@@ -1,0 +1,79 @@
+.navbarStyle{
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 80px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    opacity: 1;
+}
+
+.displayInRow{
+    display: flex;
+    flex-direction: row;
+}
+
+.logo{
+    top: 0px;
+    left: 42px;
+    width: 184px;
+    height: 81px;
+    opacity: 1;
+}
+
+.menuStyle{
+    margin-top: 30px;
+    padding: 0 15px;
+    font: normal normal bold 12px/20px Montserrat;
+    letter-spacing: 1.5px;
+    color: #646D82;
+}
+
+.logoutStyle{
+    margin: 25px 0 0 30px;
+    padding: 0 15px;
+    font: normal normal bold 15px/25px Montserrat;
+    letter-spacing: 1.5px;
+    color: #646D82;
+}
+
+.activeMenuColor{
+    color: #7165E3;
+    border-bottom:2px solid #7165E3;
+    padding-bottom:2px;
+    font: normal normal 600 15px/25px Montserrat;
+    margin-top: 27px;
+}
+
+.icons{
+    width: 40px;
+    height: 40px;
+    margin: 20px 0 0 20px;
+    cursor: pointer;
+}
+
+.logoutIcons{
+    width: 40px;
+    height: 40px;
+    margin: 20px 20px 0 -10px;
+    cursor: pointer;
+}
+
+.notificationIcon{
+    margin-top: 20px;
+    margin-left: -10px;
+    width: 20px;
+    height: 20px;
+}
+
+.notificationCount{
+    margin-top: 23px;
+    margin-left: -16px;
+    width: 12px;
+    height: 12px;
+    object-fit: cover;
+}
+
+.spaceBetween{
+    display: flex;
+    justify-content: space-between;
+}

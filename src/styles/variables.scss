@@ -1,0 +1,119 @@
+@import '~@blueprintjs/core/lib/scss/variables';
+
+$blue-100: #bfd9ff;
+$blue-200: #85b6ff;
+$blue-300: #5298ff;
+$blue-400: #267eff;
+$blue-500: #0067ff;
+$blue-600: #0058d9;
+$blue-700: #004bb8;
+$blue-800: #00409c;
+$blue-900: #003685;
+
+$green-100: #b2f093;
+$green-200: #92ea67;
+$green-300: #76e540;
+$green-400: #5ee11e;
+$green-500: #52c41a;
+$green-600: #46a716;
+$green-700: #3b8e13;
+$green-800: #327910;
+$green-900: #2b670e;
+
+$red-100: #ffffff;
+$red-200: #fffafa;
+$red-300: #ffb8b9;
+$red-400: #ff7f80;
+$red-500: #ff4d4f;
+$red-600: #ff1b1e;
+$red-700: #f00003;
+$red-800: #cc0003;
+$red-900: #ad0003;
+
+$orange-100: #ffffff;
+$orange-200: #fff4e6;
+$orange-300: #ffd8a7;
+$orange-400: #ffbf70;
+$orange-500: #ffa940;
+$orange-600: #ff9310;
+$orange-700: #e67e00;
+$orange-800: #c46b00;
+$orange-900: #a75b00;
+
+$primary: $blue-500;
+$primary-dark: $blue-700;
+$heading-color: $blue-900;
+$collapsible-header: #f7f9fb;
+$muted-text: #aeaeca;
+$auth-background: #f6fbfd;
+$background: #f4f6f9;
+$disabled-bg: #f2e8e8;
+$disabled-color: #8191b7;
+$background-hover: $disabled-color;
+
+$default-box-shadow: 0 0 20px 4px rgba(14, 12, 27, 0.05);
+$right-box-shadow: 14px 0 20px -8px rgba(14, 12, 27, 0.05);
+$bottom-box-shadow: 0 14px 20px -8px rgba(14, 12, 27, 0.05);
+
+// Overrides
+
+// Colors
+
+$blue2: $primary;
+$blue1: $primary-dark;
+$blue3: $primary-dark;
+
+$pt-intent-success: $green-500;
+$green2: $green-400;
+$green1: $green-600;
+
+$pt-intent-warning: $orange-500;
+$orange2: $orange-400;
+$orange1: $orange-600;
+
+$pt-intent-danger: $red-500;
+$red2: $red-400;
+$red1: $red-600;
+
+// Options
+
+$blue-gradient: linear-gradient(45deg, $blue-500, #00a9ff);
+
+$pt-intent-primary: $primary;
+
+$pt-link-color: $primary;
+$pt-dark-icon-color-selected: $primary;
+$pt-icon-color-selected: $primary;
+$pt-heading-color: $heading-color;
+
+$input-background-color-disabled: $disabled-bg;
+$input-color-disabled: $disabled-color;
+$button-background-color-disabled: $disabled-bg;
+
+$pt-icon-color: $heading-color;
+
+$pt-border-radius: 5px;
+$pt-button-height: 36px;
+
+$button-intents: (
+  'primary': (
+    $pt-intent-primary,
+    $primary-dark,
+    $primary,
+  ),
+  'success': (
+    $pt-intent-success,
+    $green2,
+    $green1,
+  ),
+  'warning': (
+    $pt-intent-warning,
+    $orange2,
+    $orange1,
+  ),
+  'danger': (
+    $pt-intent-danger,
+    $red2,
+    $red1,
+  ),
+) !default;
