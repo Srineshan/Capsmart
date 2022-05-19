@@ -123,12 +123,12 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             </div>
                             <img src={Envelope} alt="Envelope" className={style.smallIcons} />
                             <img src={Bell} alt="Bell" className={style.smallIcons} />
-                            <img src={Filter} alt="Filter" className={style.smallIcons} />
+                            <img src={Filter} alt="Filter" className={style.filterIcon} />
                         </div>
                         <button className={style.contractButton} onClick={() => getAddContract(true)} >ADD CONTRACT</button>
                     </div>
                     <div>
-                        <div className={`${style.tableHeader} ${style.marginTop20}`}>
+                        <div className={`${style.tableHeader} ${style.marginTop40}`}>
                             <input type="checkbox" className={style.checkBoxHeader} />
                             <p className={style.tableHeaderFontStyle}>CONTRACT TYPE</p>
                             <p className={style.tableHeaderFontStyle}>CONTRACT ID</p>

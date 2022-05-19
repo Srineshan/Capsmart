@@ -4,7 +4,6 @@ import style from './index.module.scss';
 
 const DeleteExecutedContractDialog = ({getDeleteExecutedContractDialog}) => {
 
-  console.log(getDeleteExecutedContractDialog)
     return(
         <Dialog isOpen={getDeleteExecutedContractDialog} onClose={() => getDeleteExecutedContractDialog(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
           <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
@@ -14,10 +13,10 @@ const DeleteExecutedContractDialog = ({getDeleteExecutedContractDialog}) => {
             </div>
             <div className={style.extensionBorder}></div>
             <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
             tempor incididunt ut labore,
-            <span className={`${style.blueColor} ${style.marginLeft20}`}> 
-            quis nostrud xercitation ullamco laboris nisi 
+            <span className={`${style.blueColor} ${style.marginLeft20}`}>
+            quis nostrud xercitation ullamco laboris nisi
             ut aliquip ex ea commodo consequat
             </span>
             </p>

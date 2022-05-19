@@ -1,10 +1,17 @@
-import React from 'react';
+import React,{useState} from 'react';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import style from './index.module.scss';
+import AddProofOfDocumentation from './addProofOfDocumentation';
 
-const Alert = ({getShowAlertDialog}) => {
+const Alert = ({getShowAlertDialog, isMultipleContract}) => {
+  const [showProofDialog,setShowProofDialog] = useState(false);
+
+  const getShowProofDialog = (value) => {
+    setShowProofDialog(value);
+  }
 
     return(
+      <>
         <Dialog isOpen={getShowAlertDialog} onClose={() => getShowAlertDialog(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
           <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
             <div className={style.spaceBetween}>
@@ -21,10 +28,16 @@ const Alert = ({getShowAlertDialog}) => {
             </span>
             </p>
             <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`}>OK</button>
+                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={()=>setShowProofDialog(true)}>OK</button>
             </div>
           </div>
         </Dialog>
+
+        {
+          showProofDialog &&
+          <AddProofOfDocumentation getShowProofDialog={getShowProofDialog} isMultipleContract={isMultipleContract} />
+        }
+      </>
     )
 }
 
