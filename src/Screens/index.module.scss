@@ -1,0 +1,44 @@
+.backgroundColor{
+    background: #F8FCFF 0% 0% no-repeat padding-box;
+    height: 100vh;
+    overflow: scroll;
+}
+
+.alignCenter{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.spaceBetween{
+    display: flex;
+    justify-content: space-between;
+}
+
+.roundedBackgrounds{
+    background-color: #B3B8BD;
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+}
+
+.padding{
+    padding: 0 200px;
+}
+
+.cursorPointer{
+    cursor: pointer;
+}
+
+.headingStyle{
+    font: normal normal bold 17px/15px Montserrat;
+    letter-spacing: 2px;
+    text-align: center;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+    margin-top: 20px;
+    width: 150px;
+    line-height: 25px;
+}
