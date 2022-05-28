@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import UserLogo from './../../images/userLogo.jpg';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
@@ -28,6 +28,27 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
     const [showAddUserDialog,setShowAddUserDialog] = useState(false);
     const [showEditUserDialog,setShowEditUserDialog] = useState(false);
     const [showMailtemplate,setShowMailTemplate] = useState(false);
+
+    const getUser = () => {
+        const user = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json',
+                      'X-tenantID' : '6242845f95690b3822cb96a5',
+                      'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTM3MzkzNTMsImV4cCI6MTY1MzgyNTc1M30.NfQJwvBPig-uJCp-pd7uH8mnRwfa5c-EyBm-atQN59sefOthWyaz74Pbucu2URDAVxXi5kEt-MTad-dJbyjsxw`}
+        };
+        fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/user-management-service/user', user)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+              return true;
+            }
+           )
+    };
+
+    useEffect(()=>{
+        getUser();
+    },[])
+       
 
     const getSendEmailDialog = (value) => {
         setSendEMail(value);

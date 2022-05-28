@@ -42,3 +42,8 @@
     width: 150px;
     line-height: 25px;
 }
+
+::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }

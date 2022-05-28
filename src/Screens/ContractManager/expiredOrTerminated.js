@@ -29,7 +29,7 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
                 </div>
                 <div className={`${style.cardStyle}`} onClick={() => getSelectedContract('active contracts')}>
                     <h5 className={`${style.headingForContracts}`}>ACTIVE CONTRACTS</h5>
-                    <div className={style.spaceBetween}>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
                         <p className={`${style.headingCountForContracts}`}>4</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.green}>1 </span> AUTO RENEWED</span>
@@ -39,7 +39,7 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
                 </div>
                 <div className={`${style.cardStyle}`} onClick={() => getSelectedContract('draft')}>
                     <h5 className={`${style.headingForContracts}`}>DRAFT</h5>
-                    <div className={style.spaceBetween}>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
                         <p className={`${style.headingCountForContracts}`}>2</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.yellow}>1 </span> ACTIVATION IN-PROGRESS</span>
@@ -50,7 +50,7 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
                 <div className={`${style.cardStyle}`} onClick={() => getSelectedContract('upcoming renewals')}>
                     <p className={style.next30Style}>NEXT 30 DAYS</p>
                     <h5 className={style.headingForContracts}>UPCOMING RENEWALS</h5>
-                    <div className={style.spaceBetween}>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
                         <p className={`${style.headingCountForContracts}`}>2</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.blue}>1 </span> EXTENSION REQUIRED</span>
@@ -60,7 +60,7 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
                 </div>
                 <div className={`${style.cardStyle} ${style.selectedContractBackground}`} onClick={() => getSelectedContract('expired or terminated')}>
                     <h5 className={`${style.headingForContracts}`}>EXPIRED / TERMINATED</h5>
-                    <div className={style.spaceBetween}>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
                         <p className={`${style.headingCountForContracts}`}>3</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.red}>1 </span> EXPIRED</span>

@@ -1,5 +1,12 @@
+@import '../../styles/mixins.scss';
+
 body{
     background: #F8FCFF 0% 0% no-repeat padding-box;
+    -ms-overflow-style: none !important; 
+    scrollbar-width: none !important;
+    ::-webkit-scrollbar {
+        display: none !important;
+    }
 }
 
 .margin20{
@@ -35,7 +42,6 @@ body{
 
 .cardStyle{
     height: 105px;
-    overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
     border-radius: 16px;
@@ -147,6 +153,9 @@ body{
     text-transform: uppercase;
     opacity: 1;
     margin-top: 0px !important;
+    @include breakpoint(md) {
+        font: normal normal bold 14px/12px Montserrat;
+    }
 }
 
 .headingCountForContracts{
@@ -154,6 +163,9 @@ body{
     font-size: 50px;
     margin-top: -20px;
     font-weight: bold;
+    @include breakpoint(md) {
+        font-size: 40px;
+    }
 }
 
 .spaceBetween{
@@ -171,6 +183,11 @@ body{
     text-align: left;
     font: normal normal bold 12px/15px Montserrat;
     color: #52575D;
+    span{
+        @include breakpoint(md) {
+            font: normal normal bold 10px/12px Montserrat !important;
+        }
+    }
 }
 
 .green{
@@ -316,6 +333,9 @@ body{
     font: normal normal 600 16px/21px Montserrat;
     margin: 15px 20px 0 0;
     cursor: pointer;
+    @include breakpoint(md) {
+        font: normal normal 600 12px/10px Montserrat;
+    }
 }
 
 .selectedContractBackground{
@@ -1625,4 +1645,11 @@ select {
     border-radius: 8px;
     margin: -10px;
     padding: 10px;
+  }
+
+
+  .dotStyle{
+      height: 20px;
+      width: 80px;
+      object-fit: contain;
   }
