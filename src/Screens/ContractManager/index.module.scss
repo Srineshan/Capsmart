@@ -1,0 +1,1652 @@
+@import '../../styles/mixins.scss';
+
+body{
+    background: #F8FCFF 0% 0% no-repeat padding-box;
+    -ms-overflow-style: none !important; 
+    scrollbar-width: none !important;
+    ::-webkit-scrollbar {
+        display: none !important;
+    }
+}
+
+.margin20{
+    margin: 20px;
+}
+
+.marginTop20{
+    margin-top: 20px !important;
+}
+
+.marginTop30{
+    margin-top: 30px !important;
+}
+
+.marginTop40{
+    margin-top: 40px !important;
+}
+.marginTop{
+    margin-top: 5px !important;
+}
+
+.paddingTop5{
+    padding-top: 5px;
+}
+
+.marginTop10{
+    margin-top: 10px !important;
+}
+
+.marginTop15{
+    margin-top: 15px !important;
+}
+
+.cardStyle{
+    height: 105px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 16px;
+    opacity: 1;
+    cursor: pointer;
+    padding: 15px;
+}
+
+.bigCardStyle{
+    height: calc(100vh - 265px);
+    overflow: scroll;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 16px;
+    opacity: 1;
+    padding-top: 5px;
+}
+
+.grid5{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.bigCardGrid{
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-gap: 10px;
+    margin-top: 20px;
+}
+
+.bigCalendarLeftCardWidth{
+    margin-right: 15px;
+}
+
+.userLogo{
+    width: 53px;
+    height: 53px;
+    border-radius: 50%;
+
+}
+
+.alignCenter{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.reducedOpacity{
+    opacity: 0.4;
+}
+
+.userNameStyle{
+    text-align: left;
+    font: normal normal 600 15px/13px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.loginStatus{
+    text-align: left;
+    font: italic normal normal 11px/15px Roboto;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+    margin-top: 5px;
+    max-width: 100px;
+    opacity: 1;
+}
+
+.marginLeft20{
+    margin-left: 10px;
+}
+
+.marginLeft50{
+    margin-left: 50px;
+}
+
+.reduce10Left{
+    margin-left: -10px;
+}
+
+.reduce20Left{
+    margin-left: -20px;
+}
+
+.reduce25Left{
+    margin-left: -25px;
+}
+
+.reduce30Left{
+    margin-left: -30px;
+}
+
+.chevronRightStyle{
+    width: 30px;
+    height: 30px;
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    opacity: 1;
+    border-radius: 50%;
+    margin-left: 15px;
+}
+
+.headingForContracts{
+    font: normal normal bold 17px/15px Montserrat;
+    letter-spacing: 0px;
+    text-align: left;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+    margin-top: 0px !important;
+    @include breakpoint(md) {
+        font: normal normal bold 14px/12px Montserrat;
+    }
+}
+
+.headingCountForContracts{
+    color: #52575D;
+    font-size: 50px;
+    margin-top: -20px;
+    font-weight: bold;
+    @include breakpoint(md) {
+        font-size: 40px;
+    }
+}
+
+.spaceBetween{
+    display: flex;
+    justify-content: space-between;
+}
+
+.displayInCol{
+    display: flex;
+    flex-direction: column;
+}
+
+.optionsStyle{
+    margin: -3px 0px 0 0px;
+    text-align: left;
+    font: normal normal bold 12px/15px Montserrat;
+    color: #52575D;
+    span{
+        @include breakpoint(md) {
+            font: normal normal bold 10px/12px Montserrat !important;
+        }
+    }
+}
+
+.green{
+    color: #00C07F;
+}
+
+.yellow{
+    color: #FEC106;
+}
+
+.red{
+    color: #FF6562;
+}
+
+.blue{
+    color: #7165E3;
+}
+
+.next30Style{
+    text-align: left;
+    font: normal normal normal 10px/18px Roboto;
+    color: #B3B8BD;
+    opacity: 1;
+    margin-bottom: -5px ;
+    margin-top: -10px ;
+}
+
+.statisticsHeading{
+    border-bottom:2px solid #EBF2F7;
+    padding-bottom:20px;
+    text-align: center;
+}
+
+.searchBarStyle{
+    background: #E3E5F1 0% 0% no-repeat padding-box;
+    border: 1px solid #A7A7A7;
+    height: 35px;
+    width: 34vw;
+    border-radius: 22px;
+    opacity: 0.3;
+    display: flex;
+    justify-content: space-between;
+    p{
+        margin-top: 8px;
+        margin-left: 10px;
+    }
+}
+
+.progressbarStyle{
+    width: 80%;
+    margin-left: 10%;
+}
+
+.progressMargin{
+    margin: -5px 0 20px 0;
+}
+
+.viewStyle{
+    font: normal normal normal 10px/15px Montserrat;
+    letter-spacing: -0.3px;
+    color: #B3B8BD;
+    opacity: 1;
+}
+
+.statisticsProgress{
+    font: normal normal normal 9px/13px Montserrat;
+    letter-spacing: -0.3px;
+    color: #52575D;
+    opacity: 1;
+    text-align: left;
+    margin-bottom: 1px !important;
+}
+
+.scrollStyle{
+    height: calc(100vh - 400px);
+    overflow: scroll;
+}
+
+.footerIconStyle{
+    height: 40px;
+    width: 40px;
+    object-fit: contain;
+    margin-top: 5px;
+}
+
+.displayInRow{
+    display: flex;
+    flex-direction: row;
+}
+
+.activeContractsWidth{
+    width: 220px;
+    margin-top: 10px;
+}
+
+.smallIcons{
+    height: 30px;
+    width: 30px;
+    margin-left: 20px;
+}
+
+.filterIcon{
+    height: 20px;
+    width: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 5px;
+}
+
+.fileIcon{
+    height: 15px;
+    width: 15px;
+    margin-right: 5px;
+    margin-top: 10px;
+}
+
+.colorIconsStyle{
+    height: 20px !important;
+    width: 20px !important;
+    margin-left: 5px;
+    margin-top: -3px;
+    object-fit: contain;
+}
+
+.colorFileStyle{
+    height: 15px !important;
+    width: 15px !important;
+    margin-right: 5px;
+    margin-top: 10px;
+    object-fit: contain;
+}
+
+.contractButton{
+    width: 184px;
+    height: 40px;
+    box-shadow: 0px 3px 11px var(--unnamed-color-7165e3);
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 11px #7165E3;
+    border-radius: 8px;
+    opacity: 1;
+    border: none;
+    color: white;
+    font: normal normal 600 16px/21px Montserrat;
+    margin: 15px 20px 0 0;
+    cursor: pointer;
+    @include breakpoint(md) {
+        font: normal normal 600 12px/10px Montserrat;
+    }
+}
+
+.selectedContractBackground{
+    background-color: #D8D5FD;
+}
+
+.tableHeader{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.documentPageHeader{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 10% 25% 20% 20% 20% 5%;
+}
+
+.serviceSpecificationTableHeader{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 10% 30% 25% 25% 10%;
+}
+
+.documentProofInputWidth{
+    width: 96%;
+}
+
+.contractWidth{
+    width: 200px;
+}
+
+.tableData{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.documentDataProof{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: 10% 25% 20% 20% 20% 5%;
+}
+
+.serviceSpecificationTableData{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: 10% 30% 25% 25% 10%;
+}
+
+.checkBoxHeader{
+    background: #E9E9F0 0% 0% no-repeat padding-box;
+    border: 1px solid #E9E9F0;
+    opacity: 1;
+    height: 25px;
+    width: 10%;
+    margin: 0 0px 0 20px;
+}
+
+.checkBoxData{
+    background: #B3B8BD 0% 0% no-repeat padding-box;
+    border: 1px solid #E9E9F0;
+    opacity: 1;
+    height: 15px;
+    width: 15px;
+    margin: 0 10px 0 20px;
+}
+
+.tableHeaderFontStyle{
+    font: normal normal bold 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+    margin-right: 20px;
+    text-align: left;
+    width: 10%;
+    margin-top: 10px;
+}
+
+.multipleContractorTextWidth{
+    font: normal normal bold 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+    margin-left: 10px;
+    text-align: center;
+    width: 20%;
+    margin-top: 10px;
+}
+
+.documentProofTextWidth{
+    font: normal normal bold 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+    text-align: left;
+    margin-top: 15px;
+}
+
+.tableDataFontStyle{
+    font: normal normal normal 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+    margin-right: 20px;
+    text-align: center;
+    width: 10%;
+    margin-top: 10px;
+}
+
+.multipleDataTextWidth{
+    font: normal normal normal 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+    text-align: center;
+    width: 20%;
+    margin-top: 10px;
+}
+
+.documentProofDataTextWidth{
+    font: normal normal normal 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 1;
+    display: flex;
+    align-items: center;
+    text-align: left !important;
+    margin-top: 10px;
+}
+
+.greenDotStyle{
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: #00C07F;
+    margin-top: 8px;
+}
+
+.yellowDotStyle{
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: #FEC106;
+    margin-top: 8px;
+}
+
+
+.redDotStyle{
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: #FF6562;
+    margin-top: 8px;
+}
+
+.blueDotStyle{
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: #7165E3;
+    margin-top: 8px;
+}
+
+.width10{
+    width: 10%;
+}
+
+.accountActivityStyle{
+    font: normal normal normal 15px/22px Montserrat;
+    letter-spacing: 0.66px;
+    color: #B3B8BD;
+    opacity: 0.38;
+    margin-left: 20px;
+    margin-top: 7px;
+}
+
+.paginationStyle{
+    font: normal normal 600 12px/15px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 1;
+    margin-top: 10px;
+}
+
+.minMaxWidth{
+  width: 130px;
+}
+
+.roundChevron{
+    width: 15px;
+    height: 15px;
+    margin-left: 10px;
+    margin-right: 20px;
+    margin-top: 11px;
+}
+
+.actionsIcon{
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+}
+
+.activateIcon{
+    width: 130px;
+    height: 30px;
+    margin: 5px;
+    object-fit: cover;
+    margin-left: -90px;
+}
+
+.actionCard{
+    background: #D8D7EE 0% 0% no-repeat padding-box;
+    opacity: 0.99;
+    width: 40px;
+    position: absolute;
+    right: 50;
+    margin-top: -160px;
+    margin-left: 70%;
+}
+
+.poweredBy{
+    text-align: left;
+    font: normal normal normal 11px/14px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+    opacity: 1;
+    margin: 5px 0 0 10px;
+}
+
+.leftChevronColor{
+    color: #B3B8BD;
+}
+
+.marginRight{
+    margin-right: 10px;
+}
+
+.marginRight20{
+    margin-right: 20px;
+}
+
+.welcomeStyle{
+    text-align: left;
+    font: normal normal bold 20px/18px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+}
+
+.extensionStyle{
+    text-align: left;
+    font: normal normal bold 15px/13px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+}
+
+.extensionBorder{
+    background-color: #EBF2F7;
+    height: 3px;
+}
+
+.extensionOptionsStyle{
+    text-align: left;
+    font: normal normal medium 15px/13px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin-top: 10px;
+}
+
+.terminationFieldWidth{
+    width: 72%;
+}
+
+.entityFieldWidth{
+    width: 60%;
+}
+
+.disabledButton{
+    color:rgba(143, 153, 168, 0.5);
+    background-color: #f1f2f3;
+    height: 33px;
+    width: 100px;
+    border: none;
+    border-radius: 6px;
+}
+
+.addMoreButton{
+    color:rgba(143, 153, 168, 0.5);
+    background-color: #f1f2f3;
+    height: 32px;
+    width: 130px;
+    border: none;
+    border-radius: 6px;
+}
+
+.addCotractorButton{
+    color:rgba(143, 153, 168, 0.5);
+    background-color: #f1f2f3;
+    height: 32px;
+    width: 240px;
+    border: none;
+    border-radius: 6px;
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
+.addSymbolStyle{
+    background-color: #7165E3;
+    color: white;
+    font-size: 25px;
+    box-shadow: 0px 0px 6px #00000029;
+    border-radius: 11px;
+    width: 40px;
+    height: 32px;
+}
+
+.plusSymbolPosition{
+    position: relative;
+    top: -2px;
+}
+
+.disabled{
+    cursor: not-allowed;
+}
+
+.disabledColor{
+    cursor: rgba(143, 153, 168, 0.5);
+}
+
+.addBoxDescription{
+    color: #52575D;
+    background-color: rgba(143, 153, 168, 0.5);
+    width: 260px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.fullWidth{
+    width: 100%;
+}
+
+.contractId{
+    text-align: left;
+    font: normal normal medium 15px/13px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin: 5px 20px 0 20px;
+}
+
+.welcomePadding{
+    padding: 30px 40px;
+}
+
+.welcomeMessage{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    opacity: 0.4;
+    text-align: left;
+    font: normal normal 300 13px/15px Montserrat;
+    letter-spacing: 0.9px;
+    color: #6F7479;
+    padding: 20px;
+}
+
+.addContractBody{
+    background-color: white;
+    height: 100vh;
+    overflow: scroll;
+}
+
+.extensionDialogBackground{
+    background-color: white;
+    margin: -20px !important;
+    padding: 40px;
+    border-radius: 10px;
+}
+
+.deleteEcecutedContractDialogBackground{
+    background-color: white;
+    margin: -20px !important;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.addManagerDialogBackground{
+    background-color: white !important;
+    padding: 20px 40px;
+    border-radius: 20px !important;
+}
+
+.extentionGrid{
+    display: grid;
+    grid-template-columns: 1fr 2.5fr;
+    grid-gap: 20px;
+}
+
+.addManagerGrid{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 20px;
+}
+
+.extentionLableStyle{
+    text-align: left;
+    font: normal normal normal 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+    text-transform: capitalize;
+    opacity: 1;
+    margin-top: 5px;
+}
+
+.toStyle{
+    color: #B3B8BD;
+    margin: 5px 20px 0 20px;
+}
+
+.greyText{
+    color: #B3B8BD;
+}
+
+.extentionBoxStyle{
+    border: 1px solid #7165E3;
+    border-radius: 8px;
+    opacity: 1;
+    height: 60vh;
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.serviceBoxStyle{
+    border: 1px solid #7165E3;
+    border-radius: 8px;
+    opacity: 1;
+    height: 60vh;
+    overflow: scroll;
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.deleteDraftBoxStyle{
+    border: 1px solid #7165E3;
+    border-radius: 8px;
+    opacity: 1;
+    height: 20vh;
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.newContractFromCloneBoxStyle{
+    border: 1px solid #7165E3;
+    border-radius: 8px;
+    opacity: 1;
+    height: calc(100vh - 160px);
+    overflow: scroll;
+    width: 100%;
+    margin-left: -10px;
+    padding: 20px;
+}
+
+.textAlignLeft{
+    text-align: left;
+}
+
+.dialogPaddingBottom{
+    padding-bottom: 0 !important;
+}
+
+.crossStyle{
+    color: linear-gradient(#7165E3, #FF6562) !important;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.trashStyle{
+    color: linear-gradient(#7165E3, #FF6562) !important;
+    cursor: pointer;
+}
+
+.textFieldWidth{
+    width: 350px;
+}
+
+select {
+    line-height: 1.3;
+    padding: 0.6em 1.4em 0.5em 0.8em;
+    box-sizing: border-box;
+    margin: 0;
+    border: 1px solid #aaa;
+    border-radius: 0.5em;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
+      linear-gradient(to bottom, #ffffff 0%, #f5f4f4 100%);
+    background-repeat: no-repeat, repeat;
+    background-position: right 0.7em top 50%, 0 0;
+    background-size: 0.65em auto, 100%;
+    max-height: 40px;
+    margin-top: 6px;
+    &:focus{
+      outline: none;
+    }
+    &.fullwidth {
+      min-width: 250px;
+    }
+  }
+
+  .selectLable{
+    text-align: left;
+    font: normal normal normal 17px/16px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 1;
+    margin-top: 10px;
+  }
+
+  .contractOptions{
+      height: 350px;
+      width: 60%;
+      margin-left: 20%;
+      margin-top: 3%;
+  }
+
+  .contractCards{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D4D;
+    border-radius: 20px;
+    opacity: 1;
+    width: 305px;
+    height: 150px;
+    margin-top: 3%;
+    margin-right: 20px;
+  }
+
+  .contractCards:hover{
+    background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to bottom, #7165E3, #FF6562) border-box;
+    border-radius: 20px;
+    border: 2px solid transparent;
+  }
+
+  .alignCenter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  .alertValidationInputStyle{
+    border: 1px solid red !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    height: 32px;
+  }
+
+  .contractCardData{
+    text-align: center;
+    font: normal normal 600 12px/14px Montserrat;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+    opacity: 1;
+    width: 150px;
+  }
+
+  .selectedContractCard{
+    background:
+        linear-gradient(white, white) padding-box,
+        linear-gradient(to bottom, #7165E3, #FF6562) border-box;
+    border-radius: 20px;
+    border: 2px solid transparent;
+  }
+
+  .contractCardImage{
+      height: 70px;
+      width: 100px;
+      object-fit: contain;
+      margin-left: 25px;
+      margin-bottom: 10px;
+  }
+
+  .nextButton{
+    border-radius: 12px;
+    opacity: 1;
+    background-color: #7165E3;
+    color: white;
+    border: none;
+    height: 40px;
+    width: 180px;
+    cursor: pointer;
+  }
+
+  .nextButtonPosition{
+      display: flex;
+      float: right;
+  }
+
+  .positionCenter{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .welcomeBorder{
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    opacity: 1;
+    height: 4px;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .activeContractText{
+    color:#52575D;
+  }
+
+  .dialogStyle{
+      height: 80%;
+      width: 60% !important;
+      border-radius: 20px;
+  }
+
+    .addManagerDialogStyle{
+        height: 50%;
+        width: 40%;
+        border-radius: 20px;
+    }
+
+  .outlinedButton{
+      background-color: white;
+      color: #7165E3;
+      border: 1px solid #7165E3;
+      height: 40px;
+      width: 140px;
+      border-radius: 10px;
+      margin-bottom: -20px;
+      box-shadow: 0px 3px 11px #7165E3;
+  }
+
+  .newContractOutlinedButton{
+    background-color: white;
+    color: #7165E3;
+    border: 1px solid #7165E3;
+    height: 40px;
+    width: 180px;
+    border-radius: 10px;
+    margin-bottom: -20px;
+  }
+
+  .cloneOutlinedButton{
+    background-color: white;
+    color: #7165E3;
+    border: 1px solid #7165E3;
+    box-shadow: 0px 1px 5px #7165E3;
+    height: 30px;
+    width: 80px;
+    border-radius: 10px;
+}
+
+  .buttonStyle{
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    height: 40px;
+    width: 140px;
+    border-radius: 10px;
+    margin-bottom: -20px;
+    box-shadow: 0px 3px 11px #7165E3;
+  }
+
+  .newContractButtonStyle{
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    height: 40px;
+    width: 180px;
+    border-radius: 10px;
+    margin-bottom: -20px;
+  }
+
+  .cloneButtonStyle{
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    box-shadow: 0px 1px 5px #7165E3;
+    height: 30px;
+    width: 80px;
+    border-radius: 10px;
+  }
+
+  .floatRight{
+      float: right;
+  }
+
+  .cloneContent{
+    text-align: left;
+    font: normal normal medium 18px/28px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+  }
+
+  .cloneDialog{
+    height: 40%;
+    width: 30% !important;
+}
+
+.cloneDialogBackground{
+    background-color: white;
+    margin: -20px !important;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.cursorPointer{
+    cursor: pointer;
+}
+
+.calendarStyle{
+    margin: 7px;
+}
+
+.newContractFromCloneGrid{
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-gap: 20px;
+}
+
+.reduceTop10{
+    margin-top: -10px;
+}
+
+.reduceTop{
+    margin-top: -5px;
+}
+
+.toStyle{
+    letter-spacing: 0px;
+    color: #B3B8BD;
+}
+
+.weekSelectStyle{
+    margin-top: 0px;
+    height: 30px;
+}
+
+.marginBottom{
+    margin-bottom: 10px;
+}
+
+.cloneBlockStyle{
+    height: calc(100vh - 80px);
+    overflow: scroll;
+    border-right: 4px solid #EBF2F7;
+    margin-top: -10px;
+    margin-bottom: -20px;
+    padding: 20px;
+}
+
+.contractEntityCardStyle{
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    border-radius: 10px;
+    opacity: 1;
+    height: 80px;
+    min-width: 100%;
+}
+
+.completedEntityCardStyle{
+    background-color: #BEB9F2;
+    color: black;
+    font-weight: 600 !important;
+    display: grid;
+    grid-template-columns: 1fr 20px;
+    grid-gap: 10px;
+}
+
+.completedIconStyle{
+    height: 25px;
+    width: 25px;
+    object-fit: contain;
+    margin-top: 18px;
+}
+
+.completedIconTableStyle{
+    height: 25px;
+    width: 25px;
+    object-fit: contain;
+}
+
+.contractEntityFontStyle{
+    text-align: left;
+    font: normal normal normal 17px/21px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    width: 80%;
+    padding: 20px;
+}
+
+.tableHeight{
+    height: calc(100vh - 170px);
+    overflow: scroll;
+}
+
+.selectedContractEntityStyle{
+    border: 1px solid #7165E3;
+    color: #7165E3;
+}
+
+.selectedColor{
+    color: #7165E3;
+}
+
+.smallHeadingStyle{
+    text-align: left;
+    font: normal normal 600 17px/16px Montserrat;
+    letter-spacing: 0px;
+    line-height: 20px;
+    color: #7165E3;
+    opacity: 1;
+}
+
+.descriptionStyle{
+    text-align: left;
+    font: normal normal normal 15px/30px Montserrat;
+    letter-spacing: 0px;
+    opacity: 1;
+    color: #B3B8BD;
+}
+
+.deleteDescriptionStyle{
+    text-align: left;
+    font: normal normal normal 13px/23px Montserrat;
+    letter-spacing: 0px;
+    opacity: 1;
+    color: #B3B8BD;
+    line-height: 20px;
+}
+
+.descriptionBoxStyle{
+    border: 1px solid #B3B8BD;
+    border-radius: 8px;
+    opacity: 1;
+    width: 80%;
+    margin-top: 40px;
+    padding: 20px;
+    background-color: white;
+}
+
+.roleBoxStyle{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 11px #52575D4D;
+    border-radius: 6px;
+    opacity: 1;
+    padding: 20px;
+    width: 62%;
+    margin-left: 38%;
+    margin-top: -60px;
+}
+
+.blueColor{
+    color: #7165E3;
+}
+
+.selectFieldWidth{
+    min-width: 260px;
+    max-width: 260px;
+}
+
+.selectFieldSwitchWidth{
+    min-width: 240px;
+    max-width: 240px;
+}
+
+.fieldWidth2InARow{
+    width: 50%;
+}
+
+.uploadButtonStyle{
+    background-color: #f1f2f3;
+    color: #7165E3;
+    border: none;
+    height: 30px;
+    font-size: 12px;
+    width: 70px;
+}
+
+.chooseFileStyle{
+    background-color: #f1f2f3;
+    color: #7165E3;
+    border: none;
+    height: 30px;
+    font-size: 12px;
+    width: 100px;
+}
+
+.minMaxLeftElement{
+  background-color: #f1f2f3;
+  color: #AFB2B6;
+  border: none;
+  height: 30px;
+  font-size: 12px;
+  width: 80px;
+}
+
+.textElement{
+    background-color: #f1f2f3;
+    color: #AFB2B6;
+    border: none;
+    height: 35px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    padding: 0 20px;
+    line-height: 15px;
+    width: 60%;
+  }
+
+  .textElementWithNurse{
+    background-color: #f1f2f3;
+    color: #AFB2B6;
+    border: none;
+    height: 35px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    line-height: 15px;
+    width: 60%;
+  }
+
+  .textElementWithoutBackground{
+    color: #AFB2B6;
+    border: none;
+    height: 35px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    line-height: 15px;
+    width: 60%;
+  }
+
+  .editableTextStyle{
+    height: 35px;
+    display: flex;
+    align-items: center;
+    padding-left:20px;
+    padding-top: 8px;
+    width: 50px;
+    border-radius: 4px !important;
+  }
+
+  .editableTextThresholdStyle{
+    height: 35px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding-left:15px;
+    padding-top: 8px;
+    width: 50px;
+    border-radius: 4px !important;
+  }
+
+  .editableTextSpecifiedStyle{
+    height: 35px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding-left:15px;
+    margin-top: 8px;
+    width: 65px;
+    border-radius: 4px !important;
+  }
+
+  .editableTextStyleDays{
+    height: 35px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding-top: 8px;
+    padding-left:20px;
+    width: 50px;
+    border-radius: 4px !important;
+  }
+
+  .textElementWithoutBackgroundDays{
+    color: #AFB2B6;
+    border: none;
+    height: 35px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    line-height: 15px;
+    width: 60%;
+  }
+
+  .editableTextStyleSmallWidth{
+    height: 35px;
+    display: flex;
+    align-items: center;
+    padding: 8px 20px;
+    width: 40px !important;
+    border-radius: 4px !important;
+  }
+
+  .editableSessionTextStyle{
+    height: 35px;
+    display: flex;
+    align-items: center;
+    padding: 8px 30px;
+    width: 75px;
+    border-radius: 4px !important;
+  }
+
+  .editableTextStyleWithoutPadding{
+    height: 35px;
+    display: flex;
+    align-items: center;
+    padding-right:20px;
+    padding-top: 8px;
+    width: 50px;
+    border-radius: 4px !important;
+  }
+
+  .editableTextOuterBorder{
+    height: 37px;
+    border: 1px solid #E9E9F0 !important;
+    border-radius: 4px;
+    min-width: 33.3% !important;
+  }
+
+  .editableTextOuterBorderSmall{
+    height: 37px;
+    border: 1px solid #E9E9F0 !important;
+    border-radius: 4px;
+    min-width: 27% !important;
+  }
+
+.leftAlign{
+    text-align: left;
+}
+
+.threeFieldWidth{
+    width: 33.3%;
+}
+
+.fourFieldWidth{
+    width: 25%;
+}
+
+.fourFieldWidth{
+    width: 25%;
+}
+
+.twoFieldWidth{
+    width: 50%;
+}
+
+.validationAlert{
+    background: #ffcdcc 0% 0% no-repeat padding-box;
+    border-radius: 10px;
+    padding: 10px 10px 0 10px;
+    color: black !important;
+}
+
+.blackText{
+    color: black !important;
+}
+
+.bold{
+    font-weight: bold;
+}
+
+.documentCard{
+    background-color: #D3D0F7;
+    padding: 15px 15px 5px 15px !important;
+    border-radius: 10px;
+}
+
+.proofBorder{
+  border: 1px solid #7165E3;
+  border-radius: 8px;
+  opacity: 1;
+  overflow: scroll;
+  border-radius: 8px;
+  opacity: 1;
+  overflow: scroll;
+  margin-top: 10px;
+  padding: 20px;
+}
+
+.addProofDialog{
+  height:75%;
+  width:55% !important;
+}
+
+.renewalBoxStyle{
+    background-color: #EBECED;
+    color: #B3B8BD;
+    text-align: left;
+    border: 1px solid #B3B8BD;
+    border-radius: 10px;
+    height: 100px;
+    font: normal normal normal 13px/15px Montserrat;
+    margin-top: 10px;
+    padding: 15px;
+}
+
+.siteLevelBoxStyle{
+    background-color: #EBECED;
+    color: #B3B8BD;
+    text-align: left;
+    border: 1px solid #B3B8BD;
+    border-radius: 10px;
+    height: 60px;
+    font: normal normal normal 13px/15px Montserrat;
+    margin-top: 10px;
+    padding: 15px;
+}
+
+.renewalRemainderBoxStyle{
+    color: #B3B8BD;
+    text-align: left;
+    border: 1px solid #B3B8BD;
+    border-radius: 10px;
+    height: 100px;
+    font: normal normal normal 13px/15px Montserrat;
+    margin-top: 10px;
+    padding: 15px;
+}
+
+.inputRenewalStyle{
+    background: #EBECED !important;
+    border: 1px solid #B3B8BD;
+    height: 30px !important;
+    border-radius: 4px;
+    padding: 7px 0 0 25px;
+    color: black;
+}
+
+.inputRenewalRemainderStyle{
+    background: #EBECED !important;
+    border: 1px solid #B3B8BD;
+    height: 30px !important;
+    border-radius: 4px;
+    padding: 7px 0 0 25px;
+    color: black;
+    width: 80%;
+}
+
+.renewalBoxGrid{
+    display: grid;
+    grid-template-columns: 45% 20% 35%;
+}
+
+.siteLevelGrid{
+    display: grid;
+    grid-template-columns: 35% 65%;
+}
+
+.renewalRemainderBoxGrid{
+    display: grid;
+    grid-template-columns: 50% 40% 10%;
+}
+
+.grid3{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.grid2{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 20px;
+}
+
+.twoCol{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.sendMailUserDialog{
+    height: 40%;
+    width: 40% !important;
+}
+
+.padding10{
+    padding: 10px;
+}
+
+.searchIcon{
+    max-height: 20px;
+    max-width: 20px;
+    margin-left: 20px;
+    margin-top: 7px;
+}
+
+.userMailListGrid{
+    display: grid;
+    grid-template-columns: 20px 50px 1fr 20px;
+}
+
+.userLogoMailStyle{
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: contain;
+}
+
+.mailIdTextColor{
+    color: #52575D;
+}
+
+.mailTemplate{
+  height:80% !important;
+  width:75% !important;
+}
+
+.sendNotificationsButtonWidth{
+    width: 200px;
+}
+
+.mailLeftElement{
+  margin-top:6px;
+  margin-left: 10px;
+}
+
+.redFont{
+  color: red;
+}
+
+.envelopeImageStyle{
+    height: 60px;
+    width: 60px;
+}
+
+.sendMailConfirmationStyle{
+    text-align: center;
+    font: normal normal normal 13px/23px Montserrat;
+    letter-spacing: 0px;
+    opacity: 1;
+    color: #52575D;
+    line-height: 20px;
+    width: 100%;
+    padding: 0 50px;
+    font-weight: 600;
+}
+
+::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .contractedBorderStyle{
+    border: 0.800000011920929px solid #E5E6E7;
+    border-radius: 8px;
+    margin: -10px;
+    padding: 10px;
+  }
+
+
+  .dotStyle{
+      height: 20px;
+      width: 80px;
+      object-fit: contain;
+  }

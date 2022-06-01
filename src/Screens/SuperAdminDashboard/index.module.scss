@@ -1,0 +1,1009 @@
+body{
+    -ms-overflow-style: none !important; 
+    scrollbar-width: none !important;
+    ::-webkit-scrollbar {
+        display: none !important;
+    }
+}
+
+.loginGrid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.welcomeImgStyle{
+    height: 35vh;
+    width: 35vw;
+    object-fit: contain;
+    margin-top: 20%;
+}
+
+.alignCenter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.welcomeImgCardStyle{
+    box-shadow: 0px 3px 11px #52575D1A;
+    border-radius: 0px 16px 16px 0px;
+    height: 100vh;
+}
+
+.headingStyle{
+    font: normal normal bold 20px/25px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+    text-transform: capitalize;
+}
+
+.marginTop50{
+    margin-top: 50px;
+}
+
+.marginTop30{
+    margin-top: 30px;
+}
+
+.marginTop20{
+    margin-top: 20px;
+}
+
+.marginTop10{
+    margin-top: 10px;
+}
+
+.marginTop15{
+    margin-top: 15px;
+}
+
+.marginTop{
+    margin-top: 5px;
+}
+
+.marginLeft20{
+    margin-left: 20px;
+}
+
+.marginLeft10{
+    margin-left: 10px;
+}
+
+.marginBottom20{
+    margin-bottom: 20px;
+}
+
+.marginRightForPositionButton{
+    margin-right: 5%;
+}
+
+.textFieldWidth{
+    width: 145px;
+}
+
+.welcomeDescriptionStyle{
+    text-align: center;
+    font: normal normal normal 15px/20px Montserrat;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+    width: 70%;
+    margin-left: 15%;
+    margin-top: 30px;
+}
+
+.timeSmartStyle{
+    text-align: center;
+    letter-spacing: 0px;
+    font: normal normal normal 12px/17px Montserrat;
+    color: #7165E3;
+    opacity: 1;
+    margin-top: 50px;
+}
+
+.termsStyle{
+    text-align: center;
+    font: normal normal normal 11px/13px Montserrat;
+    letter-spacing: 0px;
+    color: #DDDDDD;
+}
+
+.loginToStyle{
+    text-align: center;
+    font: normal normal normal 15px/20px Montserrat;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+}
+
+.otpTextStyle{
+    text-align: center;
+    font: normal normal normal 12px/16px Montserrat;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+}
+
+.otpHeading{
+    text-align: center;
+    font: normal normal normal 15px/20px Montserrat;
+    letter-spacing: 0px;
+    color: #707070;
+}
+
+.otpBoxStyle{
+    border: 1px solid #BEB9F2;
+    height: 80px;
+    width: 80px;
+}
+
+
+.blackText{
+    color: black;
+}
+
+.regHeading{
+    text-align: left;
+    font: normal normal 600 15px/20px Montserrat;
+    letter-spacing: 0px;
+}
+
+.padding150{
+    padding: 150px;
+}
+
+.loginButton{
+    height: 50px;
+    width: 100%;
+    background-color: #7165E3;
+    color: white;
+    font: normal normal 600 20px/25px Montserrat;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.forgotPasswordStyle{
+    text-align: center;
+    font: normal normal 600 13px/18px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+}
+
+.forgotPasswordBackground{
+    background-color: #F8FCFF;
+    height: 100vh !important;
+    padding-top: 70px;
+}
+
+.forgotPasswordCard{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    padding: 40px 100px;
+    width: 40%;
+    margin-left: 30%;
+    height: 80vh;
+}
+
+.otpCard{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    padding: 40px 40px;
+    width: 40%;
+    margin-left: 30%;
+    height: 47vh;
+    box-shadow: 0px 3px 6px #7165E3C9;
+    border-radius: 8px;
+    margin-top: 5%;
+}
+
+.eyePadding{
+    padding: 8px;
+}
+
+.cursor{
+    cursor: pointer;
+}
+
+.welcomeBackground{
+    background-color: #c4bef3;
+    height: 100vh !important;
+    overflow: scroll;
+}   
+
+.welcomeHeading{
+    text-align: center;
+    font: normal normal 600 22px/31px Montserrat;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+}
+
+.completedHeading{
+    text-align: center;
+    font: normal normal normal 26px/31px Montserrat;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+}
+
+.thanksTextStyle{
+    text-align: center;
+    font: normal normal 500 22px/31px Montserrat;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    margin-top: 30px;
+}
+
+.accountTypeStyle{
+    font: normal normal normal 15px/28px Montserrat;
+    color: white;
+}
+
+.welcomeAccountImgStyle{
+    height: 120px;
+    width: 120px;
+    margin-top: 50px;
+}
+
+.welcomeDashboardImgStyle{
+    height: 100px;
+    width: 100px;
+    margin-top: 20px;
+}
+
+.setupCompleteImgStyle{
+    height: 100px;
+    width: 100px;
+    margin-top: 40px;
+}
+
+.crossStyle{
+    color: linear-gradient(#7165E3, #FF6562) !important;
+    margin: 25px;
+    cursor: pointer;
+}
+
+.floatRight{
+    float: right;
+}
+
+.welcomeContentMargin{
+    padding: 80px 150px;
+}
+
+.welcomeToDashboardContentMargin{
+    padding: 60px 150px;
+}
+
+.completedContentMargin{
+    padding: 60px 40px;
+}
+
+.welcomeDescription{
+    text-align: left;
+    font: normal normal 500 14px/20px sans-serif;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    width: 80%;
+    margin-left: 10%;
+    line-height: 25px;
+}
+
+.outlinedWelcomeButton{
+    box-shadow: 0px 0px 6px #00000029;
+    background-color: transparent;
+    border: 1px solid #FFFFFF;
+    color: white;
+    width: 120px;
+    height: 35px;
+    border-radius: 100px;
+    padding-top: 5px;
+    cursor: pointer;
+}
+
+.welcomeButton{
+    box-shadow: 0px 0px 6px #00000029;
+    background-color: white;
+    border: 1px solid #FFFFFF;
+    color: black;
+    width: 120px;
+    height: 35px;
+    border-radius: 100px;
+    padding-top: 5px;
+    cursor: pointer;
+}
+
+.setupCompleteButton{
+    box-shadow: 0px 0px 6px #00000029;
+    background-color: white;
+    border: 1px solid #FFFFFF;
+    color: black;
+    width: 180px;
+    height: 35px;
+    border-radius: 100px;
+    padding-top: 5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.entitySetupBackground{
+    background-color: #F8FCFF;
+    height: 100vh !important;
+}
+
+.stepperImgStyle{
+    height: 100%;
+    width: 35px;  
+    object-fit: contain;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 17px;
+}
+
+.stepperImgBackground{
+    background-color: #E9E9F0;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-left: 60px;
+}
+
+.activeStepperStyle{
+    background-color: #7165E3 !important;
+}
+
+.completedStepperStyle{
+    background-color: white !important;
+    border: 2px solid #7165E3;
+}
+
+.stepperDivider{
+    background: linear-gradient(to right,#7165E3 10%, #E9E9F0 10%) !important;
+    height: 3px;
+    width: 100%;
+    margin-top: -70px;
+}
+
+.stepperDivider2{
+    background: linear-gradient(to right,#7165E3 30%, #E9E9F0 30%) !important;
+    height: 3px;
+    width: 100%;
+    margin-top: -70px;
+}
+
+.stepperDivider3{
+    background: linear-gradient(to right,#7165E3 50%, #E9E9F0 50%) !important;
+    height: 3px;
+    width: 100%;
+    margin-top: -70px;
+}
+
+.stepperDivider4{
+    background: linear-gradient(to right,#7165E3 70%, #E9E9F0 70%) !important;
+    height: 3px;
+    width: 100%;
+    margin-top: -70px;
+}
+
+.stepperDivider5{
+    background: linear-gradient(to right,#7165E3 90%, #E9E9F0 90%) !important;
+    height: 3px;
+    width: 100%;
+    margin-top: -70px;
+}
+
+.stepperGrid{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.stepperMargin{
+    padding: 40px 100px;
+}
+
+.entitySetupCardStyle{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 50px #52575D4D;
+    border-radius: 20px;
+    height: calc(100vh - 160px);
+    overflow: scroll;
+    margin-top: 65px;
+}
+
+.entityTextColor{
+    text-align: center;
+    font: normal normal medium 13px/18px Montserrat;
+    letter-spacing: 0.8px;
+    color: #CDCECE;
+    padding-top: 10px;
+    margin-left: -17%;
+}
+
+.activeEntityTextColor{
+    color: #7165E3 !important;
+}
+
+.heading{
+    text-align: center;
+    font: normal normal 600 20px/18px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+    margin-top: 30px;
+}
+
+.greyBorder{
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    height: 3px;
+    width: 90%;
+    margin-left: 5%;
+}
+
+.entityDescription{
+    background: #d7d4f7 0% 0% no-repeat padding-box;
+    text-align: left;
+    font: normal normal 300 12px/18px Montserrat;
+    letter-spacing: 0.9px;
+    color: #52575D;
+    width: 90%;
+    margin-left: 5%;
+    padding: 15px 25px;
+    margin-top: 20px;
+    border-radius: 6px;
+}
+
+.newContractFromCloneBoxStyle{
+    border: 1px solid #7165E3;
+    border-radius: 8px;
+    opacity: 1;
+    overflow: scroll;
+    width: 70%;
+    margin-left: 15%;
+    margin-top: 20px;
+    padding: 30px;
+}
+
+.extentionGrid{
+    display: grid;
+    grid-template-columns: 1fr 2.5fr;
+    grid-gap: 20px;
+}
+
+.trialGrid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.extentionLableStyle{
+    text-align: left;
+    font: normal normal normal 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+    text-transform: capitalize;
+    opacity: 1;
+    margin-top: 5px;
+}
+
+.fullWidth{
+    width: 100%;
+}
+
+.displayInRow{
+    display: flex;
+    flex-direction: row;
+}
+
+.textAlignLeft{
+    text-align: left;
+}
+
+.addSymbolStyle{
+    background-color: #7165E3;
+    color: white;
+    font-size: 25px;
+    box-shadow: 0px 0px 6px #00000029;
+    border-radius: 11px;
+    width: 50px;
+    height: 32px;
+}
+
+.plusSymbolPosition{
+    position: relative;
+    top: -2px;
+}
+
+.selectFieldSwitchWidth{
+    min-width: 240px;
+    max-width: 240px;
+}
+
+.outlinedButton{
+    background-color: white;
+    color: #7165E3;
+    border: 1px solid #7165E3;
+    height: 40px;
+    width: 180px;
+    border-radius: 10px;
+    margin-bottom: -20px;
+    cursor: pointer;
+}
+
+.buttonStyle{
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    height: 40px;
+    width: 180px;
+    border-radius: 10px;
+    margin-bottom: -20px;
+    cursor: pointer;
+  }
+
+  .spaceBetween{
+    display: flex;
+    justify-content: space-between;
+}
+
+.companyLogoUpload{
+    height: 70px;
+    width: 70px;    
+    object-fit: contain;
+}
+
+.logoThumbnailUpload{
+    height: 50px;
+    width: 50px;    
+    object-fit: cover;
+    margin-left: 60px;
+    margin-top: 20px;
+}
+
+.uploadText{
+    text-align: left;
+    font: normal normal normal 15px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+    width: 150px;
+    margin-top: 30px;
+    margin-left: 15px;
+}
+
+.entityIDButton{
+    background-color: #d7d4f7;
+    border: 1px solid #B3B8BD;
+    border-radius: 6px;
+    padding: 10px;
+    cursor: pointer;
+    span{
+        color: #7165E3;
+        margin-right: 5px;
+    }
+}
+
+.twoFieldWidth{
+    width: 50%;
+}
+
+.leftAlign{
+    text-align: left;
+}
+
+.fourFieldWidth{
+    width: 25%;
+}
+
+.buttonPosition{
+    margin-right: 15%;
+    padding-bottom: 30px;
+}
+
+.buttonPositionLeft{
+    margin-left: 15%;
+}
+
+.threeFieldWidth{
+    width: 75%;
+}
+
+.addBoxDescription{
+    color: #52575D;
+    background-color: rgba(143, 153, 168, 0.5);
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.reqDeptCard{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 11px #52575D4D;
+    border-radius: 6px;
+    width: 78%;
+    padding: 20px;
+    margin-left: 13%;
+}
+
+.reqButton{
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    height: 32px;
+    width: 150px;
+    border-radius: 10px;
+    margin-bottom: -20px;
+    cursor: pointer;
+}
+
+.tagInputStyle{
+    width: 87%;
+    margin-left: 13%;
+}
+
+.addMoreButton{
+    color:rgba(143, 153, 168, 0.5);
+    background-color: #f1f2f3;
+    border: 1px solid #BEB9F2;
+    height: 32px;
+    width: 130px;
+    border-radius: 6px;
+}
+
+.pricingButton{
+    color:rgba(143, 153, 168, 0.5);
+    background-color: #f1f2f3;
+    border: 1px solid #BEB9F2;
+    height: 32px;
+    width: 170px;
+    border-radius: 6px;
+    margin-left: 5px;
+}
+
+.selectedColor{
+    color: #7165E3;
+}
+
+.cursorPointer{
+    cursor: pointer;
+}   
+
+.siteButtonPosition{
+    margin: -40px 70px 10px 0;
+}
+
+.tableHeader{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    padding-left: 20px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 15% 15% 14% 14% 14% 14% 14%;
+}
+
+.tableHeaderFontStyle{
+    font: normal normal bold 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.tableData{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    min-height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.displayInCol{
+    display: flex;
+    flex-direction: column;
+}
+
+.tableDataGrid{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 15% 15% 14% 14% 14% 14% 14%;
+    padding-left: 20px;
+}
+
+.marginTop7{
+    margin-top: 7px;
+}
+
+.tableDataFontStyle{
+    font: normal normal normal 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 1;
+    margin-right: 20px;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.tableHeight{
+    height: calc(100vh - 320px);
+    width: 94%;
+    margin-left: 3%;
+    overflow: scroll;
+}
+
+.cloneContent{
+    text-align: left;
+    font: normal normal medium 18px/28px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+  }
+
+  .cloneDialog{
+    height: 40%;
+    width: 30% !important;
+}
+
+.bulkUploadDialog{
+    height: 70%;
+    width: 70% !important;
+}
+
+.bulkUploadDialogBackground{
+    background-color: white;
+    margin: -30px !important;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.alertTextColor{
+    color: #52575D;
+}
+
+.uploadTextStyle{
+    text-align: center;
+    font: normal normal 600 18px/22px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.cloneDialogBackground{
+    background-color: white;
+    margin: -20px !important;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.dialogPaddingBottom{
+    padding-bottom: 0 !important;
+}
+
+.extensionStyle{
+    text-align: left;
+    font: normal normal bold 15px/13px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+}
+
+.extensionBorder{
+    background-color: #EBF2F7;
+    height: 3px;
+}
+
+.positionCenter{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cloneOutlinedButton{
+    background-color: white;
+    color: #7165E3;
+    border: 1px solid #7165E3;
+    box-shadow: 0px 1px 5px #7165E3;
+    height: 30px;
+    width: 80px;
+    border-radius: 10px;
+}
+
+  .cloneButtonStyle{
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    box-shadow: 0px 1px 5px #7165E3;
+    height: 30px;
+    width: 80px;
+    border-radius: 10px;
+  }
+
+  .paddingTop5{
+    padding-top: 5px;
+}
+
+.alertCrossStyle{
+    color: linear-gradient(#7165E3, #FF6562) !important;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.dashborderStyle{
+    height: 150px;
+    width: 100%;
+    border-radius: 6px;
+    border: 2px dashed #d7d4f7;
+}
+
+.uploadImgStyle{
+    height: 50px;
+    margin-bottom: 20px;
+    object-fit: contain;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.uploadDescription{
+    background: #ebe9fb 0% 0% no-repeat padding-box;
+    border-radius: 6px;
+    padding: 20px;
+}
+
+.uploadDescriptionText{
+    text-align: left;
+    font: normal normal 300 12px/18px Montserrat;
+    letter-spacing: 0.95px;
+    color: #52575D;
+}
+
+.descriptionHeading{
+    text-align: left;
+    font: normal normal 600 14px/20px Montserrat;
+    letter-spacing: 1px;
+    color: #52575D;
+    text-transform: capitalize;
+}
+
+.downloadBulkButtonStyle{
+    background: #E6E6E6 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 1px solid #7165E3;
+    border-radius: 6px;
+    height: 40px;
+    width: 100%;
+    color: #7165E3;
+}
+
+.downloadImageStyle{
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+    margin-right: 5px;
+    margin-left: 20px;
+    margin-top: -5px;
+}
+
+.failedTesxtColor{
+    font: normal normal 600 14px/20px Montserrat;
+    letter-spacing: 0px;
+    color: #FF6562;
+}
+
+.resetStyle{
+    text-decoration: underline;
+    font: normal normal 600 14px/20px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+}
+
+.reduceMarginTop{
+    margin-top: -25px;
+}
+
+.marginRight20{
+    margin-right: 20px;
+}
+
+.marginRight{
+    margin-right: 5px;
+}
+
+.uploadButtonStyle{
+    background-color: #f1f2f3;
+    color: #7165E3;
+    border: none;
+    height: 30px;
+    font-size: 12px;
+    width: 70px;
+}
+
+.toStyle{
+    color: #B3B8BD;
+    margin: 5px 20px 0 20px;
+}
+
+.calendarStyle{
+    margin: 7px;
+}
+
+.renewalBoxStyle{
+    background-color: #F8FCFF;
+    color: #B3B8BD;
+    text-align: left;
+    border: 1px solid #B3B8BD;
+    border-radius: 10px;
+    height: 100px;
+    font: normal normal normal 13px/15px Montserrat;
+    margin-top: 10px;
+    padding: 15px;
+}
+
+.renewalBoxGrid{
+    display: grid;
+    grid-template-columns: 45% 15% 25%;
+}
+
+.inputRenewalStyle{
+    background: transparent;
+    border: 1px solid #B3B8BD;
+    height: 30px !important;
+    border-radius: 4px;
+    padding: 7px 0 0 25px;
+    color: black;
+}
+
+.textAlignRight{
+    text-align: right;
+}
+
+.inputRenewalRemainderStyle{
+    background: #EBECED !important;
+    border: 1px solid #B3B8BD;
+    height: 30px !important;
+    border-radius: 4px;
+    padding: 7px 0 0 25px;
+    color: black;
+    width: 80%;
+}
+
+.weekSelectStyle{
+    margin-top: 0px;
+    height: 30px;
+    background-color: transparent !important;
+}
+
+.renewalRemainderBoxGrid{
+    display: grid;
+    grid-template-columns: 50% 40% 10%;
+}
+
+.renewalRemainderBoxStyle{
+    color: #B3B8BD;
+    text-align: left;
+    border: 1px solid #B3B8BD;
+    border-radius: 10px;
+    height: 100px;
+    font: normal normal normal 13px/15px Montserrat;
+    margin-top: 10px;
+    padding: 15px;
+}
+
+.alertImgStyle{
+    height: 30px;
+    width: 30px;
+    object-fit: contain;
+}
+
+.trialPlanCard{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid grey;
+    border-radius: 23px;
+    padding: 20px 20px 10px 20px;
+    width: 30vw;
+}
+
+::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
