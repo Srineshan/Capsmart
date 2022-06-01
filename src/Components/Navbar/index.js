@@ -4,6 +4,7 @@ import NotificationsIcon from './../../images/notificationsIcon.png';
 import PrintIcon from './../../images/printIcon.png';
 import RedBackground from './../../images/redBackground.png';
 import NotificationCount from './../../images/notificationCount.png';
+import File from './../../images/file.png';
 import LogoutIcon from './../../images/logoutIcon.png'; 
 import style from './index.module.scss';
 
@@ -19,13 +20,13 @@ const Navbar = () => {
                 <div className={style.menuStyle}>
                     <p>TIMESHEETS</p>
                 </div>
-                <div className={`${style.menuStyle} ${style.activeMenuColor}`}>
+                <div className={`${style.menuStyle} ${window.location.pathname !== "/contracts" && style.activeMenuColor}`}>
                     <p>CONTRACT MANAGER</p>
                 </div>
                 <div className={style.menuStyle}>
                     <p>REPORT</p>
                 </div>
-                <div className={style.menuStyle}>
+                <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
                     <p>TOOLS</p>
                 </div>
                 <div className={style.menuStyle}>
@@ -33,6 +34,7 @@ const Navbar = () => {
                 </div>
             </div>
             <div className={style.displayInRow}>
+                <img src={File} alt="print" className={style.icons} />
                 <img src={PrintIcon} alt="print" className={style.icons} />
                 <img src={NotificationsIcon} alt="print" className={style.icons} />
                 <img src={RedBackground} alt="print" className={style.notificationIcon} />

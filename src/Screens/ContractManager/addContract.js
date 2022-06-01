@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Icon, Intent } from "@blueprintjs/core";
+import Doctor from './../../images/doctor.png';
+import DoctorTeam from './../../images/doctorTeam.png';
+import HighlightedDoctor from './../../images/highlightedDoctor.png';
 import style from './index.module.scss';
 
-const AddContract = ({getAddContract}) => {
+const AddContract = ({getAddContract, getNewContract}) => {
     const [selectedContract, setSelectedContract] = useState('Select...');
     const [selectedContractOnClick, setSelectedContractOnClick] = useState(false);
     return(
@@ -44,9 +47,7 @@ const AddContract = ({getAddContract}) => {
                     <div className={`${style.contractCards} ${selectedContractOnClick && style.selectedContractCard}`} onClick={() => setSelectedContractOnClick(true)}>
                         <div className={style.alignCenter}>
                             <div>
-                                <div className={style.contractCardImage}>
-
-                                </div>
+                                <img src={selectedContractOnClick ? HighlightedDoctor : Doctor} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract with No Prior Contract(s) with Entity' ? '' : style.reducedOpacity}`} />
                                 <div className={`${style.contractCardData} ${selectedContract === 'New Contract with No Prior Contract(s) with Entity' ? style.activeContractText : ''}`}>
                                 Individual Contractor Contract
                                 </div>
@@ -56,9 +57,7 @@ const AddContract = ({getAddContract}) => {
                     <div className={style.contractCards}>
                         <div className={style.alignCenter}>
                             <div>
-                                <div className={style.contractCardImage}>
-
-                                </div>
+                                <img src={DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract with No Prior Contract(s) with Entity' ? '' : style.reducedOpacity}`} />
                                 <div className={`${style.contractCardData} ${selectedContract === 'New Contract with No Prior Contract(s) with Entity' ? style.activeContractText : ''}`}>
                                 Multiple Contractor Contract
                                 </div>
@@ -80,7 +79,7 @@ const AddContract = ({getAddContract}) => {
                 )}
             </div>
             <div className={style.nextButtonPosition}>
-                <button className={style.nextButton}>NEXT</button>
+                <button className={style.nextButton} onClick={() => {getNewContract(true);getAddContract(false)}}>NEXT</button>
             </div>
         </div>
     )

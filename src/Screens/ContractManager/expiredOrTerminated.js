@@ -3,8 +3,10 @@ import UserLogo from './../../images/userLogo.jpg';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
 import Filter from './../../images/filter.png';
+import RedWarning from './../../images/redWarning.png';
 import Bell from './../../images/bell.png';
 import ProgressBar from "@ramonak/react-progress-bar";
+import PageFooterIcon from './../../images/pageFooterIcon.png';
 import style from './index.module.scss';
 
 const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
@@ -25,31 +27,31 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
                         <img src={ChevronRight} className={style.chevronRightStyle}/>
                     </div>
                 </div>
-                <div className={style.cardStyle} onClick={() => getSelectedContract('active contracts')}>
-                    <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>ACTIVE CONTRACTS</h5>
-                    <div className={style.spaceBetween}>
-                        <p className={`${style.headingCountForContracts} ${style.marginLeft20}`}>4</p>
+                <div className={`${style.cardStyle}`} onClick={() => getSelectedContract('active contracts')}>
+                    <h5 className={`${style.headingForContracts}`}>ACTIVE CONTRACTS</h5>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
+                        <p className={`${style.headingCountForContracts}`}>4</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.green}>1 </span> AUTO RENEWED</span>
                             <span><span>1 </span> EXPIRING IN 30 DAYS</span>
                         </div>
                     </div>
                 </div>
-                <div className={style.cardStyle} onClick={() => getSelectedContract('draft')}>
-                    <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>DRAFT</h5>
-                    <div className={style.spaceBetween}>
-                        <p className={`${style.headingCountForContracts} ${style.marginLeft20}`}>2</p>
+                <div className={`${style.cardStyle}`} onClick={() => getSelectedContract('draft')}>
+                    <h5 className={`${style.headingForContracts}`}>DRAFT</h5>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
+                        <p className={`${style.headingCountForContracts}`}>2</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.yellow}>1 </span> ACTIVATION IN-PROGRESS</span>
                             <span><span className={style.red}>1 </span> ACTIVATION PAST DUE</span>
                         </div>
                     </div>
                 </div>
-                <div className={style.cardStyle} onClick={() => getSelectedContract('upcoming renewals')}>
+                <div className={`${style.cardStyle}`} onClick={() => getSelectedContract('upcoming renewals')}>
                     <p className={style.next30Style}>NEXT 30 DAYS</p>
                     <h5 className={style.headingForContracts}>UPCOMING RENEWALS</h5>
-                    <div className={style.spaceBetween}>
-                        <p className={`${style.headingCountForContracts} ${style.marginLeft20}`}>2</p>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
+                        <p className={`${style.headingCountForContracts}`}>2</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.blue}>1 </span> EXTENSION REQUIRED</span>
                             <span><span className={style.blue}>1 </span> NEW CONTRACT REQUIRED</span>
@@ -57,9 +59,9 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
                     </div>
                 </div>
                 <div className={`${style.cardStyle} ${style.selectedContractBackground}`} onClick={() => getSelectedContract('expired or terminated')}>
-                    <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>EXPIRED / TERMINATED</h5>
-                    <div className={style.spaceBetween}>
-                        <p className={`${style.headingCountForContracts} ${style.marginLeft20}`}>3</p>
+                    <h5 className={`${style.headingForContracts}`}>EXPIRED / TERMINATED</h5>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
+                        <p className={`${style.headingCountForContracts}`}>3</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.red}>1 </span> EXPIRED</span>
                             <span><span className={style.red}>1 </span> TERMINATED</span>
@@ -107,6 +109,7 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
                             <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#FF6562' baseBgColor="#ffcdcc" className={style.progressMargin} />
                         </div>
                     </div>
+                    <img src={PageFooterIcon} alt="footer" className={style.footerIconStyle} />
                 </div>
                 <div className={style.bigCardStyle}>
                     <div className={style.spaceBetween}>
@@ -128,65 +131,59 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
                             <p className={style.tableHeaderFontStyle}>CONTRACT TYPE</p>
                             <p className={style.tableHeaderFontStyle}>CONTRACT ID</p>
                             <p className={style.tableHeaderFontStyle}>CONTRACT NAME</p>
-                            <p className={style.tableHeaderFontStyle}>CONTRAC- TORS</p>
-                            <p className={style.tableHeaderFontStyle}>EFFECTIVE DATE</p>
-                            <p className={style.tableHeaderFontStyle}>POD STATUS</p>
+                            <p className={style.tableHeaderFontStyle}>TERMINATION DATE</p>
+                            <p className={style.tableHeaderFontStyle}>NEW CONTRACT ID</p>
                             <p className={style.tableHeaderFontStyle}>LAST UPDATED</p>
                             <p className={style.tableHeaderFontStyle}>CONTRACT MANAGER</p>
                         </div>
                         <div className={`${style.tableData} ${style.displayInRow}`}>
                             <div className={`${style.displayInRow} ${style.width10}`}>
                                 <input type="checkbox" className={style.checkBoxData} />
-                                <div className={`${style.green} ${style.greenDotStyle}`}></div>
+                                <img src={RedWarning} alt="warning" className={style.colorIconsStyle} />
                             </div>
                             <p className={style.tableDataFontStyle}>Multiple</p>
                             <p className={style.tableDataFontStyle}>7837428</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum </p>
-                            <p className={style.tableDataFontStyle}>3</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <p className={style.tableDataFontStyle}>5</p>
+                            <p className={style.tableDataFontStyle}>7837428</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
                         </div>
                         <div className={`${style.tableData} ${style.displayInRow}`}>
                             <div className={`${style.displayInRow} ${style.width10}`}>
                                 <input type="checkbox" className={style.checkBoxData} />
-                                <div className={`${style.green} ${style.yellowDotStyle}`}></div>
                             </div>
                             <p className={style.tableDataFontStyle}>Individual</p>
                             <p className={style.tableDataFontStyle}>7837428</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum </p>
-                            <p className={style.tableDataFontStyle}>3</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <p className={style.tableDataFontStyle}>5</p>
+                            <p className={style.tableDataFontStyle}>-</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
                         </div>
                         <div className={`${style.tableData} ${style.displayInRow}`}>
                             <div className={`${style.displayInRow} ${style.width10}`}>
                                 <input type="checkbox" className={style.checkBoxData} />
-                                <div className={`${style.green} ${style.yellowDotStyle}`}></div>
+                                <img src={RedWarning} alt="warning" className={style.colorIconsStyle} />
                             </div>
                             <p className={style.tableDataFontStyle}>Individual</p>
                             <p className={style.tableDataFontStyle}>7837428</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum </p>
-                            <p className={style.tableDataFontStyle}>3</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <p className={style.tableDataFontStyle}>5</p>
+                            <p className={style.tableDataFontStyle}>-</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
                         </div>
                         <div className={`${style.tableData} ${style.displayInRow}`}>
                             <div className={`${style.displayInRow} ${style.width10}`}>
                                 <input type="checkbox" className={style.checkBoxData} />
-                                <div className={`${style.green} ${style.greenDotStyle}`}></div>
+                                <img src={RedWarning} alt="warning" className={style.colorIconsStyle} />
                             </div>
                             <p className={style.tableDataFontStyle}>Individual</p>
                             <p className={style.tableDataFontStyle}>7837428</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum </p>
-                            <p className={style.tableDataFontStyle}>3</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <p className={style.tableDataFontStyle}>5</p>
+                            <p className={style.tableDataFontStyle}>7837428</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
                         </div>

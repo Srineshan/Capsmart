@@ -1,16 +1,22 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { TextArea, InputGroup, RadioGroup, Radio, Switch, Icon, Intent, TagInput } from '@blueprintjs/core';
+import { TextArea, InputGroup, RadioGroup, Radio, Switch, Icon, Intent, TagInput, EditableText } from '@blueprintjs/core';
 import DatalistInput from 'react-datalist-input';
 import AddNewContractManager from './addNewContractManager';
 import Alert from './alert';
 import DeleteExecutedContractDialog from './deleteExecutedContractDialog';
 import NewServiceProvider from './newServiceProvider';
+import WritingFile from './../../images/writingFile.png';
+import CompletedIcon from './../../images/completedIcon.png';
+import RedWarning from './../../images/redWarning.png';
+import FileImg from './../../images/fileImg.png';
+import ServiceSpecification from './serviceSpecification';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
 const VALUES3 = ['Activity Reviewer'];
+const VALUES4 = ['Activity 1', 'Activity 2', 'Activity 3'];
 
 const NewContractFromClone = ({getNewContract}) => {
     const [selectedContract, setSelectedContract] = useState('Select...');
@@ -18,6 +24,7 @@ const NewContractFromClone = ({getNewContract}) => {
     const [item, setItem] = useState();
     const [selectContractManager, setSelectContractManager] = useState('');
     const [selectContractInfo, setSelectContractInfo] = useState('Individual Contractor');
+    const [compensation, setCompensation] = useState('RVU Based');
     const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
     const [sameAsContractor, setSameAsContractor] = useState(false);
@@ -28,14 +35,20 @@ const NewContractFromClone = ({getNewContract}) => {
     const [showAlertDialog,setShowAlertDialog] = useState(false);
     const [siteLevel, setSiteLevel] = useState(false);
     const [departmentLevel, setDepartmentLevel] = useState(false);
+    const [timeSheetCount, setTimeSheetCount] = useState('1');
     let completedSteps = [];
     const [tags, setTags] = useState(VALUES);
     const [tagSet2, setTagSet2] = useState(VALUES2);
     const [activityTags, setActivityTags] = useState(VALUES3);
+    const [contractedActivityTags, setContractedActivityTags] = useState(VALUES4);
     const [viewPage1, setViewPage1] = useState(true);
     const [viewPage2, setViewPage2] = useState(false);
     const [viewPage3, setViewPage3] = useState(false);
     const [viewPage4, setViewPage4] = useState(false);
+    const [viewPage5, setViewPage5] = useState(false);
+    const [viewPage6, setViewPage6] = useState(false);
+    const [viewPage7, setViewPage7] = useState(false);
+    const [viewPage8, setViewPage8] = useState(false);
     const [isMultipleContract, setIsMultipleContract] = useState(false);
 
     const getAddNewManagerDialog = (value) => {
@@ -48,6 +61,10 @@ const NewContractFromClone = ({getNewContract}) => {
 
     const getShowAlertDialog = (value) => {
         setShowAlertDialog(value);
+    }
+
+    const getViewPage6 = (value) => {
+        setViewPage6(value);
     }
 
     const getDeleteExecutedContractDialog = (value) => {
@@ -92,6 +109,17 @@ const NewContractFromClone = ({getNewContract}) => {
         updatedTags.splice(index, 1);
         tags = updatedTags;
         setActivityTags(tags);
+      };
+
+      const handleContractedActivityTagsAdd = values => {
+        setContractedActivityTags([...activityTags, values]);
+    };
+
+    const handleContractedActivityTagsRemove = (tags, index) => {
+        const updatedTags4 = [tags];
+        updatedTags4.splice(index, 1);
+        tags = updatedTags4;
+        setContractedActivityTags(tags);
       };
 
       const getTagProps = (_v, index) => ({
@@ -144,59 +172,360 @@ const NewContractFromClone = ({getNewContract}) => {
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
             <div className={style.spaceBetween}>
                 <p className={style.welcomeStyle}>New Contract With No Prior Contract(s) With Entity - (From Clone)</p>
-                <select
-                    name="class"
-                    id="Class"
-                    value={selectContractInfo}
-                    onChange={(e) => setSelectContractInfo(e.target.value)}
-                    className={`${style.contractWidth} ${style.marginLeft20} ${style.reduceTop10} ${style.marginBottom}`}>
-                        <option value="Individual Contractor" >
-                        Individual Contractor
-                        </option>
-                        <option value="Multiple Contractor" >
-                        Multiple Contractor
-                        </option>
-                </select>
+                <div className={style.displayInRow}>
+                    <img src={WritingFile} alt="Writing File" className={`${style.smallIcons} ${style.reduceTop10}`} />
+                    <select
+                        name="class"
+                        id="Class"
+                        value={selectContractInfo}
+                        onChange={(e) => setSelectContractInfo(e.target.value)}
+                        className={`${style.contractWidth} ${style.marginLeft20} ${style.reduceTop10} ${style.marginBottom}`}>
+                            <option value="Individual Contractor" >
+                            Individual Contractor
+                            </option>
+                            <option value="Multiple Contractor" >
+                            Multiple Contractor
+                            </option>
+                    </select>
+                </div>
             </div>
             <div className={style.welcomeBorder}></div>
 
             <div className={style.newContractFromCloneGrid}>
                 <div className={style.cloneBlockStyle}>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${viewPage2 ? style.completedEntityCardStyle : viewPage1 ? style.selectedContractEntityStyle : ''}`}>
-                        Contract Identification & Term Limit
-                        {viewPage2 && ( 
-                            <Icon icon="tick-circle" intent={Intent.SUCCESS} size={20} className={style.marginTop20} />
-                        )} 
+                        Contract ID & Term Limit
+                        {viewPage2 && (
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage3 ? style.completedEntityCardStyle : viewPage2 ? style.selectedContractEntityStyle : ''}`}>
                         Contracted Services Provider(s)
-                        {viewPage3 && ( 
-                            <Icon icon="tick-circle" intent={Intent.SUCCESS} size={20} className={style.marginTop20} />
-                        )} 
+                        {viewPage3 && (
+                            <img src={RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage4 ? style.completedEntityCardStyle : viewPage3 ? style.selectedContractEntityStyle : ''}`}>
                         Contractor Business Entity
-                        {viewPage4 && ( 
-                            <Icon icon="tick-circle" intent={Intent.SUCCESS} size={20} className={style.marginTop20} />
-                        )} 
+                        {viewPage4 && (
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage4 ? style.selectedContractEntityStyle : ''}`}>
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage5 ? style.completedEntityCardStyle : viewPage4 ? style.selectedContractEntityStyle : ''}`}>
                         Documentation Proof Required
+                        {viewPage5 && (
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10}`}>
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage6 ? style.completedEntityCardStyle : viewPage5 ? style.selectedContractEntityStyle : ''}`}>
                         Contracted Services Specification
+                        {viewPage6 && (
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10}`}>
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage7 ? style.completedEntityCardStyle : viewPage6 ? style.selectedContractEntityStyle : ''}`}>
                         Payment & Compensation
+                        {viewPage7 && (
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10}`}>
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage7 && style.selectedContractEntityStyle}`}>
                         Timesheet Submission Terms
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10}`}>
                         Timesheet Processing Workflow
                     </div>
                 </div>
-                {viewPage4 ? (
+                {viewPage7 ? (
+                    <div className={style.cloneBlockStyle}>
+                        <div className={`${style.newContractFromCloneBoxStyle}`}>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Number of Timesheets to Submit for Services Performed</div>
+                                <InputGroup className={style.fourFieldWidth} value={timeSheetCount} onChange={(e) => setTimeSheetCount(e.target.value)} />
+                            </div>
+                            {timeSheetCount === '2' && (
+                            <div>
+                                <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
+                                    <div className={`${style.extentionGrid}`}>
+                                        <div className={style.extentionLableStyle}>Timesheets lable 1 for processing</div>
+                                        <InputGroup className={style.fullWidth} value="Timesheet Name 1" />
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                    <div className={style.extentionLableStyle}>Site Specific Contract*</div>
+                                        <TagInput
+                                            placeholder="Contracted Activity to include for timesheet 1*"
+                                            values={contractedActivityTags}
+                                            onAdd={handleContractedActivityTagsAdd}
+                                            onRemove={handleContractedActivityTagsRemove}
+                                            separator={/[\s,]/}
+                                            addOnBlur={true}
+                                            addOnPaste={true}
+                                            tagProps={getTagProps}
+                                        />
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                        <div className={style.extentionLableStyle}>Service log Period for timesheet submission*</div>
+                                        <div className={style.displayInRow}>
+                                            <select
+                                                name="class"
+                                                id="Class"
+                                                // value={selectedContractContinuationPolicy || 'Select...'}
+                                                // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                                className={`${style.fullWidth}`}>
+                                                    <option value="End of the month" >
+                                                    End of the month
+                                                    </option>
+                                            </select>
+                                            <p className={style.threeFieldWidth}></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
+                                    <div className={`${style.extentionGrid}`}>
+                                        <div className={style.extentionLableStyle}>Timesheets lable 2 for processing</div>
+                                        <InputGroup className={style.fullWidth} value="Timesheet Name 2" />
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                    <div className={style.extentionLableStyle}>Site Specific Contract*</div>
+                                        <TagInput
+                                            placeholder="Contracted Activity to include for timesheet 1*"
+                                            values={contractedActivityTags}
+                                            onAdd={handleContractedActivityTagsAdd}
+                                            onRemove={handleContractedActivityTagsRemove}
+                                            separator={/[\s,]/}
+                                            addOnBlur={true}
+                                            addOnPaste={true}
+                                            tagProps={getTagProps}
+                                        />
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                        <div className={style.extentionLableStyle}>Service log Period for timesheet submission*</div>
+                                        <div className={style.displayInRow}>
+                                            <select
+                                                name="class"
+                                                id="Class"
+                                                // value={selectedContractContinuationPolicy || 'Select...'}
+                                                // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                                className={`${style.fullWidth}`}>
+                                                    <option value="End of the month" >
+                                                    End of the month
+                                                    </option>
+                                            </select>
+                                            <p className={style.threeFieldWidth}></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            )}
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Timesheets label one for processing</div>
+                                <InputGroup className={style.fullWidth} value="Timesheet Name 1" />
+                            </div>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Service Period For Timesheet Submission*</div>
+                                <div className={style.displayInRow}>
+                                    <select
+                                        name="class"
+                                        id="Class"
+                                        // value={selectedContractContinuationPolicy || 'Select...'}
+                                        // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                        className={`${style.fullWidth}`}>
+                                            <option value="Per Timesheet Period" >
+                                            Per Timesheet Period
+                                            </option>
+                                    </select>
+                                    <p className={style.threeFieldWidth}></p>
+                                </div>
+                            </div>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Contractor Business Contact Same As Contractor*</div>
+                                <div className={`${style.displayInRow}  `}> 
+                                    <Switch checked={true} label={'YES'} className={`${style.textAlignLeft} ${style.marginTop20}`} onChange={() => setSameAsContractor(!sameAsContractor)} />
+                                    {timeSheetCount === '1' && (
+                                        <div className={style.displayInRow}>
+                                            <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20} ${style.marginTop15}`} value="HH" />
+                                            <select
+                                                name="class"
+                                                id="Class"
+                                                className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop} `}>
+                                                    <option value="Week" >
+                                                    Week
+                                                    </option>
+                                            </select>
+                                        </div>
+                                    )}
+                                    {timeSheetCount === '2' && (
+                                        <div className={style.displayInRow}>
+                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} ${style.marginTop10}`}>
+                                                <EditableText value="150" className={style.editableTextSpecifiedStyle} />
+                                                <div className={style.textElementWithNurse}>Specified: 160</div>
+                                            </div>
+                                            <select
+                                                name="class"
+                                                id="Class"
+                                                className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop10} `}>
+                                                    <option value="Per Week" >
+                                                    Per Week
+                                                    </option>
+                                            </select>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Planned Absence Notification Days limit*</div>
+                                <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                                    <EditableText value="12" className={style.editableTextStyleDays} />
+                                    <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                                </div>
+                            </div>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed *</div>
+                                <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                                    <EditableText value="12" className={style.editableTextStyleDays} />
+                                    <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                                </div>
+                            </div>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Invoice Processing Day Range Goal*</div>
+                                <div className={style.displayInRow}>
+                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                                        <EditableText value="12" className={style.editableTextStyleDays} />
+                                        <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                                    </div>
+                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} `}>
+                                        <div className={style.textElementWithNurse}>Threshold</div>
+                                        <EditableText value="12" className={style.editableTextThresholdStyle} />
+                                    </div>
+                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder}`}>
+                                        <div className={style.textElementWithNurse}>Goal</div>
+                                        <EditableText value="6" className={style.editableTextThresholdStyle} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on activity service date *</div>
+                                <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                                    <EditableText value="12" className={style.editableTextStyleDays} />
+                                    <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                                </div>
+                            </div>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on contract end date</div>
+                                <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                                    <EditableText value="12" className={style.editableTextStyleDays} />
+                                    <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`${style.floatRight} ${style.marginTop20}`}>
+                            <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
+                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> setViewPage4(true)}>CONTINUE</button>
+                        </div>
+                    </div>
+                ) : viewPage6 ? (
+                    <div className={style.cloneBlockStyle}>
+                        <div className={`${style.newContractFromCloneBoxStyle}`}>
+                            <div className={`${style.extentionGrid} ${selectContractInfo === "Individual Contractor" && style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Compensation Basis*</div>
+                                <div>
+                                    <RadioGroup
+                                        inline={true}
+                                        className={`${style.marginTop} ${style.leftAlign}`}
+                                        selectedValue={compensation}
+                                        onChange={(e) => setCompensation(e.target.value)}
+                                    >
+                                        <Radio label="RVU Based" value="RVU Based" />
+                                        <Radio label="Dollar Based Rate" value="Dollar Based Rate"  />
+                                    </RadioGroup>
+                                </div>
+                            </div>
+                            {compensation === "RVU Based" && (
+                                <div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                        <div className={style.extentionLableStyle}>RVU Quantity*</div>
+                                        <div className={style.displayInRow}>
+                                            <InputGroup className={style.fourFieldWidth} value="" />
+                                            <select
+                                                name="class"
+                                                id="Class"
+                                                // value={selectedContractContinuationPolicy || 'Select...'}
+                                                // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                                className={`${style.twoFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
+                                                    <option value="Per Week/Month" >
+                                                    Per Week/Month
+                                                    </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                        <div className={style.extentionLableStyle}>FTE Equivalent</div>
+                                        <InputGroup className={style.twoFieldWidth} />
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                        <div className={style.extentionLableStyle}>RVU Reference Used</div>
+                                        <InputGroup className={style.fullWidth} />
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                        <div className={style.extentionLableStyle}>RVU Quantity Variance (+/-)</div>
+                                        <InputGroup className={style.twoFieldWidth} />
+                                    </div>
+                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                        <div className={style.extentionLableStyle}>RVU Quantity Period</div>
+                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                                            <EditableText value="3" className={style.editableTextStyleDays} />
+                                            <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Dollar Hourly Rate*</div>
+                                <InputGroup className={style.fourFieldWidth} value="120" />
+                            </div>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Dollar Value per Timesheet Submission*</div>
+                                <InputGroup className={style.fourFieldWidth} value="40" />
+                            </div>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Dollar Value for per Contracted Year/Period*</div>
+                                <InputGroup className={style.fourFieldWidth} value="120" />
+                            </div>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Compensation Offset Criteria for Reduced Number of Agreed to Services*</div>
+                                <select
+                                    name="class"
+                                    id="Class"
+                                    // value={selectedContractContinuationPolicy || 'Select...'}
+                                    // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                    className={`${style.fullWidth}`}>
+                                        <option value="Per Timesheet Period" >
+                                        Per Timesheet Period
+                                        </option>
+                                </select>
+                            </div>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Compensation Offset Criteria for Providing Additional Services to the Agreed to Services*</div>
+                                <select
+                                    name="class"
+                                    id="Class"
+                                    // value={selectedContractContinuationPolicy || 'Select...'}
+                                    // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                    className={`${style.fullWidth}`}>
+                                        <option value="Per Contract Period" >
+                                        Per Contract Period
+                                        </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className={`${style.floatRight} ${style.marginTop20}`}>
+                            <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
+                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> setViewPage7(true)}>CONTINUE</button>
+                        </div>
+                    </div>
+                ) : viewPage5 ?
+                  <ServiceSpecification getViewPage6={getViewPage6} />
+                  :viewPage4 ? (
                     <div className={style.cloneBlockStyle}>
                     <div className={style.tableHeight}>
                         <div>
@@ -204,40 +533,54 @@ const NewContractFromClone = ({getNewContract}) => {
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                             <div className={`${style.extentionLableStyle} ${style.marginTop20} ${style.marginLeft20}`}>Contracted Service Providers:<strogn className={`${style.blackText} ${style.bold} ${style.marginLeft20}`}>3</strogn></div>
-                            <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} `}
+                            <button className={`${style.addCotractorButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.marginRight20}`}
                              onClick={()=> getShowAlertDialog(true)} >ADD CONTRACTED PROVIDER</button>
                         </div>
                         <div className={`${style.documentPageHeader} ${style.marginTop10}`}>
+                            <p className={style.documentProofTextWidth}></p>
                             <p className={style.documentProofTextWidth}>POD TYPE</p>
                             <p className={style.documentProofTextWidth}>NO COL NAME</p>
                             <p className={style.documentProofTextWidth}>CONTRACTOR</p>
                             <p className={style.documentProofTextWidth}>COPY ON FILE</p>
+                            <p className={style.documentProofTextWidth}></p>
                         </div>
                         <div className={`${style.documentDataProof} ${style.displayInRow}`}>
-                            <div className={`${style.documentProofDataTextWidth}`}></div>
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
                             <p className={style.documentProofDataTextWidth}>Medical license Certificate</p>
                             <p className={style.documentProofDataTextWidth}>business </p>
                             <p className={style.documentProofDataTextWidth}>name</p>
-                            <p className={style.documentProofDataTextWidth}>ss.png</p>
+                            <div className={style.displayInRow}>
+                                <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />
+                                <p className={style.documentProofDataTextWidth}>ss.png</p>
+                            </div>
+                            <Icon icon="trash" size={20} color="#52575D"/>
                         </div>
                         <div className={`${style.documentDataProof} ${style.displayInRow}`}>
-                            <div className={`${style.documentProofDataTextWidth}`}></div>
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
                             <p className={style.documentProofDataTextWidth}>Medical license Certificate</p>
                             <p className={style.documentProofDataTextWidth}>entity </p>
                             <p className={style.documentProofDataTextWidth}>name</p>
-                            <p className={style.documentProofDataTextWidth}>Missing</p>
+                            <div className={style.displayInRow}>
+                                <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />
+                                <p className={style.documentProofDataTextWidth}>Missing</p>
+                            </div>
+                            <Icon icon="trash" size={20} color="#52575D"/>
                         </div>
                         <div className={`${style.documentDataProof} ${style.displayInRow}`}>
-                            <div className={`${style.documentProofDataTextWidth}`}></div>
+                            <img src={RedWarning} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
                             <p className={style.documentProofDataTextWidth}>Medical license Certificate</p>
                             <p className={style.documentProofDataTextWidth}>Lorem ipsum </p>
                             <p className={style.documentProofDataTextWidth}>Lorem ipsum</p>
-                            <p className={style.documentProofDataTextWidth}>ss.png</p>
+                            <div className={style.displayInRow}>
+                                <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />
+                                <p className={style.documentProofDataTextWidth}>ss.png</p>
+                            </div>
+                            <Icon icon="trash" size={20}  color="#52575D"/>
                         </div>
                     </div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
-                        <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}>CONTINUE</button>
+                        <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{setViewPage5(true)}}>CONTINUE</button>
                     </div>
                 </div>
                 ) : viewPage3 ? (
@@ -334,7 +677,8 @@ const NewContractFromClone = ({getNewContract}) => {
                             <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> setViewPage4(true)}>CONTINUE</button>
                         </div>
                     </div>
-                ) : selectContractInfo === "Individual Contractor" && viewPage2 ? (
+                )
+                : selectContractInfo === "Individual Contractor" && viewPage2 ? (
                 <div className={style.cloneBlockStyle}>
                     <div className={`${style.newContractFromCloneBoxStyle}`}>
                         <div className={`${style.extentionGrid}`}>
@@ -763,7 +1107,7 @@ const NewContractFromClone = ({getNewContract}) => {
                         <div className={style.tableHeight}>
                             <div className={style.spaceBetween}>
                                 <div className={`${style.extentionLableStyle} ${style.marginTop20} ${style.marginLeft20}`}>Contracted Service Providers:<strogn className={`${style.blackText} ${style.bold} ${style.marginLeft20}`}>3</strogn></div>
-                                <button className={`${style.addCotractorButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.marginRight20}`}
+                                <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} `}
                                 onClick={() => getNewServiceProviderDialog(true)} >ADD CONTRACTED PROVIDER</button>
                             </div>
                             <div className={`${style.tableHeader} ${style.marginTop10}`}>
@@ -805,12 +1149,8 @@ const NewContractFromClone = ({getNewContract}) => {
                     <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Indentification Information</p>
                     <div className={style.welcomeBorder}></div>
                     <p className={style.descriptionStyle}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore,
-                    <span className={`${style.blueColor} ${style.marginLeft20}`}>
-                    quis nostrud xercitation ullamco laboris nisi
-                    ut aliquip ex ea commodo consequat
-                    </span>
+                    This area will contain helpful tools and tips to help guide the user on what 
+                    information requires completion in the contract wizard.
                     </p>
                     <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Activity Performed</p>
                     <div className={style.welcomeBorder}></div>
@@ -818,36 +1158,36 @@ const NewContractFromClone = ({getNewContract}) => {
                         <div className={style.validationAlert}>
                             <div className={style.displayInRow}>
                                 <div>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}><strong>alert text validation</strong></p>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}>Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
+                                    <p className={`${style.blackText} ${style.leftAlign}`}><strong>Text to Alert User</strong></p>
+                                    <p className={`${style.blackText} ${style.leftAlign}`}>This area will display specific alerts for the users</p>
                                 </div>
                             </div>
                         </div>
                     )}
-                    <p className={style.descriptionStyle}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                    </p>
                     <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Reference Contract Documents</p>
                     <div className={style.welcomeBorder}></div>
                     <div className={style.documentCard}>
-                        <div className={style.displayInRow}>
+                        <div>
                             <div>
                                 <p className={`${style.blackText} ${style.leftAlign}`}><strong>executed Contract (Current)</strong></p>
                                 <div className={style.spaceBetween}>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}>Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
-                                    <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
+                                    <p className={`${style.blackText} ${style.leftAlign}`}>Contract name to appear here</p>
+                                    <div>
+                                        <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className={`${style.documentCard} ${style.marginTop10}`}>
-                        <div className={style.displayInRow}>
+                        <div>
                             <div>
                                 <p className={`${style.blackText} ${style.leftAlign}`}><strong>Exhibit</strong></p>
                                 <div className={style.spaceBetween}>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}>Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
-                                    <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
+                                    <p className={`${style.blackText} ${style.leftAlign}`}>Exhibit A and B</p>
+                                    <div>
+                                        <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
+                                    </div>
                                 </div>
                             </div>
                         </div>
