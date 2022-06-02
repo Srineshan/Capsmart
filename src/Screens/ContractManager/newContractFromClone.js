@@ -539,7 +539,7 @@ const NewContractFromClone = ({getNewContract}) => {
                         <div className={`${style.documentPageHeader} ${style.marginTop10}`}>
                             <p className={style.documentProofTextWidth}></p>
                             <p className={style.documentProofTextWidth}>POD TYPE</p>
-                            <p className={style.documentProofTextWidth}>NO COL NAME</p>
+                            <p className={style.documentProofTextWidth}>SITE</p>
                             <p className={style.documentProofTextWidth}>CONTRACTOR</p>
                             <p className={style.documentProofTextWidth}>COPY ON FILE</p>
                             <p className={style.documentProofTextWidth}></p>
@@ -569,8 +569,8 @@ const NewContractFromClone = ({getNewContract}) => {
                         <div className={`${style.documentDataProof} ${style.displayInRow}`}>
                             <img src={RedWarning} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
                             <p className={style.documentProofDataTextWidth}>Medical license Certificate</p>
-                            <p className={style.documentProofDataTextWidth}>Lorem ipsum </p>
-                            <p className={style.documentProofDataTextWidth}>Lorem ipsum</p>
+                            <p className={style.documentProofDataTextWidth}>sample </p>
+                            <p className={style.documentProofDataTextWidth}>name</p>
                             <div className={style.displayInRow}>
                                 <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />
                                 <p className={style.documentProofDataTextWidth}>ss.png</p>

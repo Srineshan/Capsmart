@@ -16,12 +16,9 @@ const AddContract = ({getAddContract, getNewContract}) => {
             </div>
             <div className={style.welcomeBorder}></div>
             <div className={style.welcomeMessage}>
-            Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus quam 
-            nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus dapibus 
-            semper mattis. aenean ut massa vitae tortor consequat tristique. etiam eget 
-            condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut felis. 
-            pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur 
-            adipiscing elit. sed finibus quam nec tellus dictum.
+                Welcome to the TimeSmart.AI Contract Manager Wizard.  Please select the appropriate
+                option from the drop down menu below, and whether this is an Individual Contractor
+                Agreement or Multiple Contractor Agreement.
             </div>
             <div className={style.contractOptions}>
                 <div className={style.displayInRow}>
@@ -68,11 +65,10 @@ const AddContract = ({getAddContract, getNewContract}) => {
                 {selectedContractOnClick && (
                     <div className={style.descriptionBoxStyle}>
                         <p className={style.descriptionStyle}>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-                            tempor incididunt ut labore,
+                            After selecting one of the options above and clicking Next, you will be guided through 
                             <span className={`${style.blueColor} ${style.marginLeft20}`}> 
-                            quis nostrud xercitation ullamco laboris nisi 
-                            ut aliquip ex ea commodo consequat
+                            the Contracts Manager wizard to help upload contracts and assign the appropriate 
+                            metadata.
                             </span>
                         </p>  
                     </div>
