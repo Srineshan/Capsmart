@@ -13,10 +13,11 @@ import SetupComplete from './Screens/SuperAdminDashboard/setupComplete';
 import OTPPage from './Screens/SuperAdminDashboard/otpPage';
 import WelcomeToDashboard from './Screens/SuperAdminDashboard/welcomeToDashboard';
 import './App.css'
+import history from './routes/history';
 import EntryPage from './Screens';
 import Contracts from './Screens/UserManagement';
 
-function App() {
+const App = ({props}) => {
   return (
     <Router>
       <div className="App">
@@ -24,7 +25,7 @@ function App() {
           <Route  path="/" element={<EntryPage />}/>
           <Route  path="/activeContracts" element={<ActiveContracts />}/>
           <Route  path="/contracts" element={<Contracts />}/>
-          <Route  path="/login" element={<Login />}/>
+          <Route  path="/login" element={<Login />} {...props}/>
           <Route  path="/forgotPassword" element={<ForgotPassword />}/>
           <Route  path="/welcome" element={<Welcome />}/>
           <Route  path="/entitySetup" element={<EntitySetup />}/>

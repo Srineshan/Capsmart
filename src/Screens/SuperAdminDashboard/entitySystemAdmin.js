@@ -10,51 +10,14 @@ import Step5 from './../../images/step5.png';
 import UploadImg from './../../images/uploadImg.png';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
+import {saveEntity} from './entityDataSaver';
 
-const VALUES = ['Department 1', "Department 2", "Department 3"];
 
 const EntitySystemAdmin = () => {
-    const [tags, setTags] = useState(VALUES);
-    const [departmentSpecific, setDepartmentSpecific] = useState(true);
-    const [selectDepartment, setSelectDepartment] = useState('');
-    const [item, setItem] = useState();
-
-    const options = [
-        { name: 'Department 1' },
-        { name: 'Department 2' },
-        { name: 'Department 3' },
-      ];
-
-      const onSelect = useCallback((selectedItem) => {
-        console.log('selectedItem', selectedItem);
-        setItem(selectedItem);
-        setSelectDepartment('');
-      }, []);
-
-    const handleTagsAdd = values => {
-        setTags([...tags, values]);
-    };
-
-    const getTagProps = (_v, index) => ({
-        minimal: true,
-    });
-
-    const handleTagsRemove = (tags, index) => {
-        const updatedTags = [tags];
-        updatedTags.splice(index, 1);
-        tags = updatedTags;
-        setTags(tags);
-      };
-
-      const items = useMemo(
-        () =>
-          options.map((option) => ({
-            id: option.name,
-            value: option.name,
-            ...option,
-          })),
-        [item],
-      );
+  const [billingAddress,setBillingAddress] = useState({fname:'',lname:'',title:'',email:'',phone:0})
+  const handleBillingData = (name,value) => {
+    setBillingAddress({...billingAddress,[name]:value});
+  }
 
     return(
         <div className={style.entitySetupBackground}>
@@ -63,31 +26,31 @@ const EntitySystemAdmin = () => {
                 <div className={style.stepperGrid}>
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} /> 
+                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
-                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} /> 
+                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div>
                     <div>
                         <div className={style.stepperImgBackground}>
-                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} /> 
+                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
                         </div>
                         <p className={style.entityTextColor}>SITES FOR APP USE</p>
                     </div>
                     <div>
                         <div className={style.stepperImgBackground}>
-                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} /> 
+                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
                         <p className={style.entityTextColor}>SITE USERS</p>
                     </div>
                     <div>
                         <div className={style.stepperImgBackground}>
-                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} /> 
+                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                         </div>
                         <p className={style.entityTextColor}>APP SUBSCRIPTION</p>
                     </div>
@@ -98,16 +61,16 @@ const EntitySystemAdmin = () => {
                 <p className={style.heading}>Entity System Admin</p>
                 <div className={style.greyBorder}></div>
                 <div className={style.entityDescription}>
-                Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus 
-                quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus 
-                dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam 
-                eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut 
-                felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur 
+                Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
+                quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus
+                dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam
+                eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
+                felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
                 adipiscing elit. sed finibus quam nec tellus dictum.
                 </div>
                 <div>
                     <div className={style.cloneBlockStyle}>
-                        <div className={`${style.newContractFromCloneBoxStyle}`}> 
+                        <div className={`${style.newContractFromCloneBoxStyle}`}>
                             <div className={style.textAlignLeft}>
                                 <Checkbox label="DESIGNATE CUSTOMER ACCOUNT MANAGER" />
                             </div>
@@ -143,8 +106,8 @@ const EntitySystemAdmin = () => {
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>NAME*</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup className={style.textFieldWidth} value="First Name" />
-                                    <InputGroup className={`${style.textFieldWidth} ${style.marginLeft20}`} value="State" />
+                                    <InputGroup className={style.textFieldWidth} placeholder="First Name" value={billingAddress.fname} onChange={(e)=>handleBillingData('fname',e.target.value)}/>
+                                    <InputGroup className={`${style.textFieldWidth} ${style.marginLeft20}`} value={billingAddress.lname} placeholder="Last Name" onChange={(e)=>handleBillingData('lname',e.target.value)} />
                                 </div>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -153,7 +116,12 @@ const EntitySystemAdmin = () => {
                                     <select
                                         name="class"
                                         id="Class"
+                                        value={billingAddress.title}
+                                        onChange={(e)=>handleBillingData('title',e.target.value)}
                                         className={style.twoFieldWidth}>
+                                        <option value="select title" >
+                                        select title
+                                        </option>
                                             <option value="title" >
                                             title
                                             </option>
@@ -162,15 +130,18 @@ const EntitySystemAdmin = () => {
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Email Address*</div>
-                                <InputGroup value="Email@lorem.com" className={`${style.twoFieldWidth}`}/>
+                                <InputGroup placeholder="Email@lorem.com" className={`${style.twoFieldWidth}`} value={billingAddress.email} onChange={(e)=>handleBillingData('email',e.target.value)}/>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Cell Phone</div>
-                                <InputGroup value="+1 (342) 444-5505" className={`${style.twoFieldWidth}`}/>
+                                <InputGroup placeholder="9756315505" className={`${style.twoFieldWidth}`} value={billingAddress.phone} onChange={(e)=>handleBillingData('phone',e.target.value)}/>
                             </div>
                         </div>
                         <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                            <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
+                            <button className={style.outlinedButton}
+                            onClick={()=>{
+                              // saveEntity(billingDetails=billingAddress);
+                            }}>SAVE IN-PROGRESS</button>
                             <Link to={'/siteInformation'}>
                                 <button className={`${style.buttonStyle} ${style.marginLeft20}`}>CONTINUE</button>
                             </Link>

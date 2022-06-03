@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { InputGroup, Icon, Intent, Switch, TagInput, Dialog, Classes } from '@blueprintjs/core';
 import DatalistInput from 'react-datalist-input';
 import {Link} from 'react-router-dom';
@@ -21,15 +21,49 @@ const SiteInformation = () => {
     const [siteID, setSiteID] = useState('3578689');
     const [alertDialog, setAlertDialog] = useState(false);
     const [item, setItem] = useState();
+    const [departmentValue,setDepartmentValue] = useState([]);
+    let options = [];
+    // console.log(departmentValue);
 
-    const options = [
-        { name: 'Department 1' },
-        { name: 'Department 2' },
-        { name: 'Department 3' },
-        { name: 'Department 4' },
-        { name: 'Department 5' },
-        { name: 'Department 6' },
-      ];
+    // useEffect(()=>{
+    //   getDepartmentData();
+    // },[]);
+
+
+
+
+    // const getDepartmentData = () => {
+    //   const department = {
+    //     method: 'GET',
+    //     headers: { 'Content-Type': 'application/json',
+    //               'X-tenantID' : '6242845f95690b3822cb96a5',
+    //               'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTM3NjAxMTQsImV4cCI6MTY1Mzg0NjUxNH0.eTiXgF1A1FheMgB4L8VbMeZMs7pxc0wiNhFTbt9WkO4HcVwiNKhgIQR1sBMaDp-D3Ez4Cm_VJi3jai35RrywOg`}
+    //     };
+    //     fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/entity-service/department', department)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //       data?.map(dept=>{
+    //         let temp = departmentValue;
+    //         temp.push(dept.departmentName.name);
+    //         setDepartmentValue(temp);
+    //       })
+    //       return true;
+    //     }
+    //    )
+    // }
+
+    departmentValue?.map(data=>{
+      options.push({'name':data})
+    });
+
+    // const options = [
+    //     { name: 'Department 1' },
+    //     { name: 'Department 2' },
+    //     { name: 'Department 3' },
+    //     { name: 'Department 4' },
+    //     { name: 'Department 5' },
+    //     { name: 'Department 6' },
+    //   ];
 
       const onSelect = useCallback((selectedItem) => {
         console.log('selectedItem', selectedItem);
@@ -69,31 +103,31 @@ const SiteInformation = () => {
                 <div className={style.stepperGrid}>
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} /> 
+                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
-                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} /> 
+                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div>
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
-                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} /> 
+                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
                     <div>
                         <div className={style.stepperImgBackground}>
-                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} /> 
+                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
                         <p className={style.entityTextColor}>SITE USERS</p>
                     </div>
                     <div>
                         <div className={style.stepperImgBackground}>
-                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} /> 
+                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                         </div>
                         <p className={style.entityTextColor}>APP SUBSCRIPTION</p>
                     </div>
@@ -105,11 +139,11 @@ const SiteInformation = () => {
                     <p className={style.heading}>Add Site Information</p>
                     <div className={style.greyBorder}></div>
                     <div className={style.entityDescription}>
-                    Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus 
-                    quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus 
-                    dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam 
-                    eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut 
-                    felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur 
+                    Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
+                    quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus
+                    dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam
+                    eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
+                    felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
                     adipiscing elit. sed finibus quam nec tellus dictum.
                     </div>
                     <div>
@@ -165,7 +199,7 @@ const SiteInformation = () => {
                                         {selectDepartment.length !== 0 && (
                                             <div className={`${style.reqDeptCard} ${style.marginTop}`}>
                                                 <div className={style.addBoxDescription}>
-                                                The Department you are trying to add is not on the list. 
+                                                The Department you are trying to add is not on the list.
                                                 To add a new department enter the exact name below and click
                                                 on the "REQUEST & ADD" button.
                                                 </div>
