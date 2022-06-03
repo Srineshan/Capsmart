@@ -38,7 +38,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                 </div>
                 <div className={`${style.cardStyle} ${style.selectedContractBackground}`} onClick={() => getSelectedContract('active contracts')}>
                     <h5 className={`${style.headingForContracts}`}>ACTIVE CONTRACTS</h5>
-                    <div className={style.spaceBetween}>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
                         <p className={`${style.headingCountForContracts}`}>4</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.green}>1 </span> AUTO RENEWED</span>
@@ -48,7 +48,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                 </div>
                 <div className={style.cardStyle} onClick={() => getSelectedContract('draft')}>
                     <h5 className={`${style.headingForContracts}`}>DRAFT</h5>
-                    <div className={style.spaceBetween}>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
                         <p className={`${style.headingCountForContracts}`}>2</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.yellow}>1 </span> ACTIVATION IN-PROGRESS</span>
@@ -59,7 +59,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                 <div className={style.cardStyle} onClick={() => getSelectedContract('upcoming renewals')}>
                     <p className={style.next30Style}>NEXT 30 DAYS</p>
                     <h5 className={style.headingForContracts}>UPCOMING RENEWALS</h5>
-                    <div className={style.spaceBetween}>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
                         <p className={`${style.headingCountForContracts}`}>2</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.blue}>1 </span> EXTENSION REQUIRED</span>
@@ -69,7 +69,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                 </div>
                 <div className={style.cardStyle} onClick={() => getSelectedContract('expired or terminated')}>
                     <h5 className={`${style.headingForContracts}`}>EXPIRED / TERMINATED</h5>
-                    <div className={style.spaceBetween}>
+                    <div className={`${style.spaceBetween} ${style.marginTop30}`}>
                         <p className={`${style.headingCountForContracts}`}>3</p>
                         <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                             <span><span className={style.red}>1 </span> EXPIRED</span>
@@ -163,7 +163,9 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             </div>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
-                            <p className={style.tableDataFontStyle}>...</p>
+                            <div className={style.tableDataFontStyle}>
+                                <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} />
+                            </div>
                         </div>
                         <div className={`${style.tableData} ${style.displayInRow}`}>
                             <div className={`${style.displayInRow} ${style.width10}`}>
@@ -181,7 +183,9 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             </div>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
-                            <p className={style.tableDataFontStyle}>...</p>
+                            <div className={style.tableDataFontStyle}>
+                                <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} />
+                            </div>
                         </div>
                         <div className={`${style.tableData} ${style.displayInRow}`}>
                             <div className={`${style.displayInRow} ${style.width10}`}>
@@ -199,7 +203,9 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             </div>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
-                            <p className={style.tableDataFontStyle}>...</p>
+                            <div className={style.tableDataFontStyle}>
+                                <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} />
+                            </div>
                         </div>
                         <div className={`${style.tableData} ${style.displayInRow}`}>
                             <div className={`${style.displayInRow} ${style.width10}`}>
@@ -218,7 +224,9 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             </div>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
-                            <p className={style.tableDataFontStyle}>...</p>
+                            <div className={style.tableDataFontStyle}>
+                                <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} />
+                            </div>
                         </div>
                         <div className={`${style.displayInCol} ${style.actionCard} ${style.cursorPointer}`}>
                             <img src={ContractExtension} className={style.actionsIcon} onClick={() => getExtensionDialog(true)} />

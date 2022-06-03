@@ -194,7 +194,7 @@ const NewContractFromClone = ({getNewContract}) => {
             <div className={style.newContractFromCloneGrid}>
                 <div className={style.cloneBlockStyle}>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${viewPage2 ? style.completedEntityCardStyle : viewPage1 ? style.selectedContractEntityStyle : ''}`}>
-                        Contract Identification & Term Limit
+                        Contract ID & Term Limit
                         {viewPage2 && (
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
@@ -539,7 +539,7 @@ const NewContractFromClone = ({getNewContract}) => {
                         <div className={`${style.documentPageHeader} ${style.marginTop10}`}>
                             <p className={style.documentProofTextWidth}></p>
                             <p className={style.documentProofTextWidth}>POD TYPE</p>
-                            <p className={style.documentProofTextWidth}>NO COL NAME</p>
+                            <p className={style.documentProofTextWidth}>SITE</p>
                             <p className={style.documentProofTextWidth}>CONTRACTOR</p>
                             <p className={style.documentProofTextWidth}>COPY ON FILE</p>
                             <p className={style.documentProofTextWidth}></p>
@@ -569,8 +569,8 @@ const NewContractFromClone = ({getNewContract}) => {
                         <div className={`${style.documentDataProof} ${style.displayInRow}`}>
                             <img src={RedWarning} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
                             <p className={style.documentProofDataTextWidth}>Medical license Certificate</p>
-                            <p className={style.documentProofDataTextWidth}>Lorem ipsum </p>
-                            <p className={style.documentProofDataTextWidth}>Lorem ipsum</p>
+                            <p className={style.documentProofDataTextWidth}>sample </p>
+                            <p className={style.documentProofDataTextWidth}>name</p>
                             <div className={style.displayInRow}>
                                 <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />
                                 <p className={style.documentProofDataTextWidth}>ss.png</p>
@@ -1149,12 +1149,8 @@ const NewContractFromClone = ({getNewContract}) => {
                     <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Indentification Information</p>
                     <div className={style.welcomeBorder}></div>
                     <p className={style.descriptionStyle}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore,
-                    <span className={`${style.blueColor} ${style.marginLeft20}`}>
-                    quis nostrud xercitation ullamco laboris nisi
-                    ut aliquip ex ea commodo consequat
-                    </span>
+                    This area will contain helpful tools and tips to help guide the user on what 
+                    information requires completion in the contract wizard.
                     </p>
                     <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Activity Performed</p>
                     <div className={style.welcomeBorder}></div>
@@ -1162,36 +1158,36 @@ const NewContractFromClone = ({getNewContract}) => {
                         <div className={style.validationAlert}>
                             <div className={style.displayInRow}>
                                 <div>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}><strong>alert text validation</strong></p>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}>Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
+                                    <p className={`${style.blackText} ${style.leftAlign}`}><strong>Text to Alert User</strong></p>
+                                    <p className={`${style.blackText} ${style.leftAlign}`}>This area will display specific alerts for the users</p>
                                 </div>
                             </div>
                         </div>
                     )}
-                    <p className={style.descriptionStyle}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                    </p>
                     <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Reference Contract Documents</p>
                     <div className={style.welcomeBorder}></div>
                     <div className={style.documentCard}>
-                        <div className={style.displayInRow}>
+                        <div>
                             <div>
                                 <p className={`${style.blackText} ${style.leftAlign}`}><strong>executed Contract (Current)</strong></p>
                                 <div className={style.spaceBetween}>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}>Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
-                                    <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
+                                    <p className={`${style.blackText} ${style.leftAlign}`}>Contract name to appear here</p>
+                                    <div>
+                                        <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className={`${style.documentCard} ${style.marginTop10}`}>
-                        <div className={style.displayInRow}>
+                        <div>
                             <div>
                                 <p className={`${style.blackText} ${style.leftAlign}`}><strong>Exhibit</strong></p>
                                 <div className={style.spaceBetween}>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}>Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
-                                    <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
+                                    <p className={`${style.blackText} ${style.leftAlign}`}>Exhibit A and B</p>
+                                    <div>
+                                        <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
+                                    </div>
                                 </div>
                             </div>
                         </div>

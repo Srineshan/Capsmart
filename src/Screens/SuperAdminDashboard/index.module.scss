@@ -1,3 +1,10 @@
+body{
+    -ms-overflow-style: none !important; 
+    scrollbar-width: none !important;
+    ::-webkit-scrollbar {
+        display: none !important;
+    }
+}
 
 .loginGrid{
     display: grid;
@@ -995,3 +1002,8 @@
     padding: 20px 20px 10px 20px;
     width: 30vw;
 }
+
+::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }

@@ -20,13 +20,13 @@ const Navbar = () => {
                 <div className={style.menuStyle}>
                     <p>TIMESHEETS</p>
                 </div>
-                <div className={`${style.menuStyle} ${style.activeMenuColor}`}>
+                <div className={`${style.menuStyle} ${window.location.pathname !== "/contracts" && style.activeMenuColor}`}>
                     <p>CONTRACT MANAGER</p>
                 </div>
                 <div className={style.menuStyle}>
                     <p>REPORT</p>
                 </div>
-                <div className={style.menuStyle}>
+                <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
                     <p>TOOLS</p>
                 </div>
                 <div className={style.menuStyle}>
