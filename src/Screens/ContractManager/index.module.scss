@@ -857,8 +857,6 @@ body{
 .trashStyle{
     color: linear-gradient(#7165E3, #FF6562) !important;
     cursor: pointer;
-    position: relative;
-    bottom: -20px;
 }
 
 .textFieldWidth{
@@ -1459,9 +1457,8 @@ select {
 
 .documentCard{
     background-color: #D3D0F7;
-    padding: 10px 10px 0 10px;
+    padding: 15px 15px 5px 15px !important;
     border-radius: 10px;
-    padding-bottom: -20px;
 }
 
 .proofBorder{

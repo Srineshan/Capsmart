@@ -24,23 +24,23 @@ const ServiceSpecification = ({getViewPage6}) => {
         </div>
         <div className={`${style.serviceSpecificationTableData} ${style.displayInRow}`}>
             <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
-            <p className={style.documentProofDataTextWidth}>Loreum Ipsum</p>
-            <p className={style.documentProofDataTextWidth}>Loreum Ipsum </p>
-            <p className={style.documentProofDataTextWidth}>Loreum Ipsum</p>
+            <p className={style.documentProofDataTextWidth}>Demo data</p>
+            <p className={style.documentProofDataTextWidth}>Demo data </p>
+            <p className={style.documentProofDataTextWidth}>Demo data</p>
             <Icon icon="trash" size={20} className={style.marginRight20} color="#52575D"/>
         </div>
         <div className={`${style.serviceSpecificationTableData} ${style.displayInRow}`}>
             <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
-            <p className={style.documentProofDataTextWidth}>Loreum Ipsum</p>
-            <p className={style.documentProofDataTextWidth}>Loreum Ipsum</p>
-            <p className={style.documentProofDataTextWidth}>Loreum Ipsum</p>
+            <p className={style.documentProofDataTextWidth}>Demo data</p>
+            <p className={style.documentProofDataTextWidth}>Demo data</p>
+            <p className={style.documentProofDataTextWidth}>Demo data</p>
             <Icon icon="trash" size={20} className={style.marginRight20} color="#52575D"/>
         </div>
         <div className={`${style.serviceSpecificationTableData} ${style.displayInRow}`}>
             <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
-            <p className={style.documentProofDataTextWidth}>Loreum ipsum </p>
-            <p className={style.documentProofDataTextWidth}>Loreum ipsum</p>
-            <p className={style.documentProofDataTextWidth}>Loreum Ipsum</p>
+            <p className={style.documentProofDataTextWidth}>Demo data </p>
+            <p className={style.documentProofDataTextWidth}>Demo data</p>
+            <p className={style.documentProofDataTextWidth}>Demo data</p>
             <Icon icon="trash" size={20} className={style.marginRight20} color="#52575D" />
         </div>
     </div>

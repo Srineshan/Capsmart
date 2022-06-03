@@ -1,8 +1,137 @@
 import React, { useState } from 'react';
-import { Dialog, Classes, Icon, Intent, InputGroup} from '@blueprintjs/core';
+import { Dialog, Classes, Icon, Intent, InputGroup, Tag} from '@blueprintjs/core';
 import style from './index.module.scss';
 
 const AddUser = ({getAddUserDialog}) => {
+
+    const [addUser, setAddUser] = useState({firstName: "", lastName: "", email: "", roles: [{id: "", roleName: ""}]});
+    console.log(addUser)
+    const roles =["Role 1", "Role 2", "Role 3"];
+    const [selectedRoles, setSelectedRoles] = useState([])
+
+    const handleRoles = (value) => {
+      if (value !== '0') {
+        const selectedValue = roles.filter(data => data === value).map(data => data)[0];
+ 
+        if (!selectedRoles.map(data => data).includes(value)) {
+          setSelectedRoles([...selectedRoles, selectedValue]);
+        }
+      }
+    }
+
+    const rolesTags = selectedRoles
+    .filter(data => roles.map(role => role).includes(data))
+    .map((tag, index) => {
+      const onRemove = () => {
+        setSelectedRoles(selectedRoles.filter((t) => t !== tag));
+      };
+      return (
+        <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
+          {tag}
+        </Tag>
+      );
+    });
+
+    const submitUserDetails = async () => {
+
+      let roleValue = [];
+
+      roles?.map(data=>{
+        roleValue.push(  {
+        "id": "string",
+        "roleName": data,
+        "roleDescription": "string",
+        "tenant": {
+          "tenantId": "string"
+        }
+      })
+      })
+
+      const user = {
+        "name": {
+          "firstName": addUser?.firstName,
+          "lastName": addUser?.lastName,
+          "suffix": "string"
+        },
+        "userType": "ADMIN",
+        "contractType": {
+          "contractType": "string"
+        },
+        "contractID": {
+          "contractID": "string"
+        },
+        "title": {
+          "title": "string"
+        },
+        "email": {
+          "officialEmail": addUser?.email
+        },
+        "password": {
+          "password": "string"
+        },
+        "communication": {
+          "personalEmail": "string",
+          "mobileNumber": "string",
+          "landlineNumber": "string"
+        },
+        "roles": roleValue,
+        "address": {
+          "city": "string",
+          "state": "string",
+          "zipcode": "string"
+        },
+        "tenant": {
+          "tenantId": "string"
+        },
+        "sites": {
+          "sites": [
+            "string"
+          ]
+        },
+        "licenceDetails": {
+          "medicalLicense": "string",
+          "licenseExpiryDate": "2022-05-29",
+          "deaNumber": "string",
+          "deaExpiryDate": "2022-05-29",
+          "boardCertification": [
+            "string"
+          ]
+        },
+        "userProxy": {
+          "myProxy": {
+            "proxyIdList": [
+              {
+                "id": "string",
+                "name": "string"
+              }
+            ]
+          },
+          "proxyFor": {
+            "proxyIdList": [
+              {
+                "id": "string",
+                "name": "string"
+              }
+            ]
+          }
+        },
+        "blocked": true
+      };
+
+      const userDetails = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json',
+                    'X-tenantID' : '6242845f95690b3822cb96a5'},
+          body: JSON.stringify(user)
+      };
+      fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/user-management-service/user/register', userDetails)
+          .then(response => response.json())
+          .then(data => {
+            console.log(data)
+            return true;
+          }
+        )
+    }
 
     return(
         <Dialog isOpen={getAddUserDialog} onClose={() => getAddUserDialog(false)} className={`${style.addManagerDialogBackground} ${style.addProofDialog}`}>
@@ -31,14 +160,14 @@ const AddUser = ({getAddUserDialog}) => {
             <div className={`${style.addManagerGrid} ${style.marginTop20} ${style.displayInRow}`}>
               <div className={style.extentionLableStyle}>User Name*</div>
               <div className={style.displayInRow}>
-              <InputGroup value="John" className = {style.fieldWidth2InARow} />
-              <InputGroup value="Doe" className = {`${style.fieldWidth2InARow} ${style.marginLeft20}`} />
+              <InputGroup value={addUser?.firstName} className = {style.fieldWidth2InARow} onChange={(e) => setAddUser({...addUser, firstName: e.target.value})} />
+              <InputGroup value={addUser?.lastName} className = {`${style.fieldWidth2InARow} ${style.marginLeft20}`} onChange={(e) => setAddUser({...addUser, lastName: e.target.value})} />
               </div>
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
               <div className={style.extentionLableStyle}>Email Address*</div>
-              <InputGroup value="Text" />
+              <InputGroup value={addUser?.email} onChange={(e) => setAddUser({...addUser, email: e.target.value})} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -67,16 +196,29 @@ const AddUser = ({getAddUserDialog}) => {
                     <select
                         name="class"
                         id="Class"
+                        onChange={(e) => handleRoles(e.target.value)}
                         className={`${style.fullWidth} ${style.marginLeft20} `}>
-                            <option value="Select Role-multi select" >
+                            <option value="0" >
                               Select Role-multi select
                             </option>
+                            <option value="Role 1" >
+                              Role 1
+                            </option>
+                            <option value="Role 2" >
+                              Role 2
+                            </option>
+                            <option value="Role 3" >
+                              Role 3
+                            </option>
                     </select>
+                    <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                      {rolesTags}
+                    </div>
                   </div>
             </div>
         </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={`${style.buttonStyle} ${style.marginLeft20}`} >ADD</button>
+                <button className={`${style.buttonStyle} ${style.marginLeft20}`}  >ADD</button>
             </div>
         </div>
         </Dialog>

@@ -24,30 +24,35 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
     const [isSelected, setIsSelected] = useState(false);
     const [viewRegisteredUser, setViewRegisteredUser] = useState(true);
     const [sendEMail, setSendEMail] = useState(false);
+    const [userDetails, setUserDetails] = useState();
     const [sendEmailUserListDialog, setSendEmailUserListDialog] = useState(false);
     const [showAddUserDialog,setShowAddUserDialog] = useState(false);
     const [showEditUserDialog,setShowEditUserDialog] = useState(false);
     const [showMailtemplate,setShowMailTemplate] = useState(false);
 
-    const getUser = () => {
-        const user = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json',
-                      'X-tenantID' : '6242845f95690b3822cb96a5',
-                      'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTM3MzkzNTMsImV4cCI6MTY1MzgyNTc1M30.NfQJwvBPig-uJCp-pd7uH8mnRwfa5c-EyBm-atQN59sefOthWyaz74Pbucu2URDAVxXi5kEt-MTad-dJbyjsxw`}
-        };
-        fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/user-management-service/user', user)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-              return true;
-            }
-           )
-    };
+    // const getUser = () => {
+    //     const user = {
+    //         method: 'GET',
+    //         headers: { 'Content-Type': 'application/json',
+    //                   'X-tenantID' : '6242845f95690b3822cb96a5',
+    //                   'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTM3MzkzNTMsImV4cCI6MTY1MzgyNTc1M30.NfQJwvBPig-uJCp-pd7uH8mnRwfa5c-EyBm-atQN59sefOthWyaz74Pbucu2URDAVxXi5kEt-MTad-dJbyjsxw`}
+    //     };
+    //     fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/user-management-service/user', user)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             console.log(data, data?.[0]?.name?.firstName)
+    //             setUserDetails(data);
+    //           return true;
+    //         }
+    //        )
+    // };
 
-    useEffect(()=>{
-        getUser();
-    },[])
+    // useEffect(()=>{
+    //     getUser();
+    // },[])
+
+    // const registeredUsers = userDetails?.filter(data => data?.blocked === false)?.map(data => data);
+    // const blockedUsers = userDetails?.filter(data => data?.blocked === true)?.map(data => data);
        
 
     const getSendEmailDialog = (value) => {
@@ -165,11 +170,63 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             <p className={style.tableHeaderFontStyle}>AVG LOGINS PER DAY</p>
                             <p className={style.tableHeaderFontStyle}>AVG DURATION PER LOGINS(MIN)</p>
                         </div>
-                        <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1')}}>
+                        {/* {registeredUsers?.map((data, index) =>
+                            <div className={`${style.tableData} ${style.displayInCol} ${style.marginTop7} ${index % 2 === 0 ? style.alternativeBackgroundColor : ''}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(index)}}>
+                                <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
+                                    <input type="checkbox" className={style.checkBoxData} />
+                                    <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
+                                        <div className={`${style.greenDotStyle}`}></div>
+                                        {data?.name?.firstName}
+                                    </p>
+                                    <p className={style.tableDataFontStyle}>{data?.title?.title}</p>
+                                    <p className={style.tableDataFontStyle}>Maggiehaven </p>
+                                    <p className={style.tableDataFontStyle}>{data?.userType}</p>
+                                    <p className={style.tableDataFontStyle}>07/19/2019</p>
+                                    <p className={style.tableDataFontStyle}>0:32</p>
+                                    <p className={style.tableDataFontStyle}>3</p>
+                                </div>
+                                {isSelected && selectedRow === index && (
+                                    <>
+                                        <div className={style.divideStyle}></div>
+                                        <div className={style.userInfoGrid}>
+                                            <div className={`${style.displayInCol} ${style.userInfoDivStyle}`}>
+                                                <p className={style.tableDataFontStyle}>Contact Informations</p>
+                                                <p className={style.addressTextStyle}>{data?.communication?.personalEmail}</p>
+                                                <p className={style.addressTextStyle}>{data?.communication?.mobileNumber}</p>
+                                                <p className={style.addressTextStyle}>{data?.communication?.landlineNumber}</p>
+                                            </div>
+                                            <div className={style.sideDivideStyle}></div>
+                                            <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
+                                                <div>
+                                                    <p className={style.tableDataFontStyle}>Address</p>
+                                                    <p className={style.addressTextStyle}>75297 Marisa Station</p>
+                                                    <p className={style.addressTextStyle}>{data?.address?.city}, {data?.address?.state}, {data?.address?.zipcode}</p>
+                                                </div>
+                                            </div>
+                                            <div className={style.sideDivideStyle}></div>
+                                            <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
+                                                <div>
+                                                    <p className={style.tableDataFontStyle}>Creation Date</p>
+                                                    <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
+                                                </div>
+                                            </div>
+                                            <div className={style.sideDivideStyle}></div>
+                                            <div className={`${style.displayInCol} ${style.textAlignRight}`}>
+                                                <div>
+                                                    <p className={style.tableDataFontStyle}>Last Activity</p>
+                                                    <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                         )} */}
+                         <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1')}}>
                             <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                 <input type="checkbox" className={style.checkBoxData} />
                                 <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                    <div className={`${style.greenDotStyle}`}></div>
+                                    <div className={`${style.yellowDotStyle}`}></div>
                                     John DOE
                                 </p>
                                 <p className={style.tableDataFontStyle}>Doctor</p>
@@ -535,7 +592,58 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                 <p className={style.tableHeaderFontStyle}>BLOCKED DURATION (DAYS)</p>
                                 <p className={style.tableHeaderFontStyle}>ACTION</p>
                             </div>
-                            <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1')}}>
+                            {/* {blockedUsers?.map((data, index) =>
+                                <div className={`${style.tableData} ${style.displayInCol} ${index % 2 === 0 ? style.alternativeBackgroundColor : ''}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(index)}}>
+                                    <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
+                                        <input type="checkbox" className={style.checkBoxData} />
+                                        <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
+                                            {data?.name?.firstName}
+                                        </p>
+                                        <p className={style.tableDataFontStyle}>{data?.title?.title}</p>
+                                        <p className={style.tableDataFontStyle}>Maggiehaven </p>
+                                        <p className={style.tableDataFontStyle}>Maggiehaven</p>
+                                        <p className={style.tableDataFontStyle}>07/19/2019</p>
+                                        <p className={style.tableDataFontStyle}>3</p>
+                                        <button className={style.unblockButton}>UNBLOCK</button>
+                                    </div>
+                                    {isSelected && selectedRow === index && (
+                                        <>
+                                            <div className={style.divideStyle}></div>
+                                            <div className={style.userInfoGrid}>
+                                                <div className={`${style.displayInCol} ${style.userInfoDivStyle}`}>
+                                                    <p className={style.tableDataFontStyle}>Contact Informations</p>
+                                                    <p className={style.addressTextStyle}>{data?.communication?.personalEmail}</p>
+                                                    <p className={style.addressTextStyle}>{data?.communication?.mobileNumber}</p>
+                                                    <p className={style.addressTextStyle}>{data?.communication?.landlineNumber}</p>
+                                                </div>
+                                                <div className={style.sideDivideStyle}></div>
+                                                <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
+                                                    <div>
+                                                        <p className={style.tableDataFontStyle}>Address</p>
+                                                        <p className={style.addressTextStyle}>75297 Marisa Station</p>
+                                                        <p className={style.addressTextStyle}>{data?.address?.city}, {data?.address?.state}, {data?.address?.zipcode}</p>
+                                                    </div>
+                                                </div>
+                                                <div className={style.sideDivideStyle}></div>
+                                                <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
+                                                    <div>
+                                                        <p className={style.tableDataFontStyle}>Creation Date</p>
+                                                        <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
+                                                    </div>
+                                                </div>
+                                                <div className={style.sideDivideStyle}></div>
+                                                <div className={`${style.displayInCol} ${style.textAlignRight}`}>
+                                                    <div>
+                                                        <p className={style.tableDataFontStyle}>Last Activity</p>
+                                                        <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            )} */}
+                            <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(1)}}>
                                 <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                     <input type="checkbox" className={style.checkBoxData} />
                                     <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
@@ -548,7 +656,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                     <p className={style.tableDataFontStyle}>3</p>
                                     <button className={style.unblockButton}>UNBLOCK</button>
                                 </div>
-                                {isSelected && selectedRow === '1' && (
+                                {isSelected && selectedRow === 1 && (
                                     <>
                                         <div className={style.divideStyle}></div>
                                         <div className={style.userInfoGrid}>
@@ -556,14 +664,14 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                                 <p className={style.tableDataFontStyle}>Contact Informations</p>
                                                 <p className={style.addressTextStyle}>john.doe@sureshield.com</p>
                                                 <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                                <p className={style.addressTextStyle}>+1 (342) 444-5507</p>
+                                                <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
                                             </div>
                                             <div className={style.sideDivideStyle}></div>
                                             <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
                                                 <div>
                                                     <p className={style.tableDataFontStyle}>Address</p>
                                                     <p className={style.addressTextStyle}>75297 Marisa Station</p>
-                                                    <p className={style.addressTextStyle}>, South Clement, Borders, NE 16466</p>
+                                                    <p className={style.addressTextStyle}>South Clement, Borders, NE 16466</p>
                                                 </div>
                                             </div>
                                             <div className={style.sideDivideStyle}></div>
@@ -584,7 +692,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                     </>
                                 )}
                             </div>
-                            <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('2')}}>
+                            <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(1)}}>
                                 <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                     <input type="checkbox" className={style.checkBoxData} />
                                     <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
@@ -597,7 +705,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                     <p className={style.tableDataFontStyle}>3</p>
                                     <button className={style.unblockButton}>UNBLOCK</button>
                                 </div>
-                                {isSelected && selectedRow === '2' && (
+                                {isSelected && selectedRow === 1 && (
                                     <>
                                         <div className={style.divideStyle}></div>
                                         <div className={style.userInfoGrid}>
@@ -605,14 +713,14 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                                 <p className={style.tableDataFontStyle}>Contact Informations</p>
                                                 <p className={style.addressTextStyle}>john.doe@sureshield.com</p>
                                                 <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                                <p className={style.addressTextStyle}>+1 (342) 444-5507</p>
+                                                <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
                                             </div>
                                             <div className={style.sideDivideStyle}></div>
                                             <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
                                                 <div>
                                                     <p className={style.tableDataFontStyle}>Address</p>
                                                     <p className={style.addressTextStyle}>75297 Marisa Station</p>
-                                                    <p className={style.addressTextStyle}>, South Clement, Borders, NE 16466</p>
+                                                    <p className={style.addressTextStyle}>South Clement, Borders, NE 16466</p>
                                                 </div>
                                             </div>
                                             <div className={style.sideDivideStyle}></div>
