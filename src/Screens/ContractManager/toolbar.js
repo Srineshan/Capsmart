@@ -1,12 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useRef } from 'react';
 import Konva from 'konva';
 import { createRoot } from 'react-dom/client';
 import { Stage, Layer, Shape, Ellipse, Rect, Text, Arrow } from 'react-konva';
 import style from './index.module.scss';
 
 const ToolBar = () => {
+  const [ellipse,setEllipse] = useState([]);
+  const stageRef = useRef(null);
     return (
-      <Stage width={window.innerWidth} height={window.innerHeight}>
+      <Stage width={window.innerWidth} height={window.innerHeight} ref={stageRef}>
         <Layer>
             <Shape
                 sceneFunc={(context, shape) => {
@@ -30,6 +32,14 @@ const ToolBar = () => {
                 strokeWidth={1}
                 className={style.shapeBackground}
             />
+            <Rect
+                width={50}
+                height={30}
+                fill="#A39CEB"
+                strokeWidth={1}
+                x={315}
+                y={10}
+            />
             <Ellipse
                 radiusX={20}
                 radiusY={20}
@@ -40,6 +50,42 @@ const ToolBar = () => {
                 strokeWidth={1}
                 x={340}
                 y={25}
+            />
+            <Ellipse
+                name="draggableEllipse"
+                radiusX={20}
+                radiusY={20}
+                height={20}
+                width={40}
+                fill="#fff"
+                stroke="#A39CEB"
+                strokeWidth={1}
+                x={340}
+                y={25}
+                draggable
+                 onDragEnd={(e) => {
+                   // push new circle to view
+                   // note that we must push circle first before returning draggable circle
+                   // because e.target.x returns draggable circle's positions
+                   setEllipse((prevEllipse) => [
+                     ...prevEllipse,
+                     {
+                       x: e.target.x(),
+                       y: e.target.y(),
+                       width: e.target.width(),
+                       height: e.target.height(),
+                       fill: e.target.fill(),
+                       stroke: e.target.stroke(),
+                       strokeWidth: e.target.strokeWidth()
+                     }
+                   ]);
+
+                   // return draggable circle to original position
+                   // notice the dot (.) before "draggableCircle"
+                   var stage = stageRef.current;
+                   var draggable = stage.findOne(".draggableEllipse");
+                   draggable.position({ x: 340, y: 25 });
+                 }}
             />
             <Rect
                 width={40}
@@ -95,6 +141,17 @@ const ToolBar = () => {
               x={470}
               y={150}
             />
+            {ellipse.map((eachEllipse, index) => (
+              <Ellipse
+                x={eachEllipse.x}
+                y={eachEllipse.y}
+                width={eachEllipse.width}
+                height={eachEllipse.height}
+                fill={eachEllipse.fill}
+                stroke={eachEllipse.stroke}
+                strokeWidth={eachEllipse.strokeWidth}
+              />
+        ))}
         </Layer>
       </Stage>
     );
