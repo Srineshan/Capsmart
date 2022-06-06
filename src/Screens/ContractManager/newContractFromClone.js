@@ -12,6 +12,7 @@ import FileImg from './../../images/fileImg.png';
 import ServiceSpecification from './serviceSpecification';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
+import ToolBar from './toolbar';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
@@ -36,6 +37,7 @@ const NewContractFromClone = ({getNewContract}) => {
     const [siteLevel, setSiteLevel] = useState(false);
     const [departmentLevel, setDepartmentLevel] = useState(false);
     const [timeSheetCount, setTimeSheetCount] = useState('1');
+    const [applyWorkflowToAll, setApplyWorkflowToAll] = useState(true);
     let completedSteps = [];
     const [tags, setTags] = useState(VALUES);
     const [tagSet2, setTagSet2] = useState(VALUES2);
@@ -229,14 +231,127 @@ const NewContractFromClone = ({getNewContract}) => {
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage7 && style.selectedContractEntityStyle}`}>
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage8 ? style.completedEntityCardStyle : viewPage7 ? style.selectedContractEntityStyle : ''}`}>
                         Timesheet Submission Terms
+                        {viewPage8 && (
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10}`}>
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage8 && style.selectedContractEntityStyle}`}>
                         Timesheet Processing Workflow
                     </div>
                 </div>
-                {viewPage7 ? (
+                {viewPage8 ? (
+                    <div className={style.cloneBlockStyle}>
+                        <div className={`${style.floatLeft} ${style.reduce10Left}`}>
+                            <button className={`${style.timesheetButtonStyle} ${style.selectedTimesheetButton}`}>Timesheet name 1</button>
+                            <button className={style.timesheetButtonStyle}>Timesheet name 2</button>
+                        </div>
+                        <div className={`${style.timeSheetBoxStyle}`}>
+                            <div className={`${style.extentionGrid}`}>
+                                <div className={style.extentionLableStyle}>Select Timesheet To Define Process*</div>
+                                <div className={style.displayInRow}>
+                                    <InputGroup className={style.twoFieldWidth} placeholder="Timesheet name 1" />
+                                </div>
+                            </div>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Workflow Template To Use*</div>
+                                <div className={style.twoCol}>
+                                    <div className={style.reduce10Left}>
+                                        <select
+                                            name="class"
+                                            id="Class"
+                                            className={`${style.fullWidth} ${style.marginLeft20} `}>
+                                                <option value="default saves template select" >
+                                                default saves template select
+                                                </option>
+                                        </select>
+                                    </div>
+                                    <RadioGroup
+                                        inline={true}
+                                        className={`${style.marginTop15} ${style.marginLeft20}`}
+                                        selectedValue={"Custom Creation"}
+                                    >
+                                        <Radio label="Custom Creation" value="Custom Creation" checked />
+                                    </RadioGroup>
+                                </div>
+                            </div>
+                            {selectContractInfo === "Multiple Contractor" && (
+                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                    <div className={style.extentionLableStyle}>Apply Workflow To All Contractor*</div>
+                                    <div className={style.displayInRow}>
+                                        <Switch checked={applyWorkflowToAll} label={applyWorkflowToAll ? 'YES' : "NO"} className={`${style.marginTop15} ${style.textAlignLeft} ${style.fourFieldWidth}`} onChange={() => setApplyWorkflowToAll(!applyWorkflowToAll)}  />
+                                        {!applyWorkflowToAll && (
+                                            <div className={`${style.displayInRow} ${style.fullWidth}`}>
+                                                <div className={style.threeFieldWidth}>
+                                                    <select
+                                                        name="class"
+                                                        id="Class"
+                                                        className={`${style.fullWidth} `}>
+                                                            <option value="2" >
+                                                            2
+                                                            </option>
+                                                    </select>
+                                                </div>
+                                                <div className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.fullWidth} ${style.marginTop15}`}>Workflow Template To Use*</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                            {applyWorkflowToAll && (
+                                <div className={style.fullWidth}>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                        <div className={style.extentionLableStyle}>Workflow Name</div>
+                                        <div className={style.displayInRow}>
+                                            <InputGroup className={style.twoFieldWidth} placeholder="Workflow name 1" />
+                                        </div>
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                        <div className={style.extentionLableStyle}>Workflow Description</div>
+                                        <TextArea className={style.fullWidth} placeholder="Workflow Description" />
+                                    </div>
+                                    <div className={`${style.flowChartBoxStyle} ${style.marginTop20}`}>
+                                        <ToolBar />
+                                    </div>
+                                </div>
+                            )}
+                            {!applyWorkflowToAll && (
+                                <div className={style.marginTop20}>
+                                    <div className={`${style.floatLeft} ${style.reduce10Left} ${style.displayInRow}`}>
+                                        <div className={`${style.workFlowButtonStyle} ${style.selectedWorkFlowButton}`}>
+                                            Workflow em
+                                            <Icon icon="trash" size={10} color="#7165E3"/>
+                                        </div>
+                                        <div className={style.workFlowButtonStyle}>
+                                            Workflow 2
+                                            <Icon icon="trash" size={10} color="#52575D"/>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.workflowBoxStyle}`}>
+                                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                            <div className={style.extentionLableStyle}>Workflow Variant 1</div>
+                                            <div className={style.displayInRow}>
+                                                <InputGroup className={style.twoFieldWidth} placeholder="Workflow em" />
+                                            </div>
+                                        </div>
+                                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                            <div className={style.extentionLableStyle}>Workflow Description</div>
+                                            <TextArea className={style.fullWidth} placeholder="Description" />
+                                        </div>
+                                        <div className={`${style.flowChartBoxStyle} ${style.marginTop20}`}>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className={`${style.floatRight} ${style.marginTop20}`}>
+                            <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
+                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> setViewPage8(true)}>CONTINUE</button>
+                        </div>
+                    </div>
+                ) : viewPage7 ? (
                     <div className={style.cloneBlockStyle}>
                         <div className={`${style.newContractFromCloneBoxStyle}`}>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -420,7 +535,7 @@ const NewContractFromClone = ({getNewContract}) => {
                         </div>
                         <div className={`${style.floatRight} ${style.marginTop20}`}>
                             <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> setViewPage4(true)}>CONTINUE</button>
+                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> setViewPage8(true)}>CONTINUE</button>
                         </div>
                     </div>
                 ) : viewPage6 ? (

@@ -1650,3 +1650,73 @@ select {
       width: 80px;
       object-fit: contain;
   }
+
+  .timesheetButtonStyle{
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    border: 1px solid #7165E3;
+    border-radius: 6px 6px 0px 0px;
+    width: 180px;
+    height: 40px;
+  }
+
+  .selectedTimesheetButton{
+    background: #D7D4F7 0% 0% no-repeat padding-box;
+  } 
+
+  .floatLeft{
+      float: left;
+  }
+
+  .timeSheetBoxStyle{
+    border: 1px solid #7165E3;
+    border-radius: 0px 6px 0px 0px;
+    opacity: 1;
+    height: calc(100vh - 160px);
+    overflow: scroll;
+    width: 100%;
+    margin-left: -10px;
+    padding: 20px;
+}
+
+.workflowBoxStyle{
+    border: 1px solid #E9E9F0;
+    border-radius: 0px 6px 0px 0px;
+    opacity: 1;
+    height: calc(100vh - 160px);
+    overflow: scroll;
+    width: 100%;
+    margin-left: -10px;
+    padding: 20px;
+}
+
+.workFlowButtonStyle{
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    border: 1px solid #7165E3;
+    border-radius: 6px 6px 0px 0px;
+    width: 130px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+  }
+
+  .flowChartBoxStyle{
+    border: 1px solid #F3F3F3;
+    opacity: 1;
+    height: calc(100vh - 80px);
+    width: 100%;
+    background-color: #F3F3F3;
+   }
+
+  .selectedWorkFlowButton{
+    background: #D7D4F7 0% 0% no-repeat padding-box;
+  } 
+
+  .shapeBackground{
+    background: black 0% 0% no-repeat padding-box;
+    border: 1px solid #7165E3;
+    height: 50px;
+    width: 60px;
+    margin: 20px;
+  }

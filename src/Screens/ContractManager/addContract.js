@@ -16,9 +16,9 @@ const AddContract = ({getAddContract, getNewContract}) => {
             </div>
             <div className={style.welcomeBorder}></div>
             <div className={style.welcomeMessage}>
-                Welcome to the TimeSmart.AI Contract Manager Wizard.  Please select the appropriate
-                option from the drop down menu below, and whether this is an Individual Contractor
-                Agreement or Multiple Contractor Agreement.
+            Welcome to the TimeSmart.AI Contract Manager Wizard.  Please select the appropriate
+             option from the drop down menu below, and whether this is an Individual Contractor
+              Agreement or Multiple Contractor Agreement.
             </div>
             <div className={style.contractOptions}>
                 <div className={style.displayInRow}>
