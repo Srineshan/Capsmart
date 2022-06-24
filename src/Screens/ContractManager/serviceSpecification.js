@@ -4,12 +4,20 @@ import CompletedIcon from './../../images/completedIcon.png';
 import style from './index.module.scss';
 import AddServiceProvided from './addServiceToBeProvided';
 
-const ServiceSpecification = ({getViewPage6}) => {
+const ServiceSpecification = ({getViewPage6, getAddon}) => {
   const [addService,setAddService] = useState(false);
+  const [addOn, setAddOn] = useState(false);
+
 
   const getAddServiceDialog = (value) => {
     setAddService(value);
   }
+
+  const getAddOn = (value) => {
+    setAddOn(value);
+    getAddon(value);
+    console.log('received')
+}
 
   return(
     <div className={style.cloneBlockStyle}>
@@ -50,7 +58,7 @@ const ServiceSpecification = ({getViewPage6}) => {
     </div>
     {
       addService &&
-      <AddServiceProvided getAddServiceDialog={getAddServiceDialog}/>
+      <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn}/>
     }
 </div>
   )

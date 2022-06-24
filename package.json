@@ -5,6 +5,9 @@
   "dependencies": {
     "@blueprintjs/core": "^4.3.0",
     "@blueprintjs/datetime": "^4.2.0",
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "@mui/material": "^5.8.4",
     "@ramonak/react-progress-bar": "^4.4.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",

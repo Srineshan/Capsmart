@@ -1,7 +1,9 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { InputGroup, Icon, Intent, Switch, TagInput } from '@blueprintjs/core';
+import { InputGroup, Icon, Intent, TagInput } from '@blueprintjs/core';
 import {Link} from 'react-router-dom';
 import DatalistInput from 'react-datalist-input';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Step1 from './../../images/step1.png';
 import Step2 from './../../images/step2.png';
 import Step3 from './../../images/step3.png';
@@ -205,9 +207,21 @@ const EntitySetup = () => {
                                 <div className={style.extentionLableStyle}>Multi-site Entity*</div>
                                 <div>
                                     <div className={style.displayInRow}>
-                                        <Switch checked={true} label={'YES'} className={`${style.marginTop} ${style.textAlignLeft}`}  />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch checked={true} className={` ${style.textAlignLeft}`}  />
+                                            }
+                                            className={style.switchFontStyle}
+                                            label={'YES'}
+                                        />
                                         <div className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Primary Site To Use App*</div>
-                                        <Switch checked={true} label={'YES'} className={`${style.marginTop} ${style.textAlignLeft} ${style.marginLeft20}`}  />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch checked={true} className={` ${style.textAlignLeft} ${style.marginLeft20}`}  />
+                                            }
+                                            className={style.switchFontStyle}
+                                            label={'YES'}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -215,7 +229,13 @@ const EntitySetup = () => {
                                 <div className={style.extentionLableStyle}>Setup Department*</div>
                                 <div>
                                     <div className={style.displayInRow}>
-                                        <Switch checked={departmentSpecific} label={departmentSpecific ? 'YES' : "NO"} className={`${style.marginTop} ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
+                                            }
+                                            className={style.switchFontStyle}
+                                            label={departmentSpecific ? 'YES' : "NO"}
+                                        />
                                         {departmentSpecific && (
                                             <>
                                                 <InputGroup placeholder="Enter Department"  onChange={(e) => setDepartmentValue(e.target.value) } className={`${style.fullWidth} ${style.marginLeft20}`} value={departmentValue}/>

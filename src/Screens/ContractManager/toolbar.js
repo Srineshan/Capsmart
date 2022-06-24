@@ -1,8 +1,10 @@
-import React, { Component, useState, useRef } from 'react';
+import React, { Component, useState, useRef, useEffect } from 'react';
 import Konva from 'konva';
 import { createRoot } from 'react-dom/client';
-import { Stage, Layer, Shape, Ellipse, Rect, Text, Arrow } from 'react-konva';
+import { Stage, Layer, Shape, Ellipse, Rect, Text, Arrow, Line } from 'react-konva';
 import style from './index.module.scss';
+import { TransformerComponent } from "./transformer";
+
 
 const ToolBar = () => {
   const [ellipse,setEllipse] = useState([]);
@@ -10,10 +12,129 @@ const ToolBar = () => {
   const [diamond,setDiamond] = useState([]);
   const [slantingRect,setSlantingRect] = useState([]);
   const [arrow,setArrow] = useState([]);
-  const [yes,setYes] = useState([]);
+  const [text,setText] = useState([]);
+  const [selectedShapeName,setSelectedShapeName] = useState('')
   const stageRef = useRef(null);
+  const [arrowStartPos,setArrowStartPos] = useState({x:520,y:55});
+  const [arrowEndPos,setArrowEndPos] = useState({x:490,y:55});
+  const [isDrawing,setIsDrawing] = useState(false);
+  const [isArrowSelected,setIsArrowSelected] = useState(false);
+  const [isTextSelected, setIsTextSelected] = useState(false);
+  const [arrowList,setArrowList] = useState([]);
+  const [arrowIndex,setArrowIndex] = useState(null);
+  const [points,setPoints] = useState(Array(arrow.length).fill([]));
+  const [yes,setYes] = useState([]);
+  const [hold,setHold] = useState([]);
+  const [reject,setReject] = useState([]);
+  const [selectedTextIndex,setSelectedTextIndex] = useState(null);
+  const [deleteValue,setDeleteValue] = useState(null);
+
+  const handleStageOnClick = (e) => {
+    if(!isArrowSelected){
+      setSelectedShapeName(e.target.attrs.name)
+    }
+    if(!e.target.attrs.name){
+      setDeleteValue({bool:false,name:'',shape:'',x:0,y:0})
+    }
+  }
+
+  useEffect(()=>{
+    let temp = points;
+    temp[arrowIndex] = [arrowStartPos.x, arrowStartPos.y, arrowEndPos.x, arrowEndPos.y];
+    setPoints(temp)
+  },[arrowStartPos,arrowEndPos])
+
+  const handleArrowClick = (name, index) => {
+    setArrowIndex(index);
+    setIsArrowSelected(true);
+  }
+
+  const handleMouseDown = ({evt}) => {
+    const {offsetX, offsetY} = evt;
+    setArrowStartPos({x:offsetX,y:offsetY});
+    setIsDrawing(true);
+  }
+
+  const handleMouseUp = () =>{
+    if(isDrawing && arrowIndex !== null){
+      setIsDrawing(false);
+      setIsArrowSelected(false);
+      setArrowIndex(null);
+    }
+  }
+
+  const handleMouseMove = ({evt}) => {
+    const {offsetX, offsetY} = evt;
+    if(isDrawing && arrowIndex !== null){
+      setArrowEndPos({x:offsetX,y:offsetY});
+    }
+  }
+
+
+  const handleTextDblClick = (e,index) => {
+   setSelectedTextIndex(index)
+   setIsTextSelected(true);
+   const absPos = e.target.getAbsolutePosition();
+   let temp = text;
+   text[index].visible = true;
+   text[index].x = absPos.x;
+   text[index].y = absPos.y;
+   setText(temp);
+ };
+
+   const handleTextareaKeyDown = (e,index) => {
+    if (e.keyCode === 9) {
+      let temp = text;
+      temp[index].visible = false;
+      setText(temp);
+      setSelectedTextIndex(null);
+    }
+   };
+
+  const handleTextEdit = (e,index) => {
+    let temp = text;
+    text[index].text = e.target.value;
+    setText(text);
+  };
+
+  const displayTextArea = text[selectedTextIndex]?.visible?'block':'none'
+
+  const displayDelete = (x,y,name,index)=>{
+    setDeleteValue({...deleteValue,bool:true,x:x,y:y,name:name,index:index})
+  }
+
+  const onDelete = () => {
+    let type = deleteValue?.name;
+    console.log('delete value', deleteValue);
+    if(type === 'text'){
+      setText(text?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }else if(type === 'yes'){
+      setYes(yes?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }else if(type === 'hold'){
+      setHold(hold?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }else if(type === 'reject'){
+      setReject(reject?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }else if(type === 'rect'){
+      setRect(rect?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }else if(type === 'ellipse'){
+      setEllipse(ellipse?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }else if(type === 'slantingRect'){
+      setSlantingRect(slantingRect?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }else if(type === 'diamond'){
+      setDiamond(diamond?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }else{
+      setArrow(arrow?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }
+    setDeleteValue({bool:false,x:0,y:0,name:'',index:null})
+  }
+
+
+
     return (
-      <Stage width={window.innerWidth} height={window.innerHeight} ref={stageRef}>
+      <div>
+      <Stage width={window.innerWidth} height={window.innerHeight} ref={stageRef}  onClick={handleStageOnClick} onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}>
         <Layer>
             <Rect
               width={50}
@@ -74,7 +195,8 @@ const ToolBar = () => {
                        height: e.target.height(),
                        fill: e.target.fill(),
                        stroke: e.target.stroke(),
-                       strokeWidth: e.target.strokeWidth()
+                       strokeWidth: e.target.strokeWidth(),
+                       name:`${e.target.name()}${rect?.length ? rect?.length+1 : 1}`
                      }
                    ]);
 
@@ -93,67 +215,45 @@ const ToolBar = () => {
               x={425}
               y={5}
             />
-            <Shape
-            sceneFunc={(context, shape) => {
-            context.beginPath();
-            context.moveTo(435, 20);
-            context.lineTo(450, 10);
-            context.lineTo(465, 20);
-            context.lineTo(450, 30);
-            context.closePath();
-            context.fillStrokeShape(shape);
-            }}
-            fill="#fff"
-            stroke="#A39CEB"
-            strokeWidth={1}
-            className={style.shapeBackground}
-            />
-            <Shape
-            //Diamond
-                sceneFunc={(context, shape) => {
-                context.beginPath();
-                context.moveTo(435, 20);
-                context.lineTo(450, 10);
-                context.lineTo(465, 20);
-                context.lineTo(450, 30);
-                context.closePath();
-                context.fillStrokeShape(shape);
-                }}
-                fill="#fff"
-                stroke="#A39CEB"
-                strokeWidth={1}
-                className={style.shapeBackground}
-                name='draggableDiamond'
-                draggable
-               onDragEnd={(e) => {
-                 // push new circle to view
-                 // note that we must push circle first before returning draggable circle
-                 // because e.target.x returns draggable circle's positions
-                 setDiamond((prevDiamond) => [
-                   ...prevDiamond,
+            <Line
+              x={0}
+              y={0}
+              points={[435, 20, 450, 10, 465, 20, 450, 30, 435, 20]}
+              closed
+              fill="#fff"
+              stroke="#A39CEB"
+              strokeWidth={1}
+              />
+            <Line
+              name="draggableDiamond"
+              x={0}
+              y={0}
+              points={[435, 20, 450, 10, 465, 20, 450, 30, 435, 20]}
+              closed
+              fill="#fff"
+              stroke="#A39CEB"
+              strokeWidth={1}
+              draggable
+              onDragEnd={(e) => {
+                // push new circle to view
+                // note that we must push circle first before returning draggable circle
+                // because e.target.x returns draggable circle's positions
+                setDiamond((prevDiamond) => [
+                  ...prevDiamond,
+                  { x: e.target.x(), y: e.target.y(),
+                    fill: e.target.fill(),
+                    stroke: e.target.stroke(),
+                    strokeWidth: e.target.strokeWidth(),
+                    name:`${e.target.name()}${diamond?.length ? diamond?.length+1 : 1}`
+                  }
+                ]);
 
-                     <Shape
-                     sceneFunc={(context, shape) => {
-                     context.beginPath();
-                     context.moveTo(e.target.x(), e.target.y());
-                     context.lineTo(450, 10);
-                     context.lineTo(465, 20);
-                     context.lineTo(450, 30);
-                     context.closePath();
-                     context.fillStrokeShape(shape);
-                     }}
-                     // fill: e.target.fill(),
-                     // stroke: e.target.stroke(),
-                     // strokeWidth: e.target.strokeWidth()
-                   />
-                 ]);
-
-                 // return draggable circle to original position
-                 // notice the dot (.) before "draggableCircle"
-                 var stage = stageRef.current;
-                 var draggable = stage.findOne(".draggableDiamond");
-                 draggable.position({ x: 435, y: 20 });
-               }}
+                // return draggable circle to original position
+                // notice the dot (.) before "draggableCircle"
+                var stage = stageRef.current;
+                var draggableDiamond = stage.findOne(".draggableDiamond");
+                draggableDiamond.position({ x: 0, y: 0 });
+              }}
             />
             <Ellipse
                 name="draggableEllipse"
@@ -180,7 +280,8 @@ const ToolBar = () => {
                        height: e.target.height(),
                        fill: e.target.fill(),
                        stroke: e.target.stroke(),
-                       strokeWidth: e.target.strokeWidth()
+                       strokeWidth: e.target.strokeWidth(),
+                       name:`${e.target.name()}${ellipse?.length ? ellipse?.length+1 : 1}`
                      }
                    ]);
 
@@ -199,69 +300,43 @@ const ToolBar = () => {
               x={480}
               y={5}
             />
-            <Shape
-                sceneFunc={(context, shape) => {
-                context.beginPath();
-                //change this line for x and y
-                context.moveTo(485, 30);
-                context.lineTo(490,10);
-                context.lineTo(525,10);
-                context.lineTo(520,30);
-                context.closePath();
-                // (!) Konva specific method, it is very important
-                context.fillStrokeShape(shape);
-                }}
-                fill="#fff"
-                stroke="#A39CEB"
-                strokeWidth={1}
-            />
-            <Shape
-                sceneFunc={(context, shape) => {
-                context.beginPath();
-                //change this line for x and y
-                context.moveTo(485, 30);
-                context.lineTo(490,10);
-                context.lineTo(525,10);
-                context.lineTo(520,30);
-                context.closePath();
-                // (!) Konva specific method, it is very important
-                context.fillStrokeShape(shape);
-                }}
+
+            <Line
+              x={0}
+              y={0}
+              points={[485, 30, 490, 10, 525, 10, 520, 30, 485, 30]}
+              closed
+              fill="#fff"
+              stroke="#A39CEB"
+              strokeWidth={1}
+              />
+
+              <Line
+                name="draggableSlantingRect"
+                x={0}
+                y={0}
+                points={[485, 30, 490, 10, 525, 10, 520, 30, 485, 30]}
+                closed
                 fill="#fff"
                 stroke="#A39CEB"
                 strokeWidth={1}
                 draggable
-                name="draggableSlantingRect"
                 onDragEnd={(e) => {
-                  // push new circle to view
-                  // note that we must push circle first before returning draggable circle
-                  // because e.target.x returns draggable circle's positions
-                  setSlantingRect((slantingRect) => [
-                    ...slantingRect,
-                    <Shape
-                    sceneFunc={(context, shape) => {
-                    context.beginPath();
-                    context.moveTo(e.target.x(), e.target.y());
-                    context.lineTo(490,10);
-                    context.lineTo(525,10);
-                    context.lineTo(520,30);
-                    context.closePath();
-                    context.fillStrokeShape(shape);
-                    }}
-                    // fill: e.target.fill(),
-                    // stroke: e.target.stroke(),
-                    // strokeWidth: e.target.strokeWidth()
-                  />
+                  setSlantingRect((prevSlantingRect) => [
+                    ...prevSlantingRect,
+                    { x: e.target.x(), y: e.target.y(),
+                      fill: e.target.fill(),
+                      stroke: e.target.stroke(),
+                      strokeWidth: e.target.strokeWidth(),
+                      name:`${e.target.name()}${slantingRect?.length ? slantingRect?.length+1 : 1}`
+                    }
                   ]);
-
-                  // return draggable circle to original position
-                  // notice the dot (.) before "draggableCircle"
                   var stage = stageRef.current;
-                  var draggable = stage.findOne(".draggableEllipse");
-                  draggable.position({ x: 340, y: 20 });
+                  var draggableSlantingRect = stage.findOne(".draggableSlantingRect");
+                  draggableSlantingRect.position({ x: 0, y: 0 });
                 }}
+              />
 
-            />
             <Rect
               width={50}
               height={30}
@@ -276,15 +351,14 @@ const ToolBar = () => {
                 stroke="#A39CEB"
                 />
             <Arrow
+                x = {0}
+                y = {0}
                 points={[520, 55, 490, 55]}
                 fill="#ECEDEE"
                 stroke="#A39CEB"
                 name='draggableArrow'
                 draggable
                  onDragEnd={(e) => {
-                   // push new circle to view
-                   // note that we must push circle first before returning draggable circle
-                   // because e.target.x returns draggable circle's positions
                    setArrow((prevArrow) => [
                      ...prevArrow,
                      {
@@ -294,15 +368,13 @@ const ToolBar = () => {
                        height: e.target.height(),
                        fill: e.target.fill(),
                        stroke: e.target.stroke(),
-                       strokeWidth: e.target.strokeWidth()
+                       strokeWidth: e.target.strokeWidth(),
+                       name:`${e.target.name()}${arrow?.length ? arrow?.length+1 : 1}`,
                      }
                    ]);
-
-                   // return draggable circle to original position
-                   // notice the dot (.) before "draggableCircle"
                    var stage = stageRef.current;
                    var draggable = stage.findOne(".draggableArrow");
-                   draggable.position({ x: 520, y: 55 });
+                   draggable.position({ x: 0, y: 0 });
                  }}
             />
             <Rect
@@ -331,20 +403,18 @@ const ToolBar = () => {
               name="draggableYes"
               draggable
                onDragEnd={(e) => {
-                 // push new circle to view
-                 // note that we must push circle first before returning draggable circle
-                 // because e.target.x returns draggable circle's positions
                  setYes((prevYes) => [
                    ...prevYes,
                    {
                      x: e.target.x(),
                      y: e.target.y(),
                      fill: e.target.fill(),
+                     name:`${e.target.name()}${yes?.length ? yes?.length+1 : 1}`,
+                     fontFamily: e.target.fontFamily(),
+                     text:e.target.text(),
+                     fontSize:e.target.fontSize(),
                    }
                  ]);
-
-                 // return draggable circle to original position
-                 // notice the dot (.) before "draggableCircle"
                  var stage = stageRef.current;
                  var draggable = stage.findOne(".draggableYes");
                  draggable.position({ x: 494, y: 85 });
@@ -366,6 +436,33 @@ const ToolBar = () => {
               x={488}
               y={120}
             />
+            <Text
+              fontSize={12}
+              text="HOLD"
+              fontFamily="Proxima Nova"
+              fill="#FEC106"
+              x={488}
+              y={120}
+              name="draggableHold"
+              draggable
+               onDragEnd={(e) => {
+                 setHold((prevHold) => [
+                   ...prevHold,
+                   {
+                     x: e.target.x(),
+                     y: e.target.y(),
+                     fill: e.target.fill(),
+                     name:`${e.target.name()}${hold?.length ? hold?.length+1 : 1}`,
+                     fontFamily: e.target.fontFamily(),
+                     text:e.target.text(),
+                     fontSize:e.target.fontSize(),
+                   }
+                 ]);
+                 var stage = stageRef.current;
+                 var draggable = stage.findOne(".draggableHold");
+                 draggable.position({ x: 488, y: 120 });
+               }}
+            />
             <Rect
               width={50}
               height={30}
@@ -382,37 +479,231 @@ const ToolBar = () => {
               x={484}
               y={155}
             />
-            {ellipse.map((eachEllipse, index) => (
-              <Ellipse
-                x={eachEllipse.x}
-                y={eachEllipse.y}
-                width={eachEllipse.width}
-                height={eachEllipse.height}
-                fill={eachEllipse.fill}
-                stroke={eachEllipse.stroke}
-                strokeWidth={eachEllipse.strokeWidth}
-              />
-        ))}
-        {rect.map((eachRect, index) => (
-          <Rect
-            x={eachRect.x}
-            y={eachRect.y}
-            width={eachRect.width}
-            height={eachRect.height}
-            fill={eachRect.fill}
-            stroke={eachRect.stroke}
-            strokeWidth={eachRect.strokeWidth}
+            <Text
+              fontSize={12}
+              text="REJECT"
+              fontFamily="Proxima Nova"
+              fill="#FF6F3B"
+              x={484}
+              y={155}
+              name="draggableReject"
+              draggable
+               onDragEnd={(e) => {
+                 setReject((prevReject) => [
+                   ...prevReject,
+                   {
+                     x: e.target.x(),
+                     y: e.target.y(),
+                     fill: e.target.fill(),
+                     name:`${e.target.name()}${reject?.length ? reject?.length+1 : 1}`,
+                     fontFamily: e.target.fontFamily(),
+                     text:e.target.text(),
+                     fontSize:e.target.fontSize(),
+                   }
+                 ]);
+                 var stage = stageRef.current;
+                 var draggable = stage.findOne(".draggableReject");
+                 draggable.position({ x: 484, y: 155 });
+               }}
+            />
+            <Rect
+              width={50}
+              height={30}
+              fill="#d7d5f6"
+              strokeWidth={1}
+              x={480}
+              y={180}
+            />
+            <Text
+              fontSize={32}
+              text="T"
+              fontFamily="Belgrano"
+              x={495}
+              y={182}
+            />
+            <Text
+              fontSize={32}
+              text="T"
+              fontFamily="Belgrano"
+              x={495}
+              y={182}
+              name="draggableText"
+              draggable
+               onDragEnd={(e) => {
+                 setText((prevText) => [
+                   ...prevText,
+                   {
+                     x: e.target.x(),
+                     y: e.target.y(),
+                     fill: e.target.fill(),
+                     name:`${e.target.name()}${text?.length ? text?.length+1 : 1}`,
+                     fontFamily: e.target.fontFamily(),
+                     text:'Double Click To Edit \n Tab To Confirm',
+                     fontSize:20,
+                     visible:false,
+                     id:text.length,
+                   }
+                 ]);
+
+                 var stage = stageRef.current;
+                 var draggable = stage.findOne(".draggableText");
+                 draggable.position({ x: 495, y: 182 });
+               }}
+            />
+          {ellipse.map((eachEllipse, index) => (
+            <Ellipse
+              x={eachEllipse.x}
+              y={eachEllipse.y}
+              width={eachEllipse.width}
+              height={eachEllipse.height}
+              fill={eachEllipse.fill}
+              stroke={eachEllipse.stroke}
+              strokeWidth={eachEllipse.strokeWidth}
+              name={eachEllipse.name}
+              draggable
+              onClick={()=>displayDelete(eachEllipse.x-15,eachEllipse.y-15,'ellipse',index)}
+            />
+          ))}
+          {rect.map((eachRect, index) => (
+            <Rect
+              x={eachRect.x}
+              y={eachRect.y}
+              width={eachRect.width}
+              height={eachRect.height}
+              fill={eachRect.fill}
+              stroke={eachRect.stroke}
+              strokeWidth={eachRect.strokeWidth}
+              name={eachRect.name}
+              draggable
+              onClick={()=>displayDelete(eachRect.x-15,eachRect.y-15,'rect',index)}
+            />
+          ))}
+          {diamond.map((eachDiamond,index) => (
+            <Line
+              x={eachDiamond.x}
+              y={eachDiamond.y}
+              points={[435, 20, 450, 10, 465, 20, 450, 30, 435, 20]}
+              closed
+              fill={eachDiamond.fill}
+              stroke={eachDiamond.stroke}
+              strokeWidth={eachDiamond.strokeWidth}
+              name={eachDiamond.name}
+              onClick={()=>displayDelete(eachDiamond.x-15,eachDiamond.y-15,'diamond',index)}
+              draggable
+            />
+          ))}
+          {slantingRect.map((eachSlantingRect,index) => (
+            <Line
+              x={eachSlantingRect.x}
+              y={eachSlantingRect.y}
+              points={[485, 30, 490, 10, 525, 10, 520, 30, 485, 30]}
+              closed
+              fill={eachSlantingRect.fill}
+              stroke={eachSlantingRect.stroke}
+              strokeWidth={eachSlantingRect.strokeWidth}
+              name={eachSlantingRect.name}
+              onClick={()=>displayDelete(eachSlantingRect.x-15,eachSlantingRect.y-15,'slantingRect',index)}
+              draggable
+            />
+          ))}
+          {arrow.map((eachArrow,index) => (
+            <Arrow
+              key={`arrow${index}`}
+              x={eachArrow.x}
+              y={eachArrow.y}
+              points={points[index] || [520, 55, 490, 55]}
+              onClick={()=>{handleArrowClick(eachArrow.name,index);displayDelete(eachArrow.x-15,eachArrow.y-15,'arrow',index);}}
+              fill={eachArrow.fill}
+              stroke={eachArrow.stroke}
+              strokeWidth={eachArrow.strokeWidth}
+              name={eachArrow.name}
+            />
+          ))}
+          {yes.map((eachYes,index) => (
+            <Text
+              x={eachYes.x}
+              y={eachYes.y}
+              fill={eachYes.fill}
+              name={eachYes.name}
+              fontFamily={eachYes.fontFamily}
+              fontSize={eachYes.fontSize}
+              text={eachYes.text}
+              onClick={()=>displayDelete(eachYes.x-15,eachYes.y-15,'yes',index)}
+              draggable
+            />
+          ))}
+          {hold.map((eachHold,index) => (
+            <Text
+              x={eachHold.x}
+              y={eachHold.y}
+              fill={eachHold.fill}
+              name={eachHold.name}
+              fontFamily={eachHold.fontFamily}
+              fontSize={eachHold.fontSize}
+              text={eachHold.text}
+              onClick={()=>displayDelete(eachHold.x-15,eachHold.y-15,'hold',index)}
+              draggable
+            />
+          ))}
+          {reject.map((eachReject,index) => (
+            <Text
+              x={eachReject.x}
+              y={eachReject.y}
+              fill={eachReject.fill}
+              name={eachReject.name}
+              fontFamily={eachReject.fontFamily}
+              fontSize={eachReject.fontSize}
+              text={eachReject.text}
+              onClick={()=>displayDelete(eachReject.x-15,eachReject.y-15,'reject',index)}
+              draggable
+            />
+          ))}
+          {text.map((eachText,index) => (
+            <>
+            {index !== selectedTextIndex && <Text
+              key={`text${index}`}
+              x={eachText.x}
+              y={eachText.y}
+              fill={eachText.fill}
+              name={eachText.name}
+              fontFamily={eachText.fontFamily}
+              fontSize={eachText.fontSize}
+              onDblClick={(e)=>handleTextDblClick(e,index)}
+              onClick={()=>{setIsTextSelected(true);displayDelete(eachText.x-15,eachText.y-15,'text',index);}}
+              text={eachText?.text}
+              draggable
+              />}
+            </>
+          ))}
+          {deleteValue?.bool &&
+            <Text
+              x={deleteValue.x}
+              y={deleteValue.y}
+              name="deleteButton"
+              text="Delete"
+              id="deleteText"
+              onClick={()=>onDelete()}
+            />
+          }
+          <TransformerComponent
+            selectedShapeName={selectedShapeName}
           />
-    ))}
-    {yes.map((eachYes, index) => (
-      <Rect
-        x={eachYes.x}
-        y={eachYes.y}
-        fill={eachYes.fill}
-      />
-))}
         </Layer>
       </Stage>
+
+      <textarea
+                key={`textarea${selectedTextIndex}`}
+                defaultValue={text[selectedTextIndex]?.text}
+                style={{
+                  display:displayTextArea,
+                  position: "absolute",
+                  top: 220+text[selectedTextIndex]?.y + "px",
+                  left: 350+text[selectedTextIndex]?.x + "px"
+                }}
+                onChange={e => handleTextEdit(e,selectedTextIndex)}
+                onKeyDown={e => handleTextareaKeyDown(e,selectedTextIndex)}
+              />
+      </div>
     );
   }
 

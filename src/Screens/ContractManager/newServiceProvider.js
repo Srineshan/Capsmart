@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button, RadioGroup, Radio, Switch } from '@blueprintjs/core';
-import { DateInput, IDateFormatProps } from "@blueprintjs/datetime";
+import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button, RadioGroup, Radio } from '@blueprintjs/core';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import style from './index.module.scss';
 
 const NewServiceProvider = ({getNewServiceProviderDialog}) => {
@@ -129,13 +130,25 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Site Level Responsibility*</div>
                     <div>
-                        <Switch label={"NO"} className={`${style.marginTop} ${style.textAlignLeft}`} />
+                        <FormControlLabel
+                            control={
+                                <Switch className={` ${style.textAlignLeft}`} />
+                            }
+                            className={`${style.switchFontStyle} ${style.flexLeft}`}
+                            label={"NO"}                        
+                        />
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Department Level Responsibility*</div>
                     <div>
-                        <Switch label={"NO"} className={`${style.marginTop} ${style.textAlignLeft}`}  />
+                        <FormControlLabel
+                            control={
+                                <Switch className={` ${style.textAlignLeft}`}  />
+                            }
+                            className={`${style.switchFontStyle} ${style.flexLeft}`}
+                            label={"NO"}                        
+                        />
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
