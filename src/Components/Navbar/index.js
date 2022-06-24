@@ -1,5 +1,6 @@
 import React from 'react';
 import logo from './../../images/metropolitan-hospital-logo.png';
+import TenetLogo from './../../images/Tenet_Health_logo.png';
 import NotificationsIcon from './../../images/notificationsIcon.png';
 import PrintIcon from './../../images/printIcon.png';
 import RedBackground from './../../images/redBackground.png';

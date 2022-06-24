@@ -5,9 +5,10 @@ import DoctorTeam from './../../images/doctorTeam.png';
 import HighlightedDoctor from './../../images/highlightedDoctor.png';
 import style from './index.module.scss';
 
-const AddContract = ({getAddContract, getNewContract}) => {
+const AddContract = ({getAddContract, getNewContract, getContractType}) => {
     const [selectedContract, setSelectedContract] = useState('Select...');
     const [selectedContractOnClick, setSelectedContractOnClick] = useState(false);
+    const [contractType, setContractType] = useState('Individual Contractor')
     return(
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
             <div className={style.spaceBetween}>
@@ -41,7 +42,7 @@ const AddContract = ({getAddContract, getNewContract}) => {
                         </select>
                 </div>
                 <div className={style.displayInRow}>
-                    <div className={`${style.contractCards} ${selectedContractOnClick && style.selectedContractCard}`} onClick={() => setSelectedContractOnClick(true)}>
+                    <div className={`${style.contractCards} ${contractType === "Individual Contractor" && style.selectedContractCard}`} onClick={() => {setSelectedContractOnClick(true);setContractType('Individual Contractor')}}>
                         <div className={style.alignCenter}>
                             <div>
                                 <img src={selectedContractOnClick ? HighlightedDoctor : Doctor} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract with No Prior Contract(s) with Entity' ? '' : style.reducedOpacity}`} />
@@ -51,7 +52,7 @@ const AddContract = ({getAddContract, getNewContract}) => {
                             </div>
                         </div>
                     </div>
-                    <div className={style.contractCards}>
+                    <div className={`${style.contractCards} ${contractType === "Multiple Contractor" && style.selectedContractCard}`} onClick={() => setContractType('Multiple Contractor')}>
                         <div className={style.alignCenter}>
                             <div>
                                 <img src={DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract with No Prior Contract(s) with Entity' ? '' : style.reducedOpacity}`} />
@@ -74,8 +75,8 @@ const AddContract = ({getAddContract, getNewContract}) => {
                     </div>
                 )}
             </div>
-            <div className={style.nextButtonPosition}>
-                <button className={style.nextButton} onClick={() => {getNewContract(true);getAddContract(false)}}>NEXT</button>
+            <div className={`${style.nextButtonPosition} ${style.marginTop20}`}>
+                <button className={style.nextButton} onClick={() => {getNewContract(true);getAddContract(false);getContractType(contractType)}}>NEXT</button>
             </div>
         </div>
     )

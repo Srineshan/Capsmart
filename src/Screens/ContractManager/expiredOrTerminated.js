@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import UserLogo from './../../images/userLogo.jpg';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
@@ -7,9 +7,27 @@ import RedWarning from './../../images/redWarning.png';
 import Bell from './../../images/bell.png';
 import ProgressBar from "@ramonak/react-progress-bar";
 import PageFooterIcon from './../../images/pageFooterIcon.png';
+import ThreeDot from './../../images/threeDot.png';
 import style from './index.module.scss';
 
 const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
+    const [showOptions, setShowOptions] = useState(false);
+    const menuRef = useRef(null);
+    useOptionsHide(menuRef);
+
+    function useOptionsHide(ref) {
+        useEffect(() => {
+          function handleClickOutside(event) {
+            if (ref.current && !ref.current.contains(event.target)) {
+              setShowOptions(false)
+            }
+          }
+          document.addEventListener("mousedown", handleClickOutside);
+          return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+          };
+        }, [ref]);
+      }
     return(
         <div className={style.margin20}>
             <div className={`${style.grid5}`}>
@@ -127,65 +145,74 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
                     </div>
                     <div>
                         <div className={`${style.tableHeader} ${style.marginTop40}`}>
-                            <input type="checkbox" className={style.checkBoxHeader} />
-                            <p className={style.tableHeaderFontStyle}>CONTRACT TYPE</p>
-                            <p className={style.tableHeaderFontStyle}>CONTRACT ID</p>
-                            <p className={style.tableHeaderFontStyle}>CONTRACT NAME</p>
+                            <p className={style.checkBoxHeader} ></p>
+                            <p className={`${style.tableHeaderFontStyle} ${style.marginLeft50}`}> TYPE</p>
+                            <p className={style.tableHeaderFontStyle}> ID</p>
+                            <p className={style.tableHeaderFontStyle}> NAME</p>
                             <p className={style.tableHeaderFontStyle}>TERMINATION DATE</p>
-                            <p className={style.tableHeaderFontStyle}>NEW CONTRACT ID</p>
+                            <p className={style.tableHeaderFontStyle}>NEW ID</p>
+                            <p className={style.tableHeaderFontStyle}> MANAGER</p>
                             <p className={style.tableHeaderFontStyle}>LAST UPDATED</p>
-                            <p className={style.tableHeaderFontStyle}>CONTRACT MANAGER</p>
+                            <p className={style.tableHeaderFontStyle}> ACTION</p>
                         </div>
                         <div className={`${style.tableData} ${style.displayInRow}`}>
-                            <div className={`${style.displayInRow} ${style.width10}`}>
-                                <input type="checkbox" className={style.checkBoxData} />
+                            <div className={`${style.displayInRow} ${style.width10} ${style.marginLeft30}`}>
                                 <img src={RedWarning} alt="warning" className={style.colorIconsStyle} />
                             </div>
                             <p className={style.tableDataFontStyle}>Multiple</p>
                             <p className={style.tableDataFontStyle}>7837428</p>
-                            <p className={style.tableDataFontStyle}>Lorem Ipsum </p>
+                            <p className={style.tableDataFontStyle}>Jane Smith MD</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>7837428</p>
+                            <p className={style.tableDataFontStyle}>Alex Ball MD</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
+                            <div className={style.tableDataFontStyle}>
+                                <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
+                            </div>
                         </div>
                         <div className={`${style.tableData} ${style.displayInRow}`}>
-                            <div className={`${style.displayInRow} ${style.width10}`}>
-                                <input type="checkbox" className={style.checkBoxData} />
+                            <div className={`${style.displayInRow} ${style.width10} ${style.marginLeft30}`}>
                             </div>
                             <p className={style.tableDataFontStyle}>Individual</p>
                             <p className={style.tableDataFontStyle}>7837428</p>
-                            <p className={style.tableDataFontStyle}>Lorem Ipsum </p>
+                            <p className={style.tableDataFontStyle}>PAMF</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>-</p>
+                            <p className={style.tableDataFontStyle}>Alex Ball MD</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
+                            <div className={style.tableDataFontStyle}>
+                                <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
+                            </div>
                         </div>
                         <div className={`${style.tableData} ${style.displayInRow}`}>
-                            <div className={`${style.displayInRow} ${style.width10}`}>
-                                <input type="checkbox" className={style.checkBoxData} />
+                            <div className={`${style.displayInRow} ${style.width10} ${style.marginLeft30}`}>
                                 <img src={RedWarning} alt="warning" className={style.colorIconsStyle} />
                             </div>
                             <p className={style.tableDataFontStyle}>Individual</p>
                             <p className={style.tableDataFontStyle}>7837428</p>
-                            <p className={style.tableDataFontStyle}>Lorem Ipsum </p>
+                            <p className={style.tableDataFontStyle}>LifeCare </p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>-</p>
+                            <p className={style.tableDataFontStyle}>Alex Ball MD</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
+                            <div className={style.tableDataFontStyle}>
+                                <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
+                            </div>
                         </div>
                         <div className={`${style.tableData} ${style.displayInRow}`}>
-                            <div className={`${style.displayInRow} ${style.width10}`}>
-                                <input type="checkbox" className={style.checkBoxData} />
+                            <div className={`${style.displayInRow} ${style.width10} ${style.marginLeft30}`}>
                                 <img src={RedWarning} alt="warning" className={style.colorIconsStyle} />
                             </div>
                             <p className={style.tableDataFontStyle}>Individual</p>
                             <p className={style.tableDataFontStyle}>7837428</p>
-                            <p className={style.tableDataFontStyle}>Lorem Ipsum </p>
+                            <p className={style.tableDataFontStyle}>Jeff Nunn MD </p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
                             <p className={style.tableDataFontStyle}>7837428</p>
+                            <p className={style.tableDataFontStyle}>Alex Ball MD</p>
                             <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <p className={style.tableDataFontStyle}>Lorem Ipsum</p>
+                            <div className={style.tableDataFontStyle}>
+                                <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
+                            </div>
                         </div>
                         <div className={style.spaceBetween}>
                             <p className={style.accountActivityStyle}>Last account activity: 30 days</p>

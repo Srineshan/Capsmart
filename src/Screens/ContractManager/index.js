@@ -22,6 +22,7 @@ const Contracts = () => {
     const [contractActivationDialog, setContractActivationDialog] = useState(false);
     const [cloneDialog, setCloneDialog] = useState(false);
     const [newContractFromClone, setNewContractFromClone] = useState(false);
+    const [contractType, setContractType] = useState('Individual Contractor')
 
     const getSelectedContract = (value) => {
         setSelectedContract(value);
@@ -55,11 +56,15 @@ const Contracts = () => {
         setContractActivationDialog(value);
     }
 
+    const getContractType = (value) => {
+        setContractType(value);
+    }
+
     return(
         addContract ? (
-            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} />
+            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} />
         ) : newContractFromClone ? (
-            <NewContractFromClone getNewContract={getNewContract} />
+            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} />
         ) : (
             <Fragment> 
                 <Navbar />
