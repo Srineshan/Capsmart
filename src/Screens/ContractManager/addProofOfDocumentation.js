@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Dialog, Classes, Icon, Intent, InputGroup, Checkbox, Switch, FileInput, RadioGroup, Radio } from '@blueprintjs/core';
+import { Dialog, Classes, Icon, Intent, InputGroup, Checkbox, FileInput, RadioGroup, Radio } from '@blueprintjs/core';
 import { DateInput } from "@blueprintjs/datetime";
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import style from './index.module.scss';
 
 const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
@@ -246,8 +248,14 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Certificate Copy Available</div>
                   <div className={`${style.displayInRow} `}>
-                    <Switch checked={certificateCopyAvbl} label={certificateCopyAvbl ? 'YES' : "NO"} className={`${style.marginTop} ${style.textAlignLeft}`} onChange={() => setCertificateCopyAvbl(!certificateCopyAvbl)}  />
-                    <InputGroup  leftElement={leftElement()} className={`${style.fullWidth} ${style.marginLeft50}`} />
+                    <FormControlLabel
+                        control={
+                          <Switch checked={certificateCopyAvbl} className={`${style.textAlignLeft}`} onChange={() => setCertificateCopyAvbl(!certificateCopyAvbl)}  />
+                        }
+                        className={`${style.switchFontStyle} ${style.flexLeft}`}
+                        label={certificateCopyAvbl ? 'YES' : "NO"}                 
+                    />
+                    <InputGroup  leftElement={leftElement()} className={`${style.fullWidth}`} />
                   </div>
                 </div>
                 </div>

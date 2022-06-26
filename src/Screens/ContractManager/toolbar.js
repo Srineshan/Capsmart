@@ -63,7 +63,7 @@ const ToolBar = () => {
 
   const displayTextArea = text[selectedTextIndex]?.visible?'block':'none'
 
-  const displayDelete = (x,y,name,index)=> {
+  const displayDelete = (x,y,name,index)=>{
     setDeleteValue({...deleteValue,bool:true,x:x,y:y,name:name,index:index})
   }
 
@@ -508,6 +508,33 @@ const ToolBar = () => {
                  var stage = stageRef.current;
                  var draggable = stage.findOne(".draggableHold");
                  draggable.position({ x: 488, y: 155 });
+               }}
+            />
+            <Text
+              fontSize={12}
+              text="HOLD"
+              fontFamily="Proxima Nova"
+              fill="#FEC106"
+              x={488}
+              y={120}
+              name="draggableHold"
+              draggable
+               onDragEnd={(e) => {
+                 setHold((prevHold) => [
+                   ...prevHold,
+                   {
+                     x: e.target.x(),
+                     y: e.target.y(),
+                     fill: e.target.fill(),
+                     name:`${e.target.name()}${hold?.length ? hold?.length+1 : 1}`,
+                     fontFamily: e.target.fontFamily(),
+                     text:e.target.text(),
+                     fontSize:e.target.fontSize(),
+                   }
+                 ]);
+                 var stage = stageRef.current;
+                 var draggable = stage.findOne(".draggableHold");
+                 draggable.position({ x: 488, y: 120 });
                }}
             />
             <Rect

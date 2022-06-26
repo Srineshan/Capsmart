@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Dialog, Classes, Icon, Intent, InputGroup, EditableText, Switch , RadioGroup, Radio, Checkbox} from '@blueprintjs/core';
+import React, { useState, useEffect } from 'react';
+import { Dialog, Classes, Icon, Intent, InputGroup, EditableText, RadioGroup, Radio, Checkbox} from '@blueprintjs/core';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import style from './index.module.scss';
 import SendEmailUserList from './mailUser';
 
-const AddServiceProvided = ({getAddServiceDialog}) => {
+const AddServiceProvided = ({getAddServiceDialog, getAddOn}) => {
   const [sendEmailNotification, setSendEmailNotification] = useState(false);
   const [activityType, setActivityType] = useState('OutPatient Surgery Clinic Session');
   const [activityContractedFor, setActivityContractedFor] = useState('Clinic Session Blocks');
@@ -23,6 +25,17 @@ const AddServiceProvided = ({getAddServiceDialog}) => {
         <button className={`${style.textElement}`} >{text}</button>
       )
     }
+
+    useEffect(() => {
+        if(activityContractedFor === "Add-On Services Allowed Upon Request Approval"
+        || activityContractedFor === "Department Oversight Role & Responsibility"
+        ||activityContractedFor === "Administrative / Miscellaneous Services"){
+            getAddOn(true);
+            console.log('entered')
+        } else {
+            getAddOn(false);
+        }
+    }, [activityContractedFor]);
 
     return(
       <div>
@@ -53,7 +66,13 @@ const AddServiceProvided = ({getAddServiceDialog}) => {
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>
                     <div className={`${style.displayInRow} `}>
-                        <Switch checked={isDesignatedSpecificContractor} label={isDesignatedSpecificContractor ? 'YES' : 'NO'} className={`${style.marginTop10} ${style.textAlignLeft}`} onChange={()=>setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor)}/>
+                        <FormControlLabel
+                            control={
+                                <Switch checked={isDesignatedSpecificContractor} className={`${style.textAlignLeft}`} onChange={()=>setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor)}/>
+                            }
+                            className={`${style.switchFontStyle} ${style.flexLeft} ${style.marginTop10} `}
+                            label={isDesignatedSpecificContractor ? 'YES' : 'NO'}                   
+                        />
                         {isDesignatedSpecificContractor&&<select
                             name="class"
                             id="Class"
@@ -535,7 +554,7 @@ const AddServiceProvided = ({getAddServiceDialog}) => {
                   </div>
                   :activityContractedFor === "Clinic Session Blocks" ? (
                     <div>
-                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Specify Activity Type</div>
                             <div>
                                 <select
@@ -555,7 +574,7 @@ const AddServiceProvided = ({getAddServiceDialog}) => {
                                         </option>
                                 </select>
                             </div>
-                        </div>
+                        </div> */}
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Regular {activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Schedule*</div>
                             <div className={style.displayInRow}>
@@ -608,7 +627,15 @@ const AddServiceProvided = ({getAddServiceDialog}) => {
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Additional {activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Schedule*</div>
                             <div className={style.displayInRow}>
-                                <Switch checked={true} label={'YES'} className={`${style.marginTop} ${style.textAlignLeft} ${style.threeFieldWidth}`} />
+                                <div className={`${style.threeFieldWidth}`} >
+                                    <FormControlLabel
+                                        control={
+                                            <Switch checked={true} className={` ${style.textAlignLeft}`} />
+                                        }
+                                        className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                        label={'YES'}                  
+                                    />
+                                </div>
                                 <InputGroup value="2" className={`${style.marginLeft20} ${style.threeFieldWidth}`} />
                                 <select
                                     name="class"

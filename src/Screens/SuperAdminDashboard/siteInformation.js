@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { InputGroup, Icon, Intent, Switch, TagInput, Dialog, Classes } from '@blueprintjs/core';
+import { InputGroup, Icon, Intent, TagInput, Dialog, Classes } from '@blueprintjs/core';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
 import {Link} from 'react-router-dom';
 import Step1 from './../../images/step12.png';
@@ -188,7 +190,13 @@ const SiteInformation = () => {
                                     <div className={style.extentionLableStyle}>Setup Department*</div>
                                     <div>
                                         <div className={style.displayInRow}>
-                                            <Switch checked={departmentSpecific} label={departmentSpecific ? 'YES' : "NO"} className={`${style.marginTop} ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
+                                            }
+                                            className={style.switchFontStyle}
+                                            label={departmentSpecific ? 'YES' : "NO"}
+                                        />
                                             {departmentSpecific && (
                                                 <>
                                                     <DatalistInput items={items} placeholder="Enter Departments" onSelect={onSelect} onChange={(e) => {setSelectDepartment(e.target.value); setSiteID('XX689- 64768')} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />

@@ -1,6 +1,17 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { TextArea, InputGroup, RadioGroup, Radio, Switch, Icon, Intent, TagInput, EditableText } from '@blueprintjs/core';
+import { TextArea, InputGroup, RadioGroup, Radio, Icon, Intent, TagInput, EditableText } from '@blueprintjs/core';
 import DatalistInput from 'react-datalist-input';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { DateInput } from "@blueprintjs/datetime";
+import Chip from '@mui/material/Chip';
+import { useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import ListItemText from '@mui/material/ListItemText';
+import Checkbox from '@mui/material/Checkbox';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import AddNewContractManager from './addNewContractManager';
 import Alert from './alert';
 import DeleteExecutedContractDialog from './deleteExecutedContractDialog';
@@ -18,13 +29,43 @@ const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
 const VALUES3 = ['Activity Reviewer'];
 const VALUES4 = ['Activity 1', 'Activity 2', 'Activity 3'];
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
-const NewContractFromClone = ({getNewContract}) => {
+const names = [
+  'Activity Logger',
+  'Reviewer',
+  'Approver',
+  'Accounts Payable',
+  'Contracts manager',
+  'Report viewer',
+];
+
+function getStyles(name, personName, theme) {
+  return {
+    fontWeight:
+      personName.indexOf(name) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
+
+const NewContractFromClone = ({getNewContract, contractType}) => {
     const [selectedContract, setSelectedContract] = useState('Select...');
     const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('Select Value');
     const [item, setItem] = useState();
+    const [priorContractItem, setPriorContractItem] = useState();
     const [selectContractManager, setSelectContractManager] = useState('');
-    const [selectContractInfo, setSelectContractInfo] = useState('Individual Contractor');
+    const [selectPriorContractID, setSelectPriorContractID] = useState('');
+    const [selectContractInfo, setSelectContractInfo] = useState(contractType);
     const [compensation, setCompensation] = useState('RVU Based');
     const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
@@ -38,6 +79,9 @@ const NewContractFromClone = ({getNewContract}) => {
     const [departmentLevel, setDepartmentLevel] = useState(false);
     const [timeSheetCount, setTimeSheetCount] = useState('1');
     const [applyWorkflowToAll, setApplyWorkflowToAll] = useState(true);
+    const [contractTermPeriodFrom, setContractTermPeriodFrom] = useState(new Date());
+    const [contractTermPeriodTo, setContractTermPeriodTo] = useState(new Date());
+    const [addOn, setAddOn] = useState(false);
     let completedSteps = [];
     const [tags, setTags] = useState(VALUES);
     const [tagSet2, setTagSet2] = useState(VALUES2);
@@ -51,7 +95,20 @@ const NewContractFromClone = ({getNewContract}) => {
     const [viewPage6, setViewPage6] = useState(false);
     const [viewPage7, setViewPage7] = useState(false);
     const [viewPage8, setViewPage8] = useState(false);
+    const [currentPage, setCurrentPage] = useState('Contract ID & Term Limit');
     const [isMultipleContract, setIsMultipleContract] = useState(false);
+    const theme = useTheme();
+    const [personName, setPersonName] = useState([]);
+
+    const handleChange = (event) => {
+        const {
+        target: { value },
+        } = event;
+        setPersonName(
+        // On autofill we get a stringified value.
+        typeof value === 'string' ? value.split(',') : value,
+        );
+    };
 
     const getAddNewManagerDialog = (value) => {
         setAddNewManagerDialog(value);
@@ -67,11 +124,16 @@ const NewContractFromClone = ({getNewContract}) => {
 
     const getViewPage6 = (value) => {
         setViewPage6(value);
+        setCurrentPage('Payment & Compensation');
     }
 
     const getDeleteExecutedContractDialog = (value) => {
         setDeleteExecutedContractDialog(value);
         console.log(value);
+    }
+
+    const getAddOn = (value) => {
+        setAddOn(value);
     }
 
     useEffect(() => {
@@ -80,7 +142,7 @@ const NewContractFromClone = ({getNewContract}) => {
 
       console.log(isMultipleContract, selectContractInfo)
 
-    const leftElement = () => {
+    const uploadRightElement = () => {
         return(
             <button className={style.uploadButtonStyle} >UPLOAD</button>
         )
@@ -92,10 +154,22 @@ const NewContractFromClone = ({getNewContract}) => {
         { name: 'Saaz - Emergency (General Surgeon)' },
       ];
 
+      const priorContractId = [
+        { name: 'Contract 1' },
+        { name: 'Contract 2' },
+        { name: 'Contract 3' },
+      ];
+
       const onSelect = useCallback((selectedItem) => {
         console.log('selectedItem', selectedItem);
         setItem(selectedItem);
         setSelectContractManager('');
+      }, []);
+
+      const onSelectContractId = useCallback((selectedItem) => {
+        console.log('selectedItem', selectedItem);
+        setPriorContractItem(selectedItem);
+        setSelectPriorContractID('');
       }, []);
 
       const handleTagsAdd = values => {
@@ -168,6 +242,16 @@ const NewContractFromClone = ({getNewContract}) => {
         [item],
       );
 
+      const priorContractItems = useMemo(
+        () =>
+          priorContractId.map((option) => ({
+            id: option.name,
+            value: option.name,
+            ...option,
+          })),
+        [priorContractItem],
+      );
+
     console.log(selectContractManager, completedSteps);
 
     return(
@@ -176,19 +260,10 @@ const NewContractFromClone = ({getNewContract}) => {
                 <p className={style.welcomeStyle}>New Contract With No Prior Contract(s) With Entity - (From Clone)</p>
                 <div className={style.displayInRow}>
                     <img src={WritingFile} alt="Writing File" className={`${style.smallIcons} ${style.reduceTop10}`} />
-                    <select
-                        name="class"
-                        id="Class"
+                    <InputGroup
                         value={selectContractInfo}
-                        onChange={(e) => setSelectContractInfo(e.target.value)}
-                        className={`${style.contractWidth} ${style.marginLeft20} ${style.reduceTop10} ${style.marginBottom}`}>
-                            <option value="Individual Contractor" >
-                            Individual Contractor
-                            </option>
-                            <option value="Multiple Contractor" >
-                            Multiple Contractor
-                            </option>
-                    </select>
+                        className={`${style.contractWidth} ${style.marginLeft20} ${style.reduceTop10} ${style.marginBottom}`} />
+                    <Icon icon="cross" size={25} intent={Intent.DANGER} className={style.newContractCrossStyle} onClick={() => getNewContract(false)}  />
                 </div>
             </div>
             <div className={style.welcomeBorder}></div>
@@ -219,8 +294,14 @@ const NewContractFromClone = ({getNewContract}) => {
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage6 ? style.completedEntityCardStyle : viewPage5 ? style.selectedContractEntityStyle : ''}`}>
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${((viewPage5 && addOn) || viewPage6) ? style.completedEntityCardStyle : viewPage5 ? style.selectedContractEntityStyle : ''}`}>
                         Contracted Services Specification
+                        {((viewPage5 && addOn) || viewPage6) && (
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
+                    </div>
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage6 ? style.completedEntityCardStyle : addOn ? style.selectedContractEntityStyle : ''}`}>
+                        Contracted Add on service specification
                         {viewPage6 && (
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
@@ -280,7 +361,13 @@ const NewContractFromClone = ({getNewContract}) => {
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Apply Workflow To All Contractor*</div>
                                     <div className={style.displayInRow}>
-                                        <Switch checked={applyWorkflowToAll} label={applyWorkflowToAll ? 'YES' : "NO"} className={`${style.marginTop15} ${style.textAlignLeft} ${style.fourFieldWidth}`} onChange={() => setApplyWorkflowToAll(!applyWorkflowToAll)}  />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch checked={applyWorkflowToAll} className={` ${style.textAlignLeft} ${style.fourFieldWidth}`} onChange={() => setApplyWorkflowToAll(!applyWorkflowToAll)}  />
+                                            }
+                                            className={`${style.switchFontStyle}`}
+                                            label={applyWorkflowToAll ? 'YES' : "NO"}                        
+                                        />
                                         {!applyWorkflowToAll && (
                                             <div className={`${style.displayInRow} ${style.fullWidth}`}>
                                                 <div className={style.threeFieldWidth}>
@@ -340,7 +427,7 @@ const NewContractFromClone = ({getNewContract}) => {
                                             <TextArea className={style.fullWidth} placeholder="Description" />
                                         </div>
                                         <div className={`${style.flowChartBoxStyle} ${style.marginTop20}`}>
-
+                                            <ToolBar />
                                         </div>
                                     </div>
                                 </div>
@@ -348,7 +435,7 @@ const NewContractFromClone = ({getNewContract}) => {
                         </div>
                         <div className={`${style.floatRight} ${style.marginTop20}`}>
                             <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> setViewPage8(true)}>CONTINUE</button>
+                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {setViewPage8(true);setCurrentPage('Timesheet Processing Workflow')}}>CONTINUE</button>
                         </div>
                     </div>
                 ) : viewPage7 ? (
@@ -455,7 +542,13 @@ const NewContractFromClone = ({getNewContract}) => {
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Contractor Business Contact Same As Contractor*</div>
                                 <div className={`${style.displayInRow}  `}> 
-                                    <Switch checked={true} label={'YES'} className={`${style.textAlignLeft} ${style.marginTop20}`} onChange={() => setSameAsContractor(!sameAsContractor)} />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch checked={true} className={`${style.textAlignLeft}`} onChange={() => setSameAsContractor(!sameAsContractor)} />
+                                        }
+                                        className={`${style.switchFontStyle}`}
+                                        label={'YES'}                        
+                                    />
                                     {timeSheetCount === '1' && (
                                         <div className={style.displayInRow}>
                                             <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20} ${style.marginTop15}`} value="HH" />
@@ -535,7 +628,7 @@ const NewContractFromClone = ({getNewContract}) => {
                         </div>
                         <div className={`${style.floatRight} ${style.marginTop20}`}>
                             <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> setViewPage8(true)}>CONTINUE</button>
+                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {setViewPage8(true);setCurrentPage('Timesheet Processing Workflow')}}>CONTINUE</button>
                         </div>
                     </div>
                 ) : viewPage6 ? (
@@ -635,11 +728,11 @@ const NewContractFromClone = ({getNewContract}) => {
                         </div>
                         <div className={`${style.floatRight} ${style.marginTop20}`}>
                             <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> setViewPage7(true)}>CONTINUE</button>
+                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {setViewPage7(true);setCurrentPage('Timesheet Submission Terms')}}>CONTINUE</button>
                         </div>
                     </div>
                 ) : viewPage5 ?
-                  <ServiceSpecification getViewPage6={getViewPage6} />
+                  <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} />
                   :viewPage4 ? (
                     <div className={style.cloneBlockStyle}>
                     <div className={style.tableHeight}>
@@ -695,7 +788,7 @@ const NewContractFromClone = ({getNewContract}) => {
                     </div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
                         <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{setViewPage5(true)}}>CONTINUE</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{setViewPage5(true);setCurrentPage('Contracted Services Specification')}}>CONTINUE</button>
                     </div>
                 </div>
                 ) : viewPage3 ? (
@@ -704,10 +797,20 @@ const NewContractFromClone = ({getNewContract}) => {
                             {selectContractInfo === "Individual Contractor" && (
                                 <div className={`${style.extentionGrid}`}>
                                     <div className={style.extentionLableStyle}>Contractor Business Contact Same As Contractor*</div>
-                                    <Switch checked={sameAsContractor} label={sameAsContractor ? 'YES' : 'NO'} className={`${style.marginTop20} ${style.textAlignLeft}`} onChange={() => setSameAsContractor(!sameAsContractor)} />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch checked={sameAsContractor} className={`${style.textAlignLeft}`} onChange={() => setSameAsContractor(!sameAsContractor)} />
+                                        }
+                                        className={`${style.switchFontStyle} ${style.marginTop}`}
+                                        label={sameAsContractor ? 'YES' : 'NO'}                      
+                                    />
                                 </div>
                             )}
-                            <div className={`${style.extentionGrid} ${selectContractInfo === "Individual Contractor" && style.marginTop20}`}>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Business Entity Name*</div>
+                                <InputGroup className={style.fullWidth} value="Text" />
+                            </div>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Contractor NPIN*</div>
                                 <div className={style.twoCol}>
                                     <InputGroup className={style.fullWidth} value={sameAsContractor ? "Value" : "Alphanumeric" } />
@@ -731,10 +834,6 @@ const NewContractFromClone = ({getNewContract}) => {
                                         <Radio label="Missing" value="Missing"  />
                                     </RadioGroup>
                                 </div>
-                            </div>
-                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Business Entity Name*</div>
-                                <InputGroup className={style.fullWidth} value="Text" />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Contractor Business Contact*</div>
@@ -762,7 +861,13 @@ const NewContractFromClone = ({getNewContract}) => {
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Register Business Contact With App User Role*</div>
                                 <div className={style.displayInRow}>
-                                    <Switch checked={true} label={'YES'} className={`${style.marginTop15} ${style.textAlignLeft}`} />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch checked={true} className={`${style.textAlignLeft}`} />
+                                        }
+                                        className={`${style.switchFontStyle}`}
+                                        label={'YES'}                      
+                                    />
                                     <select
                                         name="class"
                                         id="Class"
@@ -789,14 +894,39 @@ const NewContractFromClone = ({getNewContract}) => {
                         </div>
                         <div className={`${style.floatRight} ${style.marginTop20}`}>
                             <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> setViewPage4(true)}>CONTINUE</button>
+                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {setViewPage4(true);setCurrentPage('Documentation Proof Required')}}>CONTINUE</button>
                         </div>
                     </div>
                 )
                 : selectContractInfo === "Individual Contractor" && viewPage2 ? (
                 <div className={style.cloneBlockStyle}>
                     <div className={`${style.newContractFromCloneBoxStyle}`}>
-                        <div className={`${style.extentionGrid}`}>
+                    <div className={`${style.extentionGrid}`}>
+                        <div className={style.extentionLableStyle}>Service Provider Type*</div>
+                            <div className={style.grid3}>
+                                <select
+                                    name="class"
+                                    id="Class"
+                                    className={style.fullWidth}>
+                                        <option value="Text" >
+                                        Text
+                                        </option>
+                                        <option value="Physician" >
+                                        Physician
+                                        </option>
+                                        <option value="Nurse" >
+                                        Nurse
+                                        </option>
+                                        <option value="Admin Staff" >
+                                        Admin Staff
+                                        </option>
+                                        <option value="Other" >
+                                        Other
+                                        </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>NPIN*</div>
                             <div className={style.grid3}>
                             <InputGroup className={style.fullWidth}/>
@@ -811,7 +941,7 @@ const NewContractFromClone = ({getNewContract}) => {
                                 inline={true}
                                 className={`${style.marginTop} ${style.reduce30Left}`}
                             >
-                                <Radio label="Not Available" value="Not Available" />
+                                <Radio label="NA" value="Not Available" />
                             </RadioGroup>
                             </div>
                         </div>
@@ -837,31 +967,6 @@ const NewContractFromClone = ({getNewContract}) => {
                             </div>
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Service Provider Type*</div>
-                            <div className={style.grid3}>
-                                <select
-                                    name="class"
-                                    id="Class"
-                                    className={style.fullWidth}>
-                                        <option value="Text" >
-                                        Text
-                                        </option>
-                                        <option value="Physician" >
-                                        Physician
-                                        </option>
-                                        <option value="Nurse" >
-                                        Nurse
-                                        </option>
-                                        <option value="Admin Staff" >
-                                        Admin Staff
-                                        </option>
-                                        <option value="Other" >
-                                        Other
-                                        </option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Email Contractor id*</div>
                             <div className={style.displayInRow}>
                                 <InputGroup value="Enter entity specific email" className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`}/>
@@ -869,7 +974,7 @@ const NewContractFromClone = ({getNewContract}) => {
                                     inline={true}
                                     className={`${style.marginTop} ${style.marginLeft20}`}
                                 >
-                                    <Radio label="Not Available" value="Not Available" />
+                                    <Radio label="NA" value="Not Available" />
                                 </RadioGroup>
                             </div>
                         </div>
@@ -882,7 +987,7 @@ const NewContractFromClone = ({getNewContract}) => {
                                 className={`${style.marginTop} ${style.leftAlign}`}
                                 selectedValue={"Missing"}
                             >
-                                <Radio label="Not Available" value="Not Available" />
+                                <Radio label="NA" value="Not Available" />
                             </RadioGroup>
                             </div>
                         </div>
@@ -897,7 +1002,15 @@ const NewContractFromClone = ({getNewContract}) => {
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Site Level Responsibility*</div>
                             <div>
-                                <Switch checked={siteLevel} label={siteLevel ? 'YES' : "NO"} className={`${style.marginTop} ${style.textAlignLeft}`} onChange={() => setSiteLevel(!siteLevel)}  />
+                                <div className={style.flexLeft}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch checked={siteLevel} className={`${style.flexLeft}`} onChange={() => setSiteLevel(!siteLevel)}  />
+                                        }
+                                        className={`${style.switchFontStyle} ${style.marginTop}`}
+                                        label={siteLevel ? 'YES' : "NO"}                   
+                                    />
+                                </div>
                                 {siteLevel && (
                                     <div className={`${style.siteLevelBoxStyle}`}>
                                         <div className={`${style.siteLevelGrid}`}>
@@ -913,6 +1026,21 @@ const NewContractFromClone = ({getNewContract}) => {
                                                     </option>
                                             </select>
                                         </div>
+                                        {selectedContract === "Multiple Contractor" && (
+                                            <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
+                                                <div className={style.marginTop}>Site*</div>
+                                                <select
+                                                    name="class"
+                                                    id="Class"
+                                                    // value={selectedContractContinuationPolicy || 'Select...'}
+                                                    // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                                    className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
+                                                        <option value="type or select" >
+                                                        type or select
+                                                        </option>
+                                                </select>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -920,43 +1048,68 @@ const NewContractFromClone = ({getNewContract}) => {
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Department Level Responsibility*</div>
                             <div>
-                                <Switch checked={departmentLevel} label={departmentLevel ? 'YES' : "NO"} className={`${style.marginTop} ${style.textAlignLeft}`} onChange={() => setDepartmentLevel(!departmentLevel)}  />
-                                {departmentLevel && (
-                                    <div className={`${style.renewalBoxStyle}`}>
-                                        <div className={`${style.siteLevelGrid}`}>
-                                            <div className={style.marginTop}>Department*</div>
-                                            <select
-                                                name="class"
-                                                id="Class"
-                                                // value={selectedContractContinuationPolicy || 'Select...'}
-                                                // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
-                                                className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                    <option value="Department" >
-                                                     Department
-                                                    </option>
-                                            </select>
+                                <div className={style.flexLeft}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch checked={departmentLevel} className={`${style.flexLeft}`} onChange={() => setDepartmentLevel(!departmentLevel)}  />
+                                        }
+                                        className={`${style.switchFontStyle} ${style.marginTop}`}
+                                        label={departmentLevel ? 'YES' : "NO"}                 
+                                    />
+                                </div>
+                                <div>
+                                    {departmentLevel && (
+                                        <div className={`${style.departmentLevelBoxStyle}`}>
+                                            <div className={`${style.siteLevelGrid}`}>
+                                                <div className={style.marginTop}>Department*</div>
+                                                <select
+                                                    name="class"
+                                                    id="Class"
+                                                    // value={selectedContractContinuationPolicy || 'Select...'}
+                                                    // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                                    className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
+                                                        <option value="Department" >
+                                                        Department
+                                                        </option>
+                                                </select>
+                                            </div>
+                                            <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
+                                                <div className={style.marginTop}>Title*</div>
+                                                <select
+                                                    name="class"
+                                                    id="Class"
+                                                    // value={selectedContractContinuationPolicy || 'Select...'}
+                                                    // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                                    className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
+                                                        <option value="type or select" >
+                                                        type or select
+                                                        </option>
+                                                </select>
+                                            </div>
+                                            {selectedContract === "Multiple Contractor" && (
+                                                <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
+                                                    <div className={style.marginTop}>Site*</div>
+                                                    <select
+                                                        name="class"
+                                                        id="Class"
+                                                        // value={selectedContractContinuationPolicy || 'Select...'}
+                                                        // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
+                                                            <option value="type or select" >
+                                                            type or select
+                                                            </option>
+                                                    </select>
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
-                                            <div className={style.marginTop}>Title*</div>
-                                            <select
-                                                name="class"
-                                                id="Class"
-                                                // value={selectedContractContinuationPolicy || 'Select...'}
-                                                // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
-                                                className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                    <option value="type or select" >
-                                                    type or select
-                                                    </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
                             <div>
-                                <TagInput
+                                {/* <TagInput
                                     values={activityTags}
                                     onAdd={handleActivityTagsAdd}
                                     onRemove={handleActivityTagsRemove}
@@ -964,15 +1117,42 @@ const NewContractFromClone = ({getNewContract}) => {
                                     addOnBlur={true}
                                     addOnPaste={true}
                                     tagProps={getTagProps}
-                                    leftElement={leftElement}
                                     rightElement={rightIconElement}
-                                />
+                                /> */}
+                                <FormControl sx={{ m: 1, width: '100%' }}>
+                                    <Select
+                                    labelId="demo-multiple-chip-label"
+                                    id="demo-multiple-chip"
+                                    multiple
+                                    value={personName}
+                                    onChange={handleChange}
+                                    renderValue={(selected) => (
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                        {selected.map((value) => (
+                                            <Chip key={value} label={value} />
+                                        ))}
+                                        </Box>
+                                    )}
+                                    MenuProps={MenuProps}
+                                    >
+                                    {names.map((name) => (
+                                        <MenuItem
+                                        key={name}
+                                        value={name}
+                                        style={getStyles(name, personName, theme)}
+                                        >
+                                            <Checkbox checked={personName.indexOf(name) > -1} />
+                                            <ListItemText primary={name} />
+                                        </MenuItem>
+                                    ))}
+                                    </Select>
+                                </FormControl>
                             </div>
                         </div>
                     </div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
                         <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {setViewPage3(true)}}>CONTINUE</button>
+                        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {setViewPage3(true);setCurrentPage('Contractor Business Entity')}}>CONTINUE</button>
                     </div>
                 </div>
                 ) : (selectContractInfo === "Individual Contractor" && viewPage1) ? (
@@ -995,15 +1175,16 @@ const NewContractFromClone = ({getNewContract}) => {
                                 </RadioGroup>
                             </div>
                         </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <div className={`${style.extentionGrid} ${style.marginTop20} ${contractType === "Individual Contractor" && style.disabledView} `}>
                             <div className={style.extentionLableStyle}>Prior Contract ID*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup className={style.entityFieldWidth} placeholder="Search by CID / Name" />
+                                <DatalistInput items={priorContractItems} onSelect={onSelectContractId} onChange={(e) => setSelectPriorContractID(e.target.value) } className={style.selectFieldWidth} placeholder="Search by CID / Name" />
+                                {/* <InputGroup className={style.entityFieldWidth} placeholder="Search by CID / Name" /> */}
                                 <RadioGroup
                                     inline={true}
                                     className={`${style.marginTop} ${style.marginLeft20}`}
                                 >
-                                    <Radio label="Not Available" value="Not Available" />
+                                    <Radio label="NA" value="Not Available" />
                                 </RadioGroup>
                             </div>
                         </div>
@@ -1038,7 +1219,18 @@ const NewContractFromClone = ({getNewContract}) => {
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Fully Executed Contract on File*</div>
                             <div>
-                                <Switch checked={fullyExecutedContract} label={fullyExecutedContract ? 'YES' : "NO"} className={`${style.marginTop} ${style.textAlignLeft}`} onChange={() => setFullyExecutedContract(!fullyExecutedContract)}  />
+                                <div className={`${style.spaceBetween}`}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch checked={fullyExecutedContract} className={`${style.floatLeft}`} onChange={() => setFullyExecutedContract(!fullyExecutedContract)}  />
+                                        }
+                                        className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
+                                        label={fullyExecutedContract ? 'YES' : "NO"}                
+                                    />
+                                    {fullyExecutedContract && (
+                                        <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
+                                    )}
+                                </div>
                                 {fullyExecutedContract && (
                                     <div>
                                         <div className={style.reduce10Left}>
@@ -1048,16 +1240,28 @@ const NewContractFromClone = ({getNewContract}) => {
                                                 value={selectedContract || 'Select...'}
                                                 onChange={(e) => setSelectedContract(e.target.value)}
                                                 className={`${style.fullWidth} ${style.marginLeft20} `}>
-                                                    <option value="" >
-                                                    Select Type of Document
+                                                    <option value="Agreement Draft" >
+                                                    Agreement Draft
+                                                    </option>
+                                                    <option value="Executed Agreement" >
+                                                    Executed Agreement
+                                                    </option>
+                                                    <option value="Appendix Addendum" >
+                                                    Appendix Addendum
+                                                    </option>
+                                                    <option value="Schedule" >
+                                                    Schedule
+                                                    </option>
+                                                    <option value="Attachment " >
+                                                    Attachment 
                                                     </option>
                                             </select>
                                         </div>
                                         <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} value="Document Name" />
                                         <TextArea rows={4} value="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} />
-                                        <div className={`${style.displayInRow} ${style.marginTop10}`}>
-                                            <InputGroup  leftElement={leftElement()} className={style.marginLeft20} className={style.fullWidth} />
-                                            <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
+                                        <div className={`${style.floatRight} ${style.displayInRow} ${style.marginTop10}`}>
+                                            <div></div>
+                                            <InputGroup  rightElement={uploadRightElement()} className={style.marginLeft20} className={style.fullWidth} />
                                         </div>
                                     </div>
                                 )}
@@ -1067,7 +1271,13 @@ const NewContractFromClone = ({getNewContract}) => {
                             <div className={style.extentionLableStyle}>Site Specific Contract*</div>
                             <div>
                                 <div className={style.displayInRow}>
-                                    <Switch checked={siteSpecific} label={siteSpecific ? 'YES' : "NO"} className={`${style.marginTop} ${style.textAlignLeft}`} onChange={() => setSiteSpecific(!siteSpecific)}  />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch checked={siteSpecific} className={`${style.textAlignLeft}`} onChange={() => setSiteSpecific(!siteSpecific)}  />
+                                        }
+                                        className={`${style.switchFontStyle}`}
+                                        label={siteSpecific ? 'YES' : "NO"}             
+                                    />
                                     {siteSpecific && (
                                         <div className={style.displayInRow}>
                                             <DatalistInput items={items} placeholder="Select Sites" onSelect={onSelect} onChange={(e) => setSelectContractManager(e.target.value) } className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
@@ -1094,10 +1304,16 @@ const NewContractFromClone = ({getNewContract}) => {
                             <div className={style.extentionLableStyle}>Department Specific Contract*</div>
                             <div>
                                 <div className={style.displayInRow}>
-                                    <Switch checked={departmentSpecific} label={departmentSpecific ? 'YES' : "NO"} className={`${style.marginTop} ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
+                                        }
+                                        className={`${style.switchFontStyle}`}
+                                        label={departmentSpecific ? 'YES' : "NO"}              
+                                    />
                                     {departmentSpecific && (
                                         <div className={style.displayInRow}>
-                                            <DatalistInput items={items} placeholder="Select Sites" onSelect={onSelect} onChange={(e) => setSelectContractManager(e.target.value) } className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
+                                            <DatalistInput items={items} placeholder="Select Departments" onSelect={onSelect} onChange={(e) => setSelectContractManager(e.target.value) } className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
                                             <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition}>+</span></div>
                                         </div>
                                     )}
@@ -1120,9 +1336,24 @@ const NewContractFromClone = ({getNewContract}) => {
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Contract Term Period*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value="MM-DD-YYYY" />
+                                <DateInput
+                                    formatDate={date => date.toLocaleDateString()}
+                                    parseDate={str => new Date(str)}
+                                    placeholder={"MM-DD-YYYY"}
+                                    value={contractTermPeriodFrom}
+                                    onChange={(e)=> setContractTermPeriodFrom(e) }
+                                    minDate={new Date()}
+                                    maxDate={contractTermPeriodTo}
+                                />
                             <p className={style.toStyle}>To</p>
-                                <InputGroup value="MM-DD-YYYY" />
+                                <DateInput
+                                    formatDate={date => date.toLocaleDateString()}
+                                    parseDate={str => new Date(str)}
+                                    placeholder={"MM-DD-YYYY"}
+                                    value={contractTermPeriodTo}
+                                    onChange={(e)=> setContractTermPeriodTo(e) }
+                                    minDate={contractTermPeriodFrom}
+                                />
                             </div>
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -1178,8 +1409,8 @@ const NewContractFromClone = ({getNewContract}) => {
                                                 // value={selectedContractContinuationPolicy || 'Select...'}
                                                 // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
                                                 className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                    <option value="Select Value" >
-                                                    Select Value
+                                                    <option value="Days" >
+                                                    Days
                                                     </option>
                                                     <option value="Weeks" >
                                                     Weeks
@@ -1214,7 +1445,7 @@ const NewContractFromClone = ({getNewContract}) => {
                     </div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
                         <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {setViewPage2(true);setViewPage1(false)}}>CONTINUE</button>
+                        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {setViewPage2(true);setViewPage1(false);setCurrentPage('Contracted Services Provider(s)')}}>CONTINUE</button>
                     </div>
                 </div>
                 ) : (selectContractInfo === "Multiple Contractor" && (viewPage1 || viewPage2)) ? (
@@ -1256,7 +1487,7 @@ const NewContractFromClone = ({getNewContract}) => {
                         </div>
                         <div className={`${style.floatRight} ${style.marginTop20}`}>
                             <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {setViewPage2(true);setViewPage1(false);completedSteps.push('1')}}>CONTINUE</button>
+                            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {{viewPage2 ? setViewPage3(true) : setViewPage2(true)};setViewPage1(false);completedSteps.push('1');setCurrentPage('Contracted Services Provider(s)')}}>CONTINUE</button>
                         </div>
                     </div>
                 ) : ''}
@@ -1264,8 +1495,7 @@ const NewContractFromClone = ({getNewContract}) => {
                     <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Indentification Information</p>
                     <div className={style.welcomeBorder}></div>
                     <p className={style.descriptionStyle}>
-                    This area will contain helpful tools and tips to help guide the user on what 
-                    information requires completion in the contract wizard.
+                    {currentPage}
                     </p>
                     <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Activity Performed</p>
                     <div className={style.welcomeBorder}></div>

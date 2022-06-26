@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { InputGroup, Icon, Intent, Switch, TextArea, RadioGroup, Radio } from '@blueprintjs/core';
+import { InputGroup, Icon, Intent, TextArea, RadioGroup, Radio } from '@blueprintjs/core';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
 import {Link} from 'react-router-dom';
 import Step1 from './../../images/step12.png';
@@ -202,7 +204,18 @@ const AppSubscription = () => {
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Fully Executed Contract on File*</div>
                                 <div>
-                                    <Switch checked={fullyExecutedContract} label={fullyExecutedContract ? 'YES' : "NO"} className={`${style.marginTop} ${style.textAlignLeft}`} onChange={() => setFullyExecutedContract(!fullyExecutedContract)}  />
+                                    <div className={style.spaceBetween}>
+                                        <FormControlLabel
+                                            control={
+                                                <Switch checked={fullyExecutedContract} className={` ${style.textAlignLeft}`} onChange={() => setFullyExecutedContract(!fullyExecutedContract)}  />
+                                            }
+                                            className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                            label={fullyExecutedContract ? 'YES' : "NO"} 
+                                        />
+                                        {fullyExecutedContract && (
+                                            <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
+                                        )}
+                                    </div>
                                     {fullyExecutedContract && (
                                         <div>
                                             <div>
@@ -219,9 +232,8 @@ const AppSubscription = () => {
                                             </div>
                                             <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} value="Document Name" />
                                             <TextArea rows={4} value="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} />
-                                            <div className={`${style.displayInRow} ${style.marginTop10}`}>
-                                                <InputGroup  leftElement={leftElement()} className={style.marginLeft20} className={style.fullWidth} />
-                                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
+                                            <div className={`${style.displayInRow} ${style.marginTop10} ${style.twoFieldWidth} ${style.floatRight}`}>
+                                                <InputGroup  rightElement={leftElement()} className={style.marginLeft20} className={style.fullWidth} />
                                             </div>
                                         </div>
                                     )}

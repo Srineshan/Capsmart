@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { InputGroup, Icon, Intent, Switch, TagInput, Dialog, Classes } from '@blueprintjs/core';
+import { InputGroup, Icon, Intent, TagInput, Dialog, Classes } from '@blueprintjs/core';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
 import {Link} from 'react-router-dom';
 import Step1 from './../../images/step12.png';
@@ -125,7 +127,13 @@ const SiteUsers = () => {
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Is App User A Contractor? *</div>
                                     <div className={style.displayInRow}>
-                                        <Switch checked label={'YES'} className={`${style.marginTop} ${style.textAlignLeft} ${style.fourFieldWidth}`}  />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch checked={true} className={` ${style.textAlignLeft} `}  />
+                                            }
+                                            className={`${style.switchFontStyle} ${style.fourFieldWidth}`}
+                                            label={'YES'}
+                                        />
                                         <select
                                             name="class"
                                             id="Class"
@@ -169,7 +177,13 @@ const SiteUsers = () => {
                                     <div className={style.extentionLableStyle}>Specific Site Access*</div>
                                     <div>
                                         <div className={style.displayInRow}>
-                                            <Switch checked={departmentSpecific} label={departmentSpecific ? 'YES' : "NO"} className={`${style.marginTop} ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
+                                                }
+                                                className={`${style.switchFontStyle}`}
+                                                label={departmentSpecific ? 'YES' : "NO"} 
+                                            />
                                             {departmentSpecific && (
                                                 <>
                                                     <DatalistInput items={items} placeholder="Select sites" onSelect={onSelect} onChange={(e) => {setSelectDepartment(e.target.value); setSiteID('XX689- 64768')} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
@@ -207,7 +221,13 @@ const SiteUsers = () => {
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Sys admin access*</div>
-                                    <Switch checked label={'YES'} className={`${style.marginTop} ${style.textAlignLeft} ${style.fourFieldWidth}`}  />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch checked={true} className={` ${style.textAlignLeft}`}  />
+                                            }
+                                            className={`${style.switchFontStyle} ${style.fourFieldWidth}`}
+                                            label={'YES'}
+                                        />
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Other App Role*</div>
