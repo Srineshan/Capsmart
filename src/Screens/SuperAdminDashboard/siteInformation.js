@@ -109,12 +109,12 @@ const SiteInformation = () => {
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
-                    <div>
+                    {/* <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
                             <img src={Step2} alt="Step2" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
-                    </div>
+                    </div> */}
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
                             <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
@@ -221,7 +221,7 @@ const SiteInformation = () => {
                                             <TagInput
                                                 placeholder="Enter tags/keywords relative to the post"
                                                 values={tags}
-                                                className={`${style.marginTop20} ${style.tagInputStyle}`    }
+                                                className={`${style.marginTop20} ${style.tagInputStyle}`}
                                                 onAdd={handleTagsAdd}
                                                 onRemove={handleTagsRemove}
                                                 separator={/[\s,]/}
@@ -316,7 +316,7 @@ const SiteInformation = () => {
                     <p className={`${style.cloneContent} ${style.marginTop20}`}>Do you want to setup registered users for the different sites at this time?</p>
                     <div>
                         <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                            <button className={`${style.cloneOutlinedButton} ${style.cursorPointer} ${style.paddingTop5}`}>NO</button>
+                            <button className={`${style.cloneOutlinedButton} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => setAlertDialog(false)}>NO</button>
                             <Link to={'/siteUsers'}>
                                 <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`}>YES</button>
                             </Link>

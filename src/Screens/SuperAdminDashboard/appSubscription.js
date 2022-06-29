@@ -83,12 +83,12 @@ const AppSubscription = () => {
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
-                    <div>
+                    {/* <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step2} alt="Step2" className={style.stepperImgStyle} /> 
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
-                    </div>
+                    </div> */}
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step3} alt="Step3" className={style.stepperImgStyle} /> 
@@ -99,7 +99,7 @@ const AppSubscription = () => {
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step4} alt="Step4" className={style.stepperImgStyle} /> 
                         </div>
-                        <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITE USERS</p>
+                        <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>APP USERS</p>
                     </div>
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
@@ -124,15 +124,15 @@ const AppSubscription = () => {
                 <div>
                     <div className={style.cloneBlockStyle}>
                         <div className={`${style.newContractFromCloneBoxStyle}`}> 
-                            <div className={`${style.extentionGrid} ${style.marginTop30}`}>
+                            <div className={`${style.extentionGrid}`}>
                                 <div className={style.extentionLableStyle}>Subscription Plan *</div>
                                 <div className={`${style.leftAlign} ${style.displayInRow}`}>
                                     <select
                                         name="class"
                                         id="Class"
                                         className={style.fullWidth}>
-                                            <option value="Select Account Manager" >
-                                            Select Account Manager
+                                            <option value="Basic/ Silver/ Bronze/ Gold/ custom" >
+                                            Basic/ Silver/ Bronze/ Gold/ custom
                                             </option>
                                     </select>
                                     <button className={`${style.pricingButton} ${style.selectedColor} ${style.cursorPointer}`} >PRICING REVIEW</button>
@@ -149,7 +149,7 @@ const AppSubscription = () => {
                                     <div className={`${style.extentionLableStyle} ${style.fourFieldWidth} ${style.marginLeft20}`}>Per User</div>
                                 </div>
                             </div>
-                            <div className={`${style.extentionGrid} ${style.marginTop30}`}>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Billing Frequency *</div>
                                 <div className={`${style.leftAlign} `}>
                                     <select

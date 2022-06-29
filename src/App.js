@@ -16,6 +16,9 @@ import './App.css'
 import history from './routes/history';
 import EntryPage from './Screens';
 import Contracts from './Screens/UserManagement';
+import ReportsHome from './Screens/Reports';
+import TimeSheetReportsBase from './Screens/Reports/reports';
+import ChartPage from './Screens/Reports/chart';
 
 const App = ({props}) => {
   return (
@@ -36,6 +39,9 @@ const App = ({props}) => {
           <Route  path="/setupComplete" element={<SetupComplete />}/>
           <Route  path="/otpPage" element={<OTPPage />}/>
           <Route  path="/welcomeToDashboard" element={<WelcomeToDashboard />}/>
+          <Route  path="/tasks" element={<ReportsHome />}/>
+          <Route  path="/reports" element={<TimeSheetReportsBase />}/>
+          <Route  path="/chart" element={<ChartPage />}/>
         </Routes>
       </div>
     </Router>
