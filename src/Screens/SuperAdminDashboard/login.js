@@ -14,15 +14,17 @@ const Login = (props) => {
        method: 'POST',
        headers: { 'Content-Type': 'application/json',
                   'X-tenantID' : '6242845f95690b3822cb96a5',
-                  'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTM3MzkzNTMsImV4cCI6MTY1MzgyNTc1M30.NfQJwvBPig-uJCp-pd7uH8mnRwfa5c-EyBm-atQN59sefOthWyaz74Pbucu2URDAVxXi5kEt-MTad-dJbyjsxw`},
+                  // 'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTM3MzkzNTMsImV4cCI6MTY1MzgyNTc1M30.NfQJwvBPig-uJCp-pd7uH8mnRwfa5c-EyBm-atQN59sefOthWyaz74Pbucu2URDAVxXi5kEt-MTad-dJbyjsxw`
+                },
        body: JSON.stringify(user)
    };
-   fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/user-management-service/auth/login', requestOptions)
+   fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/user-management-service/auth/login', requestOptions)
        .then(response => response.json())
        .then(data => {
-         navigate('/welcome');
+         // navigate('/welcome');
          var cookie = new Cookie();
-         cookie.set('user',data.accessToken)
+         cookie.set('user',data.accessToken);
+         navigate('/welcome');
          return true;
        }
       )
@@ -60,10 +62,13 @@ const Login = (props) => {
                 <InputGroup type="email" large={true} placeholder="Enter your registered email here" className={style.marginTop10} value={user.email} onChange={(e)=>setUser({...user,email:e.target.value})}/>
                 <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Password</div>
                 <InputGroup type="password" large={true} placeholder="Enter password here" className={style.marginTop10} rightElement={EyeOpenElement(1)} value={user.password} onChange={(e)=>setUser({...user, password:e.target.value})} />
-                {/* <button className={`${style.loginButton} ${style.marginTop30}`} onClick={login}>LOGIN</button> */}
-                <Link to={'/welcome'}>
-                  <button className={`${style.loginButton} ${style.marginTop30}`}>LOGIN</button>
-                </Link>
+
+                <button className={`${style.loginButton} ${style.marginTop30}`} onClick={login}>LOGIN</button>
+                {
+                  // <Link to={'/welcome'}>
+                  //   <button className={`${style.loginButton} ${style.marginTop30}`}>LOGIN</button>
+                  // </Link>
+                }
                 <Link to={'/forgotPassword'}>
                   <div className={`${style.forgotPasswordStyle} ${style.marginTop30}`}>I forgot my password</div>
                 </Link>

@@ -20,34 +20,70 @@ const EntitySetup = () => {
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [departmentValue, setDepartmentValue] = useState('');
     const [item, setItem] = useState();
-    const [entity,setEntity] = useState({name:'',type:''});
-    const [address,setAddress] = useState({city:'',state:'',zipcode:''});
+    const [entity,setEntity] = useState({id:'',name:'',type:'',websiteURL:'',primarySite:false,multiSiteEntity:false});
+    const [address,setAddress] = useState({city:'',state:'',zipcode:'',addressLine:'',country:''});
+    const [websiteUrl,setWebsiteUrl] = useState('');
+    const [multiSiteEntity,setMultiSiteEntity] = useState(false);
+    const [primarySite,setPrimarySite] = useState(false);
     const [department,setDepartment] = useState([]);
     const accessToken = Auth();
 
-    // useEffect(()=>{
-    //   getEntityData();
-    // },[]);
+    useEffect(()=>{
+      getEntityData();
+      getDepartmentData();
+    },[]);
+
+    console.log('access',accessToken)
+
+    console.log('tags',tags);
 
     const getEntityData = () => {
       const entity = {
         method: 'GET',
         headers: { 'Content-Type': 'application/json',
                   'X-tenantID' : '6242845f95690b3822cb96a5',
-                  'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTM4MDExMjksImV4cCI6MTY1Mzg4NzUyOX0.Rjo98o0UCIdUTpz3H0YdQDdES3mdffmoBdd64jAa1hpwaM2KS8JOwV-9iGikv6mg_kdH550RI6p_7kcSZg6eWw'}
+                  'Authorization': `Bearer ${accessToken}`}
         };
-        fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/entity-service/entity', entity)
+        fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/entity-service/entity', entity)
         .then(response => response.json())
         .then(data => {
-            console.log(data)
             if(data?.filter(data=>data.id === '6242845f95690b3822cb96a5')?.map(data=>{
-              setEntity({...entity,name:data.entityName.entityName,type:data.entityType.type});
-
+              setEntity({...entity,id:data.id,name:data.entityName.entityName,type:data.entityType.type,websiteURL:data.websiteURL,multiSiteEntity:data.multiSiteEntity,primarySite:data.canPrimarySiteToUseApp});
+              setAddress({...address,addressLine:data.addressLine,city:data.city,state:data.state,zipcode:data.zipcode,country:data.country});
             }))
           return true;
         }
        )
     }
+
+    const getDepartmentData = () => {
+      let  temp = []
+      const entity = {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json',
+                  'X-tenantID' : '6242845f95690b3822cb96a5',
+                  'Authorization': `Bearer ${accessToken}`}
+        };
+        fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/entity-service/department', entity)
+        .then(response => response.json())
+        .then(data => {
+            console.log('dept',data)
+            data
+            // ?.filter(data=>data.id === '6242845f95690b3822cb96a5')
+            ?.map(data=>{
+              temp.push(data?.departmentName?.name)
+
+            })
+          return true;
+        }
+       )
+       setDepartment(temp);
+       setTags(temp);
+    }
+
+
+    console.log('entity',entity);
+    console.log('department',department,tags);
 
     const onSaveInProgress = () => {
       department.map(data=>{
@@ -63,7 +99,7 @@ const EntitySetup = () => {
     }
 
     const handleTagsAdd = values => {
-        setDepartment([...department,{name:values,id:''}])
+        setDepartment([...department,values])
         setTags([...tags, values]);
     };
 
@@ -187,18 +223,18 @@ const EntitySetup = () => {
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Mailing Address*</div>
                                 <div>
-                                    <InputGroup value="Street 8 Block 7" className={`${style.fullWidth}`}/>
+                                    <InputGroup value="Street 8 Block 7" className={`${style.fullWidth}`} value={address.addressLine} onChange={(e)=>handleAddress('addressLine',e.target.value)}/>
                                     <div className={`${style.marginTop20} ${style.displayInRow}`}>
                                         <InputGroup placeholder="Pincode Value" className={`${style.fourFieldWidth}`} value={address.zipcode} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
                                         <InputGroup placeholder="City Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.city} onChange={(e)=>handleAddress('city',e.target.value)}/>
                                         <InputGroup placeholder="State Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.state} onChange={(e)=>handleAddress('state',e.target.value)}/>
-                                        <InputGroup placeholder="Country Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`}/>
+                                        <InputGroup placeholder="Country Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.country} onChange={(e)=>handleAddress('country',e.target.value)}/>
                                     </div>
                                 </div>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Website URL*</div>
-                                <InputGroup value="http://regington.net" className={`${style.fullWidth}`}/>
+                                <InputGroup value="http://regington.net" className={`${style.fullWidth}`} value={entity.websiteURL} onChange={(e)=>handleEntity('websiteURL',e.target.value)}/>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Multi-site Entity*</div>

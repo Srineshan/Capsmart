@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { InputGroup, Icon, Intent, TagInput, Dialog, Classes } from '@blueprintjs/core';
+import { InputGroup, Icon, Intent, TagInput, Dialog, Classes, Spinner } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
@@ -11,12 +11,13 @@ import Step4 from './../../images/step4.png';
 import Step5 from './../../images/step5.png';
 import UploadImg from './../../images/uploadImg.png';
 import style from './index.module.scss';
+import {Auth} from './../../utils/auth';
 import 'react-datalist-input/dist/styles.css';
 
-const VALUES = ['Department 1', "Department 2"];
+// const VALUES = ['Department 1', "Department 2"];
 
 const SiteInformation = () => {
-    const [tags, setTags] = useState(VALUES);
+    const [tags, setTags] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [showSiteTable, setShowSiteTable] = useState(false);
     const [selectDepartment, setSelectDepartment] = useState('');
@@ -24,35 +25,69 @@ const SiteInformation = () => {
     const [alertDialog, setAlertDialog] = useState(false);
     const [item, setItem] = useState();
     const [departmentValue,setDepartmentValue] = useState([]);
+    const [siteList,setSiteList] = useState([]);
+    const [loading,setLoading] = useState(false);
+    const [address,setAddress] = useState({
+      city:'',state:'',zipcode:'',country:''
+    })
+    const [site,setSite] = useState({name:'',type:''});
     let options = [];
+    const accessToken = Auth();
     // console.log(departmentValue);
 
-    // useEffect(()=>{
-    //   getDepartmentData();
-    // },[]);
+    useEffect(()=>{
+      getDepartmentData();
+      getSiteData();
+    },[]);
+
+    console.log('dept',departmentValue,tags);
+
+    const getSiteData = () => {
+      let  temp = []
+      const site = {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json',
+                  'X-tenantID' : '6242845f95690b3822cb96a5',
+                  'Authorization': `Bearer ${accessToken}`}
+        };
+        fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/entity-service/sites', site)
+        .then(response => response.json())
+        .then(data => {
+            let temp = [];
+            console.log('dept',data);
+            data?.map(data=>{
+              temp.push({name:data.siteName.siteName,type:data.siteType.type,address:data.address})
+            })
+             setSiteList(temp);
+          return true;
+        }
+       )
+
+    }
 
 
-
-
-    // const getDepartmentData = () => {
-    //   const department = {
-    //     method: 'GET',
-    //     headers: { 'Content-Type': 'application/json',
-    //               'X-tenantID' : '6242845f95690b3822cb96a5',
-    //               'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTM3NjAxMTQsImV4cCI6MTY1Mzg0NjUxNH0.eTiXgF1A1FheMgB4L8VbMeZMs7pxc0wiNhFTbt9WkO4HcVwiNKhgIQR1sBMaDp-D3Ez4Cm_VJi3jai35RrywOg`}
-    //     };
-    //     fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/entity-service/department', department)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //       data?.map(dept=>{
-    //         let temp = departmentValue;
-    //         temp.push(dept.departmentName.name);
-    //         setDepartmentValue(temp);
-    //       })
-    //       return true;
-    //     }
-    //    )
-    // }
+    const getDepartmentData = () => {
+      setLoading(true);
+      let temp = [];
+      const department = {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json',
+                  'X-tenantID' : '6242845f95690b3822cb96a5',
+                  'Authorization': `Bearer ${accessToken}`}
+        };
+        fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/entity-service/department', department)
+        .then(response => response.json())
+        .then(data => {
+          data?.map(dept=>{
+            temp.push(dept.departmentName.name);
+          })
+          setDepartmentValue(temp);
+          setTags(temp);
+          setLoading(false);
+          return true;
+        }
+       )
+    }
 
     departmentValue?.map(data=>{
       options.push({'name':data})
@@ -67,14 +102,16 @@ const SiteInformation = () => {
     //     { name: 'Department 6' },
     //   ];
 
-      const onSelect = useCallback((selectedItem) => {
-        console.log('selectedItem', selectedItem);
-        setItem(selectedItem);
-        setSelectDepartment('');
-      }, []);
+    const onSelect = useCallback((selectedItem) => {
+      console.log('selectedItem', selectedItem);
+      setItem(selectedItem);
+      setSelectDepartment('');
+    }, []);
 
     const handleTagsAdd = values => {
         setTags([...tags, values]);
+        setDepartmentValue(tags);
+        setSelectDepartment('');
     };
 
     const getTagProps = (_v, index) => ({
@@ -97,6 +134,20 @@ const SiteInformation = () => {
           })),
         [item],
       );
+
+    const handleSite = (name,value) => {
+      setSite({...site,[name]:value});
+    }
+
+    const handleAddress = (name,value) => {
+      setAddress({...address, [name]:value});
+    }
+
+    if(loading){
+      <Spinner intent={Intent.PRIMARY} />
+    }
+
+    console.log('siltelist',siteList);
 
     return(
         <div className={style.entitySetupBackground}>
@@ -162,7 +213,7 @@ const SiteInformation = () => {
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Site Name*</div>
-                                    <InputGroup className={style.threeFieldWidth} value="Text" />
+                                    <InputGroup className={style.threeFieldWidth} defaultValue={site.name} onChange={(e)=>handleSite('name',e.target.name)} />
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Site Type*</div>
@@ -170,7 +221,9 @@ const SiteInformation = () => {
                                         <select
                                             name="class"
                                             id="Class"
-                                            className={style.fullWidth}>
+                                            className={style.fullWidth}
+                                            value={site.type}
+                                            onChange={(e)=>handleSite('type',e.target.value)}>
                                                 <option value="Hospital/Nursing home etc" >
                                                 Hospital/Nursing home etc
                                                 </option>
@@ -180,10 +233,10 @@ const SiteInformation = () => {
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Address*</div>
                                     <div className={`${style.displayInRow}`}>
-                                        <InputGroup value="Zipcode" className={`${style.fourFieldWidth}`}/>
-                                        <InputGroup value="State" className={`${style.fourFieldWidth} ${style.marginLeft20}`}/>
-                                        <InputGroup value="Country" className={`${style.fourFieldWidth} ${style.marginLeft20}`}/>
-                                        <InputGroup value="City" className={`${style.fourFieldWidth} ${style.marginLeft20}`}/>
+                                        <InputGroup value={address.zipcode} placeholder="zipcode" className={`${style.fourFieldWidth}`} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
+                                        <InputGroup value={address.state} placeholder="state" className={`${style.fourFieldWidth} ${style.marginLeft20}`} onChange={(e)=>handleAddress('state',e.target.value)}/>
+                                        <InputGroup value={address.country} placeholder="country" className={`${style.fourFieldWidth} ${style.marginLeft20}`} onChange={(e)=>handleAddress('country',e.target.value)}/>
+                                        <InputGroup value={address.city} placeholder="city" className={`${style.fourFieldWidth} ${style.marginLeft20}`} onChange={(e)=>handleAddress('city',e.target.value)}/>
                                     </div>
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -212,8 +265,8 @@ const SiteInformation = () => {
                                                 on the "REQUEST & ADD" button.
                                                 </div>
                                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                                    <InputGroup value="Department New" className={style.threeFieldWidth} />
-                                                    <button className={`${style.reqButton} ${style.marginLeft20}`} onClick={() => {handleTagsAdd('Department New')}}>REQUEST & ADD</button>
+                                                    <InputGroup value={selectDepartment} className={style.threeFieldWidth} onChange={(e)=>setSelectDepartment(e.target.value)}/>
+                                                    <button className={`${style.reqButton} ${style.marginLeft20}`} onClick={() => {handleTagsAdd(selectDepartment)}}>REQUEST & ADD</button>
                                                 </div>
                                             </div>
                                         )}
@@ -252,7 +305,7 @@ const SiteInformation = () => {
                 <div className={style.entitySetupCardStyle}>
                     <p className={style.heading}>App Use Sites for Entity</p>
                     <div className={`${style.floatRight} ${style.siteButtonPosition}`}>
-                        <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >ADD SITES</button>
+                        <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={()=>setShowSiteTable(false)}>ADD SITES</button>
                         <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >BULK UPLOAD</button>
                     </div>
                     <div className={style.greyBorder}></div>
@@ -267,37 +320,19 @@ const SiteInformation = () => {
                             <p className={style.tableHeaderFontStyle}>SOURCE</p>
                         </div>
                         <div className={`${style.tableData} ${style.displayInCol}`} >
+                        {
+                          siteList?.map(data=>(
                             <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <p className={style.tableDataFontStyle}>www.hgjhhkl.co</p>
-                                <p className={style.tableDataFontStyle}> </p>
-                                <p className={style.tableDataFontStyle}>LOS ANGELES</p>
-                                <p className={style.tableDataFontStyle}>CA</p>
+                                <p className={style.tableDataFontStyle}>{data.name}</p>
+                                <p className={style.tableDataFontStyle}>{data.type}</p>
+                                <p className={style.tableDataFontStyle}>{data.address.city}</p>
+                                <p className={style.tableDataFontStyle}>{data.address.state}</p>
                                 <p className={style.tableDataFontStyle}>11-06-2021 </p>
                                 <p className={style.tableDataFontStyle}>SWA Shah</p>
                                 <p className={style.tableDataFontStyle}>manual</p>
                             </div>
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol}`} >
-                            <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <p className={style.tableDataFontStyle}>www.hgjhhkl.co</p>
-                                <p className={style.tableDataFontStyle}> </p>
-                                <p className={style.tableDataFontStyle}>LOS ANGELES</p>
-                                <p className={style.tableDataFontStyle}>CA</p>
-                                <p className={style.tableDataFontStyle}>11-06-2021 </p>
-                                <p className={style.tableDataFontStyle}>SWA Shah</p>
-                                <p className={style.tableDataFontStyle}>manual</p>
-                            </div>
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol}`} >
-                            <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <p className={style.tableDataFontStyle}>www.hgjhhkl.co</p>
-                                <p className={style.tableDataFontStyle}> </p>
-                                <p className={style.tableDataFontStyle}>LOS ANGELES</p>
-                                <p className={style.tableDataFontStyle}>CA</p>
-                                <p className={style.tableDataFontStyle}>11-06-2021 </p>
-                                <p className={style.tableDataFontStyle}>SWA Shah</p>
-                                <p className={style.tableDataFontStyle}>manual</p>
-                            </div>
+                          ))
+                        }
                         </div>
                     </div>
                     <div className={` ${style.floatRight} ${style.marginTop20} ${style.marginRightForPositionButton}`}>

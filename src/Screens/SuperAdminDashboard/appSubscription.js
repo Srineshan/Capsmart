@@ -11,6 +11,8 @@ import Step4 from './../../images/step45.png';
 import Step5 from './../../images/step55.png';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
+import {Auth} from './../../utils/auth'
+
 
 const VALUES = ['Department 1', "Department 2", "Department 3"];
 
@@ -22,6 +24,33 @@ const AppSubscription = () => {
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
     const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('Select Value');
     const [item, setItem] = useState();
+    const [plan,setPlan] = useState({name:'',allowableUsers:0,fees:"",status:"",freq:"",discount:0,liveData:"",poa:""});
+    const [billing,setBilling] = useState({firstName:"",lastName:"",email:"",phone:0});
+    const [contract,setContract] = useState({name:"",id:"",docName:"",docDesc:"",docType:"",docPath:"",start:"",end:"",live:"",continuationPolicy:"",fullyExecutedContract:true});
+    const accessToken = Auth();
+
+    const getEntityData = () => {
+      const entity = {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json',
+                  'X-tenantID' : '6242845f95690b3822cb96a5',
+                  'Authorization': `Bearer ${accessToken}`}
+        };
+        fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/entity-service/entity', entity)
+        .then(response => response.json())
+        .then(data => {
+            if(data?.filter(data=>data.id === '6242845f95690b3822cb96a5')?.map(data=>{
+                let subPlan = data.subscriptionPlan;
+                let billingDetails = data.billingDetails;
+                let contractDetails = data.contractDetails;
+                setPlan({...plan, name:subPlan?.planName,allowableUsers:subPlan?.allowableRegisteredUsers?.allowableRegisteredUsers,fees:subPlan?.subscriptionFees.fees,status:subPlan?.subscriptionStatus,freq:subPlan?.billingFrequency,discount:subPlan?.discount?.discount,liveData:subPlan?.plannedToGoLive?.date,poa:subPlan?.poaNumber.poaNumber});
+                setBilling({...billing, firstName:billingDetails?.contactname.firstName,lastName:billingDetails?.contactname?.lastName,email:billingDetails?.email.emailId,phone:billingDetails?.contactNumber?.contactNumber});
+                setContract({...contract, name:contractDetails?.contractName,id:contractDetails?.contractID,doc:contractDetails?.contractDocuments,start:contractDetails?.contractTermPeriod?.startDate,end:contractDetails?.contractTermPeriod?.endDate,live:contractDetails?.plannedGoLive,continuationPolicy:contractDetails?.contractContinuationPolicy,fullyExecutedContract:contractDetails?.fullyExecutedContractOnFile})
+          }))
+          return true;
+        }
+       )
+    }
 
     const options = [
         { name: 'Department 1' },
@@ -79,31 +108,31 @@ const AppSubscription = () => {
                 <div className={style.stepperGrid}>
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} /> 
+                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
                     {/* <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} /> 
+                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div> */}
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} /> 
+                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} /> 
+                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>APP USERS</p>
                     </div>
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
-                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} /> 
+                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>APP SUBSCRIPTION</p>
                     </div>
@@ -114,16 +143,16 @@ const AppSubscription = () => {
                 <p className={style.heading}>App Subscription Information</p>
                 <div className={style.greyBorder}></div>
                 <div className={style.entityDescription}>
-                Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus 
-                quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus 
-                dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam 
-                eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut 
-                felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur 
+                Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
+                quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus
+                dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam
+                eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
+                felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
                 adipiscing elit. sed finibus quam nec tellus dictum.
                 </div>
                 <div>
                     <div className={style.cloneBlockStyle}>
-                        <div className={`${style.newContractFromCloneBoxStyle}`}> 
+                        <div className={`${style.newContractFromCloneBoxStyle}`}>
                             <div className={`${style.extentionGrid}`}>
                                 <div className={style.extentionLableStyle}>Subscription Plan *</div>
                                 <div className={`${style.leftAlign} ${style.displayInRow}`}>
@@ -131,9 +160,22 @@ const AppSubscription = () => {
                                         name="class"
                                         id="Class"
                                         className={style.fullWidth}>
-                                            <option value="Basic/ Silver/ Bronze/ Gold/ custom" >
-                                            Basic/ Silver/ Bronze/ Gold/ custom
+                                            <option value="Basic" >
+                                              Basic
                                             </option>
+                                            <option value="Silver">
+                                              Silver
+                                            </option>
+                                            <option value="Bronze">
+                                              Bronze
+                                            </option>
+                                            <option value="Gold">
+                                              Gold
+                                            </option>
+                                            <option value="Custom">
+                                              Custom
+                                            </option>
+
                                     </select>
                                     <button className={`${style.pricingButton} ${style.selectedColor} ${style.cursorPointer}`} >PRICING REVIEW</button>
                                 </div>
@@ -210,7 +252,7 @@ const AppSubscription = () => {
                                                 <Switch checked={fullyExecutedContract} className={` ${style.textAlignLeft}`} onChange={() => setFullyExecutedContract(!fullyExecutedContract)}  />
                                             }
                                             className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                            label={fullyExecutedContract ? 'YES' : "NO"} 
+                                            label={fullyExecutedContract ? 'YES' : "NO"}
                                         />
                                         {fullyExecutedContract && (
                                             <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
