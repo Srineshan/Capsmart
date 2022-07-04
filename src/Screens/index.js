@@ -13,6 +13,13 @@ const EntryPage = () => {
                         <div className={style.headingStyle}>Reports</div>
                     </div>
                 </Link>
+                <Link to={'/help'}>
+                    <div className={`${style.padding} ${style.cursorPointer}`}>
+                        <div className={style.roundedBackgrounds}>
+                        </div>
+                        <div className={style.headingStyle}>Help Management</div>
+                    </div>
+                </Link>
                 <Link to={'/activeContracts'}>
                     <div className={`${style.padding} ${style.cursorPointer}`}>
                         <div className={style.roundedBackgrounds}>

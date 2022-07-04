@@ -19,6 +19,7 @@ import Contracts from './Screens/UserManagement';
 import ReportsHome from './Screens/Reports';
 import TimeSheetReportsBase from './Screens/Reports/reports';
 import ChartPage from './Screens/Reports/chart';
+import HelpHome from './Screens/HelpManagement';
 
 const App = ({props}) => {
   return (
@@ -42,6 +43,7 @@ const App = ({props}) => {
           <Route  path="/tasks" element={<ReportsHome />}/>
           <Route  path="/reports" element={<TimeSheetReportsBase />}/>
           <Route  path="/chart" element={<ChartPage />}/>
+          <Route  path="/help" element={<HelpHome />}/>
         </Routes>
       </div>
     </Router>

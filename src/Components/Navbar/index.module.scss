@@ -79,3 +79,25 @@
     display: flex;
     justify-content: space-between;
 }
+
+.optionsCardStyle{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 11px #52575D;
+    border-radius: 4px 4px 0px 0px;
+    width: 200px;
+    position: absolute;
+}
+
+.options{
+    padding: 10px;
+}
+
+.options:hover{
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    color: #7064DE;
+}
+
+.noFontStyle{
+    text-decoration: none !important;
+    color: black;
+}

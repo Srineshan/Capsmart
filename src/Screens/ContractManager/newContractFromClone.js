@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { TextArea, InputGroup, RadioGroup, Radio, Icon, Intent, TagInput, EditableText } from '@blueprintjs/core';
+import { TextArea, InputGroup, RadioGroup, Radio, Icon, Intent, TagInput, EditableText, Dialog, Classes } from '@blueprintjs/core';
 import DatalistInput from 'react-datalist-input';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -95,6 +95,7 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
     const [viewPage6, setViewPage6] = useState(false);
     const [viewPage7, setViewPage7] = useState(false);
     const [viewPage8, setViewPage8] = useState(false);
+    const [viewWorkflowDialog, setViewWorkflowDialog] = useState(false);
     const [currentPage, setCurrentPage] = useState('Contract ID & Term Limit');
     const [isMultipleContract, setIsMultipleContract] = useState(false);
     const theme = useTheme();
@@ -398,8 +399,11 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                                         <div className={style.extentionLableStyle}>Workflow Description</div>
                                         <TextArea className={style.fullWidth} placeholder="Workflow Description" />
                                     </div>
-                                    <div className={`${style.flowChartBoxStyle} ${style.marginTop20}`}>
+                                    {/* <div className={`${style.flowChartBoxStyle} ${style.marginTop20}`}>
                                         <ToolBar />
+                                    </div> */}
+                                    <div className={`${style.floatRight} ${style.marginTop20}`}>
+                                        <button className={style.newContractOutlinedButton} onClick={() => setViewWorkflowDialog(true)}>View / Create Workflow</button>
                                     </div>
                                 </div>
                             )}
@@ -426,8 +430,11 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                                             <div className={style.extentionLableStyle}>Workflow Description</div>
                                             <TextArea className={style.fullWidth} placeholder="Description" />
                                         </div>
-                                        <div className={`${style.flowChartBoxStyle} ${style.marginTop20}`}>
+                                        {/* <div className={`${style.flowChartBoxStyle} ${style.marginTop20}`}>
                                             <ToolBar />
+                                        </div> */}
+                                        <div className={`${style.floatRight} ${style.marginTop20}`}>
+                                            <button className={style.newContractOutlinedButton} onClick={() => setViewWorkflowDialog(true)}>View / Create Workflow</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1551,6 +1558,17 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
             {showAlertDialog && (
               <Alert getShowAlertDialog={getShowAlertDialog} isMultipleContract={isMultipleContract} />
             )}
+            <Dialog isOpen={viewWorkflowDialog} onClose={() => setViewWorkflowDialog(false)} className={`${style.toolbarDialogStyle} ${style.dialogPaddingBottom}`}>
+                <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
+                    <div className={style.spaceBetween}>
+                        <p className={style.extensionStyle}>View / Creat Workflow</p>
+                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setViewWorkflowDialog(false)}  />
+                    </div>
+                    <div className={`${style.flowChartBoxStyle}`}>
+                        <ToolBar />
+                    </div> 
+                </div>
+            </Dialog>
         </div>
     )
 }
