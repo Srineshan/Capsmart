@@ -199,7 +199,7 @@ const ToolBar = () => {
               height={30}
               fill="#d7d5f6"
               strokeWidth={1}
-              x={315}
+              x={15}
               y={5}
             />
             <Ellipse
@@ -210,7 +210,7 @@ const ToolBar = () => {
                 fill="#fff"
                 stroke="#A39CEB"
                 strokeWidth={1}
-                x={340}
+                x={40}
                 y={20}
             />
             <Ellipse
@@ -222,7 +222,7 @@ const ToolBar = () => {
                 fill="#fff"
                 stroke="#A39CEB"
                 strokeWidth={1}
-                x={340}
+                x={40}
                 y={20}
                 draggable
                  onDragEnd={(e) => {
@@ -245,7 +245,7 @@ const ToolBar = () => {
                    // notice the dot (.) before "draggableCircle"
                    var stage = stageRef.current;
                    var draggable = stage.findOne(".draggableEllipse");
-                   draggable.position({ x: 340, y: 20 });
+                   draggable.position({ x: 40, y: 20 });
                  }}
             />
             <Rect
@@ -253,7 +253,7 @@ const ToolBar = () => {
               height={30}
               fill="#d7d5f6"
               strokeWidth={1}
-              x={370}
+              x={70}
               y={5}
             />
 
@@ -263,7 +263,7 @@ const ToolBar = () => {
                 fill="#fff"
                 stroke="#A39CEB"
                 strokeWidth={1}
-                x={375}
+                x={75}
                 y={10}
                 />
             <Rect
@@ -272,7 +272,7 @@ const ToolBar = () => {
                 fill="#fff"
                 stroke="#A39CEB"
                 strokeWidth={1}
-                x={375}
+                x={75}
                 y={10}
                 name='draggableRect'
                 draggable
@@ -297,7 +297,7 @@ const ToolBar = () => {
                    // notice the dot (.) before "draggableCircle"
                    var stage = stageRef.current;
                    var draggable = stage.findOne(".draggableRect");
-                   draggable.position({ x: 375, y: 10 });
+                   draggable.position({ x: 75, y: 10 });
                  }}
             />
             <Rect
@@ -305,13 +305,13 @@ const ToolBar = () => {
               height={30}
               fill="#d7d5f6"
               strokeWidth={1}
-              x={425}
+              x={125}
               y={5}
             />
             <Line
               x={0}
               y={0}
-              points={[435, 20, 450, 10, 465, 20, 450, 30, 435, 20]}
+              points={[135, 20, 150, 10, 165, 20, 150, 30, 135, 20]}
               closed
               fill="#fff"
               stroke="#A39CEB"
@@ -321,7 +321,7 @@ const ToolBar = () => {
               name="draggableDiamond"
               x={0}
               y={0}
-              points={[435, 20, 450, 10, 465, 20, 450, 30, 435, 20]}
+              points={[135, 20, 150, 10, 165, 20, 150, 30, 135, 20]}
               closed
               fill="#fff"
               stroke="#A39CEB"
@@ -354,13 +354,13 @@ const ToolBar = () => {
               height={30}
               fill="#d7d5f6"
               strokeWidth={1}
-              x={480}
+              x={180}
               y={5}
             />
             <Line
               x={0}
               y={0}
-              points={[485, 30, 490, 10, 525, 10, 520, 30, 485, 30]}
+              points={[185, 30, 190, 10, 225, 10, 220, 30, 185, 30]}
               closed
               fill="#fff"
               stroke="#A39CEB"
@@ -370,7 +370,7 @@ const ToolBar = () => {
                 name="draggableSlantingRect"
                 x={0}
                 y={0}
-                points={[485, 30, 490, 10, 525, 10, 520, 30, 485, 30]}
+                points={[185, 30, 190, 10, 225, 10, 220, 30, 185, 30]}
                 closed
                 draggable
                 onDragEnd={(e) => {
@@ -395,12 +395,12 @@ const ToolBar = () => {
               height={30}
               fill="#d7d5f6"
               strokeWidth={1}
-              x={480}
+              x={15}
               y={40}
               onClick={()=>setDrawable('Arrow')}
             />
             <Arrow
-                points={[520, 55, 490, 55]}
+                points={[60, 55, 20, 55]}
                 fill="#ECEDEE"
                 stroke="#A39CEB"
                 onClick={()=>setDrawable('Arrow')}
@@ -410,12 +410,12 @@ const ToolBar = () => {
               height={30}
               fill="#d7d5f6"
               strokeWidth={1}
-              x={480}
+              x={15}
               y={75}
               onClick={()=>setDrawable('Line')}
             />
             <Line
-                points={[520, 90, 490, 90]}
+                points={[60, 90, 20, 90]}
                 fill="#ECEDEE"
                 stroke="#A39CEB"
                 onClick={()=>setDrawable('Line')}
@@ -425,7 +425,7 @@ const ToolBar = () => {
                   height={30}
                   fill="#d7d5f6"
                   strokeWidth={1}
-                  x={480}
+                  x={15}
                   y={110}
                 />
             <Text
@@ -433,7 +433,7 @@ const ToolBar = () => {
               text="YES"
               fontFamily="Proxima Nova"
               fill="#00C07F"
-              x={494}
+              x={27}
               y={120}
               />
             <Text
@@ -441,7 +441,7 @@ const ToolBar = () => {
               text="YES"
               fontFamily="Proxima Nova"
               fill="#00C07F"
-              x={494}
+              x={27}
               y={120}
               name="draggableYes"
               draggable
@@ -460,7 +460,7 @@ const ToolBar = () => {
                  ]);
                  var stage = stageRef.current;
                  var draggable = stage.findOne(".draggableYes");
-                 draggable.position({ x: 494, y:120});
+                 draggable.position({ x: 27, y:120});
                }}
             />
             <Rect
@@ -468,7 +468,7 @@ const ToolBar = () => {
               height={30}
               fill="#d7d5f6"
               strokeWidth={1}
-              x={480}
+              x={15}
               y={145}
             />
             <Text
@@ -476,7 +476,7 @@ const ToolBar = () => {
               text="HOLD"
               fontFamily="Proxima Nova"
               fill="#FEC106"
-              x={488}
+              x={23}
               y={155}
             />
             <Text
@@ -484,7 +484,7 @@ const ToolBar = () => {
               text="HOLD"
               fontFamily="Proxima Nova"
               fill="#FEC106"
-              x={488}
+              x={23}
               y={155}
               name="draggableHold"
               draggable
@@ -503,7 +503,7 @@ const ToolBar = () => {
                  ]);
                  var stage = stageRef.current;
                  var draggable = stage.findOne(".draggableHold");
-                 draggable.position({ x: 488, y: 155 });
+                 draggable.position({ x: 23, y: 155 });
                }}
             />
             <Rect
@@ -511,7 +511,7 @@ const ToolBar = () => {
               height={30}
               fill="#d7d5f6"
               strokeWidth={1}
-              x={480}
+              x={15}
               y={180}
             />
             <Text
@@ -519,7 +519,7 @@ const ToolBar = () => {
               text="REJECT"
               fontFamily="Proxima Nova"
               fill="#FF6F3B"
-              x={484}
+              x={18}
               y={190}
             />
             <Text
@@ -527,7 +527,7 @@ const ToolBar = () => {
               text="REJECT"
               fontFamily="Proxima Nova"
               fill="#FF6F3B"
-              x={484}
+              x={18}
               y={190}
               name="draggableReject"
               draggable
@@ -546,7 +546,7 @@ const ToolBar = () => {
                  ]);
                  var stage = stageRef.current;
                  var draggable = stage.findOne(".draggableReject");
-                 draggable.position({ x: 484, y: 190 });
+                 draggable.position({ x: 18, y: 190 });
                }}
             />
           {ellipse.map((eachEllipse, index) => (
@@ -588,7 +588,7 @@ const ToolBar = () => {
               x={eachDiamond.x}
               y={eachDiamond.y}
               text={eachDiamond.text}
-              points={[435, 20, 450, 10, 465, 20, 450, 30, 435, 20]}
+              points={[135, 20, 150, 10, 165, 20, 150, 30, 135, 20]}
               closed
               name={eachDiamond.name}
               selected={selected}
