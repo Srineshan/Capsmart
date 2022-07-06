@@ -17,16 +17,33 @@ const Welcome = () => {
                 <div className={style.alignCenter}>
                     <img src={WelcomeImg} alt="Welcome Img" className={style.welcomeAccountImgStyle} />
                 </div>
-                <div className={`${style.welcomeDescription} ${style.marginTop50}`}>
+                <div className={`${style.welcomeDescription} ${style.marginTop30}`}>
                 {`This setup wizard will guide you to quickly activate your account. Once your 
                 account is activated you will be able to invite other users from your organization. 
                 Experience the difference in better managing contractor activity logs and timesheet 
                 processing. Refer to the quick <Setup Guide> or <Setup Tutorial> to see how easy it 
                 is to activate a customer account.`}
                 </div>
-                <div className={`${style.welcomeDescription} ${style.marginTop30}`}>
+                <div className={`${style.welcomeDescription} ${style.marginTop20}`}>
                 {`If you experience any problems or have questions,
                 do not hesitate to reach out to our TimeSmartAI support team - <support@timesmart.ai>`}
+                </div>
+                <div className={`${style.spaceBetween} ${style.welcomeDescription} ${style.marginTop20}`}>
+                    Your customer acc manager details:
+                    <div className={`${style.managerDetails} ${style.marginLeft20}`}>
+                        <div className={style.managerFieldGrid}>
+                            <div className={style.managerLabelStyle}>MANAGER NAME:</div>
+                            <div className={style.managerFieldValueStyle}>Velroy</div>
+                        </div>
+                        <div className={style.managerFieldGrid}>
+                            <div className={style.managerLabelStyle}>EMAIL ADDRESS:</div>
+                            <div className={style.managerFieldValueStyle}>velroy@sure-shield.com</div>
+                        </div>
+                        <div className={style.managerFieldGrid}>
+                            <div className={style.managerLabelStyle}>PHONE NO:</div>
+                            <div className={style.managerFieldValueStyle}>387646982</div>
+                        </div>
+                    </div>
                 </div>
                 <div className={style.marginTop50}>
                     <button className={`${style.outlinedWelcomeButton} ${style.cursor}`}>CANCEL</button>

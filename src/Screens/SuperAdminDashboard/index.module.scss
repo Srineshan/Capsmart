@@ -247,7 +247,36 @@ body{
 .welcomeAccountImgStyle{
     height: 120px;
     width: 120px;
-    margin-top: 50px;
+    margin-top: 30px;
+}
+
+.managerDetails{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid #FFFFFF;
+    opacity: 0.85;
+    height: 120px;
+    width: 70%;
+    padding: 10px 20px;
+}
+
+.managerLabelStyle{
+    text-align: left;
+    font: normal normal 600 15px/30px Montserrat;
+    letter-spacing: 0px;
+    color: #848484;
+    text-transform: uppercase;
+}
+
+.managerFieldValueStyle{
+    text-align: left;
+    font: normal normal 600 15px/30px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+}
+
+.managerFieldGrid{
+    display: grid;
+    grid-template-columns: 32% 1fr;
 }
 
 .welcomeDashboardImgStyle{
@@ -273,7 +302,7 @@ body{
 }
 
 .welcomeContentMargin{
-    padding: 80px 150px;
+    padding: 60px 150px;
 }
 
 .welcomeToDashboardContentMargin{
@@ -351,7 +380,7 @@ body{
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    margin-left: 60px;
+    margin-left: 100px;
 }
 
 .activeStepperStyle{
@@ -378,21 +407,24 @@ body{
 }
 
 .stepperDivider3{
-    background: linear-gradient(to right,#7165E3 50%, #E9E9F0 50%) !important;
+    // background: linear-gradient(to right,#7165E3 50%, #E9E9F0 50%) !important;
+    background: linear-gradient(to right,#7165E3 35%, #E9E9F0 35%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider4{
-    background: linear-gradient(to right,#7165E3 70%, #E9E9F0 70%) !important;
+    // background: linear-gradient(to right,#7165E3 70%, #E9E9F0 70%) !important;
+    background: linear-gradient(to right,#7165E3 60%, #E9E9F0 60%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider5{
-    background: linear-gradient(to right,#7165E3 90%, #E9E9F0 90%) !important;
+    // background: linear-gradient(to right,#7165E3 90%, #E9E9F0 90%) !important;
+    background: linear-gradient(to right,#7165E3 85%, #E9E9F0 85%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
@@ -400,7 +432,7 @@ body{
 
 .stepperGrid{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
 .stepperMargin{
@@ -422,7 +454,7 @@ body{
     letter-spacing: 0.8px;
     color: #CDCECE;
     padding-top: 10px;
-    margin-left: -17%;
+    margin-left: -8%;
 }
 
 .activeEntityTextColor{
@@ -624,9 +656,9 @@ body{
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 11px #52575D4D;
     border-radius: 6px;
-    width: 78%;
+    width: 73%;
     padding: 20px;
-    margin-left: 13%;
+    margin-left: 18%;
 }
 
 .reqButton{
@@ -641,8 +673,8 @@ body{
 }
 
 .tagInputStyle{
-    width: 87%;
-    margin-left: 13%;
+    width: 82%;
+    margin-left: 18%;
 }
 
 .addMoreButton{

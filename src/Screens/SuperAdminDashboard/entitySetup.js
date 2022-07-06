@@ -96,12 +96,12 @@ const EntitySetup = () => {
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
-                    <div>
+                    {/* <div>
                         <div className={style.stepperImgBackground}>
                             <img src={Step2} alt="Step2" className={style.stepperImgStyle} />
                         </div>
                         <p className={style.entityTextColor}>ENTITY SYSTEM ADMIN</p>
-                    </div>
+                    </div> */}
                     <div>
                         <div className={style.stepperImgBackground}>
                             <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
@@ -112,7 +112,7 @@ const EntitySetup = () => {
                         <div className={style.stepperImgBackground}>
                             <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
-                        <p className={style.entityTextColor}>SITE USERS</p>
+                        <p className={style.entityTextColor}>APP USERS</p>
                     </div>
                     <div>
                         <div className={style.stepperImgBackground}>
@@ -167,7 +167,7 @@ const EntitySetup = () => {
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Entity Name*</div>
-                                <InputGroup value="hospital" className={`${style.twoFieldWidth}`} value={entity.name} onChange={(e)=>handleEntity('name',e.target.value)}/>
+                                <InputGroup className={`${style.twoFieldWidth}`} value={entity.name || 'hospital'} onChange={(e)=>handleEntity('name',e.target.value)}/>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop30}`}>
                                 <div className={style.extentionLableStyle}>Entity Type*</div>
@@ -178,9 +178,6 @@ const EntitySetup = () => {
                                         value={entity.type}
                                         onChange={(e)=>handleEntity('type',e.target.value)}
                                         className={style.twoFieldWidth}>
-                                            <option value="Select Entity Type" >
-                                              Select Entity Type...
-                                            </option>
                                             <option value="Doctor Office" >
                                               Doctor Office
                                             </option>
@@ -261,7 +258,7 @@ const EntitySetup = () => {
                         </div>
                         <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
                             <button className={style.outlinedButton} onClick={onSaveInProgress}>SAVE IN-PROGRESS</button>
-                            <Link to={'/entitySystemAdmin'}>
+                            <Link to={'/siteInformation'}>
                                 <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={saveToStorage}>CONTINUE</button>
                             </Link>
                         </div>

@@ -31,7 +31,7 @@
 }
 
 .logoutStyle{
-    margin: 25px 0 0 30px;
+    margin: 25px 0 0 10px;
     padding: 0 15px;
     font: normal normal bold 15px/25px Montserrat;
     letter-spacing: 1.5px;
@@ -41,7 +41,7 @@
 .activeMenuColor{
     color: #7165E3;
     border-bottom:2px solid #7165E3;
-    padding-bottom:2px;
+    padding-bottom:17px;
     font: normal normal 600 15px/25px Montserrat;
     margin-top: 27px;
 }
@@ -80,12 +80,23 @@
     justify-content: space-between;
 }
 
+.searchBarStyle{
+    margin-top: 25px;
+    margin-left: 15px;
+    width: 150px;
+}
+
+.marginRight{
+    margin-right: 10px;
+}
+
 .optionsCardStyle{
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 11px #52575D;
     border-radius: 4px 4px 0px 0px;
     width: 200px;
     position: absolute;
+    text-align: left;
 }
 
 .options{

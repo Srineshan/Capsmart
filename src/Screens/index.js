@@ -6,8 +6,22 @@ const EntryPage = () => {
     return(
         <div className={`${style.backgroundColor} ${style.alignCenter}`}>
             <div className={style.spaceBetween}>
+                <Link to={'/tasks'}>
+                    <div className={`${style.padding} ${style.cursorPointer}`}>
+                        <div className={style.roundedBackgrounds}>
+                        </div>
+                        <div className={style.headingStyle}>Reports</div>
+                    </div>
+                </Link>
+                <Link to={'/help'}>
+                    <div className={`${style.padding} ${style.cursorPointer}`}>
+                        <div className={style.roundedBackgrounds}>
+                        </div>
+                        <div className={style.headingStyle}>Help Management</div>
+                    </div>
+                </Link>
                 <Link to={'/activeContracts'}>
-                    <div className={style.cursorPointer}>
+                    <div className={`${style.padding} ${style.cursorPointer}`}>
                         <div className={style.roundedBackgrounds}>
                         </div>
                         <div className={style.headingStyle}>Contract Dashboard</div>
@@ -20,7 +34,7 @@ const EntryPage = () => {
                         <div className={style.headingStyle}>User Management</div>
                     </div>
                 </Link>
-                <Link to={'/welcome'}>
+                <Link to={'/login'}>
                     <div className={style.cursorPointer}>
                         <div className={style.roundedBackgrounds}>
                         </div>

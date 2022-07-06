@@ -82,12 +82,12 @@ const SiteUsers = () => {
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
-                    <div>
+                    {/* <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
                             <img src={Step2} alt="Step2" className={style.stepperImgStyle} /> 
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
-                    </div>
+                    </div> */}
                     <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
                             <img src={Step3} alt="Step3" className={style.stepperImgStyle} /> 
@@ -98,7 +98,7 @@ const SiteUsers = () => {
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
                             <img src={Step4} alt="Step4" className={style.stepperImgStyle} /> 
                         </div>
-                        <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITE USERS</p>
+                        <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>APP USERS</p>
                     </div>
                     <div>
                         <div className={style.stepperImgBackground}>
@@ -326,8 +326,8 @@ const SiteUsers = () => {
                     <p className={`${style.cloneContent} ${style.marginTop20}`}>Do you want to setup registered users for the different sites at this time?</p>
                     <div>
                         <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                            <button className={`${style.cloneOutlinedButton} ${style.cursorPointer} ${style.paddingTop5}`}>NO</button>
-                            <Link to={'/entitySystemAdmin'}>
+                            <button className={`${style.cloneOutlinedButton} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => setAlertDialog(false)}>NO</button>
+                            <Link to={'/appSubscription'}>
                                 <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`}>YES</button>
                             </Link>
                         </div>
@@ -393,7 +393,7 @@ const SiteUsers = () => {
                     </div>
                     <div>
                         <div className={`${style.floatRight} ${style.marginTop20}`}>
-                            <button className={`${style.buttonStyle} ${style.marginLeft20}`}>{isUploaded ? 'SAVE & CONTINUE' : 'CANCEL UPLOAD'}</button>
+                            <button className={`${style.buttonStyle} ${style.marginLeft20}`}  onClick={() => setShowBulkUploadDialog(false)}>{isUploaded ? 'SAVE & CONTINUE' : 'CANCEL UPLOAD'}</button>
                         </div>
                     </div>
                 </div>
