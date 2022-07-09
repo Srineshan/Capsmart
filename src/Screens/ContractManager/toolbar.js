@@ -598,7 +598,7 @@ const ToolBar = () => {
                onTextClick={(newSelected) => {
                  setSelected(newSelected);
                }}
-              deleteDisplay={(e)=>displayDelete(eachDiamond.x+410,eachDiamond.y+28,'diamond',index)}
+              deleteDisplay={(e)=>displayDelete(eachDiamond.x+115,eachDiamond.y+26,'diamond',index)}
             />
           ))}
           {slantingRect.map((eachSlantingRect,index) => (
@@ -610,12 +610,12 @@ const ToolBar = () => {
               name={eachSlantingRect.name}
               selected={selected}
               onTextChange={(value) => {
-              textChangeRect(index, value);
+              textChangeSlantingRect(index, value);
               }}
                onTextClick={(newSelected) => {
                  setSelected(newSelected);
                }}
-              deleteDisplay={(e)=>displayDelete(eachSlantingRect.x+470,eachSlantingRect.y+20,'slantingRect',index)}
+              deleteDisplay={(e)=>displayDelete(eachSlantingRect.x+160,eachSlantingRect.y+20,'slantingRect',index)}
             />
           ))}
           {

@@ -14,7 +14,7 @@ function getStyle(width, height) {
     outline: "none",
     resize: "none",
     colour: "black",
-    fontSize: "5px",
+    fontSize: "8px",
     fontFamily: "sans-serif",
     align:'center',
   };
@@ -91,7 +91,7 @@ const  EditableSelectRect = ({
     <Line
         x={20}
         y={20}
-        points={[485, 30, 492, 10, 540, 10, 532, 30, 485, 30]}
+        points={[185, 30, 190, 10, 245, 10, 240, 30, 185, 30]}
         closed
         fill="#d7d5f6"
         stroke="#A39CEB"
@@ -99,11 +99,11 @@ const  EditableSelectRect = ({
         strokeWidth={1}
       />
       <EditableText
-        x={513}
-        y={27}
+        x={210}
+        y={30}
         text={text}
-        width={50-2}
-        height={20-2}
+        width={60}
+        height={30}
         onChange={onTextChange}
         name={name}
       />
