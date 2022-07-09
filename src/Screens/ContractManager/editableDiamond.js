@@ -94,7 +94,7 @@ const  EditableDiamond = ({
       <Line
         x={20}
         y={20}
-        points={[435, 20, 450, 10, 465, 20, 450, 30, 435, 20]}
+        points={[135, 20, 150, 10, 165, 20, 150, 30, 135, 20]}
         closed
         fill="#d7d5f6"
         stroke="#A39CEB"
@@ -102,9 +102,9 @@ const  EditableDiamond = ({
         strokeWidth={1}
       />
       <EditableText
-        x={462}
-        y={29}
-        text={text}
+        x={163}
+        y={30}
+        text="value"
         width={25}
         height={20}
         onChange={onTextChange}

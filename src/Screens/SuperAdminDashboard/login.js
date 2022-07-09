@@ -14,11 +14,10 @@ const Login = (props) => {
        method: 'POST',
        headers: { 'Content-Type': 'application/json',
                   'X-tenantID' : '6242845f95690b3822cb96a5',
-                  // 'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTM3MzkzNTMsImV4cCI6MTY1MzgyNTc1M30.NfQJwvBPig-uJCp-pd7uH8mnRwfa5c-EyBm-atQN59sefOthWyaz74Pbucu2URDAVxXi5kEt-MTad-dJbyjsxw`
                 },
        body: JSON.stringify(user)
    };
-   fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/user-management-service/auth/login', requestOptions)
+   fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com/user-management-service/auth/login', requestOptions)
        .then(response => response.json())
        .then(data => {
          // navigate('/welcome');

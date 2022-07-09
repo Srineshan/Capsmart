@@ -56,7 +56,7 @@ const SiteInformation = () => {
             let temp = [];
             console.log('dept',data);
             data?.map(data=>{
-              temp.push({name:data.siteName.siteName,type:data.siteType.type,address:data.address})
+              temp.push({name:data.siteName.siteName,type:data.siteType.type,address:data.address,npin:data.npin.id})
             })
              setSiteList(temp);
           return true;
@@ -205,7 +205,7 @@ const SiteInformation = () => {
                                 <div className={`${style.extentionGrid}`}>
                                     <div className={style.extentionLableStyle}>NPIN*</div>
                                     <div className={style.spaceBetween}>
-                                        <InputGroup className={style.fourFieldWidth} value="Alphanumeric" />
+                                        <InputGroup className={style.fourFieldWidth} value={siteList.npin} onChange={(e)=>handleSite('npin',e.target.value)} />
                                         <button className={style.entityIDButton} onClick={()=> setShowSiteTable(true)}>
                                             <span>{siteID !== 'XX689- 64768' ? 'ENTITY ID:' : 'SITE ID:'}</span>{siteID}
                                         </button>
@@ -213,7 +213,7 @@ const SiteInformation = () => {
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Site Name*</div>
-                                    <InputGroup className={style.threeFieldWidth} defaultValue={site.name} onChange={(e)=>handleSite('name',e.target.name)} />
+                                    <InputGroup className={style.threeFieldWidth} defaultValue={site.name} onChange={(e)=>handleSite('name',e.target.value)} />
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Site Type*</div>

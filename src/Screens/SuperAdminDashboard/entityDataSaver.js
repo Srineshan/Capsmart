@@ -1,24 +1,25 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {Auth} from './../../utils/auth'
+import axios from "axios";
 
 export const saveEntity = async(department={},entity={},address={},billingDetails={}) => {
-  const accessToken = Auth();
-  let departments = [];
-  department?.map(data=>{
-    departments.push({"departmentName":{"name":data},"departmentHead":{"id":''}})
-  })
-  console.log('in data saveer',accessToken);
+//   const accessToken = Auth();
+//   let departments = [];
+//   department?.map(data=>{
+//     departments.push({"departmentName":{"name":data},"departmentHead":{"id":''}})
+//   })
+//   console.log('in data saveer',accessToken);
   const entityValue = {
-  "id":entity.id,
+  "id":"6242845f95690b3822cb96a5",
   "entityName": {
-    "entityName": entity.name
+    "entityName": "Hospital1"
   },
   "entityType": {
-    "type": entity.type
+    "type": "Doctor Office"
   },
-  "websiteURL":entity.websiteURL,
-  "canPrimarySiteToUseApp":entity.primarySite,
-  "multiSiteEntity":entity.multiSiteEntity,
+  "websiteURL":"",
+  "canPrimarySiteToUseApp":false,
+  "multiSiteEntity":false,
   "customerType": "HEALTHCARE",
   "sites": [
     {
@@ -31,16 +32,16 @@ export const saveEntity = async(department={},entity={},address={},billingDetail
       "siteType": {
         "type": ""
       },
-      "departmentList": {
-        "departments": departments
-      },
-      "address": {
-        "addressLine": address.addressLine,
-        "city": address.city,
-        "state": address.state,
-        "zipcode": address.zipcode,
-        "country": address.country,
-      }
+      // "departmentList": {
+      //   "departments": departments
+      // },
+      // "address": {
+      //   "addressLine": address.addressLine,
+      //   "city": address.city,
+      //   "state": address.state,
+      //   "zipcode": address.zipcode,
+      //   "country": address.country,
+      // }
     }
   ],
   "subscriptionPlan": {
@@ -101,11 +102,14 @@ export const saveEntity = async(department={},entity={},address={},billingDetail
     "id": ""
   }
 }
-const response = await fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/entity-service/entity', {
+const response = await fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com/entity-service/entity', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json',
                'X-tenantID' : '6242845f95690b3822cb96a5',
-               'Authorization': `Bearer ${accessToken}`},
+               'Authorization': `Bearer ${accessToken}`,
+               'Access-Control-Allow-Origin' : '*',
+             },
+
     body: JSON.stringify(entityValue)
   });
   if(response){
@@ -113,28 +117,52 @@ const response = await fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:
   }else{
     console.log('failed');
   }
-  return;
 }
 
-export const departmentSave = async(name) => {
-  const department = {
-    "departmentName":{
-      "name":name
-    },
-    "departmentHead" : {
-      "id":''
-    }
-  }
-  const response = await fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/entity-service/department', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json',
-                'X-tenantID' : '6242845f95690b3822cb96a5',
-                'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTM3NjAxMTQsImV4cCI6MTY1Mzg0NjUxNH0.eTiXgF1A1FheMgB4L8VbMeZMs7pxc0wiNhFTbt9WkO4HcVwiNKhgIQR1sBMaDp-D3Ez4Cm_VJi3jai35RrywOg`},
-      body: JSON.stringify(department)
-    });
-    if(response){
-      console.log('Success');
-    }else{
-      console.log('failed');
-    }
+//
+const accessToken = Auth()
+const baseUrl = 'http://ec2-54-210-154-191.compute-1.amazonaws.com/entity-service'
+const headers = {
+  'Content-Type': 'application/json',
+  'X-tenantID' : '6242845f95690b3822cb96a5',
+  'Authorization': `Bearer ${accessToken}`
 }
+
+
+
+export const GET = (url) => {
+  return axios(`${baseUrl}/${url}`,{
+    method: 'GET',
+    headers: headers,
+  });
+}
+
+export const PUT = (url,data) => {
+  return axios(`${baseUrl}/${url}`,{
+    method: 'PUT',
+    headers: headers,
+    data,
+  })
+}
+
+// export const getEntityData = async() => {
+//   const accessToken = Auth();
+//   let entityData = {};
+//   const entity = {
+//     method: 'GET',
+//     headers: { 'Content-Type': 'application/json',
+//               'X-tenantID' : '6242845f95690b3822cb96a5',
+//               'Authorization': `Bearer ${accessToken}`}
+//     };
+//   let responseData = await fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com:8000/entity-service/entity', entity)
+//     .then(response => response.json())
+//     .then(data => {
+//         if(data?.filter(data=>data.id === '6242845f95690b3822cb96a5')?.map(data=>{
+//           console.log('data in func',data);
+//           entityData = data;
+//           }))
+//       return entityData;
+//     }
+//    )
+//    return entityData;
+// }

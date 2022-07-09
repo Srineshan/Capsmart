@@ -13,7 +13,9 @@ import CloudUpload from './../../images/cloudUpload.png';
 import HourglassImg from './../../images/hourglassImg.png';
 import UploadedImg from './../../images/uploadedImage.png';
 import Download from './../../images/download.png';
-import {Auth} from './../../utils/auth'
+import {Auth} from './../../utils/auth';
+import { CSVLink } from "react-csv";
+import Papa from 'papaparse';
 
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
@@ -35,6 +37,49 @@ const SiteUsers = () => {
     const accessToken = Auth();
     const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:'',title:'',email:'',phone:'',site:[],admin_access:false,roles:[]});
 
+    const columns = [
+      {
+        label: "NPIN",
+        key: "npin", // String-based value accessors!
+      },
+      {
+        label: "Site Name",
+        key: "site_name",
+      },
+      {
+        label: "Site Type",
+        key:"site_type",
+      },
+      {
+        label: "Address Line",
+        key:"address_line",
+      },
+      {
+        label: "City",
+        key:"city",
+      },
+      {
+        label: "State",
+        key:"state",
+      },
+      {
+        label: "Zipcode",
+        key:"zipcode",
+      },
+      {
+        label: "Country",
+        key:"country",
+      },
+      {
+        label: "Setup Department",
+        key: "setup_department",
+      },
+      {
+        label: "Department Name",
+        key: "department",
+      }
+    ];
+
     useEffect(()=>{
       getUserData();
     },[])
@@ -46,7 +91,7 @@ const SiteUsers = () => {
                   'X-tenantID' : '6242845f95690b3822cb96a5',
                   'Authorization': `Bearer ${accessToken}`}
         };
-        fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/user-management-service/user', user)
+        fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com/user-management-service/user', user)
         .then(response => response.json())
         .then(data => {
             setUser(data);
@@ -98,6 +143,17 @@ const SiteUsers = () => {
     const handleUserData = (name,value) => {
       setUserData({...userData, [name]:value});
     }
+
+    const changeHandler = (event) => {
+    // Passing file data (event.target.files[0]) to parse using Papa.parse
+    Papa.parse(event.target.files[0], {
+      header: true,
+      skipEmptyLines: true,
+      complete: function (results) {
+        console.log(results.data)
+      },
+    });
+  };
 
     console.log('user data',userData);
 
@@ -409,9 +465,26 @@ const SiteUsers = () => {
                             iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
                             adipiscing elit. sed finibus quam nec tellus dictum.
                         </p>
-                        <button className={style.downloadBulkButtonStyle}>
+                        <CSVLink
+                      data={[]}
+                      headers={columns}
+                      filename={`Site Users`}
+                      target="_blank"
+                      className={style.m10}>
+                      <button className={style.downloadBulkButtonStyle}>
                         DOWNLOAD BULK USER UPLOAD EXCEL TEMPLATE FILE
-                        </button>
+                      </button>
+                    </CSVLink>
+                    </div>
+                    <div>
+                      {/* File Uploader */}
+                      <input
+                        type="file"
+                        name="file"
+                        accept=".csv"
+                        onChange={changeHandler}
+                        style={{ display: "block", margin: "10px auto" }}
+                      />
                     </div>
                     <div>
                         <div className={`${style.floatRight} ${style.marginTop20}`}>
