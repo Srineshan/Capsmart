@@ -13,6 +13,7 @@ import CloudUpload from './../../images/cloudUpload.png';
 import HourglassImg from './../../images/hourglassImg.png';
 import UploadedImg from './../../images/uploadedImage.png';
 import Download from './../../images/download.png';
+import Dropzone from "react-dropzone";
 import {Auth} from './../../utils/auth';
 import { CSVLink } from "react-csv";
 import Papa from 'papaparse';
@@ -21,7 +22,17 @@ import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 
 const VALUES = ['Site 1', "Site 1", "Site", 'Site 1'];
-const SiteUsers = () => {
+
+const dropzoneStyle = {
+    width: "100%",
+    height: "auto",
+    borderWidth: 2,
+    borderColor: "rgb(102, 102, 102)",
+    borderStyle: "dashed",
+    borderRadius: 5,
+  }
+
+const SiteUsers = ({getActiveStep}) => {
 
     const [tags, setTags] = useState(VALUES);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
@@ -35,7 +46,9 @@ const SiteUsers = () => {
     const [item, setItem] = useState();
     const [user,setUser] = useState([]);
     const accessToken = Auth();
-    const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:'',title:'',email:'',phone:'',site:[],admin_access:false,roles:[]});
+    // const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:'',title:'',email:'',phone:'',site:[],admin_access:false,roles:[]});
+    const [userData,setUserData] = useState([]);
+    const [userDataCSV,setUserDataCSV] = useState([]);
 
     const columns = [
       {
@@ -80,26 +93,26 @@ const SiteUsers = () => {
       }
     ];
 
-    useEffect(()=>{
-      getUserData();
-    },[])
+    // useEffect(()=>{
+    //   getUserData();
+    // },[])
 
-    const getUserData = () => {
-      const user = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json',
-                  'X-tenantID' : '6242845f95690b3822cb96a5',
-                  'Authorization': `Bearer ${accessToken}`}
-        };
-        fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com/user-management-service/user', user)
-        .then(response => response.json())
-        .then(data => {
-            setUser(data);
-            console.log('data',data);
-          return true;
-        }
-       )
-    }
+    // const getUserData = () => {
+    //   const user = {
+    //     method: 'GET',
+    //     headers: { 'Content-Type': 'application/json',
+    //               'X-tenantID' : '6242845f95690b3822cb96a5',
+    //               'Authorization': `Bearer ${accessToken}`}
+    //     };
+    //     fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com/user-management-service/user', user)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         setUser(data);
+    //         console.log('data',data);
+    //       return true;
+    //     }
+    //    )
+    // }
 
     const options = [
         { name: 'Site 1' },
@@ -146,11 +159,12 @@ const SiteUsers = () => {
 
     const changeHandler = (event) => {
     // Passing file data (event.target.files[0]) to parse using Papa.parse
-    Papa.parse(event.target.files[0], {
+    Papa.parse(event?.[0], {
       header: true,
       skipEmptyLines: true,
       complete: function (results) {
         console.log(results.data)
+        setUserDataCSV(results.data);
       },
     });
   };
@@ -162,7 +176,7 @@ const SiteUsers = () => {
             <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
             <div className={style.stepperMargin}>
                 <div className={style.stepperGrid}>
-                    <div>
+                    <div onClick={() => getActiveStep('entitySetup')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                         </div>
@@ -174,19 +188,19 @@ const SiteUsers = () => {
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div> */}
-                    <div>
+                    <div onClick={() => getActiveStep('siteInformation')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
                             <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
-                    <div>
+                    <div onClick={() => getActiveStep('siteUsers')}>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
                             <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>APP USERS</p>
                     </div>
-                    <div>
+                    <div onClick={() => getActiveStep('appSubscription')}>
                         <div className={style.stepperImgBackground}>
                             <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                         </div>
@@ -346,9 +360,9 @@ const SiteUsers = () => {
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
                                     <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
                                     <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & ADD MORE</button>
-                                    <Link to={'/appSubscription'}>
-                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`}>CONTINUE</button>
-                                    </Link>
+                                    {/* <Link to={'/appSubscription'}> */}
+                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => getActiveStep('appSubscription')}>CONTINUE</button>
+                                    {/* </Link> */}
                                 </div>
                             </div>
                         </div>
@@ -421,7 +435,7 @@ const SiteUsers = () => {
                     <div className={style.extensionBorder}></div>
                     <div className={`${style.dashborderStyle} ${style.marginTop20}`}>
                         <div className={style.alignCenter}>
-                        {isUploaded ? (
+                        {/* {isUploaded ? (
                             <div onClick={() => setShowUploading(false)}>
                                 <img src={UploadedImg} alt="done" className={style.uploadImgStyle} />
                                 <p className={style.uploadTextStyle}>
@@ -442,7 +456,31 @@ const SiteUsers = () => {
                                 DRAG AND DROP, OR CLICK TO UPLOAD THE EXCEL TEMPLATE
                                 </p>
                             </div>
-                        ) : ''}
+                        ) : ''} */}
+                            <Dropzone style={dropzoneStyle} accept=".csv" onDrop={acceptedFiles => changeHandler(acceptedFiles)}>
+                                {({getRootProps, getInputProps}) => (
+                                    <section>
+                                    <div {...getRootProps()}>
+                                        <input {...getInputProps()} accept=".csv" />
+                                        {userDataCSV?.length === 0 ? (
+                                        <>
+                                        <img src={CloudUpload} alt="cloud" className={style.uploadImgStyle} />
+                                        <p className={style.uploadTextStyle}>
+                                        DRAG AND DROP, OR CLICK TO UPLOAD THE EXCEL TEMPLATE
+                                        </p>
+                                        </>
+                                        ) : (
+                                            <>
+                                                <img src={UploadedImg} alt="done" className={style.uploadImgStyle} />
+                                                <p className={style.uploadTextStyle}>
+                                                 RECORDS SUCCESSFULLY UPLOADED
+                                                </p>
+                                            </>
+                                        )}
+                                    </div>
+                                    </section>
+                                )}
+                            </Dropzone>
                         </div>
                         {isUploaded && (
                             <div className={`${style.spaceBetween} ${style.reduceMarginTop}`}>
@@ -475,16 +513,6 @@ const SiteUsers = () => {
                         DOWNLOAD BULK USER UPLOAD EXCEL TEMPLATE FILE
                       </button>
                     </CSVLink>
-                    </div>
-                    <div>
-                      {/* File Uploader */}
-                      <input
-                        type="file"
-                        name="file"
-                        accept=".csv"
-                        onChange={changeHandler}
-                        style={{ display: "block", margin: "10px auto" }}
-                      />
                     </div>
                     <div>
                         <div className={`${style.floatRight} ${style.marginTop20}`}>

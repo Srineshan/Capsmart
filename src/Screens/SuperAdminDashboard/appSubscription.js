@@ -16,7 +16,7 @@ import {Auth} from './../../utils/auth'
 
 const VALUES = ['Department 1', "Department 2", "Department 3"];
 
-const AppSubscription = () => {
+const AppSubscription = ({getActiveStep}) => {
     const [tags, setTags] = useState(VALUES);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [selectDepartment, setSelectDepartment] = useState('');
@@ -106,7 +106,7 @@ const AppSubscription = () => {
             <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
             <div className={style.stepperMargin}>
                 <div className={style.stepperGrid}>
-                    <div>
+                    <div onClick={() => getActiveStep('entitySetup')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                         </div>
@@ -118,19 +118,19 @@ const AppSubscription = () => {
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div> */}
-                    <div>
+                    <div onClick={() => getActiveStep('siteInformation')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
-                    <div>
+                    <div onClick={() => getActiveStep('siteUsers')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>APP USERS</p>
                     </div>
-                    <div>
+                    <div onClick={() => getActiveStep('appSubscription')}>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
                             <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                         </div>
