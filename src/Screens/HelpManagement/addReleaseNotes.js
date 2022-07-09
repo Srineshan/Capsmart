@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button } from '@blueprintjs/core';
 import style from './index.module.scss';
 
-const AddTutorial = ({getAddTutorialDialog}) => {
+const AddReleaseNotes = ({getAddReleaseNotesDialog}) => {
     const [selectedContract, setSelectedContract] = useState('Written Contract Extension For Fixed Term');
     const [startDate, setStartDate] = useState(new Date);
     const leftElement = () => {
@@ -18,25 +18,17 @@ const AddTutorial = ({getAddTutorialDialog}) => {
     }
 
     return(
-        <Dialog isOpen={getAddTutorialDialog} onClose={() => getAddTutorialDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
+        <Dialog isOpen={getAddReleaseNotesDialog} onClose={() => getAddReleaseNotesDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
           <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
             <div className={style.spaceBetween}>
-                <p className={style.extensionStyle}>Add Tutorial / Video</p>
-                <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getAddTutorialDialog(false)}  />
+                <p className={style.extensionStyle}>Add Release Note</p>
+                <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getAddReleaseNotesDialog(false)}  />
             </div>
             <div className={style.extensionBorder}></div>
             <div className={style.spaceBetween}>
                 <p className={style.extensionOptionsStyle}>01-20-2022 14:03 IST</p>
                 <p className={style.extensionOptionsStyle}>PERSON NAME</p>
                 <div className={style.extensionOptionsStyle}>
-                    <select
-                        name="class"
-                        id="Class"
-                        className={`${style.tutorialFieldWidth} ${style.reduceTop10}`}>
-                            <option value="Tutorial">
-                            Tutorial
-                            </option>
-                    </select>
                 </div>
             </div>
             <div className={style.extensionBorder}></div>
@@ -99,4 +91,4 @@ const AddTutorial = ({getAddTutorialDialog}) => {
     )
 }
 
-export default AddTutorial;
+export default AddReleaseNotes;

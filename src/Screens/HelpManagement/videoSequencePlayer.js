@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Icon, Intent, Dialog, Classes, TextArea } from "@blueprintjs/core";
 import UserLogo from './../../images/userLogo.jpg';
 import style from './index.module.scss';
 
 const VideoSequencePlayerDialog = ({getShowVideoSequenceDialog}) => {
+    const [isShowComment, setIsShowComment] = useState(false)
     return(
         <Dialog isOpen={getShowVideoSequenceDialog} onClose={() => getShowVideoSequenceDialog(false)} className={`${style.videoSequenceDialogBackground} ${style.videoSequenceDialog}`}>
             <div className={`${Classes.DIALOG_BODY} `}>
@@ -49,20 +50,52 @@ const VideoSequencePlayerDialog = ({getShowVideoSequenceDialog}) => {
                 <div className={`${style.lightColorBorder} ${style.marginTop40}`}></div>
                 <div className={`${style.marginTop40} ${style.videoSequenceGrid}`}>
                     <div>
-                        <div className={`${style.videoPageValue} ${style.marginTop10}`}>Lorem Ipsum</div>
+                        <div className={`${style.videoPageValue}`}>Lorem Ipsum</div>
+                        <video width="100%" controls className={style.marginTop20}>
+                            <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+                            Your browser does not support HTML video.
+                        </video>
                     </div>
                     <div>
                         <div className={style.videoPageLabel}>Video URL/Link</div>
                         <div className={`${style.videoPageValue} ${style.marginTop10}`}>https://www.youtube.com/watch?v=uyTXKK24bbY</div>
-                        <div className={`${style.videoPageLabel} ${style.marginTop20}`}>0 Comments</div>
-                        <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                            <img src={UserLogo} className={style.userLogoSmall} />
-                            <div className={style.marginLeft20}>
-                                <div className={`${style.videoPageValue} ${style.marginTop20}`}>Philipp Stevens</div>
-                                <TextArea placeholder='Text type...' rows={4} className={`${style.fullWidth} ${style.marginTop10}`} />
-                                <button className={`${style.commentButton} ${style.floatRight} ${style.marginTop10}`}>COMMENT</button>
+                        {isShowComment ? (
+                            <div>
+                                <div className={`${style.videoPageLabel} ${style.marginTop20}`}>1 Comments</div>
+                                <div className={`${style.displayInRow} ${style.marginTop10}`}>
+                                    <img src={UserLogo} className={style.userLogoSmall} />
+                                    <div className={style.marginLeft20}>
+                                        <div className={style.displayInRow}>
+                                            <div className={`${style.videoPageValue} ${style.marginTop20}`}>Philipp Stevens MD</div>
+                                            <div className={`${style.videoPageLabel} ${style.marginLeft20} ${style.marginTop20}`}>3 days ago</div>
+                                        </div>
+                                        <div className={`${style.videoPageLabel} ${style.marginTop20}`}>lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo</div>
+                                        <strong className={`${style.videoPageValue} ${style.floatRight}`}>Reply</strong>
+                                        <TextArea placeholder='Text type...' rows={4} className={`${style.fullWidth} ${style.marginTop10}`} />
+                                        <button className={`${style.commentButton} ${style.floatRight} ${style.marginTop10}`} onClick={() => setIsShowComment(!isShowComment)}>COMMENT</button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div>
+                                <div className={`${style.videoPageLabel} ${style.marginTop20}`}>0 Comments</div>
+                                <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                                    <img src={UserLogo} className={style.userLogoSmall} />
+                                    <div className={style.marginLeft20}>
+                                        <div className={`${style.videoPageValue} ${style.marginTop20}`}>Philipp Stevens</div>
+                                        <TextArea placeholder='Text type...' rows={4} className={`${style.fullWidth} ${style.marginTop10}`} />
+                                        <button className={`${style.commentButton} ${style.floatRight} ${style.marginTop10}`} onClick={() => setIsShowComment(!isShowComment)}>COMMENT</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <div className={`${style.lightColorBorder} ${style.marginTop20}`}></div>
+                <div className={`${style.floatRight} ${style.marginTop20}`}>
+                    <div className={style.displayInRow}>
+                        <button className={style.outlinedTransparentButton}>CANCEL</button>
+                        <button className={`${style.whiteButton} ${style.marginLeft20}`}>SAVE</button>
                     </div>
                 </div>
             </div>
