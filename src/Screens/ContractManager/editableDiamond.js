@@ -5,8 +5,8 @@ import { Html } from "react-konva-utils";
 function getStyle(width, height) {
   const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
   const baseStyle = {
-    width: `${width-7}px`,
-    height: `${height-12}px`,
+    width: `${width}px`,
+    height: `${height}px`,
     border: "none",
     padding: "0px",
     margin: "0px",
@@ -14,7 +14,7 @@ function getStyle(width, height) {
     outline: "none",
     resize: "none",
     colour: "black",
-    fontSize: "5px",
+    fontSize: "12px",
     fontFamily: "sans-serif",
   };
   if (isFirefox) {
@@ -75,7 +75,8 @@ const  EditableDiamond = ({
   onTextChange,
   selected,
   name,
-  deleteDisplay
+  deleteDisplay,
+  dragChange
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
@@ -90,23 +91,25 @@ const  EditableDiamond = ({
 
 
   return (
-    <Group x={x} y={y} name={name} draggable onClick={deleteDisplay}>
+    <Group x={x} y={y} name={name} draggable onClick={deleteDisplay} onDragEnd={dragChange}>
       <Line
         x={20}
         y={20}
-        points={[135, 20, 150, 10, 165, 20, 150, 30, 135, 20]}
+        points={[135, 20, 185, -15, 235, 20, 185, 54, 135, 20]}
         closed
-        fill="#d7d5f6"
-        stroke="#A39CEB"
+        // fill="#d7d5f6"
+        // stroke="#A39CEB"
+        fill='white'
+        stroke="red"
         name={name}
         strokeWidth={1}
       />
       <EditableText
-        x={163}
+        x={182}
         y={30}
-        text="value"
-        width={25}
-        height={20}
+        text={text}
+        width={55}
+        height={27}
         onChange={onTextChange}
         name={name}
       />

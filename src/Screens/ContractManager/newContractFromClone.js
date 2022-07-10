@@ -130,7 +130,6 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
 
     const getDeleteExecutedContractDialog = (value) => {
         setDeleteExecutedContractDialog(value);
-        console.log(value);
     }
 
     const getAddOn = (value) => {
@@ -140,8 +139,6 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
     useEffect(() => {
         setIsMultipleContract(selectContractInfo === "Multiple Contractor" ? true : false);
       }, [selectContractInfo]);
-
-      console.log(isMultipleContract, selectContractInfo)
 
     const uploadRightElement = () => {
         return(
@@ -162,13 +159,11 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
       ];
 
       const onSelect = useCallback((selectedItem) => {
-        console.log('selectedItem', selectedItem);
         setItem(selectedItem);
         setSelectContractManager('');
       }, []);
 
       const onSelectContractId = useCallback((selectedItem) => {
-        console.log('selectedItem', selectedItem);
         setPriorContractItem(selectedItem);
         setSelectPriorContractID('');
       }, []);
@@ -252,8 +247,6 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
           })),
         [priorContractItem],
       );
-
-    console.log(selectContractManager, completedSteps);
 
     return(
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
@@ -367,7 +360,7 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                                                 <Switch checked={applyWorkflowToAll} className={` ${style.textAlignLeft} ${style.fourFieldWidth}`} onChange={() => setApplyWorkflowToAll(!applyWorkflowToAll)}  />
                                             }
                                             className={`${style.switchFontStyle}`}
-                                            label={applyWorkflowToAll ? 'YES' : "NO"}                        
+                                            label={applyWorkflowToAll ? 'YES' : "NO"}
                                         />
                                         {!applyWorkflowToAll && (
                                             <div className={`${style.displayInRow} ${style.fullWidth}`}>
@@ -548,13 +541,13 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Contractor Business Contact Same As Contractor*</div>
-                                <div className={`${style.displayInRow}  `}> 
+                                <div className={`${style.displayInRow}  `}>
                                     <FormControlLabel
                                         control={
                                             <Switch checked={true} className={`${style.textAlignLeft}`} onChange={() => setSameAsContractor(!sameAsContractor)} />
                                         }
                                         className={`${style.switchFontStyle}`}
-                                        label={'YES'}                        
+                                        label={'YES'}
                                     />
                                     {timeSheetCount === '1' && (
                                         <div className={style.displayInRow}>
@@ -809,7 +802,7 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                                             <Switch checked={sameAsContractor} className={`${style.textAlignLeft}`} onChange={() => setSameAsContractor(!sameAsContractor)} />
                                         }
                                         className={`${style.switchFontStyle} ${style.marginTop}`}
-                                        label={sameAsContractor ? 'YES' : 'NO'}                      
+                                        label={sameAsContractor ? 'YES' : 'NO'}
                                     />
                                 </div>
                             )}
@@ -873,7 +866,7 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                                             <Switch checked={true} className={`${style.textAlignLeft}`} />
                                         }
                                         className={`${style.switchFontStyle}`}
-                                        label={'YES'}                      
+                                        label={'YES'}
                                     />
                                     <select
                                         name="class"
@@ -1015,7 +1008,7 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                                             <Switch checked={siteLevel} className={`${style.flexLeft}`} onChange={() => setSiteLevel(!siteLevel)}  />
                                         }
                                         className={`${style.switchFontStyle} ${style.marginTop}`}
-                                        label={siteLevel ? 'YES' : "NO"}                   
+                                        label={siteLevel ? 'YES' : "NO"}
                                     />
                                 </div>
                                 {siteLevel && (
@@ -1061,7 +1054,7 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                                             <Switch checked={departmentLevel} className={`${style.flexLeft}`} onChange={() => setDepartmentLevel(!departmentLevel)}  />
                                         }
                                         className={`${style.switchFontStyle} ${style.marginTop}`}
-                                        label={departmentLevel ? 'YES' : "NO"}                 
+                                        label={departmentLevel ? 'YES' : "NO"}
                                     />
                                 </div>
                                 <div>
@@ -1232,7 +1225,7 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                                             <Switch checked={fullyExecutedContract} className={`${style.floatLeft}`} onChange={() => setFullyExecutedContract(!fullyExecutedContract)}  />
                                         }
                                         className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
-                                        label={fullyExecutedContract ? 'YES' : "NO"}                
+                                        label={fullyExecutedContract ? 'YES' : "NO"}
                                     />
                                     {fullyExecutedContract && (
                                         <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
@@ -1260,7 +1253,7 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                                                     Schedule
                                                     </option>
                                                     <option value="Attachment " >
-                                                    Attachment 
+                                                    Attachment
                                                     </option>
                                             </select>
                                         </div>
@@ -1283,7 +1276,7 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                                             <Switch checked={siteSpecific} className={`${style.textAlignLeft}`} onChange={() => setSiteSpecific(!siteSpecific)}  />
                                         }
                                         className={`${style.switchFontStyle}`}
-                                        label={siteSpecific ? 'YES' : "NO"}             
+                                        label={siteSpecific ? 'YES' : "NO"}
                                     />
                                     {siteSpecific && (
                                         <div className={style.displayInRow}>
@@ -1316,7 +1309,7 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                                             <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
                                         }
                                         className={`${style.switchFontStyle}`}
-                                        label={departmentSpecific ? 'YES' : "NO"}              
+                                        label={departmentSpecific ? 'YES' : "NO"}
                                     />
                                     {departmentSpecific && (
                                         <div className={style.displayInRow}>
@@ -1561,12 +1554,15 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
             <Dialog isOpen={viewWorkflowDialog} onClose={() => setViewWorkflowDialog(false)} className={`${style.toolbarDialogStyle} ${style.dialogPaddingBottom}`}>
                 <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
                     <div className={style.spaceBetween}>
+                    <div className={style.reduceTop10}>
                         <p className={style.extensionStyle}>View / Creat Workflow</p>
+                        <p>Note: To Draw Arrow or Line, click on its element and draw on the screen.</p>
+                        </div>
                         <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setViewWorkflowDialog(false)}  />
                     </div>
                     <div className={`${style.flowChartBoxStyle}`}>
                         <ToolBar />
-                    </div> 
+                    </div>
                 </div>
             </Dialog>
         </div>

@@ -31,12 +31,16 @@ const ToolBar = () => {
   const [startPos,setStartPos] = useState({startX:null,startY:null});
   const [pos,setPos] = useState({x:null,y:null});
   const [drawable,setDrawable] = useState('');
+  const shapeRef = useRef();
+  const trRef = useRef();
 
   const [selected,setSelected] = useState(false);
 
   const handleStageOnClick = (e) => {
     // if(!e.target.attrs.name.includes('arrow') && !e.target.attrs.name.includes('line')){
       setSelectedShapeName(e.target.attrs.name)
+      // trRef.current.nodes([shapeRef.current]);
+      // trRef.current.getLayer().batchDraw();
     // }
     if(!e.target.attrs.name){
       setDeleteValue({bool:false,name:'',shape:'',x:0,y:0})
@@ -72,11 +76,8 @@ const ToolBar = () => {
   const displayTextArea = text[selectedTextIndex]?.visible?'block':'none'
 
   const displayDelete = (x,y,name,index)=>{
-    console.log('inside displayDelete')
     setDeleteValue({...deleteValue,bool:true,x:x,y:y,name:name,index:index})
   }
-
-  console.log('delete',deleteValue);
 
   const onDelete = () => {
     let type = deleteValue?.name;
@@ -96,8 +97,11 @@ const ToolBar = () => {
       setSlantingRect(slantingRect?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
     }else if(type === 'diamond'){
       setDiamond(diamond?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
-    }else{
+    }else if(type === 'arrow'){
       setArrow(arrow?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }
+    else{
+      setLineConnector(lineConnector?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
     }
     setDeleteValue({bool:false,x:0,y:0,name:'',index:null})
   }
@@ -187,6 +191,95 @@ const ToolBar = () => {
     setSlantingRect(temp);
   }
 
+  const handleDragChange = (e,index,shapeName) => {
+    if(shapeName === 'ellipse'){
+      let temp = ellipse;
+      temp[index].x = e.target.x();
+      temp[index].y = e.target.y();
+      setEllipse(temp);
+    }
+    else if(shapeName === 'rect'){
+      let temp = rect;
+      temp[index].x = e.target.x();
+      temp[index].y = e.target.y();
+      setRect(temp);
+    }
+    else if(shapeName === 'diamond'){
+      let temp = diamond;
+      temp[index].x = e.target.x();
+      temp[index].y = e.target.y();
+      setDiamond(temp);
+    }
+    else if(shapeName === 'slantingRect'){
+      let temp = slantingRect;
+      temp[index].x = e.target.x();
+      temp[index].y = e.target.y();
+      setSlantingRect(temp);
+    }
+    else if(shapeName === 'arrow'){
+      let temp = arrow;
+      temp[index].x = e.target.x();
+      temp[index].y = e.target.y();
+      setArrow(temp);
+    }
+    else if(shapeName === 'lineConnector'){
+      let temp = lineConnector;
+      temp[index].x = e.target.x();
+      temp[index].y = e.target.y();
+      setLineConnector(temp);
+    }
+    else if(shapeName === 'yes'){
+      let temp = yes;
+      temp[index].x = e.target.x();
+      temp[index].y = e.target.y();
+      setYes(temp);
+    }
+    else if(shapeName === 'hold'){
+      let temp = hold;
+      temp[index].x = e.target.x();
+      temp[index].y = e.target.y();
+      setHold(temp);
+    }
+    else{
+      let temp = reject;
+      temp[index].x = e.target.x();
+      temp[index].y = e.target.y();
+      setReject(temp);
+    }
+  }
+
+const checkBound = (e) => {
+  let diamondYAxis = diamond?.map(data=>data);
+  let checkableValueX = 0;
+  let checkableValueY = 0;
+  let higherBoundY = 0;
+  let lowerBoundY = 0;
+  let higherBoundX = 0;
+  let lowerBoundX = 0;
+  let value = [];
+  let response = false;
+  for(let i=0;i<diamondYAxis?.length;i++){
+     checkableValueY = diamondYAxis[i].y;
+     checkableValueX = diamondYAxis[i].x;
+     higherBoundY = checkableValueY+100;
+     lowerBoundY = checkableValueY-100;
+     higherBoundX = checkableValueX+350;
+     lowerBoundX = checkableValueX-100;
+     if(e.target.y()<higherBoundY&&e.target.y()>lowerBoundY && e.target.x()<higherBoundX && e.target.x()>lowerBoundX){
+       value.push(true);
+     }else{
+       value.push(false);
+     }
+      }
+        if(value.includes(true)){
+          response = true;
+        }else{
+          response = false;
+        }
+      return response;
+}
+
+
     return (
       <Stage width={window.innerWidth} height={window.innerHeight} ref={stageRef}  onClick={handleStageOnClick}
       onMouseDown={handleMouseDown}
@@ -234,8 +327,8 @@ const ToolBar = () => {
                      {
                        x: e.target.x(),
                        y: e.target.y(),
-                       width: e.target.width(),
-                       height: e.target.height(),
+                       width: 120,
+                       height: 40,
                        text:"",
                        name:`${e.target.name()}${ellipse?.length ? ellipse?.length+1 : 1}`
                      }
@@ -285,8 +378,8 @@ const ToolBar = () => {
                      {
                        x: e.target.x(),
                        y: e.target.y(),
-                       width: e.target.width(),
-                       height: e.target.height(),
+                       width: 120,
+                       height: 50,
                        stroke: e.target.stroke(),
                        text:"",
                        name:`${e.target.name()}${rect?.length ? rect?.length+1 : 1}`
@@ -324,7 +417,8 @@ const ToolBar = () => {
               points={[135, 20, 150, 10, 165, 20, 150, 30, 135, 20]}
               closed
               fill="#fff"
-              stroke="#A39CEB"
+              // stroke="#A39CEB"
+              stroke="red"
               strokeWidth={1}
               draggable
               onDragEnd={(e) => {
@@ -446,18 +540,22 @@ const ToolBar = () => {
               name="draggableYes"
               draggable
                onDragEnd={(e) => {
-                 setYes((prevYes) => [
-                   ...prevYes,
-                   {
-                     x: e.target.x(),
-                     y: e.target.y(),
-                     fill: e.target.fill(),
-                     name:`${e.target.name()}${yes?.length ? yes?.length+1 : 1}`,
-                     fontFamily: e.target.fontFamily(),
-                     text:e.target.text(),
-                     fontSize:e.target.fontSize(),
-                   }
-                 ]);
+                  if(checkBound(e)){
+                    setYes((prevYes) => [
+                      ...prevYes,
+                      {
+                        x: e.target.x(),
+                        y: e.target.y(),
+                        fill: e.target.fill(),
+                        name:`${e.target.name()}${yes?.length ? yes?.length+1 : 1}`,
+                        fontFamily: e.target.fontFamily(),
+                        text:e.target.text(),
+                        fontSize:15,
+                      }
+                    ]);
+                  }else{
+                    alert(`Out of Bound! Deciding Text's are limited only around decision making elements`);
+                  }
                  var stage = stageRef.current;
                  var draggable = stage.findOne(".draggableYes");
                  draggable.position({ x: 27, y:120});
@@ -489,6 +587,7 @@ const ToolBar = () => {
               name="draggableHold"
               draggable
                onDragEnd={(e) => {
+                 if(checkBound(e)){
                  setHold((prevHold) => [
                    ...prevHold,
                    {
@@ -498,9 +597,12 @@ const ToolBar = () => {
                      name:`${e.target.name()}${hold?.length ? hold?.length+1 : 1}`,
                      fontFamily: e.target.fontFamily(),
                      text:e.target.text(),
-                     fontSize:e.target.fontSize(),
+                     fontSize:15,
                    }
                  ]);
+               }else{
+                 alert(`Out of Bound! Deciding Text's are limited only around decision making elements`);
+               }
                  var stage = stageRef.current;
                  var draggable = stage.findOne(".draggableHold");
                  draggable.position({ x: 23, y: 155 });
@@ -526,12 +628,13 @@ const ToolBar = () => {
               fontSize={12}
               text="REJECT"
               fontFamily="Proxima Nova"
-              fill="#FF6F3B"
+              fill="red"
               x={18}
               y={190}
               name="draggableReject"
               draggable
                onDragEnd={(e) => {
+                 if(checkBound(e)){
                  setReject((prevReject) => [
                    ...prevReject,
                    {
@@ -541,9 +644,12 @@ const ToolBar = () => {
                      name:`${e.target.name()}${reject?.length ? reject?.length+1 : 1}`,
                      fontFamily: e.target.fontFamily(),
                      text:e.target.text(),
-                     fontSize:e.target.fontSize(),
+                     fontSize:15,
                    }
                  ]);
+               }else{
+                 alert(`Out of Bound! Deciding Text's are limited only around decision making elements`);
+               }
                  var stage = stageRef.current;
                  var draggable = stage.findOne(".draggableReject");
                  draggable.position({ x: 18, y: 190 });
@@ -563,7 +669,9 @@ const ToolBar = () => {
              onTextClick={(newSelected) => {
                setSelected(newSelected);
              }}
-             deleteDisplay={()=>displayDelete(eachEllipse.x-10,eachEllipse.y-10,'ellipse',index)}
+             deleteDisplay={()=>displayDelete(eachEllipse.x-40,eachEllipse.y-12,'ellipse',index)}
+             dragChange = {(e)=> handleDragChange(e,index,'ellipse') }
+             transformChange={console.log('transformed')}
             />
           ))}
           {rect.map((eachRect, index) => (
@@ -580,7 +688,9 @@ const ToolBar = () => {
              onTextClick={(newSelected) => {
                setSelected(newSelected);
              }}
-             deleteDisplay={()=>displayDelete(eachRect.x-5,eachRect.y-5,'rect',index)}
+             ref={shapeRef}
+             deleteDisplay={()=>displayDelete(eachRect.x,eachRect.y,'rect',index)}
+             dragChange = {(e)=> handleDragChange(e,index,'rect') }
             />
           ))}
           {diamond.map((eachDiamond,index) => (
@@ -599,6 +709,7 @@ const ToolBar = () => {
                  setSelected(newSelected);
                }}
               deleteDisplay={(e)=>displayDelete(eachDiamond.x+115,eachDiamond.y+26,'diamond',index)}
+              dragChange = {(e)=> handleDragChange(e,index,'diamond') }
             />
           ))}
           {slantingRect.map((eachSlantingRect,index) => (
@@ -616,6 +727,7 @@ const ToolBar = () => {
                  setSelected(newSelected);
                }}
               deleteDisplay={(e)=>displayDelete(eachSlantingRect.x+160,eachSlantingRect.y+20,'slantingRect',index)}
+              dragChange = {(e)=> handleDragChange(e,index,'slantingRect') }
             />
           ))}
           {
@@ -627,9 +739,10 @@ const ToolBar = () => {
               fill={eachArrow.fill}
               stroke={eachArrow.stroke}
               strokeWidth={eachArrow.strokeWidth}
-              onClick={()=>{displayDelete(eachArrow.x+500,eachArrow.y-15,'arrow',index);}}
+              onClick={()=>{displayDelete(eachArrow.points?.[2]+5,eachArrow.points?.[3],'arrow',index);}}
               draggable={drawable === ''?true:false}
               name={eachArrow.name}
+              onDragEnd = {(e)=> handleDragChange(e,index,'arrow') }
             />
           ))
         }
@@ -643,9 +756,10 @@ const ToolBar = () => {
             fill={eachLine.fill}
             stroke={eachLine.stroke}
             strokeWidth={eachLine.strokeWidth}
-            onClick={()=>{displayDelete(eachLine.x-15,eachLine.y-15,'line',index);}}
+            onClick={()=>{displayDelete(eachLine.points?.[2] + 5,eachLine.points?.[3],'line',index);}}
             draggable={drawable === ''?true:false}
             name={eachLine.name}
+            onDragEnd = {(e)=> handleDragChange(e,index,'lineConnector') }
           />
         ))
       }
@@ -660,6 +774,14 @@ const ToolBar = () => {
               text={eachYes.text}
               onClick={()=>displayDelete(eachYes.x-15,eachYes.y-15,'yes',index)}
               draggable
+              onDragEnd = {(e)=> {if(checkBound(e)){
+                handleDragChange(e,index,'yes');
+              }else{
+                alert(`Out of Bound! Deciding Text's are limited only around decision making elements`);
+                var stage = stageRef.current;
+                var draggable = stage.findOne(`.${eachYes.name}`);
+                draggable.position({ x: eachYes.x, y: eachYes.y });
+              }} }
             />
           ))}
           {hold.map((eachHold,index) => (
@@ -673,6 +795,15 @@ const ToolBar = () => {
               text={eachHold.text}
               onClick={()=>displayDelete(eachHold.x-15,eachHold.y-15,'hold',index)}
               draggable
+              onDragEnd = {(e)=> {if(checkBound(e)){
+                handleDragChange(e,index,'hold');
+              }
+              else{
+                alert(`Out of Bound! Deciding Text's are limited only around decision making elements`);
+                var stage = stageRef.current;
+                var draggable = stage.findOne(`.${eachHold.name}`);
+                draggable.position({ x: eachHold.x, y: eachHold.y });
+              }} }
             />
           ))}
           {reject.map((eachReject,index) => (
@@ -686,6 +817,15 @@ const ToolBar = () => {
               text={eachReject.text}
               onClick={()=>displayDelete(eachReject.x-15,eachReject.y-15,'reject',index)}
               draggable
+              onDragEnd = {(e)=> {if(checkBound(e)){
+                handleDragChange(e,index,'reject');
+              }
+                else{
+                  alert(`Out of Bound! Deciding Text's are limited only around decision making elements`);
+                  var stage = stageRef.current;
+                  var draggable = stage.findOne(`.${eachReject.name}`);
+                  draggable.position({ x: eachReject.x, y: eachReject.y });
+                }} }
             />
           ))}
           {deleteValue?.bool &&
@@ -698,9 +838,13 @@ const ToolBar = () => {
               onClick={()=>onDelete()}
             />
           }
-          <TransformerComponent
-            selectedShapeName={selectedShapeName}
-          />
+          {
+            // <TransformerComponent
+            //   ref={trRef}
+            //   selectedShapeName={selectedShapeName !== undefined && !selectedShapeName.includes('arrow') && !selectedShapeName.includes('line')?selectedShapeName:undefined}
+            // />
+          }
+
         </Layer>
       </Stage>
 

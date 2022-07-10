@@ -5,7 +5,7 @@ import { Html } from "react-konva-utils";
 function getStyle(width, height) {
   const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
   const baseStyle = {
-    width: `${width-8}px`,
+    width: `${width}px`,
     height: `${height-10}px`,
     border: "none",
     padding: "0px",
@@ -14,9 +14,12 @@ function getStyle(width, height) {
     outline: "none",
     resize: "none",
     colour: "black",
-    fontSize: "8px",
+    fontSize: "10px",
+    display: 'flex',
+    justifyContent:'center',
     fontFamily: "sans-serif",
-    align:'center',
+    alignItem:'center',
+    textAlign: 'center'
   };
   if (isFirefox) {
     return baseStyle;
@@ -72,7 +75,8 @@ const  EditableSelectRect = ({
   onTextChange,
   selected,
   name,
-  deleteDisplay
+  deleteDisplay,
+  dragChange
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
@@ -87,22 +91,23 @@ const  EditableSelectRect = ({
 
 
   return (
-    <Group x={x} y={y} name={name} draggable onClick={deleteDisplay}>
+    <Group x={x} y={y} name={name} draggable onClick={deleteDisplay} onDragEnd={dragChange}>
     <Line
         x={20}
         y={20}
-        points={[185, 30, 190, 10, 245, 10, 240, 30, 185, 30]}
+        points={[185, 45, 195, 0, 345, 0, 330, 45, 185, 45]}
         closed
-        fill="#d7d5f6"
+        // fill="#d7d5f6"
+        fill = 'white'
         stroke="#A39CEB"
         name={name}
         strokeWidth={1}
       />
       <EditableText
-        x={210}
-        y={30}
+        x={220}
+        y={32}
         text={text}
-        width={60}
+        width={130}
         height={30}
         onChange={onTextChange}
         name={name}
