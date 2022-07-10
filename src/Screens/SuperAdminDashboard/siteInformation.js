@@ -16,7 +16,7 @@ import 'react-datalist-input/dist/styles.css';
 
 // const VALUES = ['Department 1', "Department 2"];
 
-const SiteInformation = () => {
+const SiteInformation = ({getActiveStep}) => {
     const [tags, setTags] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [showSiteTable, setShowSiteTable] = useState(false);
@@ -154,7 +154,7 @@ const SiteInformation = () => {
             <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
             <div className={style.stepperMargin}>
                 <div className={style.stepperGrid}>
-                    <div>
+                    <div onClick={() => getActiveStep('entitySetup')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                         </div>
@@ -166,19 +166,19 @@ const SiteInformation = () => {
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div> */}
-                    <div>
+                    <div onClick={() => getActiveStep('siteInformation')}>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
                             <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
-                    <div>
+                    <div onClick={() => getActiveStep('siteUsers')}>
                         <div className={style.stepperImgBackground}>
                             <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
                         <p className={style.entityTextColor}>SITE USERS</p>
                     </div>
-                    <div>
+                    <div onClick={() => getActiveStep('appSubscription')}>
                         <div className={style.stepperImgBackground}>
                             <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                         </div>
@@ -293,9 +293,9 @@ const SiteInformation = () => {
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
                                     <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
                                     <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & ADD MORE</button>
-                                    <Link to={'/siteUsers'}>
-                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`}>CONTINUE</button>
-                                    </Link>
+                                    {/* <Link to={'/siteUsers'}> */}
+                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => getActiveStep('siteUsers')}>CONTINUE</button>
+                                    {/* </Link> */}
                                 </div>
                             </div>
                         </div>
@@ -352,9 +352,9 @@ const SiteInformation = () => {
                     <div>
                         <div className={`${style.positionCenter} ${style.marginTop20}`}>
                             <button className={`${style.cloneOutlinedButton} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => setAlertDialog(false)}>NO</button>
-                            <Link to={'/siteUsers'}>
-                                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`}>YES</button>
-                            </Link>
+                            {/* <Link to={'/siteUsers'}> */}
+                                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => getActiveStep('siteUsers')}>YES</button>
+                            {/* </Link> */}
                         </div>
                     </div>
                 </div>

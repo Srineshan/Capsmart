@@ -109,6 +109,12 @@ body{
     margin-top: 10px;
 }
 
+.userLogoVerySmall{
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+}
+
 .userLogoMailStyle{
     width: 35px;
     height: 35px;
@@ -141,6 +147,10 @@ body{
 
 .marginLeft20{
     margin-left: 10px;
+}
+
+.marginLeft5{
+    margin-left: 5px;
 }
 
 .marginLeft50{
@@ -450,6 +460,59 @@ body{
     grid-template-columns: 5% 15% 20% 10% 10% 10% 20% 10%;
 }
 
+.tableHeader4{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 5% 15% 20% 10% 10% 10% 10% 10% 10%;
+}
+
+.tableHeader5{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 20% 40% 15% 15% 10%;
+}
+
+.tableHeaderFAQ{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 5% 65% 15% 10%;
+}
+
+.tableHeaderFAQSuggestion{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 5% 15% 20% 43% 15%;
+}
+
+.tableGridFAQ{
+    display: grid;
+    grid-template-columns: 5% 65% 15% 10%;
+}
+
 .alternativeBackgroundColor{
     background-color: #ebe9fb !important;
 }
@@ -536,6 +599,32 @@ body{
     grid-template-columns: 5% 15% 20% 10% 10% 10% 20% 10%;
 }
 
+.tableDataGrid4{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 5% 15% 20% 10% 10% 10% 10% 10% 10%;
+}
+
+.tableDataGrid5{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 20% 40% 15% 15% 10%;
+}
+
+.tableDataGridFAQSuggestion{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 5% 15% 20% 43% 15%;
+}
+
+.releaseImgStyle{
+    height: 130px;
+    width: 100px;
+    object-fit: cover;
+    margin: 10px;
+    border: 3px solid #BEB9F2;
+}
+
 .documentDataProof{
     background: #F5F5F8 0% 0% no-repeat padding-box;
     height: 50px;
@@ -620,6 +709,13 @@ body{
     margin-right: 20px;
     text-align: left;
     margin-top: 10px;
+}
+
+.answerTextStyle{
+    text-align: left;
+    font: normal normal medium 13px/18px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
 }
 
 .multipleDataTextWidth{
@@ -971,6 +1067,15 @@ body{
     padding: 20px;
 }
 
+.faqBoxStyle{
+    border: 1px solid #7165E3;
+    border-radius: 8px;
+    opacity: 1;
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px;
+}
+
 .mailTemplate{
   height:80% !important;
   width:75% !important;
@@ -1189,6 +1294,12 @@ select {
         border-radius: 20px;
     }
 
+    .videoOptionsDialogStyle{
+        height: 40%;
+        width: 25% !important;
+        border-radius: 20px;
+    }
+
   .outlinedButton{
       background-color: white;
       color: #7165E3;
@@ -1199,6 +1310,26 @@ select {
       margin-bottom: -20px;
       box-shadow: 0px 3px 11px #7165E3;
   }
+
+  .outlinedTransparentButton{
+        background-color: transparent;
+        color: #fff;
+        border: 1px solid #fff;
+        height: 40px;
+        width: 140px;
+        border-radius: 10px;
+        margin-bottom: -20px;
+    }
+
+    .whiteButton{
+        background-color: #fff;
+        color: #52575D;
+        border: 1px solid #fff;
+        height: 40px;
+        width: 140px;
+        border-radius: 10px;
+        margin-bottom: -20px;
+    }
 
   .cloneOutlinedButton{
     background-color: white;
@@ -1219,6 +1350,26 @@ select {
     border-radius: 10px;
     margin-bottom: -20px;
     box-shadow: 0px 3px 11px #7165E3;
+  }
+
+  .videoButtonStyle{
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    height: 40px;
+    width: 200px;
+    border-radius: 20px;
+    font: normal normal medium 15px/24px Montserrat;
+  }
+
+  .videoButtonOutlinedStyle{
+    color: #7165E3;
+    background-color: white;
+    border: 1px solid #7165E3;
+    height: 40px;
+    width: 200px;
+    border-radius: 20px;
+    font: normal normal medium 15px/24px Montserrat;
   }
 
   .cloneButtonStyle{
@@ -1654,7 +1805,7 @@ select {
     border: 1px solid var(--unnamed-color-7165e3);
     background: #EBECED 0% 0% no-repeat padding-box;
     border: 1px solid #7165E3;
-    height: 250px;
+    min-height: 250px;
     width: 100%;
     border-radius: 4px;
     margin-top: 5px;
@@ -1750,10 +1901,9 @@ select {
 
 .videoPageLabel{
     text-align: left;
-    font: normal normal normal 15px/13px Montserrat;
+    font: normal normal normal 15px/18px Montserrat;
     letter-spacing: 0px;
     color: #B3B8BD;
-    text-transform: capitalize;
 }
 
 .videoPageValue{
@@ -1783,7 +1933,7 @@ select {
 
 .videoSequenceGrid{
     display: grid;
-    grid-template-columns: 75% 25%;
+    grid-template-columns: 70% 30%;
     grid-gap: 20px;
 }
 
@@ -1794,4 +1944,287 @@ select {
     padding: 5px 15px;
     color: white;
     border-radius: 20px;
+    height: 30px;
+}
+
+.verticalCenter{
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.padding1{
+    padding: 15px 0;
+}
+
+.padding2{
+    padding: 0 15px;
+}
+
+.padding15{
+    padding: 15px;
+}
+
+.smallGreyText{
+    text-align: left;
+    font: normal normal normal 10px/18px Montserrat;
+    color: #B3B8BD;
+}
+
+.reduceTop{
+    margin-top: 0px;
+}
+
+.reduceTop2{
+    margin-top: -2px;
+}
+
+.faqAnswerGrid{
+    display: flex;
+    grid-template-columns: 85% 15%;
+    grid-gap: 20px;
+}
+
+.transparentDashedStyle{
+    background-color: transparent;
+    border: 2px dashed #d7d4f7 !important;
+}
+
+.suggestionDetailsGrid{
+    display: grid;
+    grid-template-columns: 2% 15% 60% 20%;
+    grid-gap: 20px;
+}
+
+.suggestionWhiteButton{
+    background-color: white;
+    color: #7165E3;
+    width: 80px;
+    height: 30px;
+    border: none;
+    border-radius: 8px;
+}
+
+.suggestionBlueButton{
+    background-color: #7165E3;
+    color: #fff;
+    width: 80px;
+    height: 30px;
+    border: none;
+    border-radius: 8px;
+}
+
+.textAreaIconPositions{
+    position: relative;
+    top: -25px;
+}
+
+.colorFileStyle{
+    height: 15px !important;
+    width: 15px !important;
+    margin-right: 5px;
+    margin-top: 10px;
+    object-fit: contain;
+}
+
+.blueCircle{
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #0000004D;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    margin-right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white !important;
+    cursor: pointer;
+}
+
+.blueCircleContainer{
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.chatContainer{
+    height: 75vh;
+    width: 20vw;
+    position: absolute;
+    bottom: 80px;
+    right: 100px;
+}
+
+.blueChatPart{
+    height: 30%;
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 1px 4px #00000024;
+    width: 100%;
+    color: white !important;
+    padding: 20px;
+}
+
+.whiteChatPart{
+    background: #FBF9F8 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #0000002E;
+    height: 70%;
+    width: 100%;
+    color: #7A8593;
+    padding: 10px;
+}
+
+.justifyCenter{
+    display: flex;
+    justify-content: center;
+}
+
+.encryptionBox{
+    background: #EFF3F6 0% 0% no-repeat padding-box;
+    padding: 10px;
+}
+
+.encryptionIconStyle{
+    background-color: #B1B1B1;
+    height: 25px !important;
+    width: 25px !important;
+    border-radius: 50%;
+}
+
+.encryptionFontSize{
+    font-size: 12px;
+}
+
+.encryptionGrid{
+    display: grid;
+    grid-template-columns: 30px 1fr;
+}
+
+.whiteIcon{
+    color: white;
+}
+
+.messageSection{
+    height: 90%;
+    overflow: scroll;
+}
+
+.replySection{
+    height: 15%;
+    margin: 0 -10px -20px -10px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    padding: 20px;
+}
+
+.messageContainer{
+    background: #EFF3F6 0% 0% no-repeat padding-box;
+    padding: 20px 10px;
+    text-align: left;
+    font: normal normal normal 13px/20px Segoe UI;
+    letter-spacing: 0px;
+    color: #7A8593;
+}
+
+.messageAlignment{
+    display: flex;
+    flex-direction: column-reverse;
+    height: 75%;
+    overflow: scroll;
+}
+
+.messageGrid{
+    display: grid;
+    grid-template-columns: 50px 1fr;
+}
+
+
+.chatLogo{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
+    z-index: 99;
+}
+
+.colRev{
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.chatLogo2Pos{
+    position: relative;
+    top: 20px;
+    left: 12px;
+    z-index: 1 !important;
+}
+
+.chatLogo3Pos{
+    position: relative;
+    top: 27px;
+    left: 5px;
+    z-index: 9 !important;
+}
+
+.statusResolvedTextarea{
+    box-shadow: 0px 3px 6px #0000003D !important;
+    border: 1px solid #DFDFDF;
+    border-radius: 4px;
+    background-color: transparent !important;
+}
+
+.tutorialPostCard{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #ebe9fb;
+    padding: 5px;
+}
+
+.postImage{
+    width: 100%;
+    height: 217px;
+    object-fit: cover;
+}
+
+.postTitle{
+    text-align: left;
+    font: normal normal bold 15px/30px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.postContent{
+    text-align: left;
+    font: normal normal normal 12px/20px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.postDateStyle{
+    text-align: left;
+    font: normal normal normal 12px/22px Montserrat;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+}
+
+.tutorialPostBackgroundCard{
+    background: #F6F7FA 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #ebe9fb;
+    border-radius: 6px;
+    padding: 15px;
+    margin: 0 20px;
+        
+}
+
+.newBadge{
+    background: #7165E3 0% 0% no-repeat padding-box;
+    opacity: 0.79;
+    color: white;
+    height: 20px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 0 10px 0;
+}
+
+.reduceTop20{
+    margin-top: -20px;
 }
