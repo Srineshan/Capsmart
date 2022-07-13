@@ -32,16 +32,16 @@ export const saveEntity = async(department={},entity={},address={},billingDetail
       "siteType": {
         "type": ""
       },
-      // "departmentList": {
-      //   "departments": departments
-      // },
-      // "address": {
-      //   "addressLine": address.addressLine,
-      //   "city": address.city,
-      //   "state": address.state,
-      //   "zipcode": address.zipcode,
-      //   "country": address.country,
-      // }
+      "departmentList": {
+        "departments": []
+      },
+      "address": {
+        "addressLine": "",
+        "city": "",
+        "state": "",
+        "zipcode":"",
+        "country": "",
+      }
     }
   ],
   "subscriptionPlan": {
@@ -102,26 +102,26 @@ export const saveEntity = async(department={},entity={},address={},billingDetail
     "id": ""
   }
 }
-const response = await fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com/entity-service/entity', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json',
-               'X-tenantID' : '6242845f95690b3822cb96a5',
-               'Authorization': `Bearer ${accessToken}`,
-               'Access-Control-Allow-Origin' : '*',
-             },
-
-    body: JSON.stringify(entityValue)
-  });
-  if(response){
-    console.log('Success');
-  }else{
-    console.log('failed');
-  }
+// const response = await fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com/entity-service/entity', {
+//     method: 'PUT',
+//     headers: { 'Content-Type': 'application/json',
+//                'X-tenantID' : '6242845f95690b3822cb96a5',
+//                'Authorization': `Bearer ${accessToken}`,
+//                'Access-Control-Allow-Origin' : '*',
+//              },
+//
+//     body: JSON.stringify(entityValue)
+//   });
+//   if(response){
+//     console.log('Success');
+//   }else{
+//     console.log('failed');
+//   }
 }
 
-//
+
 const accessToken = Auth()
-const baseUrl = 'http://ec2-54-210-154-191.compute-1.amazonaws.com/entity-service'
+const baseUrl = 'http://ec2-54-210-154-191.compute-1.amazonaws.com'
 const headers = {
   'Content-Type': 'application/json',
   'X-tenantID' : '6242845f95690b3822cb96a5',
@@ -140,6 +140,14 @@ export const GET = (url) => {
 export const PUT = (url,data) => {
   return axios(`${baseUrl}/${url}`,{
     method: 'PUT',
+    headers: headers,
+    data,
+  })
+}
+
+export const POST = (url,data) => {
+  return axios(`${baseUrl}/${url}`,{
+    method: 'POST',
     headers: headers,
     data,
   })
