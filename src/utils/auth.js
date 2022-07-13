@@ -4,7 +4,7 @@ export const Auth = () => {
   let cookie = new Cookie();
   let accessToken = cookie.get('user');
   if(accessToken){
-    return true;
+    return accessToken;
   }else{
     return false;
   }

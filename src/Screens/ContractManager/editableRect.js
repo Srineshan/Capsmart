@@ -14,7 +14,7 @@ function getStyle(width, height) {
     outline: "none",
     resize: "none",
     colour: "black",
-    fontSize: "5px",
+    fontSize: "15px",
     fontFamily: "sans-serif"
   };
   if (isFirefox) {
@@ -76,6 +76,7 @@ const  EditableRect= ({
   selected,
   name,
   deleteDisplay,
+  dragChange,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
@@ -89,7 +90,7 @@ const  EditableRect= ({
   }, [selected, isEditing, isTransforming]);
 
   return (
-    <Group x={x} y={y} name={name} draggable onClick={deleteDisplay}>
+    <Group x={x} y={y} name={name} draggable onClick={deleteDisplay} onDragEnd={dragChange}>
       <Rect
         x={20}
         y={20}
@@ -102,11 +103,11 @@ const  EditableRect= ({
         name={name}
       />
       <EditableText
-        x={20}
-        y={20}
+        x={42}
+        y={27}
         text={text}
         width={width-2}
-        height={height-2}
+        height={height-10}
         onChange={onTextChange}
         name={name}
       />

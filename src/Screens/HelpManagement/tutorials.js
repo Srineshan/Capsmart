@@ -6,6 +6,8 @@ import UserLogo from './../../images/userLogo.jpg';
 import ChevronRight from './../../images/chevronRight.png';
 import Filter from './../../images/filter.png';
 import Tooltip from '@mui/material/Tooltip';
+import ThumbUpAltOutlinedIcon from '@material-ui/icons/ThumbUpAltOutlined';
+import ThumbDownAltOutlinedIcon from '@material-ui/icons/ThumbDownAltOutlined';
 import style from './index.module.scss';
 import AddTutorial from './addTutorialDialog';
 import VideoSequencePlayerDialog from './videoSequencePlayer';
@@ -24,6 +26,7 @@ const Tutorials = ({getSelectedHelp}) => {
     const [showFeedbackPage,setShowFeedbackPage] = useState(false);
     const [showVideoSequenceDialog,setShowVideoSequenceDialog] = useState(false);
     const [tutorialName, setTutorialName] = useState('Tutorials & Videos');
+    const [tutorialPage2, setTutorialPage2] = useState(false);
 
     const getSendEmailDialog = (value) => {
         setSendEMail(value);
@@ -45,464 +48,570 @@ const Tutorials = ({getSelectedHelp}) => {
         setShowVideoSequenceDialog(value);
     }
     return(
-        <div className={style.margin20}>
-            <div className={style.bigCardGrid}>
-                <div className={style.chevronCardStyle}>
-                    <div className={`${style.alignCenter}`}>
-                        <img src={ChevronRight} className={style.chevronRightStyle}/>
-                    </div>
-                </div>
-                <div className={style.displayInRow}>
-                    <div className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}>
-                        HELP MANAGEMENT
-                    </div>
-                    <div className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}>
-                        UPDATED ON FEB 16, 2022 16:45 EST
-                    </div>
-                </div>
-            </div>
-            <div className={`${style.grid5} ${style.marginTop20}`}>
-                <div className={style.cardStyle}>
-                    <div className={`${style.displayInCol} ${style.alignCenter}`}>
-                         <div className={`${style.userNameStyle} `}>
-                            JOHN
-                        </div>
-                        <img src={UserLogo} className={style.userLogo} />
-                    </div>
-                </div>
-                <div className={`${style.cardStyle}`} onClick={() => getSelectedHelp('TICKETS')}>
-                    <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>TICKETS</h5>
-                    <p className={style.last30Style}>LAST 30 DAYS</p>
-                    <div className={style.spaceBetween}>
-                        <p></p>
-                        <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>70</p>
-                    </div>
-                </div>
-                <div className={`${style.cardStyle} ${style.selectedCardBackground}`} onClick={() => getSelectedHelp('TUTORIALS & VIDEOS')}>
-                    <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>TUTORIALS & VIDEOS</h5>
-                    <p className={style.last30Style}>LAST 30 DAYS</p>
-                    <div className={style.spaceBetween}>
-                        <p></p>
-                        <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>4</p>
-                    </div>
-                </div>
-                <div className={`${style.cardStyle}`} onClick={() => getSelectedHelp('FAQS')}>
-                    <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>FAQS</h5>
-                    <p className={style.last30Style}>LAST 7 DAYS</p>
-                    <div className={style.spaceBetween}>
-                        <p></p>
-                        <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
-                    </div>
-                </div>
-                <div className={style.cardStyle} onClick={() => getSelectedHelp('RELEASE NOTES')}>
-                    <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>RELEASE NOTES</h5>
-                    <p className={style.last30Style}>LAST 30 DAYS</p>
-                    <div className={style.spaceBetween}>
-                        <p></p>
-                        <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
-                    </div>
-                </div>
-                
-            </div>
-            <div className={style.bigCardGrid}>
-                <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
-                    <div className={style.openCardStyle}>
-                    </div>
-                </div>
-                <div className={style.bigCardStyle}>
-                    <div className={style.spaceBetween}>
-                        <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
-                        <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                            <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
-                                <p>Search here</p>
-                                <p className={style.marginRight}>&#128269;</p>
-                            </div>
-                            {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
-                            <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
-                            <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />
-                            <img src={LockReset} alt="LockReset" className={style.smallIcons} /> */}
-                            <img src={Filter} alt="Filter" className={style.filterIcon} />
-                            <button className={style.tutorialButton} onClick={() => getAddTutorialDialog(true)}>ADD TUTORIAL / VIDEO</button>
-                        </div>
-                    </div>
-                    <div className={style.buttonGroupUsers}>
-                        <button className={tutorialName === "Tutorials & Videos" ? style.registeredButton : style.normalButton} onClick={() => setTutorialName('Tutorials & Videos')}>Tutorials & Videos ( 4 )</button>
-                        <button className={tutorialName === "Frequently Viewed"  ? style.registeredButton : style.normalButton} onClick={() => setTutorialName('Frequently Viewed')}>Frequently Viewed ( 1 )</button>
-                        <button className={tutorialName === "No Views"  ? style.registeredButton : style.normalButton} onClick={() => setTutorialName('No Views')}>No Views ( 1 )</button>
-                    </div>
-                    {tutorialName === "Tutorials & Videos" ? (
-                    <div>
-                        <div className={`${style.tableHeader3} ${style.marginTop20}`}>
-                            <p></p>
-                            <p className={style.tableHeaderFontStyle}>TITLE</p>
-                            <p className={style.tableHeaderFontStyle}>DESCRIPTION</p>
-                            <p className={style.tableHeaderFontStyle}>AUTHOR</p>
-                            <p className={style.tableHeaderFontStyle}>TYPE</p>
-                            <p className={style.tableHeaderFontStyle}>DATE / TIME</p>
-                            <p className={style.tableHeaderFontStyle}>LINK</p>
-                            <p className={style.tableHeaderFontStyle}>COMMENT</p>
-                        </div>
-                         <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
-                            <div className={`${style.tableDataGrid3} ${style.fullWidth} ${style.marginTop7}`}>
-                                <Tooltip title="Resolved" arrow>
-                                    <div className={`${style.greenDotStyle}`}></div>
-                                </Tooltip>
-                                <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                Lorem Ipsum
-                                </p>
-                                <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
-                                <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
-                                <p className={style.tableDataFontStyle}>Video</p>
-                                <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
-                                <p className={style.tableDataFontStyle} onClick={() => setShowVideoSequenceDialog(true)}><a>Watch?V=N70zjmvm8l0</a></p>
-                                <p className={style.tableDataFontStyle}>3</p>
+        <>
+            {!tutorialPage2 ? (
+                <div className={style.margin20}>
+                    <div className={style.bigCardGrid}>
+                        <div className={style.chevronCardStyle}>
+                            <div className={`${style.alignCenter}`}>
+                                <img src={ChevronRight} className={style.chevronRightStyle}/>
                             </div>
                         </div>
-                        <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
-                            <div className={`${style.tableDataGrid3} ${style.fullWidth} ${style.marginTop7}`}>
-                                <Tooltip title="Resolved" arrow>
-                                    <div className={`${style.greenDotStyle}`}></div>
-                                </Tooltip>
-                                <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                Lorem Ipsum
-                                </p>
-                                <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
-                                <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
-                                <p className={style.tableDataFontStyle}>Video</p>
-                                <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
-                                <p className={style.tableDataFontStyle} onClick={() => setShowVideoSequenceDialog(true)}><a>Watch?V=N70zjmvm8l0</a></p>
-                                <p className={style.tableDataFontStyle}>3</p>
+                        <div className={style.displayInRow}>
+                            <div className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}>
+                                HELP MANAGEMENT
                             </div>
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
-                            <div className={`${style.tableDataGrid3} ${style.fullWidth} ${style.marginTop7}`}>
-                                <Tooltip title="In-Progress" arrow>
-                                    <div className={`${style.yellowDotStyle}`}></div>
-                                </Tooltip>
-                                <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                Lorem Ipsum
-                                </p>
-                                <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
-                                <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
-                                <p className={style.tableDataFontStyle}>Video</p>
-                                <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
-                                <p className={style.tableDataFontStyle} onClick={() => setShowVideoSequenceDialog(true)}><a>Watch?V=N70zjmvm8l0</a></p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                            </div>
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
-                            <div className={`${style.tableDataGrid3} ${style.fullWidth} ${style.marginTop7}`}>
-                                <Tooltip title="Error" arrow>
-                                    <div className={`${style.redDotStyle}`}></div>
-                                </Tooltip>
-                                <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                Lorem Ipsum
-                                </p>
-                                <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
-                                <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
-                                <p className={style.tableDataFontStyle}>Video</p>
-                                <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
-                                <p className={style.tableDataFontStyle} onClick={() => setShowVideoSequenceDialog(true)}><a>Watch?V=N70zjmvm8l0</a></p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                            </div>
-                        </div>
-                        <div className={style.spaceBetween}>
-                            <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
-                            <div className={style.displayInRow}>
-                            <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                            <img src={ChevronRight} className={style.roundChevron} />
+                            <div className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}>
+                                UPDATED ON FEB 16, 2022 16:45 EST
                             </div>
                         </div>
                     </div>
-                    ) : tutorialName === "Frequently Viewed"  ?  (
-                        <div>
-                            <div className={`${style.tableHeader} ${style.marginTop20}`}>
-                                <p></p>
-                                <p className={style.tableHeaderFontStyle}>TICKET ID</p>
-                                <p className={style.tableHeaderFontStyle}>EXCEPTION CODE</p>
-                                <p className={style.tableHeaderFontStyle}>DESCRIPTION</p>
-                                <p className={style.tableHeaderFontStyle}>DATE/TIME</p>
-                                <p className={style.tableHeaderFontStyle}>CONTRACTOR NAME</p>
-                                <p className={style.tableHeaderFontStyle}>USER NAME</p>
-                                <p className={style.tableHeaderFontStyle}>LAST UPDATED</p>
-                            </div>
-                            <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
-                                <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                    <Tooltip title="Error" arrow>
-                                        <div className={`${style.redDotStyle}`}></div>
-                                    </Tooltip>
-                                    <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                        Tckt006
-                                    </p>
-                                    <p className={style.tableDataFontStyle}>ECPTCODE001</p>
-                                    <p className={style.tableDataFontStyle}>Lorem Ipsum Ipsum Lorem Ipsum ...</p>
-                                    <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
-                                    <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
-                                    <p className={style.tableDataFontStyle}>LOREM iPSUM</p>
-                                    <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                    <div className={`${style.grid5} ${style.marginTop20}`}>
+                        <div className={style.cardStyle}>
+                            <div className={`${style.displayInCol} ${style.alignCenter}`}>
+                                <div className={`${style.userNameStyle} `}>
+                                    JOHN
                                 </div>
+                                <img src={UserLogo} className={style.userLogo} />
                             </div>
+                        </div>
+                        <div className={`${style.cardStyle}`} onClick={() => getSelectedHelp('TICKETS')}>
+                            <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>TICKETS</h5>
+                            <p className={style.last30Style}>LAST 30 DAYS</p>
                             <div className={style.spaceBetween}>
-                                <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
-                                <div className={style.displayInRow}>
-                                <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                                <img src={ChevronRight} className={style.roundChevron} />
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div>
-                            <div className={`${style.tableHeader2} ${style.marginTop20}`}>
                                 <p></p>
-                                <p className={style.tableHeaderFontStyle}>TYPE</p>
-                                <p className={style.tableHeaderFontStyle}>RELATED TO</p>
-                                <p className={style.tableHeaderFontStyle}>MESSAGE / COMMENT</p>
-                                <p className={style.tableHeaderFontStyle}>LAST RESPONDED</p>
-                                <p className={style.tableHeaderFontStyle}>DATE / TIME</p>
-                                <p className={style.tableHeaderFontStyle}>ACTION</p>
+                                <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>70</p>
                             </div>
-                            <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
-                                <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
-                                    <Tooltip title="Resolved" arrow>
-                                        <div className={`${style.greenDotStyle}`}></div>
-                                    </Tooltip>
-                                    <p className={style.tableDataFontStyle}>Comment</p>
-                                    <p className={style.tableDataFontStyle}>Ticket</p>
-                                    <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
-                                    <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
-                                    <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
-                                    <p className={style.tableHeaderFontStyle}>REPLY</p>
-                                </div>
-                            </div>
-                            <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
-                                <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
-                                    <Tooltip title="Resolved" arrow>
-                                        <div className={`${style.greenDotStyle}`}></div>
-                                    </Tooltip>
-                                    <p className={style.tableDataFontStyle}>Email</p>
-                                    <p className={style.tableDataFontStyle}>Tutorial</p>
-                                    <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
-                                    <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
-                                    <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
-                                    <p className={style.tableHeaderFontStyle}>VIEW</p>
-                                </div>
-                            </div>
-                            <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
-                                <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
-                                    <Tooltip title="In-Progress" arrow>
-                                        <div className={`${style.yellowDotStyle}`}></div>
-                                    </Tooltip>
-                                    <p className={style.tableDataFontStyle}>Email</p>
-                                    <p className={style.tableDataFontStyle}>Ticket</p>
-                                    <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
-                                    <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
-                                    <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
-                                    <p className={style.tableHeaderFontStyle}>VIEW</p>
-                                </div>
-                            </div>
-                            <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
-                                <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
-                                    <Tooltip title="Error" arrow>
-                                        <div className={`${style.redDotStyle}`}></div>
-                                    </Tooltip>
-                                    <p className={style.tableDataFontStyle}>Email</p>
-                                    <p className={style.tableDataFontStyle}>Ticket</p>
-                                    <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
-                                    <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
-                                    <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
-                                    <p className={style.tableHeaderFontStyle}>REPLY</p>
-                                </div>
-                            </div>
+                        </div>
+                        <div className={`${style.cardStyle} ${style.selectedCardBackground}`} onClick={() => getSelectedHelp('TUTORIALS & VIDEOS')}>
+                            <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>TUTORIALS & VIDEOS</h5>
+                            <p className={style.last30Style}>LAST 30 DAYS</p>
                             <div className={style.spaceBetween}>
-                                <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
-                                <div className={style.displayInRow}>
-                                <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                                <img src={ChevronRight} className={style.roundChevron} />
-                                </div>
+                                <p></p>
+                                <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>4</p>
                             </div>
                         </div>
-                    )}
-                </div>
-            </div>
-            <div className={style.spaceBetween}>
-                <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                <p className={style.poweredBy}>© TimeSmart.AI</p>
-            </div>
-            <Dialog isOpen={showFeedbackPage} onClose={() => setShowFeedbackPage(false)} className={`${style.addManagerDialogBackground} ${style.feedbackDialog}`}>
-                <div className={`${Classes.DIALOG_BODY} `}>
-                    <div className={style.spaceBetween}>
-                        <p className={style.extensionStyle}>Feedback Ticket Resolution Progress</p>
-                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.marginLeft20}`} onClick={() => setShowFeedbackPage(false)}  />
+                        <div className={`${style.cardStyle}`} onClick={() => getSelectedHelp('FAQS')}>
+                            <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>FAQS</h5>
+                            <p className={style.last30Style}>LAST 7 DAYS</p>
+                            <div className={style.spaceBetween}>
+                                <p></p>
+                                <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
+                            </div>
+                        </div>
+                        <div className={style.cardStyle} onClick={() => getSelectedHelp('RELEASE NOTES')}>
+                            <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>RELEASE NOTES</h5>
+                            <p className={style.last30Style}>LAST 30 DAYS</p>
+                            <div className={style.spaceBetween}>
+                                <p></p>
+                                <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
+                            </div>
+                        </div>
+                        
                     </div>
-                    <div className={style.extensionBorder}></div>
-                    <div className={style.feedbackGrid}>
-                        <div>
-                            <div className={`${style.feedbackContentGrid} ${style.marginTop20}`}>
-                                <p className={style.extentionLableStyle}>Ticket ID</p>
-                                <p className={style.extentionLableStyle}>Date & Time</p>
-                            </div>
-                            <div className={style.feedbackContentGrid}>
-                                <p className={style.feedbackFontStyle}>FBTID-001</p>
-                                <p className={style.feedbackFontStyle}>01-20-2022 14:03 IST</p>
-                            </div>
-                            <div className={`${style.feedbackContentGrid} ${style.marginTop20}`}>
-                                <p className={style.extentionLableStyle}>User Name</p>
-                                <p className={style.extentionLableStyle}>Customer</p>
-                            </div>
-                            <div className={style.feedbackContentGrid}>
-                                <p className={style.feedbackFontStyle}>Lorem Ipsum</p>
-                                <p className={style.feedbackFontStyle}>ACME corp</p>
-                            </div>
-                            <div className={`${style.feedbackContentGrid} ${style.marginTop20}`}>
-                                <p className={style.extentionLableStyle}>Feedback SUBJECT</p>
-                                <p className={style.extentionLableStyle}>FEEDBACK DESCRIPTION</p>
-                            </div>
-                            <div className={style.feedbackContentGrid}>
-                                <p className={style.feedbackFontStyle}>Lorem Ipsum</p>
-                                <p className={style.feedbackFontStyle}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus ac nisl tempor elementum. Aliquam a eros porttitor, commodo lacus eget, dapibus felis.Aliquam a eros porttitor, commodo lacus eget, dapibus felis</p>
-                            </div>
-                            <div className={style.extensionBorder}></div>
-                            <div className={`${style.feedbackContentGrid} ${style.marginTop20}`}>
-                                <p className={style.extentionLableStyle}>Feedback TYPE</p>
-                                <div className={style.twoCol}>
-                                    <p className={style.extentionLableStyle}>Work impact</p>
-                                    <p className={style.extentionLableStyle}>SCREEN CAPTURE</p>
-                                </div>
-                            </div>
-                            <div className={style.feedbackContentGrid}>
-                                <p className={style.feedbackFontStyle}>Application Issue Identify</p>
-                                <div className={style.twoCol}>
-                                    <p className={style.feedbackFontStyle}>HIGH</p>
-                                    <p className={style.feedbackFontStyle}>YES</p>
-                                </div>
-                            </div>
-                            <div className={`${style.extensionBorder} ${style.marginTop20}`}></div>
-                            <div className={style.marginTop20}>
-                                <p className={style.extentionLableStyle}>SCREEN CAPTURE</p>
-                            </div>
-                            <div className={style.dashedBorder}>
-                                <div className={`${style.imageDisplayStyle} ${style.alignCenter}`}>
-                                    <div className={style.imageNameStyle}>IMAGE.PNG</div>
-                                </div>
+                    <div className={style.bigCardGrid}>
+                        <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
+                            <div className={style.openCardStyle}>
                             </div>
                         </div>
-                        <div>
-                            <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
-                                <div className={style.displayInRow}>
-                                    <p className={style.collapseHeaderText}>Ticket Status</p>
-                                    <div className={`${style.greenDotFeedbackStyle} ${style.marginLeft20}`}></div>
-                                </div>
-                                <div className={style.displayInRow}>
-                                    <p className={style.feedbackFontStyle}>Updated On 01-06-2022 23:34</p>
-                                    <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                        <div className={style.bigCardStyle}>
+                            <div className={style.spaceBetween}>
+                                <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
+                                <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                                    <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
+                                        <p>Search here</p>
+                                        <p className={style.marginRight}>&#128269;</p>
+                                    </div>
+                                    {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
+                                    <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
+                                    <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />
+                                    <img src={LockReset} alt="LockReset" className={style.smallIcons} /> */}
+                                    <img src={Filter} alt="Filter" className={style.filterIcon} onClick={() => setTutorialPage2(!tutorialPage2)} />
+                                    <button className={style.tutorialButton} onClick={() => getAddTutorialDialog(true)}>ADD TUTORIAL / VIDEO</button>
                                 </div>
                             </div>
-                            <div className={style.collapseBody}>
-                                <div className={`${style.extentionGrid}`}>
-                                    <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Assign To</div>
-                                    <div className={style.displayInRow}>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            className={`${style.fieldWidth2InARow} ${style.transparentBackground}`}>
-                                                <option value="Sanjaya Kumar" >
-                                                Sanjaya Kumar
-                                                </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
-                                    <div></div>
-                                    <div>sanjaya@timesmart.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span> 987 8767646</div>
-                                </div>
-                                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
-                                    <div className={`${style.extentionLableStyle}`}>Contractor</div>
-                                    <div>
-                                        <div>Philipp Stevens</div>
-                                        <div>pstev_msp@metropoli.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span>  987 8767646</div>
-                                    </div>
-                                </div>
-                                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
-                                    <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Status</div>
-                                    <div className={style.displayInRow}>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            className={`${style.fieldWidth2InARow} ${style.transparentBackground}`}>
-                                                <option value="New" >
-                                                New
-                                                </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className={`${style.twoCol} ${style.marginTop10}`}>
-                                    <div className={`${style.extentionGrid}`}>
-                                        <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Jira Ticket</div>
-                                        <div className={style.displayInRow}>
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch checked={true}  size="small" />
-                                                }
-                                                className={`${style.switchFontStyle}`}
-                                                label={'YES'}                        
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className={`${style.extentionGrid}`}>
-                                        <div className={`${style.extentionLableStyle} ${style.marginTop20}`}>Jira Id</div>
-                                        <div className={style.displayInRow}>
-                                            <div className={`${style.feedbackFontStyle} ${style.marginTop15}`}>JTKT00023</div>
-                                            <div className={`${style.orageDotFeedbackStyle} ${style.marginLeft20} ${style.marginTop20}`}></div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div className={style.buttonGroupUsers}>
+                                <button className={tutorialName === "Tutorials & Videos" ? style.registeredButton : style.normalButton} onClick={() => setTutorialName('Tutorials & Videos')}>Tutorials & Videos ( 4 )</button>
+                                <button className={tutorialName === "Frequently Viewed"  ? style.registeredButton : style.normalButton} onClick={() => setTutorialName('Frequently Viewed')}>Frequently Viewed ( 1 )</button>
+                                <button className={tutorialName === "No Views"  ? style.registeredButton : style.normalButton} onClick={() => setTutorialName('No Views')}>No Views ( 1 )</button>
                             </div>
-                            <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
-                                <p className={style.collapseHeaderText}>Log File Reference</p>
-                                <div className={style.reduceTop10}>
-                                    <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                            {tutorialName === "Tutorials & Videos" ? (
+                            <div>
+                                <div className={`${style.tableHeader3} ${style.marginTop20}`}>
+                                    <p></p>
+                                    <p className={style.tableHeaderFontStyle}>TITLE</p>
+                                    <p className={style.tableHeaderFontStyle}>DESCRIPTION</p>
+                                    <p className={style.tableHeaderFontStyle}>AUTHOR</p>
+                                    <p className={style.tableHeaderFontStyle}>TYPE</p>
+                                    <p className={style.tableHeaderFontStyle}>DATE / TIME</p>
+                                    <p className={style.tableHeaderFontStyle}>LINK</p>
+                                    <p className={style.tableHeaderFontStyle}>COMMENT</p>
                                 </div>
-                            </div>
-                            <div className={style.collapseBody2}>
+                                <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                    <div className={`${style.tableDataGrid3} ${style.fullWidth} ${style.marginTop7}`}>
+                                        <Tooltip title="Resolved" arrow>
+                                            <div className={`${style.greenDotStyle}`}></div>
+                                        </Tooltip>
+                                        <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
+                                        Lorem Ipsum
+                                        </p>
+                                        <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                        <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                        <p className={style.tableDataFontStyle}>Video</p>
+                                        <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                        <p className={style.tableDataFontStyle} onClick={() => setShowVideoSequenceDialog(true)}><a>Watch?V=N70zjmvm8l0</a></p>
+                                        <p className={style.tableDataFontStyle}>3</p>
+                                    </div>
+                                </div>
+                                <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                    <div className={`${style.tableDataGrid3} ${style.fullWidth} ${style.marginTop7}`}>
+                                        <Tooltip title="Resolved" arrow>
+                                            <div className={`${style.greenDotStyle}`}></div>
+                                        </Tooltip>
+                                        <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
+                                        Lorem Ipsum
+                                        </p>
+                                        <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                        <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                        <p className={style.tableDataFontStyle}>Video</p>
+                                        <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                        <p className={style.tableDataFontStyle} onClick={() => setShowVideoSequenceDialog(true)}><a>Watch?V=N70zjmvm8l0</a></p>
+                                        <p className={style.tableDataFontStyle}>3</p>
+                                    </div>
+                                </div>
+                                <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                    <div className={`${style.tableDataGrid3} ${style.fullWidth} ${style.marginTop7}`}>
+                                        <Tooltip title="In-Progress" arrow>
+                                            <div className={`${style.yellowDotStyle}`}></div>
+                                        </Tooltip>
+                                        <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
+                                        Lorem Ipsum
+                                        </p>
+                                        <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                        <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                        <p className={style.tableDataFontStyle}>Video</p>
+                                        <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                        <p className={style.tableDataFontStyle} onClick={() => setShowVideoSequenceDialog(true)}><a>Watch?V=N70zjmvm8l0</a></p>
+                                        <p className={style.tableDataFontStyle}>3</p>
+                                    </div>
+                                </div>
+                                <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                    <div className={`${style.tableDataGrid3} ${style.fullWidth} ${style.marginTop7}`}>
+                                        <Tooltip title="Error" arrow>
+                                            <div className={`${style.redDotStyle}`}></div>
+                                        </Tooltip>
+                                        <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
+                                        Lorem Ipsum
+                                        </p>
+                                        <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                        <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                        <p className={style.tableDataFontStyle}>Video</p>
+                                        <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                        <p className={style.tableDataFontStyle} onClick={() => setShowVideoSequenceDialog(true)}><a>Watch?V=N70zjmvm8l0</a></p>
+                                        <p className={style.tableDataFontStyle}>3</p>
+                                    </div>
+                                </div>
                                 <div className={style.spaceBetween}>
-                                    <div className={`${style.displayInRow}`}>
-                                        <div className={style.logFileBlueDot}></div>
-                                        {/* <div className={style.leftBorder}></div> */}
-                                        <div className={style.marginLeft20}>
-                                            <div>Login</div>
-                                            <div>userId sia@sureshield.com</div>
+                                    <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
+                                    <div className={style.displayInRow}>
+                                    <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                                    <img src={ChevronRight} className={style.roundChevron} />
+                                    </div>
+                                </div>
+                            </div>
+                            ) : tutorialName === "Frequently Viewed"  ?  (
+                                <div>
+                                    <div className={`${style.tableHeader} ${style.marginTop20}`}>
+                                        <p></p>
+                                        <p className={style.tableHeaderFontStyle}>TICKET ID</p>
+                                        <p className={style.tableHeaderFontStyle}>EXCEPTION CODE</p>
+                                        <p className={style.tableHeaderFontStyle}>DESCRIPTION</p>
+                                        <p className={style.tableHeaderFontStyle}>DATE/TIME</p>
+                                        <p className={style.tableHeaderFontStyle}>CONTRACTOR NAME</p>
+                                        <p className={style.tableHeaderFontStyle}>USER NAME</p>
+                                        <p className={style.tableHeaderFontStyle}>LAST UPDATED</p>
+                                    </div>
+                                    <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                        <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
+                                            <Tooltip title="Error" arrow>
+                                                <div className={`${style.redDotStyle}`}></div>
+                                            </Tooltip>
+                                            <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
+                                                Tckt006
+                                            </p>
+                                            <p className={style.tableDataFontStyle}>ECPTCODE001</p>
+                                            <p className={style.tableDataFontStyle}>Lorem Ipsum Ipsum Lorem Ipsum ...</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                            <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                            <p className={style.tableDataFontStyle}>LOREM iPSUM</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
                                         </div>
                                     </div>
-                                    <div className={style.extentionLableStyle}>JAN 12, 2022<br />07:35 PST</div>
-                                </div>
-                            </div>
-                            <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
-                                <p className={style.collapseHeaderText}>Comments</p>
-                                <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
-                            </div>
-                            <div className={style.collapseBody}>
-                                <div className={style.displayInRow}>
-                                    <img src={UserLogo} alt="logo"  className={style.userLogo} />
-                                    <div className={style.marginLeft20}>
-                                        <div className={`${style.displayInRow} ${style.marginTop10}`}>Sanjaya Kumar <span className={`${style.blue} ${style.marginLeft20}`}> MD</span> <span className={`${style.greyText} ${style.marginLeft20}`}>3 days ago</span> </div>
-                                        <div className={style.marginTop10}>lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo</div>
-                                        <TextArea placeholder='reply here...' rows={4} className={`${style.fullWidth} ${style.marginTop10}`} />
+                                    <div className={style.spaceBetween}>
+                                        <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
+                                        <div className={style.displayInRow}>
+                                        <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                                        <img src={ChevronRight} className={style.roundChevron} />
+                                        </div>
                                     </div>
                                 </div>
-                                <div className={`${style.floatRight} ${style.marginTop10}`}>
-                                    <button className={style.sendButton}>SEND</button>
+                            ) : (
+                                <div>
+                                    <div className={`${style.tableHeader2} ${style.marginTop20}`}>
+                                        <p></p>
+                                        <p className={style.tableHeaderFontStyle}>TYPE</p>
+                                        <p className={style.tableHeaderFontStyle}>RELATED TO</p>
+                                        <p className={style.tableHeaderFontStyle}>MESSAGE / COMMENT</p>
+                                        <p className={style.tableHeaderFontStyle}>LAST RESPONDED</p>
+                                        <p className={style.tableHeaderFontStyle}>DATE / TIME</p>
+                                        <p className={style.tableHeaderFontStyle}>ACTION</p>
+                                    </div>
+                                    <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                        <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
+                                            <Tooltip title="Resolved" arrow>
+                                                <div className={`${style.greenDotStyle}`}></div>
+                                            </Tooltip>
+                                            <p className={style.tableDataFontStyle}>Comment</p>
+                                            <p className={style.tableDataFontStyle}>Ticket</p>
+                                            <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                            <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                            <p className={style.tableHeaderFontStyle}>REPLY</p>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                        <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
+                                            <Tooltip title="Resolved" arrow>
+                                                <div className={`${style.greenDotStyle}`}></div>
+                                            </Tooltip>
+                                            <p className={style.tableDataFontStyle}>Email</p>
+                                            <p className={style.tableDataFontStyle}>Tutorial</p>
+                                            <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                            <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                            <p className={style.tableHeaderFontStyle}>VIEW</p>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                        <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
+                                            <Tooltip title="In-Progress" arrow>
+                                                <div className={`${style.yellowDotStyle}`}></div>
+                                            </Tooltip>
+                                            <p className={style.tableDataFontStyle}>Email</p>
+                                            <p className={style.tableDataFontStyle}>Ticket</p>
+                                            <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                            <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                            <p className={style.tableHeaderFontStyle}>VIEW</p>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                        <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
+                                            <Tooltip title="Error" arrow>
+                                                <div className={`${style.redDotStyle}`}></div>
+                                            </Tooltip>
+                                            <p className={style.tableDataFontStyle}>Email</p>
+                                            <p className={style.tableDataFontStyle}>Ticket</p>
+                                            <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                            <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                            <p className={style.tableHeaderFontStyle}>REPLY</p>
+                                        </div>
+                                    </div>
+                                    <div className={style.spaceBetween}>
+                                        <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
+                                        <div className={style.displayInRow}>
+                                        <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                                        <img src={ChevronRight} className={style.roundChevron} />
+                                        </div>
+                                    </div>
                                 </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className={style.spaceBetween}>
+                        <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
+                        <p className={style.poweredBy}>© TimeSmart.AI</p>
+                    </div>
+                    {showAddTutorialDialog && <AddTutorial getAddTutorialDialog={getAddTutorialDialog} />}
+                    {showVideoSequenceDialog && <VideoSequencePlayerDialog getShowVideoSequenceDialog={getShowVideoSequenceDialog} />}
+                </div>
+            ) : (
+                <div className={style.margin20}>
+                    <div className={style.bigCardGrid}>
+                        <div className={style.chevronCardStyle}>
+                            <div className={`${style.alignCenter}`}>
+                                <img src={ChevronRight} className={style.chevronRightStyle}/>
                             </div>
-                            <div className={`${style.floatRight} ${style.marginTop20}`}>
-                                <button className={style.doneButton}>Done</button>
+                        </div>
+                        <div className={style.displayInRow}>
+                            <div className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}>
+                                HELP MANAGEMENT
+                            </div>
+                            <div className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}>
+                                UPDATED ON FEB 16, 2022 16:45 EST
                             </div>
                         </div>
                     </div>
+                    <div className={`${style.grid5} ${style.marginTop20}`}>
+                        <div className={style.cardStyle}>
+                            <div className={`${style.displayInCol} ${style.alignCenter}`}>
+                                <div className={`${style.userNameStyle} `}>
+                                    JOHN
+                                </div>
+                                <img src={UserLogo} className={style.userLogo} />
+                            </div>
+                        </div>
+                        <div className={`${style.cardStyle}`} onClick={() => getSelectedHelp('TICKETS')}>
+                            <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>TICKETS</h5>
+                            <p className={style.last30Style}>LAST 30 DAYS</p>
+                            <div className={style.spaceBetween}>
+                                <p></p>
+                                <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>12</p>
+                            </div>
+                        </div>
+                        <div className={`${style.cardStyle} ${style.selectedCardBackground}`} onClick={() => getSelectedHelp('TUTORIALS & VIDEOS')}>
+                            <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>TUTORIALS & VIDEOS</h5>
+                            <p className={style.last30Style}>LAST 30 DAYS</p>
+                            <div className={style.spaceBetween}>
+                                <p></p>
+                                <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>4</p>
+                            </div>
+                        </div>
+                        <div className={`${style.cardStyle}`} onClick={() => getSelectedHelp('FAQS')}>
+                            <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>FAQS</h5>
+                            <p className={style.last30Style}>LAST 7 DAYS</p>
+                            <div className={style.spaceBetween}>
+                                <p></p>
+                                <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
+                            </div>
+                        </div>
+                        <div className={style.cardStyle} onClick={() => getSelectedHelp('RELEASE NOTES')}>
+                            <h5 className={`${style.headingForContracts} ${style.marginTop20}`}>RELEASE NOTES</h5>
+                            <p className={style.last30Style}>LAST 30 DAYS</p>
+                            <div className={style.spaceBetween}>
+                                <p></p>
+                                <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div className={style.bigCardGrid}>
+                        <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
+                            <div className={style.openCardStyle}>
+                            </div>
+                        </div>
+                        <div className={style.bigCardStyle}>
+                            <div className={style.spaceBetween}>
+                                <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
+                                <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                                    <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
+                                        <p>Search here</p>
+                                        <p className={style.marginRight}>&#128269;</p>
+                                    </div>
+                                    {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
+                                    <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
+                                    <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />
+                                    <img src={LockReset} alt="LockReset" className={style.smallIcons} /> */}
+                                    <img src={Filter} alt="Filter" className={style.filterIcon} onClick={() => setTutorialPage2(!tutorialPage2)} />
+                                    <button className={style.tutorialButton} onClick={() => getAddTutorialDialog(true)}>ADD TUTORIAL / VIDEO</button>
+                                </div>
+                            </div>
+                            <div className={style.displayInRow}>
+                                <div className={style.buttonGroupUsers}>
+                                    <button className={tutorialName === "Tutorials & Videos" ? style.registeredButton : style.normalButton} onClick={() => setTutorialName('Tutorials & Videos')}>Tutorials & Videos ( 4 )</button>
+                                    <button className={tutorialName === "Frequently Viewed"  ? style.registeredButton : style.normalButton} onClick={() => setTutorialName('Frequently Viewed')}>Frequently Viewed ( 1 )</button>
+                                    <button className={tutorialName === "No Views"  ? style.registeredButton : style.normalButton} onClick={() => setTutorialName('No Views')}>No Views ( 1 )</button>
+                                </div>
+                            </div>
+                            {tutorialName === "Tutorials & Videos" ? (
+                                <div className={`${style.grid4} ${style.tutorialPostBackgroundCard}`}>
+                                    <div className={style.tutorialPostCard}>
+                                        <div className={style.newBadge}>new</div>
+                                        <img src={UserLogo} alt="post" className={`${style.postImage} ${style.reduceTop20}`} />
+                                        <div>
+                                            <p className={style.postTitle}>Employee Agreement</p>
+                                            <p className={`${style.postContent} ${style.reduceTop10}`}>The webinar talks about how you can detect data breaches and assist your customers by ...</p>
+                                            <div className={style.spaceBetween}>
+                                                <p className={style.postDateStyle}>JAN 12, 2022</p>
+                                                <div className={style.displayInRow}>
+                                                    <ThumbUpAltOutlinedIcon fontSize='small' className={style.marginLeft20} style={{ color: '#6C6CDA' }} />
+                                                    <p className={`${style.postDateStyle} ${style.marginLeft5}`}>41</p>
+                                                    <ThumbDownAltOutlinedIcon fontSize='small' className={style.marginLeft20} style={{ color: '#B3B8BD' }}/>
+                                                    <p className={`${style.postDateStyle} ${style.marginLeft5}`}>2</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={style.tutorialPostCard}>
+                                        <div className={style.newBadge}>new</div>
+                                        <img src={UserLogo} alt="post" className={`${style.postImage} ${style.reduceTop20}`} />
+                                        <div>
+                                            <p className={style.postTitle}>Employee Agreement</p>
+                                            <p className={`${style.postContent} ${style.reduceTop10}`}>The webinar talks about how you can detect data breaches and assist your customers by ...</p>
+                                            <div className={style.spaceBetween}>
+                                                <p className={style.postDateStyle}>JAN 12, 2022</p>
+                                                <div className={style.displayInRow}>
+                                                    <ThumbUpAltOutlinedIcon fontSize='small' className={style.marginLeft20} style={{ color: '#6C6CDA' }} />
+                                                    <p className={`${style.postDateStyle} ${style.marginLeft5}`}>41</p>
+                                                    <ThumbDownAltOutlinedIcon fontSize='small' className={style.marginLeft20} style={{ color: '#B3B8BD' }}/>
+                                                    <p className={`${style.postDateStyle} ${style.marginLeft5}`}>2</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={style.tutorialPostCard}>
+                                        <img src={UserLogo} alt="post" className={style.postImage} />
+                                        <div>
+                                            <p className={style.postTitle}>Employee Agreement</p>
+                                            <p className={`${style.postContent} ${style.reduceTop10}`}>The webinar talks about how you can detect data breaches and assist your customers by ...</p>
+                                            <div className={style.spaceBetween}>
+                                                <p className={style.postDateStyle}>JAN 12, 2022</p>
+                                                <div className={style.displayInRow}>
+                                                    <ThumbUpAltOutlinedIcon fontSize='small' className={style.marginLeft20} style={{ color: '#6C6CDA' }} />
+                                                    <p className={`${style.postDateStyle} ${style.marginLeft5}`}>41</p>
+                                                    <ThumbDownAltOutlinedIcon fontSize='small' className={style.marginLeft20} style={{ color: '#B3B8BD' }}/>
+                                                    <p className={`${style.postDateStyle} ${style.marginLeft5}`}>2</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={style.tutorialPostCard}>
+                                        <img src={UserLogo} alt="post" className={style.postImage} />
+                                        <div>
+                                            <p className={style.postTitle}>Employee Agreement</p>
+                                            <p className={`${style.postContent} ${style.reduceTop10}`}>The webinar talks about how you can detect data breaches and assist your customers by ...</p>
+                                            <div className={style.spaceBetween}>
+                                                <p className={style.postDateStyle}>JAN 12, 2022</p>
+                                                <div className={style.displayInRow}>
+                                                    <ThumbUpAltOutlinedIcon fontSize='small' className={style.marginLeft20} style={{ color: '#6C6CDA' }} />
+                                                    <p className={`${style.postDateStyle} ${style.marginLeft5}`}>41</p>
+                                                    <ThumbDownAltOutlinedIcon fontSize='small' className={style.marginLeft20} style={{ color: '#B3B8BD' }}/>
+                                                    <p className={`${style.postDateStyle} ${style.marginLeft5}`}>2</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : tutorialName === "Frequently Viewed"  ?  (
+                                <div>
+                                    <div className={`${style.tableHeader} ${style.marginTop20}`}>
+                                        <p></p>
+                                        <p className={style.tableHeaderFontStyle}>TICKET ID</p>
+                                        <p className={style.tableHeaderFontStyle}>EXCEPTION CODE</p>
+                                        <p className={style.tableHeaderFontStyle}>DESCRIPTION</p>
+                                        <p className={style.tableHeaderFontStyle}>DATE/TIME</p>
+                                        <p className={style.tableHeaderFontStyle}>CONTRACTOR NAME</p>
+                                        <p className={style.tableHeaderFontStyle}>USER NAME</p>
+                                        <p className={style.tableHeaderFontStyle}>LAST UPDATED</p>
+                                    </div>
+                                    <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                        <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
+                                            <Tooltip title="Error" arrow>
+                                                <div className={`${style.redDotStyle}`}></div>
+                                            </Tooltip>
+                                            <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
+                                                Tckt006
+                                            </p>
+                                            <p className={style.tableDataFontStyle}>ECPTCODE001</p>
+                                            <p className={style.tableDataFontStyle}>Lorem Ipsum Ipsum Lorem Ipsum ...</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                            <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                            <p className={style.tableDataFontStyle}>LOREM iPSUM</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                        </div>
+                                    </div>
+                                    <div className={style.spaceBetween}>
+                                        <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
+                                        <div className={style.displayInRow}>
+                                        <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                                        <img src={ChevronRight} className={style.roundChevron} />
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <div className={`${style.tableHeader2} ${style.marginTop20}`}>
+                                        <p></p>
+                                        <p className={style.tableHeaderFontStyle}>TYPE</p>
+                                        <p className={style.tableHeaderFontStyle}>RELATED TO</p>
+                                        <p className={style.tableHeaderFontStyle}>MESSAGE / COMMENT</p>
+                                        <p className={style.tableHeaderFontStyle}>LAST RESPONDED</p>
+                                        <p className={style.tableHeaderFontStyle}>DATE / TIME</p>
+                                        <p className={style.tableHeaderFontStyle}>ACTION</p>
+                                    </div>
+                                    <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                        <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
+                                            <Tooltip title="Resolved" arrow>
+                                                <div className={`${style.greenDotStyle}`}></div>
+                                            </Tooltip>
+                                            <p className={style.tableDataFontStyle}>Comment</p>
+                                            <p className={style.tableDataFontStyle}>Ticket</p>
+                                            <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                            <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                            <p className={style.tableHeaderFontStyle}>REPLY</p>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                        <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
+                                            <Tooltip title="Resolved" arrow>
+                                                <div className={`${style.greenDotStyle}`}></div>
+                                            </Tooltip>
+                                            <p className={style.tableDataFontStyle}>Email</p>
+                                            <p className={style.tableDataFontStyle}>Tutorial</p>
+                                            <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                            <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                            <p className={style.tableHeaderFontStyle}>VIEW</p>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                        <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
+                                            <Tooltip title="In-Progress" arrow>
+                                                <div className={`${style.yellowDotStyle}`}></div>
+                                            </Tooltip>
+                                            <p className={style.tableDataFontStyle}>Email</p>
+                                            <p className={style.tableDataFontStyle}>Ticket</p>
+                                            <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                            <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                            <p className={style.tableHeaderFontStyle}>VIEW</p>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                        <div className={`${style.tableDataGrid2} ${style.fullWidth} ${style.marginTop7}`}>
+                                            <Tooltip title="Error" arrow>
+                                                <div className={`${style.redDotStyle}`}></div>
+                                            </Tooltip>
+                                            <p className={style.tableDataFontStyle}>Email</p>
+                                            <p className={style.tableDataFontStyle}>Ticket</p>
+                                            <p className={style.tableDataFontStyle}>Lorem Ipsum Dolor Sit Amet, Consectetur us</p>
+                                            <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
+                                            <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
+                                            <p className={style.tableHeaderFontStyle}>REPLY</p>
+                                        </div>
+                                    </div>
+                                    <div className={style.spaceBetween}>
+                                        <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
+                                        <div className={style.displayInRow}>
+                                        <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                                        <img src={ChevronRight} className={style.roundChevron} />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className={style.spaceBetween}>
+                        <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
+                        <p className={style.poweredBy}>© TimeSmart.AI</p>
+                    </div>
+                    {showAddTutorialDialog && <AddTutorial getAddTutorialDialog={getAddTutorialDialog} />}
+                    {showVideoSequenceDialog && <VideoSequencePlayerDialog getShowVideoSequenceDialog={getShowVideoSequenceDialog} />}
                 </div>
-            </Dialog>
-            {showAddTutorialDialog && <AddTutorial getAddTutorialDialog={getAddTutorialDialog} />}
-            {showVideoSequenceDialog && <VideoSequencePlayerDialog getShowVideoSequenceDialog={getShowVideoSequenceDialog} />}
-        </div>
+            )}
+        </>
     )
 }
 

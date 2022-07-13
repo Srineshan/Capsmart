@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { InputGroup, Icon, Intent, TagInput, Dialog, Classes } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -13,12 +13,26 @@ import CloudUpload from './../../images/cloudUpload.png';
 import HourglassImg from './../../images/hourglassImg.png';
 import UploadedImg from './../../images/uploadedImage.png';
 import Download from './../../images/download.png';
+import Dropzone from "react-dropzone";
+import {Auth} from './../../utils/auth';
+import { CSVLink } from "react-csv";
+import Papa from 'papaparse';
 
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 
 const VALUES = ['Site 1', "Site 1", "Site", 'Site 1'];
-const SiteUsers = () => {
+
+const dropzoneStyle = {
+    width: "100%",
+    height: "auto",
+    borderWidth: 2,
+    borderColor: "rgb(102, 102, 102)",
+    borderStyle: "dashed",
+    borderRadius: 5,
+  }
+
+const SiteUsers = ({getActiveStep}) => {
 
     const [tags, setTags] = useState(VALUES);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
@@ -30,6 +44,75 @@ const SiteUsers = () => {
     const [showUploading, setShowUploading] = useState(false);
     const [isUploaded, setIsUploaded] = useState(false);
     const [item, setItem] = useState();
+    const [user,setUser] = useState([]);
+    const accessToken = Auth();
+    // const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:'',title:'',email:'',phone:'',site:[],admin_access:false,roles:[]});
+    const [userData,setUserData] = useState([]);
+    const [userDataCSV,setUserDataCSV] = useState([]);
+
+    const columns = [
+      {
+        label: "NPIN",
+        key: "npin", // String-based value accessors!
+      },
+      {
+        label: "Site Name",
+        key: "site_name",
+      },
+      {
+        label: "Site Type",
+        key:"site_type",
+      },
+      {
+        label: "Address Line",
+        key:"address_line",
+      },
+      {
+        label: "City",
+        key:"city",
+      },
+      {
+        label: "State",
+        key:"state",
+      },
+      {
+        label: "Zipcode",
+        key:"zipcode",
+      },
+      {
+        label: "Country",
+        key:"country",
+      },
+      {
+        label: "Setup Department",
+        key: "setup_department",
+      },
+      {
+        label: "Department Name",
+        key: "department",
+      }
+    ];
+
+    // useEffect(()=>{
+    //   getUserData();
+    // },[])
+
+    // const getUserData = () => {
+    //   const user = {
+    //     method: 'GET',
+    //     headers: { 'Content-Type': 'application/json',
+    //               'X-tenantID' : '6242845f95690b3822cb96a5',
+    //               'Authorization': `Bearer ${accessToken}`}
+    //     };
+    //     fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com/user-management-service/user', user)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         setUser(data);
+    //         console.log('data',data);
+    //       return true;
+    //     }
+    //    )
+    // }
 
     const options = [
         { name: 'Site 1' },
@@ -41,7 +124,6 @@ const SiteUsers = () => {
       ];
 
       const onSelect = useCallback((selectedItem) => {
-        console.log('selectedItem', selectedItem);
         setItem(selectedItem);
         setSelectDepartment('');
       }, []);
@@ -71,54 +153,72 @@ const SiteUsers = () => {
         [item],
       );
 
+    const handleUserData = (name,value) => {
+      setUserData({...userData, [name]:value});
+    }
+
+    const changeHandler = (event) => {
+    // Passing file data (event.target.files[0]) to parse using Papa.parse
+    Papa.parse(event?.[0], {
+      header: true,
+      skipEmptyLines: true,
+      complete: function (results) {
+        console.log(results.data)
+        setUserDataCSV(results.data);
+      },
+    });
+  };
+
+    console.log('user data',userData);
+
     return(
         <div className={style.entitySetupBackground}>
             <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
             <div className={style.stepperMargin}>
                 <div className={style.stepperGrid}>
-                    <div>
+                    <div onClick={() => getActiveStep('entitySetup')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} /> 
+                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
                     {/* <div>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
-                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} /> 
+                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div> */}
-                    <div>
+                    <div onClick={() => getActiveStep('siteInformation')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
-                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} /> 
+                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
-                    <div>
+                    <div onClick={() => getActiveStep('siteUsers')}>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
-                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} /> 
+                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>APP USERS</p>
                     </div>
-                    <div>
+                    <div onClick={() => getActiveStep('appSubscription')}>
                         <div className={style.stepperImgBackground}>
-                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} /> 
+                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                         </div>
                         <p className={style.entityTextColor}>APP SUBSCRIPTION</p>
                     </div>
                 </div>
                 <div className={style.stepperDivider4}></div>
             </div>
-            {!showUserTable ? (
+            {showUserTable ? (
                 <div className={style.entitySetupCardStyle}>
                     <p className={style.heading}>Add Registered Users</p>
                     <div className={style.greyBorder}></div>
                     <div className={style.entityDescription}>
-                    Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus 
-                    quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus 
-                    dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam 
-                    eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut 
-                    felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur 
+                    Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
+                    quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus
+                    dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam
+                    eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
+                    felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
                     adipiscing elit. sed finibus quam nec tellus dictum.
                     </div>
                     <div>
@@ -148,9 +248,9 @@ const SiteUsers = () => {
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Name*</div>
                                     <div className={`${style.displayInRow}`}>
-                                        <InputGroup value="First Name" className={`${style.fourFieldWidth}`}/>
-                                        <InputGroup value="LAST NAME" className={`${style.fourFieldWidth} ${style.marginLeft20}`}/>
-                                        <InputGroup value="Suffix" className={`${style.fourFieldWidth} ${style.marginLeft20}`}/>
+                                        <InputGroup placeholder="First Name" className={`${style.fourFieldWidth}`} value={userData.firstName} onChange={(e)=>handleUserData('firstName',e.target.value)}/>
+                                        <InputGroup placeholder="LAST NAME" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={userData.lastName} onChange={(e)=>handleUserData('lastName',e.target.value)}/>
+                                        <InputGroup placeholder="Suffix" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={userData.suffix} onChange={(e)=>handleUserData('suffix',e.target.value)}/>
                                         <p className={`${style.fourFieldWidth}`}></p>
                                     </div>
                                 </div>
@@ -159,19 +259,27 @@ const SiteUsers = () => {
                                     <select
                                         name="class"
                                         id="Class"
-                                        className={style.fullWidth}>
+                                        className={style.fullWidth}
+                                        value={userData.title}
+                                        onChange={(e)=>handleUserData('title',e.target.value)}>
                                             <option value="Select" >
                                             Select
+                                            </option>
+                                            <option value="title1" >
+                                            title1
+                                            </option>
+                                            <option value="title2" >
+                                            title2
                                             </option>
                                     </select>
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Email Address*</div>
-                                    <InputGroup value="Email" className={`${style.twoFieldWidth}`}/>
+                                    <InputGroup placeholder="Email" className={`${style.twoFieldWidth}`} value={userData.email} onChange={(e)=>handleUserData('email',e.target.value)}/>
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Cell Phone</div>
-                                    <InputGroup value="+1 (342) 444-5505" className={`${style.twoFieldWidth}`}/>
+                                    <InputGroup placeholder="+1 (342) 444-5505" className={`${style.twoFieldWidth}`} value={userData.phone} onChange={(e)=>handleUserData('phone',e.target.value)}/>
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Specific Site Access*</div>
@@ -182,7 +290,7 @@ const SiteUsers = () => {
                                                     <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
                                                 }
                                                 className={`${style.switchFontStyle}`}
-                                                label={departmentSpecific ? 'YES' : "NO"} 
+                                                label={departmentSpecific ? 'YES' : "NO"}
                                             />
                                             {departmentSpecific && (
                                                 <>
@@ -194,7 +302,7 @@ const SiteUsers = () => {
                                         {selectDepartment.length !== 0 && (
                                             <div className={`${style.reqDeptCard} ${style.marginTop}`}>
                                                 <div className={style.addBoxDescription}>
-                                                The Department you are trying to add is not on the list. 
+                                                The Department you are trying to add is not on the list.
                                                 To add a new department enter the exact name below and click
                                                 on the "REQUEST & ADD" button.
                                                 </div>
@@ -235,9 +343,11 @@ const SiteUsers = () => {
                                         <select
                                             name="class"
                                             id="Class"
-                                            className={style.fullWidth}>
+                                            className={style.fullWidth}
+                                            value={userData.role}
+                                            onChange={(e)=>handleUserData('roles',e.target.value)}>
                                                 <option value="Select" >
-                                                Select
+                                                  Select
                                                 </option>
                                         </select>
                                     </div>
@@ -249,10 +359,10 @@ const SiteUsers = () => {
                                 </div>
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
                                     <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setShowUserTable(true)}>SAVE & ADD MORE</button>
-                                    <Link to={'/appSubscription'}>
-                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`}>CONTINUE</button>
-                                    </Link>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & ADD MORE</button>
+                                    {/* <Link to={'/appSubscription'}> */}
+                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => getActiveStep('appSubscription')}>CONTINUE</button>
+                                    {/* </Link> */}
                                 </div>
                             </div>
                         </div>
@@ -262,7 +372,7 @@ const SiteUsers = () => {
                 <div className={style.entitySetupCardStyle}>
                     <p className={style.heading}>Registered App Users</p>
                     <div className={`${style.floatRight} ${style.siteButtonPosition}`}>
-                        <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >ADD USERS</button>
+                        <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={()=> setShowUserTable(true) }>ADD USERS</button>
                         <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={() => setShowBulkUploadDialog(true)}>BULK UPLOAD</button>
                     </div>
                     <div className={style.greyBorder}></div>
@@ -277,37 +387,19 @@ const SiteUsers = () => {
                             <p className={style.tableHeaderFontStyle}>SOURCE</p>
                         </div>
                         <div className={`${style.tableData} ${style.displayInCol}`} >
+                        {
+                          user?.map(data=>(
                             <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <p className={style.tableDataFontStyle}>RAJ</p>
-                                <p className={style.tableDataFontStyle}>CO</p>
-                                <p className={style.tableDataFontStyle}>HOD</p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                                <p className={style.tableDataFontStyle}>YES</p>
-                                <p className={style.tableDataFontStyle}>Approver</p>
+                                <p className={style.tableDataFontStyle}>{data.name.firstName}{' '}{data.name.lastName}</p>
+                                <p className={style.tableDataFontStyle}>{data.name.suffix}</p>
+                                <p className={style.tableDataFontStyle}>{data.title.title}</p>
+                                <p className={style.tableDataFontStyle}>{data.sites?.sites?.length || 0}</p>
+                                <p className={style.tableDataFontStyle}>{data.userType === "ADMIN"?'YES':'NO'}</p>
+                                <p className={style.tableDataFontStyle}>{data.roles?.[0]?.roleName || ''}</p>
                                 <p className={style.tableDataFontStyle}>Upload</p>
                             </div>
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol}`} >
-                            <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <p className={style.tableDataFontStyle}>RAJ</p>
-                                <p className={style.tableDataFontStyle}>DC</p>
-                                <p className={style.tableDataFontStyle}>MD</p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                                <p className={style.tableDataFontStyle}>NO</p>
-                                <p className={style.tableDataFontStyle}>Reviewer</p>
-                                <p className={style.tableDataFontStyle}>Manual</p>
-                            </div>
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol}`} >
-                            <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <p className={style.tableDataFontStyle}>RAJ</p>
-                                <p className={style.tableDataFontStyle}>AC</p>
-                                <p className={style.tableDataFontStyle}>SURGEON</p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                                <p className={style.tableDataFontStyle}>YES</p>
-                                <p className={style.tableDataFontStyle}>Approver, Reviewer</p>
-                                <p className={style.tableDataFontStyle}>Manual</p>
-                            </div>
+                          ))
+                        }
                         </div>
                     </div>
                     <div className={` ${style.floatRight} ${style.marginTop20} ${style.marginRightForPositionButton}`}>
@@ -343,7 +435,7 @@ const SiteUsers = () => {
                     <div className={style.extensionBorder}></div>
                     <div className={`${style.dashborderStyle} ${style.marginTop20}`}>
                         <div className={style.alignCenter}>
-                        {isUploaded ? (
+                        {/* {isUploaded ? (
                             <div onClick={() => setShowUploading(false)}>
                                 <img src={UploadedImg} alt="done" className={style.uploadImgStyle} />
                                 <p className={style.uploadTextStyle}>
@@ -364,7 +456,31 @@ const SiteUsers = () => {
                                 DRAG AND DROP, OR CLICK TO UPLOAD THE EXCEL TEMPLATE
                                 </p>
                             </div>
-                        ) : ''}
+                        ) : ''} */}
+                            <Dropzone style={dropzoneStyle} accept=".csv" onDrop={acceptedFiles => changeHandler(acceptedFiles)}>
+                                {({getRootProps, getInputProps}) => (
+                                    <section>
+                                    <div {...getRootProps()}>
+                                        <input {...getInputProps()} accept=".csv" />
+                                        {userDataCSV?.length === 0 ? (
+                                        <>
+                                        <img src={CloudUpload} alt="cloud" className={style.uploadImgStyle} />
+                                        <p className={style.uploadTextStyle}>
+                                        DRAG AND DROP, OR CLICK TO UPLOAD THE EXCEL TEMPLATE
+                                        </p>
+                                        </>
+                                        ) : (
+                                            <>
+                                                <img src={UploadedImg} alt="done" className={style.uploadImgStyle} />
+                                                <p className={style.uploadTextStyle}>
+                                                 RECORDS SUCCESSFULLY UPLOADED
+                                                </p>
+                                            </>
+                                        )}
+                                    </div>
+                                    </section>
+                                )}
+                            </Dropzone>
                         </div>
                         {isUploaded && (
                             <div className={`${style.spaceBetween} ${style.reduceMarginTop}`}>
@@ -379,17 +495,24 @@ const SiteUsers = () => {
                     <div className={`${style.uploadDescription} ${style.marginTop20}`}>
                         <p className={style.descriptionHeading}>INSTRUCTIONS FOR BULK UPLOAD</p>
                         <p className={style.uploadDescriptionText}>
-                            Help lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                            sed finibus quam nec tellus dictum, vitae ultrices urna porttitor. 
-                            donec commodo tellus dapibus semper mattis. aenean ut massa vitae 
-                            tortor consequat tristique. etiam eget condimentum sapien. morbi 
-                            est ante, sagittis ac rhoncus eget, faucibus ut felis. pellentesque 
-                            iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur 
+                            Help lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            sed finibus quam nec tellus dictum, vitae ultrices urna porttitor.
+                            donec commodo tellus dapibus semper mattis. aenean ut massa vitae
+                            tortor consequat tristique. etiam eget condimentum sapien. morbi
+                            est ante, sagittis ac rhoncus eget, faucibus ut felis. pellentesque
+                            iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
                             adipiscing elit. sed finibus quam nec tellus dictum.
                         </p>
-                        <button className={style.downloadBulkButtonStyle}>
+                        <CSVLink
+                      data={[]}
+                      headers={columns}
+                      filename={`Site Users`}
+                      target="_blank"
+                      className={style.m10}>
+                      <button className={style.downloadBulkButtonStyle}>
                         DOWNLOAD BULK USER UPLOAD EXCEL TEMPLATE FILE
-                        </button>
+                      </button>
+                    </CSVLink>
                     </div>
                     <div>
                         <div className={`${style.floatRight} ${style.marginTop20}`}>

@@ -13,6 +13,7 @@ import UploadUser from './../../images/uploadUser.png';
 import ContractExtension from './../../images/contractExtension.png';
 import ProgressBar from "@ramonak/react-progress-bar";
 import AddUser from './addUser'
+import {GET} from './userDataSaver';
 import EditUser from './editUser';
 import MailTemplate from './mailTemplate';
 import style from './index.module.scss';
@@ -29,31 +30,19 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
     const [showAddUserDialog,setShowAddUserDialog] = useState(false);
     const [showEditUserDialog,setShowEditUserDialog] = useState(false);
     const [showMailtemplate,setShowMailTemplate] = useState(false);
+    const [registeredUsers, setRegisteredUsers] = useState([]);
+    const [blockedUsers, setBlockedUsers] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState();
 
-    // const getUser = () => {
-    //     const user = {
-    //         method: 'GET',
-    //         headers: { 'Content-Type': 'application/json',
-    //                   'X-tenantID' : '6242845f95690b3822cb96a5',
-    //                   'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTM3MzkzNTMsImV4cCI6MTY1MzgyNTc1M30.NfQJwvBPig-uJCp-pd7uH8mnRwfa5c-EyBm-atQN59sefOthWyaz74Pbucu2URDAVxXi5kEt-MTad-dJbyjsxw`}
-    //     };
-    //     fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/user-management-service/user', user)
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             console.log(data, data?.[0]?.name?.firstName)
-    //             setUserDetails(data);
-    //           return true;
-    //         }
-    //        )
-    // };
+    const getUser = async() => {
+        const {data: user} = await GET('user');
+        setRegisteredUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
+        setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
+    };
 
-    // useEffect(()=>{
-    //     getUser();
-    // },[])
-
-    // const registeredUsers = userDetails?.filter(data => data?.blocked === false)?.map(data => data);
-    // const blockedUsers = userDetails?.filter(data => data?.blocked === true)?.map(data => data);
-       
+    useEffect(()=>{
+        getUser();
+    },[])
 
     const getSendEmailDialog = (value) => {
         setSendEMail(value);
@@ -155,8 +144,8 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                         </div>
                     </div>
                     <div className={style.buttonGroupUsers}>
-                        <button className={viewRegisteredUser && style.registeredButton} onClick={() => setViewRegisteredUser(true)}>Registered Users ( 10 )</button>
-                        <button className={!viewRegisteredUser ? style.blockedButton : style.redText} onClick={() => setViewRegisteredUser(false)}>Blocked Users (2)</button>
+                        <button className={viewRegisteredUser && style.registeredButton} onClick={() => setViewRegisteredUser(true)}>Registered Users ( {registeredUsers?.length} )</button>
+                        <button className={!viewRegisteredUser ? style.blockedButton : style.redText} onClick={() => setViewRegisteredUser(false)}>Blocked Users ( {blockedUsers?.length} )</button>
                     </div>
                     {viewRegisteredUser ? (
                     <div>
@@ -170,11 +159,11 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             <p className={style.tableHeaderFontStyle}>AVG LOGINS PER DAY</p>
                             <p className={style.tableHeaderFontStyle}>AVG DURATION PER LOGINS(MIN)</p>
                         </div>
-                        {/* {registeredUsers?.map((data, index) =>
+                        {registeredUsers?.map((data, index) =>
                             <div className={`${style.tableData} ${style.displayInCol} ${style.marginTop7} ${index % 2 === 0 ? style.alternativeBackgroundColor : ''}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(index)}}>
                                 <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                     <input type="checkbox" className={style.checkBoxData} />
-                                    <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
+                                    <p className={`${style.tableDataFontStyle} ${style.displayInRow}`} onClick={() => {getEditUserDialog(true);setSelectedUsers(data)}}>
                                         <div className={`${style.greenDotStyle}`}></div>
                                         {data?.name?.firstName}
                                     </p>
@@ -221,8 +210,8 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                     </>
                                 )}
                             </div>
-                         )} */}
-                         <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1')}}>
+                         )}
+                         {/* <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1')}}>
                             <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                 <input type="checkbox" className={style.checkBoxData} />
                                 <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
@@ -571,7 +560,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                     </div>
                                 </>
                             )}
-                        </div>
+                        </div> */}
                         <div className={style.spaceBetween}>
                             <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
                             <div className={style.displayInRow}>
@@ -592,7 +581,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                 <p className={style.tableHeaderFontStyle}>BLOCKED DURATION (DAYS)</p>
                                 <p className={style.tableHeaderFontStyle}>ACTION</p>
                             </div>
-                            {/* {blockedUsers?.map((data, index) =>
+                            {blockedUsers?.map((data, index) =>
                                 <div className={`${style.tableData} ${style.displayInCol} ${index % 2 === 0 ? style.alternativeBackgroundColor : ''}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(index)}}>
                                     <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                         <input type="checkbox" className={style.checkBoxData} />
@@ -642,8 +631,8 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                         </>
                                     )}
                                 </div>
-                            )} */}
-                            <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(1)}}>
+                            )}
+                            {/* <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(1)}}>
                                 <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                     <input type="checkbox" className={style.checkBoxData} />
                                     <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
@@ -740,7 +729,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                         </div>
                                     </>
                                 )}
-                            </div>
+                            </div> */}
                             <div className={style.spaceBetween}>
                                 <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
                                 <div className={style.displayInRow}>
@@ -766,7 +755,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                 <AddUser getAddUserDialog={getAddUserDialog}/>
             )}
             {showEditUserDialog && (
-                <EditUser getEditUserDialog={getEditUserDialog}/>
+                <EditUser getEditUserDialog={getEditUserDialog} selectedUsers={selectedUsers} />
             )}
             {showMailtemplate && (
                 <MailTemplate getMailTemplate={getMailTemplate} />

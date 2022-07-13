@@ -5,8 +5,8 @@ import { Html } from "react-konva-utils";
 function getStyle(width, height) {
   const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
   const baseStyle = {
-    width: `${width-8}px`,
-    height: `${height-10}px`,
+    width: `${width}px`,
+    height: `${height-20}px`,
     border: "none",
     padding: "0px",
     margin: "0px",
@@ -14,8 +14,10 @@ function getStyle(width, height) {
     outline: "none",
     resize: "none",
     colour: "black",
-    fontSize: "5px",
+    fontSize: "15px",
     fontFamily: "sans-serif",
+    fontWeight:"bold",
+    justifyContent:'center',
   };
   if (isFirefox) {
     return baseStyle;
@@ -75,7 +77,8 @@ const  EditableEllipse = ({
   onTextChange,
   selected,
   name,
-  deleteDisplay
+  deleteDisplay,
+  dragChange,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
@@ -90,7 +93,7 @@ const  EditableEllipse = ({
 
 
   return (
-    <Group x={x} y={y} name={name} draggable onClick={deleteDisplay}>
+    <Group x={x} y={y} name={name} draggable onClick={deleteDisplay} onDragEnd={dragChange}>
       <Ellipse
         x={20}
         y={20}
@@ -105,8 +108,8 @@ const  EditableEllipse = ({
         strokeWidth={1}
       />
       <EditableText
-        x={5}
-        y={10}
+        x={-4}
+        y={12}
         text={text}
         width={width}
         height={height}

@@ -1,5 +1,5 @@
 body{
-    -ms-overflow-style: none !important; 
+    -ms-overflow-style: none !important;
     scrollbar-width: none !important;
     ::-webkit-scrollbar {
         display: none !important;
@@ -215,7 +215,7 @@ body{
     background-color: #c4bef3;
     height: 100vh !important;
     overflow: scroll;
-}   
+}
 
 .welcomeHeading{
     text-align: center;
@@ -362,12 +362,12 @@ body{
 
 .entitySetupBackground{
     background-color: #F8FCFF;
-    height: 100vh !important;
+    height: 15vh !important;
 }
 
 .stepperImgStyle{
     height: 100%;
-    width: 35px;  
+    width: 35px;
     object-fit: contain;
     display: flex;
     align-items: center;
@@ -584,13 +584,13 @@ body{
 
 .companyLogoUpload{
     height: 70px;
-    width: 70px;    
+    width: 70px;
     object-fit: contain;
 }
 
 .logoThumbnailUpload{
     height: 50px;
-    width: 50px;    
+    width: 50px;
     object-fit: cover;
     margin-left: 60px;
     margin-top: 20px;
@@ -702,7 +702,7 @@ body{
 
 .cursorPointer{
     cursor: pointer;
-}   
+}
 
 .siteButtonPosition{
     margin: -40px 70px 10px 0;
