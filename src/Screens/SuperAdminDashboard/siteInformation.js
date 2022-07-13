@@ -4,6 +4,7 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
 import {Link} from 'react-router-dom';
+import {GET,PUT,POST} from './entityDataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step23.png';
 import Step3 from './../../images/step33.png';
@@ -43,26 +44,12 @@ const SiteInformation = ({getActiveStep}) => {
     console.log('dept',departmentValue,tags);
 
     const getSiteData = () => {
-      let  temp = []
-      const site = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json',
-                  'X-tenantID' : '6242845f95690b3822cb96a5',
-                  'Authorization': `Bearer ${accessToken}`}
-        };
-        fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/entity-service/sites', site)
-        .then(response => response.json())
-        .then(data => {
-            let temp = [];
-            console.log('dept',data);
-            data?.map(data=>{
+      let temp = [];
+      const {data:sites} = GET('entity-service/sites');
+            sites?.map(data=>{
               temp.push({name:data.siteName.siteName,type:data.siteType.type,address:data.address,npin:data.npin.id})
             })
-             setSiteList(temp);
-          return true;
-        }
-       )
-
+      setSiteList(temp);
     }
 
 

@@ -12,7 +12,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import UploadImg from './../../images/uploadImg.png';
 import EntityStepper from './entityStepper';
 import {Auth} from './../../utils/auth'
-import {saveEntity,GET,PUT} from './entityDataSaver';
+import {saveEntity,GET,PUT,POST} from './entityDataSaver';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 import SiteInformation from './siteInformation';
@@ -24,13 +24,20 @@ const EntitySetup = () => {
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [departmentValue, setDepartmentValue] = useState('');
     const [item, setItem] = useState();
-    const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",name:'',type:'',websiteURL:'',primarySite:false,multiSiteEntity:false});
+    const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",name:'',type:'',websiteURL:'',multiSiteEntity:false,primarySiteToUseApp:false});
     const [address,setAddress] = useState({city:'',state:'',zipcode:'',addressLine:'',country:''});
     const [websiteUrl,setWebsiteUrl] = useState('');
     const [multiSiteEntity,setMultiSiteEntity] = useState(false);
-    const [siteData,setSiteData] = useState({primarySite:false,canSetupDepartment:false,departments:[],addressLine:'',city:'',state:'',country:'',zipcode:'',npin:'',name:'',siteAdmin:'',type:''});
+    const [siteData,setSiteData] = useState({canSetupDepartment:false,departments:[],addressLine:'',city:'',state:'',country:'',zipcode:'',npin:'',name:'',siteAdmin:'',type:''});
     const [department,setDepartment] = useState([]);
+    const [allSites,setAllSites] = useState([]);
     const [activeStep, setActiveStep] = useState('entitySetup');
+    const [billing,setBilling] = useState();
+    const [trial,setTrial] = useState();
+    const [subscription,setSubscription] = useState();
+    const [accountManager,setAccountManager] = useState();
+    const [departmentList,setDepartmentList] = useState([]);
+    const [entityDepartments,setEntityDepartments] = useState([]);
     const accessToken = Auth();
 
     useEffect(()=>{
@@ -43,14 +50,16 @@ const EntitySetup = () => {
       setActiveStep(value)
     }
 
-    console.log('multiSiteEntity',multiSiteEntity);
-
     const getEntityData = async() => {
-      const {data: entityData} = await GET('entity');
+      const {data: entityData} = await GET('entity-service/entity');
       if(entityData){
         console.log(entityData);
         entityData?.filter(data=>data.id === '6242845f95690b3822cb96a5')?.map(data=>{
           setEntity({id:data.id,customerType:data.customerType,name:data.entityName.entityName,type:data.entityType.type,npin:'',websiteURL:data.websiteURL,multiSiteEntity:data.multiSiteEntity})
+          setSubscription(data.subscriptionPlan);
+          setAccountManager(data.accountManager);
+          setBilling(data.billingDetails);
+          setTrial(data.trialDetails);
         })
       }else{
         console.log('error');
@@ -58,32 +67,97 @@ const EntitySetup = () => {
     }
 
     const getSiteData = async() => {
-      const{data:sites} = await GET('sites');
+      const{data:sites} = await GET('entity-service/sites');
+      setAllSites(sites);
       if(sites){
-        console.log(sites);
         sites?.filter(data=>data.primarySite === true)?.map(data=>{
-          let departmentList = data.departmentList.departments?.map(data=>data.departmentName.name)
+          setDepartmentList(data.departmentList.departments)
+          setDepartment(data.departmentList.departments?.map(data=>data.departmentName.name));
           setSiteData({primarySite:data.primarySite,name:data.siteName.siteName,type:data.siteType.type,npin:data.npin,canSetupDepartment:data.canSetupDepartment,departments:departmentList,addressLine:data.address.addressLine, city:data.address.city, state: data.address.state, country: data.address.country, zipcode: data.address.zipcode, siteAdmin: data.siteAdmin.id})
         })
-
       }else{
         console.log('error');
       }
     }
 
-    console.log(entity,siteData);
-
     const getDepartmentData = async() => {
-      const {data: department} = await GET('department');
+      const {data: department} = await GET('entity-service/department');
       if(department){
-
+        setEntityDepartments(department)
       }else{
         console.log('error');
       }
     }
 
     const saveEntityData = async() => {
+      let filteredSite = allSites?.filter(data=>data.primarySite !== true)?.map(data=>data);
+      let isPrimarySite = allSites?.filter(data=>data.primarySite === true)?.map(data=>data);
+      let temp = [];
+      entityDepartments?.filter(data=>department.includes(department))?.map((data,index)=>{
+        temp[index] = {
+            "id": data.id,
+            "departmentName": {
+              "name": data.departmentName.name,
+            },
+            "departmentHead": {
+              "id": data.depatmentHead.id,
+            }
+        }
+      })
+      setDepartmentList(temp);
+      let primary_site = {
+         "siteName": {
+           "siteName": entity.name,
+         },
+         "siteAdmin": {
+           "id": "string"
+         },
+         "siteType": {
+           "type": entity.type,
+         },
+         "npin": {
+           "id": siteData.npin,
+         },
+         "canSetupDepartment": siteData.canSetupDepartment,
+         "departmentList": {
+           "departments": departmentList,
+         },
+         "address": {
+           "addressLine": siteData.addressLine,
+           "city": siteData.city,
+           "state": siteData.state,
+           "zipcode": siteData.zipcode,
+           "country": siteData.country,
+         },
+         "primarySite": true,
 
+      }
+
+      if(isPrimarySite?.length ===0){
+        console.log('inside post');
+        let siteToAdd = {
+            "siteName": {
+              "siteName": entity.name,
+            },
+            "siteAdmin": {
+              "id": "string"
+            },
+            "address": {
+              "addressLine": siteData.addressLine,
+              "city": siteData.city,
+              "state": siteData.state,
+              "zipcode": siteData.zipcode,
+              "country": siteData.country,
+            },
+          }
+
+        await POST('entity-service/sites',JSON.stringify(siteToAdd))
+      }
+
+      const {data:sites} = getSiteData();
+
+      filteredSite?.push(primary_site);
+      setAllSites(filteredSite);
       const entityValue = {
         "id":entity.id,
         "entityName": {
@@ -93,104 +167,33 @@ const EntitySetup = () => {
           "type": entity.type
         },
         "websiteURL":entity.websiteURL,
-        "canPrimarySiteToUseApp":entity.primarySite,
+        "canPrimarySiteToUseApp":entity.primarySiteToUseApp,
         "multiSiteEntity":entity.multiSiteEntity,
         "customerType": "HEALTHCARE",
-        "sites": [
-          {
-            "siteName": {
-              "siteName": ""
-            },
-            "siteAdmin": {
-              "id": ""
-            },
-            "siteType": {
-              "type": ""
-            },
-            "departmentList": {
-              // "departments": departments
-            },
-            "address": {
-              "addressLine": address.addressLine,
-              "city": address.city,
-              "state": address.state,
-              "zipcode": address.zipcode,
-              "country": address.country,
-            }
-          }
-        ],
-        "subscriptionPlan": {
-          "planName": "BASIC",
-          "allowableRegisteredUsers": {
-            "allowableRegisteredUsers": 0
-          },
-          "subscriptionFees": {
-            "fees": ""
-          },
-          "subscriptionStatus": "ACTIVE",
-          "billingFrequency": "MONTHLY",
-          "discount": {
-            "discount": 0
-          },
-          "plannedToGoLive": {
-            "date": ""
-          },
-          "poaNumber": {
-            "poaNumber": ""
-          }
-        },
-        "billingDetails": {
-          "name": {
-            "firstName": "",
-            "lastName": ""
-          },
-          "email": {
-            "emailId": ""
-          },
-          "contactNumber": {
-            "contactNumber": 0
-          }
-        },
-        "trailDetails": {
-          "trialPeriod": {
-            "period": ""
-          },
-          "contactName": {
-            "name": ""
-          },
-          "trialPeriodDates": {
-            "startDate": "",
-            "endDate": ""
-          },
-          "name": {
-            "firstName": "",
-            "lastName": ""
-          },
-          "email": {
-            "emailId": ""
-          },
-          "contactNumber": {
-            "contactNumber": 0
-          }
-        },
-        "accountManager": {
-          "id": ""
-        }
+        "sites":allSites,
+        "subscriptionPlan": subscription,
+        "billingDetails": billing,
+        "trailDetails":trial,
+        "accountManager": accountManager,
       }
-
-      // await PUT('entity',data)
+      await PUT('entity',JSON.stringify(entityValue));
+      getEntityData();
     }
-    console.log('Department',department);
 
-
-
-    const handleTagsAdd = values => {
+    const handleTagsAdd = async(values) => {
         setDepartment([...department,values])
+        await POST('entity-service/department',JSON.stringify({
+          "departmentName":{
+            "name":values
+          }
+        }))
+        getDepartmentData();
         setTags([...tags, values]);
     };
 
     const handleTagsRemove = (tags, index) => {
-        setDepartment(department?.filter((data,indexValue)=>index!==indexValue)?.map(data=>data))
+        setDepartment(department?.filter((data,indexValue)=>index!==indexValue)?.map(data=>data));
+        setDepartmentList(departmentList?.filter((data,indexValue)=>index!==indexValue)?.map(data=>data))
         const updatedTags = [tags];
         updatedTags.splice(index, 1);
         tags = updatedTags;
@@ -203,10 +206,6 @@ const EntitySetup = () => {
       const handleSite = (name,value) =>{
         setSiteData({...siteData,[name]:value});
       }
-      // const handleDepartment = (name,value) =>{
-      //   setAddress({...department,[name]:value});
-      // }
-
 
     const nextStep = multiSiteEntity === true ?"siteInformation":"siteUsers"
 
@@ -314,18 +313,18 @@ const EntitySetup = () => {
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Mailing Address*</div>
                                   <div>
-                                      <InputGroup value="Street 8 Block 7" className={`${style.fullWidth}`} value={address.addressLine} onChange={(e)=>handleSite('addressLine',e.target.value)}/>
+                                      <InputGroup value="Street 8 Block 7" className={`${style.fullWidth}`} value={siteData.addressLine} onChange={(e)=>handleSite('addressLine',e.target.value)}/>
                                       <div className={`${style.marginTop20} ${style.displayInRow}`}>
-                                          <InputGroup placeholder="Pincode Value" className={`${style.fourFieldWidth}`} value={address.zipcode} onChange={(e)=>handleSite('zipcode',e.target.value)}/>
-                                          <InputGroup placeholder="City Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.city} onChange={(e)=>handleSite('city',e.target.value)}/>
-                                          <InputGroup placeholder="State Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.state} onChange={(e)=>handleSite('state',e.target.value)}/>
-                                          <InputGroup placeholder="Country Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.country} onChange={(e)=>handleSite('country',e.target.value)}/>
+                                          <InputGroup placeholder="Pincode Value" className={`${style.fourFieldWidth}`} value={siteData.zipcode} onChange={(e)=>handleSite('zipcode',e.target.value)}/>
+                                          <InputGroup placeholder="City Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={siteData.city} onChange={(e)=>handleSite('city',e.target.value)}/>
+                                          <InputGroup placeholder="State Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={siteData.state} onChange={(e)=>handleSite('state',e.target.value)}/>
+                                          <InputGroup placeholder="Country Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={siteData.country} onChange={(e)=>handleSite('country',e.target.value)}/>
                                       </div>
                                   </div>
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Website URL*</div>
-                                  <InputGroup value="http://regington.net" className={`${style.fullWidth}`} value={entity.websiteURL} onChange={(e)=>handleEntity('websiteURL',e.target.value)}/>
+                                  <InputGroup value={entity.websiteURL} className={`${style.fullWidth}`} value={entity.websiteURL} onChange={(e)=>handleEntity('websiteURL',e.target.value)}/>
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Multi-site Entity*</div>
@@ -333,7 +332,7 @@ const EntitySetup = () => {
                                       <div className={style.displayInRow}>
                                           <FormControlLabel
                                               control={
-                                                  <Switch checked={multiSiteEntity} className={` ${style.textAlignLeft}`}  onChange={(e)=>setMultiSiteEntity(e.target.checked)}/>
+                                                  <Switch checked={entity.multiSiteEntity} className={` ${style.textAlignLeft}`}  onChange={(e)=>setMultiSiteEntity(e.target.checked)}/>
                                               }
                                               className={style.switchFontStyle}
                                               label={'YES'}
@@ -341,7 +340,7 @@ const EntitySetup = () => {
                                           <div className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Primary Site To Use App*</div>
                                           <FormControlLabel
                                               control={
-                                                  <Switch checked={entity.primarySite} onChange={(e)=>handleEntity('primarySite',e.target.checked)} className={` ${style.textAlignLeft} ${style.marginLeft20}`}  />
+                                                  <Switch checked={entity.primarySiteToUseApp} onChange={(e)=>handleSite('primarySiteToUseApp',e.target.checked)} className={` ${style.textAlignLeft} ${style.marginLeft20}`}  />
                                               }
                                               className={style.switchFontStyle}
                                               label={'YES'}
@@ -355,7 +354,7 @@ const EntitySetup = () => {
                                       <div className={style.displayInRow}>
                                           <FormControlLabel
                                               control={
-                                                  <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
+                                                  <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => {setDepartmentSpecific(!departmentSpecific)}}  />
                                               }
                                               className={style.switchFontStyle}
                                               label={departmentSpecific ? 'YES' : "NO"}
@@ -363,7 +362,7 @@ const EntitySetup = () => {
                                           {departmentSpecific && (
                                               <>
                                                   <InputGroup placeholder="Enter Department"  onChange={(e) => setDepartmentValue(e.target.value) } className={`${style.fullWidth} ${style.marginLeft20}`} value={departmentValue}/>
-                                                  <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition} onClick={()=>{handleTagsAdd(departmentValue);setDepartmentValue('');}}>+</span></div>
+                                                  <div className={`${style.addSymbolStyle} ${style.marginLeft20} ${style.cursor}`}><span className={style.plusSymbolPosition} onClick={()=>{handleTagsAdd(departmentValue);setDepartmentValue('');}}>+</span></div>
                                               </>
                                           )}
                                       </div>
@@ -384,7 +383,7 @@ const EntitySetup = () => {
                               </div>
                           </div>
                           <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                              <button className={style.outlinedButton} onClick={saveEntity()}>SAVE IN-PROGRESS</button>
+                              <button className={style.outlinedButton} onClick={()=>{saveEntityData()}}>SAVE IN-PROGRESS</button>
                               {/* <Link to={`/${nextStep}`}> */}
                                 <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setActiveStep(multiSiteEntity === true ?"siteInformation":"siteUsers")}>CONTINUE</button>
                               {/* </Link> */}
