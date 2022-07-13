@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, Tag} from '@blueprintjs/core';
+import {POST, GET, TenantID} from './userDataSaver';
 import style from './index.module.scss';
 
 const AddUser = ({getAddUserDialog}) => {
 
-    const [addUser, setAddUser] = useState({firstName: "", lastName: "", email: "", roles: [{id: "", roleName: ""}]});
+    const [addUser, setAddUser] = useState({firstName: "", lastName: "", email: "", roles: [{id: "", roleName: ""}], title: ""});
     console.log(addUser)
-    const roles =["Role 1", "Role 2", "Role 3"];
+    const [roles, setRoles] = useState([])
     const [selectedRoles, setSelectedRoles] = useState([])
 
     const handleRoles = (value) => {
       if (value !== '0') {
-        const selectedValue = roles.filter(data => data === value).map(data => data)[0];
+        const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
  
-        if (!selectedRoles.map(data => data).includes(value)) {
+        if (!selectedRoles.map(data => data?.roleName).includes(value)) {
           setSelectedRoles([...selectedRoles, selectedValue]);
         }
       }
@@ -23,29 +24,18 @@ const AddUser = ({getAddUserDialog}) => {
     .filter(data => roles.map(role => role).includes(data))
     .map((tag, index) => {
       const onRemove = () => {
-        setSelectedRoles(selectedRoles.filter((t) => t !== tag));
+        setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName));
       };
       return (
         <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
-          {tag}
+          {tag?.roleName}
         </Tag>
       );
     });
 
+    console.log(roles, selectedRoles)
+
     const submitUserDetails = async () => {
-
-      let roleValue = [];
-
-      roles?.map(data=>{
-        roleValue.push(  {
-        "id": "string",
-        "roleName": data,
-        "roleDescription": "string",
-        "tenant": {
-          "tenantId": "string"
-        }
-      })
-      })
 
       const user = {
         "name": {
@@ -61,7 +51,7 @@ const AddUser = ({getAddUserDialog}) => {
           "contractID": "string"
         },
         "title": {
-          "title": "string"
+          "title": addUser?.title
         },
         "email": {
           "officialEmail": addUser?.email
@@ -74,19 +64,22 @@ const AddUser = ({getAddUserDialog}) => {
           "mobileNumber": "string",
           "landlineNumber": "string"
         },
-        "roles": roleValue,
+        "roles": selectedRoles,
         "address": {
           "city": "string",
           "state": "string",
           "zipcode": "string"
         },
         "tenant": {
-          "tenantId": "string"
+          "tenantId": TenantID
         },
         "sites": {
-          "sites": [
-            "string"
-          ]
+          "sites": [{
+            "id": "string",
+            "siteName": {
+              "siteName": "string"
+            }
+          }]
         },
         "licenceDetails": {
           "medicalLicense": "string",
@@ -115,23 +108,21 @@ const AddUser = ({getAddUserDialog}) => {
             ]
           }
         },
-        "blocked": true
+        "blocked": false
       };
 
-      const userDetails = {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json',
-                    'X-tenantID' : '6242845f95690b3822cb96a5'},
-          body: JSON.stringify(user)
-      };
-      fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/user-management-service/user/register', userDetails)
-          .then(response => response.json())
-          .then(data => {
-            console.log(data)
-            return true;
-          }
-        )
+      await POST('user/register', JSON.stringify(user));
+      getAddUserDialog(false)
     }
+
+    const getRoles = async() => {
+      const {data: roles} = await GET('roles');
+      setRoles(roles);
+    };
+
+    useEffect(()=>{
+      getRoles();
+  },[])
 
     return(
         <Dialog isOpen={getAddUserDialog} onClose={() => getAddUserDialog(false)} className={`${style.addManagerDialogBackground} ${style.addProofDialog}`}>
@@ -187,7 +178,7 @@ const AddUser = ({getAddUserDialog}) => {
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
               <div className={style.extentionLableStyle}>Title*</div>
-              <InputGroup value="Title" />
+              <InputGroup value={addUser?.title} onChange={(e) => setAddUser({...addUser, title: e.target.value})} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -201,15 +192,11 @@ const AddUser = ({getAddUserDialog}) => {
                             <option value="0" >
                               Select Role-multi select
                             </option>
-                            <option value="Role 1" >
-                              Role 1
-                            </option>
-                            <option value="Role 2" >
-                              Role 2
-                            </option>
-                            <option value="Role 3" >
-                              Role 3
-                            </option>
+                            {roles?.map((data, index) => (
+                              <option key={`${data}-${index}`} value={data?.roleName} >
+                                {data?.roleName}
+                              </option>
+                            ))}
                     </select>
                     <div className={`${style.marginTop20} ${style.marginLeft20}`}>
                       {rolesTags}
@@ -218,7 +205,7 @@ const AddUser = ({getAddUserDialog}) => {
             </div>
         </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={`${style.buttonStyle} ${style.marginLeft20}`}  >ADD</button>
+                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => submitUserDetails()} >ADD</button>
             </div>
         </div>
         </Dialog>
