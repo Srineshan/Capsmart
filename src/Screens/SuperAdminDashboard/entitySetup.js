@@ -12,7 +12,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import UploadImg from './../../images/uploadImg.png';
 import EntityStepper from './entityStepper';
 import {Auth} from './../../utils/auth'
-import {saveEntity,GET,PUT,POST} from './entityDataSaver';
+import {saveEntity,GET,PUT,POST,role,tenantID} from './entityDataSaver';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 import SiteInformation from './siteInformation';
@@ -51,7 +51,7 @@ const EntitySetup = () => {
     }
 
     const getEntityData = async() => {
-      const {data: entityData} = await GET('entity-service/entity');
+      const {data: entityData} = await GET(`entity-service/entity/${tenantID}`);
       if(entityData){
         console.log(entityData);
         entityData?.filter(data=>data.id === '6242845f95690b3822cb96a5')?.map(data=>{
@@ -64,6 +64,124 @@ const EntitySetup = () => {
       }else{
         console.log('error');
       }
+    }
+
+    console.log('Entity',entity);
+
+    const createEntity = async() => {
+      let sites = [{
+
+      }]
+      let entityValue = {
+          "entityName": {
+            "entityName": entity.name
+          },
+          "entityType": {
+            "type": entity.type
+          },
+          "customerType": entity.customerType,
+          "sites": [
+            {
+              "id": "string",
+              "siteName": {
+                "siteName": "string"
+              },
+              "siteAdmin": {
+                "id": "string"
+              },
+              "siteType": {
+                "type": "string"
+              },
+              "npin": {
+                "id": "string"
+              },
+              "canSetupDepartment": true,
+              "departmentList": {
+                "departments": [
+                  {
+                    "id": "string",
+                    "departmentName": {
+                      "name": "string"
+                    },
+                    "departmentHead": {
+                      "id": "string"
+                    }
+                  }
+                ]
+              },
+              "address": {
+                "addressLine": "string",
+                "city": "string",
+                "state": "string",
+                "zipcode": "string",
+                "country": "string"
+              },
+              "primarySite": true
+            }
+          ],
+          "subscriptionPlan": {
+            "planName": "BASIC",
+            "allowableRegisteredUsers": {
+              "allowableRegisteredUsers": 0
+            },
+            "subscriptionFees": {
+              "fees": "string"
+            },
+            "subscriptionStatus": "ACTIVE",
+            "billingFrequency": "MONTHLY",
+            "discount": {
+              "discount": 0
+            },
+            "plannedToGoLive": {
+              "date": "2022-07-13"
+            },
+            "poaNumber": {
+              "poaNumber": "string"
+            }
+          },
+          "billingDetails": {
+            "contactname": {
+              "firstName": "string",
+              "lastName": "string"
+            },
+            "email": {
+              "emailId": "string"
+            },
+            "contactNumber": {
+              "contactNumber": 0
+            }
+          },
+          "contractDetails": {
+            "contractName": "string",
+            "contractID": "string",
+            "contractDocuments": [
+              {
+                "name": "string",
+                "description": "string",
+                "contractDocType": "AGREEMENTDRAFT",
+                "contractDocPath": "string"
+              }
+            ],
+            "contractTermPeriod": {
+              "startDate": "2022-07-13",
+              "endDate": "2022-07-13"
+            },
+            "plannedGoLive": {
+              "date": "2022-07-13"
+            },
+            "contractContinuationPolicy": "AUTORENEWAL",
+            "fullyExecutedContractOnFile": true
+          },
+          "accountManager": {
+            "id": "string"
+          },
+          "appUserRoles": [
+            {
+              "id": "string",
+              "roleName": "string"
+            }
+          ]
+        }
     }
 
     const getSiteData = async() => {
@@ -90,94 +208,7 @@ const EntitySetup = () => {
     }
 
     const saveEntityData = async() => {
-      let filteredSite = allSites?.filter(data=>data.primarySite !== true)?.map(data=>data);
-      let isPrimarySite = allSites?.filter(data=>data.primarySite === true)?.map(data=>data);
-      let temp = [];
-      entityDepartments?.filter(data=>department.includes(department))?.map((data,index)=>{
-        temp[index] = {
-            "id": data.id,
-            "departmentName": {
-              "name": data.departmentName.name,
-            },
-            "departmentHead": {
-              "id": data.depatmentHead.id,
-            }
-        }
-      })
-      setDepartmentList(temp);
-      let primary_site = {
-         "siteName": {
-           "siteName": entity.name,
-         },
-         "siteAdmin": {
-           "id": "string"
-         },
-         "siteType": {
-           "type": entity.type,
-         },
-         "npin": {
-           "id": siteData.npin,
-         },
-         "canSetupDepartment": siteData.canSetupDepartment,
-         "departmentList": {
-           "departments": departmentList,
-         },
-         "address": {
-           "addressLine": siteData.addressLine,
-           "city": siteData.city,
-           "state": siteData.state,
-           "zipcode": siteData.zipcode,
-           "country": siteData.country,
-         },
-         "primarySite": true,
 
-      }
-
-      if(isPrimarySite?.length ===0){
-        console.log('inside post');
-        let siteToAdd = {
-            "siteName": {
-              "siteName": entity.name,
-            },
-            "siteAdmin": {
-              "id": "string"
-            },
-            "address": {
-              "addressLine": siteData.addressLine,
-              "city": siteData.city,
-              "state": siteData.state,
-              "zipcode": siteData.zipcode,
-              "country": siteData.country,
-            },
-          }
-
-        await POST('entity-service/sites',JSON.stringify(siteToAdd))
-      }
-
-      const {data:sites} = getSiteData();
-
-      filteredSite?.push(primary_site);
-      setAllSites(filteredSite);
-      const entityValue = {
-        "id":entity.id,
-        "entityName": {
-          "entityName": entity.name
-        },
-        "entityType": {
-          "type": entity.type
-        },
-        "websiteURL":entity.websiteURL,
-        "canPrimarySiteToUseApp":entity.primarySiteToUseApp,
-        "multiSiteEntity":entity.multiSiteEntity,
-        "customerType": "HEALTHCARE",
-        "sites":allSites,
-        "subscriptionPlan": subscription,
-        "billingDetails": billing,
-        "trailDetails":trial,
-        "accountManager": accountManager,
-      }
-      await PUT('entity',JSON.stringify(entityValue));
-      getEntityData();
     }
 
     const handleTagsAdd = async(values) => {
@@ -270,9 +301,9 @@ const EntitySetup = () => {
                                       <img src={UploadImg} alt="Upload" className={style.logoThumbnailUpload} />
                                       <p className={style.uploadText}>Click To Upload Logo Thumbnail</p>
                                   </div>
-                                  <div>
-                                      <button className={style.entityIDButton}><span>ENTITY ID:</span>3578689</button>
-                                  </div>
+                                { tenantID !== "" ?  <div>
+                                      <button className={style.entityIDButton}><span>ENTITY ID:</span>{entity.id}</button>
+                                  </div>:''}
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop30}`}>
                                   <div className={style.extentionLableStyle}>Customer Type*</div>
@@ -332,7 +363,7 @@ const EntitySetup = () => {
                                       <div className={style.displayInRow}>
                                           <FormControlLabel
                                               control={
-                                                  <Switch checked={entity.multiSiteEntity} className={` ${style.textAlignLeft}`}  onChange={(e)=>setMultiSiteEntity(e.target.checked)}/>
+                                                  <Switch checked={entity.multiSiteEntity} className={` ${style.textAlignLeft}`}  onChange={(e)=>handleEntity('multiSiteEntity',e.target.checked)}/>
                                               }
                                               className={style.switchFontStyle}
                                               label={'YES'}
@@ -385,7 +416,7 @@ const EntitySetup = () => {
                           <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
                               <button className={style.outlinedButton} onClick={()=>{saveEntityData()}}>SAVE IN-PROGRESS</button>
                               {/* <Link to={`/${nextStep}`}> */}
-                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setActiveStep(multiSiteEntity === true ?"siteInformation":"siteUsers")}>CONTINUE</button>
+                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setActiveStep(entity.multiSiteEntity === true ?"siteInformation":"siteUsers")}>CONTINUE</button>
                               {/* </Link> */}
                           </div>
                       </div>
