@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, Tag} from '@blueprintjs/core';
 import {POST, GET, TenantID} from './userDataSaver';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
 const AddUser = ({getAddUserDialog}) => {
 
     const [addUser, setAddUser] = useState({firstName: "", lastName: "", email: "", roles: [{id: "", roleName: ""}], title: ""});
-    console.log(addUser)
     const [roles, setRoles] = useState([])
+    const [department, setDepartment] = useState([])
     const [selectedRoles, setSelectedRoles] = useState([])
+    const [selectedDepartments, setSelectedDepartments] = useState([])
 
     const handleRoles = (value) => {
       if (value !== '0') {
@@ -17,6 +19,17 @@ const AddUser = ({getAddUserDialog}) => {
         if (!selectedRoles.map(data => data?.roleName).includes(value)) {
           setSelectedRoles([...selectedRoles, selectedValue]);
         }
+      }
+    }
+
+    const handleDepartments = (value) => {
+      if (value !== '0') {
+        const tempSelectedDepartments = department.filter(data => data?.departmentName?.name === value).map(data => data)[0];
+ 
+        if (!selectedDepartments.map(data => data?.id).includes(tempSelectedDepartments?.id)) {
+          setSelectedDepartments([...selectedDepartments, tempSelectedDepartments]);
+        }
+        console.log(selectedDepartments, tempSelectedDepartments)
       }
     }
 
@@ -33,7 +46,18 @@ const AddUser = ({getAddUserDialog}) => {
       );
     });
 
-    console.log(roles, selectedRoles)
+    const departmentsTags = selectedDepartments
+    .filter(data => department.map(dept => dept).includes(data))
+    .map((tag, index) => {
+      const onRemoveDepartment = () => {
+        setSelectedDepartments(selectedDepartments.filter((t) => t?.departmentName?.name !== tag?.departmentName?.name));
+      };
+      return (
+        <Tag key={index} onRemove={onRemoveDepartment} large={true} className={style.tagStyle}>
+          {tag?.departmentName?.name}
+        </Tag>
+      );
+    });
 
     const submitUserDetails = async () => {
 
@@ -74,12 +98,17 @@ const AddUser = ({getAddUserDialog}) => {
           "tenantId": TenantID
         },
         "sites": {
-          "sites": [{
-            "id": "string",
-            "siteName": {
-              "siteName": "string"
+          "sites": [
+            {
+              "id": "string",
+              "siteName": {
+                "siteName": "string"
+              },
+              "departmentList": {
+                "departments": selectedDepartments
+              }
             }
-          }]
+          ]
         },
         "licenceDetails": {
           "medicalLicense": "string",
@@ -111,18 +140,32 @@ const AddUser = ({getAddUserDialog}) => {
         "blocked": false
       };
 
-      await POST('user/register', JSON.stringify(user));
+      const response = await POST('user-management-service/user/register', JSON.stringify(user));
+      if(response){
+        SuccessToaster('User Added Successfully');
+      }
+      else {
+        ErrorToaster('Unexpected Error');
+      }
       getAddUserDialog(false)
     }
 
     const getRoles = async() => {
-      const {data: roles} = await GET('roles');
+      const {data: roles} = await GET('user-management-service/roles');
       setRoles(roles);
+    };
+
+    const getDepartments = async() => {
+      const {data: department} = await GET('entity-service/department');
+      setDepartment(department);
     };
 
     useEffect(()=>{
       getRoles();
+      getDepartments();
   },[])
+
+  console.log(department, selectedDepartments)
 
     return(
         <Dialog isOpen={getAddUserDialog} onClose={() => getAddUserDialog(false)} className={`${style.addManagerDialogBackground} ${style.addProofDialog}`}>
@@ -167,16 +210,25 @@ const AddUser = ({getAddUserDialog}) => {
                     <select
                         name="class"
                         id="Class"
+                        onChange={(e) => handleDepartments(e.target.value)}
                         className={`${style.fullWidth} ${style.marginLeft20} `}>
 
                             <option value="Select Department" >
                               Select Department
                             </option>
+                            {department?.map((data, index) => (
+                              <option key={`${data}-${index}`} value={data?.departmentName?.name} >
+                                {data?.departmentName?.name}
+                              </option>
+                            ))}
                     </select>
+                    <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                      {departmentsTags}
+                    </div>
                   </div>
             </div>
 
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <div className={`${style.addManagerGrid}`}>
               <div className={style.extentionLableStyle}>Title*</div>
               <InputGroup value={addUser?.title} onChange={(e) => setAddUser({...addUser, title: e.target.value})} />
             </div>
