@@ -15,8 +15,116 @@ const headers = {
   'Authorization': `Bearer ${accessToken}`
 }
 
-const entityPost = {
-
+const entityPost = (entity,address,site) => {
+  let entityValue = {
+    "entityName": {
+      "entityName": entity.name,
+    },
+    "entityType": {
+      "type": entity.type,
+    },
+    "customerType": "HEALTHCARE",
+    "sites": [
+      {
+        "siteName": {
+          "siteName": entity.name,
+        },
+        "siteAdmin": {
+          "id": ""
+        },
+        "siteType": {
+          "type": entity.type,
+        },
+        "npin": {
+          "id": entity.npin,
+        },
+        "canSetupDepartment": site.canSetupDepartment,
+        "departmentList": {
+          "departments": [
+            {
+              "id": "string",
+              "departmentName": {
+                "name": "string"
+              },
+              "departmentHead": {
+                "id": "string"
+              }
+            }
+          ]
+        },
+        "address": {
+          "addressLine": address.addressLine,
+          "city": address.city,
+          "state": address.state,
+          "zipcode": address.zipcode,
+          "country": address.country,
+        },
+        "primarySite": site.primarySite,
+      }
+    ],
+    "subscriptionPlan": {
+      "planName": "BASIC",
+      "allowableRegisteredUsers": {
+        "allowableRegisteredUsers": 0
+      },
+      "subscriptionFees": {
+        "fees": "string"
+      },
+      "subscriptionStatus": "ACTIVE",
+      "billingFrequency": "MONTHLY",
+      "discount": {
+        "discount": 0
+      },
+      "plannedToGoLive": {
+        "date": "2022-07-15"
+      },
+      "poaNumber": {
+        "poaNumber": "string"
+      }
+    },
+    "billingDetails": {
+      "contactname": {
+        "firstName": "string",
+        "lastName": "string"
+      },
+      "email": {
+        "emailId": "string"
+      },
+      "contactNumber": {
+        "contactNumber": 0
+      }
+    },
+    "contractDetails": {
+      "contractName": "string",
+      "contractID": "string",
+      "contractDocuments": [
+        {
+          "name": "string",
+          "description": "string",
+          "contractDocType": "AGREEMENTDRAFT",
+          "contractDocPath": "string"
+        }
+      ],
+      "contractTermPeriod": {
+        "startDate": "2022-07-15",
+        "endDate": "2022-07-15"
+      },
+      "plannedGoLive": {
+        "date": "2022-07-15"
+      },
+      "contractContinuationPolicy": "AUTORENEWAL",
+      "fullyExecutedContractOnFile": true
+    },
+    "accountManager": {
+      "id": "string"
+    },
+    "appUserRoles": [
+      {
+        "id": "string",
+        "roleName": "string"
+      }
+    ]
+  }
 }
 
 export const GET = (url) => {
@@ -30,7 +138,7 @@ export const PUT = (url,data) => {
   return axios(`${baseUrl}/${url}`,{
     method: 'PUT',
     headers: headers,
-    data,
+    data: JSON.stringify(data),
   })
 }
 
@@ -41,25 +149,3 @@ export const POST = (url,data) => {
     data,
   })
 }
-
-// export const getEntityData = async() => {
-//   const accessToken = Auth();
-//   let entityData = {};
-//   const entity = {
-//     method: 'GET',
-//     headers: { 'Content-Type': 'application/json',
-//               'X-tenantID' : '6242845f95690b3822cb96a5',
-//               'Authorization': `Bearer ${accessToken}`}
-//     };
-//   let responseData = await fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com:8000/entity-service/entity', entity)
-//     .then(response => response.json())
-//     .then(data => {
-//         if(data?.filter(data=>data.id === '6242845f95690b3822cb96a5')?.map(data=>{
-//           console.log('data in func',data);
-//           entityData = data;
-//           }))
-//       return entityData;
-//     }
-//    )
-//    return entityData;
-// }
