@@ -3,11 +3,12 @@ import {Auth} from './../../utils/auth'
 import axios from "axios";
 
 const accessToken = Auth()
+export const TenantID = '6242845f95690b3822cb96a5';
 const baseUrl = 'http://ec2-54-210-154-191.compute-1.amazonaws.com'
 const headers = {
 'Content-Type': 'application/json',
-'X-tenantID' : '6242845f95690b3822cb96a5',
-'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTc5NjA2MDgsImV4cCI6MTY1ODA0NzAwOH0.vsKDkeFT0ducETdXUtX5efndKpBI5V9eKtMBklDduef2O50YPj5PNDwcQBj1SY1sDV6IL0SQt3txs59P6dAWfA`
+'X-tenantID' : TenantID,
+'Authorization': `Bearer ${accessToken}`
 }
 
 
@@ -34,5 +35,3 @@ export const POST = (url,data) => {
         data,
     })
 }
-
-export const TenantID = '6242845f95690b3822cb96a5';
