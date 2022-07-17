@@ -12,7 +12,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import UploadImg from './../../images/uploadImg.png';
 import EntityStepper from './entityStepper';
 import {Auth} from './../../utils/auth'
-import {saveEntity,GET,PUT} from './entityDataSaver';
+import {saveEntity,GET,PUT,POST,role,tenantID} from './entityDataSaver';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 import SiteInformation from './siteInformation';
@@ -24,173 +24,94 @@ const EntitySetup = () => {
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [departmentValue, setDepartmentValue] = useState('');
     const [item, setItem] = useState();
-    const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",name:'',type:'',websiteURL:'',primarySite:false,multiSiteEntity:false});
-    const [address,setAddress] = useState({city:'',state:'',zipcode:'',addressLine:'',country:''});
     const [websiteUrl,setWebsiteUrl] = useState('');
     const [multiSiteEntity,setMultiSiteEntity] = useState(false);
-    const [siteData,setSiteData] = useState({primarySite:false,canSetupDepartment:false,departments:[],addressLine:'',city:'',state:'',country:'',zipcode:'',npin:'',name:'',siteAdmin:'',type:''});
+    // const [siteData,setSiteData] = useState({primarySite:true,canSetupDepartment:false,addressLine:'',city:'',state:'',country:'',zipcode:'',name:'',siteAdmin:'',type:''});
     const [department,setDepartment] = useState([]);
+    const [allSites,setAllSites] = useState([]);
     const [activeStep, setActiveStep] = useState('entitySetup');
+    const [billing,setBilling] = useState();
+    const [trial,setTrial] = useState();
+    const [subscription,setSubscription] = useState();
+    const [accountManager,setAccountManager] = useState();
+    const [departmentList,setDepartmentList] = useState([]);
+    const [entityDepartments,setEntityDepartments] = useState([]);
+    const [selectDepartment, setSelectDepartment] = useState('');
+    const [entityData,setEntityData] = useState();
+    const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",name:'',type:'',websiteURL:'',multiSiteEntity:false,primarySiteToUseApp:false,npin:'',canSetupDepartment:false});
+    const [address,setAddress] = useState({city:'',state:'',zipcode:'',addressLine:'',country:''});
+    console.log('entity',entityData);
+
     const accessToken = Auth();
 
     useEffect(()=>{
       getEntityData();
       getDepartmentData();
-      getSiteData();
     },[]);
 
     const getActiveStep = (value) => {
       setActiveStep(value)
     }
 
-    console.log('multiSiteEntity',multiSiteEntity);
-
     const getEntityData = async() => {
-      const {data: entityData} = await GET('entity');
-      if(entityData){
-        console.log(entityData);
-        entityData?.filter(data=>data.id === '6242845f95690b3822cb96a5')?.map(data=>{
-          setEntity({id:data.id,customerType:data.customerType,name:data.entityName.entityName,type:data.entityType.type,npin:'',websiteURL:data.websiteURL,multiSiteEntity:data.multiSiteEntity})
-        })
-      }else{
-        console.log('error');
-      }
+      const {data: entityData} = await GET(`entity-service/entity/${tenantID}`);
+      setEntityData(entityData);
+      let siteData = entityData?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
+      console.log('site',siteData);
+      setEntity({id:'',customerType:"HEALTHCARE",name:entityData?.entityName?.entityName,type:entityData?.entityType?.type,websiteURL:'',multiSiteEntity:entityData?.sites?.length > 1,primarySiteToUseApp:false,npin:siteData?.npin?.id});
+      setAddress({city:siteData?.address?.city,state:siteData?.address?.state,zipcode:siteData?.address?.zipcode,addressLine:siteData?.address?.addressLine,country:siteData?.address?.country});
     }
 
-    const getSiteData = async() => {
-      const{data:sites} = await GET('sites');
-      if(sites){
-        console.log(sites);
-        sites?.filter(data=>data.primarySite === true)?.map(data=>{
-          let departmentList = data.departmentList.departments?.map(data=>data.departmentName.name)
-          setSiteData({primarySite:data.primarySite,name:data.siteName.siteName,type:data.siteType.type,npin:data.npin,canSetupDepartment:data.canSetupDepartment,departments:departmentList,addressLine:data.address.addressLine, city:data.address.city, state: data.address.state, country: data.address.country, zipcode: data.address.zipcode, siteAdmin: data.siteAdmin.id})
-        })
-
-      }else{
-        console.log('error');
-      }
-    }
-
-    console.log(entity,siteData);
 
     const getDepartmentData = async() => {
-      const {data: department} = await GET('department');
+      const {data: department} = await GET('entity-service/department');
       if(department){
-
+        setEntityDepartments(department)
       }else{
         console.log('error');
       }
     }
 
-    const saveEntityData = async() => {
-
-      const entityValue = {
-        "id":entity.id,
-        "entityName": {
-          "entityName": entity.name
-        },
-        "entityType": {
-          "type": entity.type
-        },
-        "websiteURL":entity.websiteURL,
-        "canPrimarySiteToUseApp":entity.primarySite,
-        "multiSiteEntity":entity.multiSiteEntity,
-        "customerType": "HEALTHCARE",
-        "sites": [
-          {
-            "siteName": {
-              "siteName": ""
-            },
-            "siteAdmin": {
-              "id": ""
-            },
-            "siteType": {
-              "type": ""
-            },
-            "departmentList": {
-              // "departments": departments
-            },
-            "address": {
-              "addressLine": address.addressLine,
-              "city": address.city,
-              "state": address.state,
-              "zipcode": address.zipcode,
-              "country": address.country,
-            }
-          }
-        ],
-        "subscriptionPlan": {
-          "planName": "BASIC",
-          "allowableRegisteredUsers": {
-            "allowableRegisteredUsers": 0
-          },
-          "subscriptionFees": {
-            "fees": ""
-          },
-          "subscriptionStatus": "ACTIVE",
-          "billingFrequency": "MONTHLY",
-          "discount": {
-            "discount": 0
-          },
-          "plannedToGoLive": {
-            "date": ""
-          },
-          "poaNumber": {
-            "poaNumber": ""
-          }
-        },
-        "billingDetails": {
-          "name": {
-            "firstName": "",
-            "lastName": ""
-          },
-          "email": {
-            "emailId": ""
-          },
-          "contactNumber": {
-            "contactNumber": 0
-          }
-        },
-        "trailDetails": {
-          "trialPeriod": {
-            "period": ""
-          },
-          "contactName": {
-            "name": ""
-          },
-          "trialPeriodDates": {
-            "startDate": "",
-            "endDate": ""
-          },
-          "name": {
-            "firstName": "",
-            "lastName": ""
-          },
-          "email": {
-            "emailId": ""
-          },
-          "contactNumber": {
-            "contactNumber": 0
-          }
-        },
-        "accountManager": {
-          "id": ""
-        }
-      }
-
-      // await PUT('entity',data)
-    }
-    console.log('Department',department);
-
-
-
-    const handleTagsAdd = values => {
+    const handleTagsAdd = async(values) => {
         setDepartment([...department,values])
+        let temp = entityDepartments;
+        temp.push({
+            "departmentName": {
+              "name": values
+            },
+            "departmentHead": {
+              "id": ""
+            }
+          })
+        setEntityDepartments(temp);
+        // await POST('entity-service/department',JSON.stringify({
+        //   "departmentName":{
+        //     "name":values
+        //   }
+        // }))
+        getDepartmentData();
         setTags([...tags, values]);
     };
 
+    const options = entityDepartments;
+
+    const onSelect = useCallback((selectedItem) => {
+      setDepartmentValue(selectedItem);
+      setSelectDepartment('');
+    }, []);
+
+    // const items = useMemo(
+    //   () =>
+    //     options.map((option) => ({
+    //       id: option.id,
+    //       ...option,
+    //     })),
+    //   [item],
+    // );
+
     const handleTagsRemove = (tags, index) => {
-        setDepartment(department?.filter((data,indexValue)=>index!==indexValue)?.map(data=>data))
+        setDepartment(department?.filter((data,indexValue)=>index!==indexValue)?.map(data=>data));
+        setDepartmentList(departmentList?.filter((data,indexValue)=>index!==indexValue)?.map(data=>data))
         const updatedTags = [tags];
         updatedTags.splice(index, 1);
         tags = updatedTags;
@@ -200,15 +121,73 @@ const EntitySetup = () => {
       const handleEntity = (name,value) =>{
         setEntity({...entity,[name]:value});
       }
-      const handleSite = (name,value) =>{
-        setSiteData({...siteData,[name]:value});
-      }
-      // const handleDepartment = (name,value) =>{
-      //   setAddress({...department,[name]:value});
+      // const handleSite = (name,value) =>{
+      //   setSiteData({...siteData,[name]:value});
       // }
-
+      const handleAddress = (name,value) => {
+        setAddress({...address, [name]:value});
+      }
 
     const nextStep = multiSiteEntity === true ?"siteInformation":"siteUsers"
+
+
+    const updateEntity = async() => {
+      let temp = entityData?.sites?.filter(data=>data.primarySite !== true)?.map(data=>data);
+      temp.push({
+        "siteName": {
+          "siteName": entity.name
+        },
+        "siteAdmin": {
+          "id": ""
+        },
+        "siteType": {
+          "type": entity.type
+        },
+        "npin": {
+          "id": entity.npin
+        },
+        "canSetupDepartment": entity.canSetupDepartment,
+        "departmentList": {
+          "departments": [
+            {
+              "id": "string",
+              "departmentName": {
+                "name": "string"
+              },
+              "departmentHead": {
+                "id": "string"
+              }
+            }
+          ]
+        },
+        "address": {
+          "addressLine": address.addressLine,
+          "city": address.city,
+          "state": address.state,
+          "zipcode": address.zipcode,
+          "country": address.country,
+        },
+        "primarySite": true
+      });
+      const updatedValue =
+        {
+          "id": entityData?.id,
+          "entityName": {
+            "entityName": entity?.name,
+          },
+          "entityType": {
+            "type": entity?.type,
+          },
+          "customerType": "HEALTHCARE",
+          "sites": temp,
+          "subscriptionPlan": entityData?.subscriptionPlan,
+          "billingDetails": entityData?.billingDetails,
+          "contractDetails": entityData?.contractDetails,
+          "accountManager":entityData?.accountManager,
+          "appUserRoles": entityData?.appUserRoles,
+        }
+      await PUT('entity-service/entity',updatedValue)
+    }
 
     return(
       <>
@@ -271,9 +250,9 @@ const EntitySetup = () => {
                                       <img src={UploadImg} alt="Upload" className={style.logoThumbnailUpload} />
                                       <p className={style.uploadText}>Click To Upload Logo Thumbnail</p>
                                   </div>
-                                  <div>
-                                      <button className={style.entityIDButton}><span>ENTITY ID:</span>3578689</button>
-                                  </div>
+                                {tenantID !== "" ?  <div>
+                                      <button className={style.entityIDButton}><span>ENTITY ID:</span>{entity.id}</button>
+                                  </div>:''}
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop30}`}>
                                   <div className={style.extentionLableStyle}>Customer Type*</div>
@@ -281,6 +260,7 @@ const EntitySetup = () => {
                                       <select
                                           name="class"
                                           id="Class"
+                                          value={entityData?.type}
                                           className={style.twoFieldWidth}>
                                               <option value="HealthCare" >
                                               HealthCare
@@ -290,11 +270,11 @@ const EntitySetup = () => {
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>NPIN*</div>
-                                  <InputGroup className={style.fourFieldWidth} value={entity.npin} onChange={(e)=>handleEntity('npin',e.target.value)} />
+                                  <InputGroup className={style.fourFieldWidth} value={entityData?.npin} onChange={(e)=>handleEntity('npin',e.target.value)} />
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Entity Name*</div>
-                                  <InputGroup className={`${style.twoFieldWidth}`} value={entity.name || 'hospital'} onChange={(e)=>handleEntity('name',e.target.value)}/>
+                                  <InputGroup className={`${style.twoFieldWidth}`} value={entityData?.name || 'hospital'} onChange={(e)=>handleEntity('name',e.target.value)}/>
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop30}`}>
                                   <div className={style.extentionLableStyle}>Entity Type*</div>
@@ -302,9 +282,12 @@ const EntitySetup = () => {
                                       <select
                                           name="class"
                                           id="Class"
-                                          value={entity.type}
+                                          value={entityData?.type}
                                           onChange={(e)=>handleEntity('type',e.target.value)}
                                           className={style.twoFieldWidth}>
+                                          <option value="" >
+                                            Select Entity Type
+                                          </option>
                                               <option value="Doctor Office" >
                                                 Doctor Office
                                               </option>
@@ -314,18 +297,18 @@ const EntitySetup = () => {
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Mailing Address*</div>
                                   <div>
-                                      <InputGroup value="Street 8 Block 7" className={`${style.fullWidth}`} value={address.addressLine} onChange={(e)=>handleSite('addressLine',e.target.value)}/>
+                                      <InputGroup placeholder="Street 8 Block 7" value={address.addressLine} className={`${style.fullWidth}`} onChange={(e)=>handleAddress('addressLine',e.target.value)}/>
                                       <div className={`${style.marginTop20} ${style.displayInRow}`}>
-                                          <InputGroup placeholder="Pincode Value" className={`${style.fourFieldWidth}`} value={address.zipcode} onChange={(e)=>handleSite('zipcode',e.target.value)}/>
-                                          <InputGroup placeholder="City Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.city} onChange={(e)=>handleSite('city',e.target.value)}/>
-                                          <InputGroup placeholder="State Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.state} onChange={(e)=>handleSite('state',e.target.value)}/>
-                                          <InputGroup placeholder="Country Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.country} onChange={(e)=>handleSite('country',e.target.value)}/>
+                                          <InputGroup placeholder="Pincode Value" className={`${style.fourFieldWidth}`} value={address.zipcode} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
+                                          <InputGroup placeholder="City Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.city} onChange={(e)=>handleAddress('city',e.target.value)}/>
+                                          <InputGroup placeholder="State Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.state} onChange={(e)=>handleAddress('state',e.target.value)}/>
+                                          <InputGroup placeholder="Country Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.country} onChange={(e)=>handleAddress('country',e.target.value)}/>
                                       </div>
                                   </div>
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Website URL*</div>
-                                  <InputGroup value="http://regington.net" className={`${style.fullWidth}`} value={entity.websiteURL} onChange={(e)=>handleEntity('websiteURL',e.target.value)}/>
+                                  <InputGroup value={entity.websiteURL} className={`${style.fullWidth}`} value={entity.websiteURL} onChange={(e)=>handleEntity('websiteURL',e.target.value)}/>
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Multi-site Entity*</div>
@@ -333,7 +316,7 @@ const EntitySetup = () => {
                                       <div className={style.displayInRow}>
                                           <FormControlLabel
                                               control={
-                                                  <Switch checked={multiSiteEntity} className={` ${style.textAlignLeft}`}  onChange={(e)=>setMultiSiteEntity(e.target.checked)}/>
+                                                  <Switch checked={entity.multiSiteEntity} className={` ${style.textAlignLeft}`}  onChange={(e)=>handleEntity('multiSiteEntity',e.target.checked)}/>
                                               }
                                               className={style.switchFontStyle}
                                               label={'YES'}
@@ -341,7 +324,7 @@ const EntitySetup = () => {
                                           <div className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Primary Site To Use App*</div>
                                           <FormControlLabel
                                               control={
-                                                  <Switch checked={entity.primarySite} onChange={(e)=>handleEntity('primarySite',e.target.checked)} className={` ${style.textAlignLeft} ${style.marginLeft20}`}  />
+                                                  <Switch checked={entity.primarySiteToUseApp} onChange={(e)=>handleEntity('primarySiteToUseApp',e.target.checked)} className={` ${style.textAlignLeft} ${style.marginLeft20}`}  />
                                               }
                                               className={style.switchFontStyle}
                                               label={'YES'}
@@ -355,15 +338,20 @@ const EntitySetup = () => {
                                       <div className={style.displayInRow}>
                                           <FormControlLabel
                                               control={
-                                                  <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
+                                                  <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => {setDepartmentSpecific(!departmentSpecific)}}  />
                                               }
                                               className={style.switchFontStyle}
                                               label={departmentSpecific ? 'YES' : "NO"}
                                           />
                                           {departmentSpecific && (
                                               <>
-                                                  <InputGroup placeholder="Enter Department"  onChange={(e) => setDepartmentValue(e.target.value) } className={`${style.fullWidth} ${style.marginLeft20}`} value={departmentValue}/>
-                                                  <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition} onClick={()=>{handleTagsAdd(departmentValue);setDepartmentValue('');}}>+</span></div>
+                                                <>
+                                                    {
+                                                    // <InputGroup placeholder="Enter Department"  onChange={(e) => setDepartmentValue(e.target.value) } className={`${style.fullWidth} ${style.marginLeft20}`} value={departmentValue}/>
+                                                    }
+                                                    <DatalistInput items={entityDepartments?.map(data=>data?.departmentName?.name)} placeholder="Select Departments" onSelect={onSelect} onChange={(e) => {setDepartmentValue(e.target.value)} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
+                                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20} ${style.cursor}`}><span className={style.plusSymbolPosition} onClick={()=>{handleTagsAdd(departmentValue);setDepartmentValue('');}}>+</span></div>
+                                                </>
                                               </>
                                           )}
                                       </div>
@@ -384,9 +372,9 @@ const EntitySetup = () => {
                               </div>
                           </div>
                           <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                              <button className={style.outlinedButton} onClick={saveEntity()}>SAVE IN-PROGRESS</button>
+                              <button className={style.outlinedButton} onClick={()=>{updateEntity()}}>SAVE IN-PROGRESS</button>
                               {/* <Link to={`/${nextStep}`}> */}
-                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setActiveStep(multiSiteEntity === true ?"siteInformation":"siteUsers")}>CONTINUE</button>
+                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setActiveStep(entity.multiSiteEntity === true ?"siteInformation":"siteUsers")}>CONTINUE</button>
                               {/* </Link> */}
                           </div>
                       </div>

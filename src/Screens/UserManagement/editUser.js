@@ -1,104 +1,136 @@
-import React, { useState } from 'react';
-import { Dialog, Classes, Icon, Intent, InputGroup, } from '@blueprintjs/core';
-import {PUT} from './userDataSaver';
+import React, { useState, useEffect } from 'react';
+import { Dialog, Classes, Icon, Intent, InputGroup, Tag } from '@blueprintjs/core';
+import {GET, PUT} from './userDataSaver';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
 const EditUser = ({getEditUserDialog, selectedUsers}) => {
 
   const [userData, setUserData] = useState(selectedUsers);
+  const [blockedData, setBlockedData] = useState(selectedUsers);
+  const [rolesTagsToUse, setRolesTagsToUse] = useState([])
+  const [departmentsTagsToUse, setDepartmentsTagsToUse] = useState([])
+  console.log('userDate', userData)
 
-  console.log(selectedUsers, userData)
+  const [roles, setRoles] = useState([])
+  const [department, setDepartment] = useState([])
 
-  const submitUserDetails = async () => {
+    const [selectedRoles, setSelectedRoles] = useState(userData?.roles)
+    const [selectedDepartments, setSelectedDepartments] = useState(selectedUsers?.sites?.sites[0]?.departmentList?.departments)
 
-      const user = {
-        "id": "string",
-        "name": {
-          "firstName": "string",
-          "lastName": "string",
-          "suffix": "string"
-        },
-        "userType": "ADMIN",
-        "contractType": {
-          "contractType": "string"
-        },
-        "contractID": {
-          "contractID": "string"
-        },
-        "title": {
-          "title": "string"
-        },
-        "email": {
-          "officialEmail": "string"
-        },
-        "password": {
-          "password": "string"
-        },
-        "communication": {
-          "personalEmail": "string",
-          "mobileNumber": "string",
-          "landlineNumber": "string"
-        },
-        "roles": [
-          {
-            "id": "string",
-            "roleName": "string",
-            "roleDescription": "string",
-            "tenant": {
-              "tenantId": "string"
-            }
-          }
-        ],
-        "address": {
-          "city": "string",
-          "state": "string",
-          "zipcode": "string"
-        },
-        "tenant": {
-          "tenantId": "string"
-        },
-        "sites": {
+    const handleRoles = (value) => {
+      if (value !== '0') {
+        const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
+ 
+        if (!selectedRoles.map(data => data?.roleName).includes(value)) {
+          setSelectedRoles([...selectedRoles, selectedValue]);
+        }
+        setUserData({...userData, roles: [...selectedRoles, selectedValue]})}
+    }
+
+    const handleDepartments = (value) => {
+      if (value !== '0') {
+        const tempSelectedDepartments = department.filter(data => data?.departmentName?.name === value).map(data => data)[0];
+ 
+        if (!selectedDepartments.map(data => data?.id).includes(tempSelectedDepartments?.id)) {
+          setSelectedDepartments([...selectedDepartments, tempSelectedDepartments]);
+        }
+        setUserData({...userData, sites: {
           "sites": [
             {
               "id": "string",
               "siteName": {
                 "siteName": "string"
+              },
+              "departmentList": {
+                "departments": [...selectedDepartments, tempSelectedDepartments]
               }
             }
           ]
-        },
-        "licenceDetails": {
-          "medicalLicense": "string",
-          "licenseExpiryDate": "2022-07-10",
-          "deaNumber": "string",
-          "deaExpiryDate": "2022-07-10",
-          "boardCertification": [
-            "string"
-          ]
-        },
-        "userProxy": {
-          "myProxy": {
-            "proxyIdList": [
-              {
-                "id": "string",
-                "name": "string"
-              }
-            ]
-          },
-          "proxyFor": {
-            "proxyIdList": [
-              {
-                "id": "string",
-                "name": "string"
-              }
-            ]
-          }
-        },
-        "blocked": true
-      };
-
-      await PUT('user', JSON.stringify(user));
+        }})
+      }
     }
+
+    const rolesTags = selectedRoles
+    .filter(data => roles.map(role => role?.id === data?.id))
+    .map((tag, index) => {
+      const onRemove = () => {
+        setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName));
+        setUserData({...userData, roles: selectedRoles.filter((t) => t?.roleName !== tag?.roleName)})
+      };
+      return (
+        <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
+          {tag?.roleName}
+        </Tag>
+      );
+    });
+
+      const departmentsTags = selectedDepartments
+      .filter(data => department.map(dept => dept?.id === data?.id))
+      .map((tag, index) => {
+        const onRemoveDepartment = () => {
+          setSelectedDepartments(selectedDepartments.filter((t) => t?.departmentName?.name !== tag?.departmentName?.name));
+          setUserData({...userData, sites: {
+            "sites": [
+              {
+                "id": "string",
+                "siteName": {
+                  "siteName": "string"
+                },
+                "departmentList": {
+                  "departments": selectedDepartments.filter((t) => t?.departmentName?.name !== tag?.departmentName?.name)
+                }
+              }
+            ]
+          }})
+        };
+        return (
+          <Tag key={index} onRemove={onRemoveDepartment} large={true} className={style.tagStyle}>
+            {tag?.departmentName?.name}
+          </Tag>
+        );
+      });
+
+      console.log("Console",departmentsTags, rolesTags, departmentsTagsToUse, rolesTagsToUse, selectedRoles, selectedDepartments, department, roles)
+
+    const getRoles = async() => {
+      const {data: roles} = await GET('user-management-service/roles');
+      setRoles(roles);
+    };
+
+    const getDepartments = async() => {
+      const {data: department} = await GET('entity-service/department');
+      setDepartment(department);
+    };
+
+    useEffect(()=>{
+      getRoles();
+      getDepartments();
+    },[])
+
+    // console.log(roles, userData , department,selectedDepartments, selectedRoles, rolesTagsToUse, selectedUsers?.sites?.sites[0]?.departmentList?.departments)
+
+  const submitUserDetails = async () => {
+    const response = await PUT('user-management-service/user', JSON.stringify(userData));
+    getEditUserDialog(false);
+    if(response){
+      SuccessToaster('User Updated Successfully');
+    }
+    else {
+      ErrorToaster('Unexpected Error');
+    }
+  }
+
+  const handleUserBlockDetails = async () => {
+    const response = await PUT('user-management-service/user', JSON.stringify({...blockedData, blocked: true}));
+    getEditUserDialog(false);
+    if(response){
+      SuccessToaster('User Blocked Successfully');
+    }
+    else {
+      ErrorToaster('Unexpected Error');
+    }
+  }
 
     return(
         <Dialog isOpen={getEditUserDialog} onClose={() => getEditUserDialog(false)} className={`${style.addManagerDialogBackground} ${style.addProofDialog}`}>
@@ -109,75 +141,84 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
             </div>
             <div className={style.extensionBorder}></div>
             <div className={style.proofBorder}>
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Customer Type*</div>
-                <div className={`${style.reduce10Left} ${style.marginRight}`}>
-                    <select
-                        name="class"
-                        id="Class"
-                        className={`${style.fullWidth} ${style.marginLeft20} `}>
+              <div className={`${style.addManagerGrid}`}>
+                  <div className={style.extentionLableStyle}>Customer Type*</div>
+                  <div className={`${style.reduce10Left} ${style.marginRight}`}>
+                      <select
+                          name="class"
+                          id="Class"
+                          className={`${style.fullWidth} ${style.marginLeft20} `}>
 
-                            <option value="Select Customer Type" >
-                              Select Customer Type
-                            </option>
-                    </select>
-                  </div>
-            </div>
-
-            <div className={`${style.addManagerGrid} ${style.marginTop20} ${style.displayInRow}`}>
-              <div className={style.extentionLableStyle}>Customer Name*</div>
-              <div className={style.displayInRow}>
-              <InputGroup value={userData?.name?.firstName} className = {style.fieldWidth2InARow} />
-              <InputGroup value={userData?.name?.lastName} className = {`${style.fieldWidth2InARow} ${style.marginLeft20}`} />
+                              <option value="Select Customer Type" >
+                                Select Customer Type
+                              </option>
+                      </select>
+                    </div>
+              </div>
+              <div className={`${style.addManagerGrid} ${style.marginTop20} ${style.displayInRow}`}>
+                <div className={style.extentionLableStyle}>Customer Name*</div>
+                <div className={style.displayInRow}>
+                <InputGroup value={userData?.name?.firstName} className = {style.fieldWidth2InARow} onChange={(e) => setUserData({...userData, name: {firstName: e.target.value, lastName: userData?.name?.lastName, suffix: userData?.name?.suffix}})} />
+                <InputGroup value={userData?.name?.lastName} className = {`${style.fieldWidth2InARow} ${style.marginLeft20}`} onChange={(e) => setUserData({...userData, name:{firstName: userData?.name?.firstName, lastName: e.target.value, suffix: userData?.name?.suffix}})} />
+                </div>
+              </div>
+              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Email Address*</div>
+                <InputGroup value={userData?.email?.officialEmail} readOnly onChange={(e) => setUserData({...userData, email: {officialEmail: e.target.value}})} />
+              </div>
+              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  <div className={style.extentionLableStyle}>Department*</div>
+                  <div className={`${style.reduce10Left} ${style.marginRight}`}>
+                      <select
+                          name="class"
+                          id="Class"
+                          onChange={(e) => handleDepartments(e.target.value)}
+                          className={`${style.fullWidth} ${style.marginLeft20} `}>
+                              <option value="Select Department" >
+                                Select Department
+                              </option>
+                              {department?.map((data, index) => (
+                                <option key={`${data}-${index}`} value={data?.departmentName?.name} >
+                                  {data?.departmentName?.name}
+                                </option>
+                              ))}
+                      </select>
+                      <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                        {departmentsTags}
+                      </div>
+                    </div>
+              </div>
+              <div className={`${style.addManagerGrid}`}>
+                  <div className={style.extentionLableStyle}>Role*</div>
+                  <div className={`${style.reduce10Left} ${style.marginRight}`}>
+                      <select
+                          name="class"
+                          id="Class"
+                          onChange={(e) => handleRoles(e.target.value)}
+                          className={`${style.fullWidth} ${style.marginLeft20} `}>
+                              <option value="Select Role-multi select" >
+                                Select Role-multi select
+                              </option>
+                              {roles?.map((data, index) => (
+                                <option key={`${data}-${index}`} value={data?.roleName} >
+                                  {data?.roleName}
+                                </option>
+                              ))}
+                      </select>
+                      <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                        {rolesTags}
+                      </div>
+                    </div>
+              </div>
+              <div className={`${style.addManagerGrid}`}>
+                <div className={style.extentionLableStyle}>Title*</div>
+                <InputGroup value={userData?.title?.title} onChange={(e) => setUserData({...userData, title: {title: e.target.value}})} />
               </div>
             </div>
-
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <div className={style.extentionLableStyle}>Email Address*</div>
-              <InputGroup value={userData?.email?.officialEmail} />
-            </div>
-
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Department*</div>
-                <div className={`${style.reduce10Left} ${style.marginRight}`}>
-                    <select
-                        name="class"
-                        id="Class"
-                        className={`${style.fullWidth} ${style.marginLeft20} `}>
-
-                            <option value="Select Department" >
-                              Select Department
-                            </option>
-                    </select>
-                  </div>
-            </div>
-
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Role*</div>
-                <div className={`${style.reduce10Left} ${style.marginRight}`}>
-                    <select
-                        name="class"
-                        id="Class"
-                        value={userData?.roles}
-                        className={`${style.fullWidth} ${style.marginLeft20} `}>
-                            <option value="Select Role-multi select" >
-                              Select Role-multi select
-                            </option>
-                    </select>
-                  </div>
-            </div>
-
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <div className={style.extentionLableStyle}>Title*</div>
-              <InputGroup value="Title" />
-            </div>
-
-        </div>
-
             <div className={` ${style.marginTop20}`}>
-            <button className={`${style.outlinedButton} ${style.marginLeft20}`} >BLOCK</button>
-            <button className={`${style.buttonStyle} ${style.marginLeft20}`} >DEACTIVATE</button>
-            <button className={`${style.buttonStyle} ${style.marginLeft20} ${style.floatRight}`} >ADD</button>
+            <button className={`${style.outlinedButton} ${style.marginLeft20}`} onClick={() => handleUserBlockDetails()}>BLOCK</button>
+            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => getEditUserDialog(false)} >DEACTIVATE</button>
+            <button className={`${style.buttonStyle} ${style.marginLeft20} ${style.floatRight}`} onClick={() => submitUserDetails()}>UPDATE</button>
             </div>
         </div>
         </Dialog>

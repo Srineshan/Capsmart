@@ -119,3 +119,11 @@ select {
     width: 0 !important;
     height: 0 !important;
   }
+
+  .toast-container {
+	z-index: 9999;
+  }
+  
+  .bp3-toast-container{
+	z-index: 999999;
+  }

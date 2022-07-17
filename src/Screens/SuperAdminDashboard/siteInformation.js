@@ -4,6 +4,7 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
 import {Link} from 'react-router-dom';
+import {GET,PUT,POST,tenantID} from './entityDataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step23.png';
 import Step3 from './../../images/step33.png';
@@ -26,44 +27,83 @@ const SiteInformation = ({getActiveStep}) => {
     const [item, setItem] = useState();
     const [departmentValue,setDepartmentValue] = useState([]);
     const [siteList,setSiteList] = useState([]);
+    const [entityData,setEntityData] = useState();
     const [loading,setLoading] = useState(false);
     const [address,setAddress] = useState({
       city:'',state:'',zipcode:'',country:''
     })
-    const [site,setSite] = useState({name:'',type:''});
+    const [site,setSite] = useState({name:'',type:'',canSetupDepartment:false,npin:''});
     let options = [];
     const accessToken = Auth();
-    // console.log(departmentValue);
 
     useEffect(()=>{
       getDepartmentData();
-      getSiteData();
+      getEntityData();
     },[]);
 
-    console.log('dept',departmentValue,tags);
-
-    const getSiteData = () => {
-      let  temp = []
-      const site = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json',
-                  'X-tenantID' : '6242845f95690b3822cb96a5',
-                  'Authorization': `Bearer ${accessToken}`}
-        };
-        fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/entity-service/sites', site)
-        .then(response => response.json())
-        .then(data => {
-            let temp = [];
-            console.log('dept',data);
-            data?.map(data=>{
-              temp.push({name:data.siteName.siteName,type:data.siteType.type,address:data.address,npin:data.npin.id})
-            })
-             setSiteList(temp);
-          return true;
-        }
-       )
-
+    const getEntityData = async() => {
+      const {data: data} = await GET(`entity-service/entity/${tenantID}`);
+      setEntityData(data);
     }
+
+    const updateEntitySite = async() => {
+      console.log('inside func');
+      let temp = entityData?.sites;
+      temp.push({
+        "siteName": {
+          "siteName": site.name
+        },
+        "siteAdmin": {
+          "id": ""
+        },
+        "siteType": {
+          "type": site.type
+        },
+        "npin": {
+          "id": site.npin
+        },
+        "canSetupDepartment": site.canSetupDepartment,
+        "departmentList": {
+          "departments": [
+            {
+              "id": "string",
+              "departmentName": {
+                "name": "string"
+              },
+              "departmentHead": {
+                "id": "string"
+              }
+            }
+          ]
+        },
+        "address": {
+          "addressLine": "",
+          "city": address.city,
+          "state": address.state,
+          "zipcode": address.zipcode,
+          "country": address.country,
+        },
+        "primarySite": false
+      });
+      const updatedValue =
+      {
+      "id": entityData.id,
+      "entityName": {
+        "entityName": entityData.name,
+      },
+      "entityType": {
+        "type": entityData.type,
+      },
+      "customerType": "HEALTHCARE",
+      "sites": temp,
+      "subscriptionPlan": entityData.subscriptionPlan,
+      "billingDetails": entityData.billingDetails,
+      "contractDetails": entityData.contractDetails,
+      "accountManager":entityData.accountManager,
+      "appUserRoles": entityData.appUserRoles,
+    }
+    await PUT('entity-service/entity',updatedValue)
+  }
 
 
     const getDepartmentData = () => {
@@ -205,7 +245,7 @@ const SiteInformation = ({getActiveStep}) => {
                                 <div className={`${style.extentionGrid}`}>
                                     <div className={style.extentionLableStyle}>NPIN*</div>
                                     <div className={style.spaceBetween}>
-                                        <InputGroup className={style.fourFieldWidth} value={siteList.npin} onChange={(e)=>handleSite('npin',e.target.value)} />
+                                        <InputGroup className={style.fourFieldWidth} value={entityData?.npin} />
                                         <button className={style.entityIDButton} onClick={()=> setShowSiteTable(true)}>
                                             <span>{siteID !== 'XX689- 64768' ? 'ENTITY ID:' : 'SITE ID:'}</span>{siteID}
                                         </button>
@@ -224,6 +264,9 @@ const SiteInformation = ({getActiveStep}) => {
                                             className={style.fullWidth}
                                             value={site.type}
                                             onChange={(e)=>handleSite('type',e.target.value)}>
+                                                <option value="" >
+                                                Select Site Type
+                                                </option>
                                                 <option value="Hospital/Nursing home etc" >
                                                 Hospital/Nursing home etc
                                                 </option>
@@ -291,7 +334,7 @@ const SiteInformation = ({getActiveStep}) => {
                                     <button className={style.outlinedButton}>BULK UPLOAD</button>
                                 </div>
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                    <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
+                                    <button className={style.outlinedButton} onClick={()=>updateEntitySite()}>SAVE IN-PROGRESS</button>
                                     <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & ADD MORE</button>
                                     {/* <Link to={'/siteUsers'}> */}
                                         <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => getActiveStep('siteUsers')}>CONTINUE</button>

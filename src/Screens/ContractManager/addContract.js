@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { Icon, Intent } from "@blueprintjs/core";
 import Doctor from './../../images/doctor.png';
 import DoctorTeam from './../../images/doctorTeam.png';
@@ -8,7 +8,8 @@ import style from './index.module.scss';
 const AddContract = ({getAddContract, getNewContract, getContractType}) => {
     const [selectedContract, setSelectedContract] = useState('Select...');
     const [selectedContractOnClick, setSelectedContractOnClick] = useState(false);
-    const [contractType, setContractType] = useState('Individual Contractor')
+    const [contractType, setContractType] = useState('Individual Contractor');
+
     return(
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
             <div className={style.spaceBetween}>
@@ -66,12 +67,12 @@ const AddContract = ({getAddContract, getNewContract, getContractType}) => {
                 {selectedContractOnClick && (
                     <div className={style.descriptionBoxStyle}>
                         <p className={style.descriptionStyle}>
-                            After selecting one of the options above and clicking Next, you will be guided through 
-                            <span className={`${style.blueColor} ${style.marginLeft20}`}> 
-                            the Contracts Manager wizard to help upload contracts and assign the appropriate 
+                            After selecting one of the options above and clicking Next, you will be guided through
+                            <span className={`${style.blueColor} ${style.marginLeft20}`}>
+                            the Contracts Manager wizard to help upload contracts and assign the appropriate
                             metadata.
                             </span>
-                        </p>  
+                        </p>
                     </div>
                 )}
             </div>

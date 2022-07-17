@@ -13,7 +13,8 @@ import UploadUser from './../../images/uploadUser.png';
 import ContractExtension from './../../images/contractExtension.png';
 import ProgressBar from "@ramonak/react-progress-bar";
 import AddUser from './addUser'
-import {GET} from './userDataSaver';
+import {GET, TenantID, PUT} from './userDataSaver';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import EditUser from './editUser';
 import MailTemplate from './mailTemplate';
 import style from './index.module.scss';
@@ -35,14 +36,27 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
     const [selectedUsers, setSelectedUsers] = useState();
 
     const getUser = async() => {
-        const {data: user} = await GET('user');
+        const {data: user} = await GET('user-management-service/user');
         setRegisteredUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
         setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
     };
 
+    console.log(selectedUsers)
+
+    const handleUserUnBlock = async(data) => {
+        const response = await PUT('user-management-service/user', JSON.stringify({...data, blocked: false}));
+        if(response){
+            SuccessToaster('User UnBlocked Successfully');
+        }
+        else {
+            ErrorToaster('Unexpected Error');
+        }
+        getUser();
+    }
+
     useEffect(()=>{
         getUser();
-    },[])
+    },[showAddUserDialog, showEditUserDialog])
 
     const getSendEmailDialog = (value) => {
         setSendEMail(value);
@@ -63,6 +77,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
     const getMailTemplate = (value) => {
         setShowMailTemplate(value);
     }
+
     return(
         <div className={style.margin20}>
             <div className={style.bigCardGrid}>
@@ -160,7 +175,8 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             <p className={style.tableHeaderFontStyle}>AVG DURATION PER LOGINS(MIN)</p>
                         </div>
                         {registeredUsers?.map((data, index) =>
-                            <div className={`${style.tableData} ${style.displayInCol} ${style.marginTop7} ${index % 2 === 0 ? style.alternativeBackgroundColor : ''}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(index)}}>
+                            <div className={`${style.tableData} ${style.displayInCol} ${style.marginTop7} ${index % 2 === 0 ? style.alternativeBackgroundColor : ''}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(index)}}
+                            key={index}>
                                 <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                     <input type="checkbox" className={style.checkBoxData} />
                                     <p className={`${style.tableDataFontStyle} ${style.displayInRow}`} onClick={() => {getEditUserDialog(true);setSelectedUsers(data)}}>
@@ -211,356 +227,6 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                 )}
                             </div>
                          )}
-                         {/* <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1')}}>
-                            <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <input type="checkbox" className={style.checkBoxData} />
-                                <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                    <div className={`${style.yellowDotStyle}`}></div>
-                                    John DOE
-                                </p>
-                                <p className={style.tableDataFontStyle}>Doctor</p>
-                                <p className={style.tableDataFontStyle}>Maggiehaven </p>
-                                <p className={style.tableDataFontStyle}>Contractor</p>
-                                <p className={style.tableDataFontStyle}>07/19/2019</p>
-                                <p className={style.tableDataFontStyle}>0:32</p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                            </div>
-                            {isSelected && selectedRow === '1' && (
-                                <>
-                                    <div className={style.divideStyle}></div>
-                                    <div className={style.userInfoGrid}>
-                                        <div className={`${style.displayInCol} ${style.userInfoDivStyle}`}>
-                                            <p className={style.tableDataFontStyle}>Contact Informations</p>
-                                            <p className={style.addressTextStyle}>john.doe@sureshield.com</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5507</p>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Address</p>
-                                                <p className={style.addressTextStyle}>75297 Marisa Station</p>
-                                                <p className={style.addressTextStyle}>, South Clement, Borders, NE 16466</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Creation Date</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignRight}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Last Activity</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('2')}}>
-                            <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <input type="checkbox" className={style.checkBoxData} />
-                                <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                    <div className={`${style.greenDotStyle}`}></div>
-                                    John DOE
-                                </p>
-                                <p className={style.tableDataFontStyle}>Doctor</p>
-                                <p className={style.tableDataFontStyle}>Maggiehaven </p>
-                                <p className={style.tableDataFontStyle}>Contractor</p>
-                                <p className={style.tableDataFontStyle}>07/19/2019</p>
-                                <p className={style.tableDataFontStyle}>0:32</p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                            </div>
-                            {isSelected && selectedRow === '2' && (
-                                <>
-                                    <div className={style.divideStyle}></div>
-                                    <div className={style.userInfoGrid}>
-                                        <div className={`${style.displayInCol} ${style.userInfoDivStyle}`}>
-                                            <p className={style.tableDataFontStyle}>Contact Informations</p>
-                                            <p className={style.addressTextStyle}>john.doe@sureshield.com</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5507</p>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Address</p>
-                                                <p className={style.addressTextStyle}>75297 Marisa Station</p>
-                                                <p className={style.addressTextStyle}>, South Clement, Borders, NE 16466</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Creation Date</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignRight}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Last Activity</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('3')}}>
-                            <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <input type="checkbox" className={style.checkBoxData} />
-                                <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                    <div className={`${style.yellowDotStyle}`}></div>
-                                    John DOE
-                                </p>
-                                <p className={style.tableDataFontStyle}>Doctor</p>
-                                <p className={style.tableDataFontStyle}>Maggiehaven </p>
-                                <p className={style.tableDataFontStyle}>Contractor</p>
-                                <p className={style.tableDataFontStyle}>07/19/2019</p>
-                                <p className={style.tableDataFontStyle}>0:32</p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                            </div>
-                            {isSelected && selectedRow === '3' && (
-                                <>
-                                    <div className={style.divideStyle}></div>
-                                    <div className={style.userInfoGrid}>
-                                        <div className={`${style.displayInCol} ${style.userInfoDivStyle}`}>
-                                            <p className={style.tableDataFontStyle}>Contact Informations</p>
-                                            <p className={style.addressTextStyle}>john.doe@sureshield.com</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5507</p>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Address</p>
-                                                <p className={style.addressTextStyle}>75297 Marisa Station</p>
-                                                <p className={style.addressTextStyle}>, South Clement, Borders, NE 16466</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Creation Date</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignRight}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Last Activity</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('4')}}>
-                            <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <input type="checkbox" className={style.checkBoxData} />
-                                <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                    <div className={`${style.redDotStyle}`}></div>
-                                    John DOE
-                                </p>
-                                <p className={style.tableDataFontStyle}>Doctor</p>
-                                <p className={style.tableDataFontStyle}>Maggiehaven </p>
-                                <p className={style.tableDataFontStyle}>Contractor</p>
-                                <p className={style.tableDataFontStyle}>07/19/2019</p>
-                                <p className={style.tableDataFontStyle}>0:32</p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                            </div>
-                            {isSelected && selectedRow === '4' && (
-                                <>
-                                    <div className={style.divideStyle}></div>
-                                    <div className={style.userInfoGrid}>
-                                        <div className={`${style.displayInCol} ${style.userInfoDivStyle}`}>
-                                            <p className={style.tableDataFontStyle}>Contact Informations</p>
-                                            <p className={style.addressTextStyle}>john.doe@sureshield.com</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5507</p>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Address</p>
-                                                <p className={style.addressTextStyle}>75297 Marisa Station</p>
-                                                <p className={style.addressTextStyle}>, South Clement, Borders, NE 16466</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Creation Date</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignRight}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Last Activity</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('5')}}>
-                            <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <input type="checkbox" className={style.checkBoxData} />
-                                <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                    <div className={`${style.redDotStyle}`}></div>
-                                    John DOE
-                                </p>
-                                <p className={style.tableDataFontStyle}>Doctor</p>
-                                <p className={style.tableDataFontStyle}>Maggiehaven </p>
-                                <p className={style.tableDataFontStyle}>Contractor</p>
-                                <p className={style.tableDataFontStyle}>07/19/2019</p>
-                                <p className={style.tableDataFontStyle}>0:32</p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                            </div>
-                            {isSelected && selectedRow === '5' && (
-                                <>
-                                    <div className={style.divideStyle}></div>
-                                    <div className={style.userInfoGrid}>
-                                        <div className={`${style.displayInCol} ${style.userInfoDivStyle}`}>
-                                            <p className={style.tableDataFontStyle}>Contact Informations</p>
-                                            <p className={style.addressTextStyle}>john.doe@sureshield.com</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5507</p>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Address</p>
-                                                <p className={style.addressTextStyle}>75297 Marisa Station</p>
-                                                <p className={style.addressTextStyle}>, South Clement, Borders, NE 16466</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Creation Date</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignRight}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Last Activity</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('6')}}>
-                            <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <input type="checkbox" className={style.checkBoxData} />
-                                <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                    <div className={`${style.greenDotStyle}`}></div>
-                                    John DOE
-                                </p>
-                                <p className={style.tableDataFontStyle}>Doctor</p>
-                                <p className={style.tableDataFontStyle}>Maggiehaven </p>
-                                <p className={style.tableDataFontStyle}>Contractor</p>
-                                <p className={style.tableDataFontStyle}>07/19/2019</p>
-                                <p className={style.tableDataFontStyle}>0:32</p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                            </div>
-                            {isSelected && selectedRow === '6' && (
-                                <>
-                                    <div className={style.divideStyle}></div>
-                                    <div className={style.userInfoGrid}>
-                                        <div className={`${style.displayInCol} ${style.userInfoDivStyle}`}>
-                                            <p className={style.tableDataFontStyle}>Contact Informations</p>
-                                            <p className={style.addressTextStyle}>john.doe@sureshield.com</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5507</p>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Address</p>
-                                                <p className={style.addressTextStyle}>75297 Marisa Station</p>
-                                                <p className={style.addressTextStyle}>, South Clement, Borders, NE 16466</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Creation Date</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignRight}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Last Activity</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('7')}}>
-                            <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <input type="checkbox" className={style.checkBoxData} />
-                                <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                    <div className={`${style.yellowDotStyle}`}></div>
-                                    John DOE
-                                </p>
-                                <p className={style.tableDataFontStyle}>Doctor</p>
-                                <p className={style.tableDataFontStyle}>Maggiehaven </p>
-                                <p className={style.tableDataFontStyle}>Contractor</p>
-                                <p className={style.tableDataFontStyle}>07/19/2019</p>
-                                <p className={style.tableDataFontStyle}>0:32</p>
-                                <p className={style.tableDataFontStyle}>3</p>
-                            </div>
-                            {isSelected && selectedRow === '7' && (
-                                <>
-                                    <div className={style.divideStyle}></div>
-                                    <div className={style.userInfoGrid}>
-                                        <div className={`${style.displayInCol} ${style.userInfoDivStyle}`}>
-                                            <p className={style.tableDataFontStyle}>Contact Informations</p>
-                                            <p className={style.addressTextStyle}>john.doe@sureshield.com</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                            <p className={style.addressTextStyle}>+1 (342) 444-5507</p>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Address</p>
-                                                <p className={style.addressTextStyle}>75297 Marisa Station</p>
-                                                <p className={style.addressTextStyle}>, South Clement, Borders, NE 16466</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Creation Date</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                        <div className={style.sideDivideStyle}></div>
-                                        <div className={`${style.displayInCol} ${style.textAlignRight}`}>
-                                            <div>
-                                                <p className={style.tableDataFontStyle}>Last Activity</p>
-                                                <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div> */}
                         <div className={style.spaceBetween}>
                             <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
                             <div className={style.displayInRow}>
@@ -593,7 +259,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                         <p className={style.tableDataFontStyle}>Maggiehaven</p>
                                         <p className={style.tableDataFontStyle}>07/19/2019</p>
                                         <p className={style.tableDataFontStyle}>3</p>
-                                        <button className={style.unblockButton}>UNBLOCK</button>
+                                        <button className={style.unblockButton} onClick={() => handleUserUnBlock(data)}>UNBLOCK</button>
                                     </div>
                                     {isSelected && selectedRow === index && (
                                         <>
@@ -632,104 +298,6 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                     )}
                                 </div>
                             )}
-                            {/* <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(1)}}>
-                                <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                    <input type="checkbox" className={style.checkBoxData} />
-                                    <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                        John DOE
-                                    </p>
-                                    <p className={style.tableDataFontStyle}>Doctor</p>
-                                    <p className={style.tableDataFontStyle}>Maggiehaven </p>
-                                    <p className={style.tableDataFontStyle}>Maggiehaven</p>
-                                    <p className={style.tableDataFontStyle}>07/19/2019</p>
-                                    <p className={style.tableDataFontStyle}>3</p>
-                                    <button className={style.unblockButton}>UNBLOCK</button>
-                                </div>
-                                {isSelected && selectedRow === 1 && (
-                                    <>
-                                        <div className={style.divideStyle}></div>
-                                        <div className={style.userInfoGrid}>
-                                            <div className={`${style.displayInCol} ${style.userInfoDivStyle}`}>
-                                                <p className={style.tableDataFontStyle}>Contact Informations</p>
-                                                <p className={style.addressTextStyle}>john.doe@sureshield.com</p>
-                                                <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                                <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                            </div>
-                                            <div className={style.sideDivideStyle}></div>
-                                            <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                                <div>
-                                                    <p className={style.tableDataFontStyle}>Address</p>
-                                                    <p className={style.addressTextStyle}>75297 Marisa Station</p>
-                                                    <p className={style.addressTextStyle}>South Clement, Borders, NE 16466</p>
-                                                </div>
-                                            </div>
-                                            <div className={style.sideDivideStyle}></div>
-                                            <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                                <div>
-                                                    <p className={style.tableDataFontStyle}>Creation Date</p>
-                                                    <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                                </div>
-                                            </div>
-                                            <div className={style.sideDivideStyle}></div>
-                                            <div className={`${style.displayInCol} ${style.textAlignRight}`}>
-                                                <div>
-                                                    <p className={style.tableDataFontStyle}>Last Activity</p>
-                                                    <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                            <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow(1)}}>
-                                <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                    <input type="checkbox" className={style.checkBoxData} />
-                                    <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
-                                        John DOE
-                                    </p>
-                                    <p className={style.tableDataFontStyle}>Doctor</p>
-                                    <p className={style.tableDataFontStyle}>Maggiehaven </p>
-                                    <p className={style.tableDataFontStyle}>Maggiehaven</p>
-                                    <p className={style.tableDataFontStyle}>07/19/2019</p>
-                                    <p className={style.tableDataFontStyle}>3</p>
-                                    <button className={style.unblockButton}>UNBLOCK</button>
-                                </div>
-                                {isSelected && selectedRow === 1 && (
-                                    <>
-                                        <div className={style.divideStyle}></div>
-                                        <div className={style.userInfoGrid}>
-                                            <div className={`${style.displayInCol} ${style.userInfoDivStyle}`}>
-                                                <p className={style.tableDataFontStyle}>Contact Informations</p>
-                                                <p className={style.addressTextStyle}>john.doe@sureshield.com</p>
-                                                <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                                <p className={style.addressTextStyle}>+1 (342) 444-5505</p>
-                                            </div>
-                                            <div className={style.sideDivideStyle}></div>
-                                            <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                                <div>
-                                                    <p className={style.tableDataFontStyle}>Address</p>
-                                                    <p className={style.addressTextStyle}>75297 Marisa Station</p>
-                                                    <p className={style.addressTextStyle}>South Clement, Borders, NE 16466</p>
-                                                </div>
-                                            </div>
-                                            <div className={style.sideDivideStyle}></div>
-                                            <div className={`${style.displayInCol} ${style.textAlignCenter}`}>
-                                                <div>
-                                                    <p className={style.tableDataFontStyle}>Creation Date</p>
-                                                    <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                                </div>
-                                            </div>
-                                            <div className={style.sideDivideStyle}></div>
-                                            <div className={`${style.displayInCol} ${style.textAlignRight}`}>
-                                                <div>
-                                                    <p className={style.tableDataFontStyle}>Last Activity</p>
-                                                    <p className={style.addressTextStyle}>02/19/2022 1:30 pm</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                            </div> */}
                             <div className={style.spaceBetween}>
                                 <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
                                 <div className={style.displayInRow}>

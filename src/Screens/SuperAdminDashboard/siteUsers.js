@@ -4,6 +4,7 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
 import {Link} from 'react-router-dom';
+import {GET} from './entityDataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step23.png';
 import Step3 from './../../images/step34.png';
@@ -93,9 +94,11 @@ const SiteUsers = ({getActiveStep}) => {
       }
     ];
 
-    // useEffect(()=>{
-    //   getUserData();
-    // },[])
+    useEffect(async()=>{
+      // getUserData();
+      const {data: users} = await GET('user-management-service/user');
+      setUser(users);
+    },[])
 
     // const getUserData = () => {
     //   const user = {

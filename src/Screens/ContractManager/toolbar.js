@@ -9,6 +9,7 @@ import EditableRect from "./editableRect";
 import EditableEllipse from "./editableEllipse";
 import EditableDiamond from "./editableDiamond";
 import EditableSelectRect from "./editableSelectRect";
+import FlowChartProcedureGroup from "./flowChartProcedureGroup";
 
 
 const ToolBar = () => {
@@ -18,7 +19,7 @@ const ToolBar = () => {
   const [slantingRect,setSlantingRect] = useState([]);
   const [arrow,setArrow] = useState([]);
   const [lineConnector,setLineConnector] = useState([]);
-  const [text,setText] = useState([]);
+  const [group,setGroup] = useState([]);
   const [selectedShapeName,setSelectedShapeName] = useState('')
   const stageRef = useRef(null);
   const [isTextSelected, setIsTextSelected] = useState(false);
@@ -47,43 +48,13 @@ const ToolBar = () => {
     }
   }
 
-  const handleTextDblClick = (e,index) => {
-   setSelectedTextIndex(index)
-   setIsTextSelected(true);
-   const absPos = e.target.getAbsolutePosition();
-   let temp = text;
-   text[index].visible = true;
-   text[index].x = absPos.x;
-   text[index].y = absPos.y;
-   setText(temp);
- };
-
-   const handleTextareaKeyDown = (e,index) => {
-    if (e.keyCode === 9) {
-      let temp = text;
-      temp[index].visible = false;
-      setText(temp);
-      setSelectedTextIndex(null);
-    }
-   };
-
-  const handleTextEdit = (e,index) => {
-    let temp = text;
-    text[index].text = e.target.value;
-    setText(text);
-  };
-
-  const displayTextArea = text[selectedTextIndex]?.visible?'block':'none'
-
   const displayDelete = (x,y,name,index)=>{
     setDeleteValue({...deleteValue,bool:true,x:x,y:y,name:name,index:index})
   }
 
   const onDelete = () => {
     let type = deleteValue?.name;
-    if(type === 'text'){
-      setText(text?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
-    }else if(type === 'yes'){
+    if(type === 'yes'){
       setYes(yes?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
     }else if(type === 'hold'){
       setHold(hold?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
@@ -278,7 +249,7 @@ const checkBound = (e) => {
         }
       return response;
 }
-
+console.log('Group',group);
 
     return (
       <Stage width={window.innerWidth} height={window.innerHeight} ref={stageRef}  onClick={handleStageOnClick}
@@ -483,6 +454,41 @@ const checkBound = (e) => {
                   draggable.position({ x: 0, y: 0 });
                 }}
               />
+              <Rect
+                width={57}
+                height={30}
+                fill="#d7d5f6"
+                strokeWidth={1}
+                x={235}
+                y={5}
+              />
+              <Text
+                fontSize={12}
+                text="GROUP 1"
+                fontFamily="Proxima Nova"
+                fill="black"
+                strokeWidth={1}
+                stroke="black"
+                x={240}
+                y={15}
+                name="group1"
+                draggable
+                onDragEnd={(e) => {
+                  setGroup((prevGroup) => [
+                    ...prevGroup,
+                    { x: e.target.x(), y: e.target.y(),
+                      fill: e.target.fill(),
+                      stroke: e.target.stroke(),
+                      strokeWidth: e.target.strokeWidth(),
+                      text:'',
+                      name:`${e.target.name()}${group?.length ? group?.length+1 : 1}`
+                    }
+                  ]);
+                  var stage = stageRef.current;
+                  var draggable = stage.findOne(".group1");
+                  draggable.position({ x: 240, y: 15 });
+                }}
+                />
 
             <Rect
               width={50}
@@ -828,6 +834,16 @@ const checkBound = (e) => {
                 }} }
             />
           ))}
+          {
+            group.map((eachGroup,index)=>(
+              <FlowChartProcedureGroup
+                x={eachGroup.x}
+                y={eachGroup.y}
+                fill={eachGroup.fill}
+                name={eachGroup.name}
+              />
+            ))
+          }
           {deleteValue?.bool &&
             <Text
               x={deleteValue.x}
