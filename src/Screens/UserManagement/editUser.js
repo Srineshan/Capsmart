@@ -21,7 +21,7 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
     const handleRoles = (value) => {
       if (value !== '0') {
         const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
- 
+
         if (!selectedRoles.map(data => data?.roleName).includes(value)) {
           setSelectedRoles([...selectedRoles, selectedValue]);
         }
@@ -31,7 +31,7 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
     const handleDepartments = (value) => {
       if (value !== '0') {
         const tempSelectedDepartments = department.filter(data => data?.departmentName?.name === value).map(data => data)[0];
- 
+
         if (!selectedDepartments.map(data => data?.id).includes(tempSelectedDepartments?.id)) {
           setSelectedDepartments([...selectedDepartments, tempSelectedDepartments]);
         }
@@ -66,8 +66,8 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
     });
 
       const departmentsTags = selectedDepartments
-      .filter(data => department.map(dept => dept?.id === data?.id))
-      .map((tag, index) => {
+      ?.filter(data => department?.map(dept => dept?.id === data?.id))
+      ?.map((tag, index) => {
         const onRemoveDepartment = () => {
           setSelectedDepartments(selectedDepartments.filter((t) => t?.departmentName?.name !== tag?.departmentName?.name));
           setUserData({...userData, sites: {
