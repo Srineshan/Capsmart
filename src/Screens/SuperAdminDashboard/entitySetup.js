@@ -26,7 +26,6 @@ const EntitySetup = () => {
     const [item, setItem] = useState();
     const [websiteUrl,setWebsiteUrl] = useState('');
     const [multiSiteEntity,setMultiSiteEntity] = useState(false);
-    // const [siteData,setSiteData] = useState({primarySite:true,canSetupDepartment:false,addressLine:'',city:'',state:'',country:'',zipcode:'',name:'',siteAdmin:'',type:''});
     const [department,setDepartment] = useState([]);
     const [allSites,setAllSites] = useState([]);
     const [activeStep, setActiveStep] = useState('entitySetup');
@@ -40,28 +39,30 @@ const EntitySetup = () => {
     const [entityData,setEntityData] = useState();
     const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",name:'',type:'',websiteURL:'',multiSiteEntity:false,primarySiteToUseApp:false,npin:'',canSetupDepartment:false});
     const [address,setAddress] = useState({city:'',state:'',zipcode:'',addressLine:'',country:''});
-    console.log('entity',entityData);
+    console.log('entity',entity);
 
     const accessToken = Auth();
 
     useEffect(()=>{
       getEntityData();
       getDepartmentData();
-    },[]);
+      },[]);
 
     const getActiveStep = (value) => {
       setActiveStep(value)
     }
 
     const getEntityData = async() => {
-      const {data: entityData} = await GET(`entity-service/entity/${tenantID}`);
-      setEntityData(entityData);
-      let siteData = entityData?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
+      const {data: data} = await GET(`entity-service/entity/${tenantID}`);
+      console.log('data',data);
+      setEntityData(data);
+      let siteData = data?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
       console.log('site',siteData);
-      setEntity({id:'',customerType:"HEALTHCARE",name:entityData?.entityName?.entityName,type:entityData?.entityType?.type,websiteURL:'',multiSiteEntity:entityData?.sites?.length > 1,primarySiteToUseApp:false,npin:siteData?.npin?.id});
+      setEntity({id:'',customerType:"HEALTHCARE",name:data?.entityName?.entityName,type:data?.entityType?.type,websiteURL:'',multiSiteEntity:data?.sites?.length > 1,primarySiteToUseApp:false,npin:siteData?.npin?.id});
       setAddress({city:siteData?.address?.city,state:siteData?.address?.state,zipcode:siteData?.address?.zipcode,addressLine:siteData?.address?.addressLine,country:siteData?.address?.country});
     }
 
+    console.log('entityData',entity,address);
 
     const getDepartmentData = async() => {
       const {data: department} = await GET('entity-service/department');
@@ -270,11 +271,11 @@ const EntitySetup = () => {
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>NPIN*</div>
-                                  <InputGroup className={style.fourFieldWidth} value={entityData?.npin} onChange={(e)=>handleEntity('npin',e.target.value)} />
+                                  <InputGroup className={style.fourFieldWidth} value={entity?.npin} onChange={(e)=>handleEntity('npin',e.target.value)} />
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Entity Name*</div>
-                                  <InputGroup className={`${style.twoFieldWidth}`} value={entityData?.name || 'hospital'} onChange={(e)=>handleEntity('name',e.target.value)}/>
+                                  <InputGroup className={`${style.twoFieldWidth}`} value={entity?.name || 'hospital'} onChange={(e)=>handleEntity('name',e.target.value)}/>
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop30}`}>
                                   <div className={style.extentionLableStyle}>Entity Type*</div>
@@ -282,7 +283,7 @@ const EntitySetup = () => {
                                       <select
                                           name="class"
                                           id="Class"
-                                          value={entityData?.type}
+                                          value={entity?.type}
                                           onChange={(e)=>handleEntity('type',e.target.value)}
                                           className={style.twoFieldWidth}>
                                           <option value="" >
