@@ -62,12 +62,15 @@ const Login = (props) => {
                 <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Password</div>
                 <InputGroup type="password" large={true} placeholder="Enter password here" className={style.marginTop10} rightElement={EyeOpenElement(1)} value={user.password} onChange={(e)=>setUser({...user, password:e.target.value})} />
 
-                <button className={`${style.loginButton} ${style.marginTop30}`} onClick={login}>LOGIN</button>
-                {
-                  // <Link to={'/welcome'}>
-                  //   <button className={`${style.loginButton} ${style.marginTop30}`}>LOGIN</button>
-                  // </Link>
-                }
+                {/* <button className={`${style.loginButton} ${style.marginTop30}`} onClick={login}>LOGIN</button> */}
+                
+                  {/* <Link to={'/welcome'}>
+                    <button className={`${style.loginButton} ${style.marginTop30}`}>LOGIN</button>
+                  </Link> */}
+                  <Link to={'/tasksAndAlerts'}>
+                    <button className={`${style.loginButton} ${style.marginTop30}`}>LOGIN</button>
+                  </Link>
+                
                 <Link to={'/forgotPassword'}>
                   <div className={`${style.forgotPasswordStyle} ${style.marginTop30}`}>I forgot my password</div>
                 </Link>

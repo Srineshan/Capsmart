@@ -151,7 +151,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                 <p className={style.marginRight}>&#128269;</p>
                             </div>
                             <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
-                            <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
+                            <img src={CancelUser} alt="CancelUser" className={style.smallIcons} />
                             <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />
                             <img src={LockReset} alt="LockReset" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />

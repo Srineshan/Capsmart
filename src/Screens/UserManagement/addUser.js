@@ -61,6 +61,11 @@ const AddUser = ({getAddUserDialog}) => {
 
     const submitUserDetails = async () => {
 
+      if(!addUser?.email.includes('@') || !addUser?.email.includes('.')) {
+        ErrorToaster('Enter a valid mail-id');
+        return;
+      }
+
       const user = {
         "name": {
           "firstName": addUser?.firstName,

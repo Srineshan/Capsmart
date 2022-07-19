@@ -24,9 +24,40 @@ const AppSubscription = ({getActiveStep}) => {
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
     const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('Select Value');
     const [item, setItem] = useState();
-    const [plan,setPlan] = useState({name:'',allowableUsers:0,fees:"",status:"",freq:"",discount:0,liveData:"",poa:""});
-    const [billing,setBilling] = useState({firstName:"",lastName:"",email:"",phone:0});
-    const [contract,setContract] = useState({name:"",id:"",docName:"",docDesc:"",docType:"",docPath:"",start:"",end:"",live:"",continuationPolicy:"",fullyExecutedContract:true});
+    const [plan,setPlan] = useState({planName: '',allowableRegisteredUsers: {allowableRegisteredUsers: 0}, subscriptionFees: {fees: ""}, subscriptionStatus: "ACTIVE", billingFrequency: "",
+        discount: {
+            discount: 0
+        }, 
+        plannedToGoLive: {
+            date: "2022-07-18"
+        },
+        poaNumber: {
+            poaNumber: ""
+        }});
+    const [billing,setBilling] = useState({contactname: {firstName: '', lastName: ''}, email: {emailId: ''}, contactNumber: {contactNumber: 0}});
+    const [contract,setContract] = useState(
+        {
+            contractName: "",
+            contractID: "",
+            contractDocuments: [
+              {
+                name: "",
+                description: "",
+                contractDocType: "AGREEMENTDRAFT",
+                contractDocPath: ""
+              }
+            ],
+            contractTermPeriod: {
+              startDate: "2022-07-18",
+              endDate: "2022-07-18"
+            },
+            plannedGoLive: {
+              date: "2022-07-18"
+            },
+            contractContinuationPolicy: "AUTORENEWAL",
+            fullyExecutedContractOnFile: true
+        },
+    );
     const accessToken = Auth();
 
     const getEntityData = () => {
@@ -43,9 +74,9 @@ const AppSubscription = ({getActiveStep}) => {
                 let subPlan = data.subscriptionPlan;
                 let billingDetails = data.billingDetails;
                 let contractDetails = data.contractDetails;
-                setPlan({...plan, name:subPlan?.planName,allowableUsers:subPlan?.allowableRegisteredUsers?.allowableRegisteredUsers,fees:subPlan?.subscriptionFees.fees,status:subPlan?.subscriptionStatus,freq:subPlan?.billingFrequency,discount:subPlan?.discount?.discount,liveData:subPlan?.plannedToGoLive?.date,poa:subPlan?.poaNumber.poaNumber});
-                setBilling({...billing, firstName:billingDetails?.contactname.firstName,lastName:billingDetails?.contactname?.lastName,email:billingDetails?.email.emailId,phone:billingDetails?.contactNumber?.contactNumber});
-                setContract({...contract, name:contractDetails?.contractName,id:contractDetails?.contractID,doc:contractDetails?.contractDocuments,start:contractDetails?.contractTermPeriod?.startDate,end:contractDetails?.contractTermPeriod?.endDate,live:contractDetails?.plannedGoLive,continuationPolicy:contractDetails?.contractContinuationPolicy,fullyExecutedContract:contractDetails?.fullyExecutedContractOnFile})
+                // setPlan({...plan, name:subPlan?.planName,allowableUsers:subPlan?.allowableRegisteredUsers?.allowableRegisteredUsers,fees:subPlan?.subscriptionFees.fees,status:subPlan?.subscriptionStatus,freq:subPlan?.billingFrequency,discount:subPlan?.discount?.discount,liveData:subPlan?.plannedToGoLive?.date,poa:subPlan?.poaNumber.poaNumber});
+                // setBilling({...billing, firstName:billingDetails?.contactname.firstName,lastName:billingDetails?.contactname?.lastName,email:billingDetails?.email.emailId,phone:billingDetails?.contactNumber?.contactNumber});
+                // setContract({...contract, name:contractDetails?.contractName,id:contractDetails?.contractID,doc:contractDetails?.contractDocuments,start:contractDetails?.contractTermPeriod?.startDate,end:contractDetails?.contractTermPeriod?.endDate,live:contractDetails?.plannedGoLive,continuationPolicy:contractDetails?.contractContinuationPolicy,fullyExecutedContract:contractDetails?.fullyExecutedContractOnFile})
           }))
           return true;
         }
@@ -159,20 +190,22 @@ const AppSubscription = ({getActiveStep}) => {
                                     <select
                                         name="class"
                                         id="Class"
+                                        value={plan?.planName}
+                                        onChange={(e) => setPlan({...plan, planName: e.target.value})}
                                         className={style.fullWidth}>
-                                            <option value="Basic" >
+                                            <option value="BASIC" >
                                               Basic
                                             </option>
-                                            <option value="Silver">
+                                            <option value="SILVER">
                                               Silver
                                             </option>
-                                            <option value="Bronze">
+                                            <option value="BRONZE">
                                               Bronze
                                             </option>
-                                            <option value="Gold">
+                                            <option value="GOLD">
                                               Gold
                                             </option>
-                                            <option value="Custom">
+                                            <option value="CUSTOM">
                                               Custom
                                             </option>
 
@@ -182,12 +215,13 @@ const AppSubscription = ({getActiveStep}) => {
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Allowable Registered Users *</div>
-                                <InputGroup className={style.fourFieldWidth} value="289" />
+                                <InputGroup className={style.fourFieldWidth} value={plan?.allowableRegisteredUsers?.allowableRegisteredUsers}
+                                onChange={(e) => setPlan({...plan, allowableRegisteredUsers: {allowableRegisteredUsers: e.target.value}})} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Monthly Subscription Fees*</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup className={`${style.textFieldWidth} ${style.fourFieldWidth}`} value="$6" />
+                                    <InputGroup className={`${style.textFieldWidth} ${style.fourFieldWidth}`} value={`$ ${plan?.subscriptionFees?.fees}`} onChange={(e) => setPlan({...plan, subscriptionFees: {fees: e.target.value}})} />
                                     <div className={`${style.extentionLableStyle} ${style.fourFieldWidth} ${style.marginLeft20}`}>Per User</div>
                                 </div>
                             </div>
@@ -197,6 +231,8 @@ const AppSubscription = ({getActiveStep}) => {
                                     <select
                                         name="class"
                                         id="Class"
+                                        value={plan?.billingFrequency}
+                                        onChange={(e) => setPlan({...plan, billingFrequency: e.target.value})}
                                         className={style.fourFieldWidth}>
                                             <option value="Monthly" >
                                             Monthly
@@ -206,35 +242,43 @@ const AppSubscription = ({getActiveStep}) => {
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Discount*</div>
-                                <InputGroup className={style.fourFieldWidth} value="10%" />
+                                <InputGroup className={style.fourFieldWidth} value={`${plan?.discount?.discount} %`}
+                                onChange={(e) => setPlan({...plan, discount:{discount: e.target.value}})}
+                                 />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>POA Number</div>
-                                <InputGroup className={style.fourFieldWidth} value="368fcbv3" />
+                                <InputGroup className={style.fourFieldWidth} value={plan?.poaNumber?.poaNumber}
+                                 onChange={(e) => setPlan({...plan, poaNumber:{poaNumber: e.target.value}})} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Billing Contact Name</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup className={style.fourFieldWidth} value="First Name" />
-                                    <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20}`} value="Last Name" />
+                                    <InputGroup className={style.fourFieldWidth} value={billing?.contactname?.firstName} onChange={(e) => setBilling({...billing, contactname: {firstName: e.target.value}})} />
+                                    <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={billing?.contactname?.lastName}
+                                     onChange={(e) => setBilling({...billing, contactname: {lastName: e.target.value}})} />
                                 </div>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Email*</div>
-                                <InputGroup className={style.twoFieldWidth} value="email@lorem.com" />
+                                <InputGroup className={style.twoFieldWidth} value={billing?.email?.emailId}
+                                 onChange={(e) => setBilling({...billing, email: {emailId: e.target.value}})} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Cell Phone</div>
-                                <InputGroup className={style.twoFieldWidth} value="+1 (342) 444-5505" />
+                                <InputGroup className={style.twoFieldWidth} value={billing?.contactNumber?.contactNumber} 
+                                 onChange={(e) => setBilling({...billing, contactNumber: {contactNumber: e.target.value}})} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Contract / Agreement Name*</div>
-                                <InputGroup className={style.fullWidth} value="Text" />
+                                <InputGroup className={style.fullWidth} value={contract?.contractName}
+                                 onChange={(e) => setContract({...contract, contractName: e.target.value})} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Contract ID ( CID )*</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup className={style.fourFieldWidth} value="PAMF-1106" />
+                                    <InputGroup className={style.fourFieldWidth} value={contract?.contractID}
+                                    onChange={(e) => setContract({...contract, contractID: e.target.value})}  />
                                     <RadioGroup
                                         inline={true}
                                         className={`${style.marginTop} ${style.marginLeft20}`}
@@ -249,12 +293,12 @@ const AppSubscription = ({getActiveStep}) => {
                                     <div className={style.spaceBetween}>
                                         <FormControlLabel
                                             control={
-                                                <Switch checked={fullyExecutedContract} className={` ${style.textAlignLeft}`} onChange={() => setFullyExecutedContract(!fullyExecutedContract)}  />
+                                                <Switch checked={contract?.fullyExecutedContractOnFile} className={` ${style.textAlignLeft}`} onChange={() => setContract({...contract, fullyExecutedContractOnFile: !contract?.fullyExecutedContractOnFile})}  />
                                             }
                                             className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                            label={fullyExecutedContract ? 'YES' : "NO"}
+                                            label={contract?.fullyExecutedContractOnFile ? 'YES' : "NO"}
                                         />
-                                        {fullyExecutedContract && (
+                                        {contract?.fullyExecutedContractOnFile && (
                                             <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
                                         )}
                                     </div>
@@ -264,18 +308,22 @@ const AppSubscription = ({getActiveStep}) => {
                                                 <select
                                                     name="class"
                                                     id="Class"
-                                                    value={selectedContract || 'Select...'}
-                                                    onChange={(e) => setSelectedContract(e.target.value)}
+                                                    value={contract?.contractDocuments?.contractDocType || 'Select...'}
+                                                    onChange={(e) => setContract({...contract, contractDocuments: {contractDocType: e.target.value}})}
                                                     className={`${style.fullWidth}`}>
                                                         <option value="" >
                                                         Select Type of Document
                                                         </option>
                                                 </select>
                                             </div>
-                                            <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} value="Document Name" />
-                                            <TextArea rows={4} value="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} />
+                                            <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} 
+                                            value={contract?.contractDocuments?.name}
+                                            onChange={(e) => setContract({...contract, contractDocuments: {name: e.target.value}})}
+                                             />
+                                            <TextArea rows={4} value={contract?.contractDocuments?.description} className={`${style.fullWidth} ${style.marginTop10}`}
+                                            onChange={(e) => setContract({...contract, contractDocuments: {description: e.target.value}})} />
                                             <div className={`${style.displayInRow} ${style.marginTop10} ${style.twoFieldWidth} ${style.floatRight}`}>
-                                                <InputGroup  rightElement={leftElement()} className={style.marginLeft20} className={style.fullWidth} />
+                                                <InputGroup  rightElement={leftElement()} className={`${style.marginLeft20} ${style.fullWidth}`} />
                                             </div>
                                         </div>
                                     )}
@@ -284,15 +332,18 @@ const AppSubscription = ({getActiveStep}) => {
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Contract Term Period*</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup value="MM-DD-YYYY" rightElement={calendarIcon()}/>
+                                    <InputGroup value={contract?.contractTermPeriod?.startDate} rightElement={calendarIcon()}
+                                    onChange={(e) => setContract({...contract, contractTermPeriod: {startDate: e.target.value}})} />
                                 <p className={style.toStyle}>To</p>
-                                    <InputGroup value="MM-DD-YYYY" rightElement={calendarIcon()} />
+                                    <InputGroup value={contract?.contractTermPeriod?.endDate} rightElement={calendarIcon()}
+                                    onChange={(e) => setContract({...contract, contractTermPeriod:{endDate: e.target.value}})}  />
                                 </div>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Planned Go Live</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup value="MM-DD-YYYY" rightElement={calendarIcon()}/>
+                                    <InputGroup value={contract?.plannedGoLive?.date} rightElement={calendarIcon()}
+                                    onChange={(e) => setContract({...contract, plannedGoLive: {date: e.target.value}})} />
                                 </div>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -302,8 +353,10 @@ const AppSubscription = ({getActiveStep}) => {
                                         <select
                                             name="class"
                                             id="Class"
-                                            value={selectedContractContinuationPolicy || 'Select...'}
-                                            onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                            // value={selectedContractContinuationPolicy || 'Select...'}
+                                            value={contract?.contractContinuationPolicy}
+                                            // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                            onChange={(e) => setContract({...contract, contractContinuationPolicy: e.target.value})}
                                             className={`${style.fullWidth} `}>
                                                 <option value="Select Value" >
                                                 Select Value

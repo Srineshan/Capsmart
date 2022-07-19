@@ -20,6 +20,7 @@ import ReportsHome from './Screens/Reports';
 import TimeSheetReportsBase from './Screens/Reports/reports';
 import ChartPage from './Screens/Reports/chart';
 import HelpHome from './Screens/HelpManagement';
+import TasksAndAlerts from './Screens/SuperAdminDashboard/tasksAndAlerts';
 
 const App = ({props}) => {
   return (
@@ -44,6 +45,7 @@ const App = ({props}) => {
           <Route  path="/reports" element={<TimeSheetReportsBase />}/>
           <Route  path="/chart" element={<ChartPage />}/>
           <Route  path="/help" element={<HelpHome />}/>
+          <Route  path="/tasksAndAlerts" element={<TasksAndAlerts />}/>
         </Routes>
       </div>
     </Router>
