@@ -91,8 +91,6 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
         );
       });
 
-      console.log("Console",departmentsTags, rolesTags, departmentsTagsToUse, rolesTagsToUse, selectedRoles, selectedDepartments, department, roles)
-
     const getRoles = async() => {
       const {data: roles} = await GET('user-management-service/roles');
       setRoles(roles);
