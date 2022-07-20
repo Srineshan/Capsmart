@@ -25,6 +25,95 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [contractTermPeriodFrom, setContractTermPeriodFrom] = useState(new Date());
     const [contractTermPeriodTo, setContractTermPeriodTo] = useState(new Date());
 
+    const [contractDetail, setContractDetail] = useState({
+        contractName: {
+            contractName: ""
+          },
+          contractType: "INDIVIDUAL",
+          contractStatus: "ACTIVE",
+          contractDetail: {
+            contractId: {
+              id: ""
+            },
+            priorContract: {
+              id: "",
+              notApplicable: true
+            },
+            contractManager: {
+              userID: ""
+            },
+            contractFiles: [
+              {
+                id: "",
+                filePath: "",
+                fileName: "",
+                documentType: "",
+                documentDescription: "",
+                documentName: ""
+              }
+            ],
+            site: {
+              sites: [
+                {
+                  id: "",
+                  departmentList: {
+                    departments: [
+                      {
+                        id: "",
+                        departmentName: {
+                          departmentName: ""
+                        }
+                      }
+                    ]
+                  },
+                  siteName: {
+                    siteName: ""
+                  }
+                }
+              ]
+            },
+            departmentList: {
+              departments: [
+                {
+                  id: "",
+                  departmentName: {
+                    departmentName: ""
+                  }
+                }
+              ]
+            },
+            contractTerm: {
+              startDate: "2022-07-20",
+              endDate: "2022-07-20",
+              effectiveDate: "2022-07-20"
+            },
+            continuationPolicy: {
+              contractPolicyType: "AUTORENEWAL",
+              autoRenewalPeriod: {
+                autoRenewalTerm: {
+                  term: 0
+                },
+                allowableAutoRenewalTerm: {
+                  term: 0
+                },
+                autoRenewalCalender: "WEEKS"
+              },
+              reminderList: {
+                renewalReminderList: [
+                  {
+                    days: 0
+                  }
+                ]
+              }
+            },
+            contractIdMissing: true,
+            fullyExecutedContract: true,
+            siteSpecificContract: true,
+            departmentSpecificContract: true
+          },
+          newContract: true
+    })
+
     const options = [
         { name: 'Salvie - Head of Dept (Ortho)' },
         { name: 'Sanya - MD (General Mediciene)' },
