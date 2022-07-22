@@ -11,6 +11,11 @@ const AddServiceProvided = ({getAddServiceDialog, getAddOn}) => {
   const [activityContractedFor, setActivityContractedFor] = useState('Clinic Session Blocks');
   const [isDesignatedSpecificContractor,setIsDesignatedSpecificContractor] = useState(true);
   const [addOnService,setAddOnService] = useState('Clinic Session');
+  const [outpatientClinicalSessionRate, setOutpatientClinicalSessionRate] = useState(0);
+  const [outpatientClinicalSessionDuration, setOutpatientClinicalSessionDuration] = useState(0);
+  const [fractureClinicalSessionRate, setFractureClinicalSessionRate] = useState(0);
+  const [fractureClinicalSessionDuration, setFractureClinicalSessionDuration] = useState(0);
+  const [clinicalSessionExtension, setClinicalSessionExtension] = useState(0);
   const getSendEmailNotification = (value) => {
     setSendEmailNotification(value)
   }
@@ -427,7 +432,8 @@ const AddServiceProvided = ({getAddServiceDialog, getAddOn}) => {
                           <div className={style.displayInRow}>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElementWithoutBackground}>$</div>
-                                <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                <EditableText value={outpatientClinicalSessionRate} className={style.editableTextStyleWithoutPadding}
+                                onChange={(e) => setOutpatientClinicalSessionRate(e)} />
                             </div>
                             <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional Clinic Session</p>
                           </div>
@@ -435,7 +441,8 @@ const AddServiceProvided = ({getAddServiceDialog, getAddOn}) => {
                       <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
                           <div className={style.extentionLableStyle}>Clinic Session Duration*</div>
                           <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                              <EditableText value="4" className={style.editableTextStyle} />
+                              <EditableText value={outpatientClinicalSessionDuration} className={style.editableTextStyle}
+                              onChange={(e) => setOutpatientClinicalSessionDuration(e)} />
                               <div className={style.textElementWithoutBackground}>Hour</div>
                           </div>
                       </div>
@@ -447,7 +454,8 @@ const AddServiceProvided = ({getAddServiceDialog, getAddOn}) => {
                        <div className={style.displayInRow}>
                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                             <div className={style.textElementWithoutBackground}>$</div>
-                            <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                            <EditableText value={fractureClinicalSessionRate} className={style.editableTextStyleWithoutPadding}
+                            onChange={(e) => setFractureClinicalSessionRate(e)} />
                         </div>
                         <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional Fracture Clinic Session</p>
                        </div>
@@ -455,7 +463,8 @@ const AddServiceProvided = ({getAddServiceDialog, getAddOn}) => {
                    <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
                        <div className={style.extentionLableStyle}>Fracture Session Duration*</div>
                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                           <EditableText value="4" className={style.editableTextStyle} />
+                           <EditableText value={fractureClinicalSessionDuration} className={style.editableTextStyle}
+                           onChange={(e) => setFractureClinicalSessionDuration(e)} />
                            <div className={style.textElementWithoutBackground}>Hour</div>
                        </div>
                    </div>
@@ -467,7 +476,8 @@ const AddServiceProvided = ({getAddServiceDialog, getAddOn}) => {
                        <div className={style.displayInRow}> 
                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                             <div className={style.textElementWithoutBackground}>$</div>
-                            <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                            <EditableText value={clinicalSessionExtension} className={style.editableTextStyleWithoutPadding}
+                            onChange={(e) => setClinicalSessionExtension(e)} />
                         </div>
                         <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
                        </div>

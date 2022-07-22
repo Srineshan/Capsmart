@@ -20,21 +20,21 @@ const EntryPage = () => {
                         <div className={style.headingStyle}>Help Management</div>
                     </div>
                 </Link>
-                <Link to={'/activeContracts'}>
+                <Link to={'/contracts'}>
                     <div className={`${style.padding} ${style.cursorPointer}`}>
                         <div className={style.roundedBackgrounds}>
                         </div>
                         <div className={style.headingStyle}>Contract Dashboard</div>
                     </div>
                 </Link>
-                <Link to={'/contracts'}>
+                <Link to={'/user'}>
                     <div className={`${style.padding} ${style.cursorPointer}`}>
                         <div className={style.roundedBackgrounds}>
                         </div>
                         <div className={style.headingStyle}>User Management</div>
                     </div>
                 </Link>
-                <Link to={'/login'}>
+                <Link to={'/welcome'}>
                     <div className={style.cursorPointer}>
                         <div className={style.roundedBackgrounds}>
                         </div>

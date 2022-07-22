@@ -4,7 +4,50 @@ import { InputGroup, RadioGroup, Radio, EditableText } from '@blueprintjs/core';
 import style from './index.module.scss';
 
 const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPage}) => {
-    const [compensation, setCompensation] = useState('RVU Based');
+    const [compensation, setCompensation] = useState('RVUBASED');
+    const [rvuQuantity, setRvuQuantity] =useState({
+        quantity: 0
+    })
+    const [frequency, setFrequency] = useState('')
+    const [fteEquivalent, setFteEquivalent] = useState({
+        value: 0
+    })
+    const [rvuReferenceUsed, setRvuReferenceUsed] = useState({
+        value: ''
+    })
+    const [rvuQuantityVariance, setRvuQuantityVariance] = useState({
+        value: 0
+    })
+    const [rvuQuantityPeriod, setRvuQuantityPeriod] = useState({
+        days: 0
+    })
+    const [dollarRate, setDollarRate] = useState({
+        hour: 0
+    })
+    const [dollarValue, setDollarValue] = useState({
+        perTimesheetSubmission: 0,
+        perContractedPeriod: 0
+    })
+    const [compensationOffsetCriteria, setCompensationOffsetCriteria] = useState({
+        reducedNumberOfServices: '',
+        providingAdditionalServices: ''
+    })
+
+    const handleContinue = () => {
+        const data = {
+            compensationBasis: compensation,
+            rvuQuantity: rvuQuantity,
+            frequency: frequency,
+            fteEquivalent: fteEquivalent,
+            rvuReferenceUsed: rvuReferenceUsed,
+            rvuQuantityVariance: rvuQuantityVariance,
+            rvuQuantityPeriod: rvuQuantityPeriod,
+            dollarRate: dollarRate,
+            dollarValue: dollarValue,
+            compensationOffsetCriteria: compensationOffsetCriteria
+          }
+        console.log(data)
+    }
 
     return (
         <div className={style.cloneBlockStyle}>
@@ -18,45 +61,63 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                             selectedValue={compensation}
                             onChange={(e) => setCompensation(e.target.value)}
                         >
-                            <Radio label="RVU Based" value="RVU Based" />
-                            <Radio label="Dollar Based Rate" value="Dollar Based Rate" />
+                            <Radio label="RVU Based" value="RVUBASED" />
+                            <Radio label="Dollar Based Rate" value="DOLLARBASEDRATE" />
                         </RadioGroup>
                     </div>
                 </div>
-                {compensation === "RVU Based" && (
+                {compensation === "RVUBASED" && (
                     <div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>RVU Quantity*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup className={style.fourFieldWidth} value="" />
+                                <InputGroup className={style.fourFieldWidth} value={rvuQuantity?.quantity} 
+                                onChange={(e) => setRvuQuantity({
+                                    ...rvuQuantity, quantity: e.target.value
+                                })} />
                                 <select
                                     name="class"
                                     id="Class"
-                                    // value={selectedContractContinuationPolicy || 'Select...'}
-                                    // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                    value={frequency}
+                                    onChange={(e) => setFrequency(e.target.value)}
                                     className={`${style.twoFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
-                                    <option value="Per Week/Month" >
-                                        Per Week/Month
+                                    <option value="WEEK" >
+                                        Per Week
+                                    </option>
+                                    <option value="MONTH" >
+                                        Per Month
                                     </option>
                                 </select>
                             </div>
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>FTE Equivalent</div>
-                            <InputGroup className={style.twoFieldWidth} />
+                            <InputGroup className={style.twoFieldWidth} value={fteEquivalent?.value}
+                            onChange={(e) => setFteEquivalent({
+                                ...rvuQuantity, value: e.target.value
+                            })} />
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>RVU Reference Used</div>
-                            <InputGroup className={style.fullWidth} />
+                            <InputGroup className={style.fullWidth} value={rvuReferenceUsed?.value}
+                            onChange={(e) => setRvuReferenceUsed({
+                                ...rvuReferenceUsed, value: e.target.value
+                            })} />
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>RVU Quantity Variance (+/-)</div>
-                            <InputGroup className={style.twoFieldWidth} />
+                            <InputGroup className={style.twoFieldWidth} value={rvuQuantityVariance?.value}
+                            onChange={(e) => setRvuQuantityVariance({
+                                ...rvuQuantityVariance, value: e.target.value
+                            })} />
                         </div>
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>RVU Quantity Period</div>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                                <EditableText value="3" className={style.editableTextStyleDays} />
+                                <EditableText className={style.editableTextStyleDays} value={rvuQuantityPeriod?.days}
+                                onChange={(e) => setRvuQuantityPeriod({
+                                    ...rvuQuantityPeriod, days: e
+                                })} />
                                 <div className={style.textElementWithoutBackgroundDays}>Days</div>
                             </div>
                         </div>
@@ -64,23 +125,34 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                 )}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Dollar Hourly Rate*</div>
-                    <InputGroup className={style.fourFieldWidth} value="120" />
+                    <InputGroup className={style.fourFieldWidth} value={dollarRate?.hour}
+                        onChange={(e) => setDollarRate({
+                            ...dollarRate, hour: e.target.value
+                        })} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Dollar Value per Timesheet Submission*</div>
-                    <InputGroup className={style.fourFieldWidth} value="40" />
+                    <InputGroup className={style.fourFieldWidth} value={dollarValue?.perTimesheetSubmission}
+                    onChange={(e) => setDollarValue({
+                        ...dollarValue, perTimesheetSubmission: e.target.value, perContractedPeriod: dollarValue?.perContractedPeriod
+                    })} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Dollar Value for per Contracted Year/Period*</div>
-                    <InputGroup className={style.fourFieldWidth} value="120" />
+                    <InputGroup className={style.fourFieldWidth} value={dollarValue?.perContractedPeriod}
+                    onChange={(e) => setDollarValue({
+                        ...dollarValue, perContractedPeriod: e.target.value, perTimesheetSubmission: dollarValue?.perTimesheetSubmission
+                    })} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Compensation Offset Criteria for Reduced Number of Agreed to Services*</div>
                     <select
                         name="class"
                         id="Class"
-                        // value={selectedContractContinuationPolicy || 'Select...'}
-                        // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                        value={compensationOffsetCriteria?.reducedNumberOfServices}
+                        onChange={(e) => setCompensationOffsetCriteria({
+                            ...compensationOffsetCriteria, reducedNumberOfServices: e.target.value, providingAdditionalServices: compensationOffsetCriteria?.providingAdditionalServices
+                        })}
                         className={`${style.fullWidth}`}>
                         <option value="Per Timesheet Period" >
                             Per Timesheet Period
@@ -92,8 +164,10 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                     <select
                         name="class"
                         id="Class"
-                        // value={selectedContractContinuationPolicy || 'Select...'}
-                        // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                        value={compensationOffsetCriteria?.providingAdditionalServices}
+                        onChange={(e) => setCompensationOffsetCriteria({
+                            ...compensationOffsetCriteria, providingAdditionalServices: e.target.value, reducedNumberOfServices: compensationOffsetCriteria?.reducedNumberOfServices
+                        })}
                         className={`${style.fullWidth}`}>
                         <option value="Per Contract Period" >
                             Per Contract Period
@@ -103,7 +177,10 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
             </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
                 <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { getViewPage7(true); getCurrentPage('Timesheet Submission Terms') }}>CONTINUE</button>
+                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} 
+                onClick={() => { getViewPage7(true); getCurrentPage('Timesheet Submission Terms') }}
+                // onClick={() => { handleContinue() }}
+                >CONTINUE</button>
             </div>
         </div>
     )

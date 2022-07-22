@@ -3,6 +3,7 @@ import { InputGroup, RadioGroup, Radio } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
+import FormGroup from '@mui/material/FormGroup';
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
@@ -50,7 +51,24 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
     const [selectedContract, setSelectedContract] = useState('Select...');
     const theme = useTheme();
     const [personName, setPersonName] = useState([]);
-
+    const [serviceProviderType, setServiceProviderType] = useState('');
+    const [npin, setNpin] = useState('');
+    const [npinMissing, setNpinMissing] = useState(false);
+    const [npinNotApplicable, setNpinNotApplicable] = useState(false);
+    const [contractorFirstName, setContractorFirstName] = useState('');
+    const [contractorMiddleName, setContractorMiddleName] = useState('');
+    const [contractorLastName, setContractorLastName] = useState('');
+    const [contractorNameSuffix, setContractorNameSuffix] = useState('');
+    const [contractorEmail, setContractorEmail] = useState('');
+    const [contractorPhone, setContractorPhone] = useState(0);
+    const [city, setCity] = useState('');
+    const [state, setState] = useState('');
+    const [zipCode, setZipCode] = useState('');
+    const [siteLevelTitle, setSiteLevelTitle] = useState('');
+    const [departmentLevelDepartment, setDepartmentLevelDepartment] = useState('');
+    const [departmentLevelTitle, setDepartmentLevelTitle] = useState('');
+    const [siteLevelSite, setSiteLevelSite] = useState('');
+    const [departmentLevelSite, setDepartmentLevelSite] = useState('');
     const handleChange = (event) => {
         const {
         target: { value },
@@ -69,6 +87,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                         <select
                             name="class"
                             id="Class"
+                            value={serviceProviderType}
+                            onChange={(e) => setServiceProviderType(e.target.value)}
                             className={style.fullWidth}>
                                 <option value="Text" >
                                 Text
@@ -91,28 +111,29 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>NPIN*</div>
                     <div className={style.grid3}>
-                    <InputGroup className={style.fullWidth}/>
-                    <RadioGroup
-                        inline={true}
-                        className={`${style.marginTop}`}
-                        selectedValue={"Missing"}
-                    >
-                        <Radio label="Missing" value="Missing" checked />
-                    </RadioGroup>
-                    <RadioGroup
-                        inline={true}
-                        className={`${style.marginTop} ${style.reduce30Left}`}
-                    >
-                        <Radio label="NA" value="Not Available" />
-                    </RadioGroup>
+                    <InputGroup className={style.fullWidth}
+                    value={npin}
+                    onChange={(e) => setNpin(e.target.value)}/>
+                    <FormGroup>
+                        <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => setNpinMissing(e.target.checked)} />} label="Missing" />
+                    </FormGroup>
+                    <FormGroup>
+                        <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => setNpinNotApplicable(e.target.checked)} />} label="NA" />
+                    </FormGroup>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contractor Name*</div>
                     <div className={style.grid3}>
-                    <InputGroup className={style.fullWidth} value="First" />
-                    <InputGroup className={style.fullWidth} value="Middle"/>
-                    <InputGroup className={style.fullWidth} value="Last"/>
+                    <InputGroup className={style.fullWidth} placeholder="First"
+                    value={contractorFirstName}
+                    onChange={(e) => setContractorFirstName(e.target.value)} />
+                    <InputGroup className={style.fullWidth} placeholder="Middle"
+                    value={contractorMiddleName}
+                    onChange={(e) => setContractorMiddleName(e.target.value)}/>
+                    <InputGroup className={style.fullWidth} placeholder="Last"
+                    value={contractorLastName}
+                    onChange={(e) => setContractorLastName(e.target.value)}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -121,6 +142,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                         <select
                             name="class"
                             id="Class"
+                            value={contractorNameSuffix}
+                            onChange={(e) => setContractorNameSuffix(e.target.value)}
                             className={style.fullWidth}>
                                 <option value="Text" >
                                 Text
@@ -131,34 +154,31 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Email Contractor id*</div>
                     <div className={style.displayInRow}>
-                        <InputGroup value="Enter entity specific email" className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`}/>
-                        <RadioGroup
-                            inline={true}
-                            className={`${style.marginTop} ${style.marginLeft20}`}
-                        >
-                            <Radio label="NA" value="Not Available" />
-                        </RadioGroup>
+                        <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`}
+                        value={contractorEmail}
+                        onChange={(e) => setContractorEmail(e.target.value)}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Cell Phone*</div>
                     <div className={style.grid2}>
-                    <InputGroup value="Numeric" className={style.fullWidth}/>
-                    <RadioGroup
-                        inline={true}
-                        className={`${style.marginTop} ${style.leftAlign}`}
-                        selectedValue={"Missing"}
-                    >
-                        <Radio label="NA" value="Not Available" />
-                    </RadioGroup>
+                    <InputGroup placeholder="Numeric" className={style.fullWidth}
+                    value={contractorPhone}
+                    onChange={(e) => setContractorPhone(e.target.value)}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Contractor Name*</div>
+                    <div className={style.extentionLableStyle}>Address*</div>
                     <div className={style.grid3}>
-                    <InputGroup className={style.fullWidth} value="City" />
-                    <InputGroup className={style.fullWidth} value="State"/>
-                    <InputGroup className={style.fullWidth} value="Zipcode"/>
+                    <InputGroup className={style.fullWidth} placeholder="City" 
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}/>
+                    <InputGroup className={style.fullWidth} placeholder="State"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}/>
+                    <InputGroup className={style.fullWidth} placeholder="Zipcode"
+                    value={zipCode}
+                    onChange={(e) => setZipCode(e.target.value)}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -180,8 +200,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                                     <select
                                         name="class"
                                         id="Class"
-                                        // value={selectedContractContinuationPolicy || 'Select...'}
-                                        // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                        value={siteLevelTitle}
+                                        onChange={(e) => setSiteLevelTitle(e.target.value)}
                                         className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
                                             <option value="type or select" >
                                             type or select
@@ -194,8 +214,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                                         <select
                                             name="class"
                                             id="Class"
-                                            // value={selectedContractContinuationPolicy || 'Select...'}
-                                            // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                            value={siteLevelSite}
+                                            onChange={(e) => setSiteLevelSite(e.target.value)}
                                             className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
                                                 <option value="type or select" >
                                                 type or select
@@ -227,8 +247,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                                         <select
                                             name="class"
                                             id="Class"
-                                            // value={selectedContractContinuationPolicy || 'Select...'}
-                                            // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                            value={departmentLevelDepartment}
+                                            onChange={(e) => setDepartmentLevelDepartment(e.target.value)}
                                             className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
                                                 <option value="Department" >
                                                 Department
@@ -240,8 +260,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                                         <select
                                             name="class"
                                             id="Class"
-                                            // value={selectedContractContinuationPolicy || 'Select...'}
-                                            // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                            value={departmentLevelTitle}
+                                            onChange={(e) => setDepartmentLevelTitle(e.target.value)}
                                             className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
                                                 <option value="type or select" >
                                                 type or select
@@ -254,8 +274,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                                             <select
                                                 name="class"
                                                 id="Class"
-                                                // value={selectedContractContinuationPolicy || 'Select...'}
-                                                // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                                value={departmentLevelSite}
+                                                onChange={(e) => setDepartmentLevelSite(e.target.value)}
                                                 className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
                                                     <option value="type or select" >
                                                     type or select
