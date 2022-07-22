@@ -1,36 +1,88 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { TextArea, InputGroup, RadioGroup, Radio, Icon, TagInput } from '@blueprintjs/core';
+import { TextArea, InputGroup, RadioGroup, Radio, Icon, TagInput, Checkbox, FileInput } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { DateInput } from "@blueprintjs/datetime";
 import DatalistInput from 'react-datalist-input';
+import {GET,PUT,POST,role,tenantID} from './contractDataSaver';
+import AddNewContractManager from './addNewContractManager';
 
 import style from './index.module.scss';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
-const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPage}) => {
+const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType}) => {
     const [selectContractManager, setSelectContractManager] = useState('');
-    const [selectPriorContractID, setSelectPriorContractID] = useState('');
     const [siteSpecific, setSiteSpecific] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
     const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('Select Value');
     const [item, setItem] = useState();
-    const [priorContractItem, setPriorContractItem] = useState();
     const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
+    const [priorContractItem, setPriorContractItem] = useState();
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
+    const [fullyExecutedContractData,setFullyExecutedContractData] = useState({type:'',name:'',desc:''});
     const [departmentSpecific, setDepartmentSpecific] = useState(false);
     const [tags, setTags] = useState(VALUES);
     const [tagSet2, setTagSet2] = useState(VALUES2);
     const [contractTermPeriodFrom, setContractTermPeriodFrom] = useState(new Date());
     const [contractTermPeriodTo, setContractTermPeriodTo] = useState(new Date());
+    const [contractName,setContractName] = useState('');
+    const [contractId,setContractId] = useState({id:'',missing:false});
+    const [contractPriorId,setContractPriorId] = useState('');
+    const [contractNA,setContractNA] = useState(false);
+    const [user,setUsers] = useState([]);
+    const [contracts,setContracts] = useState();
+    const [sites,setSites] = useState();
+    const [selectedSite,setSelectedSite] = useState([]);
+
+    useEffect(() => {
+      getUserData();
+      getContracts();
+      getSites();
+    },[])
+
+    const getUserData = async() => {
+      const {data: user} = await GET('user-management-service/user');
+      if(user){
+        setUsers(user);
+        console.log('user items',items);
+      }
+    }
+
+    const getContracts = async()=>{
+      const {data:contracts} = await GET('contract-managment-service/contracts');
+      console.log('contracts',contracts);
+      if(contracts){
+        setContracts(contracts);
+        console.log('priorContract',priorContractItems)
+      }
+    }
+
+    const getSites = async()=>{
+      const {data:sites} = await GET('entity-service/sites');
+      if(sites){
+        setSites(sites);
+      }
+    }
+
+    console.log(selectedContractType);
+
+    const getAddNewManagerDialog = (value) => {
+        setAddNewManagerDialog(value);
+    }
+
+    const handleFileUpload = (e) => {
+      console.log('file',e);
+    }
+
+    console.log('user',user);
 
     const [contractDetail, setContractDetail] = useState({
         contractName: {
             contractName: ""
           },
           contractType: "INDIVIDUAL",
-          contractStatus: "ACTIVE",
+          contractStatus: "DRAFT",
           contractDetail: {
             contractId: {
               id: ""
@@ -114,17 +166,17 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
           newContract: true
     })
 
-    const options = [
-        { name: 'Salvie - Head of Dept (Ortho)' },
-        { name: 'Sanya - MD (General Mediciene)' },
-        { name: 'Saaz - Emergency (General Surgeon)' },
-      ];
+    // const options = [
+    //     { name: 'Salvie - Head of Dept (Ortho)' },
+    //     { name: 'Sanya - MD (General Mediciene)' },
+    //     { name: 'Saaz - Emergency (General Surgeon)' },
+    //   ];
 
-      const priorContractId = [
-        { name: 'Contract 1' },
-        { name: 'Contract 2' },
-        { name: 'Contract 3' },
-      ];
+      // const priorContractId = [
+      //   { name: 'Contract 1' },
+      //   { name: 'Contract 2' },
+      //   { name: 'Contract 3' },
+      // ];
 
       const onSelect = useCallback((selectedItem) => {
         setItem(selectedItem);
@@ -132,19 +184,20 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       }, []);
 
       const onSelectContractId = useCallback((selectedItem) => {
-        setPriorContractItem(selectedItem);
-        setSelectPriorContractID('');
+        setContractPriorId({...contractPriorId, id:selectedItem});
       }, []);
 
-      const uploadRightElement = () => {
-        return(
-            <button className={style.uploadButtonStyle} >UPLOAD</button>
-        )
-    }
+    //   const uploadRightElement = () => {
+    //     return(
+    //       <button>
+    //         <input type="file" className={style.uploadButtonStyle} />UPLOAD
+    //       </button>
+    //     )
+    // }
 
-    const handleTagsAdd = values => {
-        setTags([...tags, values]);
-    };
+    // const handleTagsAdd = values => {
+    //     setTags([...tags, values]);
+    // };
 
     const getTagProps = (_v, index) => ({
         minimal: true,
@@ -170,72 +223,63 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
 
     const items = useMemo(
         () =>
-          options.map((option) => ({
-            id: option.name,
-            value: option.name,
+          user.map((option) => ({
+            id: option?.id,
+            value: `${option.name.firstName} ${option.name.lastName} ${option.name.suffix}`,
             ...option,
           })),
-        [item],
+        [user],
       );
 
-      const priorContractItems = useMemo(
-        () =>
-          priorContractId.map((option) => ({
-            id: option.name,
-            value: option.name,
-            ...option,
-          })),
-        [priorContractItem],
-      );
+      const siteItems = useMemo(
+          () =>
+            sites?.map((option) => ({
+              id: option?.id,
+              value: option?.siteName?.siteName,
+              ...option,
+            })),
+          [sites],
+        );
+
+    const priorContractItems = useMemo(
+      () =>
+        contracts?.map((option) => ({
+          id: option?.contractDetail?.contractId?.id,
+          value: option?.contractDetail?.contractId?.id,
+          ...option,
+        })),
+      [contracts],
+    );
+    console.log('contracts',contracts?.map(data=>data));
+
+    console.log('items',items,priorContractItems);
+
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
                 <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>Contract / Agreement Name*</div>
-                    <InputGroup className={style.fullWidth}/>
+                    <InputGroup className={style.fullWidth} value={contractName} onChange={(e)=>setContractName(e.target.value)}/>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract ID*</div>
                     <div className={style.displayInRow}>
-                        <InputGroup value="PAMF-1106" className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`}/>
-                        <RadioGroup
-                            inline={true}
-                            className={`${style.marginTop} ${style.marginLeft20}`}
-                            selectedValue={"Missing"}
-                        >
-                            <Radio label="Missing" value="Missing" checked />
-                        </RadioGroup>
+                        <InputGroup placeholder="PAMF-1106" value={contractId.id} className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`} onChange={(e)=>setContractId({...contractId, id:e.target.value})}/>
+                      <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked})}/>
                     </div>
                 </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20} ${style.disabledView} `}>
+                <div className={contracts?.length !== 0 ? `${style.extentionGrid} ${style.marginTop20}`:`${style.extentionGrid} ${style.marginTop20} ${style.disabledView} `}>
                     <div className={style.extentionLableStyle}>Prior Contract ID*</div>
                     <div className={style.displayInRow}>
-                        <DatalistInput items={priorContractItems} onSelect={onSelectContractId} onChange={(e) => setSelectPriorContractID(e.target.value) } className={style.selectFieldWidth} placeholder="Search by CID / Name" />
+                        <DatalistInput items={priorContractItems || []} onSelect={onSelectContractId} onChange={(e) => setContractPriorId(e.target.value) } className={style.selectFieldWidth} placeholder="Search by CID / Name" />
                         {/* <InputGroup className={style.entityFieldWidth} placeholder="Search by CID / Name" /> */}
-                        <RadioGroup
-                            inline={true}
-                            className={`${style.marginTop} ${style.marginLeft20}`}
-                        >
-                            <Radio label="NA" value="Not Available" />
-                        </RadioGroup>
+                           <Checkbox label="NA"  onChange={(e)=>setContractNA(e.target.checked)}/>
+
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
                     <div className={style.displayInRow}>
-                    {/* <select
-                        name="class"
-                        id="Class"
-                        value={selectedContract || 'Select...'}
-                        onChange={(e) => setSelectedContract(e.target.value)}
-                        className={`${style.entityFieldWidth} ${style.marginBottom} `}>
-                            <option value="" >
-
-                            </option>
-                            <option value="Salvie - Head of Dept (Ortho)">Salvie - Head of Dept (Ortho)</option>
-                            <option value="Sanya - MD (General Mediciene)">Sanya - MD (General Mediciene)</option>
-                            <option value="Saaz - Emergency (General Surgeon)">Saaz - Emergency (General Surgeon)</option>
-                    </select> */}
                     <div>
                         <DatalistInput items={items} onSelect={onSelect} onChange={(e) => setSelectContractManager(e.target.value) } className={style.selectFieldWidth} />
                         {selectContractManager.length !== 0 && (
@@ -269,9 +313,12 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                     <select
                                         name="class"
                                         id="Class"
-                                        value={selectedContract || 'Select...'}
-                                        onChange={(e) => setSelectedContract(e.target.value)}
+                                        value={fullyExecutedContractData.type || 'Select...'}
+                                        onChange={(e) => setFullyExecutedContractData(e.target.value)}
                                         className={`${style.fullWidth} ${style.marginLeft20} `}>
+                                          <option value="Select...">
+                                            Select...
+                                          </option>
                                             <option value="Agreement Draft" >
                                             Agreement Draft
                                             </option>
@@ -284,16 +331,16 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                             <option value="Schedule" >
                                             Schedule
                                             </option>
-                                            <option value="Attachment " >
+                                            <option value="Attachment" >
                                             Attachment
                                             </option>
                                     </select>
                                 </div>
-                                <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} value="Document Name" />
-                                <TextArea rows={4} value="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} />
+                                <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name" value={fullyExecutedContractData.name} onChange={(e)=>setFullyExecutedContractData({...fullyExecutedContractData, name:e.target.value})}/>
+                                <TextArea rows={4} placeholder="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} value={fullyExecutedContractData.desc} onChange={(e)=>setFullyExecutedContractData({...fullyExecutedContractData, desc:e.target.value})}/>
                                 <div className={`${style.floatRight} ${style.displayInRow} ${style.marginTop10}`}>
                                     <div></div>
-                                    <InputGroup  rightElement={uploadRightElement()} className={style.marginLeft20} className={style.fullWidth} />
+                                    <FileInput text="Choose file..."  className={style.fileInputWidth} onChange={(e)=>handleFileUpload(e)}/>
                                 </div>
                             </div>
                         )}
@@ -312,8 +359,8 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                             />
                             {siteSpecific && (
                                 <div className={style.displayInRow}>
-                                    <DatalistInput items={items} placeholder="Select Sites" onSelect={onSelect} onChange={(e) => setSelectContractManager(e.target.value) } className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
-                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition}>+</span></div>
+                                    <DatalistInput items={siteItems} placeholder="Select Sites" onSelect={onSelect} onChange={(e) => setSelectContractManager(e.target.value) } className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
+                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20}`} onClick={()=>{setSelectedSite([...selectedSite,])}}><span className={style.plusSymbolPosition}>+</span></div>
                                 </div>
                             )}
                         </div>
@@ -322,7 +369,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                 placeholder="Enter tags/keywords relative to the post"
                                 values={tags}
                                 className={`${style.marginTop20}`}
-                                onAdd={handleTagsAdd}
+                                // onAdd={handleTagsAdd}
                                 onRemove={handleTagsRemove}
                                 separator={/[\s,]/}
                                 addOnBlur={true}
@@ -479,6 +526,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                 <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
                 <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {getViewPage2(true);getViewPage1(false);getCurrentPage('Contracted Services Provider(s)')}}>CONTINUE</button>
             </div>
+            {addNewManagerDialog && (
+                <AddNewContractManager getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUserData}/>
+            )}
         </div>
     )
 }
