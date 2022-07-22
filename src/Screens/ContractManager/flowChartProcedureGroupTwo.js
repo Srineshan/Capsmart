@@ -4,7 +4,7 @@ import EditableRect from "./editableRect";
 import EditableSelectRect from "./editableSelectRect";
 import EditableDiamond from "./editableDiamond";
 
-const FlowChartProcedureGroup = ({
+const FlowChartProcedureGroupTwo = ({
   colour,
   text,
   x,
@@ -19,6 +19,7 @@ const FlowChartProcedureGroup = ({
 }) => {
   const shapeRef = useRef();
   const [selected,setSelected] = useState(false);
+
   return(
 
     <Group x={x} y={y} name={name} draggable onClick={deleteDisplay} onDragEnd={dragChange}>
@@ -36,7 +37,7 @@ const FlowChartProcedureGroup = ({
        ref={shapeRef}
      />
     <EditableSelectRect
-        x={70}
+        x={-430}
         y={105}
         text={text}
         closed
@@ -48,7 +49,7 @@ const FlowChartProcedureGroup = ({
        />
     
     <EditableDiamond
-        x={150}
+        x={-355}
         y={200}
         text={text}
         points={[135, 20, 150, 10, 165, 20, 150, 30, 135, 20]}
@@ -64,7 +65,7 @@ const FlowChartProcedureGroup = ({
          text="HOLD"
          fontFamily="Proxima Nova"
          fill="#FEC106"
-         x={400}
+         x={-100}
          y={210}
        />
       <Text
@@ -72,7 +73,7 @@ const FlowChartProcedureGroup = ({
           text="REJECT"
           fontFamily="Proxima Nova"
           fill="#FF6F3B"
-          x={260}
+          x={-230}
           y={210}
       />
       <Text
@@ -80,25 +81,25 @@ const FlowChartProcedureGroup = ({
           text="YES"
           fontFamily="Proxima Nova"
           fill="#00C07F"
-          x={320}
+          x={-190}
           y={280}
       />
       <Arrow
-          x={55}
-          y={40}
-          points={[100, 100, 225, 100]}
+          x={-170}
+          y={45}
+          points={[225, 100, 100, 100]}
           fill="#ECEDEE"
           stroke="#A39CEB"
       />
       <Arrow
-          x={255}
+          x={-250}
           y={70}
           points={[100, 100, 100, 135]}
           fill="#ECEDEE"
           stroke="#A39CEB"
       />
       <Arrow
-          x={255}
+          x={-250}
           y={175}
           points={[100, 100, 100, 135]}
           fill="#ECEDEE"
@@ -109,4 +110,4 @@ const FlowChartProcedureGroup = ({
   )
 }
 
-export default FlowChartProcedureGroup;
+export default FlowChartProcedureGroupTwo;
