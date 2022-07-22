@@ -67,7 +67,7 @@ const Contracts = () => {
 
     return(
         addContract ? (
-            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} />
+            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType}/>
         ) : newContractFromClone ? (
             <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType}/>
         ) : (
