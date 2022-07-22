@@ -28,10 +28,10 @@ const App = ({props}) => {
     <Router>
       <div className="App">
         <Routes>
-          <Route  path="/" element={<EntryPage />}/>
-          <Route  path="/activeContracts" element={<ActiveContracts />}/>
-          <Route  path="/contracts" element={<Contracts />}/>
-          <Route  path="/login" element={<Login />} {...props}/>
+          <Route  path="/" element={<Login />} {...props}/>
+          <Route  path="/contracts" element={<ActiveContracts />}/>
+          <Route  path="/user" element={<Contracts />}/>
+          <Route  path="/pages" element={<EntryPage />}/>
           <Route  path="/forgotPassword" element={<ForgotPassword />}/>
           <Route  path="/welcome" element={<Welcome />}/>
           <Route  path="/entitySetup" element={<EntitySetup />}/>

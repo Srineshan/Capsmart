@@ -9,7 +9,7 @@ const baseUrl = 'http://ec2-54-210-154-191.compute-1.amazonaws.com'
 const headers = {
 'Content-Type': 'application/json',
 'X-tenantID' : TenantID,
-'Authorization': `Bearer ${accessToken}`
+'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTgzMjQyMzQsImV4cCI6MTY1ODQxMDYzNH0.kqsmBLz8BGwtnq6-9GDNv8XQvgEA3nTKoiow4LFZGaYM0b2day-4JHor4Pm2EqWd8peqkFqwObJakLqr7GTo_A`
 }
 
 

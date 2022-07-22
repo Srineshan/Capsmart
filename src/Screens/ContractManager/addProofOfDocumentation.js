@@ -19,6 +19,20 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
     const [selectedPOD,setSelectedPOD] = useState('Medical Staff Membership & Privileges');
     const [selectedInsuranceCarrier,setSelectedInsuranceCarrier] = useState('By Entity')
     const podTypesForRadio = ['Liability Insurance Certificate','Workers Compensation Insurance Certificate','Tall Insurance Coverage Certificate'];
+    const [contractorName, setContractorName] = useState('');
+    const [privilegingFacilityName, setPrivilegingFacilityName] = useState('');
+    const [contractedServiceProviderName, setContractedServiceProviderName] = useState('');
+    const [specialityBoardName, setSpecialityBoardName] = useState('');
+    const [medicalStaffId, setMedicalStaffId] = useState('');
+    const [specialityBoardCertificateId, setSpecialityBoardCertificateId] = useState('');
+    const [insuranceCarrierName, setInsuranceCarrierName] = useState('');
+    const [insuranceCertificateId, setInsuranceCertificateId] = useState('');
+    const [stateOfLicensure, setStateOfLicensure] = useState('');
+    const [licenseId, setLicenseId] = useState('');
+    const [certificateId, setCertificateId] = useState('');
+    const [membershipRenewalDate, setmembershipRenewalDate] = useState('');
+    const [expirationDate, setExpirationDate] = useState('');
+
     console.log(isMultipleContract)
     const leftElement = () => {
         return(
@@ -66,6 +80,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                         <select
                             name="class"
                             id="Class"
+                            value={contractorName} 
+                            onChange={(e) => setContractorName(e.target.value)}
                             className={`${style.fullWidth} ${style.marginLeft20} `}>
                             <option >
                                 Select Contractor Name
@@ -79,6 +95,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                          <select
                              name="class"
                              id="Class"
+                             value={privilegingFacilityName}
+                             onChange={(e) => setPrivilegingFacilityName(e.target.value)}
                              className={`${style.fullWidth} ${style.marginLeft20} `}>
                              <option>
                                  Select Name
@@ -90,17 +108,18 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                   <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Contracted Service Provider*</div>
-                      <InputGroup value="Contractor Name" />
+                      <InputGroup value={contractedServiceProviderName} onChange={(e) => setContractedServiceProviderName(e.target.value)} />
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>{selectedPOD === 'Primary Speciality Board Certification'?'Speciality Board':'Privileging Facility'}*</div>
-                        <InputGroup value="Name" />
+                        <InputGroup value={selectedPOD === 'Primary Speciality Board Certification'? specialityBoardName : privilegingFacilityName}
+                        onChange={(e) => selectedPOD === 'Primary Speciality Board Certification'? setSpecialityBoardName(e.target.value) : setPrivilegingFacilityName(e.target.value)} />
                     </div>
                   </>
                 }
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Medical Staff ID</div>
-                    <InputGroup value="13578656" />
+                    <InputGroup value={medicalStaffId} onChange={(e) => setMedicalStaffId(e.target.value)} />
                 </div>
               </>:
               ['Primary Speciality Board Certification','Secondary Specialty Board Certification'].includes(selectedPOD) ?
@@ -110,11 +129,11 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                 <>
                   <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contracted Service Provider*</div>
-                    <InputGroup value="Contractor Name" />
+                    <InputGroup value={contractedServiceProviderName} onChange={(e) => setContractedServiceProviderName(e.target.value)} />
                   </div>
                   <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Speciality Board</div>
-                      <InputGroup value="Name" />
+                      <InputGroup value={specialityBoardName} onChange={(e) => setSpecialityBoardName(e.target.value)} />
                   </div>
                 </>:
                 <>
@@ -124,6 +143,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                           <select
                               name="class"
                               id="Class"
+                              value={contractorName} 
+                              onChange={(e) => setContractorName(e.target.value)}
                               className={`${style.fullWidth} ${style.marginLeft20} `}>
                               <option >
                                   Select Contractor Name
@@ -137,6 +158,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                           <select
                               name="class"
                               id="Class"
+                              value={specialityBoardName} 
+                              onChange={(e) => setSpecialityBoardName(e.target.value)}
                               className={`${style.fullWidth} ${style.marginLeft20} `}>
                               <option >
                                   Select Name
@@ -148,7 +171,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
               }
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>Specialty Board Certificate ID</div>
-                  <InputGroup value="13578656" />
+                  <InputGroup value={specialityBoardCertificateId} onChange={(e) => setSpecialityBoardCertificateId(e.target.value)} />
               </div>
               </>:['Liability Insurance Certificate','Workers Compensation Insurance Certificate','Tail Insurance Coverage Certificate'].includes(selectedPOD)?
               <>
@@ -167,11 +190,11 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
 
                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                    <div className={style.extentionLableStyle}>Insurance Carrier</div>
-                   <InputGroup value="name" />
+                   <InputGroup value={insuranceCarrierName} onChange={(e)=>setInsuranceCarrierName(e.target.value)} />
                </div>
                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                    <div className={style.extentionLableStyle}>Insurance Certificate ID</div>
-                   <InputGroup value="13578656" />
+                   <InputGroup value={insuranceCertificateId} onChange={(e)=>setInsuranceCertificateId(e.target.value)} />
                </div>
              </>
               :['Medical license Certificate','Drug Enforcement Administration (DEA) License'].includes(selectedPOD) ?
@@ -184,6 +207,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                           <select
                               name="class"
                               id="Class"
+                              value={contractorName} 
+                              onChange={(e) => setContractorName(e.target.value)}
                               className={`${style.fullWidth} ${style.marginLeft20} `}>
                               <option >
                                   Select Contractor Name
@@ -198,6 +223,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                       <select
                           name="class"
                           id="Class"
+                          value={stateOfLicensure}
+                          onChange={(e) => setStateOfLicensure(e.target.value)}
                           className={`${style.fieldWidth2InARow} ${style.marginLeft20} `}>
                           <option >
                               California
@@ -207,7 +234,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                   </div>
                   <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>License ID</div>
-                      <InputGroup value="13578656" />
+                      <InputGroup value={licenseId} onChange={(e) => setLicenseId(e.target.value)} />
                   </div>
                 </>
                :selectedPOD === 'Controlled Substance DEA Registration Certificate' && (
@@ -219,6 +246,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                               <select
                                   name="class"
                                   id="Class"
+                                  value={contractorName} 
+                                  onChange={(e) => setContractorName(e.target.value)}
                                   className={`${style.fullWidth} ${style.marginLeft20} `}>
                                   <option >
                                       Select Contractor Name
@@ -229,7 +258,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                    }
                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Certificate ID</div>
-                    <InputGroup value="13578656" />
+                    <InputGroup value={certificateId} onChange={(e) => setCertificateId(e.target.value)} />
                 </div>
                  </>
                )
@@ -241,6 +270,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                         formatDate={date => date.toLocaleString()}
                         parseDate={str => new Date(str)}
                         placeholder={"MM-DD-YYYY"}
+                        value={selectedPOD === 'Medical Staff Membership & Privileges' ? membershipRenewalDate : expirationDate}
+                        onChange={(e) => selectedPOD === 'Medical Staff Membership & Privileges' ? setmembershipRenewalDate(e) : setExpirationDate(e)}
                     />
                 </div>
 
