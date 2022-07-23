@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InputGroup, RadioGroup, Radio, EditableText } from '@blueprintjs/core';
+import {POST, GET, PUT, TenantID} from './contractDataSaver';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
 const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPage}) => {
+    const contractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
     const [compensation, setCompensation] = useState('RVUBASED');
+    const [paymentAndCompensation, setPaymentAndCompensation] = useState({});
     const [rvuQuantity, setRvuQuantity] =useState({
         quantity: 0
     })
@@ -33,7 +37,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
         providingAdditionalServices: ''
     })
 
-    const handleContinue = () => {
+    const handleContinue = async() => {
         const data = {
             compensationBasis: compensation,
             rvuQuantity: rvuQuantity,
@@ -42,12 +46,41 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
             rvuReferenceUsed: rvuReferenceUsed,
             rvuQuantityVariance: rvuQuantityVariance,
             rvuQuantityPeriod: rvuQuantityPeriod,
+            compensationOffsetCriteria: compensationOffsetCriteria,
             dollarRate: dollarRate,
             dollarValue: dollarValue,
-            compensationOffsetCriteria: compensationOffsetCriteria
           }
+          const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
+            if(response){
+                SuccessToaster('Payment And Compensation Updated Successfully');
+            }
+            else {
+                ErrorToaster('Unexpected Error');
+            }
         console.log(data)
     }
+
+    const getPaymentAndCompensation = async() => {
+        const {data: paymentAndCompensation} = await GET(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`);
+        setPaymentAndCompensation(paymentAndCompensation);
+    };
+
+    useEffect(() => {
+        setCompensation(paymentAndCompensation?.compensationBasis);
+        setRvuQuantity(paymentAndCompensation?.rvuQuantity);
+        setFrequency(paymentAndCompensation?.frequency);
+        setFteEquivalent(paymentAndCompensation?.fteEquivalent);
+        setRvuReferenceUsed(paymentAndCompensation?.rvuReferenceUsed);
+        setRvuQuantityPeriod(paymentAndCompensation?.rvuQuantityPeriod);
+        setRvuQuantityVariance(paymentAndCompensation?.rvuQuantityVariance);
+        setDollarRate(paymentAndCompensation?.dollarRate);
+        setDollarValue(paymentAndCompensation?.dollarValue);
+        setCompensationOffsetCriteria(paymentAndCompensation?.compensationOffsetCriteria);
+    },[paymentAndCompensation])
+
+    useEffect(()=>{
+        getPaymentAndCompensation();
+    },[])
 
     return (
         <div className={style.cloneBlockStyle}>
@@ -94,7 +127,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                             <div className={style.extentionLableStyle}>FTE Equivalent</div>
                             <InputGroup className={style.twoFieldWidth} value={fteEquivalent?.value}
                             onChange={(e) => setFteEquivalent({
-                                ...rvuQuantity, value: e.target.value
+                                ...fteEquivalent, value: e.target.value
                             })} />
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -176,7 +209,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                 </div>
             </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
+                <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
                 <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} 
                 onClick={() => { getViewPage7(true); getCurrentPage('Timesheet Submission Terms') }}
                 // onClick={() => { handleContinue() }}

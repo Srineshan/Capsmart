@@ -2,13 +2,13 @@ import React from 'react';
 import {Auth} from './../../utils/auth'
 import axios from "axios";
 
-const accessToken = Auth()
+const accessToken ='eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTg0Njg0NjYsImV4cCI6MTY1ODU1NDg2Nn0.0ANAjauvTWlSmugb6hzVZknt3AVqPYFZ_Sm_9Dz52qOYw7IfZbl3ZS3YqyE0OivWQmKeYauFbaQOeyQKjH_KBg'
 export const TenantID = '6242845f95690b3822cb96a5';
 const baseUrl = 'http://ec2-54-210-154-191.compute-1.amazonaws.com'
 const headers = {
 'Content-Type': 'application/json',
 'X-tenantID' : TenantID,
-'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTgzMjQyMzQsImV4cCI6MTY1ODQxMDYzNH0.kqsmBLz8BGwtnq6-9GDNv8XQvgEA3nTKoiow4LFZGaYM0b2day-4JHor4Pm2EqWd8peqkFqwObJakLqr7GTo_A`
+'Authorization': `Bearer ${accessToken}`
 }
 
 

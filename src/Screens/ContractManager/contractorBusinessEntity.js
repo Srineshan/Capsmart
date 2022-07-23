@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { InputGroup, Checkbox, Tag } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import {POST, GET, TenantID} from './contractDataSaver';
+import {POST, GET, PUT, TenantID} from './contractDataSaver';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
 const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractInfo}) => {
+    const contractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
     const [sameAsContractor, setSameAsContractor] = useState(false);
     const [contractorNPIN, setContractorNPIN] = useState({
         notApplicable: true,
@@ -43,8 +45,9 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
         zipcode: ""
     });
     const [appRoleRequired, setAppRoleRequired] = useState(true);
+    const [contractorBusinessEntity, setContractorBusinessEntity] = useState({});
 
-    const handleContinue = () => {
+    const handleContinue = async() => {
         const data = {
             contractorNPIN: contractorNPIN,
             contractorEntityTaxId: contractorEntityTaxId,
@@ -55,6 +58,13 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
             contractorContact: sameAsContractor,
             appRoleRequired: appRoleRequired
           }
+          const response = await PUT(`contract-managment-service/contracts/${contractId}/contractorBusinessEntity`, JSON.stringify(data));
+            if(response){
+                SuccessToaster('Business Entity Updated Successfully');
+            }
+            else {
+                ErrorToaster('Unexpected Error');
+            }
 
           console.log(data)
     }
@@ -70,7 +80,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
       }
 
     const rolesTags = selectedRoles
-    .filter(data => roles.map(role => role).includes(data))
+    ?.filter(data => roles?.map(role => role.id === data?.id))
     .map((tag, index) => {
       const onRemove = () => {
         setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName));
@@ -85,10 +95,27 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
     const getRoles = async() => {
         const {data: roles} = await GET('user-management-service/roles');
         setRoles(roles);
-      };
+    };
+
+    const getContractorBusinessEntity = async() => {
+        const {data: contractorBusinessEntity} = await GET(`contract-managment-service/contracts/${contractId}/contractorBusinessEntity`);
+        setContractorBusinessEntity(contractorBusinessEntity);
+    };
+
+    useEffect(()=>{
+        setSameAsContractor(contractorBusinessEntity?.contractorContact);
+        setBusinessEntity(contractorBusinessEntity?.businessEntity);
+        setContractorNPIN(contractorBusinessEntity?.contractorNPIN);
+        setContractorEntityTaxId(contractorBusinessEntity?.contractorEntityTaxId);
+        setBusinessEntityUser(contractorBusinessEntity?.businessEntityUser);
+        setAppRoleRequired(contractorBusinessEntity?.appRoleRequired);
+        setSelectedRoles(contractorBusinessEntity?.roles);
+        setMailingAddress(contractorBusinessEntity?.mailingAddress);
+    },[contractorBusinessEntity])
   
       useEffect(()=>{
         getRoles();
+        getContractorBusinessEntity();
     },[])
 
     console.log(businessEntityUser)
@@ -209,9 +236,8 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                 </div>
             </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
+                <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
                 <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} 
-                    // onClick={() => handleContinue()}
                 onClick={() => { getViewPage4(true); getCurrentPage('Documentation Proof Required') }}
                 >CONTINUE</button>
             </div>
