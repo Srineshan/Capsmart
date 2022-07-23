@@ -4,7 +4,8 @@ import axios from "axios";
 
 
 
-const accessToken = Auth();
+// const accessToken = Auth();
+const accessToken = 'eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTg0Njg0NjYsImV4cCI6MTY1ODU1NDg2Nn0.0ANAjauvTWlSmugb6hzVZknt3AVqPYFZ_Sm_9Dz52qOYw7IfZbl3ZS3YqyE0OivWQmKeYauFbaQOeyQKjH_KBg';
 // export const role = 'SUPER-SYS-ADMIN';
 export const role = 'SYS-ADMIN';
 export const tenantID = '6242845f95690b3822cb96a5'
@@ -12,7 +13,7 @@ const baseUrl = 'http://ec2-54-210-154-191.compute-1.amazonaws.com'
 const headers = {
   'Content-Type': 'application/json',
   'X-tenantID' : tenantID,
-  'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNDI4NTJlOTMzN2NkNTUzN2I4ODcxNSIsInVzZXJOYW1lIjoiSG9zcGl0YWwgMSIsInN1YiI6Imhvc3BpdGFsMUB0aW1lc21hcnRhaS5jb20iLCJpYXQiOjE2NTgxMjQ2MzEsImV4cCI6MTY1ODIxMTAzMX0.KhJGc9SYj-pDNWAh9yANNRWmOHT6UwVFzi_9JfVGqK2VCB8oIzFhXc8BOSRXbxE4_RphDpQpbce5WOpBJVNAoQ`
+  'Authorization': `Bearer ${accessToken}`
 }
 
 const entityPost = (entity,address,site) => {

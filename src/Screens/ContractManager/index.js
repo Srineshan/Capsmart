@@ -22,7 +22,8 @@ const Contracts = () => {
     const [contractActivationDialog, setContractActivationDialog] = useState(false);
     const [cloneDialog, setCloneDialog] = useState(false);
     const [newContractFromClone, setNewContractFromClone] = useState(false);
-    const [contractType, setContractType] = useState('Individual Contractor')
+    const [contractType, setContractType] = useState('');
+    const [selectedContractType,setSelectedContractType] = useState('');
 
     const getSelectedContract = (value) => {
         setSelectedContract(value);
@@ -60,32 +61,36 @@ const Contracts = () => {
         setContractType(value);
     }
 
+    const getSelectedContractType = (value) => {
+      setSelectedContractType(value);
+    }
+
     return(
         addContract ? (
-            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} />
+            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType}/>
         ) : newContractFromClone ? (
-            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} />
+            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType}/>
         ) : (
-            <Fragment> 
+            <Fragment>
                 <Navbar />
                 {selectedContract === 'expired or terminated' ? (
-                    <ExpiredOrTerminated getSelectedContract={getSelectedContract} 
+                    <ExpiredOrTerminated getSelectedContract={getSelectedContract}
                     getAddContract={getAddContract} />
                 ) : selectedContract === 'draft' ? (
-                    <Draft 
-                    getSelectedContract={getSelectedContract} 
-                    getDeleteDraftDialog={getDeleteDraftDialog} 
+                    <Draft
+                    getSelectedContract={getSelectedContract}
+                    getDeleteDraftDialog={getDeleteDraftDialog}
                     getContractActivationDialog={getContractActivationDialog}
                     getAddContract={getAddContract} />
                 ) : selectedContract === 'upcoming renewals' ? (
                     <UpcomingRenewals getSelectedContract={getSelectedContract}
                     getAddContract={getAddContract} />
                 ) : (
-                    <ActiveContracts 
-                    getSelectedContract={getSelectedContract} 
-                    getAddContract={getAddContract} 
-                    getExtensionDialog={getExtensionDialog} 
-                    getTerminationDialog={getTerminationDialog} 
+                    <ActiveContracts
+                    getSelectedContract={getSelectedContract}
+                    getAddContract={getAddContract}
+                    getExtensionDialog={getExtensionDialog}
+                    getTerminationDialog={getTerminationDialog}
                     getCloneDialog={getCloneDialog}
                      />
                 )}

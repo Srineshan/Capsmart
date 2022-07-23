@@ -20,9 +20,8 @@ import TimesheetProcessingWorkflow from './timesheetProcessingWorkflow';
 
 import style from './index.module.scss';
 
-const NewContractFromClone = ({getNewContract, contractType}) => {
+const NewContractFromClone = ({getNewContract, contractType, selectedContract, selectedContractType}) => {
     const [selectContractInfo, setSelectContractInfo] = useState(contractType);
-    const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
     const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] = useState(false);
     const [newServiceProviderDialog, setNewServiceProviderDialog] = useState(false);
     const [showAlertDialog,setShowAlertDialog] = useState(false);
@@ -37,9 +36,10 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
     const [viewPage8, setViewPage8] = useState(false);
     const [currentPage, setCurrentPage] = useState('Contract ID & Term Limit');
     const [isMultipleContract, setIsMultipleContract] = useState(false);
+    const [contractId,setContractId] = useState('');
 
-    const getAddNewManagerDialog = (value) => {
-        setAddNewManagerDialog(value);
+    const getContractId = (value) => {
+      setContractId(value);
     }
 
     const getNewServiceProviderDialog = (value) => {
@@ -60,23 +60,23 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
 
     const getViewPage1 = (value) => {
         setViewPage1(value);
-    } 
+    }
 
     const getViewPage2 = (value) => {
         setViewPage2(value);
-    } 
+    }
 
     const getViewPage3 = (value) => {
         setViewPage3(value);
-    } 
+    }
 
     const getViewPage4 = (value) => {
         setViewPage4(value);
-    } 
+    }
 
     const getViewPage5 = (value) => {
         setViewPage5(value);
-    } 
+    }
 
     const getViewPage6 = (value) => {
         setViewPage6(value);
@@ -85,18 +85,18 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
 
     const getViewPage7 = (value) => {
         setViewPage7(value);
-    } 
+    }
 
     const getViewPage8 = (value) => {
         setViewPage8(value);
-    } 
+    }
 
     const getCurrentPage = (value) => {
         setCurrentPage(value);
-    } 
+    }
 
     useEffect(() => {
-        setIsMultipleContract(selectContractInfo === "Multiple Contractor" ? true : false);
+        setIsMultipleContract(selectContractInfo === "MULTIPLE" ? true : false);
       }, [selectContractInfo]);
 
     return(
@@ -172,46 +172,56 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                     getViewPage8={getViewPage8}
                     getCurrentPage={getCurrentPage}
                     selectContractInfo={selectContractInfo}
+                    contractId = {contractId}
                      />
                 ) : viewPage7 ? (
                     <TimeSheetSubmissionTerms
                     getViewPage8={getViewPage8}
-                    getCurrentPage={getCurrentPage} />
+                    getCurrentPage={getCurrentPage}
+                    contractId = {contractId}/>
                 ) : viewPage6 ? (
                     <PaymentAndCompensation
                     selectContractInfo={selectContractInfo}
                     getViewPage7={getViewPage7}
                     getCurrentPage={getCurrentPage}
+                    contractId = {contractId}
                      />
                 ) : viewPage5 ?
-                  <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} />
+                  <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId = {contractId}/>
                   :viewPage4 ? (
                     <DocumentationProofRequired
                     getShowAlertDialog={getShowAlertDialog}
                     getViewPage5={getViewPage5}
                     getCurrentPage={getCurrentPage}
+                    contractId = {contractId}
                      />
                 ) : viewPage3 ? (
-                    <ContractorBusinessEntity 
-                    getViewPage4={getViewPage4} 
+                    <ContractorBusinessEntity
+                    getViewPage4={getViewPage4}
                     getCurrentPage={getCurrentPage}
-                    selectContractInfo={selectContractInfo} />
+                    selectContractInfo={selectContractInfo}
+                    contractId = {contractId}/>
                 )
-                : selectContractInfo === "Individual Contractor" && viewPage2 ? (
-                    <ContractedServicesProviderIndividual 
-                    getViewPage3={getViewPage3} 
-                    getCurrentPage={getCurrentPage} />
-                ) : (selectContractInfo === "Individual Contractor" && viewPage1) ? (
-                    <ContractIdTermLimitIndividual 
-                    getViewPage1={getViewPage1} 
-                    getViewPage2={getViewPage2} />
-                ) : (selectContractInfo === "Multiple Contractor" && (viewPage1 || viewPage2)) ? (
-                    <ContractedServicesProviderMultiple 
-                    getNewServiceProviderDialog={getNewServiceProviderDialog} 
-                    getViewPage1={getViewPage1} 
-                    getViewPage2={getViewPage2} 
-                    getViewPage3={getViewPage3} 
-                    getCurrentPage={getCurrentPage} />
+                : selectContractInfo === "INDIVIDUAL" && viewPage2 ? (
+                    <ContractedServicesProviderIndividual
+                    getViewPage3={getViewPage3}
+                    getCurrentPage={getCurrentPage}
+                    contractId = {contractId}/>
+                ) : (selectContractInfo === "INDIVIDUAL" && viewPage1) ? (
+                    <ContractIdTermLimitIndividual
+                    getViewPage1={getViewPage1}
+                    getViewPage2={getViewPage2}
+                    contractType = {contractType}
+                    selectedContractType = {selectedContractType}
+                    getContractId={getContractId}/>
+                ) : (selectContractInfo === "MULTIPLE" && (viewPage1 || viewPage2)) ? (
+                    <ContractedServicesProviderMultiple
+                    getNewServiceProviderDialog={getNewServiceProviderDialog}
+                    getViewPage1={getViewPage1}
+                    getViewPage2={getViewPage2}
+                    getViewPage3={getViewPage3}
+                    getCurrentPage={getCurrentPage}
+                    contractId = {contractId}/>
                 ) : ''}
                 <div className={style.cloneBlockStyle}>
                     <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Indentification Information</p>
@@ -261,9 +271,6 @@ const NewContractFromClone = ({getNewContract, contractType}) => {
                     </div>
                 </div>
             </div>
-            {addNewManagerDialog && (
-                <AddNewContractManager getAddNewManagerDialog={getAddNewManagerDialog} />
-            )}
             {deleteExecutedContractDialog && (
                 <DeleteExecutedContractDialog getDeleteExecutedContractDialog={getDeleteExecutedContractDialog} />
             )}

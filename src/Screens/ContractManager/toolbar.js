@@ -10,6 +10,7 @@ import EditableEllipse from "./editableEllipse";
 import EditableDiamond from "./editableDiamond";
 import EditableSelectRect from "./editableSelectRect";
 import FlowChartProcedureGroup from "./flowChartProcedureGroup";
+import FlowChartProcedureGroupTwo from "./flowChartProcedureGroupTwo";
 
 
 const ToolBar = () => {
@@ -20,6 +21,7 @@ const ToolBar = () => {
   const [arrow,setArrow] = useState([]);
   const [lineConnector,setLineConnector] = useState([]);
   const [group,setGroup] = useState([]);
+  const [groupTwo,setGroupTwo] = useState([]);
   const [selectedShapeName,setSelectedShapeName] = useState('')
   const stageRef = useRef(null);
   const [isTextSelected, setIsTextSelected] = useState(false);
@@ -70,6 +72,10 @@ const ToolBar = () => {
       setDiamond(diamond?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
     }else if(type === 'arrow'){
       setArrow(arrow?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }else if(type === 'group'){
+      setGroup(group?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
+    }else if(type === 'groupTwo'){
+      setGroupTwo(groupTwo?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
     }
     else{
       setLineConnector(lineConnector?.filter((data,i)=>i!==deleteValue.index)?.map(data=>data));
@@ -210,6 +216,18 @@ const ToolBar = () => {
       temp[index].x = e.target.x();
       temp[index].y = e.target.y();
       setHold(temp);
+    }
+    else if(shapeName === 'group'){
+      let temp = group;
+      temp[index].x = e.target.x();
+      temp[index].y = e.target.y();
+      setGroup(temp);
+    }
+    else if(shapeName === 'groupTwo'){
+      let temp = groupTwo;
+      temp[index].x = e.target.x();
+      temp[index].y = e.target.y();
+      setGroupTwo(temp);
     }
     else{
       let temp = reject;
@@ -489,7 +507,41 @@ console.log('Group',group);
                   draggable.position({ x: 240, y: 15 });
                 }}
                 />
-
+              <Rect
+                width={57}
+                height={30}
+                fill="#d7d5f6"
+                strokeWidth={1}
+                x={300}
+                y={5}
+              />
+              <Text
+                fontSize={12}
+                text="GROUP 2"
+                fontFamily="Proxima Nova"
+                fill="black"
+                strokeWidth={1}
+                stroke="black"
+                x={305}
+                y={15}
+                name="group2"
+                draggable
+                onDragEnd={(e) => {
+                  setGroupTwo((prevGroup) => [
+                    ...prevGroup,
+                    { x: e.target.x(), y: e.target.y(),
+                      fill: e.target.fill(),
+                      stroke: e.target.stroke(),
+                      strokeWidth: e.target.strokeWidth(),
+                      text:'',
+                      name:`${e.target.name()}${group?.length ? group?.length+1 : 1}`
+                    }
+                  ]);
+                  var stage = stageRef.current;
+                  var draggable = stage.findOne(".group2");
+                  draggable.position({ x: 305, y: 15 });
+                }}
+                />
             <Rect
               width={50}
               height={30}
@@ -841,6 +893,20 @@ console.log('Group',group);
                 y={eachGroup.y}
                 fill={eachGroup.fill}
                 name={eachGroup.name}
+                deleteDisplay={()=>displayDelete(eachGroup.x+200,eachGroup.y+100,'group',index)}
+                dragChange = {(e)=> handleDragChange(e,index,'group') }
+              />
+            ))
+          }
+          {
+            groupTwo.map((eachGroup,index)=>(
+              <FlowChartProcedureGroupTwo
+                x={eachGroup.x}
+                y={eachGroup.y}
+                fill={eachGroup.fill}
+                name={eachGroup.name}
+                deleteDisplay={()=>displayDelete(eachGroup.x-40,eachGroup.y+100,'groupTwo',index)}
+                dragChange = {(e)=> handleDragChange(e,index,'groupTwo') }
               />
             ))
           }

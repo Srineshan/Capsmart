@@ -21,6 +21,7 @@ import TimeSheetReportsBase from './Screens/Reports/reports';
 import ChartPage from './Screens/Reports/chart';
 import HelpHome from './Screens/HelpManagement';
 import TasksAndAlerts from './Screens/SuperAdminDashboard/tasksAndAlerts';
+import ReferenceList from './Screens/ReferenceList';
 
 const App = ({props}) => {
   return (
@@ -46,6 +47,7 @@ const App = ({props}) => {
           <Route  path="/chart" element={<ChartPage />}/>
           <Route  path="/help" element={<HelpHome />}/>
           <Route  path="/tasksAndAlerts" element={<TasksAndAlerts />}/>
+          <Route path="/referenceList" element={<ReferenceList />} />
         </Routes>
       </div>
     </Router>
