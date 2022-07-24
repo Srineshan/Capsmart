@@ -16,6 +16,8 @@ const AddServiceProvided = ({getAddServiceDialog, getAddOn}) => {
   const [fractureClinicalSessionRate, setFractureClinicalSessionRate] = useState(0);
   const [fractureClinicalSessionDuration, setFractureClinicalSessionDuration] = useState(0);
   const [clinicalSessionExtension, setClinicalSessionExtension] = useState(0);
+  const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
+  const [workingPeriodTo, setWorkingPeriodTo] = useState('');
   const getSendEmailNotification = (value) => {
     setSendEmailNotification(value)
   }
@@ -30,6 +32,29 @@ const AddServiceProvided = ({getAddServiceDialog, getAddOn}) => {
         <button className={`${style.textElement}`} >{text}</button>
       )
     }
+
+    // const handleContinue = async() => {
+    //     const data = {
+    //         compensationBasis: compensation,
+    //         rvuQuantity: rvuQuantity,
+    //         frequency: frequency,
+    //         fteEquivalent: fteEquivalent,
+    //         rvuReferenceUsed: rvuReferenceUsed,
+    //         rvuQuantityVariance: rvuQuantityVariance,
+    //         rvuQuantityPeriod: rvuQuantityPeriod,
+    //         compensationOffsetCriteria: compensationOffsetCriteria,
+    //         dollarRate: dollarRate,
+    //         dollarValue: dollarValue,
+    //       }
+    //       const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
+    //         if(response){
+    //             SuccessToaster('Payment And Compensation Updated Successfully');
+    //         }
+    //         else {
+    //             ErrorToaster('Unexpected Error');
+    //         }
+    //     console.log(data)
+    // }
 
     useEffect(() => {
         if(activityContractedFor === "Add-On Services Allowed Upon Request Approval"

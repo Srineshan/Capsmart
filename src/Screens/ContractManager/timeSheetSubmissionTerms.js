@@ -12,6 +12,17 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
     const [sameAsContractor, setSameAsContractor] = useState(false);
     const [activityTags, setActivityTags] = useState(VALUES3);
     const [contractedActivityTags, setContractedActivityTags] = useState(VALUES4);
+    const [timeSheetLabelOne, setTimeSheetLabelOne] = useState('');
+    const [servicePeriod, setServicePeriod] = useState('');
+    const [sameAsContractorHour, setSameAsContractorHour] = useState('');
+    const [sameAsContractorFrequency, setSameAsContractorFrequency] = useState('');
+    const [plannedAbsence, setPlannedAbsence] = useState(0);
+    const [maxUnplannedAbsence, setMaxUnplannedAbsence] = useState(0);
+    const [invoiceProcessingDay, setInvoiceProcessingDay] = useState(0);
+    const [invoiceProcessingDayThreshold, setInvoiceProcessingDayThreshold] = useState(0);
+    const [invoiceProcessingDayGoal, setInvoiceProcessingDayGoal] = useState(0);
+    const [dayLimitForSubmissionBasedOnActivityServiceDate, setDayLimitForSubmissionBasedOnActivityServiceDate] = useState(0);
+    const [dayLimitForSubmissionBasedOnContractEndDate, setDayLimitForSubmissionBasedOnContractEndDate] = useState(0);
 
     const handleContractedActivityTagsAdd = values => {
         setContractedActivityTags([...activityTags, values]);
