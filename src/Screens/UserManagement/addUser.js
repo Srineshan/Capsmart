@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, Tag} from '@blueprintjs/core';
-import {POST, GET, TenantID} from './userDataSaver';
+import {POST, GET, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
@@ -19,7 +19,7 @@ const AddUser = ({getAddUserDialog}) => {
     const handleRoles = (value) => {
       if (value !== '0') {
         const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
- 
+
         if (!selectedRoles.map(data => data?.roleName).includes(value)) {
           setSelectedRoles([...selectedRoles, selectedValue]);
         }
@@ -29,7 +29,7 @@ const AddUser = ({getAddUserDialog}) => {
     const handleDepartments = (value) => {
       if (value !== '0') {
         const tempSelectedDepartments = department.filter(data => data?.departmentName?.name === value).map(data => data)[0];
- 
+
         if (!selectedDepartments.map(data => data?.id).includes(tempSelectedDepartments?.id)) {
           setSelectedDepartments([...selectedDepartments, tempSelectedDepartments]);
         }
@@ -40,7 +40,7 @@ const AddUser = ({getAddUserDialog}) => {
     const handleSites = (value) => {
       if (value !== '0') {
         const tempSelectedSites = sites.filter(data => data?.siteName?.siteName === value).map(data => data)[0];
- 
+
         if (!selectedSites.map(data => data?.id).includes(tempSelectedSites?.id)) {
           setSelectedSites([...selectedSites, tempSelectedSites]);
         }
@@ -93,20 +93,18 @@ const AddUser = ({getAddUserDialog}) => {
         ErrorToaster('Enter a valid mail-id');
         return;
       }
-
+      if(addUser?.firstName === '' && addUser?.email === '' && addUser?.title === '' && selectedRoles?.length ===0 && selectedSites?.length === 0)
+      {
+        ErrorToaster('All Fields are Mandatory');
+        return;
+      }
       const user = {
         "name": {
           "firstName": addUser?.firstName,
           "lastName": addUser?.lastName,
-          "suffix": "string"
+          "suffix": ""
         },
         "userType": "ADMIN",
-        "contractType": {
-          "contractType": "string"
-        },
-        "contractID": {
-          "contractID": "string"
-        },
         "title": {
           "title": addUser?.title
         },
@@ -116,52 +114,16 @@ const AddUser = ({getAddUserDialog}) => {
         "password": {
           "password": "string"
         },
-        "communication": {
-          "personalEmail": "string",
-          "mobileNumber": "string",
-          "landlineNumber": "string"
-        },
         "roles": selectedRoles,
-        "address": {
-          "city": "string",
-          "state": "string",
-          "zipcode": "string"
-        },
+
         "tenant": {
           "tenantId": TenantID
         },
         "sites": {
           "sites": selectedSites
         },
-        "licenceDetails": {
-          "medicalLicense": "string",
-          "licenseExpiryDate": "2022-05-29",
-          "deaNumber": "string",
-          "deaExpiryDate": "2022-05-29",
-          "boardCertification": [
-            "string"
-          ]
-        },
-        "userProxy": {
-          "myProxy": {
-            "proxyIdList": [
-              {
-                "id": "string",
-                "name": "string"
-              }
-            ]
-          },
-          "proxyFor": {
-            "proxyIdList": [
-              {
-                "id": "string",
-                "name": "string"
-              }
-            ]
-          }
-        },
         "blocked": false
-      };
+      }
 
       const response = await POST('user-management-service/user/register', JSON.stringify(user));
       if(response){

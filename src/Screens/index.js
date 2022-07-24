@@ -41,13 +41,16 @@ const EntryPage = () => {
                         <div className={style.headingStyle}>Super Admin Dashboard</div>
                     </div>
                 </Link>
-                <Link to={'/referenceList'}>
-                    <div className={`${style.marginLeft20} ${style.cursorPointer}`}>
-                        <div className={style.roundedBackgrounds}>
-                        </div>
-                        <div className={style.headingStyle}>Reference List</div>
-                    </div>
-                </Link>
+                {
+                  // <Link to={'/referenceList'}>
+                  //     <div className={`${style.marginLeft20} ${style.cursorPointer}`}>
+                  //         <div className={style.roundedBackgrounds}>
+                  //         </div>
+                  //         <div className={style.headingStyle}>Reference List</div>
+                  //     </div>
+                  // </Link>
+                }
+
             </div>
         </div>
     )

@@ -4,7 +4,7 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
 import {Link} from 'react-router-dom';
-import {GET} from './entityDataSaver';
+import {GET, tenantID, POST} from './entityDataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step23.png';
 import Step3 from './../../images/step34.png';
@@ -18,6 +18,7 @@ import Dropzone from "react-dropzone";
 import {Auth} from './../../utils/auth';
 import { CSVLink } from "react-csv";
 import Papa from 'papaparse';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
@@ -34,11 +35,13 @@ const dropzoneStyle = {
   }
 
 const SiteUsers = ({getActiveStep}) => {
-
+    const [isAppUserContractor,setIsAppUserContractor] = useState(true);
     const [tags, setTags] = useState(VALUES);
-    const [departmentSpecific, setDepartmentSpecific] = useState(true);
-    const [showUserTable, setShowUserTable] = useState(false);
-    const [selectDepartment, setSelectDepartment] = useState('');
+    const [entityRoles,setEntityRoles] = useState([]);
+    const [selectedRoles,setSelectedRoles] = useState([]);
+    const [siteSpecific, setSiteSpecific] = useState(true);
+    const [showUserTable, setShowUserTable] = useState(true);
+    const [selectedSites, setSelectedSites] = useState([]);
     const [siteID, setSiteID] = useState('3578689');
     const [alertDialog, setAlertDialog] = useState(false);
     const [showBulkUploadDialog, setShowBulkUploadDialog] = useState(false);
@@ -47,9 +50,10 @@ const SiteUsers = ({getActiveStep}) => {
     const [item, setItem] = useState();
     const [user,setUser] = useState([]);
     const accessToken = Auth();
-    // const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:'',title:'',email:'',phone:'',site:[],admin_access:false,roles:[]});
-    const [userData,setUserData] = useState([]);
+    const [entitySite,setEntitySite] = useState([]);
     const [userDataCSV,setUserDataCSV] = useState([]);
+    const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:'',isAdmin:false,title:'',email:'',phone:''});
+
 
     const columns = [
       {
@@ -94,74 +98,80 @@ const SiteUsers = ({getActiveStep}) => {
       }
     ];
 
-    useEffect(async()=>{
-      // getUserData();
-      const {data: users} = await GET('user-management-service/user');
-      setUser(users);
+
+    useEffect(()=>{
+      getUserData();
+      getSiteData();
+      getRolesData();
     },[])
 
-    // const getUserData = () => {
-    //   const user = {
-    //     method: 'GET',
-    //     headers: { 'Content-Type': 'application/json',
-    //               'X-tenantID' : '6242845f95690b3822cb96a5',
-    //               'Authorization': `Bearer ${accessToken}`}
-    //     };
-    //     fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com/user-management-service/user', user)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         setUser(data);
-    //         console.log('data',data);
-    //       return true;
-    //     }
-    //    )
-    // }
+    const getUserData = async() => {
+      const {data: users} = await GET('user-management-service/user');
+      setUser(users);
+      setShowUserTable(user?.length !==0?true:false);
+    }
 
-    const options = [
-        { name: 'Site 1' },
-        { name: 'Site 2' },
-        { name: 'Site 3' },
-        { name: 'Site 4' },
-        { name: 'Site 5' },
-        { name: 'Site 6' },
-      ];
+    const getSiteData = async() =>{
+      const {data: data} = await GET(`entity-service/entity/${tenantID}`);
+      setEntitySite(data?.sites);
+    }
 
-      const onSelect = useCallback((selectedItem) => {
-        setItem(selectedItem);
-        setSelectDepartment('');
-      }, []);
+    const getRolesData = async() =>{
+      const {data: data} = await GET(`user-management-service/roles`);
+      setEntityRoles(data);
+    }
 
-    const handleTagsAdd = values => {
-        setTags([...tags, values]);
-    };
-
-    const getTagProps = (_v, index) => ({
-        minimal: true,
-    });
-
-    const handleTagsRemove = (tags, index) => {
-        const updatedTags = [tags];
-        updatedTags.splice(index, 1);
-        tags = updatedTags;
-        setTags(tags);
-      };
-
-      const items = useMemo(
+    const items = useMemo(
         () =>
-          options.map((option) => ({
-            id: option.name,
-            value: option.name,
+          entitySite?.map((option) => ({
+            id: option?.id,
+            value: option.siteName.siteName,
             ...option,
           })),
-        [item],
+        [entitySite],
       );
+
+    console.log('items',selectedSites,entitySite);
+      const onSelect = (selectedItem) => {
+        setItem(selectedItem)
+        let temp = selectedSites;
+        temp.push(selectedItem);
+        setSelectedSites(temp);
+      }
+
+
+    const handleTagsRemove = (tags, index) => {
+      setSelectedSites(selectedSites?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
+    };
+
+    const roleItems = useMemo(
+        () =>
+          entityRoles?.map((option) => ({
+            id: option?.id,
+            value: option.roleName,
+            ...option,
+          })),
+        [entityRoles],
+      );
+
+      const onSelectRoles = (selectedItem) => {
+        setItem(selectedItem)
+        let temp = selectedRoles;
+        temp.push(selectedItem);
+        setSelectedRoles(temp);
+      }
+
+
+    const handleTagsRemoveRoles = (tags, index) => {
+      setSelectedRoles(selectedRoles?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
+    };
+
 
     const handleUserData = (name,value) => {
       setUserData({...userData, [name]:value});
     }
 
     const changeHandler = (event) => {
-    // Passing file data (event.target.files[0]) to parse using Papa.parse
     Papa.parse(event?.[0], {
       header: true,
       skipEmptyLines: true,
@@ -172,6 +182,57 @@ const SiteUsers = ({getActiveStep}) => {
     });
   };
 
+  const addUser = async() => {
+    if(userData.firstName !== '' && userData.email !== '' && userData.phone !== '' && userData.email.includes('@') && userData.email.includes('.')){
+      let data = {
+        "name": {
+          "firstName": userData.firstName,
+          "lastName": userData.lastName,
+          "suffix": userData.suffix,
+        },
+        "userType": userData.isAdmin ? "ADMIN" : "",
+        "title": {
+          "title": userData.title
+        },
+        "email": {
+          "officialEmail": userData.email
+        },
+        "password": {
+          "password": "admin123"
+        },
+        "communication": {
+          "personalEmail": userData.email,
+          "mobileNumber": userData.phone,
+          "landlineNumber": "string"
+        },
+        "roles": selectedRoles,
+        "tenant": {
+          "tenantId": tenantID,
+        },
+        "sites": {
+          "sites": siteSpecific ? selectedSites : entitySite,
+        },
+        "blocked": false
+      }
+    await POST('user-management-service/user/register',data)
+    .then(response=>{
+    SuccessToaster('User Created Successfully');
+    resetValues();
+    }).catch(error=>{
+      ErrorToaster('Unexpected Error Creating User');
+    });
+    }
+    else{
+      ErrorToaster('First Name, Phone and valid Email fields are mandatory')
+    }
+
+  }
+
+  const resetValues = () => {
+    setUserData({firstName:'',lastName:'',suffix:'',isAdmin:false,title:'',email:'',phone:''});
+    setSelectedRoles([]);
+    setSelectedSites([]);
+  }
     console.log('user data',userData);
 
     return(
@@ -290,42 +351,27 @@ const SiteUsers = ({getActiveStep}) => {
                                         <div className={style.displayInRow}>
                                             <FormControlLabel
                                                 control={
-                                                    <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => setDepartmentSpecific(!departmentSpecific)}  />
+                                                    <Switch checked={siteSpecific} className={` ${style.textAlignLeft}`} onChange={() => setSiteSpecific(!siteSpecific)}  />
                                                 }
                                                 className={`${style.switchFontStyle}`}
-                                                label={departmentSpecific ? 'YES' : "NO"}
+                                                label={siteSpecific ? 'YES' : "NO"}
                                             />
-                                            {departmentSpecific && (
+                                            {siteSpecific && (
                                                 <>
-                                                    <DatalistInput items={items} placeholder="Select sites" onSelect={onSelect} onChange={(e) => {setSelectDepartment(e.target.value); setSiteID('XX689- 64768')} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition}>+</span></div>
+                                                    <DatalistInput items={items} placeholder="Select sites" onSelect={onSelect} className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
                                                 </>
                                             )}
                                         </div>
-                                        {selectDepartment.length !== 0 && (
-                                            <div className={`${style.reqDeptCard} ${style.marginTop}`}>
-                                                <div className={style.addBoxDescription}>
-                                                The Department you are trying to add is not on the list.
-                                                To add a new department enter the exact name below and click
-                                                on the "REQUEST & ADD" button.
-                                                </div>
-                                                <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                                    <InputGroup value="Department New" className={style.threeFieldWidth} />
-                                                    <button className={`${style.reqButton} ${style.marginLeft20}`} onClick={() => {handleTagsAdd('Department New')}}>REQUEST & ADD</button>
-                                                </div>
-                                            </div>
-                                        )}
-                                        {departmentSpecific && (
+
+                                        {siteSpecific && (
                                             <TagInput
                                                 placeholder="Enter tags/keywords relative to the post"
-                                                values={tags}
-                                                className={`${style.marginTop20} ${style.tagInputStyle}`    }
-                                                onAdd={handleTagsAdd}
+                                                values={selectedSites?.map(data=>data?.siteName?.siteName)}
+                                                className={`${style.marginTop20} ${style.tagInputStyle}`}
                                                 onRemove={handleTagsRemove}
                                                 separator={/[\s,]/}
                                                 addOnBlur={true}
                                                 addOnPaste={true}
-                                                tagProps={getTagProps}
                                             />
                                         )}
                                     </div>
@@ -334,7 +380,7 @@ const SiteUsers = ({getActiveStep}) => {
                                     <div className={style.extentionLableStyle}>Sys admin access*</div>
                                         <FormControlLabel
                                             control={
-                                                <Switch checked={true} className={` ${style.textAlignLeft}`}  />
+                                                <Switch checked={userData.isAdmin} onChange={(e)=>setUserData({...userData, isAdmin:(!userData.isAdmin)})} className={` ${style.textAlignLeft}`}  />
                                             }
                                             className={`${style.switchFontStyle} ${style.fourFieldWidth}`}
                                             label={'YES'}
@@ -342,17 +388,19 @@ const SiteUsers = ({getActiveStep}) => {
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Other App Role*</div>
-                                    <div className={`${style.leftAlign} `}>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            className={style.fullWidth}
-                                            value={userData.role}
-                                            onChange={(e)=>handleUserData('roles',e.target.value)}>
-                                                <option value="Select" >
-                                                  Select
-                                                </option>
-                                        </select>
+                                    <div>
+                                            <DatalistInput items={roleItems} placeholder="Select Roles" onSelect={onSelectRoles} className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
+
+                                            <TagInput
+                                                placeholder="Enter tags/keywords relative to the post"
+                                                values={selectedRoles?.map(data=>data?.roleName)}
+                                                className={`${style.marginTop20} ${style.tagInputStyle}`}
+                                                onRemove={handleTagsRemoveRoles}
+                                                separator={/[\s,]/}
+                                                addOnBlur={true}
+                                                addOnPaste={true}
+                                            />
+
                                     </div>
                                 </div>
                             </div>
@@ -361,8 +409,8 @@ const SiteUsers = ({getActiveStep}) => {
                                     <button className={style.outlinedButton}>BULK UPLOAD</button>
                                 </div>
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                    <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & ADD MORE</button>
+                                    <button className={style.outlinedButton} onClick={addUser}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={addUser}>SAVE & ADD MORE</button>
                                     {/* <Link to={'/appSubscription'}> */}
                                         <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => getActiveStep('appSubscription')}>CONTINUE</button>
                                     {/* </Link> */}
@@ -393,12 +441,12 @@ const SiteUsers = ({getActiveStep}) => {
                         {
                           user?.map(data=>(
                             <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <p className={style.tableDataFontStyle}>{data.name.firstName}{' '}{data.name.lastName}</p>
-                                <p className={style.tableDataFontStyle}>{data.name.suffix}</p>
-                                <p className={style.tableDataFontStyle}>{data.title.title}</p>
-                                <p className={style.tableDataFontStyle}>{data.sites?.sites?.length || 0}</p>
-                                <p className={style.tableDataFontStyle}>{data.userType === "ADMIN"?'YES':'NO'}</p>
-                                <p className={style.tableDataFontStyle}>{data.roles?.[0]?.roleName || ''}</p>
+                                <p className={style.tableDataFontStyle}>{data?.name?.firstName}{' '}{data?.name?.lastName}</p>
+                                <p className={style.tableDataFontStyle}>{data?.name?.suffix}</p>
+                                <p className={style.tableDataFontStyle}>{data?.title?.title}</p>
+                                <p className={style.tableDataFontStyle}>{data?.sites?.sites?.length || 0}</p>
+                                <p className={style.tableDataFontStyle}>{data?.userType === "ADMIN"?'YES':'NO'}</p>
+                                <p className={style.tableDataFontStyle}>{data?.roles?.[0]?.roleName || ''}</p>
                                 <p className={style.tableDataFontStyle}>Upload</p>
                             </div>
                           ))

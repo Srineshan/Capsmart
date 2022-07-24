@@ -17,7 +17,9 @@ import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 import SiteInformation from './siteInformation';
 import SiteUsers from './siteUsers';
+import axios from "axios";
 import AppSubscription from './appSubscription';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 const EntitySetup = () => {
     const [tags, setTags] = useState([]);
@@ -33,13 +35,11 @@ const EntitySetup = () => {
     const [trial,setTrial] = useState();
     const [subscription,setSubscription] = useState();
     const [accountManager,setAccountManager] = useState();
-    const [departmentList,setDepartmentList] = useState([]);
     const [entityDepartments,setEntityDepartments] = useState([]);
-    const [selectDepartment, setSelectDepartment] = useState('');
+    const [selectDepartments, setSelectDepartments] = useState([]);
     const [entityData,setEntityData] = useState();
-    const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",name:'',type:'',websiteURL:'',multiSiteEntity:false,primarySiteToUseApp:false,npin:'',canSetupDepartment:false});
+    const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",name:'',type:'',websiteURL:'',multiSiteEntity:false,primarySiteToUseApp:false,npin:'',canSetupDepartment:true});
     const [address,setAddress] = useState({city:'',state:'',zipcode:'',addressLine:'',country:''});
-    console.log('entity',entity);
 
     const accessToken = Auth();
 
@@ -54,15 +54,14 @@ const EntitySetup = () => {
 
     const getEntityData = async() => {
       const {data: data} = await GET(`entity-service/entity/${tenantID}`);
-      console.log('data',data);
       setEntityData(data);
       let siteData = data?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
-      console.log('site',siteData);
       setEntity({id:'',customerType:"HEALTHCARE",name:data?.entityName?.entityName,type:data?.entityType?.type,websiteURL:'',multiSiteEntity:data?.sites?.length > 1,primarySiteToUseApp:false,npin:siteData?.npin?.id});
       setAddress({city:siteData?.address?.city,state:siteData?.address?.state,zipcode:siteData?.address?.zipcode,addressLine:siteData?.address?.addressLine,country:siteData?.address?.country});
+      setSelectDepartments(data?.sites?.filter(data=>data.primarySite === true)?.map(data=>data.departmentList?.departments));
     }
 
-    console.log('entityData',entity,address);
+    console.log(selectDepartments);
 
     const getDepartmentData = async() => {
       const {data: department} = await GET('entity-service/department');
@@ -74,8 +73,8 @@ const EntitySetup = () => {
     }
 
     const handleTagsAdd = async(values) => {
-        setDepartment([...department,values])
-        let temp = entityDepartments;
+        console.log('handle add tag',values);
+        let temp = selectDepartments;
         temp.push({
             "departmentName": {
               "name": values
@@ -84,82 +83,64 @@ const EntitySetup = () => {
               "id": ""
             }
           })
-        setEntityDepartments(temp);
-        // await POST('entity-service/department',JSON.stringify({
-        //   "departmentName":{
-        //     "name":values
-        //   }
-        // }))
-        getDepartmentData();
-        setTags([...tags, values]);
+        setSelectDepartments(temp);
     };
 
-    const options = entityDepartments;
+    const onSelect = (selectedItem) => {
+      let temp = selectDepartments;
+      temp.push(selectedItem);
+      setSelectDepartments(temp);
+    }
 
-    const onSelect = useCallback((selectedItem) => {
-      setDepartmentValue(selectedItem);
-      setSelectDepartment('');
-    }, []);
 
-    // const items = useMemo(
-    //   () =>
-    //     options.map((option) => ({
-    //       id: option.id,
-    //       ...option,
-    //     })),
-    //   [item],
-    // );
-
-    const handleTagsRemove = (tags, index) => {
-        setDepartment(department?.filter((data,indexValue)=>index!==indexValue)?.map(data=>data));
-        setDepartmentList(departmentList?.filter((data,indexValue)=>index!==indexValue)?.map(data=>data))
-        const updatedTags = [tags];
-        updatedTags.splice(index, 1);
-        tags = updatedTags;
-        setTags(tags);
+      const handleTagsRemove = (tags, index) => {
+        setSelectDepartments(selectDepartments?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
       };
 
-      const handleEntity = (name,value) =>{
+      const handleEntity = (name,value) => {
         setEntity({...entity,[name]:value});
       }
-      // const handleSite = (name,value) =>{
-      //   setSiteData({...siteData,[name]:value});
-      // }
+
       const handleAddress = (name,value) => {
         setAddress({...address, [name]:value});
       }
 
     const nextStep = multiSiteEntity === true ?"siteInformation":"siteUsers"
 
+    const items = useMemo(
+        () =>
+          entityDepartments?.map((option) => ({
+            id: option?.id,
+            value: option.departmentName.name,
+            ...option,
+          })),
+        [entityDepartments],
+      );
+
+    console.log('deptList',selectDepartments);
+
 
     const updateEntity = async() => {
-      let temp = entityData?.sites?.filter(data=>data.primarySite !== true)?.map(data=>data);
-      temp.push({
+      let filteredValue = entityData?.sites?.filter(data=>data.primarySite !== true)?.map(data=>data);
+      let primarySiteValue = entityData?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
+      console.log('primarySiteValue',primarySiteValue);
+      let temp = {
+        "id":primarySiteValue.id,
         "siteName": {
-          "siteName": entity.name
+          "siteName": entity.name,
         },
         "siteAdmin": {
           "id": ""
         },
         "siteType": {
-          "type": entity.type
+          "type": entity.type,
         },
         "npin": {
           "id": entity.npin
         },
         "canSetupDepartment": entity.canSetupDepartment,
         "departmentList": {
-          "departments": [
-            {
-              "id": "string",
-              "departmentName": {
-                "name": "string"
-              },
-              "departmentHead": {
-                "id": "string"
-              }
-            }
-          ]
+          "departments": departmentSpecific ? selectDepartments : entityDepartments,
         },
         "address": {
           "addressLine": address.addressLine,
@@ -169,7 +150,8 @@ const EntitySetup = () => {
           "country": address.country,
         },
         "primarySite": true
-      });
+      }
+      filteredValue.push(temp);
       const updatedValue =
         {
           "id": entityData?.id,
@@ -180,14 +162,27 @@ const EntitySetup = () => {
             "type": entity?.type,
           },
           "customerType": "HEALTHCARE",
-          "sites": temp,
+          "websiteURL":entity?.websiteURL,
+          "canPrimarySiteToUseApp":entity?.primarySiteToUseApp,
+          "sites": filteredValue,
           "subscriptionPlan": entityData?.subscriptionPlan,
           "billingDetails": entityData?.billingDetails,
-          "contractDetails": entityData?.contractDetails,
-          "accountManager":entityData?.accountManager,
-          "appUserRoles": entityData?.appUserRoles,
         }
-      await PUT('entity-service/entity',updatedValue)
+      await axios.PUT('entity-service/entity',JSON.stringify(updatedValue))
+        .then(response=>{
+        SuccessToaster('Entity Updated Successfully');
+        }).catch(error=>{
+          console.log('error',error);
+          ErrorToaster('Unexpected Error Updating Entity');
+        });
+    }
+
+
+    console.log('dept',selectDepartments);
+    const handleDeptChange = (value) => {
+      if(value !== ''){
+        setDepartmentValue(value);
+      }
     }
 
     return(
@@ -317,7 +312,7 @@ const EntitySetup = () => {
                                       <div className={style.displayInRow}>
                                           <FormControlLabel
                                               control={
-                                                  <Switch checked={entity.multiSiteEntity} className={` ${style.textAlignLeft}`}  onChange={(e)=>handleEntity('multiSiteEntity',e.target.checked)}/>
+                                                  <Switch checked={entity.multiSiteEntity} className={` ${style.textAlignLeft}`}  value={entity.multiSiteEntity} onChange={(e)=>handleEntity('multiSiteEntity',e.target.checked)}/>
                                               }
                                               className={style.switchFontStyle}
                                               label={'YES'}
@@ -339,7 +334,7 @@ const EntitySetup = () => {
                                       <div className={style.displayInRow}>
                                           <FormControlLabel
                                               control={
-                                                  <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => {setDepartmentSpecific(!departmentSpecific)}}  />
+                                                  <Switch checked={departmentSpecific} className={`${style.textAlignLeft}`} onChange={() => {setDepartmentSpecific(!departmentSpecific)}}  />
                                               }
                                               className={style.switchFontStyle}
                                               label={departmentSpecific ? 'YES' : "NO"}
@@ -347,27 +342,24 @@ const EntitySetup = () => {
                                           {departmentSpecific && (
                                               <>
                                                 <>
-                                                    {
-                                                    // <InputGroup placeholder="Enter Department"  onChange={(e) => setDepartmentValue(e.target.value) } className={`${style.fullWidth} ${style.marginLeft20}`} value={departmentValue}/>
-                                                    }
-                                                    <DatalistInput items={entityDepartments?.map(data=>data?.departmentName?.name)} placeholder="Select Departments" onSelect={onSelect} onChange={(e) => {setDepartmentValue(e.target.value)} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
+                                                    <DatalistInput items={items} placeholder="Select Departments" onSelect={onSelect} onChange={(e) => {handleDeptChange(e.target.value)} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
                                                     <div className={`${style.addSymbolStyle} ${style.marginLeft20} ${style.cursor}`}><span className={style.plusSymbolPosition} onClick={()=>{handleTagsAdd(departmentValue);setDepartmentValue('');}}>+</span></div>
                                                 </>
                                               </>
                                           )}
                                       </div>
                                       {departmentSpecific && (
-                                          <TagInput
-                                              placeholder="Enter tags/keywords relative to the post"
-                                              values={tags}
-                                              key={`tags${tags}`}
-                                              className={`${style.marginTop20} ${style.tagInputStyle}`}
-                                              onAdd={handleTagsAdd}
-                                              onRemove={handleTagsRemove}
-                                              separator={/[\s,]/}
-                                              addOnBlur={true}
-                                              addOnPaste={true}
-                                          />
+                                        <TagInput
+                                            placeholder="Enter tags/keywords relative to the post"
+                                            values={selectDepartments?.map(data=>data?.departmentName?.name)}
+                                            key={`tags${tags}`}
+                                            className={`${style.marginTop20} ${style.tagInputStyle}`}
+                                            onAdd={handleTagsAdd}
+                                            onRemove={handleTagsRemove}
+                                            separator={/[\s,]/}
+                                            addOnBlur={true}
+                                            addOnPaste={true}
+                                        />
                                       )}
                                   </div>
                               </div>
@@ -375,7 +367,7 @@ const EntitySetup = () => {
                           <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
                               <button className={style.outlinedButton} onClick={()=>{updateEntity()}}>SAVE IN-PROGRESS</button>
                               {/* <Link to={`/${nextStep}`}> */}
-                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setActiveStep(entity.multiSiteEntity === true ?"siteInformation":"siteUsers")}>CONTINUE</button>
+                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {updateEntity();setActiveStep(entity.multiSiteEntity === true ?"siteInformation":"siteUsers")}}>CONTINUE</button>
                               {/* </Link> */}
                           </div>
                       </div>
