@@ -1,8 +1,9 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { InputGroup, Icon, Intent, TextArea, RadioGroup, Radio } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
+import {GET, tenantID, PUT} from './entityDataSaver';
 import {Link} from 'react-router-dom';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step23.png';
@@ -12,29 +13,34 @@ import Step5 from './../../images/step55.png';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 import {Auth} from './../../utils/auth'
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 
 const VALUES = ['Department 1', "Department 2", "Department 3"];
 
 const AppSubscription = ({getActiveStep}) => {
     const [tags, setTags] = useState(VALUES);
+    const [entityData,setEntityData] = useState();
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [selectDepartment, setSelectDepartment] = useState('');
     const [selectedContract, setSelectedContract] = useState('Select...');
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
     const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('Select Value');
     const [item, setItem] = useState();
+    const [isUpdated, setIsUpdated] = useState(false);
     const [plan,setPlan] = useState({planName: '',allowableRegisteredUsers: {allowableRegisteredUsers: 0}, subscriptionFees: {fees: ""}, subscriptionStatus: "ACTIVE", billingFrequency: "",
         discount: {
             discount: 0
-        }, 
+        },
         plannedToGoLive: {
             date: "2022-07-18"
         },
         poaNumber: {
             poaNumber: ""
         }});
+    const [poaNumber,setPoaNumber] = useState('');
     const [billing,setBilling] = useState({contactname: {firstName: '', lastName: ''}, email: {emailId: ''}, contactNumber: {contactNumber: 0}});
+    const [billingData,setBillingData] = useState({firstName:'',lastName:'',email:'',phone:''});
     const [contract,setContract] = useState(
         {
             contractName: "",
@@ -60,28 +66,18 @@ const AppSubscription = ({getActiveStep}) => {
     );
     const accessToken = Auth();
 
-    const getEntityData = () => {
-      const entity = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json',
-                  'X-tenantID' : '6242845f95690b3822cb96a5',
-                  'Authorization': `Bearer ${accessToken}`}
-        };
-        fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/entity-service/entity', entity)
-        .then(response => response.json())
-        .then(data => {
-            if(data?.filter(data=>data.id === '6242845f95690b3822cb96a5')?.map(data=>{
-                let subPlan = data.subscriptionPlan;
-                let billingDetails = data.billingDetails;
-                let contractDetails = data.contractDetails;
-                // setPlan({...plan, name:subPlan?.planName,allowableUsers:subPlan?.allowableRegisteredUsers?.allowableRegisteredUsers,fees:subPlan?.subscriptionFees.fees,status:subPlan?.subscriptionStatus,freq:subPlan?.billingFrequency,discount:subPlan?.discount?.discount,liveData:subPlan?.plannedToGoLive?.date,poa:subPlan?.poaNumber.poaNumber});
-                // setBilling({...billing, firstName:billingDetails?.contactname.firstName,lastName:billingDetails?.contactname?.lastName,email:billingDetails?.email.emailId,phone:billingDetails?.contactNumber?.contactNumber});
-                // setContract({...contract, name:contractDetails?.contractName,id:contractDetails?.contractID,doc:contractDetails?.contractDocuments,start:contractDetails?.contractTermPeriod?.startDate,end:contractDetails?.contractTermPeriod?.endDate,live:contractDetails?.plannedGoLive,continuationPolicy:contractDetails?.contractContinuationPolicy,fullyExecutedContract:contractDetails?.fullyExecutedContractOnFile})
-          }))
-          return true;
-        }
-       )
+    useEffect(()=>{
+      getEntityData();
+    },[]);
+
+    const getEntityData = async() => {
+      const {data: data} = await GET(`entity-service/entity/${tenantID}`);
+      setEntityData(data);
+      setBillingData({firstName:data?.billingDetails?.contactname?.firstName,lastName:data?.billingDetails?.contactname?.lastName,email:data?.billingDetails?.email?.emailId,phone:data?.billingDetails?.contactNumber?.contactNumber.toString()});
+      setPoaNumber(data?.subscriptionPlan?.poaNumber?.poaNumber);
     }
+
+    console.log('billing',billing);
 
     const options = [
         { name: 'Department 1' },
@@ -90,18 +86,12 @@ const AppSubscription = ({getActiveStep}) => {
       ];
 
       const onSelect = useCallback((selectedItem) => {
+        setItem(selectedItem)
         console.log('selectedItem', selectedItem);
         setItem(selectedItem);
         setSelectDepartment('');
+        setItem(true);
       }, []);
-
-    const handleTagsAdd = values => {
-        setTags([...tags, values]);
-    };
-
-    const getTagProps = (_v, index) => ({
-        minimal: true,
-    });
 
     const leftElement = () => {
         return(
@@ -115,13 +105,6 @@ const AppSubscription = ({getActiveStep}) => {
         )
     }
 
-    const handleTagsRemove = (tags, index) => {
-        const updatedTags = [tags];
-        updatedTags.splice(index, 1);
-        tags = updatedTags;
-        setTags(tags);
-      };
-
       const items = useMemo(
         () =>
           options.map((option) => ({
@@ -131,6 +114,71 @@ const AppSubscription = ({getActiveStep}) => {
           })),
         [item],
       );
+
+    const updateBilling = async() => {
+      if(billingData?.email === '' && !billingData?.email.includes('@') && !billingData?.email.includes('.')){
+        ErrorToaster('Enter a valid E-mail');
+        return;
+      }
+      let data = {
+        "id": entityData?.id,
+        "entityName": entityData?.entityName,
+        "entityType": entityData?.entityType,
+        "customerType": entityData?.customerType,
+        "sites": entityData?.sites,
+        "subscriptionPlan": {
+          "planName": "BASIC",
+          "allowableRegisteredUsers": {
+            "allowableRegisteredUsers": 0
+          },
+          "subscriptionFees": {
+            "fees": "string"
+          },
+          "subscriptionStatus": "ACTIVE",
+          "billingFrequency": "MONTHLY",
+          "discount": {
+            "discount": 0
+          },
+          "plannedToGoLive": {
+            "date": "2022-07-23"
+          },
+          "poaNumber": {
+            "poaNumber": poaNumber
+          }
+        },
+        "billingDetails": {
+          "contactname": {
+            "firstName": billingData?.firstName,
+            "lastName": billingData?.lastName,
+          },
+          "email": {
+            "emailId": billingData?.email
+          },
+          "contactNumber": {
+            "contactNumber": billingData?.phone
+          }
+        },
+        "contractDetails": entityData?.contractDetail,
+      }
+      if(isUpdated){
+        await PUT('entity-service/entity',data)
+          .then(response=>{
+          SuccessToaster('Entity Billing Updated Successfully');
+          }).catch(error=>{
+            ErrorToaster('Unexpected Error Updating Entity Billing');
+          });
+        }
+    }
+
+    const handleBillingData = (name,value) => {
+      setBillingData({...billingData, [name]:value});
+      setIsUpdated(true);
+    }
+
+    const handlePoaNumber = (value) => {
+      setPoaNumber(value);
+      setIsUpdated(true);
+    }
 
     return(
         <div className={style.entitySetupBackground}>
@@ -191,6 +239,7 @@ const AppSubscription = ({getActiveStep}) => {
                                         name="class"
                                         id="Class"
                                         value={plan?.planName}
+                                        disabled
                                         onChange={(e) => setPlan({...plan, planName: e.target.value})}
                                         className={style.fullWidth}>
                                             <option value="BASIC" >
@@ -215,13 +264,20 @@ const AppSubscription = ({getActiveStep}) => {
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Allowable Registered Users *</div>
-                                <InputGroup className={style.fourFieldWidth} value={plan?.allowableRegisteredUsers?.allowableRegisteredUsers}
+                                <InputGroup className={style.fourFieldWidth}
+                                value="289"
+                                disabled
+                                // value={plan?.allowableRegisteredUsers?.allowableRegisteredUsers}
                                 onChange={(e) => setPlan({...plan, allowableRegisteredUsers: {allowableRegisteredUsers: e.target.value}})} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Monthly Subscription Fees*</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup className={`${style.textFieldWidth} ${style.fourFieldWidth}`} value={`$ ${plan?.subscriptionFees?.fees}`} onChange={(e) => setPlan({...plan, subscriptionFees: {fees: e.target.value}})} />
+                                    <InputGroup className={`${style.textFieldWidth} ${style.fourFieldWidth}`}
+                                    // value={`$ ${plan?.subscriptionFees?.fees}`}
+                                    value={`$ 6`}
+                                    disabled
+                                    onChange={(e) => setPlan({...plan, subscriptionFees: {fees: e.target.value}})} />
                                     <div className={`${style.extentionLableStyle} ${style.fourFieldWidth} ${style.marginLeft20}`}>Per User</div>
                                 </div>
                             </div>
@@ -232,6 +288,7 @@ const AppSubscription = ({getActiveStep}) => {
                                         name="class"
                                         id="Class"
                                         value={plan?.billingFrequency}
+                                        disabled
                                         onChange={(e) => setPlan({...plan, billingFrequency: e.target.value})}
                                         className={style.fourFieldWidth}>
                                             <option value="Monthly" >
@@ -242,46 +299,47 @@ const AppSubscription = ({getActiveStep}) => {
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Discount*</div>
-                                <InputGroup className={style.fourFieldWidth} value={`${plan?.discount?.discount} %`}
+                                <InputGroup className={style.fourFieldWidth} value={`${plan?.discount?.discount} %`} disabled
                                 onChange={(e) => setPlan({...plan, discount:{discount: e.target.value}})}
                                  />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>POA Number</div>
-                                <InputGroup className={style.fourFieldWidth} value={plan?.poaNumber?.poaNumber}
-                                 onChange={(e) => setPlan({...plan, poaNumber:{poaNumber: e.target.value}})} />
+                                <InputGroup className={style.fourFieldWidth} placeholder="POA Number" value={poaNumber}
+                                 onChange={(e) => handlePoaNumber(e.target.value)} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Billing Contact Name</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup className={style.fourFieldWidth} value={billing?.contactname?.firstName} onChange={(e) => setBilling({...billing, contactname: {firstName: e.target.value}})} />
-                                    <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={billing?.contactname?.lastName}
-                                     onChange={(e) => setBilling({...billing, contactname: {lastName: e.target.value}})} />
+                                    <InputGroup className={style.fourFieldWidth} value={billingData?.firstName} placeholder="First Name" onChange={(e) => handleBillingData('firstName',e.target.value)} />
+                                    <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20}`} placeholder="Last Name" value={billingData?.lastName}
+                                     onChange={(e) => handleBillingData('lastName',e.target.value)} />
                                 </div>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Email*</div>
-                                <InputGroup className={style.twoFieldWidth} value={billing?.email?.emailId}
-                                 onChange={(e) => setBilling({...billing, email: {emailId: e.target.value}})} />
+                                <InputGroup className={style.twoFieldWidth} value={billingData?.email} placeholder="example@gmail.com"
+                                 onChange={(e) => handleBillingData('email',e.target.value)} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Cell Phone</div>
-                                <InputGroup className={style.twoFieldWidth} value={billing?.contactNumber?.contactNumber} 
-                                 onChange={(e) => setBilling({...billing, contactNumber: {contactNumber: e.target.value}})} />
+                                <InputGroup className={style.twoFieldWidth} value={billingData?.phone} placeholder="+1(342)444-5505"
+                                 onChange={(e) => handleBillingData('phone',e.target.value)} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Contract / Agreement Name*</div>
-                                <InputGroup className={style.fullWidth} value={contract?.contractName}
+                                <InputGroup className={style.fullWidth} value={contract?.contractName} placeholder="Text" disabled
                                  onChange={(e) => setContract({...contract, contractName: e.target.value})} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Contract ID ( CID )*</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup className={style.fourFieldWidth} value={contract?.contractID}
+                                    <InputGroup className={style.fourFieldWidth} value={contract?.contractID} disabled placeholder="PAMF-1106"
                                     onChange={(e) => setContract({...contract, contractID: e.target.value})}  />
                                     <RadioGroup
                                         inline={true}
                                         className={`${style.marginTop} ${style.marginLeft20}`}
+                                        disabeld
                                     >
                                         <Radio label="Missing" value="Missing"  />
                                     </RadioGroup>
@@ -295,6 +353,7 @@ const AppSubscription = ({getActiveStep}) => {
                                             control={
                                                 <Switch checked={contract?.fullyExecutedContractOnFile} className={` ${style.textAlignLeft}`} onChange={() => setContract({...contract, fullyExecutedContractOnFile: !contract?.fullyExecutedContractOnFile})}  />
                                             }
+                                            disabled
                                             className={`${style.switchFontStyle} ${style.flexLeft}`}
                                             label={contract?.fullyExecutedContractOnFile ? 'YES' : "NO"}
                                         />
@@ -316,7 +375,7 @@ const AppSubscription = ({getActiveStep}) => {
                                                         </option>
                                                 </select>
                                             </div>
-                                            <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} 
+                                            <InputGroup className={`${style.fullWidth} ${style.marginTop10}`}
                                             value={contract?.contractDocuments?.name}
                                             onChange={(e) => setContract({...contract, contractDocuments: {name: e.target.value}})}
                                              />
@@ -333,16 +392,18 @@ const AppSubscription = ({getActiveStep}) => {
                                 <div className={style.extentionLableStyle}>Contract Term Period*</div>
                                 <div className={style.displayInRow}>
                                     <InputGroup value={contract?.contractTermPeriod?.startDate} rightElement={calendarIcon()}
+                                    disabled
                                     onChange={(e) => setContract({...contract, contractTermPeriod: {startDate: e.target.value}})} />
                                 <p className={style.toStyle}>To</p>
                                     <InputGroup value={contract?.contractTermPeriod?.endDate} rightElement={calendarIcon()}
+                                    disabled
                                     onChange={(e) => setContract({...contract, contractTermPeriod:{endDate: e.target.value}})}  />
                                 </div>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Planned Go Live</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup value={contract?.plannedGoLive?.date} rightElement={calendarIcon()}
+                                    <InputGroup value={contract?.plannedGoLive?.date} rightElement={calendarIcon()} disabled
                                     onChange={(e) => setContract({...contract, plannedGoLive: {date: e.target.value}})} />
                                 </div>
                             </div>
@@ -353,6 +414,7 @@ const AppSubscription = ({getActiveStep}) => {
                                         <select
                                             name="class"
                                             id="Class"
+                                            disabled
                                             // value={selectedContractContinuationPolicy || 'Select...'}
                                             value={contract?.contractContinuationPolicy}
                                             // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
@@ -422,9 +484,9 @@ const AppSubscription = ({getActiveStep}) => {
                             </div>
                         </div>
                         <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                            <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
+                            <button className={style.outlinedButton} onClick={updateBilling}>SAVE IN-PROGRESS</button>
                             <Link to={'/setupComplete'}>
-                                <button className={`${style.buttonStyle} ${style.marginLeft20}`}>CONTINUE</button>
+                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={updateBilling}>CONTINUE</button>
                             </Link>
                         </div>
                     </div>

@@ -14,13 +14,14 @@ import UploadImg from './../../images/uploadImg.png';
 import style from './index.module.scss';
 import {Auth} from './../../utils/auth';
 import 'react-datalist-input/dist/styles.css';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 // const VALUES = ['Department 1', "Department 2"];
 
 const SiteInformation = ({getActiveStep}) => {
     const [tags, setTags] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
-    const [showSiteTable, setShowSiteTable] = useState(false);
+    const [showSiteTable, setShowSiteTable] = useState(true);
     const [selectDepartment, setSelectDepartment] = useState('');
     const [siteID, setSiteID] = useState('3578689');
     const [alertDialog, setAlertDialog] = useState(false);
@@ -28,11 +29,12 @@ const SiteInformation = ({getActiveStep}) => {
     const [departmentValue,setDepartmentValue] = useState([]);
     const [siteList,setSiteList] = useState([]);
     const [entityData,setEntityData] = useState();
+    const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [loading,setLoading] = useState(false);
     const [address,setAddress] = useState({
       city:'',state:'',zipcode:'',country:''
     })
-    const [site,setSite] = useState({name:'',type:'',canSetupDepartment:false,npin:''});
+    const [site,setSite] = useState({name:'',type:'',canSetupDepartment:true,npin:''});
     let options = [];
     const accessToken = Auth();
 
@@ -44,6 +46,7 @@ const SiteInformation = ({getActiveStep}) => {
     const getEntityData = async() => {
       const {data: data} = await GET(`entity-service/entity/${tenantID}`);
       setEntityData(data);
+      setSiteList(data?.sites);
     }
 
     const updateEntitySite = async() => {
@@ -64,17 +67,7 @@ const SiteInformation = ({getActiveStep}) => {
         },
         "canSetupDepartment": site.canSetupDepartment,
         "departmentList": {
-          "departments": [
-            {
-              "id": "string",
-              "departmentName": {
-                "name": "string"
-              },
-              "departmentHead": {
-                "id": "string"
-              }
-            }
-          ]
+          "departments":departmentSpecific ? selectedDepartment : departmentValue,
         },
         "address": {
           "addressLine": "",
@@ -103,55 +96,44 @@ const SiteInformation = ({getActiveStep}) => {
       "appUserRoles": entityData.appUserRoles,
     }
     await PUT('entity-service/entity',updatedValue)
+    .then(response=>{
+    SuccessToaster('Site Created Successfully');
+    }).catch(error=>{
+      ErrorToaster('Unexpected Error Creating Site');
+    });
   }
 
-
-    const getDepartmentData = () => {
-      setLoading(true);
-      let temp = [];
-      const department = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json',
-                  'X-tenantID' : '6242845f95690b3822cb96a5',
-                  'Authorization': `Bearer ${accessToken}`}
-        };
-        fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/entity-service/department', department)
-        .then(response => response.json())
-        .then(data => {
-          data?.map(dept=>{
-            temp.push(dept.departmentName.name);
-          })
-          setDepartmentValue(temp);
-          setTags(temp);
-          setLoading(false);
-          return true;
-        }
-       )
+  const getDepartmentData = async() => {
+    const {data: department} = await GET('entity-service/department');
+    if(department){
+      setDepartmentValue(department)
+      setShowSiteTable(siteList?.filter(data=>data.primarySite !== true)?.map(data=>data)?.length !== 0 ? false:true);
+    }else{
+      console.log('error');
     }
+  }
 
-    departmentValue?.map(data=>{
-      options.push({'name':data})
-    });
-
-    // const options = [
-    //     { name: 'Department 1' },
-    //     { name: 'Department 2' },
-    //     { name: 'Department 3' },
-    //     { name: 'Department 4' },
-    //     { name: 'Department 5' },
-    //     { name: 'Department 6' },
-    //   ];
+  console.log('departments',selectedDepartment);
 
     const onSelect = useCallback((selectedItem) => {
       console.log('selectedItem', selectedItem);
       setItem(selectedItem);
-      setSelectDepartment('');
+      let temp = selectedDepartment;
+      temp.push(selectedItem);
+      setSelectedDepartment(temp);
     }, []);
 
     const handleTagsAdd = values => {
-        setTags([...tags, values]);
-        setDepartmentValue(tags);
-        setSelectDepartment('');
+      let temp = selectedDepartment;
+      temp.push({
+          "departmentName": {
+            "name": values
+          },
+          "departmentHead": {
+            "id": ""
+          }
+        })
+      setSelectedDepartment(temp);
     };
 
     const getTagProps = (_v, index) => ({
@@ -159,20 +141,17 @@ const SiteInformation = ({getActiveStep}) => {
     });
 
     const handleTagsRemove = (tags, index) => {
-        const updatedTags = [tags];
-        updatedTags.splice(index, 1);
-        tags = updatedTags;
-        setTags(tags);
-      };
+      setSelectedDepartment(selectedDepartment?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
+    };
 
       const items = useMemo(
         () =>
-          options.map((option) => ({
-            id: option.name,
-            value: option.name,
+          departmentValue.map((option) => ({
+            id: option?.id,
+            value: option?.departmentName.name,
             ...option,
           })),
-        [item],
+        [departmentValue],
       );
 
     const handleSite = (name,value) => {
@@ -187,7 +166,13 @@ const SiteInformation = ({getActiveStep}) => {
       <Spinner intent={Intent.PRIMARY} />
     }
 
-    console.log('siltelist',siteList);
+    const resetSiteValues = () => {
+      setAddress({
+        city:'',state:'',zipcode:'',country:''
+      });
+      setSite({name:'',type:'',canSetupDepartment:true,npin:''});
+    }
+
 
     return(
         <div className={style.entitySetupBackground}>
@@ -245,7 +230,7 @@ const SiteInformation = ({getActiveStep}) => {
                                 <div className={`${style.extentionGrid}`}>
                                     <div className={style.extentionLableStyle}>NPIN*</div>
                                     <div className={style.spaceBetween}>
-                                        <InputGroup className={style.fourFieldWidth} value={entityData?.npin} />
+                                        <InputGroup className={style.fourFieldWidth} value={entityData?.npin} onChange={(e)=>handleSite('npin',e.target.value)}/>
                                         <button className={style.entityIDButton} onClick={()=> setShowSiteTable(true)}>
                                             <span>{siteID !== 'XX689- 64768' ? 'ENTITY ID:' : 'SITE ID:'}</span>{siteID}
                                         </button>
@@ -253,7 +238,7 @@ const SiteInformation = ({getActiveStep}) => {
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Site Name*</div>
-                                    <InputGroup className={style.threeFieldWidth} defaultValue={site.name} onChange={(e)=>handleSite('name',e.target.value)} />
+                                    <InputGroup className={style.threeFieldWidth} placeholder="Site Name" value={site.name} onChange={(e)=>handleSite('name',e.target.value)} />
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Site Type*</div>
@@ -296,27 +281,14 @@ const SiteInformation = ({getActiveStep}) => {
                                             {departmentSpecific && (
                                                 <>
                                                     <DatalistInput items={items} placeholder="Enter Departments" onSelect={onSelect} onChange={(e) => {setSelectDepartment(e.target.value); setSiteID('XX689- 64768')} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition}>+</span></div>
+                                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition} onClick={(e)=>handleTagsAdd(selectDepartment)}>+</span></div>
                                                 </>
                                             )}
                                         </div>
-                                        {selectDepartment.length !== 0 && (
-                                            <div className={`${style.reqDeptCard} ${style.marginTop}`}>
-                                                <div className={style.addBoxDescription}>
-                                                The Department you are trying to add is not on the list.
-                                                To add a new department enter the exact name below and click
-                                                on the "REQUEST & ADD" button.
-                                                </div>
-                                                <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                                    <InputGroup value={selectDepartment} className={style.threeFieldWidth} onChange={(e)=>setSelectDepartment(e.target.value)}/>
-                                                    <button className={`${style.reqButton} ${style.marginLeft20}`} onClick={() => {handleTagsAdd(selectDepartment)}}>REQUEST & ADD</button>
-                                                </div>
-                                            </div>
-                                        )}
                                         {departmentSpecific && (
                                             <TagInput
                                                 placeholder="Enter tags/keywords relative to the post"
-                                                values={tags}
+                                                values={selectedDepartment?.map(data=>data?.departmentName?.name)}
                                                 className={`${style.marginTop20} ${style.tagInputStyle}`}
                                                 onAdd={handleTagsAdd}
                                                 onRemove={handleTagsRemove}
@@ -334,10 +306,10 @@ const SiteInformation = ({getActiveStep}) => {
                                     <button className={style.outlinedButton}>BULK UPLOAD</button>
                                 </div>
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                    <button className={style.outlinedButton} onClick={()=>updateEntitySite()}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & ADD MORE</button>
+                                    <button className={style.outlinedButton} onClick={()=>{updateEntitySite();setShowSiteTable(true);resetSiteValues();}}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{updateEntitySite();resetSiteValues();}}>SAVE & ADD MORE</button>
                                     {/* <Link to={'/siteUsers'}> */}
-                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => getActiveStep('siteUsers')}>CONTINUE</button>
+                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {updateEntitySite();getActiveStep('siteUsers');resetSiteValues();}}>CONTINUE</button>
                                     {/* </Link> */}
                                 </div>
                             </div>
@@ -362,7 +334,7 @@ const SiteInformation = ({getActiveStep}) => {
                             <p className={style.tableHeaderFontStyle}>CREATED BY</p>
                             <p className={style.tableHeaderFontStyle}>SOURCE</p>
                         </div>
-                        <div className={`${style.tableData} ${style.displayInCol}`} >
+                        <div className={`${style.tableData} ${style.displayInCol}`}>
                         {
                           siteList?.map(data=>(
                             <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>

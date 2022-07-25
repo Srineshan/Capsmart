@@ -54,7 +54,7 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
     const handleSites = (value) => {
       if (value !== '0') {
         const tempSelectedSites = sites.filter(data => data?.siteName?.siteName === value).map(data => data)[0];
- 
+
         if (!selectedSites.map(data => data?.id).includes(tempSelectedSites?.id)) {
           setSelectedSites([...selectedSites, tempSelectedSites]);
         }
@@ -121,8 +121,6 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
       );
     });
 
-    console.log(sitesTags, selectedSites, sites)
-
     const getRoles = async() => {
       const {data: roles} = await GET('user-management-service/roles');
       setRoles(roles);
@@ -143,8 +141,6 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
       getDepartments();
       getSites();
   },[])
-
-    // console.log(roles, userData , department,selectedDepartments, selectedRoles, rolesTagsToUse, selectedUsers?.sites?.sites[0]?.departmentList?.departments)
 
   const submitUserDetails = async () => {
     const response = await PUT('user-management-service/user', JSON.stringify(userData));
