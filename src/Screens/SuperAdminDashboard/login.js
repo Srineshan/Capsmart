@@ -17,7 +17,7 @@ const Login = (props) => {
                 },
        body: JSON.stringify(user)
    };
-   fetch('https://ec2-54-210-154-191.compute-1.amazonaws.com/user-management-service/auth/login', requestOptions)
+   fetch('http://ec2-54-210-154-191.compute-1.amazonaws.com/user-management-service/auth/login', requestOptions)
        .then(response => response.json())
        .then(data => {
          // navigate('/welcome');

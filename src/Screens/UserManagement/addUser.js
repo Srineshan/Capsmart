@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, Tag} from '@blueprintjs/core';
-import {POST, GET, TenantID} from './../dataSaver';
+import {POST, TenantID, GET} from './userDataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
@@ -156,7 +156,7 @@ const AddUser = ({getAddUserDialog}) => {
       getSites();
   },[])
 
-  console.log(sites)
+  console.log('sites',sites,roles,department);
 
     return(
         <Dialog isOpen={getAddUserDialog} onClose={() => getAddUserDialog(false)} className={`${style.addManagerDialogBackground} ${style.addProofDialog}`}>

@@ -40,6 +40,7 @@ const EntitySetup = () => {
     const [entityData,setEntityData] = useState();
     const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",name:'',type:'',websiteURL:'',multiSiteEntity:false,primarySiteToUseApp:false,npin:'',canSetupDepartment:true});
     const [address,setAddress] = useState({city:'',state:'',zipcode:'',addressLine:'',country:''});
+    const [isUpdated,setIsUpdated] = useState(false);
 
     const accessToken = Auth();
 
@@ -58,8 +59,10 @@ const EntitySetup = () => {
       let siteData = data?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
       setEntity({id:'',customerType:"HEALTHCARE",name:data?.entityName?.entityName,type:data?.entityType?.type,websiteURL:'',multiSiteEntity:data?.sites?.length > 1,primarySiteToUseApp:false,npin:siteData?.npin?.id});
       setAddress({city:siteData?.address?.city,state:siteData?.address?.state,zipcode:siteData?.address?.zipcode,addressLine:siteData?.address?.addressLine,country:siteData?.address?.country});
-      setSelectDepartments(data?.sites?.filter(data=>data.primarySite === true)?.map(data=>data.departmentList?.departments));
+      setSelectDepartments(siteData?.departmentList?.departments);
     }
+
+    console.log('depts',selectDepartments);
 
     console.log(selectDepartments);
 
@@ -73,7 +76,7 @@ const EntitySetup = () => {
     }
 
     const handleTagsAdd = async(values) => {
-        console.log('handle add tag',values);
+
         let temp = selectDepartments;
         temp.push({
             "departmentName": {
@@ -84,25 +87,31 @@ const EntitySetup = () => {
             }
           })
         setSelectDepartments(temp);
+        setIsUpdated(true);
     };
 
     const onSelect = (selectedItem) => {
+      setItem(selectedItem);
       let temp = selectDepartments;
       temp.push(selectedItem);
       setSelectDepartments(temp);
+      setIsUpdated(true);
     }
 
 
       const handleTagsRemove = (tags, index) => {
         setSelectDepartments(selectDepartments?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
+        setIsUpdated(true);
       };
 
       const handleEntity = (name,value) => {
         setEntity({...entity,[name]:value});
+        setIsUpdated(true);
       }
 
       const handleAddress = (name,value) => {
         setAddress({...address, [name]:value});
+        setIsUpdated(true);
       }
 
     const nextStep = multiSiteEntity === true ?"siteInformation":"siteUsers"
@@ -116,8 +125,6 @@ const EntitySetup = () => {
           })),
         [entityDepartments],
       );
-
-    console.log('deptList',selectDepartments);
 
 
     const updateEntity = async() => {
@@ -168,13 +175,15 @@ const EntitySetup = () => {
           "subscriptionPlan": entityData?.subscriptionPlan,
           "billingDetails": entityData?.billingDetails,
         }
-      await axios.PUT('entity-service/entity',JSON.stringify(updatedValue))
-        .then(response=>{
-        SuccessToaster('Entity Updated Successfully');
-        }).catch(error=>{
-          console.log('error',error);
-          ErrorToaster('Unexpected Error Updating Entity');
-        });
+      if(isUpdated){
+        await PUT('entity-service/entity',updatedValue)
+          .then(response=>{
+          SuccessToaster('Entity Updated Successfully');
+          }).catch(error=>{
+            console.log('error',error);
+            ErrorToaster('Unexpected Error Updating Entity');
+          });
+      }
     }
 
 

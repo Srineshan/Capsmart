@@ -27,6 +27,7 @@ const AppSubscription = ({getActiveStep}) => {
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
     const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('Select Value');
     const [item, setItem] = useState();
+    const [isUpdated, setIsUpdated] = useState(false);
     const [plan,setPlan] = useState({planName: '',allowableRegisteredUsers: {allowableRegisteredUsers: 0}, subscriptionFees: {fees: ""}, subscriptionStatus: "ACTIVE", billingFrequency: "",
         discount: {
             discount: 0
@@ -85,18 +86,12 @@ const AppSubscription = ({getActiveStep}) => {
       ];
 
       const onSelect = useCallback((selectedItem) => {
+        setItem(selectedItem)
         console.log('selectedItem', selectedItem);
         setItem(selectedItem);
         setSelectDepartment('');
+        setItem(true);
       }, []);
-
-    const handleTagsAdd = values => {
-        setTags([...tags, values]);
-    };
-
-    const getTagProps = (_v, index) => ({
-        minimal: true,
-    });
 
     const leftElement = () => {
         return(
@@ -110,13 +105,6 @@ const AppSubscription = ({getActiveStep}) => {
         )
     }
 
-    const handleTagsRemove = (tags, index) => {
-        const updatedTags = [tags];
-        updatedTags.splice(index, 1);
-        tags = updatedTags;
-        setTags(tags);
-      };
-
       const items = useMemo(
         () =>
           options.map((option) => ({
@@ -128,7 +116,10 @@ const AppSubscription = ({getActiveStep}) => {
       );
 
     const updateBilling = async() => {
-      if(billingData?.email !== '' && billingData?.email.includes('@') && billingData?.email.includes('.')){
+      if(billingData?.email === '' && !billingData?.email.includes('@') && !billingData?.email.includes('.')){
+        ErrorToaster('Enter a valid E-mail');
+        return;
+      }
       let data = {
         "id": entityData?.id,
         "entityName": entityData?.entityName,
@@ -169,16 +160,24 @@ const AppSubscription = ({getActiveStep}) => {
         },
         "contractDetails": entityData?.contractDetail,
       }
+      if(isUpdated){
+        await PUT('entity-service/entity',data)
+          .then(response=>{
+          SuccessToaster('Entity Billing Updated Successfully');
+          }).catch(error=>{
+            ErrorToaster('Unexpected Error Updating Entity Billing');
+          });
+        }
+    }
 
-      await PUT('entity-service/entity',data)
-        .then(response=>{
-        SuccessToaster('Entity Billing Updated Successfully');
-        }).catch(error=>{
-          ErrorToaster('Unexpected Error Updating Entity Billing');
-        });
-      }else{
-        ErrorToaster('Enter a valid E-mail ID');
-      }
+    const handleBillingData = (name,value) => {
+      setBillingData({...billingData, [name]:value});
+      setIsUpdated(true);
+    }
+
+    const handlePoaNumber = (value) => {
+      setPoaNumber(value);
+      setIsUpdated(true);
     }
 
     return(
@@ -307,25 +306,25 @@ const AppSubscription = ({getActiveStep}) => {
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>POA Number</div>
                                 <InputGroup className={style.fourFieldWidth} placeholder="POA Number" value={poaNumber}
-                                 onChange={(e) => setPoaNumber(e.target.value)} />
+                                 onChange={(e) => handlePoaNumber(e.target.value)} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Billing Contact Name</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup className={style.fourFieldWidth} value={billingData?.firstName} placeholder="First Name" onChange={(e) => setBillingData({...billingData, firstName: e.target.value})} />
+                                    <InputGroup className={style.fourFieldWidth} value={billingData?.firstName} placeholder="First Name" onChange={(e) => handleBillingData('firstName',e.target.value)} />
                                     <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20}`} placeholder="Last Name" value={billingData?.lastName}
-                                     onChange={(e) => setBillingData({...billingData, lastName: e.target.value})} />
+                                     onChange={(e) => handleBillingData('lastName',e.target.value)} />
                                 </div>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Email*</div>
                                 <InputGroup className={style.twoFieldWidth} value={billingData?.email} placeholder="example@gmail.com"
-                                 onChange={(e) => setBillingData({...billingData, email:e.target.value})} />
+                                 onChange={(e) => handleBillingData('email',e.target.value)} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Cell Phone</div>
                                 <InputGroup className={style.twoFieldWidth} value={billingData?.phone} placeholder="+1(342)444-5505"
-                                 onChange={(e) => setBillingData({...billingData, phone: e.target.value})} />
+                                 onChange={(e) => handleBillingData('phone',e.target.value)} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Contract / Agreement Name*</div>
