@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, Checkbox, FileInput, RadioGroup, Radio } from '@blueprintjs/core';
 import { DateInput } from "@blueprintjs/datetime";
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import {GET, PUT, POST, TenantID} from './contractDataSaver';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
 const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
+    const contractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
     const [certificateCopyAvbl,setCertificateCopyAvbl] = useState(true);
     const podTypes = ['Medical Staff Membership & Privileges',
                       'Primary Speciality Board Certification',
@@ -32,11 +35,108 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
     const [certificateId, setCertificateId] = useState('');
     const [membershipRenewalDate, setmembershipRenewalDate] = useState('');
     const [expirationDate, setExpirationDate] = useState('');
+    const [fileName, setFileName] = useState('');
+    const [fileData, setFileData] = useState();
+
+    const handleContinue = async () => {
+      console.log('entered')
+      const data = selectedPOD === 'Medical Staff Membership & Privileges' ?
+      {
+        id: contractId,
+        podType: {type: selectedPOD},
+        dataMap: {
+          dataMap: {
+            contractedServiceProvider: contractedServiceProviderName,
+            privilegingFacility: privilegingFacilityName,
+            medicalStaffId: medicalStaffId,
+          }
+        },
+        expirationDate: {date: membershipRenewalDate?.toLocaleDateString()},
+        certificateCopyAvailable: certificateCopyAvbl
+      } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ? 
+      {
+        id: contractId,
+        podType: {type: selectedPOD},
+        dataMap: {
+          dataMap: {
+            contractedServiceProvider: contractedServiceProviderName,
+            specialityBoard: specialityBoardName,
+            specialityBoardCertificateId: specialityBoardCertificateId,
+          }
+        },
+        expirationDate: {date: membershipRenewalDate},
+        certificateCopyAvailable: certificateCopyAvbl
+      } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ? 
+      {
+        id: contractId,
+        podType: {type: selectedPOD},
+        dataMap: {
+          dataMap: {
+            coverageToBeProvidedBy: selectedInsuranceCarrier,
+            insuranceCarrier: insuranceCarrierName,
+            insuranceCertificateId: insuranceCertificateId,
+          }
+        },
+        expirationDate: {date: membershipRenewalDate},
+        certificateCopyAvailable: certificateCopyAvbl
+      } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ? 
+      {
+        id: contractId,
+        podType: {type: selectedPOD},
+        dataMap: {
+          dataMap: {
+            stateOfLicensure: stateOfLicensure,
+            licenseId: licenseId,
+          }
+        },
+        expirationDate: {date: membershipRenewalDate},
+        certificateCopyAvailable: certificateCopyAvbl
+      } : selectedPOD === 'Controlled Substance DEA Registration Certificate' ? 
+      {
+        id: contractId,
+        podType: {type: selectedPOD},
+        dataMap: {
+          dataMap: {
+            certificateId: certificateId,
+          }
+        },
+        expirationDate: {date: membershipRenewalDate},
+        certificateCopyAvailable: certificateCopyAvbl
+      } : '';
+      console.log('data',data);
+
+      const formData = new FormData();
+      let file = fileData;
+      console.log(file)
+       formData.append('documentationProof', new Blob([JSON.stringify(data)], {
+          headers: {'Content-Type': 'multipart/form-data' }
+        }));
+       formData.append('documentProofFiles',file);
+       console.log('formData',formData);
+
+       const response = await POST(`contract-managment-service/contracts/${contractId}/DocumentationProof`, JSON.stringify(formData));
+       if(response){
+           SuccessToaster('Documentation Proof Updated Successfully');
+       }
+       else {
+           ErrorToaster('Unexpected Error');
+       }
+      console.log('data',formData);
+    }
+
+    const handleFileUpload = (e) => {
+      setFileData(e.target.files[0])
+    }
 
     console.log(isMultipleContract)
     const leftElement = () => {
         return(
-            <button className={style.chooseFileStyle} >CHOOSE FILE</button>
+          <div>
+            <label for="file-upload"  className={style.customFileUpload}>
+                Choose File
+            </label>
+            <input id="file-upload" type="file" onChange={(e)=> {handleFileUpload(e);setFileName(e.target.files[0]?.name)}}/>
+          </div>
         )
     }
 
@@ -267,7 +367,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>{selectedPOD === 'Medical Staff Membership & Privileges' ? 'Membership Renewal Date' : 'Expiration Date'}*</div>
                     <DateInput
-                        formatDate={date => date.toLocaleString()}
+                        formatDate={date => date.toLocaleDateString()}
                         parseDate={str => new Date(str)}
                         placeholder={"MM-DD-YYYY"}
                         value={selectedPOD === 'Medical Staff Membership & Privileges' ? membershipRenewalDate : expirationDate}
@@ -286,14 +386,14 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                         className={`${style.switchFontStyle} ${style.flexLeft}`}
                         label={certificateCopyAvbl ? 'YES' : "NO"}                 
                     />
-                    <InputGroup  leftElement={leftElement()} className={`${style.fullWidth}`} />
+                    <InputGroup value={fileName}  leftElement={leftElement()} className={`${style.fullWidth}`} />
                   </div>
                 </div>
                 </div>
               </div>
               <div className={`${style.floatRight} ${style.marginTop20}`}>
                   <button className={`${style.buttonStyle} ${style.marginLeft20}`} >ADD MORE</button>
-                  <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & EXIT</button>
+                  <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => handleContinue()}>SAVE & EXIT</button>
               </div>
             </div>
         </Dialog>

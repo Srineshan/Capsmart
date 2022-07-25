@@ -349,16 +349,15 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract ID*</div>
                     <div className={style.displayInRow}>
-                        <InputGroup placeholder="PAMF-1106" value={contractId.id} className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
-                      <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked, id:''})}/>
+                      <InputGroup placeholder="PAMF-1106" value={contractId.id} className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
+                      <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked, id:''})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                     </div>
                 </div>
                 <div className={contracts?.length !== 0 ? `${style.extentionGrid} ${style.marginTop20}`:`${style.extentionGrid} ${style.marginTop20} ${style.disabledView} `}>
                     <div className={style.extentionLableStyle}>Prior Contract ID*</div>
                     <div className={style.displayInRow}>
                         <DatalistInput items={priorContractItems || []} onSelect={onSelectContractId} className={style.selectFieldWidth} placeholder="Search by CID / Name" />
-                           <Checkbox label="NA"  checked={contractPriorId.na} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})}/>
-
+                        <Checkbox label="NA"  checked={contractPriorId.na} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
