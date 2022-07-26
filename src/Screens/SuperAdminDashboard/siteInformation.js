@@ -21,13 +21,13 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 const SiteInformation = ({getActiveStep}) => {
     const [tags, setTags] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
+    const [siteList,setSiteList] = useState([]);
     const [showSiteTable, setShowSiteTable] = useState(true);
     const [selectDepartment, setSelectDepartment] = useState('');
     const [siteID, setSiteID] = useState('3578689');
     const [alertDialog, setAlertDialog] = useState(false);
     const [item, setItem] = useState();
     const [departmentValue,setDepartmentValue] = useState([]);
-    const [siteList,setSiteList] = useState([]);
     const [entityData,setEntityData] = useState();
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [loading,setLoading] = useState(false);
@@ -46,11 +46,20 @@ const SiteInformation = ({getActiveStep}) => {
     const getEntityData = async() => {
       const {data: data} = await GET(`entity-service/entity/${tenantID}`);
       setEntityData(data);
-      setSiteList(data?.sites);
+      if(data?.canPrimarySiteToUseApp){
+        setSiteList(data?.sites);
+      }else{
+        let sites = data?.sites;
+        setSiteList(sites?.filter(data=>data.primarySite === false)?.map(data=>data));
+      }
+      setShowSiteTable(data?.sites?.length !== 0 ? true : false)
     }
 
-    const updateEntitySite = async() => {
-      console.log('inside func');
+    const updateEntitySite = async(buttonText) => {
+      if(site.name === '' || site.type === '' || site.npin === '' || address.city === '' || address.state === '' || address.zipcode === '' || address.country === ''){
+        ErrorToaster('All Fields are mandatory');
+        return;
+      }
       let temp = entityData?.sites;
       temp.push({
         "siteName": {
@@ -58,6 +67,9 @@ const SiteInformation = ({getActiveStep}) => {
         },
         "siteAdmin": {
           "id": ""
+        },
+        "siteDisplayId": {
+            "id": ""
         },
         "siteType": {
           "type": site.type
@@ -67,7 +79,7 @@ const SiteInformation = ({getActiveStep}) => {
         },
         "canSetupDepartment": site.canSetupDepartment,
         "departmentList": {
-          "departments":departmentSpecific ? selectedDepartment : departmentValue,
+          "departments":departmentSpecific?selectedDepartment:departmentValue,
         },
         "address": {
           "addressLine": "",
@@ -81,12 +93,9 @@ const SiteInformation = ({getActiveStep}) => {
       const updatedValue =
       {
       "id": entityData.id,
-      "entityName": {
-        "entityName": entityData.name,
-      },
-      "entityType": {
-        "type": entityData.type,
-      },
+      "entityName": entityData?.entityName,
+      "entityType": entityData?.entityType,
+      "entityDisplayId": entityData?.entityDisplayId,
       "customerType": "HEALTHCARE",
       "sites": temp,
       "subscriptionPlan": entityData.subscriptionPlan,
@@ -101,6 +110,15 @@ const SiteInformation = ({getActiveStep}) => {
     }).catch(error=>{
       ErrorToaster('Unexpected Error Creating Site');
     });
+    if(buttonText === 'Continue'){
+      getActiveStep('siteUsers');
+      resetSiteValues();
+    }else if(buttonText === 'Saveinprogress'){
+      setShowSiteTable(true);
+      resetSiteValues();
+    }else{
+      resetSiteValues();
+    }
   }
 
   const getDepartmentData = async() => {
@@ -113,17 +131,17 @@ const SiteInformation = ({getActiveStep}) => {
     }
   }
 
-  console.log('departments',selectedDepartment);
 
-    const onSelect = useCallback((selectedItem) => {
-      console.log('selectedItem', selectedItem);
+    const onSelect = (selectedItem) => {
       setItem(selectedItem);
       let temp = selectedDepartment;
       temp.push(selectedItem);
       setSelectedDepartment(temp);
-    }, []);
+      setSelectDepartment('');
+    }
 
     const handleTagsAdd = values => {
+      setItem(values);
       let temp = selectedDepartment;
       temp.push({
           "departmentName": {
@@ -134,11 +152,8 @@ const SiteInformation = ({getActiveStep}) => {
           }
         })
       setSelectedDepartment(temp);
+      setSelectDepartment('');
     };
-
-    const getTagProps = (_v, index) => ({
-        minimal: true,
-    });
 
     const handleTagsRemove = (tags, index) => {
       setSelectedDepartment(selectedDepartment?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
@@ -230,10 +245,12 @@ const SiteInformation = ({getActiveStep}) => {
                                 <div className={`${style.extentionGrid}`}>
                                     <div className={style.extentionLableStyle}>NPIN*</div>
                                     <div className={style.spaceBetween}>
-                                        <InputGroup className={style.fourFieldWidth} value={entityData?.npin} onChange={(e)=>handleSite('npin',e.target.value)}/>
-                                        <button className={style.entityIDButton} onClick={()=> setShowSiteTable(true)}>
-                                            <span>{siteID !== 'XX689- 64768' ? 'ENTITY ID:' : 'SITE ID:'}</span>{siteID}
-                                        </button>
+                                        <InputGroup className={style.fourFieldWidth} value={site?.npin} onChange={(e)=>handleSite('npin',e.target.value)}/>
+                                        {
+                                          // <button className={style.entityIDButton} onClick={()=> setShowSiteTable(true)}>
+                                          //     <span>{siteID !== 'XX689- 64768' ? 'ENTITY ID:' : 'SITE ID:'}</span>{siteID}
+                                          // </button>
+                                        }
                                     </div>
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -280,11 +297,24 @@ const SiteInformation = ({getActiveStep}) => {
                                         />
                                             {departmentSpecific && (
                                                 <>
-                                                    <DatalistInput items={items} placeholder="Enter Departments" onSelect={onSelect} onChange={(e) => {setSelectDepartment(e.target.value); setSiteID('XX689- 64768')} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
+                                                    <DatalistInput items={items} placeholder="Enter Departments" onSelect={onSelect} value={selectDepartment} onChange={(e) => {setSelectDepartment(e.target.value); setSiteID('XX689- 64768')} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
                                                     <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition} onClick={(e)=>handleTagsAdd(selectDepartment)}>+</span></div>
                                                 </>
                                             )}
                                         </div>
+                                        {selectDepartment.length !== 0 && !departmentValue?.map(data=>data.departmentName?.name).includes(selectDepartment) &&(
+                                          <div className={`${style.reqDeptCard} ${style.marginTop}`}>
+                                              <div className={style.addBoxDescription}>
+                                              The Department you are trying to add is not on the list.
+                                              To add a new department enter the exact name below and click
+                                              on the "REQUEST & ADD" button.
+                                              </div>
+                                              <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                                                  <InputGroup value={selectDepartment} className={style.threeFieldWidth} onChange={(e)=>setSelectDepartment(e.target.value)}/>
+                                                  <button className={`${style.reqButton} ${style.marginLeft20}`} onClick={() => {handleTagsAdd(selectDepartment)}}>REQUEST & ADD</button>
+                                              </div>
+                                          </div>
+                                      )}
                                         {departmentSpecific && (
                                             <TagInput
                                                 placeholder="Enter tags/keywords relative to the post"
@@ -295,7 +325,6 @@ const SiteInformation = ({getActiveStep}) => {
                                                 separator={/[\s,]/}
                                                 addOnBlur={true}
                                                 addOnPaste={true}
-                                                tagProps={getTagProps}
                                             />
                                         )}
                                     </div>
@@ -306,10 +335,10 @@ const SiteInformation = ({getActiveStep}) => {
                                     <button className={style.outlinedButton}>BULK UPLOAD</button>
                                 </div>
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                    <button className={style.outlinedButton} onClick={()=>{updateEntitySite();setShowSiteTable(true);resetSiteValues();}}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{updateEntitySite();resetSiteValues();}}>SAVE & ADD MORE</button>
+                                    <button className={style.outlinedButton} onClick={()=>{updateEntitySite('Saveinprogress');}}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{updateEntitySite('Addmore');}}>SAVE & ADD MORE</button>
                                     {/* <Link to={'/siteUsers'}> */}
-                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {updateEntitySite();getActiveStep('siteUsers');resetSiteValues();}}>CONTINUE</button>
+                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {updateEntitySite('Continue');}}>CONTINUE</button>
                                     {/* </Link> */}
                                 </div>
                             </div>
@@ -338,13 +367,13 @@ const SiteInformation = ({getActiveStep}) => {
                         {
                           siteList?.map(data=>(
                             <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <p className={style.tableDataFontStyle}>{data.name}</p>
-                                <p className={style.tableDataFontStyle}>{data.type}</p>
+                                <p className={style.tableDataFontStyle}>{data?.siteName?.siteName}</p>
+                                <p className={style.tableDataFontStyle}>{data?.siteType?.type}</p>
                                 <p className={style.tableDataFontStyle}>{data.address.city}</p>
                                 <p className={style.tableDataFontStyle}>{data.address.state}</p>
-                                <p className={style.tableDataFontStyle}>11-06-2021 </p>
-                                <p className={style.tableDataFontStyle}>SWA Shah</p>
-                                <p className={style.tableDataFontStyle}>manual</p>
+                                <p className={style.tableDataFontStyle}>-</p>
+                                <p className={style.tableDataFontStyle}>-</p>
+                                <p className={style.tableDataFontStyle}>-</p>
                             </div>
                           ))
                         }

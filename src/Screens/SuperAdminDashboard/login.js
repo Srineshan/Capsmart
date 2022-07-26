@@ -61,19 +61,19 @@ const Login = (props) => {
                 <InputGroup type="email" large={true} placeholder="Enter your registered email here" className={style.marginTop10} value={user.email} onChange={(e)=>setUser({...user,email:e.target.value})}/>
                 <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Password</div>
                 <InputGroup type="password" large={true} placeholder="Enter password here" className={style.marginTop10} rightElement={EyeOpenElement(1)} value={user.password} onChange={(e)=>setUser({...user, password:e.target.value})} />
-{
-              // <button className={`${style.loginButton} ${style.marginTop30}`} onClick={login}>LOGIN</button>
-}
+                {
+              <button className={`${style.loginButton} ${style.marginTop30}`} onClick={login}>LOGIN</button>
+            }
                   {/* <Link to={'/welcome'}>
                     <button className={`${style.loginButton} ${style.marginTop30}`}>LOGIN</button>
                   </Link> */}
                   {
-                  <Link to={'/pages'}>
-                    <button className={`${style.loginButton} ${style.marginTop30}`}>LOGIN</button>
-                  </Link>
+                  // <Link to={'/pages'}>
+                  //   <button className={`${style.loginButton} ${style.marginTop30}`}>LOGIN</button>
+                  // </Link>
                   }
-                <Link to={'/forgotPassword'}>
-                  <div className={`${style.forgotPasswordStyle} ${style.marginTop30}`}>I forgot my password</div>
+                <Link to={'/setPassword'}>
+                  <div className={`${style.setPasswordStyle} ${style.marginTop30}`}>I forgot my password</div>
                 </Link>
             </div>
         </div>

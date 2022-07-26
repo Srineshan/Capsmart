@@ -8,7 +8,6 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
 
   const [userData, setUserData] = useState(selectedUsers);
   const [blockedData, setBlockedData] = useState(selectedUsers);
-  console.log('userDate', userData, selectedUsers?.sites?.sites)
 
   const [roles, setRoles] = useState([])
   const [department, setDepartment] = useState([])
@@ -28,28 +27,6 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
         setUserData({...userData, roles: [...selectedRoles, selectedValue]})}
     }
 
-    const handleDepartments = (value) => {
-      if (value !== '0') {
-        const tempSelectedDepartments = department.filter(data => data?.departmentName?.name === value).map(data => data)[0];
-
-        if (!selectedDepartments.map(data => data?.id).includes(tempSelectedDepartments?.id)) {
-          setSelectedDepartments([...selectedDepartments, tempSelectedDepartments]);
-        }
-        setUserData({...userData, sites: {
-          "sites": [
-            {
-              "id": "string",
-              "siteName": {
-                "siteName": "string"
-              },
-              "departmentList": {
-                "departments": [...selectedDepartments, tempSelectedDepartments]
-              }
-            }
-          ]
-        }})
-      }
-    }
 
     const handleSites = (value) => {
       if (value !== '0') {
@@ -106,8 +83,8 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
       });
 
       const sitesTags = selectedSites
-    .filter(data => sites.map(site => site?.id === data?.id))
-    .map((tag, index) => {
+    ?.filter(data => sites.map(site => site?.id === data?.id))
+    ?.map((tag, index) => {
       const onRemoveSite = () => {
         setSelectedSites(selectedSites.filter((t) => t?.siteName?.siteName !== tag?.siteName?.siteName));
         setUserData({...userData, sites: {
@@ -198,28 +175,6 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
                 <div className={style.extentionLableStyle}>Email Address*</div>
                 <InputGroup value={userData?.email?.officialEmail} readOnly onChange={(e) => setUserData({...userData, email: {officialEmail: e.target.value}})} />
               </div>
-              {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <div className={style.extentionLableStyle}>Department*</div>
-                  <div className={`${style.reduce10Left} ${style.marginRight}`}>
-                      <select
-                          name="class"
-                          id="Class"
-                          onChange={(e) => handleDepartments(e.target.value)}
-                          className={`${style.fullWidth} ${style.marginLeft20} `}>
-                              <option value="Select Department" >
-                                Select Department
-                              </option>
-                              {department?.map((data, index) => (
-                                <option key={`${data}-${index}`} value={data?.departmentName?.name} >
-                                  {data?.departmentName?.name}
-                                </option>
-                              ))}
-                      </select>
-                      <div className={`${style.marginTop20} ${style.marginLeft20}`}>
-                        {departmentsTags}
-                      </div>
-                    </div>
-              </div> */}
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Sites*</div>
                 <div className={`${style.reduce10Left} ${style.marginRight}`}>

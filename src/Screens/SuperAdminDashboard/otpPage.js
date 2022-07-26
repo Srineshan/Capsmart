@@ -20,7 +20,7 @@ const OTPPage = () => {
       };
 
     return(
-        <div className={style.forgotPasswordBackground}>
+        <div className={style.setPasswordBackground}>
             <div className={style.otpCard}>
                 <div className={style.otpHeading}>
                     PLEASE ENTER THE PASSCODE TO VERIFY YOUR IDENTITY

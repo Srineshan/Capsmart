@@ -43,6 +43,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [reminderFields,setReminderFields] = useState([]);
     const [documentFields,setDocumentFields] = useState([]);
     const [userName, setUserName] = useState('');
+    const [selectedRole, setSelectedRole] = useState('')
 
     console.log('userName',userName);
 
@@ -58,7 +59,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
 
     useEffect(()=>{
       getDocumentFields();
-    },[fullyExecutedContractData])
+    },[fullyExecutedContractData.length])
 
     const getUserData = async() => {
       const {data: user} = await GET('user-management-service/user');
@@ -68,7 +69,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       }
     }
 
-    const getContracts = async()=>{
+    const getContracts = async() => {
       const {data:contracts} = await GET('contract-managment-service/contracts');
       if(contracts){
         setContracts(contracts);
@@ -82,9 +83,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       }
     }
 
-    console.log('contracts',contracts);
-
-    const getAddNewManagerDialog = (value) => {
+      const getAddNewManagerDialog = (value) => {
         setAddNewManagerDialog(value);
     }
 
@@ -92,19 +91,17 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       console.log('file',e);
     }
 
-    console.log('user',user);
-
     const addContract = async() => {
       let data = {
         "contractName": {
           "contractName": contractName
         },
-        "contractId": {
-          "id": contractId.id,
-        },
         "contractType": contractType,
         "contractStatus": "DRAFT",
         "contractDetail": {
+          "contractId": {
+            "id": contractId?.id,
+          },
           "priorContract": {
             "id": contractPriorId,
             "notApplicable": contractNA,
@@ -153,20 +150,20 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
           //   ]
           // },
           "contractTerm": {
-            "startDate": contractTermPeriodFrom,
-            "endDate": contractTermPeriodTo,
-            "effectiveDate": contractEffectiveDate,
+            "startDate": contractTermPeriodFrom.toString(),
+            "endDate": contractTermPeriodTo.toString(),
+            "effectiveDate": contractEffectiveDate.toString(),
           },
           "continuationPolicy": {
             "contractPolicyType": selectedContractContinuationPolicy,
             "autoRenewalPeriod": {
               "autoRenewalTerm": {
-                "term": parseInt(autoRenewal.renewalTerm)
+                "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.renewalTerm) : 0,
               },
               "allowableAutoRenewalTerm": {
-                "term": parseInt(autoRenewal.allowableRenewalTerm)
+                "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.allowableRenewalTerm) : 0,
               },
-              "autoRenewalCalender": autoRenewal.calendar
+              "autoRenewalCalender": selectedContractContinuationPolicy === 'AUTORENEWAL' ? autoRenewal.calendar : ''
             },
             "reminderList": {
               "renewalReminderList": renewalReminder
@@ -194,7 +191,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
      })
     }
 
-
+    console.log('selected user',selectContractManager);
     const onSelect = useCallback((selectedItem) => {
       setSelectContractManager(selectedItem.id);
     }, []);
@@ -269,7 +266,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
 
     const handleReminder = (e,i) => {
       let temp = renewalReminder;
-      temp[i] = {'days':e};
+      temp[i] = {'days':parseInt(e)};
       setRenewalreminder(temp);
     }
 
@@ -292,6 +289,23 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       }
       setReminderFields(temp);
     }
+
+    const handlContractManagerOnChange = (e) => {
+      setUserName(e.target.value);
+      if(e.target.value !== ''){
+        setSelectContractManager(items?.filter(data=>data.name?.firstName === 'userName')?.map(data=>data.id));
+      }else{
+        setSelectContractManager('');
+      }
+    }
+
+    const addNewDocumentField = () => {
+      let temp = fullyExecutedContractData;
+      temp.push({type:'',name:'',desc:''});
+      setFullyExecutedContractData(temp);
+    }
+
+    console.log('contracts',contracts,priorContractItems);
 
     const getDocumentFields = () => {
       let temp = [];
@@ -349,7 +363,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract ID*</div>
                     <div className={style.displayInRow}>
-                        <InputGroup placeholder="PAMF-1106" value={contractId.id} className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
+                        <InputGroup placeholder="Contract Id" value={contractId.id} className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
                       <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked, id:''})}/>
                     </div>
                 </div>
@@ -390,11 +404,11 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                 label={fullyExecutedContract ? 'YES' : "NO"}
                             />
                             {fullyExecutedContract && (
-                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={()=>{let temp = fullyExecutedContractData;temp.push({type:'',name:'',desc:''});setFullyExecutedContractData(temp);}}>ADD MORE</button>
+                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={()=>{addNewDocumentField()}}>ADD MORE</button>
                             )}
                         </div>
                         {fullyExecutedContract && (
-                          getDocumentFields
+                          documentFields
                         )}
                     </div>
                 </div>
@@ -443,9 +457,31 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                 label={departmentSpecific ? 'YES' : "NO"}
                             />
                             {departmentSpecific && (
-                                <div className={style.displayInRow}>
-                                    <DatalistInput items={items} placeholder="Select Departments" onSelect={onSelect} className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
-                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition}>+</span></div>
+                                <div>
+                                  <div>
+                                      <select
+                                          name="class"
+                                          id="Class"
+                                          value={selectedRole || 'Select...'}
+                                          onChange={(e) => setSelectedRole(e.target.value)}
+                                          className={`${style.fullWidth} ${style.marginLeft20} `}>
+                                              <option value="Contract Manager" >
+                                              Contract Manager
+                                              </option>
+                                              <option value="User" >
+                                              User
+                                              </option>
+                                      </select>
+                                  </div>
+                                  {selectedRole === "User" && (
+                                    <div className={`${style.roleBoxStyle} ${style.marginLeft20} ${style.floatRight}`}>
+                                      {
+                                        // roles?.map(data=>(
+                                          <Checkbox label={'data.roleName'} />
+                                        // ))
+                                      }
+                                    </div>
+                                  )}
                                 </div>
                             )}
                         </div>

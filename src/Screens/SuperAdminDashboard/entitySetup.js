@@ -57,7 +57,7 @@ const EntitySetup = () => {
       const {data: data} = await GET(`entity-service/entity/${tenantID}`);
       setEntityData(data);
       let siteData = data?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
-      setEntity({id:'',customerType:"HEALTHCARE",name:data?.entityName?.entityName,type:data?.entityType?.type,websiteURL:'',multiSiteEntity:data?.sites?.length > 1,primarySiteToUseApp:false,npin:siteData?.npin?.id});
+      setEntity({id:'',customerType:"HEALTHCARE",name:data?.entityName?.entityName,type:data?.entityType?.type,websiteURL:data?.websiteURL,multiSiteEntity:data?.sites?.length > 1,primarySiteToUseApp:data.canPrimarySiteToUseApp,npin:siteData?.npin?.id});
       setAddress({city:siteData?.address?.city,state:siteData?.address?.state,zipcode:siteData?.address?.zipcode,addressLine:siteData?.address?.addressLine,country:siteData?.address?.country});
       setSelectDepartments(siteData?.departmentList?.departments);
     }
@@ -98,7 +98,6 @@ const EntitySetup = () => {
       setIsUpdated(true);
     }
 
-
       const handleTagsRemove = (tags, index) => {
         setSelectDepartments(selectDepartments?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
         setIsUpdated(true);
@@ -126,26 +125,37 @@ const EntitySetup = () => {
         [entityDepartments],
       );
 
+    console.log('websiteURL',entity);
 
     const updateEntity = async() => {
       let filteredValue = entityData?.sites?.filter(data=>data.primarySite !== true)?.map(data=>data);
       let primarySiteValue = entityData?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
-      console.log('primarySiteValue',primarySiteValue);
+      if(entity?.name === '' || entity?.type === '' || entity?.npin === '' || address?.addressLine === '' || address?.city === '' || address?.state === '' || address?.country === '' || address?.zipcode === '' || address?.addressLine === null || address?.city === null || address?.state === null || address?.country === null || address?.zipcode === null || entity?.websiteURL === null){
+        ErrorToaster('All Fields are Mandatory');
+        return;
+      }
+      if((!entity?.websiteURL?.includes('https://') && !entity?.websiteURL?.includes('http://')) || !entity?.websiteURL?.includes('.')){
+        ErrorToaster('Enter a valid Website URL');
+        return;
+      }
       let temp = {
-        "id":primarySiteValue.id,
-        "siteName": {
-          "siteName": entity.name,
+          ...( entityData?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)?.length !== 0 && {'id':primarySiteValue?.id}),
+          "siteName": {
+          "siteName": entity?.name,
         },
         "siteAdmin": {
           "id": ""
         },
+        "siteDisplayId": {
+            "id": primarySiteValue?.siteDisplayId?.id,
+        },
         "siteType": {
-          "type": entity.type,
+          "type": entity?.type,
         },
         "npin": {
-          "id": entity.npin
+          "id": entity?.npin
         },
-        "canSetupDepartment": entity.canSetupDepartment,
+        "canSetupDepartment": entity?.canSetupDepartment,
         "departmentList": {
           "departments": departmentSpecific ? selectDepartments : entityDepartments,
         },
@@ -168,6 +178,7 @@ const EntitySetup = () => {
           "entityType": {
             "type": entity?.type,
           },
+          "entityDisplayId": entityData?.entityDisplayId,
           "customerType": "HEALTHCARE",
           "websiteURL":entity?.websiteURL,
           "canPrimarySiteToUseApp":entity?.primarySiteToUseApp,
@@ -183,11 +194,10 @@ const EntitySetup = () => {
             console.log('error',error);
             ErrorToaster('Unexpected Error Updating Entity');
           });
+        setIsUpdated(false);
       }
     }
 
-
-    console.log('dept',selectDepartments);
     const handleDeptChange = (value) => {
       if(value !== ''){
         setDepartmentValue(value);
@@ -255,8 +265,8 @@ const EntitySetup = () => {
                                       <img src={UploadImg} alt="Upload" className={style.logoThumbnailUpload} />
                                       <p className={style.uploadText}>Click To Upload Logo Thumbnail</p>
                                   </div>
-                                {tenantID !== "" ?  <div>
-                                      <button className={style.entityIDButton}><span>ENTITY ID:</span>{entity.id}</button>
+                                {entityData?.entityDisplayId?.id ?  <div>
+                                      <button className={style.entityIDButton}><span>ENTITY ID:</span>{entityData?.entityDisplayId.id}</button>
                                   </div>:''}
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop30}`}>
@@ -279,7 +289,7 @@ const EntitySetup = () => {
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Entity Name*</div>
-                                  <InputGroup className={`${style.twoFieldWidth}`} value={entity?.name || 'hospital'} onChange={(e)=>handleEntity('name',e.target.value)}/>
+                                  <InputGroup className={`${style.twoFieldWidth}`} value={entity?.name} onChange={(e)=>handleEntity('name',e.target.value)}/>
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop30}`}>
                                   <div className={style.extentionLableStyle}>Entity Type*</div>
@@ -360,7 +370,7 @@ const EntitySetup = () => {
                                       {departmentSpecific && (
                                         <TagInput
                                             placeholder="Enter tags/keywords relative to the post"
-                                            values={selectDepartments?.map(data=>data?.departmentName?.name)}
+                                            values={selectDepartments?.map(data=>data?.departmentName?.name) || []}
                                             key={`tags${tags}`}
                                             className={`${style.marginTop20} ${style.tagInputStyle}`}
                                             onAdd={handleTagsAdd}

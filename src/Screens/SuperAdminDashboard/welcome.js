@@ -13,15 +13,15 @@ const Welcome = () => {
                 <div className={style.welcomeHeading}>
                 WELCOME TO TIMESMARTAI
                 </div>
-                <div className={style.accountTypeStyle}>Contract Account</div> 
+                <div className={style.accountTypeStyle}>Contract Account</div>
                 <div className={style.alignCenter}>
                     <img src={WelcomeImg} alt="Welcome Img" className={style.welcomeAccountImgStyle} />
                 </div>
                 <div className={`${style.welcomeDescription} ${style.marginTop30}`}>
-                {`This setup wizard will guide you to quickly activate your account. Once your 
-                account is activated you will be able to invite other users from your organization. 
-                Experience the difference in better managing contractor activity logs and timesheet 
-                processing. Refer to the quick <Setup Guide> or <Setup Tutorial> to see how easy it 
+                {`This setup wizard will guide you to quickly activate your account. Once your
+                account is activated you will be able to invite other users from your organization.
+                Experience the difference in better managing contractor activity logs and timesheet
+                processing. Refer to the quick <Setup Guide> or <Setup Tutorial> to see how easy it
                 is to activate a customer account.`}
                 </div>
                 <div className={`${style.welcomeDescription} ${style.marginTop20}`}>
@@ -33,15 +33,15 @@ const Welcome = () => {
                     <div className={`${style.managerDetails} ${style.marginLeft20}`}>
                         <div className={style.managerFieldGrid}>
                             <div className={style.managerLabelStyle}>MANAGER NAME:</div>
-                            <div className={style.managerFieldValueStyle}>Velroy</div>
+                            <div className={style.managerFieldValueStyle}>-</div>
                         </div>
                         <div className={style.managerFieldGrid}>
                             <div className={style.managerLabelStyle}>EMAIL ADDRESS:</div>
-                            <div className={style.managerFieldValueStyle}>velroy@sure-shield.com</div>
+                            <div className={style.managerFieldValueStyle}>-</div>
                         </div>
                         <div className={style.managerFieldGrid}>
                             <div className={style.managerLabelStyle}>PHONE NO:</div>
-                            <div className={style.managerFieldValueStyle}>387646982</div>
+                            <div className={style.managerFieldValueStyle}>-</div>
                         </div>
                     </div>
                 </div>
