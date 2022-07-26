@@ -119,26 +119,30 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
                         </div>
                     </div>
                 )}
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Timesheets label one for processing</div>
-                    <InputGroup className={style.fullWidth} value="Timesheet Name 1" />
-                </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Service Period For Timesheet Submission*</div>
-                    <div className={style.displayInRow}>
-                        <select
-                            name="class"
-                            id="Class"
-                            // value={selectedContractContinuationPolicy || 'Select...'}
-                            // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
-                            className={`${style.fullWidth}`}>
-                            <option value="Per Timesheet Period" >
-                                Per Timesheet Period
-                            </option>
-                        </select>
-                        <p className={style.threeFieldWidth}></p>
+                {timeSheetCount === '1' && (
+                    <div>
+                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                            <div className={style.extentionLableStyle}>Timesheets label one for processing</div>
+                            <InputGroup className={style.fullWidth} value="Timesheet Name 1" />
+                        </div>
+                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                            <div className={style.extentionLableStyle}>Service Period For Timesheet Submission*</div>
+                            <div className={style.displayInRow}>
+                                <select
+                                    name="class"
+                                    id="Class"
+                                    // value={selectedContractContinuationPolicy || 'Select...'}
+                                    // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                    className={`${style.fullWidth}`}>
+                                    <option value="Per Timesheet Period" >
+                                        Per Timesheet Period
+                                    </option>
+                                </select>
+                                <p className={style.threeFieldWidth}></p>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                )}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contractor Business Contact Same As Contractor*</div>
                     <div className={`${style.displayInRow}  `}>
@@ -183,14 +187,14 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Planned Absence Notification Days limit*</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value="12" className={style.editableTextStyleDays} />
+                        <EditableText value={plannedAbsence} onChange={(e) => setPlannedAbsence(e)} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed *</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value="12" className={style.editableTextStyleDays} />
+                        <EditableText value={maxUnplannedAbsence} onChange={(e) => setMaxUnplannedAbsence(e)} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>
@@ -198,30 +202,30 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
                     <div className={style.extentionLableStyle}>Invoice Processing Day Range Goal*</div>
                     <div className={style.displayInRow}>
                         <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                            <EditableText value="12" className={style.editableTextStyleDays} />
+                            <EditableText value={invoiceProcessingDay} onChange={(e) => setInvoiceProcessingDay(e)} className={style.editableTextStyleDays} />
                             <div className={style.textElementWithoutBackgroundDays}>Days</div>
                         </div>
                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} `}>
                             <div className={style.textElementWithNurse}>Threshold</div>
-                            <EditableText value="12" className={style.editableTextThresholdStyle} />
+                            <EditableText value={invoiceProcessingDayThreshold} onChange={(e) => setInvoiceProcessingDayThreshold(e)} className={style.editableTextThresholdStyle} />
                         </div>
                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder}`}>
                             <div className={style.textElementWithNurse}>Goal</div>
-                            <EditableText value="6" className={style.editableTextThresholdStyle} />
+                            <EditableText value={invoiceProcessingDayGoal} onChange={(e) => setInvoiceProcessingDayGoal(e)} className={style.editableTextThresholdStyle} />
                         </div>
                     </div>
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on activity service date *</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value="12" className={style.editableTextStyleDays} />
+                        <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate} onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e)} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on contract end date</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value="12" className={style.editableTextStyleDays} />
+                        <EditableText value={dayLimitForSubmissionBasedOnContractEndDate} onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e)} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>

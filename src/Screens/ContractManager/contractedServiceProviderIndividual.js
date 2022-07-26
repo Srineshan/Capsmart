@@ -11,6 +11,8 @@ import { useTheme } from '@mui/material/styles';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
+import {POST, GET, PUT, TenantID} from './contractDataSaver';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
@@ -69,6 +71,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
     const [departmentLevelTitle, setDepartmentLevelTitle] = useState('');
     const [siteLevelSite, setSiteLevelSite] = useState('');
     const [departmentLevelSite, setDepartmentLevelSite] = useState('');
+    const [roles, setRoles] = useState([])
+    const [selectedRoles, setSelectedRoles] = useState([])
     const handleChange = (event) => {
         const {
         target: { value },
@@ -78,6 +82,152 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
         typeof value === 'string' ? value.split(',') : value,
         );
     };
+
+    const handleSave = () => {
+        const data = {
+            "name": {
+                "firstName": "string",
+                "lastName": "string",
+                "suffix": "string"
+              },
+              "userType": "ADMIN",
+              "contract": [
+                {
+                  "id": "string",
+                  "contractName": {
+                    "contractName": "string"
+                  }
+                }
+              ],
+              "title": {
+                "title": "string"
+              },
+              "email": {
+                "officialEmail": "string"
+              },
+              "password": {
+                "password": "string"
+              },
+              "communication": {
+                "personalEmail": "string",
+                "mobileNumber": "string",
+                "landlineNumber": "string",
+                "mobileNumberNotApplicable": true
+              },
+              "roles": [
+                {
+                  "id": "string",
+                  "roleName": "string",
+                  "roleDescription": "string",
+                  "tenant": {
+                    "tenantId": "string"
+                  }
+                }
+              ],
+              "address": {
+                "city": "string",
+                "state": "string",
+                "zipcode": "string"
+              },
+              "tenant": {
+                "tenantId": "string"
+              },
+              "sites": {
+                "sites": [
+                  {
+                    "id": "string",
+                    "siteName": {
+                      "siteName": "string"
+                    },
+                    "departmentList": {
+                      "departments": [
+                        {
+                          "id": "string",
+                          "departmentName": {
+                            "name": "string"
+                          },
+                          "departmentHead": {
+                            "id": "string"
+                          },
+                          "departmentResponsibility": {
+                            "title": "string"
+                          }
+                        }
+                      ]
+                    },
+                    "siteResponsibility": {
+                      "title": "string"
+                    }
+                  }
+                ]
+              },
+              "serviceProviderType": "string",
+              "licenceDetails": {
+                "medicalLicense": "string",
+                "licenseExpiryDate": "2022-07-26",
+                "deaNumber": "string",
+                "deaExpiryDate": "2022-07-26",
+                "boardCertification": [
+                  "string"
+                ]
+              },
+              "userProxy": {
+                "myProxy": {
+                  "proxyIdList": [
+                    {
+                      "id": "string",
+                      "name": "string"
+                    }
+                  ]
+                },
+                "proxyFor": {
+                  "proxyIdList": [
+                    {
+                      "id": "string",
+                      "name": "string"
+                    }
+                  ]
+                }
+              },
+              "activated": true,
+              "siteLevelResponsible": true,
+              "departmentLevelResponsible": true,
+              "blocked": true,
+              "npin": {
+                "missing": true,
+                "notApplicable": true,
+                "npin": "string"
+              }
+          }
+          const response = await POST('user-management-service/user/register', JSON.stringify(user));
+            if(response){
+                SuccessToaster('Business Entity Updated Successfully');
+            }
+            else {
+                ErrorToaster('Unexpected Error');
+            }
+
+          console.log(data)
+    }
+
+    const handleRoles = (value) => {
+        if (value !== '0') {
+          const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
+   
+          if (!selectedRoles.map(data => data?.roleName).includes(value)) {
+            setSelectedRoles([...selectedRoles, selectedValue]);
+          }
+        }
+    }
+
+    const getRoles = async() => {
+        const {data: roles} = await GET('user-management-service/roles');
+        setRoles(roles);
+    };
+
+    useEffect(()=>{
+        getRoles();
+    },[])
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -112,6 +262,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                     <div className={style.extentionLableStyle}>NPIN*</div>
                     <div className={style.grid3}>
                     <InputGroup className={style.fullWidth}
+                    placeholder="NPIN"
                     value={npin}
                     onChange={(e) => setNpin(e.target.value)}/>
                     <FormGroup>
@@ -301,7 +452,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                             tagProps={getTagProps}
                             rightElement={rightIconElement}
                         /> */}
-                        <FormControl sx={{ m: 1, width: '100%' }}>
+                        <FormControl sx={{ width: '100%'}}>
                             <Select
                             labelId="demo-multiple-chip-label"
                             id="demo-multiple-chip"
@@ -309,7 +460,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                             value={personName}
                             onChange={handleChange}
                             renderValue={(selected) => (
-                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }} className={style.selectMultipleCheckbox}>
                                 {selected.map((value) => (
                                     <Chip key={value} label={value} />
                                 ))}
@@ -333,7 +484,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                 </div>
             </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
+                <button className={style.newContractOutlinedButton} onClick={() => handleSave()}>SAVE IN-PROGRESS</button>
                 <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {getViewPage3(true);getCurrentPage('Contractor Business Entity')}}>CONTINUE</button>
             </div>
         </div>

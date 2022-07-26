@@ -10,7 +10,7 @@ import PageFooterIcon from './../../images/pageFooterIcon.png';
 import ThreeDot from './../../images/threeDot.png';
 import style from './index.module.scss';
 
-const ExpiredOrTerminated = ({getSelectedContract, getAddContract}) => {
+const ExpiredOrTerminated = ({getSelectedContract, getAddContract, expiredContracts}) => {
     const [showOptions, setShowOptions] = useState(false);
     const menuRef = useRef(null);
     useOptionsHide(menuRef);

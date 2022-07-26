@@ -36,7 +36,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
     const [membershipRenewalDate, setmembershipRenewalDate] = useState('');
     const [expirationDate, setExpirationDate] = useState('');
     const [fileName, setFileName] = useState('');
-    const [fileData, setFileData] = useState();
+    const [fileData, setFileData] = useState([]);
 
     const handleContinue = async () => {
       console.log('entered')
@@ -108,13 +108,13 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
       const formData = new FormData();
       let file = fileData;
       console.log(file)
-       formData.append('documentationProof', new Blob([JSON.stringify(data)], {
-          headers: {'Content-Type': 'multipart/form-data' }
+       formData.append('documentationProof', new Blob([JSON.stringify([data])], {
+        type: "application/json"
         }));
        formData.append('documentProofFiles',file);
        console.log('formData',formData);
 
-       const response = await POST(`contract-managment-service/contracts/${contractId}/DocumentationProof`, JSON.stringify(formData));
+       const response = await POST(`contract-managment-service/contracts/${contractId}/DocumentationProof`, formData);
        if(response){
            SuccessToaster('Documentation Proof Updated Successfully');
        }
@@ -125,7 +125,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
     }
 
     const handleFileUpload = (e) => {
-      setFileData(e.target.files[0])
+      setFileData([...fileData ,e.target.files[0]])
     }
 
     console.log(isMultipleContract)
