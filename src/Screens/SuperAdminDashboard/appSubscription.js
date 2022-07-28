@@ -77,8 +77,6 @@ const AppSubscription = ({getActiveStep}) => {
       setPoaNumber(data?.subscriptionPlan?.poaNumber?.poaNumber);
     }
 
-    console.log('billing',billing);
-
     const options = [
         { name: 'Department 1' },
         { name: 'Department 2' },
@@ -124,6 +122,7 @@ const AppSubscription = ({getActiveStep}) => {
         "id": entityData?.id,
         "entityName": entityData?.entityName,
         "entityType": entityData?.entityType,
+        "entityDisplayId": entityData?.entityDisplayId,
         "customerType": entityData?.customerType,
         "sites": entityData?.sites,
         "subscriptionPlan": {
@@ -334,7 +333,7 @@ const AppSubscription = ({getActiveStep}) => {
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Contract ID ( CID )*</div>
                                 <div className={style.displayInRow}>
-                                    <InputGroup className={style.fourFieldWidth} value={contract?.contractID} disabled placeholder="PAMF-1106"
+                                    <InputGroup className={style.fourFieldWidth} value={contract?.contractID} disabled placeholder="Contract Id"
                                     onChange={(e) => setContract({...contract, contractID: e.target.value})}  />
                                     <RadioGroup
                                         inline={true}

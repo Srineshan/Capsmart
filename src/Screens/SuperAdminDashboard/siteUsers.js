@@ -43,7 +43,6 @@ const SiteUsers = ({getActiveStep}) => {
     const [showUserTable, setShowUserTable] = useState(true);
     const [selectedSites, setSelectedSites] = useState([]);
     const [siteID, setSiteID] = useState('3578689');
-    const [alertDialog, setAlertDialog] = useState(false);
     const [showBulkUploadDialog, setShowBulkUploadDialog] = useState(false);
     const [showUploading, setShowUploading] = useState(false);
     const [isUploaded, setIsUploaded] = useState(false);
@@ -329,11 +328,20 @@ const SiteUsers = ({getActiveStep}) => {
                                             <option value="Select" >
                                             Select
                                             </option>
-                                            <option value="title1" >
-                                            title1
+                                            <option value="Anesthesiologist" >
+                                            Anesthesiologist
                                             </option>
-                                            <option value="title2" >
-                                            title2
+                                            <option value="Cardiologist" >
+                                            Cardiologist
+                                            </option>
+                                            <option value="Chief Medical Information" >
+                                            Chief Medical Information
+                                            </option>
+                                            <option value="Chief Medical Officer" >
+                                            Chief Medical Officer
+                                            </option>
+                                            <option value="Chief of Staff" >
+                                            Chief of Staff
                                             </option>
                                     </select>
                                 </div>
@@ -412,7 +420,7 @@ const SiteUsers = ({getActiveStep}) => {
                                     <button className={style.outlinedButton} onClick={addUser}>SAVE IN-PROGRESS</button>
                                     <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={addUser}>SAVE & ADD MORE</button>
                                     {/* <Link to={'/appSubscription'}> */}
-                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => getActiveStep('appSubscription')}>CONTINUE</button>
+                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {getActiveStep('appSubscription')}}>CONTINUE</button>
                                     {/* </Link> */}
                                 </div>
                             </div>
@@ -455,28 +463,12 @@ const SiteUsers = ({getActiveStep}) => {
                     </div>
                     <div className={` ${style.floatRight} ${style.marginTop20} ${style.marginRightForPositionButton}`}>
                         <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setAlertDialog(true)}>CONTINUE</button>
+                        <Link to={'/appSubscription'}>
+                            <button className={`${style.buttonStyle} ${style.marginLeft20}`}>CONTINUE</button>
+                        </Link>
                     </div>
                 </div>
             )}
-            <Dialog isOpen={alertDialog} onClose={() => setAlertDialog(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
-                <div className={`${Classes.DIALOG_BODY} ${style.cloneDialogBackground}`}>
-                    <div className={style.spaceBetween}>
-                        <p className={style.extensionStyle}>SETUP ALERT</p>
-                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.alertCrossStyle} onClick={() => setAlertDialog(false)}  />
-                    </div>
-                    <div className={style.extensionBorder}></div>
-                    <p className={`${style.cloneContent} ${style.marginTop20}`}>Do you want to setup registered users for the different sites at this time?</p>
-                    <div>
-                        <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                            <button className={`${style.cloneOutlinedButton} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => setAlertDialog(false)}>NO</button>
-                            <Link to={'/appSubscription'}>
-                                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`}>YES</button>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </Dialog>
             <Dialog isOpen={showBulkUploadDialog} onClose={() => setShowBulkUploadDialog(false)} className={`${style.bulkUploadDialog} ${style.dialogPaddingBottom}`}>
                 <div className={`${Classes.DIALOG_BODY} ${style.bulkUploadDialogBackground}`}>
                     <div className={style.spaceBetween}>

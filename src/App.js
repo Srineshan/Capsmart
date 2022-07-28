@@ -3,7 +3,7 @@ import { BrowserRouter as Router , Routes , Route} from 'react-router-dom';
 import ActiveContracts from './Screens/ContractManager';
 import Welcome from './Screens/SuperAdminDashboard/welcome';
 import Login from './Screens/SuperAdminDashboard/login';
-import ForgotPassword from './Screens/SuperAdminDashboard/forgotPassword';
+import SetPassword from './Screens/SuperAdminDashboard/setPassword';
 import EntitySetup from './Screens/SuperAdminDashboard/entitySetup';
 import EntitySystemAdmin from './Screens/SuperAdminDashboard/entitySystemAdmin';
 import SiteInformation from './Screens/SuperAdminDashboard/siteInformation';
@@ -34,7 +34,7 @@ const App = ({props}) => {
           <Route  path="/contracts" element={<ActiveContracts />}/>
           <Route  path="/user" element={<Contracts />}/>
           <Route  path="/pages" element={<EntryPage />}/>
-          <Route  path="/forgotPassword" element={<ForgotPassword />}/>
+          <Route  path="/setPassword" element={<SetPassword />}/>
           <Route  path="/welcome" element={<Welcome />}/>
           <Route  path="/entitySetup" element={<EntitySetup />}/>
           <Route  path="/entitySystemAdmin" element={<EntitySystemAdmin />}/>
