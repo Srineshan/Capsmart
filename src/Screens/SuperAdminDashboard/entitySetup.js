@@ -20,6 +20,7 @@ import SiteUsers from './siteUsers';
 import axios from "axios";
 import AppSubscription from './appSubscription';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import EntitySystemAdmin from './entitySystemAdmin';
 
 const EntitySetup = () => {
     const [tags, setTags] = useState([]);
@@ -207,17 +208,17 @@ const EntitySetup = () => {
                       </div>
                       <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                   </div>
-                  {/* <div>
-                      <div className={style.stepperImgBackground}>
-                          <img src={Step2} alt="Step2" className={style.stepperImgStyle} />
-                      </div>
-                      <p className={style.entityTextColor}>ENTITY SYSTEM ADMIN</p>
-                  </div> */}
                   <div onClick={() => getActiveStep('siteInformation')}>
                       <div className={style.stepperImgBackground}>
-                          <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
+                          <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
                       </div>
                       <p className={style.entityTextColor}>SITES FOR APP USE</p>
+                  </div>
+                  <div onClick={() => getActiveStep('entitySystemAdmin')}>
+                      <div className={style.stepperImgBackground}>
+                          <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                      </div>
+                      <p className={style.entityTextColor}>ENTITY SYSTEM ADMIN</p>
                   </div>
                   <div onClick={() => getActiveStep('siteUsers')}>
                       <div className={style.stepperImgBackground}>
@@ -384,7 +385,9 @@ const EntitySetup = () => {
               </div>
           </div>
           ) : activeStep === "siteInformation" ? (
-              <SiteInformation getActiveStep={getActiveStep} />
+            <SiteInformation getActiveStep={getActiveStep} />
+          ) : activeStep === "entitySystemAdmin" ? (
+            <EntitySystemAdmin getActiveStep={getActiveStep} />
           ) : activeStep === "siteUsers" ? (
             <SiteUsers getActiveStep={getActiveStep} />
           ) : (

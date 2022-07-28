@@ -246,6 +246,11 @@ body{
     color: white;
 }
 
+.customerSetupText{
+    font: normal normal 600 15px/28px Montserrat;
+    color: #7165E3;
+}
+
 .welcomeAccountImgStyle{
     height: 120px;
     width: 120px;
@@ -409,24 +414,24 @@ body{
 }
 
 .stepperDivider3{
-    // background: linear-gradient(to right,#7165E3 50%, #E9E9F0 50%) !important;
-    background: linear-gradient(to right,#7165E3 35%, #E9E9F0 35%) !important;
+    background: linear-gradient(to right,#7165E3 50%, #E9E9F0 50%) !important;
+    // background: linear-gradient(to right,#7165E3 35%, #E9E9F0 35%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider4{
-    // background: linear-gradient(to right,#7165E3 70%, #E9E9F0 70%) !important;
-    background: linear-gradient(to right,#7165E3 60%, #E9E9F0 60%) !important;
+    background: linear-gradient(to right,#7165E3 70%, #E9E9F0 70%) !important;
+    // background: linear-gradient(to right,#7165E3 60%, #E9E9F0 60%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider5{
-    // background: linear-gradient(to right,#7165E3 90%, #E9E9F0 90%) !important;
-    background: linear-gradient(to right,#7165E3 85%, #E9E9F0 85%) !important;
+    background: linear-gradient(to right,#7165E3 90%, #E9E9F0 90%) !important;
+    // background: linear-gradient(to right,#7165E3 85%, #E9E9F0 85%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
@@ -434,7 +439,7 @@ body{
 
 .stepperGrid{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 }
 
 .stepperMargin{
@@ -456,7 +461,7 @@ body{
     letter-spacing: 0.8px;
     color: #CDCECE;
     padding-top: 10px;
-    margin-left: -8%;
+    margin-left: 15%;
 }
 
 .activeEntityTextColor{
@@ -723,12 +728,72 @@ body{
     grid-template-columns: 15% 15% 14% 14% 14% 14% 14%;
 }
 
+.tableHeaderActiveCustomer{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    padding-left: 20px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 5% 15% 10% 10% 9% 10% 15% 5% 10% 6% !important;
+}
+
+.tableHeaderTrialCustomer{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    padding-left: 20px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 5% 15% 10% 10% 9% 10% 10% 5% 10% 6% 5% !important;
+}
+
+.tableHeaderTerminatedCustomer{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    padding-left: 20px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 5% 15% 10% 10% 5% 10% 9% 15% 10% 6% !important;
+}
+
+.tableHeaderFeedbackCustomer{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    padding-left: 20px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 5% 15% 10% 10% 12% 10% 9% 10% 10% 4% !important;
+}
+
 .tableHeaderFontStyle{
     font: normal normal bold 13px/17px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
     text-transform: uppercase;
-    opacity: 1;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.tableHeaderFontStyleActiveCustomer{
+    font: normal normal bold 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
     text-align: left;
     margin-top: 10px;
 }
@@ -742,6 +807,58 @@ body{
     display: flex;
     align-items: center;
     margin-top: 5px;
+}
+
+.tableDataActiveCustomer{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    min-height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: 5% 15% 10% 10% 10% 10% 10% 5% 15% 5% !important;
+}
+
+.tableDataTrialCustomer{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    min-height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: 5% 15% 10% 10% 10% 10% 10% 5% 10% 5% 5% !important;
+}
+
+.tableDataTerminatedCustomer{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    min-height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: 5% 15% 10% 10% 5% 10% 9% 15% 10% 6% !important;
+}
+
+.tableDataFeedbackCustomer{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    min-height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: 5% 15% 10% 10% 12% 10% 9% 10% 10% 4% !important;
 }
 
 .displayInCol{
@@ -766,6 +883,15 @@ body{
     color: #52575D;
     opacity: 1;
     margin-right: 20px;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.tableDataFontStyleActiveCustomers{
+    font: normal normal normal 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 1;
     text-align: left;
     margin-top: 10px;
 }
@@ -1100,13 +1226,19 @@ body{
 }
 
 .bigCardStyle{
-    height: calc(100vh - 265px);
+    height: calc(100vh - 320px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
     border-radius: 16px;
     opacity: 1;
-    padding-top: 5px;
+    padding: 5px;
+}
+
+.grid4{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
 }
 
 .grid5{
@@ -1122,8 +1254,11 @@ body{
     margin-top: 20px;
 }
 
-.bigCalendarLeftCardWidth{
-    margin-right: 15px;
+.bigCardGrid2{
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    grid-gap: 10px;
+    margin-top: 20px;
 }
 
 .userLogo{
@@ -1131,13 +1266,6 @@ body{
     height: 53px;
     border-radius: 50%;
 
-}
-
-.alignCenter{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
 }
 
 .reducedOpacity{
@@ -1198,6 +1326,14 @@ body{
     margin-left: 15px;
 }
 
+.chevronRightStyle2{
+    width: 30px;
+    height: 30px;
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    opacity: 1;
+    border-radius: 50%;
+}
+
 .headingForContracts{
     font: normal normal bold 17px/15px Montserrat;
     letter-spacing: 0px;
@@ -1217,6 +1353,17 @@ body{
     font-weight: 900;
     margin-right: 5px;
     margin-top: 5px;
+    @include breakpoint(md) {
+        font-size: 40px;
+    }
+}
+
+.headingCountForCustomers{
+    color: #52575D;
+    font-size: 35px !important;
+    font-weight: 900;
+    margin-right: 5px;
+    margin-bottom: 30px !important;
     @include breakpoint(md) {
         font-size: 40px;
     }
@@ -1271,7 +1418,7 @@ body{
 
 .statisticsHeading{
     border-bottom:2px solid #EBF2F7;
-    padding-bottom:20px;
+    padding-bottom:10px;
     text-align: center;
 }
 
@@ -1333,7 +1480,7 @@ body{
 }
 
 .activeContractsWidth{
-    width: 220px;
+    width: 100%;
     margin-top: 10px;
     text-align: left;
 }
@@ -1376,7 +1523,7 @@ body{
 }
 
 .contractButton{
-    width: 184px;
+    width: 150px;
     height: 40px;
     box-shadow: 0px 3px 11px var(--unnamed-color-7165e3);
     background: #7165E3 0% 0% no-repeat padding-box;
@@ -1386,7 +1533,7 @@ body{
     border: none;
     color: white;
     font: normal normal 600 16px/21px Montserrat;
-    margin: 15px 20px 0 0;
+    margin: -5px 20px 0 0;
     cursor: pointer;
     @include breakpoint(md) {
         font: normal normal 600 12px/10px Montserrat;
@@ -1535,6 +1682,17 @@ body{
     margin-top: 10px;
 }
 
+.tableDataFontStyleAlerts{
+    font: normal normal normal 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+    text-align: left;
+    width: 10%;
+    margin-top: 10px;
+}
+
 .multipleDataTextWidth{
     font: normal normal normal 13px/17px Montserrat;
     letter-spacing: 0px;
@@ -1636,7 +1794,7 @@ body{
     position: absolute;
     right: 50;
     margin-top: -160px;
-    margin-left: 70%;
+    margin-left: 80%;
 }
 
 .poweredBy{
@@ -1680,4 +1838,72 @@ body{
     opacity: 0.75;
     color: white;
     font-weight: 600;
+}
+
+.width15Percent{
+    width: 15% !important;
+}
+
+.width20Percent{
+    width: 20%;
+}
+
+.width30Percent{
+    width: 40% !important;
+}
+
+.sideBarHeadingStyle{
+    margin-top: 0;
+    margin-left: 10%;
+}
+
+.alternativeBackgroundStyle{
+    background-color: #ebe9fb;
+}
+
+.linkStyle{
+    text-decoration: none;
+}
+
+.chevronCardStyle{
+    height: 40px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 6px;
+    opacity: 1;
+    cursor: pointer;
+    position: relative;
+}
+
+.openCardStyle{
+    background-color: #ebe9fb;
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userNameStyle{
+    text-align: left;
+    font: normal normal 600 15px/13px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    height: 40px;
+}
+
+.loginStatus{
+    text-align: left;
+    font: normal normal normal 11px/15px Montserrat;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+    max-width: 200px;
+    height: 40px;
+    margin-top: 0px;
+}
+
+.justifyCenter{
+    display: flex;
+    justify-content: center;
 }

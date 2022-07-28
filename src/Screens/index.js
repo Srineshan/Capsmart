@@ -34,7 +34,8 @@ const EntryPage = () => {
                         <div className={style.headingStyle}>User Management</div>
                     </div>
                 </Link>
-                <Link to={'/welcome'}>
+                <Link to={'/tasksAndAlerts'}>
+                {/* <Link to={'/welcome'}> */}
                     <div className={style.cursorPointer}>
                         <div className={style.roundedBackgrounds}>
                         </div>

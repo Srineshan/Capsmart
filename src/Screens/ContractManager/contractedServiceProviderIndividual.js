@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import { InputGroup, RadioGroup, Radio } from '@blueprintjs/core';
+import React, {useState, useEffect} from 'react';
+import { InputGroup, RadioGroup, Radio, Tag } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
@@ -16,10 +16,10 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
-function getStyles(name, personName, theme) {
+function getStyles(role, personName, theme) {
     return {
       fontWeight:
-        personName.indexOf(name) === -1
+        personName.indexOf(role) === -1
           ? theme.typography.fontWeightRegular
           : theme.typography.fontWeightMedium,
     };
@@ -47,7 +47,8 @@ const ITEM_PADDING_TOP = 8;
   ];
   
 
-const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) => {
+const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId}) => {
+    const testContractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
     const [siteLevel, setSiteLevel] = useState(false);
     const [departmentLevel, setDepartmentLevel] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
@@ -73,29 +74,20 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
     const [departmentLevelSite, setDepartmentLevelSite] = useState('');
     const [roles, setRoles] = useState([])
     const [selectedRoles, setSelectedRoles] = useState([])
-    const handleChange = (event) => {
-        const {
-        target: { value },
-        } = event;
-        setPersonName(
-        // On autofill we get a stringified value.
-        typeof value === 'string' ? value.split(',') : value,
-        );
-    };
 
-    const handleSave = () => {
+    const handleSave = async() => {
         const data = {
             "name": {
-                "firstName": "string",
-                "lastName": "string",
-                "suffix": "string"
+                "firstName": contractorFirstName,
+                "lastName": contractorLastName,
+                "suffix": contractorNameSuffix
               },
               "userType": "ADMIN",
               "contract": [
                 {
-                  "id": "string",
+                  "id": testContractId,
                   "contractName": {
-                    "contractName": "string"
+                    "contractName": "Sample Contract 2"
                   }
                 }
               ],
@@ -103,34 +95,25 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                 "title": "string"
               },
               "email": {
-                "officialEmail": "string"
+                "officialEmail": contractorEmail
               },
               "password": {
                 "password": "string"
               },
               "communication": {
-                "personalEmail": "string",
-                "mobileNumber": "string",
+                "personalEmail": contractorEmail,
+                "mobileNumber": contractorPhone,
                 "landlineNumber": "string",
                 "mobileNumberNotApplicable": true
               },
-              "roles": [
-                {
-                  "id": "string",
-                  "roleName": "string",
-                  "roleDescription": "string",
-                  "tenant": {
-                    "tenantId": "string"
-                  }
-                }
-              ],
+              "roles": selectedRoles,
               "address": {
-                "city": "string",
-                "state": "string",
-                "zipcode": "string"
+                "city": city,
+                "state": state,
+                "zipcode": zipCode
               },
               "tenant": {
-                "tenantId": "string"
+                "tenantId": TenantID
               },
               "sites": {
                 "sites": [
@@ -161,7 +144,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                   }
                 ]
               },
-              "serviceProviderType": "string",
+              "serviceProviderType": serviceProviderType,
               "licenceDetails": {
                 "medicalLicense": "string",
                 "licenseExpiryDate": "2022-07-26",
@@ -190,18 +173,18 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                 }
               },
               "activated": true,
-              "siteLevelResponsible": true,
-              "departmentLevelResponsible": true,
+              "siteLevelResponsible": siteLevel,
+              "departmentLevelResponsible": departmentLevel,
               "blocked": true,
               "npin": {
-                "missing": true,
-                "notApplicable": true,
-                "npin": "string"
+                "missing": npinMissing,
+                "notApplicable": npinNotApplicable,
+                "npin": npin
               }
           }
-          const response = await POST('user-management-service/user/register', JSON.stringify(user));
+          const response = await POST('user-management-service/user/register', JSON.stringify(data));
             if(response){
-                SuccessToaster('Business Entity Updated Successfully');
+                SuccessToaster('User Added Successfully');
             }
             else {
                 ErrorToaster('Unexpected Error');
@@ -220,10 +203,25 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
         }
     }
 
+    const rolesTags = selectedRoles
+    .filter(data => roles.map(role => role).includes(data))
+    .map((tag, index) => {
+      const onRemove = () => {
+        setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName));
+      };
+      return (
+        <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
+          {tag?.roleName}
+        </Tag>
+      );
+    });
+
     const getRoles = async() => {
         const {data: roles} = await GET('user-management-service/roles');
         setRoles(roles);
     };
+
+    console.log(roles)
 
     useEffect(()=>{
         getRoles();
@@ -276,15 +274,15 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contractor Name*</div>
                     <div className={style.grid3}>
-                    <InputGroup className={style.fullWidth} placeholder="First"
-                    value={contractorFirstName}
-                    onChange={(e) => setContractorFirstName(e.target.value)} />
-                    <InputGroup className={style.fullWidth} placeholder="Middle"
-                    value={contractorMiddleName}
-                    onChange={(e) => setContractorMiddleName(e.target.value)}/>
-                    <InputGroup className={style.fullWidth} placeholder="Last"
-                    value={contractorLastName}
-                    onChange={(e) => setContractorLastName(e.target.value)}/>
+                        <InputGroup className={style.fullWidth} placeholder="First"
+                        value={contractorFirstName}
+                        onChange={(e) => setContractorFirstName(e.target.value)} />
+                        <InputGroup className={style.fullWidth} placeholder="Middle"
+                        value={contractorMiddleName}
+                        onChange={(e) => setContractorMiddleName(e.target.value)}/>
+                        <InputGroup className={style.fullWidth} placeholder="Last"
+                        value={contractorLastName}
+                        onChange={(e) => setContractorLastName(e.target.value)}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -441,24 +439,14 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
-                    <div>
-                        {/* <TagInput
-                            values={activityTags}
-                            onAdd={handleActivityTagsAdd}
-                            onRemove={handleActivityTagsRemove}
-                            separator={/[\s,]/}
-                            addOnBlur={true}
-                            addOnPaste={true}
-                            tagProps={getTagProps}
-                            rightElement={rightIconElement}
-                        /> */}
+                    {/* <div>
                         <FormControl sx={{ width: '100%'}}>
                             <Select
                             labelId="demo-multiple-chip-label"
                             id="demo-multiple-chip"
                             multiple
                             value={personName}
-                            onChange={handleChange}
+                            onChange={(e) => handleRoles(e.target.value)}
                             renderValue={(selected) => (
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }} className={style.selectMultipleCheckbox}>
                                 {selected.map((value) => (
@@ -468,18 +456,37 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage}) =>
                             )}
                             MenuProps={MenuProps}
                             >
-                            {names.map((name) => (
+                            {roles.map((role) => (
                                 <MenuItem
-                                key={name}
-                                value={name}
-                                style={getStyles(name, personName, theme)}
+                                key={role?.id}
+                                value={role?.roleName}
+                                style={getStyles(role, personName, theme)}
                                 >
-                                    <Checkbox checked={personName.indexOf(name) > -1} />
-                                    <ListItemText primary={name} />
+                                    <Checkbox checked={personName.indexOf(role) > -1} />
+                                    <ListItemText primary={role?.roleName} />
                                 </MenuItem>
                             ))}
                             </Select>
                         </FormControl>
+                    </div> */}
+                    <div className={`${style.reduce10Left} ${style.marginRight}`}>
+                        <select
+                            name="class"
+                            id="Class"
+                            onChange={(e) => handleRoles(e.target.value)}
+                            className={`${style.fullWidth} ${style.marginLeft20} `}>
+                                <option value="0" >
+                                Select Role-multi select
+                                </option>
+                                {roles?.map((data, index) => (
+                                <option key={`${data}-${index}`} value={data?.roleName} >
+                                    {data?.roleName}
+                                </option>
+                                ))}
+                        </select>
+                        <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                        {rolesTags}
+                        </div>
                     </div>
                 </div>
             </div>

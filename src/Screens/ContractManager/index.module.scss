@@ -1785,7 +1785,7 @@ select {
   
   .selectMultipleCheckbox{
     height: auto;
-    min-height: 1em;
+    min-height: 1em !important;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;

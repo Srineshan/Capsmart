@@ -13,7 +13,7 @@ import style from './index.module.scss';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
-const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId}) => {
+const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType, selectedContractType, getContractId, getCurrentPage}) => {
     console.log('type',contractType,selectedContractType);
     const [selectContractManager, setSelectContractManager] = useState('');
     const [siteSpecific, setSiteSpecific] = useState(false);

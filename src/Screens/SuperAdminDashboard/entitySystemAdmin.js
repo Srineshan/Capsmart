@@ -4,7 +4,7 @@ import DatalistInput from 'react-datalist-input';
 import {Link} from 'react-router-dom';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step22.png';
-import Step3 from './../../images/step3.png';
+import Step3 from './../../images/step34.png';
 import Step4 from './../../images/step4.png';
 import Step5 from './../../images/step5.png';
 import UploadImg from './../../images/uploadImg.png';
@@ -13,7 +13,7 @@ import 'react-datalist-input/dist/styles.css';
 import {saveEntity} from './entityDataSaver';
 
 
-const EntitySystemAdmin = () => {
+const EntitySystemAdmin = ({getActiveStep}) => {
   const [billingAddress,setBillingAddress] = useState({fname:'',lname:'',title:'',email:'',phone:0})
   const handleBillingData = (name,value) => {
     setBillingAddress({...billingAddress,[name]:value});
@@ -24,38 +24,38 @@ const EntitySystemAdmin = () => {
             <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
             <div className={style.stepperMargin}>
                 <div className={style.stepperGrid}>
-                    <div>
+                    <div onClick={() => getActiveStep('entitySetup')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
-                    <div>
-                        <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
-                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} />
+                    <div onClick={() => getActiveStep('siteInformation')}>
+                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
+                            <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
+                        </div>
+                        <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
+                    </div>
+                    <div onClick={() => getActiveStep('entitySystemAdmin')}>
+                        <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
+                            <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div>
-                    <div>
-                        <div className={style.stepperImgBackground}>
-                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
-                        </div>
-                        <p className={style.entityTextColor}>SITES FOR APP USE</p>
-                    </div>
-                    <div>
+                    <div onClick={() => getActiveStep('siteUsers')}>
                         <div className={style.stepperImgBackground}>
                             <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
-                        <p className={style.entityTextColor}>SITE USERS</p>
+                        <p className={style.entityTextColor}>APP USERS</p>
                     </div>
-                    <div>
+                    <div onClick={() => getActiveStep('appSubscription')}>
                         <div className={style.stepperImgBackground}>
                             <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                         </div>
                         <p className={style.entityTextColor}>APP SUBSCRIPTION</p>
                     </div>
-                </div>
-                <div className={style.stepperDivider2}></div>
+              </div>
+                <div className={style.stepperDivider3}></div>
             </div>
             <div className={style.entitySetupCardStyle}>
                 <p className={style.heading}>Entity System Admin</p>

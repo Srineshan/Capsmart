@@ -6,7 +6,7 @@ import DatalistInput from 'react-datalist-input';
 import {Link} from 'react-router-dom';
 import {GET,PUT,POST,tenantID} from './entityDataSaver';
 import Step1 from './../../images/step12.png';
-import Step2 from './../../images/step23.png';
+import Step2 from './../../images/step2.png';
 import Step3 from './../../images/step33.png';
 import Step4 from './../../images/step4.png';
 import Step5 from './../../images/step5.png';
@@ -185,18 +185,18 @@ const SiteInformation = ({getActiveStep}) => {
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
-                    {/* <div>
-                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
-                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} />
-                        </div>
-                        <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
-                    </div> */}
                     <div onClick={() => getActiveStep('siteInformation')}>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
-                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
+                            <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
+                    <div onClick={() => getActiveStep('entitySystemAdmin')}>
+                      <div className={style.stepperImgBackground}>
+                          <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                      </div>
+                      <p className={style.entityTextColor}>ENTITY SYSTEM ADMIN</p>
+                  </div>
                     <div onClick={() => getActiveStep('siteUsers')}>
                         <div className={style.stepperImgBackground}>
                             <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
@@ -210,7 +210,7 @@ const SiteInformation = ({getActiveStep}) => {
                         <p className={style.entityTextColor}>APP SUBSCRIPTION</p>
                     </div>
                 </div>
-                <div className={style.stepperDivider3}></div>
+                <div className={style.stepperDivider2}></div>
             </div>
             {!showSiteTable ? (
                 <div className={style.entitySetupCardStyle}>
