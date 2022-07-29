@@ -18,7 +18,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import ContractExtensionDialog from './contractExtensionDialog';
 import style from './index.module.scss';
 
-const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog}) => {
+const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts}) => {
     const [showOptions, setShowOptions] = useState(false);
     const menuRef = useRef(null);
     useOptionsHide(menuRef);

@@ -207,14 +207,15 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     getViewPage3={getViewPage3}
                     getCurrentPage={getCurrentPage}
                     contractId = {contractId}/>
-                ) : (selectContractInfo === "INDIVIDUAL" && viewPage1) ? (
+                ) : (viewPage1) ? (
                     <ContractIdTermLimitIndividual
                     getViewPage1={getViewPage1}
                     getViewPage2={getViewPage2}
                     contractType = {contractType}
                     selectedContractType = {selectedContractType}
-                    getContractId={getContractId}/>
-                ) : (selectContractInfo === "MULTIPLE" && (viewPage1 || viewPage2)) ? (
+                    getContractId={getContractId}
+                    getCurrentPage={getCurrentPage} />
+                ) : (selectContractInfo === "MULTIPLE" && viewPage2) ? (
                     <ContractedServicesProviderMultiple
                     getNewServiceProviderDialog={getNewServiceProviderDialog}
                     getViewPage1={getViewPage1}

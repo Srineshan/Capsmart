@@ -8,6 +8,8 @@ import style from './index.module.scss';
 const TimesheetProcessingWorkflow = ({getViewPage8, getCurrentPage, selectContractInfo}) => {
     const [applyWorkflowToAll, setApplyWorkflowToAll] = useState(true);
     const [viewWorkflowDialog, setViewWorkflowDialog] = useState(false);
+    const [workflowName, setWorkflowName] = useState('');
+    const [workflowDescription, setWorkflowDescription] = useState('');
 
     return (
         <div className={style.cloneBlockStyle}>
@@ -78,12 +80,14 @@ const TimesheetProcessingWorkflow = ({getViewPage8, getCurrentPage, selectContra
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Workflow Name</div>
                             <div className={style.displayInRow}>
-                                <InputGroup className={style.twoFieldWidth} placeholder="Workflow name 1" />
+                                <InputGroup className={style.twoFieldWidth} placeholder="Enter Workflow name" 
+                                value={workflowName} onChange={(e) => setWorkflowName(e.target.value)} />
                             </div>
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Workflow Description</div>
-                            <TextArea className={style.fullWidth} placeholder="Workflow Description" />
+                            <TextArea className={style.fullWidth} placeholder="Enter Workflow Description"
+                            value={workflowDescription} onChange={(e) => setWorkflowDescription(e.target.value)} />
                         </div>
                         {/* <div className={`${style.flowChartBoxStyle} ${style.marginTop20}`}>
                                         <ToolBar />

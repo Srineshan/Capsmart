@@ -190,17 +190,17 @@ const AppSubscription = ({getActiveStep}) => {
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
-                    {/* <div>
-                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} />
-                        </div>
-                        <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
-                    </div> */}
                     <div onClick={() => getActiveStep('siteInformation')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
+                    </div>
+                    <div onClick={() => getActiveStep('entitySystemAdmin')}>
+                      <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                          <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                      </div>
+                      <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div>
                     <div onClick={() => getActiveStep('siteUsers')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>

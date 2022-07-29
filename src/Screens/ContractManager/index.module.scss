@@ -1764,3 +1764,29 @@ select {
   .tagStyle {
     margin: 0 5px 10px 0 !important;
   }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  .customFileUpload {
+    cursor: pointer;
+    width:70px;
+    height: 50px;
+    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 1.25;
+    background-color: #f1f2f3;
+    color: #7165E3;
+    border: none;
+    position: relative;
+    top: 7px;
+  }
+  
+  .selectMultipleCheckbox{
+    height: auto;
+    min-height: 1em !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }

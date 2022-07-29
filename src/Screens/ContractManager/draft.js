@@ -12,7 +12,7 @@ import PageFooterIcon from './../../images/pageFooterIcon.png';
 import ThreeDot from './../../images/threeDot.png';
 import style from './index.module.scss';
 
-const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivationDialog, getAddContract}) => {
+const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivationDialog, getAddContract, draftContracts}) => {
     const [showOptions, setShowOptions] = useState(false);
     const menuRef = useRef(null);
     useOptionsHide(menuRef);
@@ -30,6 +30,8 @@ const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivation
           };
         }, [ref]);
       }
+
+      console.log(draftContracts)
     return(
         <div className={style.margin20}>
             <div className={`${style.grid5}`}>
