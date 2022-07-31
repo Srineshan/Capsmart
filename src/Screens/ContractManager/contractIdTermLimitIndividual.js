@@ -4,7 +4,7 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { DateInput } from "@blueprintjs/datetime";
 import DatalistInput from 'react-datalist-input';
-import {GET,PUT,POST,role,tenantID} from './contractDataSaver';
+import {GET,PUT,POST,role,tenantID} from './../dataSaver';
 import AddNewContractManager from './addNewContractManager';
 import {Auth} from './../../utils/auth'
 import {format} from 'date-fns';

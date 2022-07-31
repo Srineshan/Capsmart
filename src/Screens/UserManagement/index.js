@@ -1,11 +1,10 @@
 import React, { Fragment, useState } from 'react';
 import Navbar from './../../Components/Navbar';
-import ActiveContracts from './activeContracts';
-import CloneAlert from './cloneAlert';
+import UserTable from './userTable';
 
 import './../../index.scss';
 
-const Contracts = () => {
+const Users = () => {
     const [selectedContract, setSelectedContract] = useState('active contract');
     const [addContract, setAddContract] = useState(false);
     const [extensionDialog, setExtensionDialog] = useState(false);
@@ -48,32 +47,17 @@ const Contracts = () => {
     }
 
 return(
-        <Fragment> 
+        <Fragment>
             <Navbar />
-            <ActiveContracts 
-            getSelectedContract={getSelectedContract} 
-            getAddContract={getAddContract} 
-            getExtensionDialog={getExtensionDialog} 
-            getTerminationDialog={getTerminationDialog} 
+            <UserTable
+            getSelectedContract={getSelectedContract}
+            getAddContract={getAddContract}
+            getExtensionDialog={getExtensionDialog}
+            getTerminationDialog={getTerminationDialog}
             getCloneDialog={getCloneDialog}
                 />
-            {/* {extensionDialog && (
-                <ContractExtension getExtensionDialog={getExtensionDialog} />
-            )}
-            {terminationDialog && (
-                <ContractTermination getTerminationDialog={getTerminationDialog} />
-            )}
-            {cloneDialog && (
-                <CloneAlert getCloneDialog={getCloneDialog} getNewContract={getNewContract} />
-            )}
-            {deleteDraftDialog && (
-                <DeleteDraftContract getDeleteDraftDialog={getDeleteDraftDialog} />
-            )}
-            {contractActivationDialog && (
-                <ContractActivationRequest getContractActivationDialog={getContractActivationDialog} />
-            )} */}
         </Fragment>
     )
 }
 
-export default Contracts;
+export default Users;

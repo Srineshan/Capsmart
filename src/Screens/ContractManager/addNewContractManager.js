@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, Checkbox } from '@blueprintjs/core';
 import style from './index.module.scss';
-import {GET,PUT,POST,role,TenantID} from './contractDataSaver';
+import {GET,PUT,POST,role,TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserData}) => {

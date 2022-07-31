@@ -3,7 +3,7 @@ import { InputGroup, Icon, Intent, TextArea, RadioGroup, Radio } from '@blueprin
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
-import {GET, tenantID, PUT} from './entityDataSaver';
+import {GET, TenantID, PUT} from './../dataSaver';
 import {Link} from 'react-router-dom';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step23.png';
@@ -71,7 +71,7 @@ const AppSubscription = ({getActiveStep}) => {
     },[]);
 
     const getEntityData = async() => {
-      const {data: data} = await GET(`entity-service/entity/${tenantID}`);
+      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
       setEntityData(data);
       setBillingData({firstName:data?.billingDetails?.contactname?.firstName,lastName:data?.billingDetails?.contactname?.lastName,email:data?.billingDetails?.email?.emailId,phone:data?.billingDetails?.contactNumber?.contactNumber.toString()});
       setPoaNumber(data?.subscriptionPlan?.poaNumber?.poaNumber);

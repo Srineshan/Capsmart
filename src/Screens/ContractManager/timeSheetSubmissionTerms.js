@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { InputGroup, TagInput, EditableText } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import {POST, GET, PUT, TenantID} from './contractDataSaver';
+import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
@@ -81,7 +81,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
                         <select
                             name="class"
                             id="Class"
-                            value={timesheetValues?.[i]?.servicePeriod?.value} 
+                            value={timesheetValues?.[i]?.servicePeriod?.value}
                             onChange={(e) => setTimesheetValues([{...timesheetValues?.[i], servicePeriod: {value : e.target.value} }])}
                             className={`${style.fullWidth}`}>
                             <option value="End of the month" >

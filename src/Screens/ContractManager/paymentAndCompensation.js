@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { InputGroup, RadioGroup, Radio, EditableText } from '@blueprintjs/core';
-import {POST, GET, PUT, TenantID} from './contractDataSaver';
+import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
@@ -104,7 +104,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>RVU Quantity*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup className={style.fourFieldWidth} value={rvuQuantity?.quantity} 
+                                <InputGroup className={style.fourFieldWidth} value={rvuQuantity?.quantity}
                                 onChange={(e) => setRvuQuantity({
                                     ...rvuQuantity, quantity: e.target.value
                                 })} />
@@ -210,7 +210,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
             </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
                 <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} 
+                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
                 onClick={() => { getViewPage7(true); getCurrentPage('Timesheet Submission Terms') }}
                 // onClick={() => { handleContinue() }}
                 >CONTINUE</button>

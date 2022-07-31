@@ -3,8 +3,9 @@ import { Dialog, Classes, Icon, Intent, InputGroup, Checkbox, FileInput, RadioGr
 import { DateInput } from "@blueprintjs/datetime";
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import {GET, PUT, POST, TenantID} from './contractDataSaver';
+import {GET, PUT, POST, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import {format} from 'date-fns';
 import style from './index.module.scss';
 
 const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
@@ -33,16 +34,15 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
     const [stateOfLicensure, setStateOfLicensure] = useState('');
     const [licenseId, setLicenseId] = useState('');
     const [certificateId, setCertificateId] = useState('');
-    const [membershipRenewalDate, setmembershipRenewalDate] = useState('');
-    const [expirationDate, setExpirationDate] = useState('');
+    const [membershipRenewalDate, setmembershipRenewalDate] = useState(new Date());
+    const [expirationDate, setExpirationDate] = useState(new Date());
     const [fileName, setFileName] = useState('');
-    const [fileData, setFileData] = useState([]);
+    const [fileData, setFileData] = useState(null);
 
     const handleContinue = async () => {
       console.log('entered')
       const data = selectedPOD === 'Medical Staff Membership & Privileges' ?
       {
-        id: contractId,
         podType: {type: selectedPOD},
         dataMap: {
           dataMap: {
@@ -51,11 +51,15 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
             medicalStaffId: medicalStaffId,
           }
         },
-        expirationDate: {date: membershipRenewalDate?.toLocaleDateString()},
+        expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+        file: {
+        filePath: "",
+        fileName: fileName
+          },
         certificateCopyAvailable: certificateCopyAvbl
-      } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ? 
+      } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ?
       {
-        id: contractId,
+        // id: contractId,
         podType: {type: selectedPOD},
         dataMap: {
           dataMap: {
@@ -64,11 +68,15 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
             specialityBoardCertificateId: specialityBoardCertificateId,
           }
         },
-        expirationDate: {date: membershipRenewalDate},
+        expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+        file: {
+        filePath: "",
+        fileName: fileName
+          },
         certificateCopyAvailable: certificateCopyAvbl
-      } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ? 
+      } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ?
       {
-        id: contractId,
+        // id: contractId,
         podType: {type: selectedPOD},
         dataMap: {
           dataMap: {
@@ -77,11 +85,15 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
             insuranceCertificateId: insuranceCertificateId,
           }
         },
-        expirationDate: {date: membershipRenewalDate},
+        expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+        file: {
+        filePath: "",
+        fileName: fileName
+          },
         certificateCopyAvailable: certificateCopyAvbl
-      } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ? 
+      } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ?
       {
-        id: contractId,
+        // id: contractId,
         podType: {type: selectedPOD},
         dataMap: {
           dataMap: {
@@ -89,31 +101,53 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
             licenseId: licenseId,
           }
         },
-        expirationDate: {date: membershipRenewalDate},
+        expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+        file: {
+        filePath: "",
+        fileName: fileName
+          },
         certificateCopyAvailable: certificateCopyAvbl
-      } : selectedPOD === 'Controlled Substance DEA Registration Certificate' ? 
+      } : selectedPOD === 'Controlled Substance DEA Registration Certificate' ?
       {
-        id: contractId,
+        // id: contractId,
         podType: {type: selectedPOD},
         dataMap: {
           dataMap: {
             certificateId: certificateId,
           }
         },
-        expirationDate: {date: membershipRenewalDate},
+        expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+        file: {
+        filePath: "",
+        fileName: fileName
+          },
         certificateCopyAvailable: certificateCopyAvbl
       } : '';
       console.log('data',data);
 
+      let podData = {
+        "documentProofs" : [data]
+      }
+
+     //  const formData = new FormData();
+     //  let file = fullyExecutedContractData?.map(data=>data.file);
+     //   formData.append('contractDetail', new Blob([JSON.stringify(data)], {
+     //        type: "application/json"
+     //    }));
+     //   formData.append('contractFiles',file);
+     //   await POST('contract-managment-service/contracts/contractDetail',formData)
+     //   .then(response=>{getContractId(response);
+     //   SuccessToaster('Contract Created Successfully');
+     // }).catch(error=>{
+     //   ErrorToaster('Unexpected Error Creating Contract');
+     // })
+
       const formData = new FormData();
-      let file = fileData;
-      console.log(file)
-       formData.append('documentationProof', new Blob([JSON.stringify([data])], {
+       formData.append('documentationProof', new Blob([JSON.stringify(podData)], {
         type: "application/json"
         }));
-       formData.append('documentProofFiles',file);
-       console.log('formData',formData);
-
+       formData.append('documentProofFiles',fileData);
+       console.log('formdata',formData);
        const response = await POST(`contract-managment-service/contracts/${contractId}/DocumentationProof`, formData);
        if(response){
            SuccessToaster('Documentation Proof Updated Successfully');
@@ -125,7 +159,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
     }
 
     const handleFileUpload = (e) => {
-      setFileData([...fileData ,e.target.files[0]])
+      setFileData(e.target.files[0]);
+      setFileName(e.target.files[0]?.name);
     }
 
     console.log(isMultipleContract)
@@ -135,7 +170,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
             <label for="file-upload"  className={style.customFileUpload}>
                 Choose File
             </label>
-            <input id="file-upload" type="file" onChange={(e)=> {handleFileUpload(e);setFileName(e.target.files[0]?.name)}}/>
+            <input id="file-upload" type="file" onChange={(e)=> handleFileUpload(e)}/>
           </div>
         )
     }
@@ -180,7 +215,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                         <select
                             name="class"
                             id="Class"
-                            value={contractorName} 
+                            value={contractorName}
                             onChange={(e) => setContractorName(e.target.value)}
                             className={`${style.fullWidth} ${style.marginLeft20} `}>
                             <option >
@@ -243,7 +278,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                           <select
                               name="class"
                               id="Class"
-                              value={contractorName} 
+                              value={contractorName}
                               onChange={(e) => setContractorName(e.target.value)}
                               className={`${style.fullWidth} ${style.marginLeft20} `}>
                               <option >
@@ -258,7 +293,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                           <select
                               name="class"
                               id="Class"
-                              value={specialityBoardName} 
+                              value={specialityBoardName}
                               onChange={(e) => setSpecialityBoardName(e.target.value)}
                               className={`${style.fullWidth} ${style.marginLeft20} `}>
                               <option >
@@ -307,7 +342,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                           <select
                               name="class"
                               id="Class"
-                              value={contractorName} 
+                              value={contractorName}
                               onChange={(e) => setContractorName(e.target.value)}
                               className={`${style.fullWidth} ${style.marginLeft20} `}>
                               <option >
@@ -346,7 +381,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                               <select
                                   name="class"
                                   id="Class"
-                                  value={contractorName} 
+                                  value={contractorName}
                                   onChange={(e) => setContractorName(e.target.value)}
                                   className={`${style.fullWidth} ${style.marginLeft20} `}>
                                   <option >
@@ -370,8 +405,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                         formatDate={date => date.toLocaleDateString()}
                         parseDate={str => new Date(str)}
                         placeholder={"MM-DD-YYYY"}
-                        value={selectedPOD === 'Medical Staff Membership & Privileges' ? membershipRenewalDate : expirationDate}
-                        onChange={(e) => selectedPOD === 'Medical Staff Membership & Privileges' ? setmembershipRenewalDate(e) : setExpirationDate(e)}
+                        value={membershipRenewalDate}
+                        onChange={(e) => setmembershipRenewalDate(e)}
                     />
                 </div>
 
@@ -384,7 +419,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                           <Switch checked={certificateCopyAvbl} className={`${style.textAlignLeft}`} onChange={() => setCertificateCopyAvbl(!certificateCopyAvbl)}  />
                         }
                         className={`${style.switchFontStyle} ${style.flexLeft}`}
-                        label={certificateCopyAvbl ? 'YES' : "NO"}                 
+                        label={certificateCopyAvbl ? 'YES' : "NO"}
                     />
                     <InputGroup value={fileName}  leftElement={leftElement()} className={`${style.fullWidth}`} />
                   </div>

@@ -12,7 +12,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import UploadImg from './../../images/uploadImg.png';
 import EntityStepper from './entityStepper';
 import {Auth} from './../../utils/auth'
-import {saveEntity,GET,PUT,POST,role,tenantID} from './entityDataSaver';
+import {saveEntity,GET,PUT,POST,role,TenantID} from './../dataSaver';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 import SiteInformation from './siteInformation';
@@ -55,7 +55,7 @@ const EntitySetup = () => {
     }
 
     const getEntityData = async() => {
-      const {data: data} = await GET(`entity-service/entity/${tenantID}`);
+      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
       setEntityData(data);
       let siteData = data?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
       setEntity({id:'',customerType:"HEALTHCARE",name:data?.entityName?.entityName,type:data?.entityType?.type,websiteURL:data?.websiteURL,multiSiteEntity:data?.sites?.length > 1,primarySiteToUseApp:data.canPrimarySiteToUseApp,npin:siteData?.npin?.id});

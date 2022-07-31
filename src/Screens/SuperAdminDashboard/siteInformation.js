@@ -4,7 +4,7 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
 import {Link} from 'react-router-dom';
-import {GET,PUT,POST,tenantID} from './entityDataSaver';
+import {GET,PUT,POST,TenantID} from './../dataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step2.png';
 import Step3 from './../../images/step33.png';
@@ -44,7 +44,7 @@ const SiteInformation = ({getActiveStep}) => {
     },[]);
 
     const getEntityData = async() => {
-      const {data: data} = await GET(`entity-service/entity/${tenantID}`);
+      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
       setEntityData(data);
       if(data?.canPrimarySiteToUseApp){
         setSiteList(data?.sites);
