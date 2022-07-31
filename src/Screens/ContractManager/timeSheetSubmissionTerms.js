@@ -11,7 +11,7 @@ const VALUES3 = ['Activity Reviewer'];
 
 const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
     const contractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
-    const [timeSheetCount, setTimeSheetCount] = useState(1);
+    const [timeSheetCount, setTimeSheetCount] = useState(0);
     const [contractedTimeCommitment, setContractedTimeCommitment] = useState(false);
     const [activityTags, setActivityTags] = useState(VALUES3);
     const [contractedActivityTags, setContractedActivityTags] = useState(VALUES4);
@@ -29,7 +29,22 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
     const [timesheetSubmissionTerms, setTimesheetSubmissionTerms] = useState({});
     const [timesheetFields, setTimesheetFields] = useState([]);
     const [timesheetValues, setTimesheetValues] = useState([{
-        label: '', servicePeriod: ''
+        "timesheetLabel": {
+            "label": ""
+          },
+          "activities": [
+            {
+              "activityType": {
+                "activityType": ""
+              },
+              "performingActivity": {
+                "activity": ""
+              }
+            }
+          ],
+          "servicePeriod": {
+            "value": ""
+          }
     }]);
     const [timesheetValuesToUse, setTimesheetValuesToUse] = useState([]);
     const [timesheetActivity, setTimesheetActivity] = useState([{
@@ -51,14 +66,55 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
         minimal: true,
     });
 
+    const handleTimesheetValue = (i, name, value) => {
+        console.log(i, name, value)
+        let temp = timesheetValues;
+        if(name === 'label'){
+            temp[i] = {
+                timesheetLabel: {label: value},
+                servicePeriod: temp[i]?.servicePeriod,
+                activities: temp[i]?.activities
+            }
+        }
+        if(name === 'period'){
+            temp[i] = {
+                timesheetLabel: temp[i]?.timesheetLabel,
+                servicePeriod: {value: value},
+                activities: temp[i]?.activities
+            }
+        }
+        setTimesheetValues(temp)
+    }
+
     const getTimesheetFields = () => {
+        let tempValues = [];
+        for(let i=timesheetValues?.length; i<timeSheetCount;i++){
+            tempValues.push({
+                "timesheetLabel": {
+                    "label": ""
+                },
+                "activities": [
+                {
+                    "activityType": {
+                    "activityType": ""
+                    },
+                    "performingActivity": {
+                    "activity": ""
+                    }
+                }
+                ],
+                "servicePeriod": {
+                "value": ""
+                }
+            })
+        }
         let temp = [];
         for(let i=0;i<timeSheetCount;i++){
           temp[i] = (
-            <div key={i} className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20}`}>
+            <div key={`${i}temp${timeSheetCount + 1}`} className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20}`}>
                 <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>{`Timesheets lable ${i+1} for processing`}</div>
-                    <InputGroup className={style.fullWidth} value={timesheetValues?.[i]?.timesheetLabel?.label} onChange={(e) => setTimesheetValues([{...timesheetValues?.[i], timesheetLabel: {label : e.target.value} }])} />
+                    <InputGroup className={style.fullWidth} value={timesheetValues?.[i]?.timesheetLabel?.label} onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)} />
                 </div>
                 {timeSheetCount > 1 && (
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -82,7 +138,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
                             name="class"
                             id="Class"
                             value={timesheetValues?.[i]?.servicePeriod?.value} 
-                            onChange={(e) => setTimesheetValues([{...timesheetValues?.[i], servicePeriod: {value : e.target.value} }])}
+                            onChange={(e) => handleTimesheetValue(i, 'period', e.target.value)}
                             className={`${style.fullWidth}`}>
                             <option value="End of the month" >
                                 End of the month
@@ -108,6 +164,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
         }
         setTimesheetFields(temp);
         setTimesheetValuesToUse(timesheetValues);
+        setTimesheetValues(tempValues);
       }
 
     const getTimeSheetSubmissionTerms = async() => {
@@ -116,7 +173,6 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
     };
 
     const handleContinue = async() => {
-        console.log('entered')
         let data = {
             "timesheetSubmissionServicesCount": {
               "count": timeSheetCount
@@ -172,6 +228,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
         setInvoiceProcessingDayGoal(timesheetSubmissionTerms?.invoiceProcessing?.goal);
         setDayLimitForSubmissionBasedOnActivityServiceDate(timesheetSubmissionTerms?.dayLimit?.activityServiceDate?.days);
         setDayLimitForSubmissionBasedOnContractEndDate(timesheetSubmissionTerms?.dayLimit?.contractEndDate?.days);
+        setTimesheetValues(timesheetSubmissionTerms?.timesheetActivitiesPeriods);
     },[timesheetSubmissionTerms]);
 
     useEffect(()=>{
@@ -180,7 +237,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
 
     useEffect(()=>{
         getTimesheetFields();
-    },[timeSheetCount, timesheetValues])
+    },[timeSheetCount])
 
     return (
         <div className={style.cloneBlockStyle}>
@@ -192,105 +249,6 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
                 <div>
                     {timesheetFields}
                 </div>
-                {/* {timeSheetCount === 2 && (
-                    <div>
-                        <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                            <div className={`${style.extentionGrid}`}>
-                                <div className={style.extentionLableStyle}>Timesheets lable 1 for processing</div>
-                                <InputGroup className={style.fullWidth} value={timeSheetLabelOne} onChange={(e) => setTimeSheetLabelOne(e.target.value)} />
-                            </div>
-                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Site Specific Contract*</div>
-                                <TagInput
-                                    placeholder="Contracted Activity to include for timesheet 1*"
-                                    values={contractedActivityTags}
-                                    onAdd={handleContractedActivityTagsAdd}
-                                    onRemove={handleContractedActivityTagsRemove}
-                                    separator={/[\s,]/}
-                                    addOnBlur={true}
-                                    addOnPaste={true}
-                                    tagProps={getTagProps}
-                                />
-                            </div>
-                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Service log Period for timesheet submission*</div>
-                                <div className={style.displayInRow}>
-                                    <select
-                                        name="class"
-                                        id="Class"
-                                        // value={selectedContractContinuationPolicy || 'Select...'}
-                                        // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
-                                        className={`${style.fullWidth}`}>
-                                        <option value="End of the month" >
-                                            End of the month
-                                        </option>
-                                    </select>
-                                    <p className={style.threeFieldWidth}></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                            <div className={`${style.extentionGrid}`}>
-                                <div className={style.extentionLableStyle}>Timesheets lable 2 for processing</div>
-                                <InputGroup className={style.fullWidth} value="Timesheet Name 2" />
-                            </div>
-                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Site Specific Contract*</div>
-                                <TagInput
-                                    placeholder="Contracted Activity to include for timesheet 1*"
-                                    values={contractedActivityTags}
-                                    onAdd={handleContractedActivityTagsAdd}
-                                    onRemove={handleContractedActivityTagsRemove}
-                                    separator={/[\s,]/}
-                                    addOnBlur={true}
-                                    addOnPaste={true}
-                                    tagProps={getTagProps}
-                                />
-                            </div>
-                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Service log Period for timesheet submission*</div>
-                                <div className={style.displayInRow}>
-                                    <select
-                                        name="class"
-                                        id="Class"
-                                        // value={selectedContractContinuationPolicy || 'Select...'}
-                                        // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
-                                        className={`${style.fullWidth}`}>
-                                        <option value="End of the month" >
-                                            End of the month
-                                        </option>
-                                    </select>
-                                    <p className={style.threeFieldWidth}></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {timeSheetCount === 1 && (
-                    <div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Timesheets label one for processing</div>
-                            <InputGroup className={style.fullWidth} placeholder="Enter Timesheet Name"
-                            value={timeSheetLabelOne} onChange={(e) => setTimeSheetLabelOne(e.target.value)} />
-                        </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Service Period For Timesheet Submission*</div>
-                            <div className={style.displayInRow}>
-                                <select
-                                    name="class"
-                                    id="Class"
-                                    value={servicePeriod}
-                                    onChange={(e) => setServicePeriod(e.target.value)}
-                                    className={`${style.fullWidth}`}>
-                                    <option value="Per Timesheet Period" >
-                                        Per Timesheet Period
-                                    </option>
-                                </select>
-                                <p className={style.threeFieldWidth}></p>
-                            </div>
-                        </div>
-                    </div>
-                )} */}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
                     <div className={`${style.displayInRow}  `}>
@@ -326,15 +284,24 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
                         {timeSheetCount === 2 && (
                             <div className={style.displayInRow}>
                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} ${style.marginTop10}`}>
-                                    <EditableText value="150" className={style.editableTextSpecifiedStyle} />
+                                    <EditableText placeholder="HH" className={style.editableTextSpecifiedStyle}
+                                    value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e)} />
                                     <div className={style.textElementWithNurse}>Specified: 160</div>
                                 </div>
                                 <select
                                     name="class"
                                     id="Class"
+                                    value={contractedTimeCommitmentFrequency}
+                                    onChange={(e) => setContractedTimeCommitmentFrequency(e.target.value)}
                                     className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop10} `}>
-                                    <option value="Per Week" >
-                                        Per Week
+                                    <option value="WEEK" >
+                                        Week
+                                    </option>
+                                    <option value="MONTH" >
+                                        Month
+                                    </option>
+                                    <option value="YEAR" >
+                                        Year
                                     </option>
                                 </select>
                             </div>

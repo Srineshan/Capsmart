@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import { InputGroup, RadioGroup, Radio, Tag } from '@blueprintjs/core';
+import { InputGroup, RadioGroup, Radio, Tag, TagInput } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
+import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
@@ -46,6 +47,8 @@ const ITEM_PADDING_TOP = 8;
     'Report viewer',
   ];
   
+  const VALUES = ['Site 1', "Site 2"];
+  const VALUES2 = ['Site 1 - Department 1 - Title 1', "Site 2 - Department 2 - Title 2", "Site 3 - Department 3 - Title 3"];
 
 const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId}) => {
     const testContractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
@@ -73,7 +76,24 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     const [siteLevelSite, setSiteLevelSite] = useState('');
     const [departmentLevelSite, setDepartmentLevelSite] = useState('');
     const [roles, setRoles] = useState([])
-    const [selectedRoles, setSelectedRoles] = useState([])
+    const [selectedRoles, setSelectedRoles] = useState([]);
+    const [tags, setTags] = useState(VALUES);
+    const [tagSet2, setTagSet2] = useState(VALUES2);
+
+    const getTagProps = (_v, index) => ({
+      minimal: true,
+  });
+
+  const handleTagSet2Add = values => {
+      setTagSet2([...tags, values]);
+  };
+
+  const handleTagSet2Remove = (tags, index) => {
+    const updatedTags = [tags];
+    updatedTags.splice(index, 1);
+    tags = updatedTags;
+    setTagSet2(tags);
+  };
 
     const handleSave = async() => {
         const data = {
@@ -344,21 +364,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                         </div>
                         {siteLevel && (
                             <div className={`${style.siteLevelBoxStyle}`}>
-                                <div className={`${style.siteLevelGrid}`}>
-                                    <div className={style.marginTop}>Title*</div>
-                                    <select
-                                        name="class"
-                                        id="Class"
-                                        value={siteLevelTitle}
-                                        onChange={(e) => setSiteLevelTitle(e.target.value)}
-                                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                            <option value="type or select" >
-                                            type or select
-                                            </option>
-                                    </select>
-                                </div>
-                                {selectedContract === "Multiple Contractor" && (
-                                    <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
+                              {/* {selectedContract === "Multiple Contractor" && ( */}
+                              <div className={`${style.siteLevelGrid}`}>
                                         <div className={style.marginTop}>Site*</div>
                                         <select
                                             name="class"
@@ -371,7 +378,34 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                                                 </option>
                                         </select>
                                     </div>
-                                )}
+                                {/* )} */}
+                                <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
+                                    <div className={style.marginTop}>Title*</div>
+                                    <select
+                                        name="class"
+                                        id="Class"
+                                        value={siteLevelTitle}
+                                        onChange={(e) => setSiteLevelTitle(e.target.value)}
+                                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
+                                            <option value="type or select" >
+                                            type or select
+                                            </option>
+                                    </select>
+                                </div>
+                                <div className={`${style.addButtonPosition} ${style.marginTop20}`}>
+                                  <Button variant="outlined">Add</Button>
+                                </div>
+                                <TagInput
+                                    placeholder="Enter tags/keywords relative to the post"
+                                    values={tagSet2}
+                                    className={`${style.marginTop20}`}
+                                    onAdd={handleTagSet2Add}
+                                    onRemove={handleTagSet2Remove}
+                                    separator={/[\s,]/}
+                                    addOnBlur={true}
+                                    addOnPaste={true}
+                                    tagProps={getTagProps}
+                                />
                             </div>
                         )}
                     </div>
@@ -391,7 +425,22 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                         <div>
                             {departmentLevel && (
                                 <div className={`${style.departmentLevelBoxStyle}`}>
+                                  {/* {selectedContract === "Multiple Contractor" && ( */}
                                     <div className={`${style.siteLevelGrid}`}>
+                                        <div className={style.marginTop}>Site*</div>
+                                        <select
+                                            name="class"
+                                            id="Class"
+                                            value={departmentLevelSite}
+                                            onChange={(e) => setDepartmentLevelSite(e.target.value)}
+                                            className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
+                                                <option value="type or select" >
+                                                type or select
+                                                </option>
+                                        </select>
+                                      </div>
+                                    {/* )} */}
+                                    <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                                         <div className={style.marginTop}>Department*</div>
                                         <select
                                             name="class"
@@ -417,21 +466,20 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                                                 </option>
                                         </select>
                                     </div>
-                                    {selectedContract === "Multiple Contractor" && (
-                                        <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
-                                            <div className={style.marginTop}>Site*</div>
-                                            <select
-                                                name="class"
-                                                id="Class"
-                                                value={departmentLevelSite}
-                                                onChange={(e) => setDepartmentLevelSite(e.target.value)}
-                                                className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                    <option value="type or select" >
-                                                    type or select
-                                                    </option>
-                                            </select>
-                                        </div>
-                                    )}
+                                    <div className={`${style.addButtonPosition} ${style.marginTop20}`}>
+                                      <Button variant="outlined">Add</Button>
+                                    </div>
+                                    <TagInput
+                                        placeholder="Enter tags/keywords relative to the post"
+                                        values={tagSet2}
+                                        className={`${style.marginTop20}`}
+                                        onAdd={handleTagSet2Add}
+                                        onRemove={handleTagSet2Remove}
+                                        separator={/[\s,]/}
+                                        addOnBlur={true}
+                                        addOnPaste={true}
+                                        tagProps={getTagProps}
+                                    />
                                 </div>
                             )}
                         </div>

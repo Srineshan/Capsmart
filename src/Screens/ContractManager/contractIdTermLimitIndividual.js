@@ -364,7 +364,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                     <div className={style.extentionLableStyle}>Contract ID*</div>
                     <div className={style.displayInRow}>
                         <InputGroup placeholder="Contract Id" value={contractId.id} className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
-                      <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked, id:''})}/>
+                      <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked, id:''})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                     </div>
                 </div>
                 <div className={contracts?.length !== 0 ? `${style.extentionGrid} ${style.marginTop20}`:`${style.extentionGrid} ${style.marginTop20} ${style.disabledView} `}>
@@ -544,8 +544,8 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                                 value={selectedContractContinuationPolicy || 'Select...'}
                                 onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
                                 className={`${style.fullWidth} ${style.marginLeft20} `}>
-                                    <option value="Select Value" >
-                                    Select Value
+                                    <option value="0" >
+                                    Choose Your Contract Continuation Policy
                                     </option>
                                     <option value="AUTORENEWAL" >
                                     Auto Renewal
