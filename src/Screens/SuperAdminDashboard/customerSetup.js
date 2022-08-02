@@ -1,5 +1,5 @@
-import React from 'react';
-import { Icon, Intent } from '@blueprintjs/core';
+import React, {useState} from 'react';
+import { Icon, Intent, RadioGroup, Radio } from '@blueprintjs/core';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
@@ -8,6 +8,19 @@ import WelcomeImg from './../../images/welcomeNewAccountImg.png';
 import style from './index.module.scss';
 
 const CustomerSetup = () => {
+  const [selectedContractType,setSelectedContractType] = useState(sessionStorage.getItem('type'));
+  const handleContractType = (value,type) => {
+    if(value && type  === 'contract'){
+      sessionStorage.setItem('type','contract');
+      setSelectedContractType('contract');
+    }else if(value && type === 'trial'){
+      sessionStorage.setItem('type','trial');
+      setSelectedContractType('trial');
+    }else{
+      sessionStorage.removeItem('type');
+    }
+
+  }
 
     return(
         <div className={style.welcomeBackground}>
@@ -16,15 +29,15 @@ const CustomerSetup = () => {
                 <div className={style.welcomeHeading}>
                 WELCOME TO TIMESMARTAI
                 </div>
-                <div className={style.customerSetupText}>CUSTOMER SETUP WIZARD</div> 
+                <div className={style.customerSetupText}>CUSTOMER SETUP WIZARD</div>
                 <div className={style.alignCenter}>
                     <img src={WelcomeImg} alt="Welcome Img" className={style.welcomeAccountImgStyle} />
                 </div>
                 <div className={`${style.welcomeDescription} ${style.marginTop30}`}>
-                {`This setup wizard will guide you to quickly activate your account. Once your 
-                account is activated you will be able to invite other users from your organization. 
-                Experience the difference in better managing contractor activity logs and timesheet 
-                processing. Refer to the quick <Setup Guide> or <Setup Tutorial> to see how easy it 
+                {`This setup wizard will guide you to quickly activate your account. Once your
+                account is activated you will be able to invite other users from your organization.
+                Experience the difference in better managing contractor activity logs and timesheet
+                processing. Refer to the quick <Setup Guide> or <Setup Tutorial> to see how easy it
                 is to activate a customer account.`}
                 </div>
                 <div className={`${style.welcomeDescription} ${style.marginTop20}`}>
@@ -54,14 +67,14 @@ const CustomerSetup = () => {
                     </div>
                     <div className={style.justifyCenter}>
                         <div className={`${style.textAlignLeft} ${style.marginTop20}`}>
-                            <FormGroup>
-                                <FormControlLabel control={<Checkbox value="Contract Account" color="default" />} label="Contract Account"
+                        <FormGroup>
+                                <FormControlLabel  control={<Checkbox value="Contract Account" color="default" onChange={(e)=>handleContractType(e.target.value,'contract')}/>} label="Contract Account"
                                     sx={{
                                         color: 'white'
                                     }} />
                             </FormGroup>
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox value="Trial account" color="default" />} label="Trial account"
+                                <FormControlLabel control={<Checkbox value="Trial account" color="default" onChange={(e)=>handleContractType(e.target.value,'trial')}/>} label="Trial account"
                                     sx={{
                                         color: 'white',
                                     }} />

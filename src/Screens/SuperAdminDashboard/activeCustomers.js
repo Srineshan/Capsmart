@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect, Fragment } from 'react';
+import {GET,isSuperAdminAccess} from './../dataSaver';
 import UserLogo from './../../images/userLogo.jpg';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
 import Filter from './../../images/filter.png';
+import {Link} from 'react-router-dom';
 import Bell from './../../images/bell.png';
 import RedPage from './../../images/redPage.png';
 import YellowPage from './../../images/yellowPage.png';
@@ -12,12 +14,29 @@ import PageFooterIcon from './../../images/pageFooterIcon.png';
 import RedWarning from './../../images/redWarning.png';
 import ProgressBar from "@ramonak/react-progress-bar";
 import style from './index.module.scss';
-import { Checkbox } from '@material-ui/core';
+import { Checkbox, CircularProgress } from '@material-ui/core';
 import SideBar from '../../Components/Sidebar';
 import Navbar from '../../Components/Navbar';
 
 const ActiveCustomers = ({getSelectedCustomer, getAddContract}) => {
     const [showOptions, setShowOptions] = useState(false);
+    const [entityList,setEntityList] = useState([]);
+    const [loading,setLoading] = useState(false);
+    useEffect(()=>{
+      getEntityList();
+    }, [])
+
+    const getEntityList = async() => {
+      setLoading(true);
+      const {data: entityData, loading:loading} = await GET(`entity-service/entity`);
+      setEntityList(entityData);
+      setLoading(false);
+    }
+
+    if(loading){
+      return <CircularProgress />;
+    }
+
 
     return(
         <Fragment>
@@ -38,7 +57,7 @@ const ActiveCustomers = ({getSelectedCustomer, getAddContract}) => {
                             <div className={`${style.cardStyle} ${style.selectedContractBackground}`} onClick={() => getSelectedCustomer('ACTIVE CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>ACTIVE CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>4</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data=>data)?.length}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.red}>1 </span> RENEWAL PAST DUE</span>
                                         <span><span className={style.yellow}>1 </span> AUTO RENEWED</span>
@@ -93,7 +112,9 @@ const ActiveCustomers = ({getSelectedCustomer, getAddContract}) => {
                                         <img src={Envelope} alt="Envelope" className={style.smallIcons} />
                                         <img src={Bell} alt="Bell" className={style.smallIcons} />
                                         <img src={Filter} alt="Filter" className={style.filterIcon} />
-                                        <button className={style.contractButton} onClick={() => getAddContract(true)} >ADD CUSTOMER</button>
+                                        <Link to={isSuperAdminAccess? "/customerSetup" : "/welcome"}>
+                                          <button className={style.contractButton}>ADD CUSTOMER</button>
+                                        </Link>
                                     </div>
                                 </div>
                                 <div>
@@ -109,66 +130,29 @@ const ActiveCustomers = ({getSelectedCustomer, getAddContract}) => {
                                         <p></p>
                                         <p className={style.tableHeaderFontStyleActiveCustomer}>LAST UPDATED</p>
                                     </div>
-                                    <div className={`${style.tableDataActiveCustomer}`}>
-                                        <div className={`${style.displayInRow}`}>
-                                            <Checkbox />
-                                            <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
+                                    {
+                                      entityList?.length !== 0 ?
+                                      entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data=> (
+                                        <div className={`${style.tableDataActiveCustomer}`}>
+                                            <div className={`${style.displayInRow}`}>
+                                                <Checkbox />
+                                                <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
+                                            </div>
+                                            <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>{data?.entityName?.entityName}</p>
+                                            <p className={style.tableDataFontStyleActiveCustomers}>{data?.customerType}</p>
+                                            <p className={style.tableDataFontStyleActiveCustomers}>Maggiehaven</p>
+                                            <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>NY</p>
+                                            <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
+                                            <p className={style.tableDataFontStyleActiveCustomers}>{data?.subscriptionPlan?.subscriptionStatus}</p>
+                                            <p className={style.tableDataFontStyleActiveCustomers}>-</p>
+                                            <p className={style.tableDataFontStyleActiveCustomers}>Health Stream</p>
+                                            <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
                                         </div>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>ACME Hospital</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Healthcare</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Maggiehaven</p>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>NY</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Active</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>-</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Health Stream</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                    </div>
-                                    <div className={`${style.tableDataActiveCustomer}`}>
-                                        <div className={`${style.displayInRow}`}>
-                                            <Checkbox />
-                                            <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
-                                        </div>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>ACME Hospital</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Healthcare</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Maggiehaven</p>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>NY</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Active</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>-</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Health Stream</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                    </div>
-                                    <div className={`${style.tableDataActiveCustomer}`}>
-                                        <div className={`${style.displayInRow}`}>
-                                            <Checkbox />
-                                            <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
-                                        </div>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>ACME Hospital</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Healthcare</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Maggiehaven</p>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>NY</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Active</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>-</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Health Stream</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                    </div>
-                                    <div className={`${style.tableDataActiveCustomer}`}>
-                                        <div className={`${style.displayInRow}`}>
-                                            <Checkbox />
-                                            <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
-                                        </div>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>ACME Hospital</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Healthcare</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Maggiehaven</p>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>NY</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Active</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>-</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Health Stream</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                    </div>
+                                      ))
+                                       : (
+                                        <p>No Entity Found</p>
+                                      )
+                                    }
                                     <div className={style.spaceBetween}>
                                         <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
                                         <div className={style.displayInRow}>
@@ -181,7 +165,7 @@ const ActiveCustomers = ({getSelectedCustomer, getAddContract}) => {
                         </div>
                     </div>
                 </div>
-                <div className={style.spaceBetween}>                        
+                <div className={style.spaceBetween}>
                     <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
                     <p className={style.poweredBy}>© TimeSmart.AI</p>
                 </div>
