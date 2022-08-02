@@ -38,124 +38,246 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
     const [expirationDate, setExpirationDate] = useState(new Date());
     const [fileName, setFileName] = useState('');
     const [fileData, setFileData] = useState(null);
+    const [users,setUsers] = useState([]);
+
+    useEffect(()=>{
+      getUserData();
+    },[])
+
+    const getUserData = async() => {
+      const {data: userData} = await GET(`user-management-service/user?contractID=${contractId}`);
+      if(userData){
+        setUsers(userData);
+      }
+    }
 
     const handleContinue = async () => {
-      console.log('entered')
-      const data = selectedPOD === 'Medical Staff Membership & Privileges' ?
-      {
-        podType: {type: selectedPOD},
-        dataMap: {
+      let data;
+      if(!isMultipleContract){
+        if(selectedPOD === 'Medical Staff Membership & Privileges' && contractedServiceProviderName === '' || privilegingFacilityName === ''){
+          ErrorToaster('Fill in mandatory fields');
+          return;
+        }
+        if(['Primary Speciality Board Certification','Secondary Specialty Board Certification']?.includes(selectedPOD) && contractedServiceProviderName === ''){
+          ErrorToaster('Fill in mandatory fields');
+          return;
+        }
+        if(['Liability Insurance Certificate', 'Workers Compensation Insurance Certificate', 'Tail Insurance Coverage Certificate']?.includes(selectedPOD) && selectedInsuranceCarrier === ''){
+          ErrorToaster('Fill in mandatory fields');
+          return;
+        }
+         if(['Medical license Certificate', 'Drug Enforcement Administration (DEA) License']?.includes(selectedPOD) && stateOfLicensure === ''){
+          ErrorToaster('Fill in mandatory fields');
+          return;
+        }
+         data = selectedPOD === 'Medical Staff Membership & Privileges' ?
+        {
+          podType: {type: selectedPOD},
           dataMap: {
-            contractedServiceProvider: contractedServiceProviderName,
-            privilegingFacility: privilegingFacilityName,
-            medicalStaffId: medicalStaffId,
-          }
-        },
-        expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
-        file: {
-        filePath: "",
-        fileName: fileName
+            dataMap: {
+              contractedServiceProvider: contractedServiceProviderName,
+              privilegingFacility: privilegingFacilityName,
+              medicalStaffId: medicalStaffId,
+            }
           },
-        certificateCopyAvailable: certificateCopyAvbl
-      } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ?
-      {
-        // id: contractId,
-        podType: {type: selectedPOD},
-        dataMap: {
+          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          file: {
+          filePath: "",
+          fileName: fileName
+            },
+          certificateCopyAvailable: certificateCopyAvbl
+        } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ?
+        {
+          podType: {type: selectedPOD},
           dataMap: {
-            contractedServiceProvider: contractedServiceProviderName,
-            specialityBoard: specialityBoardName,
-            specialityBoardCertificateId: specialityBoardCertificateId,
-          }
-        },
-        expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
-        file: {
-        filePath: "",
-        fileName: fileName
+            dataMap: {
+              contractedServiceProvider: contractedServiceProviderName,
+              specialityBoard: specialityBoardName,
+              specialityBoardCertificateId: specialityBoardCertificateId,
+            }
           },
-        certificateCopyAvailable: certificateCopyAvbl
-      } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ?
-      {
-        // id: contractId,
-        podType: {type: selectedPOD},
-        dataMap: {
+          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          file: {
+          filePath: "",
+          fileName: fileName
+            },
+          certificateCopyAvailable: certificateCopyAvbl
+        } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ?
+        {
+          podType: {type: selectedPOD},
           dataMap: {
-            coverageToBeProvidedBy: selectedInsuranceCarrier,
-            insuranceCarrier: insuranceCarrierName,
-            insuranceCertificateId: insuranceCertificateId,
-          }
-        },
-        expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
-        file: {
-        filePath: "",
-        fileName: fileName
+            dataMap: {
+              coverageToBeProvidedBy: selectedInsuranceCarrier,
+              insuranceCarrier: insuranceCarrierName,
+              insuranceCertificateId: insuranceCertificateId,
+            }
           },
-        certificateCopyAvailable: certificateCopyAvbl
-      } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ?
-      {
-        // id: contractId,
-        podType: {type: selectedPOD},
-        dataMap: {
+          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          file: {
+          filePath: "",
+          fileName: fileName
+            },
+          certificateCopyAvailable: certificateCopyAvbl
+        } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ?
+        {
+          podType: {type: selectedPOD},
           dataMap: {
-            stateOfLicensure: stateOfLicensure,
-            licenseId: licenseId,
-          }
-        },
-        expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
-        file: {
-        filePath: "",
-        fileName: fileName
+            dataMap: {
+              stateOfLicensure: stateOfLicensure,
+              licenseId: licenseId,
+            }
           },
-        certificateCopyAvailable: certificateCopyAvbl
-      } : selectedPOD === 'Controlled Substance DEA Registration Certificate' ?
-      {
-        // id: contractId,
-        podType: {type: selectedPOD},
-        dataMap: {
+          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          file: {
+          filePath: "",
+          fileName: fileName
+            },
+          certificateCopyAvailable: certificateCopyAvbl
+        } : selectedPOD === 'Controlled Substance DEA Registration Certificate' ?
+        {
+          podType: {type: selectedPOD},
           dataMap: {
-            certificateId: certificateId,
-          }
-        },
-        expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
-        file: {
-        filePath: "",
-        fileName: fileName
+            dataMap: {
+              certificateId: certificateId,
+            }
           },
-        certificateCopyAvailable: certificateCopyAvbl
-      } : '';
-      console.log('data',data);
+          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          file: {
+          filePath: "",
+          fileName: fileName
+            },
+          certificateCopyAvailable: certificateCopyAvbl
+        } : '';
+
+      }else{
+        if(selectedPOD === 'Medical Staff Membership & Privileges' && contractorName === '' || privilegingFacilityName === ''){
+          ErrorToaster('Fill in mandatory fields');
+          return;
+        }
+        if(['Primary Speciality Board Certification','Secondary Specialty Board Certification']?.includes(selectedPOD) && contractorName === ''){
+          ErrorToaster('Fill in mandatory fields');
+          return;
+        }
+        if(['Liability Insurance Certificate', 'Workers Compensation Insurance Certificate', 'Tail Insurance Coverage Certificate']?.includes(selectedPOD) && selectedInsuranceCarrier === ''){
+          ErrorToaster('Fill in mandatory fields');
+          return;
+        }
+         if(['Medical license Certificate', 'Drug Enforcement Administration (DEA) License']?.includes(selectedPOD) && contractorName === '' || stateOfLicensure === ''){
+          ErrorToaster('Fill in mandatory fields');
+          return;
+        }
+        if(selectedPOD === 'Controlled Substance DEA Registration Certificate' && contractorName === ''){
+          ErrorToaster('Fill in mandatory Fields');
+          return;
+        }
+         data = selectedPOD === 'Medical Staff Membership & Privileges' ?
+        {
+          podType: {type: selectedPOD},
+          dataMap: {
+            dataMap: {
+              contractor: contractorName,
+              privilegingFacility: privilegingFacilityName,
+              medicalStaffId: medicalStaffId,
+            }
+          },
+          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          file: {
+          filePath: "",
+          fileName: fileName
+            },
+          certificateCopyAvailable: certificateCopyAvbl
+        } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ?
+        {
+          podType: {type: selectedPOD},
+          dataMap: {
+            dataMap: {
+              contractor: contractorName,
+              specialityBoard: specialityBoardName,
+              specialityBoardCertificateId: specialityBoardCertificateId,
+            }
+          },
+          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          file: {
+          filePath: "",
+          fileName: fileName
+            },
+          certificateCopyAvailable: certificateCopyAvbl
+        } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ?
+        {
+          podType: {type: selectedPOD},
+          dataMap: {
+            dataMap: {
+              coverageToBeProvidedBy: selectedInsuranceCarrier,
+              insuranceCarrier: insuranceCarrierName,
+              insuranceCertificateId: insuranceCertificateId,
+            }
+          },
+          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          file: {
+          filePath: "",
+          fileName: fileName
+            },
+          certificateCopyAvailable: certificateCopyAvbl
+        } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ?
+        {
+          podType: {type: selectedPOD},
+          dataMap: {
+            dataMap: {
+              contractor : contractorName,
+              stateOfLicensure: stateOfLicensure,
+              licenseId: licenseId,
+            }
+          },
+          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          file: {
+          filePath: "",
+          fileName: fileName
+            },
+          certificateCopyAvailable: certificateCopyAvbl
+        } : selectedPOD === 'Controlled Substance DEA Registration Certificate' ?
+        {
+          podType: {type: selectedPOD},
+          dataMap: {
+            dataMap: {
+              contractor : contractorName,
+              certificateId: certificateId,
+            }
+          },
+          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          file: {
+          filePath: "",
+          fileName: fileName
+            },
+          certificateCopyAvailable: certificateCopyAvbl
+        } : '';
+      }
 
       let podData = {
         "documentProofs" : [data]
       }
 
-     //  const formData = new FormData();
-     //  let file = fullyExecutedContractData?.map(data=>data.file);
-     //   formData.append('contractDetail', new Blob([JSON.stringify(data)], {
-     //        type: "application/json"
-     //    }));
-     //   formData.append('contractFiles',file);
-     //   await POST('contract-managment-service/contracts/contractDetail',formData)
-     //   .then(response=>{getContractId(response);
-     //   SuccessToaster('Contract Created Successfully');
-     // }).catch(error=>{
-     //   ErrorToaster('Unexpected Error Creating Contract');
-     // })
+      if(data?.certificateCopyAvailable && fileData === null){
+        ErrorToaster('Document missing');
+        return;
+      }
 
-      const formData = new FormData();
-       formData.append('documentationProof', new Blob([JSON.stringify(podData)], {
-        type: "application/json"
-        }));
-       formData.append('documentProofFiles',fileData);
-       console.log('formdata',formData);
-       const response = await POST(`contract-managment-service/contracts/${contractId}/DocumentationProof`, formData);
-       if(response){
-           SuccessToaster('Documentation Proof Updated Successfully');
-       }
-       else {
-           ErrorToaster('Unexpected Error');
-       }
-      console.log('data',formData);
+      // const formData = new FormData();
+      //  formData.append('documentationProof', new Blob([JSON.stringify(podData)], {
+      //   type: "application/json"
+      //   }));
+      //   if(data?.certificateCopyAvailable){
+      //     formData.append('documentProofFiles',fileData);
+      //   }else{
+      //     let file = undefined;
+      //     formData.append('documentProofFiles',file);
+      //   }
+      //  await POST(`contract-managment-service/contracts/${contractId}/DocumentationProof`, formData)
+      //  .then(response=>{
+      //    SuccessToaster('Documentation Proof Updated Successfully');
+      //  })
+      //  .catch(error=>{
+      //    ErrorToaster('Unexpected Error Occured');
+      //  })
     }
 
     const handleFileUpload = (e) => {
@@ -361,7 +483,10 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                           value={stateOfLicensure}
                           onChange={(e) => setStateOfLicensure(e.target.value)}
                           className={`${style.fieldWidth2InARow} ${style.marginLeft20} `}>
-                          <option >
+                          <option value=''>
+                            Select State...
+                          </option>
+                          <option value="California">
                               California
                           </option>
                       </select>

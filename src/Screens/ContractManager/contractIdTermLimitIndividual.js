@@ -151,10 +151,11 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         })
       })
       let data = {
+        "id":"5e05461e-2ce9-4197-b8be-0ae4ae3cc786",
         "contractName": {
           "contractName": contractName
         },
-        "contractType": "INDIVIDUAL",
+        "contractType": contractType,
         "contractStatus": "ACTIVE",
         "contractDetail": {
           "contractId": {
@@ -218,6 +219,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     }
 
     const onSelectSite = (selectedItem) => {
+      console.log('selected Site Item',selectedItem);
       setItem(selectedItem);
       let temp = selectedSites;
       temp.push(selectedItem);
@@ -416,7 +418,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       setDocumentFields(temp);
     }
 
-    console.log('data',renewalReminder);
+    console.log('data',sites);
 
     return(
         <div className={style.cloneBlockStyle}>
@@ -428,7 +430,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract ID*</div>
                     <div className={style.displayInRow}>
-                        <InputGroup placeholder="Contract Id" value={contractId.id} className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
+                        <InputGroup placeholder="Contract Id" value={contractId.id} className={`${style.entityFieldWidth}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
                       <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked, id:''})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                     </div>
                 </div>
@@ -461,7 +463,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                         <div className={`${style.spaceBetween}`}>
                             <FormControlLabel
                                 control={
-                                    <Switch checked={fullyExecutedContract} className={`${style.floatLeft}`} onChange={() => {setFullyExecutedContract(!fullyExecutedContract)}}  />
+                                    <Switch checked={fullyExecutedContract} className={`${style.floatLeft}`} onChange={() => {setFullyExecutedContract(!fullyExecutedContract);setFullyExecutedContractData([{type:'',name:'',desc:'',fileName:'',file:null,filePath:''}]);}}  />
                                 }
                                 className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
                                 label={fullyExecutedContract ? 'YES' : "NO"}
