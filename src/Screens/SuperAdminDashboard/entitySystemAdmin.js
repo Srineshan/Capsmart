@@ -10,7 +10,6 @@ import Step5 from './../../images/step5.png';
 import UploadImg from './../../images/uploadImg.png';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
-import {saveEntity} from './entityDataSaver';
 
 
 const EntitySystemAdmin = ({getActiveStep}) => {
@@ -138,10 +137,7 @@ const EntitySystemAdmin = ({getActiveStep}) => {
                             </div>
                         </div>
                         <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                            <button className={style.outlinedButton}
-                            onClick={()=>{
-                              // saveEntity(billingDetails=billingAddress);
-                            }}>SAVE IN-PROGRESS</button>
+                            <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
                             <Link to={'/siteInformation'}>
                                 <button className={`${style.buttonStyle} ${style.marginLeft20}`}>CONTINUE</button>
                             </Link>

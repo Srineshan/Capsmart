@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, Tag} from '@blueprintjs/core';
-import {POST, TenantID, GET} from './userDataSaver';
+import {POST, TenantID, GET} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 

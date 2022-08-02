@@ -15,7 +15,7 @@ import WelcomeToDashboard from './Screens/SuperAdminDashboard/welcomeToDashboard
 import './App.css'
 import history from './routes/history';
 import EntryPage from './Screens';
-import Contracts from './Screens/UserManagement';
+import Users from './Screens/UserManagement';
 import ReportsHome from './Screens/Reports';
 import TimeSheetReportsBase from './Screens/Reports/reports';
 import ChartPage from './Screens/Reports/chart';
@@ -32,7 +32,7 @@ const App = ({props}) => {
         <Routes>
           <Route  path="/" element={<Login />} {...props}/>
           <Route  path="/contracts" element={<ActiveContracts />}/>
-          <Route  path="/user" element={<Contracts />}/>
+          <Route  path="/user" element={<Users />}/>
           <Route  path="/pages" element={<EntryPage />}/>
           <Route  path="/setPassword" element={<SetPassword />}/>
           <Route  path="/welcome" element={<Welcome />}/>

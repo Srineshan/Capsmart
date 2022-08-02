@@ -1,11 +1,13 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { TextArea, InputGroup, RadioGroup, Radio, Icon, TagInput, Checkbox, FileInput, EditableText } from '@blueprintjs/core';
+import { TextArea, InputGroup, RadioGroup, Radio, Icon, TagInput, Checkbox, FileInput, EditableText, Divider } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { DateInput } from "@blueprintjs/datetime";
 import DatalistInput from 'react-datalist-input';
-import {GET,PUT,POST,role,tenantID} from './contractDataSaver';
+import {GET,PUT,POST,role,tenantID} from './../dataSaver';
 import AddNewContractManager from './addNewContractManager';
+import {Auth} from './../../utils/auth'
+import {format} from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import axios from 'axios';
 
@@ -13,8 +15,7 @@ import style from './index.module.scss';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
-const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType, selectedContractType, getContractId, getCurrentPage}) => {
-    console.log('type',contractType,selectedContractType);
+const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId}) => {
     const [selectContractManager, setSelectContractManager] = useState('');
     const [siteSpecific, setSiteSpecific] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
@@ -23,7 +24,8 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
     const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
     const [priorContractItem, setPriorContractItem] = useState();
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
-    const [fullyExecutedContractData,setFullyExecutedContractData] = useState([{type:'',name:'',desc:''}]);
+    const [fullyExecutedContractData,setFullyExecutedContractData] = useState([{type:'',name:'',desc:'',fileName:'',file:null,filePath:''}]);
+    const [files,setFiles] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(false);
     const [tags, setTags] = useState(VALUES);
     const [tagSet2, setTagSet2] = useState(VALUES2);
@@ -37,20 +39,28 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
     const [user,setUsers] = useState([]);
     const [contracts,setContracts] = useState();
     const [sites,setSites] = useState();
-    const [selectedSite,setSelectedSite] = useState([]);
+    const [selectedSites,setSelectedSites] = useState([]);
     const [autoRenewal,setAutoRenewal] = useState({renewalTerm:'0',allowableRenewalTerm:'0',calendar:'WEEKS'});
     const [renewalReminder,setRenewalreminder] = useState([{'days':0}]);
     const [reminderFields,setReminderFields] = useState([]);
     const [documentFields,setDocumentFields] = useState([]);
     const [userName, setUserName] = useState('');
-    const [selectedRole, setSelectedRole] = useState('')
+    const [selectedRole, setSelectedRole] = useState('');
+    const [addFileClicked,setAddFileClicked] = useState(false);
+    const [selectedDepartmentSites,setSelectedDepartmentSites] = useState([]);
+    const [selectedSite,setSelectedSite] = useState('');
+    const [departmentsName,setDepartmentsName] = useState([]);
+    const id = '50785c4d-056f-4a71-a066-18212905fc44';
 
-    console.log('userName',userName);
 
     useEffect(() => {
       getUserData();
       getContracts();
       getSites();
+      getDocumentFields();
+      if(id!==''){
+        getContractDetail();
+      }
     },[])
 
     useEffect(()=>{
@@ -58,14 +68,43 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
     },[renewalReminder])
 
     useEffect(()=>{
-      getDocumentFields();
-    },[fullyExecutedContractData.length])
+      getDocumentFields()
+    },[fullyExecutedContractData])
+
+    const getContractDetail = async() => {
+      const {data: contractData} = await GET(`contract-managment-service/contracts/${id}/contractDetail`);
+      if(contractData){
+        let contractDetail = contractData?.contractDetail;
+        setContractName(contractData?.contractName?.contractName);
+        setContractId({id:contractDetail?.contractId?.id,missing:contractData?.contractIdMissing});
+        setDepartmentSpecific(contractDetail?.departmentSpecificContract);
+        setSiteSpecific(contractDetail?.siteSpecificContract);
+        setFullyExecutedContract(contractDetail?.fullyExecutedContract);
+        setSelectContractManager(contractDetail?.contractManager?.userID);
+        setContractPriorId({id:contractDetail?.priorContract?.id,na:contractDetail?.priorContract?.notApplicable});
+        setContractTermPeriodFrom(new Date(contractDetail?.contractTerm?.startDate));
+        setContractTermPeriodTo(new Date(contractDetail?.contractTerm?.endDate));
+        setContractEffectiveDate(new Date(contractDetail?.contractTerm?.effectiveDate));
+        setSelectedContractContinuationPolicy(contractDetail?.continuationPolicy?.contractPolicyType);
+        let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
+        setAutoRenewal({renewalTerm:continuation?.autoRenewalTerm?.term.toString(),allowableRenewalTerm:continuation?.allowableAutoRenewalTerm?.term.toString(),calendar:continuation?.autoRenewalCalender})
+        setRenewalreminder(contractDetail?.continuationPolicy?.reminderList?.renewalReminderList);
+        if(contractDetail?.siteSpecificContract){
+          setSelectedSites(contractDetail?.site?.sites);
+        }
+        else if(contractDetail?.departmentSpecificContract){
+          setSelectedDepartmentSites(contractDetail?.site?.sites);
+        }
+        else{
+          setSites(contractDetail?.site?.sites);
+        }
+      }
+    }
 
     const getUserData = async() => {
       const {data: user} = await GET('user-management-service/user');
       if(user){
         setUsers(user);
-        console.log('user items',items);
       }
     }
 
@@ -88,71 +127,55 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
     }
 
     const handleFileUpload = (index,e) => {
-      console.log('file',e);
+      console.log('inside file handle',index,e);
+      let fileName = e.target.files?.[0]?.name;
+      let temp = fullyExecutedContractData;
+      temp?.filter((data,indexVal)=>index === indexVal)?.map(data=>{
+        data.file = e.target.files[0];
+        data.fileName = fileName;
+      })
+      setFullyExecutedContractData(temp);
+      getDocumentFields();
     }
 
+
     const addContract = async() => {
+      let contractFiles = [];
+      fullyExecutedContract && fullyExecutedContractData?.map(data=>{
+        contractFiles?.push({
+          filePath:data.filePath,
+          fileName:data.fileName,
+          documentType:data.type,
+          documentDescription:data.desc,
+          documentName:data.name,
+        })
+      })
       let data = {
+        "id":"5e05461e-2ce9-4197-b8be-0ae4ae3cc786",
         "contractName": {
           "contractName": contractName
         },
         "contractType": contractType,
-        "contractStatus": "DRAFT",
+        "contractStatus": "ACTIVE",
         "contractDetail": {
           "contractId": {
             "id": contractId?.id,
           },
           "priorContract": {
-            "id": contractPriorId,
-            "notApplicable": contractNA,
+            "id": contractPriorId?.id,
+            "notApplicable": contractPriorId?.na,
           },
           "contractManager": {
-            "userID": "62d9650ea18d662326f0ce0d"
+            "userID": selectContractManager,
           },
-          // "contractFiles": [
-          //   {
-          //     "id": "string",
-          //     "filePath": "string",
-          //     "fileName": "string",
-          //     "documentType": "string",
-          //     "documentDescription": "string",
-          //     "documentName": "string"
-          //   }
-          // ],
-          // "site": {
-          //   "sites": [
-          //     {
-          //       "id": "string",
-          //       "departmentList": {
-          //         "departments": [
-          //           {
-          //             "id": "string",
-          //             "departmentName": {
-          //               "departmentName": "string"
-          //             }
-          //           }
-          //         ]
-          //       },
-          //       "siteName": {
-          //         "siteName": "string"
-          //       }
-          //     }
-          //   ]
-          // },
-          // "departmentList": {
-          //   "departments": [
-          //     {
-          //       "id": "string",
-          //       "departmentName": {
-          //         "departmentName": "string"
-          //       }
-          //     }
-          //   ]
-          // },
+          "contractFiles": contractFiles,
+          "site": {
+            "sites": !siteSpecific ? sites : siteSpecific && !departmentSpecific ? selectedSites : siteSpecific && departmentSpecific ? selectedDepartmentSites : !siteSpecific && !departmentSpecific ? sites : [],
+          },
           "contractTerm": {
-            "startDate": contractTermPeriodFrom.toString(),
-            "endDate": contractTermPeriodTo.toString(),
-            "effectiveDate": contractEffectiveDate.toString(),
+            "startDate": format(contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+            "endDate": format(contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+            "effectiveDate": format(contractEffectiveDate, 'yyyy-MM-dd').toString(),
           },
           "continuationPolicy": {
             "contractPolicyType": selectedContractContinuationPolicy,
@@ -163,7 +186,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
               "allowableAutoRenewalTerm": {
                 "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.allowableRenewalTerm) : 0,
               },
-              "autoRenewalCalender": selectedContractContinuationPolicy === 'AUTORENEWAL' ? autoRenewal.calendar : ''
+              "autoRenewalCalender": selectedContractContinuationPolicy === 'AUTORENEWAL' ? autoRenewal.calendar : 'WEEKS'
             },
             "reminderList": {
               "renewalReminderList": renewalReminder
@@ -178,7 +201,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
       }
 
       const formData = new FormData();
-      let file;
+      let file = fullyExecutedContractData?.map(data=>data.file);
        formData.append('contractDetail', new Blob([JSON.stringify(data)], {
             type: "application/json"
         }));
@@ -191,14 +214,21 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
      })
     }
 
-    console.log('selected user',selectContractManager);
-    const onSelect = useCallback((selectedItem) => {
+    const onSelect = (selectedItem) => {
       setSelectContractManager(selectedItem.id);
-    }, []);
+    }
 
-    const onSelectContractId = useCallback((selectedItem) => {
+    const onSelectSite = (selectedItem) => {
+      console.log('selected Site Item',selectedItem);
+      setItem(selectedItem);
+      let temp = selectedSites;
+      temp.push(selectedItem);
+      setSelectedSites(temp);
+    }
+
+    const onSelectContractId = (selectedItem) => {
       setContractPriorId({...contractPriorId, id:selectedItem?.contractDetails?.contractId?.id, na:false});
-    }, []);
+    }
 
 
     const getTagProps = (_v, index) => ({
@@ -206,15 +236,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
     });
 
     const handleTagsRemove = (tags, index) => {
-        const updatedTags = [tags];
-        updatedTags.splice(index, 1);
-        tags = updatedTags;
-        setTags(tags);
+        setSelectedSites(selectedSites?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data));
     };
 
-    const handleTagSet2Add = values => {
-        setTagSet2([...tags, values]);
-    };
 
     const handleTagSet2Remove = (tags, index) => {
       const updatedTags = [tags];
@@ -245,7 +269,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
 
     const priorContractItems = useMemo(
       () =>
-        contracts?.map((option) => ({
+        contracts?.filter(data=>data?.contractDetail?.contractId !== null)?.map((option) => ({
           id: option?.contractDetail?.contractId?.id,
           value: option?.contractDetail?.contractId?.id,
           ...option,
@@ -274,6 +298,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
       let temp = fullyExecutedContractData;
       temp[i] = {...temp[i], [name]:e.target.value};
       setFullyExecutedContractData(temp);
+      getDocumentFields();
     }
 
     const getReminder = () => {
@@ -282,12 +307,16 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
         temp[i] = (
           <div className={`${style.renewalRemainderBoxGrid} ${style.marginBottom}`} key={`reminder${i}`}>
               <div className={style.marginTop}>Set Renewal Reminder*</div>
-              <EditableText className={style.inputRenewalRemainderStyle} defaultValue={renewalReminder?.[i]?.days} placeholder="" onChange={(e)=>handleReminder(e,i)}/>
+              <EditableText className={style.inputRenewalRemainderStyle} defaultValue={renewalReminder?.[i]?.days} placeholder="" onChange={(e)=>handleReminder(e,i)} key={`days${i}`}/>
               <Icon icon="cross" className={style.marginTop10} color="black" onClick={()=>removeReminder(i)}/>
           </div>
         )
       }
       setReminderFields(temp);
+    }
+
+    const removeContractData = (index) => {
+      setFullyExecutedContractData(fullyExecutedContractData?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
     }
 
     const handlContractManagerOnChange = (e) => {
@@ -301,11 +330,47 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
 
     const addNewDocumentField = () => {
       let temp = fullyExecutedContractData;
-      temp.push({type:'',name:'',desc:''});
+      temp.push({type:'',name:'',desc:'',fileName:'',filePath:'',file:null});
       setFullyExecutedContractData(temp);
+      getDocumentFields();
     }
 
-    console.log('contracts',contracts,priorContractItems);
+    const onSelectDepartment = (value, siteId, deptIndex, deptValue) => {
+      let modifiedSite = {};
+      if(value){
+        if(selectedDepartmentSites?.length === 0){
+          let temp = [];
+          selectedSites?.map((data,index)=>{
+            console.log('index',index,'siteId',siteId);
+            let department = {departments:[]}
+            if(data?.id === siteId){
+              department?.departments?.push(deptValue);
+              setDepartmentsName([...departmentsName, {name:deptValue?.departmentName?.departmentName,id:deptValue?.id}])
+            }
+            temp.push({
+              address:data.address,
+              canSetupDepartment:data.canSetupDepartment,
+              departmentList:department,
+              id:data.id,
+              npin:data.npin,
+              primarySite:data.primarySite,
+              siteAdmin:data.siteAdmin,
+              siteDisplayId:data.siteDisplayId,
+              siteName:data.seName,
+              siteType:data.siteType,
+            })
+          })
+          setSelectedDepartmentSites(temp);
+        }else{
+          let temp = selectedDepartmentSites;
+          temp?.filter((data,indexValue)=>siteId === data?.id)?.map(data=>{
+            let deptTemp = data?.departmentList?.departments;
+            deptTemp.push(deptValue);
+          })
+          setSelectedDepartmentSites(temp);
+        }
+      }
+    }
 
     const getDocumentFields = () => {
       let temp = [];
@@ -343,15 +408,17 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
               <TextArea rows={4} placeholder="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} value={fullyExecutedContractData[i].desc} onChange={(e)=>handleFileChange(e,i,'desc')}/>
               <div className={`${style.floatRight} ${style.displayInRow} ${style.marginTop10}`}>
                   <div></div>
-                  <FileInput text="Choose file..."  className={style.fileInputWidth} onChange={(e)=>handleFileUpload(i,e)}/>
+                  <FileInput text={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : 'Choose File...'}  className={style.fileInputWidth} onChange={(e)=>handleFileUpload(i,e)}/>
               </div>
+              <Icon icon="trash" onClick={()=>removeContractData(i)}/>
+              <Divider />
           </div>
         )
       }
       setDocumentFields(temp);
     }
 
-    console.log('User',selectContractManager);
+    console.log('data',sites);
 
     return(
         <div className={style.cloneBlockStyle}>
@@ -363,29 +430,28 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract ID*</div>
                     <div className={style.displayInRow}>
-                        <InputGroup placeholder="Contract Id" value={contractId.id} className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
+                        <InputGroup placeholder="Contract Id" value={contractId.id} className={`${style.entityFieldWidth}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
                       <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked, id:''})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                     </div>
                 </div>
                 <div className={contracts?.length !== 0 ? `${style.extentionGrid} ${style.marginTop20}`:`${style.extentionGrid} ${style.marginTop20} ${style.disabledView} `}>
                     <div className={style.extentionLableStyle}>Prior Contract ID*</div>
                     <div className={style.displayInRow}>
-                        <DatalistInput items={priorContractItems || []} onSelect={onSelectContractId} className={style.selectFieldWidth} placeholder="Search by CID / Name" />
-                        <Checkbox label="NA"  checked={contractPriorId.na} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
+                        <DatalistInput items={priorContractItems || []} onSelect={onSelectContractId} className={style.selectFieldWidth} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})} placeholder="Search by CID / Name" value={contractPriorId?.id}/>
+                           <Checkbox label="NA"  checked={contractPriorId.na} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})}/>
+
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
                     <div className={style.displayInRow}>
                     <div>
-                        <DatalistInput items={items} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} />
-                        {!items?.map(data=>data.name?.firstName)?.includes(userName) && (
-
+                        <DatalistInput items={items} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager)?.map(data=>data?.value)[0]}/>
+                        {!items?.map(data=>data.name?.firstName)?.includes(userName) && !userName === '' &&(
                             <div className={style.addBoxDescription}>
                             The Contract Manager you are trying to add is not a registered
                             user. to add a new contract manager click on the "ADD" button.
                             </div>
-
                         )}
                     </div>
                     <button className={`${style.disabledButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={() =>setAddNewManagerDialog(true)}>ADD</button>
@@ -397,7 +463,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                         <div className={`${style.spaceBetween}`}>
                             <FormControlLabel
                                 control={
-                                    <Switch checked={fullyExecutedContract} className={`${style.floatLeft}`} onChange={() => setFullyExecutedContract(!fullyExecutedContract)}  />
+                                    <Switch checked={fullyExecutedContract} className={`${style.floatLeft}`} onChange={() => {setFullyExecutedContract(!fullyExecutedContract);setFullyExecutedContractData([{type:'',name:'',desc:'',fileName:'',file:null,filePath:''}]);}}  />
                                 }
                                 className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
                                 label={fullyExecutedContract ? 'YES' : "NO"}
@@ -424,17 +490,18 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                             />
                             {siteSpecific && (
                                 <div className={style.displayInRow}>
-                                    <DatalistInput items={siteItems} placeholder="Select Sites" onSelect={onSelect}  className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
-                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20}`} onClick={()=>{setSelectedSite([...selectedSite,])}}><span className={style.plusSymbolPosition}>+</span></div>
-                                </div>
+                                    <DatalistInput items={siteItems||[]} placeholder="Select Sites" onSelect={onSelectSite}  className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
+                                    {
+                                      // <div className={`${style.addSymbolStyle} ${style.marginLeft20}`} onClick={()=>{setSelectedSites([...selectedSites,])}}><span className={style.plusSymbolPosition}>+</span></div>
+                                    }
+                                    </div>
                             )}
                         </div>
                         {siteSpecific && (
                             <TagInput
                                 placeholder="Enter tags/keywords relative to the post"
-                                values={tags}
+                                values={selectedSites?.map(data=>data?.siteName?.siteName)}
                                 className={`${style.marginTop20}`}
-                                // onAdd={handleTagsAdd}
                                 onRemove={handleTagsRemove}
                                 separator={/[\s,]/}
                                 addOnBlur={true}
@@ -461,24 +528,25 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                                       <select
                                           name="class"
                                           id="Class"
-                                          value={selectedRole || 'Select...'}
-                                          onChange={(e) => setSelectedRole(e.target.value)}
+                                          value={selectedSite || 'Select...'}
+                                          onChange={(e) => setSelectedSite(e.target.value)}
                                           className={`${style.fullWidth} ${style.marginLeft20} `}>
-                                              <option value="Contract Manager" >
-                                              Contract Manager
+                                          {
+                                            selectedSites?.map(data=>(
+                                              <option value={data?.siteName?.siteName}>
+                                                {data?.siteName?.siteName}
                                               </option>
-                                              <option value="User" >
-                                              User
-                                              </option>
+                                            ))
+                                          }
                                       </select>
                                   </div>
-                                  {selectedRole === "User" && (
+                                  {selectedSites?.map(data=>data?.siteName?.siteName)?.includes(selectedSite) && (
                                     <div className={`${style.roleBoxStyle} ${style.marginLeft20} ${style.floatRight}`}>
                                       {
-                                        // roles?.map(data=>(
-                                          <Checkbox label={'data.roleName'} />
-                                        // ))
-                                      }
+                                        selectedSites?.filter(site=>site?.siteName?.siteName === selectedSite)?.map((site)=>site?.departmentList?.departments?.map((dept,deptIndex)=>(
+                                            <Checkbox label={dept?.departmentName?.departmentName} checked={departmentsName?.map(data=>data.name).includes(dept?.departmentName?.departmentName)} onChange={(e)=>onSelectDepartment(e.target.checked,site?.id,deptIndex,dept)}/>
+                                        )))
+                                    }
                                     </div>
                                   )}
                                 </div>
@@ -487,9 +555,8 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                         {departmentSpecific && (
                             <TagInput
                                 placeholder="Enter tags/keywords relative to the post"
-                                values={tagSet2}
+                                values={departmentsName?.map(data=>data.name)}
                                 className={`${style.marginTop20}`}
-                                onAdd={handleTagSet2Add}
                                 onRemove={handleTagSet2Remove}
                                 separator={/[\s,]/}
                                 addOnBlur={true}
@@ -508,7 +575,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                             placeholder={"MM-DD-YYYY"}
                             value={contractTermPeriodFrom}
                             onChange={(e)=> setContractTermPeriodFrom(e) }
-                            minDate={new Date()}
+                            minDate={contractTermPeriodFrom || new Date()}
                         />
                     <p className={style.toStyle}>To</p>
                         <DateInput
@@ -530,7 +597,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                         placeholder={"MM-DD-YYYY"}
                         value={contractEffectiveDate}
                         onChange={(e)=> setContractEffectiveDate(e) }
-                        minDate={contractTermPeriodFrom}
+                        minDate={contractEffectiveDate||contractTermPeriodFrom}
                     />
                     </div>
                 </div>
@@ -550,13 +617,13 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                                     <option value="AUTORENEWAL" >
                                     Auto Renewal
                                     </option>
-                                    <option value="Written Contract Extension For Fixed Term" >
+                                    <option value="WRITTENCONTRACTEXTENSIONFORFIXEDTERM" >
                                     Written Contract Extension For Fixed Term
                                     </option>
-                                    <option value="New Contract On Expiration" >
+                                    <option value="NEWCONTRACTONEXPIRATION" >
                                     New Contract On Expiration
                                     </option>
-                                    <option value="One Time Contract - Terminate On Expiration" >
+                                    <option value="ONETIMECONTRACTTERMINATEONEXPIRATION" >
                                     One Time Contract - Terminate On Expiration
                                     </option>
                             </select>
@@ -572,9 +639,6 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                                         value={autoRenewal.calendar}
                                         onChange={(e) => setAutoRenewal({...autoRenewal, calendar:e.target.value})}
                                         className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                            <option value="DAYS" >
-                                            Days
-                                            </option>
                                             <option value="WEEKS" >
                                             Weeks
                                             </option>
@@ -589,9 +653,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, contractType
                                 </div>
                             </div>
                         )}
-                        {(selectedContractContinuationPolicy === "Written Contract Extension For Fixed Term"
-                            || selectedContractContinuationPolicy === "New Contract On Expiration"
-                            || selectedContractContinuationPolicy === "One Time Contract - Terminate On Expiration") && (
+                        {(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
+                            || selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
+                            || selectedContractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION") && (
                             <div className={`${style.renewalRemainderBoxStyle}`}>
                               {reminderFields}
                               <div className={`${style.renewalBoxGrid}`}>

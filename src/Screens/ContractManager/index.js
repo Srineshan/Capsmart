@@ -12,7 +12,7 @@ import './../../index.scss';
 import NewContractFromClone from './newContractFromClone';
 import DeleteDraftContract from './deleteDraftContract';
 import ContractActivationRequest from './contractActivationRequest';
-import {GET, PUT, POST, TenantID} from './contractDataSaver';
+import {GET, PUT, POST, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 const Contracts = () => {

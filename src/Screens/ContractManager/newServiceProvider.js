@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button, RadioGroup, Radio } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import {GET, PUT, POST, TenantID} from './../dataSaver';
 import style from './index.module.scss';
 
 const NewServiceProvider = ({getNewServiceProviderDialog}) => {
     const [selectedContract, setSelectedContract] = useState('Written Contract Extension For Fixed Term');
     const [startDate, setStartDate] = useState(new Date);
-    const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration')
+    const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration');
+    const [roles,setRoles] = useState([]);
+    const [npin,setNpin] = useState({npin:'',missing:false,na:false});
+    const [userDetails,setUserDetails] = useState({firstName:'',middleName:'',lastName:'',suffix:'',email:'',phone:''});
+    const [providerType,setProviderType] = useState('');
+    const [address,setAddress] = useState({city:'',state:'',zipcode:''});
+    const [siteLevel,setSiteLevel] = useState(false);
+    const [deptLevel,setDeptLevel] = useState(false);
+
     const leftElement = () => {
         return(
             <Button text="Upload" intent={Intent.PRIMARY} />
@@ -18,6 +27,26 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
         return(
             <Icon icon="calendar" intent={Intent.PRIMARY} className={style.calendarStyle} />
         )
+    }
+
+    useEffect(()=>{
+      getRolesData();
+    },[])
+
+    const getRolesData = async() => {
+      const {data: rolesData} = await GET(`user-management-service/roles`);
+      if(rolesData){
+        console.log('roles',rolesData);
+        setRoles(rolesData);
+      }
+    }
+
+    const handleUserData = (name,value) => {
+      setUserDetails({...userDetails, [name]:value});
+    }
+
+    const handleAddress = (name,value) => {
+      setAddress({...address, [name]:value});
     }
 
     return(
@@ -32,28 +61,27 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
                 <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>NPIN*</div>
                     <div className={style.grid3}>
-                    <InputGroup className={style.fullWidth}/>
+                    <InputGroup className={style.fullWidth} value={npin?.npin} onChange={(e)=>setNpin({npin:e.target.value,na:false,missing:false})}/>
                     <RadioGroup
                         inline={true}
                         className={`${style.marginTop}`}
-                        selectedValue={"Missing"}
                     >
-                        <Radio label="Missing" value="Missing" checked />
+                        <Radio label="Missing" value="Missing" checked onChange={(e)=>setNpin({npin:'',missing:e.target.checked,na:false})}/>
                     </RadioGroup>
                     <RadioGroup
                         inline={true}
                         className={`${style.marginTop} ${style.reduce30Left}`}
                     >
-                        <Radio label="Not Available" value="Not Available" />
+                        <Radio label="Not Available" value="Not Available" onChange={(e)=>setNpin({npin:'',missing:false,na:e.target.checked})}/>
                     </RadioGroup>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contractor Name*</div>
                     <div className={style.grid3}>
-                    <InputGroup className={style.fullWidth} value="First" />
-                    <InputGroup className={style.fullWidth} value="Middle"/>
-                    <InputGroup className={style.fullWidth} value="Last"/>
+                    <InputGroup className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e)=>handleUserData('firstName',e.target.value)}/>
+                    <InputGroup className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e)=>handleUserData('middleName',e.target.value)}/>
+                    <InputGroup className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e)=>handleUserData('lastName',e.target.value)}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -62,7 +90,8 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
                         <select
                             name="class"
                             id="Class"
-                            className={style.fullWidth}>
+                            className={style.fullWidth}
+                            onChange={(e)=>handleUserData('suffix',e.target.value)}>
                                 <option value="Text" >
                                 Text
                                 </option>
@@ -75,7 +104,8 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
                         <select
                             name="class"
                             id="Class"
-                            className={style.fullWidth}>
+                            className={style.fullWidth}
+                            onChange={(e)=>setProviderType(e.target.value)}>
                                 <option value="Text" >
                                 Text
                                 </option>
@@ -97,34 +127,38 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Email Contractor id*</div>
                     <div className={style.displayInRow}>
-                        <InputGroup value="Enter entity specific email" className={`${style.entityFieldWidth}`}/>
-                        <RadioGroup
-                            inline={true}
-                            className={`${style.marginTop} ${style.marginLeft20}`}
-                        >
-                            <Radio label="Not Available" value="Not Available" />
-                        </RadioGroup>
+                        <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e)=>handleUserData('email',e.target.value)}/>
+                        {
+                          // <RadioGroup
+                          //     inline={true}
+                          //     className={`${style.marginTop} ${style.marginLeft20}`}
+                          // >
+                          //     <Radio label="Not Available" value="Not Available" />
+                          // </RadioGroup>
+                        }
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Cell Phone*</div>
                     <div className={style.grid2}>
-                    <InputGroup value="Numeric" className={style.fullWidth}/>
-                    <RadioGroup
-                        inline={true}
-                        className={`${style.marginTop} ${style.leftAlign}`}
-                        selectedValue={"Missing"}
-                    >
-                        <Radio label="Not Available" value="Not Available" />
-                    </RadioGroup>
+                    <InputGroup placeholder="Numeric" value={userDetails?.phone} className={style.fullWidth} onChange={(e)=>handleUserData('phone',e.target.value)}/>
+                    {
+                      // <RadioGroup
+                      //     inline={true}
+                      //     className={`${style.marginTop} ${style.leftAlign}`}
+                      //     selectedValue={"Missing"}
+                      // >
+                      //     <Radio label="Not Available" value="Not Available" />
+                      // </RadioGroup>
+                    }
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contractor Name*</div>
                     <div className={style.grid3}>
-                    <InputGroup className={style.fullWidth} value="City" />
-                    <InputGroup className={style.fullWidth} value="State"/>
-                    <InputGroup className={style.fullWidth} value="Zipcode"/>
+                    <InputGroup className={style.fullWidth} placeholder="City" value={address.city} onChange={(e)=>handleAddress('city',e.target.value)}/>
+                    <InputGroup className={style.fullWidth} placeholder="State" value={address.state} onChange={(e)=>handleAddress('state',e.target.value)}/>
+                    <InputGroup className={style.fullWidth} placeholder="Zipcode" value={address.zipcode} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -135,7 +169,8 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
                                 <Switch className={` ${style.textAlignLeft}`} />
                             }
                             className={`${style.switchFontStyle} ${style.flexLeft}`}
-                            label={"NO"}                        
+                            label={siteLevel?"YES":"NO"}
+                            onChange={()=>setSiteLevel(!siteLevel)}
                         />
                     </div>
                 </div>
@@ -147,7 +182,8 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
                                 <Switch className={` ${style.textAlignLeft}`}  />
                             }
                             className={`${style.switchFontStyle} ${style.flexLeft}`}
-                            label={"NO"}                        
+                            label={deptLevel?"YES":"NO"}
+                            onChange={()=>setDeptLevel(!deptLevel)}
                         />
                     </div>
                 </div>
@@ -157,9 +193,16 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
                         name="class"
                         id="Class"
                         className={style.fullWidth}>
-                            <option value="Activity Logger" >
-                            Activity Logger
+                            <option value="Select Role" >
+                            Select Role...
                             </option>
+                            {
+                              roles?.map(data=>{
+                                <option value={data?.roleName} >
+                                {data?.roleName}
+                                </option>
+                              })
+                            }
                     </select>
                 </div>
             </div>

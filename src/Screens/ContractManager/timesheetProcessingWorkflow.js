@@ -3,7 +3,7 @@ import { TextArea, InputGroup, RadioGroup, Radio, Icon, Dialog, Classes, Intent,
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import ToolBar from './toolbar';
-import {POST, GET, PUT, TenantID} from './contractDataSaver';
+import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';

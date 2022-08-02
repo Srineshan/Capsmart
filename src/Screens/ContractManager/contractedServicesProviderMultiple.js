@@ -1,7 +1,21 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import {GET, PUT, POST, TenantID} from './../dataSaver';
 import style from './index.module.scss';
 
 const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage}) => {
+    const contractID = "e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf"
+    const [users,setUsers] = useState([]);
+    useEffect(()=>{
+      getUserData();
+    },[])
+
+    const getUserData = async() => {
+      const {data: userData} = await GET(`user-management-service/user?contractID=${contractID}`);
+      if(userData){
+        setUsers(userData);
+      }
+    }
+    console.log('user',users);
     return(
         <div className={style.cloneBlockStyle}>
             <div className={style.tableHeight}>
@@ -17,27 +31,20 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
                     <p className={style.multipleContractorTextWidth}>SITE LEVEL</p>
                     <p className={style.multipleContractorTextWidth}>DEPT LEVEL</p>
                 </div>
-                <div className={`${style.tableData} ${style.displayInRow}`}>
-                    <div className={`${style.multipleDataTextWidth}`}></div>
-                    <p className={style.multipleDataTextWidth}>John, DOE - MD</p>
-                    <p className={style.multipleDataTextWidth}>Physician </p>
-                    <p className={style.multipleDataTextWidth}>Chief Medical Officer</p>
-                    <p className={style.multipleDataTextWidth}>-</p>
-                </div>
-                <div className={`${style.tableData} ${style.displayInRow}`}>
-                    <div className={`${style.multipleDataTextWidth}`}></div>
-                    <p className={style.multipleDataTextWidth}>Alex, JACK - Surgeon</p>
-                    <p className={style.multipleDataTextWidth}>Nurse </p>
-                    <p className={style.multipleDataTextWidth}>HOD</p>
-                    <p className={style.multipleDataTextWidth}>-</p>
-                </div>
-                <div className={`${style.tableData} ${style.displayInRow}`}>
-                    <div className={`${style.multipleDataTextWidth}`}></div>
-                    <p className={style.multipleDataTextWidth}>Mario, KAL - MD</p>
-                    <p className={style.multipleDataTextWidth}>Physician </p>
-                    <p className={style.multipleDataTextWidth}>Chief Medical Officer</p>
-                    <p className={style.multipleDataTextWidth}>-</p>
-                </div>
+                <>
+                {
+                  users?.length === 0 ? users?.map(data=>(
+                    <div className={`${style.tableData} ${style.displayInRow}`}>
+                        <div className={`${style.multipleDataTextWidth}`}></div>
+                        <p className={style.multipleDataTextWidth}>{`${data?.name?.firstName} ${data?.name?.lastName} - ${data?.name?.suffix}`}</p>
+                        <p className={style.multipleDataTextWidth}>Physician </p>
+                        <p className={style.multipleDataTextWidth}>Chief Medical Officer</p>
+                        <p className={style.multipleDataTextWidth}>-</p>
+                    </div>
+                  ))
+                  :<p>No Service Provider Found</p>
+                }
+                </>
             </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
                 <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>

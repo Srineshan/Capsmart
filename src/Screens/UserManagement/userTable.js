@@ -13,7 +13,7 @@ import UploadUser from './../../images/uploadUser.png';
 import ContractExtension from './../../images/contractExtension.png';
 import ProgressBar from "@ramonak/react-progress-bar";
 import AddUser from './addUser'
-import {GET, TenantID, PUT} from './userDataSaver';
+import {GET, TenantID, PUT} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import EditUser from './editUser';
 import MailTemplate from './mailTemplate';
@@ -21,7 +21,7 @@ import style from './index.module.scss';
 import SendEmail from './sendEmail';
 import SendEmailUserList from './sendMailUserList';
 
-const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog}) => {
+const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog}) => {
     const [selectedRow, setSelectedRow] = useState('');
     const [isSelected, setIsSelected] = useState(false);
     const [viewRegisteredUser, setViewRegisteredUser] = useState(true);
@@ -135,7 +135,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                         <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>1</p>
                     </div>
                 </div>
-                
+
             </div>
             <div className={style.bigCardGrid}>
                 <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
@@ -332,4 +332,4 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
     )
 }
 
-export default ActiveContracts;
+export default UserTable;

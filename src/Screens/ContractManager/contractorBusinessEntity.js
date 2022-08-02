@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { InputGroup, Checkbox, Tag } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import {POST, GET, PUT, TenantID} from './contractDataSaver';
+import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
@@ -72,7 +72,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
     const handleRoles = (value) => {
         if (value !== '0') {
           const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
-   
+
           if (!selectedRoles.map(data => data?.roleName).includes(value)) {
             setSelectedRoles([...selectedRoles, selectedValue]);
           }
@@ -112,7 +112,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
         setSelectedRoles(contractorBusinessEntity?.roles);
         setMailingAddress(contractorBusinessEntity?.mailingAddress);
     },[contractorBusinessEntity])
-  
+
       useEffect(()=>{
         getRoles();
         getContractorBusinessEntity();
@@ -137,14 +137,14 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                 )}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Business Entity Name*</div>
-                    <InputGroup className={style.fullWidth} 
+                    <InputGroup className={style.fullWidth}
                     value={businessEntity?.name}
                     onChange={(e) => setBusinessEntity({...businessEntity, name: e.target.value})} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contractor NPIN*</div>
                     <div className={style.twoCol}>
-                        <InputGroup className={style.fullWidth} value={contractorNPIN?.npin} 
+                        <InputGroup className={style.fullWidth} value={contractorNPIN?.npin}
                          onChange={(e) => setContractorNPIN({...contractorNPIN, npin: e.target.value})}  />
                         <div className={`${style.displayInRow} ${style.marginTop10}`}>
                             <Checkbox label="Missing" checked={contractorNPIN?.missing} value="Missing" onChange={(e) => setContractorNPIN({...contractorNPIN, missing: e.target.checked})} />
@@ -156,7 +156,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contractor Entity Tax ID*</div>
                     <div className={style.twoCol}>
-                        <InputGroup className={style.fullWidth} value={contractorEntityTaxId?.taxId} 
+                        <InputGroup className={style.fullWidth} value={contractorEntityTaxId?.taxId}
                         onChange={(e) => setContractorEntityTaxId({...contractorEntityTaxId, taxId: e.target.value})} />
                         <Checkbox label="Missing" checked={contractorEntityTaxId?.missing} value="Missing" className={`${style.marginTop10}`}
                         onChange={(e) => setContractorEntityTaxId({...contractorEntityTaxId, missing: e.target.checked})}  />
@@ -237,7 +237,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
             </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
                 <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} 
+                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
                 onClick={() => { getViewPage4(true); getCurrentPage('Documentation Proof Required') }}
                 >CONTINUE</button>
             </div>
