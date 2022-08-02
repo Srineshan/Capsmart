@@ -41,7 +41,7 @@ const TasksAndAlerts = () => {
                             <img src={ChevronRight} className={style.chevronRightStyle}/>
                         </div>
                     </div>
-                    <Link to={'/activeContracts'} className={style.linkStyle}>
+                    <Link to={'/activeCustomers'} className={style.linkStyle}>
                         <div className={`${style.cardStyle} ${style.selectedContractBackground}`}>
                             <h5 className={`${style.headingForContracts}`}>CUSTOMERS & PROSPECTS</h5>
                             <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginRight}`}>

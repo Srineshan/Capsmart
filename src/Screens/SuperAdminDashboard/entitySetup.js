@@ -42,7 +42,7 @@ const EntitySetup = () => {
     const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",name:'',type:'',websiteURL:'',multiSiteEntity:false,primarySiteToUseApp:false,npin:'',canSetupDepartment:true});
     const [address,setAddress] = useState({city:'',state:'',zipcode:'',addressLine:'',country:''});
     const [isUpdated,setIsUpdated] = useState(false);
-
+    const role = '';
     const accessToken = Auth();
 
     useEffect(()=>{
@@ -211,36 +211,38 @@ const EntitySetup = () => {
         <div className={style.entitySetupBackground}>
           <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
           <div className={style.stepperMargin}>
-              <div className={style.stepperGrid}>
+              <div className={role !== "" ? style.stepperGrid : style.stepperGrid4}>
                   <div onClick={() => getActiveStep('entitySetup')}>
                       <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
                           <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                       </div>
-                      <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
+                      <p className={`${role !== "" ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                   </div>
                   <div onClick={() => getActiveStep('siteInformation')}>
                       <div className={style.stepperImgBackground}>
                           <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
                       </div>
-                      <p className={style.entityTextColor}>SITES FOR APP USE</p>
+                      <p className={role !== "" ? style.entityTextColor : style.entityTextColor4grid}>SITES FOR APP USE</p>
                   </div>
+                  {role !== "" && (
                   <div onClick={() => getActiveStep('entitySystemAdmin')}>
                       <div className={style.stepperImgBackground}>
                           <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
                       </div>
-                      <p className={style.entityTextColor}>ENTITY SYSTEM ADMIN</p>
+                      <p className={role !== "" ? style.entityTextColor : style.entityTextColor4grid}>ENTITY SYSTEM ADMIN</p>
                   </div>
+                  )}
                   <div onClick={() => getActiveStep('siteUsers')}>
                       <div className={style.stepperImgBackground}>
                           <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                       </div>
-                      <p className={style.entityTextColor}>APP USERS</p>
+                      <p className={role !== "" ? style.entityTextColor : style.entityTextColor4grid}>APP USERS</p>
                   </div>
                   <div onClick={() => getActiveStep('appSubscription')}>
                       <div className={style.stepperImgBackground}>
                           <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                       </div>
-                      <p className={style.entityTextColor}>APP SUBSCRIPTION</p>
+                      <p className={role !== "" ? style.entityTextColor : style.entityTextColor4grid}>APP SUBSCRIPTION</p>
                   </div>
               </div>
               <div className={style.stepperDivider}></div>

@@ -413,9 +413,24 @@ body{
     margin-top: -70px;
 }
 
+.stepperDivider2grid4{
+    background: linear-gradient(to right,#7165E3 35%, #E9E9F0 35%) !important;
+    height: 3px;
+    width: 100%;
+    margin-top: -70px;
+}
+
 .stepperDivider3{
     background: linear-gradient(to right,#7165E3 50%, #E9E9F0 50%) !important;
     // background: linear-gradient(to right,#7165E3 35%, #E9E9F0 35%) !important;
+    height: 3px;
+    width: 100%;
+    margin-top: -70px;
+}
+
+.stepperDivider4grid4{
+    // background: linear-gradient(to right,#7165E3 70%, #E9E9F0 70%) !important;
+    background: linear-gradient(to right,#7165E3 60%, #E9E9F0 60%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
@@ -437,9 +452,22 @@ body{
     margin-top: -70px;
 }
 
+.stepperDivider5grid4{
+    // background: linear-gradient(to right,#7165E3 90%, #E9E9F0 90%) !important;
+    background: linear-gradient(to right,#7165E3 85%, #E9E9F0 85%) !important;
+    height: 3px;
+    width: 100%;
+    margin-top: -70px;
+}
+
 .stepperGrid{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.stepperGrid4{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
 .stepperMargin{
@@ -462,6 +490,15 @@ body{
     color: #CDCECE;
     padding-top: 10px;
     margin-left: 15%;
+}
+
+.entityTextColor4grid{
+    text-align: center;
+    font: normal normal medium 13px/18px Montserrat;
+    letter-spacing: 0.8px;
+    color: #CDCECE;
+    padding-top: 10px;
+    margin-left: -7%;
 }
 
 .activeEntityTextColor{
@@ -1369,11 +1406,6 @@ body{
     }
 }
 
-.spaceBetween{
-    display: flex;
-    justify-content: space-between;
-}
-
 .displayInColRev{
     display: flex;
     flex-direction: column-reverse;
@@ -1862,7 +1894,7 @@ body{
 }
 
 .linkStyle{
-    text-decoration: none;
+    text-decoration: none !important;
 }
 
 .chevronCardStyle{
@@ -1906,4 +1938,55 @@ body{
 .justifyCenter{
     display: flex;
     justify-content: center;
+}
+.dialogStyle{
+    height: 80%;
+    width: 60% !important;
+    border-radius: 20px;
+}
+
+.extensionDialogBackground{
+    background-color: white;
+    margin: -20px !important;
+    padding: 40px;
+    border-radius: 10px;
+}
+
+.extensionOptionsStyle{
+    text-align: left;
+    font: normal normal medium 15px/13px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin-top: 10px;
+}
+
+.extentionBoxStyle{
+    border: 1px solid #7165E3;
+    border-radius: 8px;
+    opacity: 1;
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.grid2{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.crossStyle2{
+    color: linear-gradient(#7165E3, #FF6562) !important;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.smallSelectField{
+    width: 60px;
+}
+
+.reduceTop10{
+    margin-top: -10px;
 }

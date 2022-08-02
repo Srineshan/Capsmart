@@ -12,9 +12,29 @@ import Navbar from '../../Components/Navbar';
 import ThreeDot from './../../images/threeDot.png';
 
 import style from './index.module.scss';
+import StopTrial from './stopTrial';
+import ExtendTrial from './extendTrial';
+import ConvertTrial from './convertTrial';
 
 const TrialCustomers = ({getSelectedCustomer, getAddContract}) => {
     const [showOptions, setShowOptions] = useState(false);
+
+    const [stopTrialDialog, setStopTrialDialog] = useState(false);
+    const [extendTrialDialog, setExtendTrialDialog] = useState(false);
+    const [convertTrialDialog, setConvertTrialDialog] = useState(false);
+
+    const getStopTrialDialog = (value) => {
+        setStopTrialDialog(value);
+    }
+
+    const getExtendTrialDialog = (value) => {
+        setExtendTrialDialog(value);
+    }
+
+    const getConvertTrialDialog = (value) => {
+        setConvertTrialDialog(value);
+    }
+
     const menuRef = useRef(null);
     useOptionsHide(menuRef);
 
@@ -178,9 +198,9 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract}) => {
                                     </div>
                                     {showOptions && (
                                         <div className={`${style.displayInCol} ${style.actionCard} ${style.cursorPointer}`} ref={menuRef}>
-                                            <img src={CustomerBox3} alt="CustomerBox1" className={style.actionsIcon} />
-                                            <img src={CustomerBox1} alt="CustomerBox2" className={style.actionsIcon}  />
-                                            <img src={CustomerBox2} alt="CustomerBox3" className={style.actionsIcon}  />
+                                            <img src={CustomerBox3} alt="CustomerBox1" className={style.actionsIcon} onClick={() => setStopTrialDialog(true)} />
+                                            <img src={CustomerBox1} alt="CustomerBox2" className={style.actionsIcon} onClick={() => setExtendTrialDialog(true)} />
+                                            <img src={CustomerBox2} alt="CustomerBox3" className={style.actionsIcon} onClick={() => setConvertTrialDialog(true)} />
                                         </div>
                                     )}
                                     <div className={style.spaceBetween}>
@@ -200,6 +220,15 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract}) => {
                     <p className={style.poweredBy}>© TimeSmart.AI</p>
                 </div>
             </div>
+            {stopTrialDialog && (
+                <StopTrial getStopTrialDialog={getStopTrialDialog} />
+            )}
+            {extendTrialDialog && (
+                <ExtendTrial getExtendTrialDialog={getExtendTrialDialog} />
+            )}
+            {convertTrialDialog && (
+                <ConvertTrial getConvertTrialDialog={getConvertTrialDialog} />
+            )}
         </Fragment>
     )
 }
