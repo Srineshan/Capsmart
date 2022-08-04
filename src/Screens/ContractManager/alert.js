@@ -28,7 +28,7 @@ const Alert = ({getShowAlertDialog, isMultipleContract}) => {
             </span>
             </p>
             <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={()=>setShowProofDialog(true)}>OK</button>
+                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={()=>{setShowProofDialog(true)}}>OK</button>
             </div>
           </div>
         </Dialog>

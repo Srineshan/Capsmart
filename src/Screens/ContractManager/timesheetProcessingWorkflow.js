@@ -190,9 +190,12 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
                     </div>
                 )}
             </div>
-            <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') }}>CONTINUE</button>
+            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Timesheet Submission Terms')}}>BACK</button>
+                <div>
+                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
+                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') }}>CONTINUE</button>
+                </div>
             </div>
             <Dialog isOpen={viewWorkflowDialog} onClose={() => setViewWorkflowDialog(false)} className={`${style.toolbarDialogStyle} ${style.dialogPaddingBottom}`}>
                 <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>

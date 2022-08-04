@@ -406,16 +406,29 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
               </div>
               <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name" value={fullyExecutedContractData[i].name} onChange={(e)=>handleFileChange(e,i,'name')}/>
               <TextArea rows={4} placeholder="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} value={fullyExecutedContractData[i].desc} onChange={(e)=>handleFileChange(e,i,'desc')}/>
-              <div className={`${style.floatRight} ${style.displayInRow} ${style.marginTop10}`}>
-                  <div></div>
-                  <FileInput text={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : 'Choose File...'}  className={style.fileInputWidth} onChange={(e)=>handleFileUpload(i,e)}/>
+              <div className={style.grid2}>
+                  <div>
+                    {/* <Icon icon="trash" onClick={()=>removeContractData(i)}/> */}
+                    <button className={`${style.addMoreButton} ${style.marginTop10} ${style.selectedColor} ${style.cursorPointer}`} onClick={()=>{removeContractData(i)}}>REMOVE</button>
+                  </div>
+                  {/* <FileInput text={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : 'Choose File...'}  className={style.fileInputWidth} onChange={(e)=>handleFileUpload(i,e)}/> */}
+                  <InputGroup value={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : 'Choose File...'}  leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e)=>handleFileUpload(i,e)} />
               </div>
-              <Icon icon="trash" onClick={()=>removeContractData(i)}/>
-              <Divider />
           </div>
         )
       }
       setDocumentFields(temp);
+    }
+
+    const leftElement = () => {
+        return(
+          <div>
+            <label for="file-upload"  className={style.customFileUpload}>
+                Choose File
+            </label>
+            <input id="file-upload" type="file" onChange={(e)=> handleFileUpload(e)}/>
+          </div>
+        )
     }
 
     console.log('data',sites);
@@ -434,14 +447,16 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                       <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked, id:''})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                     </div>
                 </div>
-                <div className={contracts?.length !== 0 ? `${style.extentionGrid} ${style.marginTop20}`:`${style.extentionGrid} ${style.marginTop20} ${style.disabledView} `}>
-                    <div className={style.extentionLableStyle}>Prior Contract ID*</div>
-                    <div className={style.displayInRow}>
-                        <DatalistInput items={priorContractItems || []} onSelect={onSelectContractId} className={style.selectFieldWidth} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})} placeholder="Search by CID / Name" value={contractPriorId?.id}/>
-                           <Checkbox label="NA"  checked={contractPriorId.na} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})}/>
+                {selectedContractType !== "New Contract" && (
+                  <div className={contracts?.length !== 0 ? `${style.extentionGrid} ${style.marginTop20}`:`${style.extentionGrid} ${style.marginTop20} ${style.disabledView} `}>
+                      <div className={style.extentionLableStyle}>Prior Contract ID*</div>
+                      <div className={style.displayInRow}>
+                          <DatalistInput items={priorContractItems || []} onSelect={onSelectContractId} className={style.selectFieldWidth} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})} placeholder="Search by CID / Name" value={contractPriorId?.id}/>
+                            <Checkbox label="NA"  checked={contractPriorId.na} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
 
-                    </div>
-                </div>
+                      </div>
+                  </div>
+                )}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
                     <div className={style.displayInRow}>

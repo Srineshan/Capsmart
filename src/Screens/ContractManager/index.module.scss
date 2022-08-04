@@ -305,7 +305,6 @@ body{
     height: 15px;
     width: 15px;
     margin-right: 5px;
-    margin-top: 10px;
 }
 
 .colorIconsStyle{
@@ -399,7 +398,6 @@ body{
 
 .documentDataProof{
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    height: 50px;
     width: 96%;
     margin-left: 2%;
     border-radius: 6px;
@@ -408,6 +406,7 @@ body{
     margin-top: 5px;
     display: grid;
     grid-template-columns: 10% 25% 20% 20% 20% 5%;
+    word-break: break-word !important;
 }
 
 .serviceSpecificationTableData{

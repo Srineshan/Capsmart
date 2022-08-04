@@ -45,9 +45,9 @@ const DocumentationProofRequired = ({getShowAlertDialog, getViewPage5, getCurren
                     <div className={`${style.documentDataProof} ${style.displayInRow}`}>
                         <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
                         <p className={style.documentProofDataTextWidth}>{data?.podType?.type}</p>
-                        <p className={style.documentProofDataTextWidth}>business</p>
+                        <p className={style.documentProofDataTextWidth}>{data?.dataMap?.dataMap?.privilegingFacility?.siteName?.siteName}</p>
                         <p className={style.documentProofDataTextWidth}>name</p>
-                        <div className={style.displayInRow}>
+                        <div className={`${style.displayInRow} ${style.alignCenter}`}>
                             <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />
                             <p className={style.documentProofDataTextWidth}>{data?.file?.fileName !== '' ? data?.file?.fileName : 'Missing'}</p>
                         </div>
@@ -81,9 +81,13 @@ const DocumentationProofRequired = ({getShowAlertDialog, getViewPage5, getCurren
                 }
 
             </div>
-            <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
-                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{getViewPage5(true);getCurrentPage('Contracted Services Specification')}}>CONTINUE</button>
+            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contractor Business Entity')}}>BACK</button>
+                <div>
+                    <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
+                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
+                    onClick={()=>{getViewPage5(true);getCurrentPage('Contracted Services Specification')}}>CONTINUE</button>
+                </div>
             </div>
         </div>
     )

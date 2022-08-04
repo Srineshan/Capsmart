@@ -49,7 +49,8 @@ const ITEM_PADDING_TOP = 8;
 
   const VALUES = ['Site 1', "Site 2"];
   const VALUES2 = ['Site 1 - Department 1 - Title 1', "Site 2 - Department 2 - Title 2", "Site 3 - Department 3 - Title 3"];
-
+  let siteTitleValues = [];
+  let departmentTitleValues = [];
 const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId}) => {
     const testContractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
     const [siteLevel, setSiteLevel] = useState(false);
@@ -78,8 +79,77 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     const [roles, setRoles] = useState([])
     const [selectedRoles, setSelectedRoles] = useState([]);
     const [tags, setTags] = useState(VALUES);
-    const [tagSet2, setTagSet2] = useState(VALUES2);
+    const [tagSet2, setTagSet2] = useState(siteTitleValues);
+    const [tagSet3, setTagSet3] = useState(departmentTitleValues);
     const id = "2276e34f-a2fd-4770-9afc-14b53f8d9ecd";
+    const [contractData, setContractData] = useState([])
+    const [userProviderData, setUserProviderData] = useState({});
+
+    const getUserData = async() => {
+      const {data: userData} = await GET(`user-management-service/user?contractID=${testContractId}`);
+      if(userData){
+        setUserProviderData(userData[0]);
+      }
+    }
+    const [siteList, setSiteList] = useState([
+      {
+        "id": "1",
+        "departmentList": {
+          "departments": [
+            {
+              "id": "string",
+              "departmentName": {
+                "departmentName": "departmet 11"
+              }
+            }
+          ]
+        },
+        "siteName": {
+          "siteName": "Site 1"
+        }
+      },
+      {
+        "id": "2",
+        "departmentList": {
+          "departments": [
+            {
+              "id": "string",
+              "departmentName": {
+                "departmentName": "departmet 21"
+              }
+            }
+          ]
+        },
+        "siteName": {
+          "siteName": "Site 2"
+        }
+      },
+      {
+        "id": "3",
+        "departmentList": {
+          "departments": [
+            {
+              "id": "string",
+              "departmentName": {
+                "departmentName": "departmet 31"
+              }
+            }
+          ]
+        },
+        "siteName": {
+          "siteName": "Site 3"
+        }
+      }
+  ])
+  const [possibleDepartments, setPossibleDepartments] = useState([])
+  const [selectedDepartmentSpecificSite, setSelectedDepartmentSpecificSite] = useState([]);
+
+  const titleList = ['Title 1', 'Title 2', 'Title 3'];
+    const getContractDetail = async() => {
+      const {data: contractData} = await GET(`contract-managment-service/contracts/${id}/contractDetail`);
+      setContractData(contractData);
+    }
+    console.log(contractData)
 
     const getTagProps = (_v, index) => ({
       minimal: true,
@@ -89,6 +159,10 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
       setTagSet2([...tags, values]);
   };
 
+  const handleTagSet3Add = values => {
+    setTagSet3([...tagSet3, values]);
+};
+
   const handleTagSet2Remove = (tags, index) => {
     const updatedTags = [tags];
     updatedTags.splice(index, 1);
@@ -96,15 +170,44 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     setTagSet2(tags);
   };
 
+  const handleTagSet3Remove = (tags, index) => {
+    const updatedTags = [tags];
+    updatedTags.splice(index, 1);
+    tags = updatedTags;
+    setTagSet3(tags);
+  };
+
+  const handleSiteLevelValues = () => {
+    siteTitleValues?.push(`${siteLevelSite} - ${siteLevelTitle}`);
+    setSiteLevelSite('');
+    setSiteLevelTitle('');
+  }
+
+  const handleDepartmentLevelValues = () => {
+    departmentTitleValues?.push(`${departmentLevelSite} - ${departmentLevelDepartment} - ${departmentLevelTitle}`);
+    setDepartmentLevelSite('');
+    setDepartmentLevelDepartment('');
+    setDepartmentLevelTitle('');
+    console.log(departmentTitleValues)
+  }
+
+  const handleSelectedDepartmentSite = (id) => {
+    setSelectedDepartmentSpecificSite(siteList?.filter(data => data?.id === id)?.map(data => data));
+    setDepartmentLevelSite(siteList?.filter(data => data?.id === id)?.map(data => data?.id));
+    setPossibleDepartments(siteList?.filter(data => data?.id === id)?.map(data => data?.departmentList?.departments)?.[0])
+    console.log(selectedDepartmentSpecificSite, departmentLevelSite, possibleDepartments)
+  }
+
     const handleSave = async() => {
         const data = {
+            ...( userProviderData !== "" && {'id': userProviderData?.id}),
             "name": {
                 "firstName": contractorFirstName,
                 "lastName": contractorLastName,
                 "suffix": contractorNameSuffix
               },
               "userType": "ADMIN",
-              "contract": [
+              "contracts": [
                 {
                   "id": testContractId,
                   "contractName": {
@@ -118,9 +221,9 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
               "email": {
                 "officialEmail": contractorEmail
               },
-              "password": {
+              ...( userProviderData === "" && {"password": {
                 "password": "string"
-              },
+              }}),
               "communication": {
                 "personalEmail": contractorEmail,
                 "mobileNumber": contractorPhone,
@@ -203,13 +306,23 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 "npin": npin
               }
           }
-          const response = await POST('user-management-service/user/register', JSON.stringify(data));
+          if(userProviderData !== ''){
+            const response = await PUT('user-management-service/user', JSON.stringify(data));
             if(response){
-                SuccessToaster('User Added Successfully');
+                SuccessToaster('User Updated Successfully');
             }
             else {
                 ErrorToaster('Unexpected Error');
             }
+          } else {
+            const response = await POST('user-management-service/user/register', JSON.stringify(data));
+            if(response){
+              SuccessToaster('User Added Successfully');
+            }
+            else {
+                ErrorToaster('Unexpected Error');
+            }
+          }
 
           console.log(data)
     }
@@ -225,8 +338,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     }
 
     const rolesTags = selectedRoles
-    .filter(data => roles.map(role => role).includes(data))
-    .map((tag, index) => {
+    ?.filter(data => roles.map(role => role?.id === data?.id))
+    ?.map((tag, index) => {
       const onRemove = () => {
         setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName));
       };
@@ -243,9 +356,36 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     };
 
     console.log(roles)
+    useEffect(() => {
+      setTagSet2(siteTitleValues);
+    }, [siteTitleValues])
+
+    useEffect(() =>{
+      if(userProviderData !== '') {
+        setServiceProviderType(userProviderData?.serviceProviderType);
+        setNpin(userProviderData?.npin?.npin);
+        setNpinMissing(userProviderData?.npin?.missing);
+        setNpinNotApplicable(userProviderData?.npin?.notApplicable);
+        setContractorFirstName(userProviderData?.name?.firstName);
+        setContractorLastName(userProviderData?.name?.lastName);
+        setContractorNameSuffix(userProviderData?.name?.suffix);
+        setContractorMiddleName('');
+        setContractorPhone(userProviderData?.communication?.mobileNumber);
+        setContractorEmail(userProviderData?.email?.officialEmail);
+        setCity(userProviderData?.address?.city);
+        setState(userProviderData?.address?.state);
+        setZipCode(userProviderData?.address?.zipcode);
+        setSiteLevel(userProviderData?.siteLevelResponsible);
+        setDepartmentLevel(userProviderData?.departmentLevelResponsible);
+        setSelectedRoles(userProviderData?.roles);
+      }
+    }, [userProviderData])
+
+    console.log(siteTitleValues, tagSet2, siteLevelSite, siteLevelTitle)
 
     useEffect(()=>{
         getRoles();
+        getUserData();
     },[])
     return(
         <div className={style.cloneBlockStyle}>
@@ -324,7 +464,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Email Contractor id*</div>
                     <div className={style.displayInRow}>
-                        <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth} ${style.alertValidationInputStyle}`}
+                        <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
                         value={contractorEmail}
                         onChange={(e) => setContractorEmail(e.target.value)}/>
                     </div>
@@ -374,9 +514,14 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                                             value={siteLevelSite}
                                             onChange={(e) => setSiteLevelSite(e.target.value)}
                                             className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                <option value="type or select" >
-                                                type or select
+                                                <option value="Select Site" >
+                                                Select Site
                                                 </option>
+                                                {siteList?.map((data, index) => (
+                                                  <option key={index} value={data?.siteName?.siteName}>
+                                                    {data?.siteName?.siteName}
+                                                  </option>
+                                                ))}
                                         </select>
                                     </div>
                                 {/* )} */}
@@ -388,19 +533,24 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                                         value={siteLevelTitle}
                                         onChange={(e) => setSiteLevelTitle(e.target.value)}
                                         className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                            <option value="type or select" >
-                                            type or select
+                                            <option value="Select Title" >
+                                            Select Title
                                             </option>
+                                            {titleList?.map((data, index) => (
+                                              <option key={index} value={data}>
+                                                {data}
+                                              </option>
+                                            ))}
                                     </select>
                                 </div>
                                 <div className={`${style.addButtonPosition} ${style.marginTop20}`}>
-                                  <Button variant="outlined">Add</Button>
+                                  <Button variant="outlined" onClick={() => handleSiteLevelValues()}>Add</Button>
                                 </div>
                                 <TagInput
-                                    placeholder="Enter tags/keywords relative to the post"
+                                    // placeholder="Enter tags/keywords relative to the post"
                                     values={tagSet2}
                                     className={`${style.marginTop20}`}
-                                    onAdd={handleTagSet2Add}
+                                    // onAdd={handleTagSet2Add}
                                     onRemove={handleTagSet2Remove}
                                     separator={/[\s,]/}
                                     addOnBlur={true}
@@ -433,11 +583,16 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                                             name="class"
                                             id="Class"
                                             value={departmentLevelSite}
-                                            onChange={(e) => setDepartmentLevelSite(e.target.value)}
+                                            onChange={(e) => handleSelectedDepartmentSite(e.target.value)}
                                             className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                <option value="type or select" >
-                                                type or select
+                                                <option value="Select Site" >
+                                                Select Site
                                                 </option>
+                                                {siteList?.map((data, index) => (
+                                                  <option key={index} value={data?.id}>
+                                                    {data?.siteName?.siteName}
+                                                  </option>
+                                                ))}
                                         </select>
                                       </div>
                                     {/* )} */}
@@ -449,9 +604,14 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                                             value={departmentLevelDepartment}
                                             onChange={(e) => setDepartmentLevelDepartment(e.target.value)}
                                             className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                <option value="Department" >
-                                                Department
+                                                <option value="Select Department" >
+                                                Select Department
                                                 </option>
+                                                {possibleDepartments?.map((data, index) => (
+                                                  <option key={index} value={data?.id}>
+                                                    {data?.departmentName?.departmentName}
+                                                  </option>
+                                                ))}
                                         </select>
                                     </div>
                                     <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
@@ -462,20 +622,25 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                                             value={departmentLevelTitle}
                                             onChange={(e) => setDepartmentLevelTitle(e.target.value)}
                                             className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                <option value="type or select" >
-                                                type or select
+                                                <option value="Select Title" >
+                                                Select Title
                                                 </option>
+                                                {titleList?.map((data, index) => (
+                                                  <option key={index} value={data}>
+                                                    {data}
+                                                  </option>
+                                                ))}
                                         </select>
                                     </div>
                                     <div className={`${style.addButtonPosition} ${style.marginTop20}`}>
-                                      <Button variant="outlined">Add</Button>
+                                      <Button variant="outlined" onClick={() => handleDepartmentLevelValues()}>Add</Button>
                                     </div>
                                     <TagInput
-                                        placeholder="Enter tags/keywords relative to the post"
-                                        values={tagSet2}
+                                        // placeholder="Enter tags/keywords relative to the post"
+                                        values={tagSet3}
                                         className={`${style.marginTop20}`}
-                                        onAdd={handleTagSet2Add}
-                                        onRemove={handleTagSet2Remove}
+                                        // onAdd={handleTagSet3Add}
+                                        onRemove={handleTagSet3Remove}
                                         separator={/[\s,]/}
                                         addOnBlur={true}
                                         addOnPaste={true}
@@ -539,9 +704,12 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                     </div>
                 </div>
             </div>
-            <div className={`${style.floatRight} ${style.marginTop20}`}>
+            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+              <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contract ID & Term Limit')}}>BACK</button>
+              <div>
                 <button className={style.newContractOutlinedButton} onClick={() => handleSave()}>SAVE IN-PROGRESS</button>
                 <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {getViewPage3(true);getCurrentPage('Contractor Business Entity')}}>CONTINUE</button>
+              </div>
             </div>
         </div>
     )

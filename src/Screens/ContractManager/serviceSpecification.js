@@ -4,7 +4,7 @@ import CompletedIcon from './../../images/completedIcon.png';
 import style from './index.module.scss';
 import AddServiceProvided from './addServiceToBeProvided';
 
-const ServiceSpecification = ({getViewPage6, getAddon}) => {
+const ServiceSpecification = ({getViewPage6, getAddon, getCurrentPage}) => {
   const [addService,setAddService] = useState(false);
   const [addOn, setAddOn] = useState(false);
 
@@ -52,9 +52,12 @@ const ServiceSpecification = ({getViewPage6, getAddon}) => {
             <Icon icon="trash" size={20} className={style.marginRight20} color="#52575D" />
         </div>
     </div>
-    <div className={`${style.floatRight} ${style.marginTop20}`}>
-        <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
-        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => getViewPage6(true)}>CONTINUE</button>
+    <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+      <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Documentation Proof Required')}}>BACK</button>
+      <div>
+        <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
+        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => getViewPage6(true)}>CONTINUE</button>
+      </div>
     </div>
     {
       addService &&
