@@ -15,7 +15,7 @@ import style from './index.module.scss';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
-const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId}) => {
+const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields}) => {
     const [selectContractManager, setSelectContractManager] = useState('');
     const [siteSpecific, setSiteSpecific] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
@@ -24,7 +24,8 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
     const [priorContractItem, setPriorContractItem] = useState();
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
-    const [fullyExecutedContractData,setFullyExecutedContractData] = useState([{type:'',name:'',desc:'',fileName:'',file:null,filePath:''}]);
+    const [fullyExecutedContractData,setFullyExecutedContractData] = useState([]);
+    const [fileFieldData,setFileFieldData] = useState({type:'',name:'',desc:'',fileName:'',file:null,filePath:''});
     const [files,setFiles] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(false);
     const [tags, setTags] = useState(VALUES);
@@ -75,6 +76,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       const {data: contractData} = await GET(`contract-managment-service/contracts/${id}/contractDetail`);
       if(contractData){
         let contractDetail = contractData?.contractDetail;
+        setName(contractData?.contractName?.contractName || '');
         setContractName(contractData?.contractName?.contractName);
         setContractId({id:contractDetail?.contractId?.id,missing:contractData?.contractIdMissing});
         setDepartmentSpecific(contractDetail?.departmentSpecificContract);
@@ -126,16 +128,18 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         setAddNewManagerDialog(value);
     }
 
-    const handleFileUpload = (index,e) => {
-      console.log('inside file handle',index,e);
-      let fileName = e.target.files?.[0]?.name;
-      let temp = fullyExecutedContractData;
-      temp?.filter((data,indexVal)=>index === indexVal)?.map(data=>{
-        data.file = e.target.files[0];
-        data.fileName = fileName;
-      })
-      setFullyExecutedContractData(temp);
-      getDocumentFields();
+    const handleFileUpload = (e) => {
+      console.log('file sample test', fileFieldData);
+      setFileFieldData({...fileFieldData, file: e.target.files[0], fileName: e.target.files?.[0]?.name});
+      // console.log('inside file handle',index,e);
+      // let fileName = e.target.files?.[0]?.name;
+      // let temp = fullyExecutedContractData;
+      // temp?.filter((data,indexVal)=>index === indexVal)?.map(data=>{
+      //   data.file = e.target.files[0];
+      //   data.fileName = fileName;
+      // })
+      // setFullyExecutedContractData(temp);
+      // getDocumentFields();
     }
 
 
@@ -219,7 +223,6 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     }
 
     const onSelectSite = (selectedItem) => {
-      console.log('selected Site Item',selectedItem);
       setItem(selectedItem);
       let temp = selectedSites;
       temp.push(selectedItem);
@@ -294,11 +297,8 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       setRenewalreminder(temp);
     }
 
-    const handleFileChange = (e,i,name) => {
-      let temp = fullyExecutedContractData;
-      temp[i] = {...temp[i], [name]:e.target.value};
-      setFullyExecutedContractData(temp);
-      getDocumentFields();
+    const handleFileChange = (e, name) => {
+      setFileFieldData({...fileFieldData, [name]:e.target.value});
     }
 
     const getReminder = () => {
@@ -330,9 +330,10 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
 
     const addNewDocumentField = () => {
       let temp = fullyExecutedContractData;
-      temp.push({type:'',name:'',desc:'',fileName:'',filePath:'',file:null});
+      temp.push(fileFieldData);
       setFullyExecutedContractData(temp);
-      getDocumentFields();
+      setFileFieldData({type:'',name:'',desc:'',fileName:'',file:null,filePath:''});
+      setFileFields(temp);
     }
 
     const onSelectDepartment = (value, siteId, deptIndex, deptValue) => {
@@ -382,7 +383,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                       name="class"
                       id="Class"
                       value={fullyExecutedContractData[i].type || 'Select...'}
-                      onChange={(e) => handleFileChange(e,i,'type')}
+                      onChange={(e) => handleFileChange(e,'type')}
                       className={`${style.fullWidth} ${style.marginLeft20} `}>
                         <option value="Select...">
                           Select...
@@ -404,14 +405,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                           </option>
                   </select>
               </div>
-              <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name" value={fullyExecutedContractData[i].name} onChange={(e)=>handleFileChange(e,i,'name')}/>
-              <TextArea rows={4} placeholder="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} value={fullyExecutedContractData[i].desc} onChange={(e)=>handleFileChange(e,i,'desc')}/>
+              <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name" value={fullyExecutedContractData[i].name} onChange={(e)=>handleFileChange(e,'name')}/>
+              <TextArea rows={4} placeholder="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} value={fullyExecutedContractData[i].desc} onChange={(e)=>handleFileChange(e,'desc')}/>
               <div className={style.grid2}>
-                  <div>
-                    {/* <Icon icon="trash" onClick={()=>removeContractData(i)}/> */}
-                    <button className={`${style.addMoreButton} ${style.marginTop10} ${style.selectedColor} ${style.cursorPointer}`} onClick={()=>{removeContractData(i)}}>REMOVE</button>
-                  </div>
-                  {/* <FileInput text={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : 'Choose File...'}  className={style.fileInputWidth} onChange={(e)=>handleFileUpload(i,e)}/> */}
                   <InputGroup value={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : 'Choose File...'}  leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e)=>handleFileUpload(i,e)} />
               </div>
           </div>
@@ -431,14 +427,14 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         )
     }
 
-    console.log('data',sites);
+    console.log('data',fileFieldData, fullyExecutedContractData);
 
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
                 <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>Contract / Agreement Name*</div>
-                    <InputGroup placeholder="Contract Name" className={style.fullWidth} value={contractName} onChange={(e)=>setContractName(e.target.value)}/>
+                    <InputGroup placeholder="Contract Name" className={style.fullWidth} value={contractName} onChange={(e)=>{setContractName(e.target.value);setName(e.target.value)}}/>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract ID*</div>
@@ -488,7 +484,42 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                             )}
                         </div>
                         {fullyExecutedContract && (
-                          documentFields
+                          <div>
+                              <div className={style.reduce10Left}>
+                                  <select
+                                      name="class"
+                                      id="Class"
+                                      value={fileFieldData?.type || 'Select...'}
+                                      onChange={(e) => handleFileChange(e,'type')}
+                                      className={`${style.fullWidth} ${style.marginLeft20} `}>
+                                        <option value="Select...">
+                                          Select...
+                                        </option>
+                                          <option value="Agreement Draft">
+                                          Agreement Draft
+                                          </option>
+                                          <option value="Executed Agreement">
+                                          Executed Agreement
+                                          </option>
+                                          <option value="Appendix Addendum">
+                                          Appendix Addendum
+                                          </option>
+                                          <option value="Schedule">
+                                          Schedule
+                                          </option>
+                                          <option value="Attachment">
+                                          Attachment
+                                          </option>
+                                  </select>
+                              </div>
+                              <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
+                              value={fileFieldData?.name}
+                              onChange={(e)=>handleFileChange(e,'name')}/>
+                              <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc} className={`${style.fullWidth} ${style.marginTop10}`}  onChange={(e)=>handleFileChange(e,'desc')}/>
+                              <div >
+                                  <InputGroup value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : 'Choose File...'}  leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e)=>handleFileUpload(e)} />
+                              </div>
+                          </div>
                         )}
                     </div>
                 </div>

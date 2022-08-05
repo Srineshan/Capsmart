@@ -37,6 +37,8 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
     const [currentPage, setCurrentPage] = useState('Contract ID & Term Limit');
     const [isMultipleContract, setIsMultipleContract] = useState(false);
     const [contractId,setContractId] = useState('');
+    const [fileFields,setFileFields] = useState([]);
+    const [contractName, setContractName] = useState('');
 
     const getContractId = (value) => {
       setContractId(value);
@@ -95,9 +97,19 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
         setCurrentPage(value);
     }
 
+    const getFileFields = (value) => {
+      setFileFields(value);
+    }
+
+    const getContractName = (value) => {
+      setContractName(value);
+    }
+
     useEffect(() => {
         setIsMultipleContract(selectContractInfo === "MULTIPLE" ? true : false);
       }, [selectContractInfo]);
+
+    console.log('fileFields',fileFields);
 
     return(
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
@@ -223,7 +235,9 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     contractType = {contractType}
                     selectedContractType = {selectedContractType}
                     getContractId={getContractId}
-                    getCurrentPage={getCurrentPage} />
+                    getCurrentPage={getCurrentPage}
+                    setFileFields={getFileFields}
+                    setName={getContractName}/>
                 ) : (selectContractInfo === "MULTIPLE" && currentPage === "Contracted Services Provider(s)") ? (
                     <ContractedServicesProviderMultiple
                     getNewServiceProviderDialog={getNewServiceProviderDialog}
@@ -258,27 +272,33 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                             <div>
                                 <p className={`${style.blackText} ${style.leftAlign}`}><strong>executed Contract (Current)</strong></p>
                                 <div className={style.spaceBetween}>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}>Contract name to appear here</p>
-                                    <div>
-                                        <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
-                                    </div>
+                                    <p className={`${style.blackText} ${style.leftAlign}`}>{contractName}</p>
+                                    {
+                                      // <div>
+                                      //     <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
+                                      // </div>
+                                    }
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className={`${style.documentCard} ${style.marginTop10}`}>
-                        <div>
-                            <div>
-                                <p className={`${style.blackText} ${style.leftAlign}`}><strong>Exhibit</strong></p>
-                                <div className={style.spaceBetween}>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}>Exhibit A and B</p>
-                                    <div>
-                                        <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {fileFields?.map(data=>(
+                      <div className={`${style.documentCard} ${style.marginTop10}`}>
+                          <div>
+                              <div>
+                                  <p className={`${style.blackText} ${style.leftAlign}`}><strong>{data?.type}</strong></p>
+                                  <div className={style.spaceBetween}>
+                                      <p className={`${style.blackText} ${style.leftAlign}`}>{data?.name}</p>
+                                      <div>
+                                          <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                    ))
+                    }
+
                 </div>
             </div>
             {deleteExecutedContractDialog && (
