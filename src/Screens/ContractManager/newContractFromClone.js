@@ -102,7 +102,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
     return(
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
             <div className={style.spaceBetween}>
-                <p className={style.welcomeStyle}>New Contract With No Prior Contract(s) With Entity - (From Clone)</p>
+                <p className={style.welcomeStyle}>New Contract With No Prior Contract(s) With Entity</p>
                 <div className={style.displayInRow}>
                     <img src={WritingFile} alt="Writing File" className={`${style.smallIcons} ${style.reduceTop10}`} />
                     <InputGroup
@@ -115,63 +115,63 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
 
             <div className={style.newContractFromCloneGrid}>
                 <div className={style.cloneBlockStyle}>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${viewPage2 ? style.completedEntityCardStyle : viewPage1 ? style.selectedContractEntityStyle : ''}`}
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${viewPage2 ? style.completedEntityCardStyle : ''} ${currentPage === "Contract ID & Term Limit" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Contract ID & Term Limit')}>
                         Contract ID & Term Limit
                         {viewPage2 && (
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage3 ? style.completedEntityCardStyle : viewPage2 ? style.selectedContractEntityStyle : ''}`}
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage3 ? style.completedEntityCardStyle : ''} ${currentPage === "Contracted Services Provider(s)" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Contracted Services Provider(s)')}>
                         Contracted Services Provider(s)
                         {viewPage3 && (
                             <img src={RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage4 ? style.completedEntityCardStyle : viewPage3 ? style.selectedContractEntityStyle : ''}`}
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage4 ? style.completedEntityCardStyle : ''} ${currentPage === "Contractor Business Entity" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Contractor Business Entity')}>
                         Contractor Business Entity
                         {viewPage4 && (
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage5 ? style.completedEntityCardStyle : viewPage4 ? style.selectedContractEntityStyle : ''}`}
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage5 ? style.completedEntityCardStyle : ''} ${currentPage === "Documentation Proof Required" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Documentation Proof Required')}>
                         Documentation Proof Required
                         {viewPage5 && (
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${((viewPage5 && addOn) || viewPage6) ? style.completedEntityCardStyle : viewPage5 ? style.selectedContractEntityStyle : ''}`}
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${((viewPage5 && addOn) || viewPage6) ? style.completedEntityCardStyle : ''} ${currentPage === "Contracted Services Specification" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Contracted Services Specification')}>
                         Contracted Services Specification
                         {((viewPage5 && addOn) || viewPage6) && (
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage6 ? style.completedEntityCardStyle : addOn ? style.selectedContractEntityStyle : ''}`}
+                    {/* <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage6 ? style.completedEntityCardStyle : addOn ? style.selectedContractEntityStyle : ''}`}
                     onClick={() => setCurrentPage('Contracted Add on service specification')}>
                         Contracted Add on service specification
                         {viewPage6 && (
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
-                    </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage7 ? style.completedEntityCardStyle : viewPage6 ? style.selectedContractEntityStyle : ''}`}
+                    </div> */}
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage7 ? style.completedEntityCardStyle : ''} ${currentPage === "Payment & Compensation" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Payment & Compensation')}>
                         Payment & Compensation
                         {viewPage7 && (
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage8 ? style.completedEntityCardStyle : viewPage7 ? style.selectedContractEntityStyle : ''}`}
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage8 ? style.completedEntityCardStyle : ''} ${currentPage === "Timesheet Submission Terms" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Timesheet Submission Terms')}>
                         Timesheet Submission Terms
                         {viewPage8 && (
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage8 && style.selectedContractEntityStyle}`}
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${currentPage === "Timesheet Processing Workflow" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Timesheet Processing Workflow')}>
                         Timesheet Processing Workflow
                     </div>
@@ -196,7 +196,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     contractId = {contractId}
                      />
                 ) : (currentPage === "Contracted Add on service specification" || currentPage === "Contracted Services Specification")  ?
-                  <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId = {contractId}/>
+                  <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId = {contractId} getCurrentPage={getCurrentPage}/>
                   :currentPage === "Documentation Proof Required"  ? (
                     <DocumentationProofRequired
                     getShowAlertDialog={getShowAlertDialog}

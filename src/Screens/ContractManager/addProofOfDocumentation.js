@@ -39,9 +39,12 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
     const [fileName, setFileName] = useState('');
     const [fileData, setFileData] = useState(null);
     const [users,setUsers] = useState([]);
+    const [sites, setSites] = useState([])
+    const [selectedSite, setSelectedSite] = useState({})
 
     useEffect(()=>{
       getUserData();
+      getSites();
     },[])
 
     const getUserData = async() => {
@@ -51,10 +54,23 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
       }
     }
 
+    const getSites = async() => {
+      const {data: sites} = await GET('entity-service/sites');
+      setSites(sites);
+    };
+
+    const handleSites = (value) => {
+      if (value !== '0') {
+        const tempSelectedSites = sites.filter(data => data?.siteName?.siteName === value).map(data => data)[0];
+        setSelectedSite(tempSelectedSites);
+        console.log(selectedSite, tempSelectedSites)
+      }
+    }
+    console.log(selectedSite)
     const handleContinue = async () => {
       let data;
       if(!isMultipleContract){
-        if(selectedPOD === 'Medical Staff Membership & Privileges' && contractedServiceProviderName === '' || privilegingFacilityName === ''){
+        if(selectedPOD === 'Medical Staff Membership & Privileges' && contractedServiceProviderName === '' || selectedSite === {}){
           ErrorToaster('Fill in mandatory fields');
           return;
         }
@@ -76,7 +92,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
           dataMap: {
             dataMap: {
               contractedServiceProvider: contractedServiceProviderName,
-              privilegingFacility: privilegingFacilityName,
+              privilegingFacility: selectedSite,
               medicalStaffId: medicalStaffId,
             }
           },
@@ -150,7 +166,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
         } : '';
 
       }else{
-        if(selectedPOD === 'Medical Staff Membership & Privileges' && contractorName === '' || privilegingFacilityName === ''){
+        if(selectedPOD === 'Medical Staff Membership & Privileges' && contractorName === '' || selectedSite === {}){
           ErrorToaster('Fill in mandatory fields');
           return;
         }
@@ -176,7 +192,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
           dataMap: {
             dataMap: {
               contractor: contractorName,
-              privilegingFacility: privilegingFacilityName,
+              privilegingFacility: selectedSite,
               medicalStaffId: medicalStaffId,
             }
           },
@@ -261,23 +277,23 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
         return;
       }
 
-      // const formData = new FormData();
-      //  formData.append('documentationProof', new Blob([JSON.stringify(podData)], {
-      //   type: "application/json"
-      //   }));
-      //   if(data?.certificateCopyAvailable){
-      //     formData.append('documentProofFiles',fileData);
-      //   }else{
-      //     let file = undefined;
-      //     formData.append('documentProofFiles',file);
-      //   }
-      //  await POST(`contract-managment-service/contracts/${contractId}/DocumentationProof`, formData)
-      //  .then(response=>{
-      //    SuccessToaster('Documentation Proof Updated Successfully');
-      //  })
-      //  .catch(error=>{
-      //    ErrorToaster('Unexpected Error Occured');
-      //  })
+      const formData = new FormData();
+       formData.append('documentationProof', new Blob([JSON.stringify(podData)], {
+        type: "application/json"
+        }));
+        if(data?.certificateCopyAvailable){
+          formData.append('documentProofFiles',fileData);
+        }else{
+          let file = undefined;
+          formData.append('documentProofFiles',file);
+        }
+       await POST(`contract-managment-service/contracts/${contractId}/DocumentationProof`, formData)
+       .then(response=>{
+         SuccessToaster('Documentation Proof Updated Successfully');
+       })
+       .catch(error=>{
+         ErrorToaster('Unexpected Error Occured');
+       })
     }
 
     const handleFileUpload = (e) => {
@@ -349,16 +365,20 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                      <div className={style.extentionLableStyle}>Privileging Facility*</div>
                      <div className={style.reduce10Left}>
-                         <select
-                             name="class"
-                             id="Class"
-                             value={privilegingFacilityName}
-                             onChange={(e) => setPrivilegingFacilityName(e.target.value)}
-                             className={`${style.fullWidth} ${style.marginLeft20} `}>
-                             <option>
-                                 Select Name
-                             </option>
-                         </select>
+                     <select
+                      name="class"
+                      id="Class"
+                      onChange={(e) => handleSites(e.target.value)}
+                      className={`${style.fullWidth} ${style.marginLeft20} `}>
+                          <option value="0" >
+                            Select Sites
+                          </option>
+                          {sites?.map((data, index) => (
+                            <option key={`${data}-${index}`} value={data?.siteName?.siteName} >
+                              {data?.siteName?.siteName}
+                            </option>
+                          ))}
+                      </select>
                        </div>
                  </div>
                 </>:
@@ -369,8 +389,26 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>{selectedPOD === 'Primary Speciality Board Certification'?'Speciality Board':'Privileging Facility'}*</div>
-                        <InputGroup value={selectedPOD === 'Primary Speciality Board Certification'? specialityBoardName : privilegingFacilityName}
-                        onChange={(e) => selectedPOD === 'Primary Speciality Board Certification'? setSpecialityBoardName(e.target.value) : setPrivilegingFacilityName(e.target.value)} />
+                        {selectedPOD === 'Primary Speciality Board Certification'? (
+                          <InputGroup value={specialityBoardName}
+                          onChange={(e) => setSpecialityBoardName(e.target.value)} />
+                        ) : 
+                        (
+                        <select
+                          name="class"
+                          id="Class"
+                          onChange={(e) => handleSites(e.target.value)}
+                          className={`${style.fullWidth} `}>
+                              <option value="0" >
+                                Select Sites
+                              </option>
+                              {sites?.map((data, index) => (
+                                <option key={`${data}-${index}`} value={data?.siteName?.siteName} >
+                                  {data?.siteName?.siteName}
+                                </option>
+                              ))}
+                          </select>
+                        )}
                     </div>
                   </>
                 }

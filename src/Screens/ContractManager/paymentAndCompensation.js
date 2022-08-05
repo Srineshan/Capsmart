@@ -104,7 +104,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>RVU Quantity*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup className={style.fourFieldWidth} value={rvuQuantity?.quantity}
+                                <InputGroup className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0" maxLength={2}
                                 onChange={(e) => setRvuQuantity({
                                     ...rvuQuantity, quantity: e.target.value
                                 })} />
@@ -125,21 +125,21 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>FTE Equivalent</div>
-                            <InputGroup className={style.twoFieldWidth} value={fteEquivalent?.value}
+                            <InputGroup className={style.twoFieldWidth} value={fteEquivalent?.value} placeholder="0" maxLength={2}
                             onChange={(e) => setFteEquivalent({
                                 ...fteEquivalent, value: e.target.value
                             })} />
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>RVU Reference Used</div>
-                            <InputGroup className={style.fullWidth} value={rvuReferenceUsed?.value}
+                            <InputGroup className={style.fullWidth} value={rvuReferenceUsed?.value} placeholder="Enter RVU Reference Used"
                             onChange={(e) => setRvuReferenceUsed({
                                 ...rvuReferenceUsed, value: e.target.value
                             })} />
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>RVU Quantity Variance (+/-)</div>
-                            <InputGroup className={style.twoFieldWidth} value={rvuQuantityVariance?.value}
+                            <InputGroup className={style.twoFieldWidth} value={rvuQuantityVariance?.value} placeholder="0" maxLength={2}
                             onChange={(e) => setRvuQuantityVariance({
                                 ...rvuQuantityVariance, value: e.target.value
                             })} />
@@ -147,7 +147,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>RVU Quantity Period</div>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                                <EditableText className={style.editableTextStyleDays} value={rvuQuantityPeriod?.days}
+                                <EditableText className={style.editableTextStyleDays} value={rvuQuantityPeriod?.days} placeholder="0" maxLength={2}
                                 onChange={(e) => setRvuQuantityPeriod({
                                     ...rvuQuantityPeriod, days: e
                                 })} />
@@ -158,21 +158,21 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                 )}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Dollar Hourly Rate*</div>
-                    <InputGroup className={style.fourFieldWidth} value={dollarRate?.hour}
+                    <InputGroup className={style.fourFieldWidth} value={dollarRate?.hour} placeholder="0" maxLength={2}
                         onChange={(e) => setDollarRate({
                             ...dollarRate, hour: e.target.value
                         })} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Dollar Value per Timesheet Submission*</div>
-                    <InputGroup className={style.fourFieldWidth} value={dollarValue?.perTimesheetSubmission}
+                    <InputGroup className={style.fourFieldWidth} value={dollarValue?.perTimesheetSubmission} placeholder="0" maxLength={2}
                     onChange={(e) => setDollarValue({
                         ...dollarValue, perTimesheetSubmission: e.target.value, perContractedPeriod: dollarValue?.perContractedPeriod
                     })} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Dollar Value for per Contracted Year/Period*</div>
-                    <InputGroup className={style.fourFieldWidth} value={dollarValue?.perContractedPeriod}
+                    <InputGroup className={style.fourFieldWidth} value={dollarValue?.perContractedPeriod} placeholder="0" maxLength={2}
                     onChange={(e) => setDollarValue({
                         ...dollarValue, perContractedPeriod: e.target.value, perTimesheetSubmission: dollarValue?.perTimesheetSubmission
                     })} />
@@ -208,12 +208,15 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                     </select>
                 </div>
             </div>
-            <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                onClick={() => { getViewPage7(true); getCurrentPage('Timesheet Submission Terms') }}
-                // onClick={() => { handleContinue() }}
-                >CONTINUE</button>
+            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contracted Services Specification')}}>BACK</button>
+                <div>
+                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
+                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
+                    onClick={() => { getViewPage7(true); getCurrentPage('Timesheet Submission Terms') }}
+                    // onClick={() => { handleContinue() }}
+                    >CONTINUE</button>
+                </div>
             </div>
         </div>
     )

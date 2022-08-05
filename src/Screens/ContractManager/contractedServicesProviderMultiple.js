@@ -1,13 +1,16 @@
 import React, {useState, useEffect} from 'react';
 import {GET, PUT, POST, TenantID} from './../dataSaver';
+import EditServiceProvider from './editServiceProviderDialog';
 import style from './index.module.scss';
 
 const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage}) => {
     const contractID = "e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf"
     const [users,setUsers] = useState([]);
+    const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
+    const [userProviderData, setUserProviderData] = useState({});
     useEffect(()=>{
       getUserData();
-    },[])
+    },[getNewServiceProviderDialog])
 
     const getUserData = async() => {
       const {data: userData} = await GET(`user-management-service/user?contractID=${contractID}`);
@@ -15,6 +18,11 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
         setUsers(userData);
       }
     }
+
+    const getEditServiceDialog = (value) => {
+      setEditServiceProviderDialog(value)
+    }
+    
     console.log('user',users);
     return(
         <div className={style.cloneBlockStyle}>
@@ -33,8 +41,8 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
                 </div>
                 <>
                 {
-                  users?.length === 0 ? users?.map(data=>(
-                    <div className={`${style.tableData} ${style.displayInRow}`}>
+                  users?.length !== 0 ? users?.map(data=>(
+                    <div className={`${style.tableData} ${style.displayInRow}`} onClick={() => {setUserProviderData(data);setEditServiceProviderDialog(true)}}>
                         <div className={`${style.multipleDataTextWidth}`}></div>
                         <p className={style.multipleDataTextWidth}>{`${data?.name?.firstName} ${data?.name?.lastName} - ${data?.name?.suffix}`}</p>
                         <p className={style.multipleDataTextWidth}>Physician </p>
@@ -50,6 +58,9 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
                 <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
                 <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {{getViewPage2 ? getViewPage3(true) : getViewPage2(true)};getViewPage1(false);getCurrentPage('Contracted Services Provider(s)')}}>CONTINUE</button>
             </div>
+            {editServiceProviderDialog && (
+              <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} />
+            )}
         </div>
     )
 }

@@ -7,20 +7,19 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
-const NewServiceProvider = ({getNewServiceProviderDialog}) => {
+const EditServiceProvider = ({getEditServiceDialog, userProviderData}) => {
     const testContractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
     const [selectedContract, setSelectedContract] = useState('Written Contract Extension For Fixed Term');
     const [startDate, setStartDate] = useState(new Date);
     const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration');
     const [roles,setRoles] = useState([]);
-    const [selectedRoles, setSelectedRoles] = useState([]);
+    const [selectedRoles, setSelectedRoles] = useState(userProviderData?.roles);
     const [npin,setNpin] = useState({npin:'',missing:false,na:false});
     const [userDetails,setUserDetails] = useState({firstName:'',middleName:'',lastName:'',suffix:'',email:'',phone:''});
     const [providerType,setProviderType] = useState('');
     const [address,setAddress] = useState({city:'',state:'',zipcode:''});
     const [siteLevel,setSiteLevel] = useState(false);
     const [deptLevel,setDeptLevel] = useState(false);
-
     const leftElement = () => {
         return(
             <Button text="Upload" intent={Intent.PRIMARY} />
@@ -48,7 +47,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
     }
 
     const rolesTags = selectedRoles
-    .filter(data => roles.map(role => role).includes(data))
+    .filter(data => roles.map(role => role?.id === data?.id))
     .map((tag, index) => {
       const onRemove = () => {
         setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName));
@@ -78,6 +77,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
 
     const handleSave = async() => {
         const data = {
+            "id": userProviderData?.id,
             "name": {
                 "firstName": userDetails?.firstName,
                 "lastName": userDetails?.lastName,
@@ -97,9 +97,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
               },
               "email": {
                 "officialEmail": userDetails?.email
-              },
-              "password": {
-                "password": "string"
               },
               "communication": {
                 "personalEmail": userDetails?.email,
@@ -183,9 +180,10 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
                 "npin": npin?.npin
               }
           }
-          const response = await POST('user-management-service/user/register', JSON.stringify(data));
+          console.log('data', data, userDetails)
+          const response = await PUT('user-management-service/user', JSON.stringify(data));
             if(response){
-                SuccessToaster('User Added Successfully');
+                SuccessToaster('User Updated Successfully');
             }
             else {
                 ErrorToaster('Unexpected Error');
@@ -194,14 +192,22 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
           console.log(data)
     }
 
-    console.log(roles)
+    useEffect(() =>{
+        setNpin(userProviderData?.npin);
+        setSelectedRoles(userProviderData?.roles);
+        setUserDetails({...userDetails, firstName:userProviderData?.name?.firstName, lastName: userProviderData?.name?.lastName, suffix: userProviderData?.name?.suffix, email: userProviderData?.email?.officialEmail, phone: userProviderData?.communication?.mobileNumber});
+        setProviderType(userProviderData?.serviceProviderType);
+        setAddress(userProviderData?.address);
+        setSiteLevel(userProviderData?.siteLevelResponsible);
+        setDeptLevel(userProviderData?.departmentLevelResponsible);
+    }, [])
 
     return(
-        <Dialog isOpen={getNewServiceProviderDialog} onClose={() => getNewServiceProviderDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
+        <Dialog isOpen={getEditServiceDialog} onClose={() => getEditServiceDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
           <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
             <div className={style.spaceBetween}>
-                <p className={style.extensionStyle}>New Service Provider</p>
-                <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getNewServiceProviderDialog(false)}  />
+                <p className={style.extensionStyle}>Edit Service Provider</p>
+                <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getEditServiceDialog(false)}  />
             </div>
             <div className={style.extensionBorder}></div>
             <div className={`${style.serviceBoxStyle}`}>
@@ -364,8 +370,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
             </div>
             <div>
                 <div className={`${style.floatRight} ${style.marginTop20}`}>
-                    <button className={`${style.buttonStyle}`} onClick={() => handleSave()}>ADD MORE</button>
-                    <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & EXIT</button>
+                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave(); getEditServiceDialog(false)}}>SAVE & EXIT</button>
                 </div>
             </div>
           </div>
@@ -373,4 +378,4 @@ const NewServiceProvider = ({getNewServiceProviderDialog}) => {
     )
 }
 
-export default NewServiceProvider;
+export default EditServiceProvider;

@@ -20,6 +20,23 @@ import Navbar from '../../Components/Navbar';
 
 const ActiveCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
     const [showOptions, setShowOptions] = useState(false);
+    const [entityList,setEntityList] = useState([]);
+    const [loading,setLoading] = useState(false);
+    useEffect(()=>{
+      getEntityList();
+    }, [])
+
+    const getEntityList = async() => {
+      setLoading(true);
+      const {data: entityData, loading:loading} = await GET(`entity-service/entity`);
+      setEntityList(entityData);
+      setLoading(false);
+    }
+
+    if(loading){
+      return <CircularProgress />;
+    }
+
 
 
     return(

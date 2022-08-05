@@ -261,7 +261,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
                         />
                         {timeSheetCount === 1 && (
                             <div className={style.displayInRow}>
-                                <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20} ${style.marginTop15}`} placeholder="HH"
+                                <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20} ${style.marginTop15}`}  placeholder="HH" maxLength={2}
                                 value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e.target.value)} />
                                 <select
                                     name="class"
@@ -284,7 +284,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
                         {timeSheetCount === 2 && (
                             <div className={style.displayInRow}>
                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} ${style.marginTop10}`}>
-                                    <EditableText placeholder="HH" className={style.editableTextSpecifiedStyle}
+                                    <EditableText  placeholder="HH" maxLength={2} className={style.editableTextSpecifiedStyle}
                                     value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e)} />
                                     <div className={style.textElementWithNurse}>Specified: 160</div>
                                 </div>
@@ -311,14 +311,14 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Planned Absence Notification Days limit*</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value={plannedAbsence} placeholder="0" onChange={(e) => setPlannedAbsence(e)} className={style.editableTextStyleDays} />
+                        <EditableText value={plannedAbsence}  placeholder="0" maxLength={2} onChange={(e) => setPlannedAbsence(e)} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed *</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value={maxUnplannedAbsence} placeholder="0" onChange={(e) => setMaxUnplannedAbsence(e)} className={style.editableTextStyleDays} />
+                        <EditableText value={maxUnplannedAbsence}  placeholder="0" maxLength={2} onChange={(e) => setMaxUnplannedAbsence(e)} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>
@@ -326,37 +326,40 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
                     <div className={style.extentionLableStyle}>Invoice Processing Day Range Goal*</div>
                     <div className={style.displayInRow}>
                         <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                            <EditableText value={invoiceProcessingDay} placeholder="0" onChange={(e) => setInvoiceProcessingDay(e)} className={style.editableTextStyleDays} />
+                            <EditableText value={invoiceProcessingDay}  placeholder="0" maxLength={2} onChange={(e) => setInvoiceProcessingDay(e)} className={style.editableTextStyleDays} />
                             <div className={style.textElementWithoutBackgroundDays}>Days</div>
                         </div>
                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} `}>
                             <div className={style.textElementWithNurse}>Threshold</div>
-                            <EditableText value={invoiceProcessingDayThreshold} placeholder="0" onChange={(e) => setInvoiceProcessingDayThreshold(e)} className={style.editableTextThresholdStyle} />
+                            <EditableText value={invoiceProcessingDayThreshold}  placeholder="0" maxLength={2} onChange={(e) => setInvoiceProcessingDayThreshold(e)} className={style.editableTextThresholdStyle} />
                         </div>
                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder}`}>
                             <div className={style.textElementWithNurse}>Goal</div>
-                            <EditableText value={invoiceProcessingDayGoal} placeholder="0" onChange={(e) => setInvoiceProcessingDayGoal(e)} className={style.editableTextThresholdStyle} />
+                            <EditableText value={invoiceProcessingDayGoal}  placeholder="0" maxLength={2} onChange={(e) => setInvoiceProcessingDayGoal(e)} className={style.editableTextThresholdStyle} />
                         </div>
                     </div>
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on activity service date *</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate} placeholder="0" onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e)} className={style.editableTextStyleDays} />
+                        <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate}  placeholder="0" maxLength={2} onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e)} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on contract end date</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value={dayLimitForSubmissionBasedOnContractEndDate} placeholder="0" onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e)} className={style.editableTextStyleDays} />
+                        <EditableText value={dayLimitForSubmissionBasedOnContractEndDate}  placeholder="0" maxLength={2} onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e)} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>
             </div>
-            <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') }}>CONTINUE</button>
+            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Payment & Compensation')}}>BACK</button>
+                <div>
+                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
+                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') }}>CONTINUE</button>
+                </div>
             </div>
         </div>
     )

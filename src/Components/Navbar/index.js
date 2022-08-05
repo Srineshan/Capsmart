@@ -65,9 +65,9 @@ const Navbar = () => {
             <div className={style.displayInRow}>
                 <img src={File} alt="print" className={style.icons} />
                 <img src={PrintIcon} alt="print" className={style.icons} />
-                <img src={NotificationsIcon} alt="print" className={style.icons} />
+                {/* <img src={NotificationsIcon} alt="print" className={style.icons} />
                 <img src={RedBackground} alt="print" className={style.notificationIcon} />
-                <img src={NotificationCount} alt="print" className={style.notificationCount} />
+                <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
                 <div className={style.logoutStyle}>
                     <p>Logout</p>
                 </div>
