@@ -165,43 +165,6 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
                                     ))
                                     }
 
-
-                                    <div className={`${style.tableDataTrialCustomer}`}>
-                                        <div className={`${style.displayInRow}`}>
-                                            <Checkbox />
-                                            <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
-                                        </div>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>Lorem Ipsum</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem Ipsum</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Contract</p>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>Maggiehaven</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>GA</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>32 days</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                        <div className={style.tableDataFontStyle}>
-                                            <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
-                                        </div>
-                                    </div>
-                                    <div className={`${style.tableDataTrialCustomer}`}>
-                                        <div className={`${style.displayInRow}`}>
-                                            <Checkbox />
-                                            <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
-                                        </div>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>Lorem Ipsum</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem Ipsum</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Trial</p>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>Maggiehaven</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>TX</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>65 days</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                        <div className={style.tableDataFontStyle}>
-                                            <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
-                                        </div>
-                                    </div>
                                     {showOptions && (
                                         <div className={`${style.displayInCol} ${style.actionCard} ${style.cursorPointer}`} ref={menuRef}>
                                             <img src={CustomerBox3} alt="CustomerBox1" className={style.actionsIcon} onClick={() => setStopTrialDialog(true)} />
