@@ -36,8 +36,8 @@ const FeedbackCustomers = ({getSelectedCustomer, getAddContract}) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className={style.cardStyle} onClick={() => getSelectedCustomer('IN-PROGESS / TRIAL CUSTOMERS')}>
-                                <h5 className={`${style.headingForContracts}`}>IN-PROGESS / TRIAL CUSTOMERS</h5>
+                            <div className={style.cardStyle} onClick={() => getSelectedCustomer('IN-PROGRESS / TRIAL CUSTOMERS')}>
+                                <h5 className={`${style.headingForContracts}`}>IN-PROGRESS / TRIAL CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                     <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>3</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
@@ -156,7 +156,7 @@ const FeedbackCustomers = ({getSelectedCustomer, getAddContract}) => {
                         </div>
                     </div>
                 </div>
-                <div className={style.spaceBetween}>                        
+                <div className={style.spaceBetween}>
                     <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
                     <p className={style.poweredBy}>© TimeSmart.AI</p>
                 </div>

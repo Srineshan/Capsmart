@@ -23,7 +23,7 @@ const TasksAndAlerts = () => {
     const [viewToDo, setViewToDo] = useState(true);
 
     return(
-        <Fragment> 
+        <Fragment>
             <Navbar />
             <div className={style.margin20}>
                 <div className={`${style.grid5}`}>
@@ -57,18 +57,20 @@ const TasksAndAlerts = () => {
                             </div>
                         </div>
                     </Link>
-                    <div className={style.cardStyle} >
-                        <h5 className={`${style.headingForContracts}`}>REGISTERED USERS</h5>
-                        <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginRight}`}>
-                            <div className={`${style.optionsStyle} ${style.displayInCol}`}>
-                                <span className={style.displayInRow}><p className={style.headingCountForContracts}>22376 </p> REGISTERED USERS</span>
-                                <span className={style.displayInRow}><p className={`${style.yellow} ${style.headingCountForContracts}`}>14 </p> TRIAL USERS</span>
-                            </div>
-                            <div className={`${style.optionsStyle} ${style.displayInColRev}`}>
-                                <span className={style.displayInRow}><span className={`${style.red} ${style.marginRight}`}>1 </span> BLOCKED</span>
+                    <Link to={'/user'} className={style.linkStyle}>
+                        <div className={style.cardStyle} >
+                            <h5 className={`${style.headingForContracts}`}>REGISTERED USERS</h5>
+                            <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginRight}`}>
+                                <div className={`${style.optionsStyle} ${style.displayInCol}`}>
+                                    <span className={style.displayInRow}><p className={style.headingCountForContracts}>22376 </p> REGISTERED USERS</span>
+                                    <span className={style.displayInRow}><p className={`${style.yellow} ${style.headingCountForContracts}`}>14 </p> TRIAL USERS</span>
+                                </div>
+                                <div className={`${style.optionsStyle} ${style.displayInColRev}`}>
+                                    <span className={style.displayInRow}><span className={`${style.red} ${style.marginRight}`}>1 </span> BLOCKED</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </Link>
                     <div className={style.cardStyle} >
                         <h5 className={style.headingForContracts}>AT RISK SUBSCRIPTIONS</h5>
                         <div className={`${style.spaceBetween} ${style.marginTop20} ${style.marginRight}`}>
@@ -335,11 +337,11 @@ const TasksAndAlerts = () => {
                                 <p className={`${style.tableDataFontStyleAlerts} ${style.width30Percent} ${style.marginLeft30}`}>Lorem Ipsum </p>
                                 <p className={style.tableDataFontStyleAlerts}></p>
                             </div>
-                          </div>  
+                          </div>
                         )}
                     </div>
                 </div>
-                <div className={style.spaceBetween}>                        
+                <div className={style.spaceBetween}>
                     <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
                     <p className={style.poweredBy}>© TimeSmart.AI</p>
                 </div>

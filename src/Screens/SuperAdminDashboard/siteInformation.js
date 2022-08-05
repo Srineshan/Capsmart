@@ -3,8 +3,8 @@ import { InputGroup, Icon, Intent, TagInput, Dialog, Classes, Spinner } from '@b
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
-import {Link} from 'react-router-dom';
-import {GET,PUT,POST,TenantID} from './../dataSaver';
+import {Link, useParams} from 'react-router-dom';
+import {GET,PUT,POST,TenantID,isSuperAdminAccess} from './../dataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step2.png';
 import Step3 from './../../images/step33.png';
@@ -19,6 +19,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 // const VALUES = ['Department 1', "Department 2"];
 
 const SiteInformation = ({getActiveStep}) => {
+    const {id} = useParams();
     const [tags, setTags] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [siteList,setSiteList] = useState([]);
@@ -45,7 +46,7 @@ const SiteInformation = ({getActiveStep}) => {
     },[]);
 
     const getEntityData = async() => {
-      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
+      const {data: data} = await GET(`entity-service/entity/${id}`);
       setEntityData(data);
       if(data?.canPrimarySiteToUseApp){
         setSiteList(data?.sites);
@@ -104,6 +105,7 @@ const SiteInformation = ({getActiveStep}) => {
       "contractDetails": entityData.contractDetails,
       "accountManager":entityData.accountManager,
       "appUserRoles": entityData.appUserRoles,
+      "websiteURL":entityData?.websiteURL,
     }
     await PUT('entity-service/entity',updatedValue)
     .then(response=>{
@@ -194,41 +196,41 @@ const SiteInformation = ({getActiveStep}) => {
         <div className={style.entitySetupBackground}>
             <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
             <div className={style.stepperMargin}>
-                <div className={role !== "" ? style.stepperGrid : style.stepperGrid4}>
+                <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                         </div>
-                        <p className={`${role !== "" ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
+                        <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
                     <div onClick={() => getActiveStep('siteInformation')}>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
                             <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
                         </div>
-                        <p className={`${role !== "" ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
+                        <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
-                    {role !== "" && (
+                    {isSuperAdminAccess && (
                       <div onClick={() => getActiveStep('entitySystemAdmin')}>
                         <div className={style.stepperImgBackground}>
                             <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
                         </div>
-                        <p className={role !== "" ? style.entityTextColor : style.entityTextColor4grid}>ENTITY SYSTEM ADMIN</p>
+                        <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>ENTITY SYSTEM ADMIN</p>
                       </div>
                     )}
                     <div onClick={() => getActiveStep('siteUsers')}>
                         <div className={style.stepperImgBackground}>
                             <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
-                        <p className={role !== "" ? style.entityTextColor : style.entityTextColor4grid}>SITE USERS</p>
+                        <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>SITE USERS</p>
                     </div>
                     <div onClick={() => getActiveStep('appSubscription')}>
                         <div className={style.stepperImgBackground}>
                             <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                         </div>
-                        <p className={role !== "" ? style.entityTextColor : style.entityTextColor4grid}>APP SUBSCRIPTION</p>
+                        <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>APP SUBSCRIPTION</p>
                     </div>
                 </div>
-                <div className={role !=="" ? style.stepperDivider2 : style.stepperDivider2grid4}></div>
+                <div className={isSuperAdminAccess ? style.stepperDivider2 : style.stepperDivider2grid4}></div>
             </div>
             {!showSiteTable ? (
                 <div className={style.entitySetupCardStyle}>
@@ -400,7 +402,7 @@ const SiteInformation = ({getActiveStep}) => {
                         <div className={`${style.positionCenter} ${style.marginTop20}`}>
                             <button className={`${style.cloneOutlinedButton} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => setAlertDialog(false)}>NO</button>
                             {/* <Link to={'/siteUsers'}> */}
-                                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => getActiveStep(role !=="" ? 'entitySystemAdmin' : 'siteUsers')}>YES</button>
+                                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => getActiveStep(isSuperAdminAccess ? 'entitySystemAdmin' : 'siteUsers')}>YES</button>
                             {/* </Link> */}
                         </div>
                     </div>

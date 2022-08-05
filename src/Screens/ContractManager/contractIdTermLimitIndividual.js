@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { TextArea, InputGroup, RadioGroup, Radio, Icon, TagInput, Checkbox, FileInput, EditableText, Divider } from '@blueprintjs/core';
+import { TextArea, InputGroup, Icon, TagInput, Checkbox, FileInput, EditableText, Divider } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { DateInput } from "@blueprintjs/datetime";
@@ -82,9 +82,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         setFullyExecutedContract(contractDetail?.fullyExecutedContract);
         setSelectContractManager(contractDetail?.contractManager?.userID);
         setContractPriorId({id:contractDetail?.priorContract?.id,na:contractDetail?.priorContract?.notApplicable});
-        setContractTermPeriodFrom(new Date(contractDetail?.contractTerm?.startDate));
-        setContractTermPeriodTo(new Date(contractDetail?.contractTerm?.endDate));
-        setContractEffectiveDate(new Date(contractDetail?.contractTerm?.effectiveDate));
+        setContractTermPeriodFrom(new Date(contractDetail?.contractTerm?.startDate) !== undefined ? new Date(contractDetail?.contractTerm?.startDate) : new Date());
+        setContractTermPeriodTo(new Date(contractDetail?.contractTerm?.endDate)  !== undefined ? new Date(contractDetail?.contractTerm?.endDate) : new Date() );
+        setContractEffectiveDate(new Date(contractDetail?.contractTerm?.effectiveDate)  !== undefined ? new Date(contractDetail?.contractTerm?.effectiveDate) : new Date());
         setSelectedContractContinuationPolicy(contractDetail?.continuationPolicy?.contractPolicyType);
         let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
         setAutoRenewal({renewalTerm:continuation?.autoRenewalTerm?.term.toString(),allowableRenewalTerm:continuation?.allowableAutoRenewalTerm?.term.toString(),calendar:continuation?.autoRenewalCalender})

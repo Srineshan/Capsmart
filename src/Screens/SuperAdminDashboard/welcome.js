@@ -1,6 +1,7 @@
 import React from 'react';
 import { Icon, Intent } from '@blueprintjs/core';
 import {Link} from 'react-router-dom';
+import {TenantID} from './../dataSaver';
 import WelcomeImg from './../../images/welcomeNewAccountImg.png';
 import style from './index.module.scss';
 
@@ -47,7 +48,7 @@ const Welcome = () => {
                 </div>
                 <div className={style.marginTop50}>
                     <button className={`${style.outlinedWelcomeButton} ${style.cursor}`}>CANCEL</button>
-                    <Link to={'/entitySetup'}>
+                    <Link to={`/entitySetup/${TenantID}`}>
                         <button className={`${style.welcomeButton} ${style.marginLeft20} ${style.cursor}`}>CONTINUE</button>
                     </Link>
                 </div>

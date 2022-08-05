@@ -41,8 +41,6 @@ const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, get
         setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
     };
 
-    console.log(selectedUsers)
-
     const handleUserUnBlock = async(data) => {
         const response = await PUT('user-management-service/user', JSON.stringify({...data, blocked: false}));
         if(response){

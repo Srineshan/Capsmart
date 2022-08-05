@@ -1,10 +1,13 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { InputGroup, Icon, Intent, TextArea, RadioGroup, Radio } from '@blueprintjs/core';
+import { InputGroup, Icon, Intent, TextArea, Checkbox } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
-import {GET, TenantID, PUT} from './../dataSaver';
-import {Link} from 'react-router-dom';
+import SetupComplete from './setupComplete';
+import {format} from 'date-fns';
+import { DateInput } from "@blueprintjs/datetime";
+import {GET, TenantID, PUT, isSuperAdminAccess} from './../dataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step23.png';
 import Step3 from './../../images/step34.png';
@@ -16,86 +19,92 @@ import {Auth} from './../../utils/auth'
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 
-const VALUES = ['Department 1', "Department 2", "Department 3"];
-
 const AppSubscription = ({getActiveStep}) => {
-    const [tags, setTags] = useState(VALUES);
+    const {id} = useParams();
+    // const id = TenantID;
+    const navigate = useNavigate();
     const [entityData,setEntityData] = useState();
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [selectDepartment, setSelectDepartment] = useState('');
     const [selectedContract, setSelectedContract] = useState('Select...');
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
-    const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('Select Value');
+    const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('AUTORENEWAL');
     const [item, setItem] = useState();
+    const [isSetupComplete,setIsCompleteSetup] = useState(false);
     const [isUpdated, setIsUpdated] = useState(false);
-    const [plan,setPlan] = useState({planName: '',allowableRegisteredUsers: {allowableRegisteredUsers: 0}, subscriptionFees: {fees: ""}, subscriptionStatus: "ACTIVE", billingFrequency: "",
-        discount: {
-            discount: 0
-        },
-        plannedToGoLive: {
-            date: "2022-07-18"
-        },
-        poaNumber: {
-            poaNumber: ""
-        }});
-    const [poaNumber,setPoaNumber] = useState('');
-    const [billing,setBilling] = useState({contactname: {firstName: '', lastName: ''}, email: {emailId: ''}, contactNumber: {contactNumber: 0}});
+    const [plan,setPlan] = useState({planName: 'BASIC',allowableRegisteredUsers: 0,fees: "", subscriptionStatus: "ACTIVE", billingFrequency: "MONTHLY",discount: 0,
+       poaNumber: ""});
     const [billingData,setBillingData] = useState({firstName:'',lastName:'',email:'',phone:''});
+    // const [autoRenewal,setAutoRenewal] = useState({renewalTerm:'0',allowableRenewalTerm:'0',calendar:'WEEKS'});
+    // const [renewalReminder,setRenewalreminder] = useState([{'days':0}]);
     const [contract,setContract] = useState(
         {
             contractName: "",
             contractID: "",
-            contractDocuments: [
-              {
-                name: "",
-                description: "",
-                contractDocType: "AGREEMENTDRAFT",
-                contractDocPath: ""
-              }
-            ],
-            contractTermPeriod: {
-              startDate: "2022-07-18",
-              endDate: "2022-07-18"
-            },
-            plannedGoLive: {
-              date: "2022-07-18"
-            },
+            missing:false,
+            startDate: new Date(),
+            endDate: new Date(),
+            date: new Date(),
             contractContinuationPolicy: "AUTORENEWAL",
-            fullyExecutedContractOnFile: true
-        },
+        }
     );
+    const [trial,setTrial] = useState({
+      trialPeriod:7,
+      startDate:new Date(),
+      endDate: new Date()
+    })
+    const [contractFiles,setContractFiles] = useState([{type:'',name:'',desc:'',file:null,path:''}])
+
     const role = '';
     const accessToken = Auth();
 
     useEffect(()=>{
-      getEntityData();
+      if(id !== 'new'){
+          getEntityData();
+      }
     },[]);
 
     const getEntityData = async() => {
-      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
+      const {data: data} = await GET(`entity-service/entity/${id}`);
+      let subscription = data?.subscriptionPlan;
+      let contractData = data?.contractDetails;
       setEntityData(data);
       setBillingData({firstName:data?.billingDetails?.contactname?.firstName,lastName:data?.billingDetails?.contactname?.lastName,email:data?.billingDetails?.email?.emailId,phone:data?.billingDetails?.contactNumber?.contactNumber.toString()});
-      setPoaNumber(data?.subscriptionPlan?.poaNumber?.poaNumber);
+      setPlan({planName: subscription?.planName,allowableRegisteredUsers: subscription?.allowableRegisteredUsers?.allowableRegisteredUsers,fees: subscription?.subscriptionFees?.fees, subscriptionStatus: subscription?.subscriptionStatus, billingFrequency: subscription?.billingFrequency,discount: subscription?.discount?.discount || '0',
+         poaNumber: subscription?.poaNumber?.poaNumber});
+      setContract({
+            contractName: contractData?.contractName,
+            contractID: contractData?.contractID,
+            missing:false,
+            startDate: contractData?.contractTermPeriod?.startDate !== undefined? new Date(contractData?.contractTermPeriod?.startDate) : new Date(),
+            endDate: contractData?.contractTermPeriod?.endDate !== undefined ? new Date(contractData?.contractTermPeriod?.endDate) : new Date(),
+            date: contractData?.plannedGoLive?.date !== undefined ? new Date(contractData?.plannedGoLive?.date) : new Date(),
+            contractContinuationPolicy: contractData?.contractContinuationPolicy,
+        })
     }
 
-    const options = [
-        { name: 'Department 1' },
-        { name: 'Department 2' },
-        { name: 'Department 3' },
-      ];
-
-      const onSelect = useCallback((selectedItem) => {
-        setItem(selectedItem)
-        console.log('selectedItem', selectedItem);
-        setItem(selectedItem);
-        setSelectDepartment('');
-        setItem(true);
-      }, []);
+    const onSelect = useCallback((selectedItem) => {
+      setItem(selectedItem);
+      setSelectDepartment('');
+      setItem(true);
+    }, []);
 
     const leftElement = () => {
         return(
             <button className={style.uploadButtonStyle} >UPLOAD</button>
         )
+    }
+
+    const percentRightElement = () => {
+        return(
+            <p className={`${style.marginTop7} ${style.marginRight20}`}>%</p>
+        )
+    }
+
+    const dollarLeftElement = () => {
+      return(
+        <p className={`${style.marginTop7} ${style.marginLeft20}`}>$</p>
+      )
     }
 
     const calendarIcon = () => {
@@ -104,21 +113,15 @@ const AppSubscription = ({getActiveStep}) => {
         )
     }
 
-      const items = useMemo(
-        () =>
-          options.map((option) => ({
-            id: option.name,
-            value: option.name,
-            ...option,
-          })),
-        [item],
-      );
-
-    const updateBilling = async() => {
+    const updateBilling = async(type) => {
       if(billingData?.email === '' && !billingData?.email.includes('@') && !billingData?.email.includes('.')){
         ErrorToaster('Enter a valid E-mail');
         return;
       }
+      let fileData = [];
+     contractFiles?.map(data=>{
+        fileData.push({"name":data?.name,"description":data?.desc,"contractDocType":data?.type,"contractDocPath":data?.path})
+      })
       let data = {
         "id": entityData?.id,
         "entityName": entityData?.entityName,
@@ -127,23 +130,23 @@ const AppSubscription = ({getActiveStep}) => {
         "customerType": entityData?.customerType,
         "sites": entityData?.sites,
         "subscriptionPlan": {
-          "planName": "BASIC",
+          "planName": plan?.planName || 'BASIC',
           "allowableRegisteredUsers": {
-            "allowableRegisteredUsers": 0
+            "allowableRegisteredUsers": parseInt(plan?.allowableRegisteredUsers),
           },
           "subscriptionFees": {
-            "fees": "string"
+            "fees": plan?.fees,
           },
-          "subscriptionStatus": "ACTIVE",
-          "billingFrequency": "MONTHLY",
+          "subscriptionStatus": plan?.subscriptionStatus || 'ACTIVE',
+          "billingFrequency": plan?.billingFrequency || 'MONTHLY',
           "discount": {
-            "discount": 0
+            "discount": parseInt(plan?.discount)
           },
           "plannedToGoLive": {
-            "date": "2022-07-23"
+            "date": format(contract?.date, 'yyyy-MM-dd').toString(),
           },
           "poaNumber": {
-            "poaNumber": poaNumber
+            "poaNumber": contract?.poaNumber,
           }
         },
         "billingDetails": {
@@ -155,10 +158,23 @@ const AppSubscription = ({getActiveStep}) => {
             "emailId": billingData?.email
           },
           "contactNumber": {
-            "contactNumber": billingData?.phone
+            "contactNumber": parseInt(billingData?.phone)
           }
         },
-        "contractDetails": entityData?.contractDetail,
+        "contractDetails": {
+        "contractName": contract?.contractName,
+        "contractID": contract?.contractID,
+        "contractDocuments": [],
+        "contractTermPeriod": {
+          "startDate": format(contract?.startDate, 'yyyy-MM-dd').toString(),
+          "endDate": format(contract?.endDate, 'yyyy-MM-dd').toString(),
+        },
+        "plannedGoLive": {
+          "date": format(contract?.date, 'yyyy-MM-dd').toString(),
+        },
+        "contractContinuationPolicy": contract?.contractContinuationPolicy,
+        "fullyExecutedContractOnFile": fullyExecutedContract,
+      },
       }
       if(isUpdated){
         await PUT('entity-service/entity',data)
@@ -168,6 +184,9 @@ const AppSubscription = ({getActiveStep}) => {
             ErrorToaster('Unexpected Error Updating Entity Billing');
           });
         }
+      if(type === 'Continue'){
+        setIsCompleteSetup(true);
+      }
     }
 
     const handleBillingData = (name,value) => {
@@ -175,50 +194,71 @@ const AppSubscription = ({getActiveStep}) => {
       setIsUpdated(true);
     }
 
-    const handlePoaNumber = (value) => {
-      setPoaNumber(value);
+    const handleContract = (name, value) => {
+      setContract({...contract, [name]:value});
+      if(name === 'missing' && value === true){
+        setContract({...contract, 'contractID':'', 'missing':true});
+      }
+      if(name === 'contractID' && value !== ''){
+        setContract({...contract, 'missing':false, 'contractID': value});
+      }
       setIsUpdated(true);
     }
 
+    const handleTrial = (name,value) => {
+      setTrial({...trial, [name]:value});
+      setIsUpdated(true);
+    }
+
+    const handleContractFiles = (name,value) => {
+      setContract({...contract, [name]:value});
+      setIsUpdated(true);
+    }
+
+    const getCompleteValue = (value) => {
+      setIsCompleteSetup(value);
+    }
+
     return(
-        <div className={style.entitySetupBackground}>
+      <>
+        {isSetupComplete? <SetupComplete data={plan?.planName === 'TRIAL'? 'Trial':'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess? 'Created' : 'Updated'}/> : <div className={style.entitySetupBackground}>
             <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
             <div className={style.stepperMargin}>
-                <div className={role !== "" ? style.stepperGrid : style.stepperGrid4}>
+                <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                         </div>
-                        <p className={`${role !== "" ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
+                        <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
                     <div onClick={() => getActiveStep('siteInformation')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
                         </div>
-                        <p className={`${role !== "" ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
+                        <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
-                    {role !== "" && (
+                    {isSuperAdminAccess && (
                     <div onClick={() => getActiveStep('entitySystemAdmin')}>
                       <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                           <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
                       </div>
-                      <p className={`${role !== "" ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
+                      <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div>
                     )}
                     <div onClick={() => getActiveStep('siteUsers')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
-                        <p className={`${role !== "" ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP USERS</p>
+                        <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP USERS</p>
                     </div>
                     <div onClick={() => getActiveStep('appSubscription')}>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
                             <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                         </div>
-                        <p className={`${role !== "" ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP SUBSCRIPTION</p>
+                        <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP SUBSCRIPTION</p>
                     </div>
                 </div>
-                <div className={role !=="" ? style.stepperDivider5 : style.stepperDivider5grid4}></div>
+                <div className={isSuperAdminAccess ? style.stepperDivider5 : style.stepperDivider5grid4}></div>
             </div>
             <div className={style.entitySetupCardStyle}>
                 <p className={style.heading}>App Subscription Information</p>
@@ -240,8 +280,8 @@ const AppSubscription = ({getActiveStep}) => {
                                     <select
                                         name="class"
                                         id="Class"
+                                        disabled={!isSuperAdminAccess}
                                         value={plan?.planName}
-                                        disabled
                                         onChange={(e) => setPlan({...plan, planName: e.target.value})}
                                         className={style.fullWidth}>
                                             <option value="BASIC" >
@@ -271,19 +311,20 @@ const AppSubscription = ({getActiveStep}) => {
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Allowable Registered Users *</div>
                                         <InputGroup className={style.fourFieldWidth}
-                                        value="289"
-                                        disabled
-                                        // value={plan?.allowableRegisteredUsers?.allowableRegisteredUsers}
-                                        onChange={(e) => setPlan({...plan, allowableRegisteredUsers: {allowableRegisteredUsers: e.target.value}})} />
+                                        type="number"
+                                        disabled={!isSuperAdminAccess}
+                                        value={plan?.allowableRegisteredUsers}
+                                        onChange={(e) => setPlan({...plan, allowableRegisteredUsers: e.target.value})} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Monthly Subscription Fees*</div>
                                         <div className={style.displayInRow}>
                                             <InputGroup className={`${style.textFieldWidth} ${style.fourFieldWidth}`}
-                                            // value={`$ ${plan?.subscriptionFees?.fees}`}
-                                            value={`$ 6`}
-                                            disabled
-                                            onChange={(e) => setPlan({...plan, subscriptionFees: {fees: e.target.value}})} />
+                                            value={plan?.fees}
+                                            type="number"
+                                            leftElement={dollarLeftElement()}
+                                            disabled={!isSuperAdminAccess}
+                                            onChange={(e) => setPlan({...plan, fees: e.target.value})} />
                                             <div className={`${style.extentionLableStyle} ${style.fourFieldWidth} ${style.marginLeft20}`}>Per User</div>
                                         </div>
                                     </div>
@@ -294,25 +335,31 @@ const AppSubscription = ({getActiveStep}) => {
                                                 name="class"
                                                 id="Class"
                                                 value={plan?.billingFrequency}
-                                                disabled
+                                                disabled={!isSuperAdminAccess}
                                                 onChange={(e) => setPlan({...plan, billingFrequency: e.target.value})}
                                                 className={style.fourFieldWidth}>
-                                                    <option value="Monthly" >
+                                                    <option value="MONTHLY" >
                                                     Monthly
+                                                    </option>
+                                                    <option value="QUARTERLY" >
+                                                    Quarterly
+                                                    </option>
+                                                    <option value="ANNUALY" >
+                                                    Annualy
                                                     </option>
                                             </select>
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Discount*</div>
-                                        <InputGroup className={style.fourFieldWidth} value={`${plan?.discount?.discount} %`} disabled
-                                        onChange={(e) => setPlan({...plan, discount:{discount: e.target.value}})}
+                                        <InputGroup className={style.fourFieldWidth} type="number" value={plan?.discount} rightElement={percentRightElement()} disabled={!isSuperAdminAccess}
+                                        onChange={(e) => setPlan({...plan, discount: e.target.value})}
                                         />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>POA Number</div>
-                                        <InputGroup className={style.fourFieldWidth} placeholder="POA Number" value={poaNumber}
-                                        onChange={(e) => handlePoaNumber(e.target.value)} />
+                                        <InputGroup className={style.fourFieldWidth} placeholder="POA Number" value={plan?.poaNumber}
+                                        onChange={(e) => setPlan({...plan, poaNumber: e.target.value})} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Billing Contact Name</div>
@@ -329,26 +376,20 @@ const AppSubscription = ({getActiveStep}) => {
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Cell Phone</div>
-                                        <InputGroup className={style.twoFieldWidth} value={billingData?.phone} placeholder="+1(342)444-5505"
+                                        <InputGroup type="number" className={style.twoFieldWidth} value={billingData?.phone} placeholder="+1(342)444-5505"
                                         onChange={(e) => handleBillingData('phone',e.target.value)} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Contract / Agreement Name*</div>
-                                        <InputGroup className={style.fullWidth} value={contract?.contractName} placeholder="Text" disabled
-                                        onChange={(e) => setContract({...contract, contractName: e.target.value})} />
+                                        <InputGroup className={style.fullWidth} value={contract?.contractName} placeholder="Text" disabled={!isSuperAdminAccess}
+                                        onChange={(e) => handleContract('contractName', e.target.value)} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Contract ID ( CID )*</div>
                                         <div className={style.displayInRow}>
-                                            <InputGroup className={style.fourFieldWidth} value={contract?.contractID} disabled placeholder="Contract Id"
-                                            onChange={(e) => setContract({...contract, contractID: e.target.value})}  />
-                                            <RadioGroup
-                                                inline={true}
-                                                className={`${style.marginTop} ${style.marginLeft20}`}
-                                                disabeld
-                                            >
-                                                <Radio label="Missing" value="Missing"  />
-                                            </RadioGroup>
+                                            <InputGroup className={style.fourFieldWidth} value={contract?.contractID} disabled={!isSuperAdminAccess} placeholder="Contract Id"
+                                            onChange={(e) => handleContract('contractID', e.target.value)}  />
+                                            <Checkbox label="Missing"  checked={contract.missing} onChange={(e)=>handleContract('missing', e.target.checked)} className={`${style.marginTop} ${style.marginLeft20}`}/>
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -357,13 +398,13 @@ const AppSubscription = ({getActiveStep}) => {
                                             <div className={style.spaceBetween}>
                                                 <FormControlLabel
                                                     control={
-                                                        <Switch checked={contract?.fullyExecutedContractOnFile} className={` ${style.textAlignLeft}`} onChange={() => setContract({...contract, fullyExecutedContractOnFile: !contract?.fullyExecutedContractOnFile})}  />
+                                                        <Switch checked={fullyExecutedContract} className={` ${style.textAlignLeft}`} onChange={(e) => setFullyExecutedContract(!fullyExecutedContract)}  />
                                                     }
-                                                    disabled
+                                                    disabled={!isSuperAdminAccess}
                                                     className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                                    label={contract?.fullyExecutedContractOnFile ? 'YES' : "NO"}
+                                                    label={fullyExecutedContract ? 'YES' : "NO"}
                                                 />
-                                                {contract?.fullyExecutedContractOnFile && (
+                                                {fullyExecutedContract && (
                                                     <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
                                                 )}
                                             </div>
@@ -373,20 +414,23 @@ const AppSubscription = ({getActiveStep}) => {
                                                         <select
                                                             name="class"
                                                             id="Class"
-                                                            value={contract?.contractDocuments?.contractDocType || 'Select...'}
-                                                            onChange={(e) => setContract({...contract, contractDocuments: {contractDocType: e.target.value}})}
+                                                            value={contractFiles?.type || 'Select...'}
+                                                            onChange={(e) => handleContractFiles('type',e.target.value)}
                                                             className={`${style.fullWidth}`}>
                                                                 <option value="" >
                                                                 Select Type of Document
                                                                 </option>
+                                                                <option value="Agreement">
+                                                                Agreement
+                                                                </option>
                                                         </select>
                                                     </div>
                                                     <InputGroup className={`${style.fullWidth} ${style.marginTop10}`}
-                                                    value={contract?.contractDocuments?.name}
-                                                    onChange={(e) => setContract({...contract, contractDocuments: {name: e.target.value}})}
+                                                    value={contractFiles?.name}
+                                                    onChange={(e) => handleContractFiles('name',e.target.value)}
                                                     />
-                                                    <TextArea rows={4} value={contract?.contractDocuments?.description} className={`${style.fullWidth} ${style.marginTop10}`}
-                                                    onChange={(e) => setContract({...contract, contractDocuments: {description: e.target.value}})} />
+                                                    <TextArea rows={4} value={contractFiles?.desc} className={`${style.fullWidth} ${style.marginTop10}`}
+                                                    onChange={(e) => handleContractFiles('desc', e.target.value)} />
                                                     <div className={`${style.displayInRow} ${style.marginTop10} ${style.twoFieldWidth} ${style.floatRight}`}>
                                                         <InputGroup  rightElement={leftElement()} className={`${style.marginLeft20} ${style.fullWidth}`} />
                                                     </div>
@@ -397,20 +441,38 @@ const AppSubscription = ({getActiveStep}) => {
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Contract Term Period*</div>
                                         <div className={style.displayInRow}>
-                                            <InputGroup value={contract?.contractTermPeriod?.startDate} rightElement={calendarIcon()}
-                                            disabled
-                                            onChange={(e) => setContract({...contract, contractTermPeriod: {startDate: e.target.value}})} />
+                                        <DateInput
+                                            formatDate={date => date.toLocaleDateString()}
+                                            parseDate={str => new Date(str)}
+                                            placeholder={"MM-DD-YYYY"}
+                                            value={contract?.startDate || new Date()}
+                                            onChange={(e)=> handleContract('startDate',e)}
+                                            rightElement={calendarIcon()}
+                                        />
                                         <p className={style.toStyle}>To</p>
-                                            <InputGroup value={contract?.contractTermPeriod?.endDate} rightElement={calendarIcon()}
-                                            disabled
-                                            onChange={(e) => setContract({...contract, contractTermPeriod:{endDate: e.target.value}})}  />
+                                        <DateInput
+                                            formatDate={date => date.toLocaleDateString()}
+                                            parseDate={str => new Date(str)}
+                                            placeholder={"MM-DD-YYYY"}
+                                            value={contract?.endDate || new Date()}
+                                            onChange={(e)=> handleContract('endDate', e)}
+                                            minDate={contract?.startDate || new Date()}
+                                            rightElement={calendarIcon()}
+                                        />
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Planned Go Live</div>
                                         <div className={style.displayInRow}>
-                                            <InputGroup value={contract?.plannedGoLive?.date} rightElement={calendarIcon()} disabled
-                                            onChange={(e) => setContract({...contract, plannedGoLive: {date: e.target.value}})} />
+                                        <DateInput
+                                            formatDate={date => date.toLocaleDateString()}
+                                            parseDate={str => new Date(str)}
+                                            placeholder={"MM-DD-YYYY"}
+                                            value={contract?.date}
+                                            onChange={(e)=> handleContract('date', e)}
+                                            minDate={contract?.startDate || new Date()}
+                                            rightElement={calendarIcon()}
+                                        />
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -420,72 +482,72 @@ const AppSubscription = ({getActiveStep}) => {
                                                 <select
                                                     name="class"
                                                     id="Class"
-                                                    disabled
-                                                    // value={selectedContractContinuationPolicy || 'Select...'}
+                                                    disabled={!isSuperAdminAccess}
                                                     value={contract?.contractContinuationPolicy}
-                                                    // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
-                                                    onChange={(e) => setContract({...contract, contractContinuationPolicy: e.target.value})}
+                                                    onChange={(e) => handleContract('contractContinuationPolicy', e.target.value)}
                                                     className={`${style.fullWidth} `}>
                                                         <option value="Select Value" >
                                                         Select Value
                                                         </option>
-                                                        <option value="Auto Renewal" >
+                                                        <option value="AUTORENEWAL" >
                                                         Auto Renewal
                                                         </option>
-                                                        {/* <option value="Written Contract Extension For Fixed Term" >
+                                                        <option value="WRITTENCONTRACTEXTENSIONFORFIXEDTERM" >
                                                         Written Contract Extension For Fixed Term
                                                         </option>
-                                                        <option value="New Contract On Expiration" >
+                                                        <option value="NEWCONTRACTONEXPIRATION" >
                                                         New Contract On Expiration
                                                         </option>
-                                                        <option value="One Time Contract - Terminate On Expiration" >
+                                                        <option value="ONETIMECONTRACTTERMINATEONEXPIRATION" >
                                                         One Time Contract - Terminate On Expiration
-                                                        </option> */}
+                                                        </option>
                                                 </select>
                                             </div>
-                                            {selectedContractContinuationPolicy === "Auto Renewal" && (
-                                                <div className={`${style.renewalBoxStyle}`}>
-                                                    <div className={`${style.renewalBoxGrid}`}>
-                                                        <div className={`${style.marginTop10} ${style.textAlignRight} ${style.marginRight20}`}>Auto Renewal Term*</div>
-                                                        <div className={style.inputRenewalStyle} >4</div>
-                                                        <select
-                                                            name="class"
-                                                            id="Class"
-                                                            // value={selectedContractContinuationPolicy || 'Select...'}
-                                                            // onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
-                                                            value={"Weeks"}
-                                                            className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                                <option value="Select Value" >
-                                                                Select Value
-                                                                </option>
-                                                                <option value="Weeks" >
-                                                                Weeks
-                                                                </option>
-                                                                <option value="Months" >
-                                                                Months
-                                                                </option>
-                                                        </select>
-                                                    </div>
-                                                    <div className={`${style.renewalBoxGrid}`}>
-                                                        <div className={`${style.marginTop15} ${style.textAlignRight} ${style.marginRight20}`}>Allowable Auto Renewal Terms*</div>
-                                                        <div className={`${style.inputRenewalStyle} ${style.marginTop10}`} >2</div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {/* {(selectedContractContinuationPolicy === "Written Contract Extension For Fixed Term"
-                                            || selectedContractContinuationPolicy === "New Contract On Expiration"
-                                            || selectedContractContinuationPolicy === "One Time Contract - Terminate On Expiration") && (
-                                                <div className={`${style.renewalRemainderBoxStyle}`}>
-                                                    <div className={`${style.renewalRemainderBoxGrid}`}>
-                                                        <div className={style.marginTop}>Set Renewal Reminder*</div>
-                                                        <div className={style.inputRenewalRemainderStyle} >30 Days   </div>
-                                                        <Icon icon="cross" className={style.marginTop10} color="black" />
-                                                    </div>
-                                                    <div className={`${style.renewalBoxGrid}`}>
-                                                        <button className={`${style.addMoreButton} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
-                                                    </div>
-                                                </div>
-                                            )} */}
+                                            {
+                                              // {contract?.contractContinuationPolicy === "AUTORENEWAL" && (
+                                              //     <div className={`${style.renewalBoxStyle}`}>
+                                              //         <div className={`${style.renewalBoxGrid}`}>
+                                              //             <div className={`${style.marginTop10} ${style.textAlignRight} ${style.marginRight20}`}>Auto Renewal Term*</div>
+                                              //             <div className={style.inputRenewalStyle} >4</div>
+                                              //             <select
+                                              //                 name="class"
+                                              //                 id="Class"
+                                              //                 value={contract?.continuationPolicy || 'Select...'}
+                                              //                 className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
+                                              //                     <option value="Select Value" >
+                                              //                     Select Value
+                                              //                     </option>
+                                              //                     <option value="WEEKS" >
+                                              //                     Weeks
+                                              //                     </option>
+                                              //                     <option value="MONTHS" >
+                                              //                     Months
+                                              //                     </option>
+                                              //             </select>
+                                              //         </div>
+                                              //         <div className={`${style.renewalBoxGrid}`}>
+                                              //             <div className={`${style.marginTop15} ${style.textAlignRight} ${style.marginRight20}`}>Allowable Auto Renewal Terms*</div>
+                                              //             <div className={`${style.inputRenewalStyle} ${style.marginTop10}`} >2</div>
+                                              //         </div>
+                                              //     </div>
+                                              // )}
+                                              //  {(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
+                                              // || selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
+                                              // || selectedContractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION") && (
+                                              //     <div className={`${style.renewalRemainderBoxStyle}`}>
+                                              //         <div className={`${style.renewalRemainderBoxGrid}`}>
+                                              //             <div className={style.marginTop}>Set Renewal Reminder*</div>
+                                              //             <div className={style.inputRenewalRemainderStyle} >30 Days   </div>
+                                              //             <Icon icon="cross" className={style.marginTop10} color="black" />
+                                              //         </div>
+                                              //         <div className={`${style.renewalBoxGrid}`}>
+                                              //             <button className={`${style.addMoreButton} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
+                                              //         </div>
+                                              //     </div>
+                                              // )}
+
+                                            }
+
                                         </div>
                                     </div>
                                 </>
@@ -497,7 +559,9 @@ const AppSubscription = ({getActiveStep}) => {
                                             <select
                                                 name="class"
                                                 id="Class"
-                                                className={style.fourFieldWidth}>
+                                                className={style.fourFieldWidth}
+                                                value={trial?.period}
+                                                onChange={(e)=>handleTrial('period',e.target.value)}>
                                                     <option value="7" >
                                                     7
                                                     </option>
@@ -508,13 +572,24 @@ const AppSubscription = ({getActiveStep}) => {
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Trial Start Date</div>
                                         <div className={style.displayInRow}>
-                                            <InputGroup value={contract?.contractTermPeriod?.startDate} rightElement={calendarIcon()}
-                                            disabled
-                                            onChange={(e) => setContract({...contract, contractTermPeriod: {startDate: e.target.value}})} />
+                                        <DateInput
+                                            formatDate={date => date.toLocaleDateString()}
+                                            parseDate={str => new Date(str)}
+                                            placeholder={"MM-DD-YYYY"}
+                                            value={trial?.startDate}
+                                            onChange={(e)=> handleTrial('startDate', e)}
+                                            rightElement={calendarIcon()}
+                                        />
                                         <p className={style.toStyle}>To</p>
-                                            <InputGroup value={contract?.contractTermPeriod?.endDate} rightElement={calendarIcon()}
-                                            disabled
-                                            onChange={(e) => setContract({...contract, contractTermPeriod:{endDate: e.target.value}})}  />
+                                        <DateInput
+                                            formatDate={date => date.toLocaleDateString()}
+                                            parseDate={str => new Date(str)}
+                                            placeholder={"MM-DD-YYYY"}
+                                            value={trial?.endDate}
+                                            onChange={(e)=> handleTrial('endDate', e)}
+                                            minDate={trial?.startDate}
+                                            rightElement={calendarIcon()}
+                                        />
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -539,15 +614,14 @@ const AppSubscription = ({getActiveStep}) => {
                             )}
                         </div>
                         <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                            <button className={style.outlinedButton} onClick={updateBilling}>SAVE IN-PROGRESS</button>
-                            <Link to={'/setupComplete'}>
-                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={updateBilling}>CONTINUE</button>
-                            </Link>
+                            <button className={style.outlinedButton} onClick={()=>updateBilling('saveInProgress')}>SAVE IN-PROGRESS</button>
+                            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>updateBilling('Continue')}>CONTINUE</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div>}
+      </>
     )
 }
 
