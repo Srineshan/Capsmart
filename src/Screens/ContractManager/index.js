@@ -119,6 +119,9 @@ const Contracts = () => {
                     getTerminationDialog={getTerminationDialog}
                     getCloneDialog={getCloneDialog}
                     activeContracts={activeContracts}
+                    getNewContract={getNewContract}
+                    getContractType={getContractType}
+                    getSelectedContractType={getSelectedContractType}
                      />
                 )}
                 {extensionDialog && (
