@@ -7,7 +7,7 @@ import RedBackground from './../../images/redBackground.png';
 import NotificationCount from './../../images/notificationCount.png';
 import File from './../../images/file.png';
 import {Link} from 'react-router-dom';
-import LogoutIcon from './../../images/logoutIcon.png'; 
+import LogoutIcon from './../../images/logoutIcon.png';
 import style from './index.module.scss';
 
 const Navbar = () => {

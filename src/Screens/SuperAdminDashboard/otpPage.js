@@ -37,7 +37,7 @@ const OTPPage = () => {
                     <div className={`${style.otpBoxStyle} ${style.marginRight}`}></div>
                     <div className={`${style.otpBoxStyle} ${style.marginRight}`}></div>
                     <div className={`${style.otpBoxStyle} ${style.marginRight}`}></div>
-                    <div className={style.otpBoxStyle}></div> 
+                    <div className={style.otpBoxStyle}></div>
                 </div>
                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                     <button className={style.outlinedButton}>RESEND PASSCODE</button>

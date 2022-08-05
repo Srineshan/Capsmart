@@ -46,7 +46,7 @@ const FlowChartProcedureGroup = ({
           setSelected(newSelected);
         }}
        />
-    
+
     <EditableDiamond
         x={150}
         y={200}
@@ -105,7 +105,7 @@ const FlowChartProcedureGroup = ({
           stroke="#A39CEB"
       />
     </Group>
-    
+
   )
 }
 
