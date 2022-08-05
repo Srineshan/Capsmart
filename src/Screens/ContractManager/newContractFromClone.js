@@ -109,7 +109,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
         setIsMultipleContract(selectContractInfo === "MULTIPLE" ? true : false);
       }, [selectContractInfo]);
 
-    console.log('fileFields',fileFields);
+    console.log('fileFields',fileFields, contractType);
 
     return(
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>

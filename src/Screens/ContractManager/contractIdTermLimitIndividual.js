@@ -204,7 +204,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
        formData.append('contractFiles',file);
        if(id === 'new'){
          await POST('contract-managment-service/contracts/contractDetail',formData)
-         .then(response=>{getContractId(response);
+         .then(response=>{getContractId(response?.data);
            console.log('response',response);
           window.location.hash = response?.data;
          SuccessToaster('Contract Created Successfully');
@@ -213,7 +213,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
        })
      }else{
        await PUT('contract-managment-service/contracts/contractDetail',formData)
-       .then(response=>{getContractId(response);
+       .then(response=>{
        SuccessToaster('Contract Updated Successfully');
      }).catch(error=>{
        ErrorToaster('Unexpected Error Updating Contract');
