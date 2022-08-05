@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import style from './index.module.scss';
 
+
 const EntryPage = () => {
     return(
         <div className={`${style.backgroundColor} ${style.alignCenter}`}>
