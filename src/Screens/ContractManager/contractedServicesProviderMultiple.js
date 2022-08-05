@@ -23,7 +23,6 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
       setEditServiceProviderDialog(value)
     }
 
-    console.log('user',users);
     return(
         <div className={style.cloneBlockStyle}>
             <div className={style.tableHeight}>

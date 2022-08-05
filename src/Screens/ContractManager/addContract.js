@@ -14,6 +14,7 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
     const handleNext = () => {
       if(selectedContract === '0'){
         ErrorToaster('Select a contract type to add');
+
       }
       else{
         getNewContract(true);

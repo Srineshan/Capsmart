@@ -147,7 +147,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         })
       })
       let data = {
-        "id":id,
+        ...( id !== 'new' && {'id':id}),
         "contractName": {
           "contractName": contractName
         },
@@ -205,7 +205,8 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
        if(id === 'new'){
          await POST('contract-managment-service/contracts/contractDetail',formData)
          .then(response=>{getContractId(response);
-          window.location.hash = response;
+           console.log('response',response);
+          window.location.hash = response?.data;
          SuccessToaster('Contract Created Successfully');
        }).catch(error=>{
          ErrorToaster('Unexpected Error Creating Contract');
