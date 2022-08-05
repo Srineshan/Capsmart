@@ -66,15 +66,11 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
         console.log(selectedSite, tempSelectedSites)
       }
     }
-    console.log(selectedSite)
+    console.log(selectedSite, users)
     const handleContinue = async () => {
       let data;
       if(!isMultipleContract){
-        if(selectedPOD === 'Medical Staff Membership & Privileges' && contractedServiceProviderName === '' || selectedSite === {}){
-          ErrorToaster('Fill in mandatory fields');
-          return;
-        }
-        if(['Primary Speciality Board Certification','Secondary Specialty Board Certification']?.includes(selectedPOD) && contractedServiceProviderName === ''){
+        if(selectedPOD === 'Medical Staff Membership & Privileges' && selectedSite === {}){
           ErrorToaster('Fill in mandatory fields');
           return;
         }
@@ -91,7 +87,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
           podType: {type: selectedPOD},
           dataMap: {
             dataMap: {
-              contractedServiceProvider: contractedServiceProviderName,
+              contractedServiceProvider: users?.[0]?.id,
               privilegingFacility: selectedSite,
               medicalStaffId: medicalStaffId,
             }
@@ -107,7 +103,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
           podType: {type: selectedPOD},
           dataMap: {
             dataMap: {
-              contractedServiceProvider: contractedServiceProviderName,
+              contractedServiceProvider: users?.[0]?.id,
               specialityBoard: specialityBoardName,
               specialityBoardCertificateId: specialityBoardCertificateId,
             }
@@ -359,6 +355,11 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                             <option >
                                 Select Contractor Name
                             </option>
+                            {users?.map((data, index) => (
+                              <option value={data?.id} key={index}>
+                                  {`${data?.name?.firstName} ${data?.name?.lastName}`}
+                              </option>
+                            ))}
                         </select>
                       </div>
                    </div>
@@ -385,7 +386,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                   <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Contracted Service Provider*</div>
-                      <InputGroup value={contractedServiceProviderName} onChange={(e) => setContractedServiceProviderName(e.target.value)} />
+                      <InputGroup value={users?.length !== 0 ? `${users?.[0]?.name?.firstName} ${users?.[0]?.name?.lastName}` : 'No Users found'} readOnly />
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>{selectedPOD === 'Primary Speciality Board Certification'?'Speciality Board':'Privileging Facility'}*</div>
@@ -424,7 +425,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                 <>
                   <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contracted Service Provider*</div>
-                    <InputGroup value={contractedServiceProviderName} onChange={(e) => setContractedServiceProviderName(e.target.value)} />
+                    <InputGroup value={users?.length !== 0 ? `${users?.[0]?.name?.firstName} ${users?.[0]?.name?.lastName}` : 'No Users found'} readOnly />
                   </div>
                   <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Speciality Board</div>
@@ -435,16 +436,21 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                   <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Contractor*</div>
                       <div className={style.reduce10Left}>
-                          <select
-                              name="class"
-                              id="Class"
-                              value={contractorName}
-                              onChange={(e) => setContractorName(e.target.value)}
-                              className={`${style.fullWidth} ${style.marginLeft20} `}>
-                              <option >
-                                  Select Contractor Name
+                        <select
+                            name="class"
+                            id="Class"
+                            value={contractorName}
+                            onChange={(e) => setContractorName(e.target.value)}
+                            className={`${style.fullWidth} ${style.marginLeft20} `}>
+                            <option >
+                                Select Contractor Name
+                            </option>
+                            {users?.map((data, index) => (
+                              <option value={data?.id} key={index}>
+                                  {`${data?.name?.firstName} ${data?.name?.lastName}`}
                               </option>
-                          </select>
+                            ))}
+                        </select>
                         </div>
                   </div>
                   <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -499,17 +505,22 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Contractor*</div>
                       <div className={style.reduce10Left}>
-                          <select
-                              name="class"
-                              id="Class"
-                              value={contractorName}
-                              onChange={(e) => setContractorName(e.target.value)}
-                              className={`${style.fullWidth} ${style.marginLeft20} `}>
-                              <option >
-                                  Select Contractor Name
+                        <select
+                            name="class"
+                            id="Class"
+                            value={contractorName}
+                            onChange={(e) => setContractorName(e.target.value)}
+                            className={`${style.fullWidth} ${style.marginLeft20} `}>
+                            <option >
+                                Select Contractor Name
+                            </option>
+                            {users?.map((data, index) => (
+                              <option value={data?.id} key={index}>
+                                  {`${data?.name?.firstName} ${data?.name?.lastName}`}
                               </option>
-                          </select>
-                        </div>
+                            ))}
+                        </select>
+                      </div>
                   </div>
                 }
                  <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -539,19 +550,24 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                  <>
                    {isMultipleContract &&
                      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                          <div className={style.extentionLableStyle}>Contractor*</div>
-                          <div className={style.reduce10Left}>
-                              <select
-                                  name="class"
-                                  id="Class"
-                                  value={contractorName}
-                                  onChange={(e) => setContractorName(e.target.value)}
-                                  className={`${style.fullWidth} ${style.marginLeft20} `}>
-                                  <option >
-                                      Select Contractor Name
-                                  </option>
-                              </select>
-                            </div>
+                        <div className={style.extentionLableStyle}>Contractor*</div>
+                        <div className={style.reduce10Left}>
+                          <select
+                            name="class"
+                            id="Class"
+                            value={contractorName}
+                            onChange={(e) => setContractorName(e.target.value)}
+                            className={`${style.fullWidth} ${style.marginLeft20} `}>
+                            <option >
+                                Select Contractor Name
+                            </option>
+                            {users?.map((data, index) => (
+                              <option value={data?.id} key={index}>
+                                  {`${data?.name?.firstName} ${data?.name?.lastName}`}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
                    }
                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -591,7 +607,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
               </div>
               <div className={`${style.floatRight} ${style.marginTop20}`}>
                   <button className={`${style.buttonStyle} ${style.marginLeft20}`} >ADD MORE</button>
-                  <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => handleContinue()}>SAVE & EXIT</button>
+                  <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleContinue(); getShowProofDialog(false)}}>SAVE & EXIT</button>
               </div>
             </div>
         </Dialog>

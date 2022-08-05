@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Navbar from './../../Components/Navbar';
+import {GET, PUT, POST, TenantID} from './../dataSaver';
 import UserLogo from './../../images/userLogo.jpg';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
@@ -19,7 +20,10 @@ import ContractExtensionDialog from './contractExtensionDialog';
 import style from './index.module.scss';
 
 const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts}) => {
+    const contractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
     const [showOptions, setShowOptions] = useState(false);
+    const [users,setUsers] = useState([]);
+
     const menuRef = useRef(null);
     useOptionsHide(menuRef);
 
@@ -36,6 +40,19 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
           };
         }, [ref]);
       }
+
+      const getUserData = async() => {
+        const {data: userData} = await GET(`user-management-service/user?contractID=${contractId}`);
+        if(userData){
+          setUsers(userData);
+        }
+      }
+
+      useEffect(()=>{
+        getUserData();
+      },[])
+
+      console.log(activeContracts, users)
     return(
         <div className={style.margin20}>
             <div className={`${style.grid5}`}>
@@ -164,26 +181,28 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             <p className={style.tableHeaderFontStyle}>LAST UPDATED</p>
                             <p className={style.tableHeaderFontStyle}>ACTION</p>
                         </div>
-                        <div className={`${style.tableData} ${style.displayInRow}`}>
-                            <div className={`${style.displayInRow} ${style.width10} ${style.marginLeft30}`}>
-                                <div className={`${style.green} ${style.greenDotStyle}`}></div>
+                        {activeContracts?.map((data, index) => (
+                            <div className={`${style.tableData} ${style.displayInRow} ${index%2 === 0 && style.alternativeBackgroundColor}`} key={index}>
+                                <div className={`${style.displayInRow} ${style.width10} ${style.marginLeft30}`}>
+                                    <div className={`${style.green} ${style.greenDotStyle}`}></div>
+                                </div>
+                                <p className={style.tableDataFontStyle}>{data?.contractType}</p>
+                                <p className={style.tableDataFontStyle}>{data?.contractDetail?.contractId?.id}</p>
+                                <p className={style.tableDataFontStyle}>{data?.contractName?.contractName}</p>
+                                <p className={style.tableDataFontStyle}> - </p>
+                                <p className={style.tableDataFontStyle}>{data?.contractDetail?.contractTerm?.effectiveDate}</p>
+                                <div className={style.displayInRow}>
+                                    <img src={GreenPage} alt="warning" className={style.colorFileStyle} />
+                                    <p className={style.tableDataFontStyle}>5</p>
+                                </div>
+                                <p className={style.tableDataFontStyle}>Alex Ball MD</p>
+                                <p className={style.tableDataFontStyle}>07/19/2019</p>
+                                <div className={style.tableDataFontStyle}>
+                                    <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
+                                </div>
                             </div>
-                            <p className={style.tableDataFontStyle}>Multiple</p>
-                            <p className={style.tableDataFontStyle}>7837428</p>
-                            <p className={style.tableDataFontStyle}>Jane Smith MD </p>
-                            <p className={style.tableDataFontStyle}>3</p>
-                            <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <div className={style.displayInRow}>
-                                <img src={GreenPage} alt="warning" className={style.colorFileStyle} />
-                                <p className={style.tableDataFontStyle}>5</p>
-                            </div>
-                            <p className={style.tableDataFontStyle}>Alex Ball MD</p>
-                            <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <div className={style.tableDataFontStyle}>
-                                <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
-                            </div>
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInRow}`}>
+                        ))}
+                        {/* <div className={`${style.tableData} ${style.displayInRow}`}>
                             <div className={`${style.displayInRow} ${style.width10} ${style.marginLeft30}`}>
                                 <div className={`${style.green} ${style.yellowDotStyle}`}></div>
                             </div>
@@ -240,7 +259,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             <div className={style.tableDataFontStyle}>
                                 <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
                             </div>
-                        </div>
+                        </div> */}
                         {showOptions && (
                             <div className={`${style.displayInCol} ${style.actionCard} ${style.cursorPointer}`} ref={menuRef}>
                                 <img src={ContractExtension} className={style.actionsIcon} onClick={() => getExtensionDialog(true)} />
