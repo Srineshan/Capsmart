@@ -1,25 +1,33 @@
 import React, {useState} from 'react';
-import { Icon, Intent, RadioGroup, Radio } from '@blueprintjs/core';
+import { Icon, Intent } from '@blueprintjs/core';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import WelcomeImg from './../../images/welcomeNewAccountImg.png';
 import style from './index.module.scss';
+import {ErrorToaster} from './../../utils/toaster';
 
 const CustomerSetup = () => {
-  const [selectedContractType,setSelectedContractType] = useState(sessionStorage.getItem('type'));
+  const [selectedContractType,setSelectedContractType] = useState({contract:false,trial:false});
+  const navigate = useNavigate();
   const handleContractType = (value,type) => {
     if(value && type  === 'contract'){
       sessionStorage.setItem('type','contract');
-      setSelectedContractType('contract');
-    }else if(value && type === 'trial'){
+      setSelectedContractType({contract:true,trial:false});
+    }if(value && type === 'trial'){
       sessionStorage.setItem('type','trial');
-      setSelectedContractType('trial');
-    }else{
-      sessionStorage.removeItem('type');
+      setSelectedContractType({contract:false,trial:true});
     }
+  }
 
+  const handleContinue = () =>{
+    if(!selectedContractType?.contract && !selectedContractType?.trial){
+      ErrorToaster('Select a Subscription Plan to proceed');
+      return;
+    }else{
+      navigate('/entitySetup/new');
+    }
   }
 
     return(
@@ -68,13 +76,13 @@ const CustomerSetup = () => {
                     <div className={style.justifyCenter}>
                         <div className={`${style.textAlignLeft} ${style.marginTop20}`}>
                         <FormGroup>
-                                <FormControlLabel  control={<Checkbox value="Contract Account" color="default" onChange={(e)=>handleContractType(e.target.value,'contract')}/>} label="Contract Account"
+                                <FormControlLabel  checked={selectedContractType?.contract} control={<Checkbox value="Contract Account" color="default" onChange={(e)=>handleContractType(e.target.checked,'contract')}/>} label="Contract Account"
                                     sx={{
                                         color: 'white'
                                     }} />
                             </FormGroup>
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox value="Trial account" color="default" onChange={(e)=>handleContractType(e.target.value,'trial')}/>} label="Trial account"
+                                <FormControlLabel checked={selectedContractType?.trial} control={<Checkbox value="Trial account" color="default" onChange={(e)=>handleContractType(e.target.checked,'trial')}/>} label="Trial account"
                                     sx={{
                                         color: 'white',
                                     }} />
@@ -83,10 +91,11 @@ const CustomerSetup = () => {
                     </div>
                 </div>
                 <div className={style.marginTop50}>
+                    <Link to={'/activeCustomers'}>
                     <button className={`${style.outlinedWelcomeButton} ${style.cursor}`}>CANCEL</button>
-                    <Link to={'/entitySetup'}>
-                        <button className={`${style.welcomeButton} ${style.marginLeft20} ${style.cursor}`}>CONTINUE</button>
                     </Link>
+                    <button className={`${style.welcomeButton} ${style.marginLeft20} ${style.cursor}`} onClick={handleContinue}>CONTINUE</button>
+
                 </div>
             </div>
         </div>

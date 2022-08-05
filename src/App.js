@@ -36,7 +36,7 @@ const App = ({props}) => {
           <Route  path="/pages" element={<EntryPage />}/>
           <Route  path="/setPassword" element={<SetPassword />}/>
           <Route  path="/welcome" element={<Welcome />}/>
-          <Route  path="/entitySetup" element={<EntitySetup />}/>
+          <Route  path="/entitySetup/:id" element={<EntitySetup />}/>
           <Route  path="/entitySystemAdmin" element={<EntitySystemAdmin />}/>
           <Route  path="/siteInformation" element={<SiteInformation />}/>
           <Route  path="/siteUsers" element={<SiteUsers />}/>

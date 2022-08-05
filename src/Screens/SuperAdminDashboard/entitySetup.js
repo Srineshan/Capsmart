@@ -9,10 +9,11 @@ import Step5 from './../../images/step5.png';
 import DatalistInput from 'react-datalist-input';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { useParams } from 'react-router-dom';
 import UploadImg from './../../images/uploadImg.png';
 import EntityStepper from './entityStepper';
 import {Auth} from './../../utils/auth'
-import {saveEntity,GET,PUT,POST,role,TenantID} from './../dataSaver';
+import {saveEntity,GET,PUT,POST,role,TenantID,isSuperAdminAccess} from './../dataSaver';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 import SiteInformation from './siteInformation';
@@ -23,6 +24,8 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import EntitySystemAdmin from './entitySystemAdmin';
 
 const EntitySetup = () => {
+    let {id} = useParams();
+    console.log('id',id);
     const [tags, setTags] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [departmentValue, setDepartmentValue] = useState('');
@@ -46,8 +49,10 @@ const EntitySetup = () => {
     const accessToken = Auth();
 
     useEffect(()=>{
-      getEntityData();
-      getDepartmentData();
+      if(id !== 'new'){
+        getEntityData();
+        getDepartmentData();
+      }
       },[]);
 
     const getActiveStep = (value) => {
@@ -55,17 +60,13 @@ const EntitySetup = () => {
     }
 
     const getEntityData = async() => {
-      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
+      const {data: data} = await GET(`entity-service/entity/${id}`);
       setEntityData(data);
       let siteData = data?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
       setEntity({id:'',customerType:"HEALTHCARE",name:data?.entityName?.entityName,type:data?.entityType?.type,websiteURL:data?.websiteURL,multiSiteEntity:data?.sites?.length > 1,primarySiteToUseApp:data.canPrimarySiteToUseApp,npin:siteData?.npin?.id});
       setAddress({city:siteData?.address?.city,state:siteData?.address?.state,zipcode:siteData?.address?.zipcode,addressLine:siteData?.address?.addressLine,country:siteData?.address?.country});
       setSelectDepartments(siteData?.departmentList?.departments);
     }
-
-    console.log('depts',selectDepartments);
-
-    console.log(selectDepartments);
 
     const getDepartmentData = async() => {
       const {data: department} = await GET('entity-service/department');
@@ -77,7 +78,6 @@ const EntitySetup = () => {
     }
 
     const handleTagsAdd = async(values) => {
-
         let temp = selectDepartments;
         temp.push({
             "departmentName": {
@@ -128,8 +128,8 @@ const EntitySetup = () => {
 
     console.log('websiteURL',entity);
 
-    const updateEntity = async() => {
-      let filteredValue = entityData?.sites?.filter(data=>data.primarySite !== true)?.map(data=>data);
+    const updateEntity = async(type) => {
+      let filteredValue = entityData?.sites?.filter(data=>data.primarySite !== true)?.map(data=>data) || [];
       let primarySiteValue = entityData?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
       if(entity?.name === '' || entity?.type === '' || entity?.npin === '' || address?.addressLine === '' || address?.city === '' || address?.state === '' || address?.country === '' || address?.zipcode === '' || address?.addressLine === null || address?.city === null || address?.state === null || address?.country === null || address?.zipcode === null || entity?.websiteURL === null){
         ErrorToaster('All Fields are Mandatory');
@@ -188,15 +188,31 @@ const EntitySetup = () => {
           "billingDetails": entityData?.billingDetails,
         }
       if(isUpdated){
-        await PUT('entity-service/entity',updatedValue)
-          .then(response=>{
-          SuccessToaster('Entity Updated Successfully');
-          }).catch(error=>{
-            console.log('error',error);
-            ErrorToaster('Unexpected Error Updating Entity');
-          });
+        if(id !== 'new'){
+          await PUT('entity-service/entity',updatedValue)
+            .then(response=>{
+            SuccessToaster('Entity Updated Successfully');
+            }).catch(error=>{
+              console.log('error',error);
+              ErrorToaster('Unexpected Error Updating Entity');
+            });
+        }else{
+          await POST('entity-service/entity',updatedValue)
+            .then(response=>{
+              console.log('response',response);
+            let newEntityId = response?.data?.id
+            window.location = `/entitySetup/${newEntityId}`
+            SuccessToaster('Entity Updated Successfully');
+            }).catch(error=>{
+              console.log('error',error);
+              ErrorToaster('Unexpected Error Updating Entity');
+            });
+        }
         setIsUpdated(false);
       }
+    if(type === 'Continue'){
+      setActiveStep(entity.multiSiteEntity === true ?"siteInformation":"siteUsers");
+    }
     }
 
     const handleDeptChange = (value) => {
@@ -211,38 +227,38 @@ const EntitySetup = () => {
         <div className={style.entitySetupBackground}>
           <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
           <div className={style.stepperMargin}>
-              <div className={role !== "" ? style.stepperGrid : style.stepperGrid4}>
+              <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                   <div onClick={() => getActiveStep('entitySetup')}>
                       <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
                           <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                       </div>
-                      <p className={`${role !== "" ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
+                      <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                   </div>
                   <div onClick={() => getActiveStep('siteInformation')}>
                       <div className={style.stepperImgBackground}>
                           <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
                       </div>
-                      <p className={role !== "" ? style.entityTextColor : style.entityTextColor4grid}>SITES FOR APP USE</p>
+                      <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>SITES FOR APP USE</p>
                   </div>
-                  {role !== "" && (
+                  {isSuperAdminAccess && (
                   <div onClick={() => getActiveStep('entitySystemAdmin')}>
                       <div className={style.stepperImgBackground}>
                           <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
                       </div>
-                      <p className={role !== "" ? style.entityTextColor : style.entityTextColor4grid}>ENTITY SYSTEM ADMIN</p>
+                      <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>ENTITY SYSTEM ADMIN</p>
                   </div>
                   )}
                   <div onClick={() => getActiveStep('siteUsers')}>
                       <div className={style.stepperImgBackground}>
                           <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                       </div>
-                      <p className={role !== "" ? style.entityTextColor : style.entityTextColor4grid}>APP USERS</p>
+                      <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>APP USERS</p>
                   </div>
                   <div onClick={() => getActiveStep('appSubscription')}>
                       <div className={style.stepperImgBackground}>
                           <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                       </div>
-                      <p className={role !== "" ? style.entityTextColor : style.entityTextColor4grid}>APP SUBSCRIPTION</p>
+                      <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>APP SUBSCRIPTION</p>
                   </div>
               </div>
               <div className={style.stepperDivider}></div>
@@ -308,6 +324,12 @@ const EntitySetup = () => {
                                           </option>
                                               <option value="Doctor Office" >
                                                 Doctor Office
+                                              </option>
+                                              <option value="Nursing Home" >
+                                                Nursing Home
+                                              </option>
+                                              <option value="Hospital" >
+                                                Hospital
                                               </option>
                                       </select>
                                   </div>
@@ -387,9 +409,9 @@ const EntitySetup = () => {
                               </div>
                           </div>
                           <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                              <button className={style.outlinedButton} onClick={()=>{updateEntity()}}>SAVE IN-PROGRESS</button>
+                              <button className={style.outlinedButton} onClick={()=>{updateEntity('SaveInProgress')}}>SAVE IN-PROGRESS</button>
                               {/* <Link to={`/${nextStep}`}> */}
-                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {updateEntity();setActiveStep(entity.multiSiteEntity === true ?"siteInformation":"siteUsers")}}>CONTINUE</button>
+                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {updateEntity('Continue');}}>CONTINUE</button>
                               {/* </Link> */}
                           </div>
                       </div>

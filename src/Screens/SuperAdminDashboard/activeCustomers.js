@@ -18,25 +18,8 @@ import { Checkbox, CircularProgress } from '@material-ui/core';
 import SideBar from '../../Components/Sidebar';
 import Navbar from '../../Components/Navbar';
 
-const ActiveCustomers = ({getSelectedCustomer, getAddContract}) => {
+const ActiveCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
     const [showOptions, setShowOptions] = useState(false);
-    const [entityList,setEntityList] = useState([]);
-    const [loading,setLoading] = useState(false);
-    useEffect(()=>{
-      getEntityList();
-    }, [])
-
-    const getEntityList = async() => {
-      setLoading(true);
-      const {data: entityData, loading:loading} = await GET(`entity-service/entity`);
-      setEntityList(entityData);
-      setLoading(false);
-    }
-
-    if(loading){
-      return <CircularProgress />;
-    }
-
 
     return(
         <Fragment>
@@ -57,7 +40,7 @@ const ActiveCustomers = ({getSelectedCustomer, getAddContract}) => {
                             <div className={`${style.cardStyle} ${style.selectedContractBackground}`} onClick={() => getSelectedCustomer('ACTIVE CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>ACTIVE CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data=>data)?.length}</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data=>data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.red}>1 </span> RENEWAL PAST DUE</span>
                                         <span><span className={style.yellow}>1 </span> AUTO RENEWED</span>
@@ -65,10 +48,10 @@ const ActiveCustomers = ({getSelectedCustomer, getAddContract}) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className={style.cardStyle} onClick={() => getSelectedCustomer('IN-PROGESS / TRIAL CUSTOMERS')}>
-                                <h5 className={`${style.headingForContracts}`}>IN-PROGESS / TRIAL CUSTOMERS</h5>
+                            <div className={style.cardStyle} onClick={() => getSelectedCustomer('IN-PROGRESS / TRIAL CUSTOMERS')}>
+                                <h5 className={`${style.headingForContracts}`}>IN-PROGRESS / TRIAL CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>3</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data=>data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.green}>1 </span> ON TRIAL</span>
                                         <span><span className={style.yellow}>1 </span> OVER 30 DAYS</span>
@@ -138,7 +121,9 @@ const ActiveCustomers = ({getSelectedCustomer, getAddContract}) => {
                                                 <Checkbox />
                                                 <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
                                             </div>
-                                            <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>{data?.entityName?.entityName}</p>
+                                            <Link to={`/entitySetup/${data?.id}`}>
+                                              <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>{data?.entityName?.entityName}</p>
+                                            </Link>
                                             <p className={style.tableDataFontStyleActiveCustomers}>{data?.customerType}</p>
                                             <p className={style.tableDataFontStyleActiveCustomers}>Maggiehaven</p>
                                             <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>NY</p>

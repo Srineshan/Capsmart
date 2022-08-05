@@ -16,7 +16,7 @@ import StopTrial from './stopTrial';
 import ExtendTrial from './extendTrial';
 import ConvertTrial from './convertTrial';
 
-const TrialCustomers = ({getSelectedCustomer, getAddContract}) => {
+const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
     const [showOptions, setShowOptions] = useState(false);
 
     const [stopTrialDialog, setStopTrialDialog] = useState(false);
@@ -70,7 +70,7 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract}) => {
                             <div className={`${style.cardStyle}`} onClick={() => getSelectedCustomer('ACTIVE CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>ACTIVE CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>4</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data=>data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.red}>1 </span> RENEWAL PAST DUE</span>
                                         <span><span className={style.yellow}>1 </span> AUTO RENEWED</span>
@@ -78,10 +78,10 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract}) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className={`${style.cardStyle} ${style.selectedContractBackground}`} onClick={() => getSelectedCustomer('IN-PROGESS / TRIAL CUSTOMERS')}>
-                                <h5 className={`${style.headingForContracts}`}>IN-PROGESS / TRIAL CUSTOMERS</h5>
+                            <div className={`${style.cardStyle} ${style.selectedContractBackground}`} onClick={() => getSelectedCustomer('IN-PROGRESS / TRIAL CUSTOMERS')}>
+                                <h5 className={`${style.headingForContracts}`}>IN-PROGRESS / TRIAL CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>3</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data=>data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.green}>1 </span> ON TRIAL</span>
                                         <span><span className={style.yellow}>1 </span> OVER 30 DAYS</span>
@@ -142,24 +142,30 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract}) => {
                                         <p className={style.tableHeaderFontStyleActiveCustomer}>PARTNER</p>
                                         <p className={style.tableHeaderFontStyleActiveCustomer}>ACTION</p>
                                     </div>
-                                    <div className={`${style.tableDataTrialCustomer}`}>
-                                        <div className={`${style.displayInRow}`}>
-                                            <Checkbox />
-                                            <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
-                                        </div>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>Lorem Ipsum</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem Ipsum</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Trial</p>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>Maggiehaven</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>NY</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>-</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                        <div className={style.tableDataFontStyle}>
-                                            <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
-                                        </div>
-                                    </div>
+                                    {
+                                    entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data=> (
+                                      <div className={`${style.tableDataTrialCustomer}`}>
+                                          <div className={`${style.displayInRow}`}>
+                                              <Checkbox />
+                                              <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
+                                          </div>
+                                          <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>{data?.entityName?.entityName}</p>
+                                          <p className={style.tableDataFontStyleActiveCustomers}>{data?.customerType}</p>
+                                          <p className={style.tableDataFontStyleActiveCustomers}>Trial</p>
+                                          <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>Maggiehaven</p>
+                                          <p className={style.tableDataFontStyleActiveCustomers}>NY</p>
+                                          <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
+                                          <p className={style.tableDataFontStyleActiveCustomers}>-</p>
+                                          <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
+                                          <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
+                                          <div className={style.tableDataFontStyle}>
+                                              <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
+                                          </div>
+                                      </div>
+                                    ))
+                                    }
+
+
                                     <div className={`${style.tableDataTrialCustomer}`}>
                                         <div className={`${style.displayInRow}`}>
                                             <Checkbox />
@@ -215,7 +221,7 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract}) => {
                         </div>
                     </div>
                 </div>
-                <div className={style.spaceBetween}>                        
+                <div className={style.spaceBetween}>
                     <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
                     <p className={style.poweredBy}>© TimeSmart.AI</p>
                 </div>
