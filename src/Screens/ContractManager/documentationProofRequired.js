@@ -7,7 +7,7 @@ import FileImg from './../../images/fileImg.png';
 import style from './index.module.scss';
 
 const DocumentationProofRequired = ({getShowAlertDialog, getViewPage5, getCurrentPage}) => {
-  const contractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
+  const contractId = window.location.hash.substr(1);
   const [documents,setDocuments] = useState([]);
 
   useEffect(()=>{
@@ -20,7 +20,7 @@ const DocumentationProofRequired = ({getShowAlertDialog, getViewPage5, getCurren
       setDocuments(documentsData?.documentProofs);
     }
   }
-  
+
     return(
         <div className={style.cloneBlockStyle}>
             <div className={style.tableHeight}>

@@ -20,9 +20,7 @@ import ContractExtensionDialog from './contractExtensionDialog';
 import style from './index.module.scss';
 
 const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts}) => {
-    const contractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
     const [showOptions, setShowOptions] = useState(false);
-    const [users,setUsers] = useState([]);
 
     const menuRef = useRef(null);
     useOptionsHide(menuRef);
@@ -41,18 +39,10 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
         }, [ref]);
       }
 
-      const getUserData = async() => {
-        const {data: userData} = await GET(`user-management-service/user?contractID=${contractId}`);
-        if(userData){
-          setUsers(userData);
-        }
+      const handleAddContract = () => {
+        window.location.hash = 'new';
+        getAddContract(true);
       }
-
-      useEffect(()=>{
-        getUserData();
-      },[])
-
-      console.log(activeContracts, users)
     return(
         <div className={style.margin20}>
             <div className={`${style.grid5}`}>
@@ -166,7 +156,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             <img src={Bell} alt="Bell" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />
                         </div>
-                        <button className={style.contractButton} onClick={() => getAddContract(true)} >ADD CONTRACT</button>
+                        <button className={style.contractButton} onClick={() => {handleAddContract()}} >ADD CONTRACT</button>
                     </div>
                     <div>
                         <div className={`${style.tableHeader} ${style.marginTop40}`}>
@@ -277,7 +267,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                     </div>
                 </div>
             </div>
-            <div className={style.spaceBetween}>                        
+            <div className={style.spaceBetween}>
                 <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
                 <p className={style.poweredBy}>© TimeSmart.AI</p>
             </div>

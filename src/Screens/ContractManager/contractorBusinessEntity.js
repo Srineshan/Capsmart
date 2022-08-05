@@ -8,7 +8,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
 const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractInfo}) => {
-    const contractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
+    const contractId = window.location.hash.substr(1);
     const [sameAsContractor, setSameAsContractor] = useState(false);
     const [contractorNPIN, setContractorNPIN] = useState({
         notApplicable: true,

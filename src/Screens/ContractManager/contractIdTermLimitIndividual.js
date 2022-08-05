@@ -51,15 +51,16 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [selectedDepartmentSites,setSelectedDepartmentSites] = useState([]);
     const [selectedSite,setSelectedSite] = useState('');
     const [departmentsName,setDepartmentsName] = useState([]);
-    const id = '50785c4d-056f-4a71-a066-18212905fc44';
-
+    // const id = '50785c4d-056f-4a71-a066-18212905fc44';
+    const id = window.location.hash.substr(1);
+    console.log('id',id);
 
     useEffect(() => {
       getUserData();
       getContracts();
       getSites();
       getDocumentFields();
-      if(id!==''){
+      if(id !== 'new'){
         getContractDetail();
       }
     },[])
@@ -131,15 +132,6 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const handleFileUpload = (e) => {
       console.log('file sample test', fileFieldData);
       setFileFieldData({...fileFieldData, file: e.target.files[0], fileName: e.target.files?.[0]?.name});
-      // console.log('inside file handle',index,e);
-      // let fileName = e.target.files?.[0]?.name;
-      // let temp = fullyExecutedContractData;
-      // temp?.filter((data,indexVal)=>index === indexVal)?.map(data=>{
-      //   data.file = e.target.files[0];
-      //   data.fileName = fileName;
-      // })
-      // setFullyExecutedContractData(temp);
-      // getDocumentFields();
     }
 
 
@@ -155,7 +147,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         })
       })
       let data = {
-        "id":"5e05461e-2ce9-4197-b8be-0ae4ae3cc786",
+        "id":id,
         "contractName": {
           "contractName": contractName
         },
@@ -210,12 +202,23 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
             type: "application/json"
         }));
        formData.append('contractFiles',file);
-       await POST('contract-managment-service/contracts/contractDetail',formData)
+       if(id === 'new'){
+         await POST('contract-managment-service/contracts/contractDetail',formData)
+         .then(response=>{getContractId(response);
+          window.location.hash = response;
+         SuccessToaster('Contract Created Successfully');
+       }).catch(error=>{
+         ErrorToaster('Unexpected Error Creating Contract');
+       })
+     }else{
+       await PUT('contract-managment-service/contracts/contractDetail',formData)
        .then(response=>{getContractId(response);
-       SuccessToaster('Contract Created Successfully');
+       SuccessToaster('Contract Updated Successfully');
      }).catch(error=>{
-       ErrorToaster('Unexpected Error Creating Contract');
+       ErrorToaster('Unexpected Error Updating Contract');
      })
+     }
+
     }
 
     const onSelect = (selectedItem) => {

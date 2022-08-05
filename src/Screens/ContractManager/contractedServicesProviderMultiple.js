@@ -4,7 +4,7 @@ import EditServiceProvider from './editServiceProviderDialog';
 import style from './index.module.scss';
 
 const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage}) => {
-    const contractID = "e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf"
+    const contractID = window.location.hash.substr(1);
     const [users,setUsers] = useState([]);
     const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
     const [userProviderData, setUserProviderData] = useState({});
@@ -22,7 +22,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
     const getEditServiceDialog = (value) => {
       setEditServiceProviderDialog(value)
     }
-    
+
     console.log('user',users);
     return(
         <div className={style.cloneBlockStyle}>

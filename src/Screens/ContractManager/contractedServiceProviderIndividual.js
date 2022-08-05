@@ -81,7 +81,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     const [tags, setTags] = useState(VALUES);
     const [tagSet2, setTagSet2] = useState(siteTitleValues);
     const [tagSet3, setTagSet3] = useState(departmentTitleValues);
-    const id = "2276e34f-a2fd-4770-9afc-14b53f8d9ecd";
+    const id = window.location.hash.substr(1);
     const [contractData, setContractData] = useState([])
     const [userProviderData, setUserProviderData] = useState({});
 

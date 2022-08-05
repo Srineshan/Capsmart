@@ -8,7 +8,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
 const EditServiceProvider = ({getEditServiceDialog, userProviderData}) => {
-    const testContractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
+    const contractId = window.location.hash.substr(1);
     const [selectedContract, setSelectedContract] = useState('Written Contract Extension For Fixed Term');
     const [startDate, setStartDate] = useState(new Date);
     const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration');
@@ -86,7 +86,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData}) => {
               "userType": "ADMIN",
               "contracts": [
                 {
-                  "id": testContractId,
+                  "id": contractId,
                   "contractName": {
                     "contractName": "Sample Contract 2"
                   }

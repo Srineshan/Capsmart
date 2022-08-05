@@ -9,7 +9,7 @@ import {format} from 'date-fns';
 import style from './index.module.scss';
 
 const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
-    const contractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
+    const contractId = window.location.hash.substr(1);
     const [certificateCopyAvbl,setCertificateCopyAvbl] = useState(true);
     const podTypes = ['Medical Staff Membership & Privileges',
                       'Primary Speciality Board Certification',
@@ -63,10 +63,9 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
       if (value !== '0') {
         const tempSelectedSites = sites.filter(data => data?.siteName?.siteName === value).map(data => data)[0];
         setSelectedSite(tempSelectedSites);
-        console.log(selectedSite, tempSelectedSites)
       }
     }
-    console.log(selectedSite, users)
+
     const handleContinue = async () => {
       let data;
       if(!isMultipleContract){
@@ -393,7 +392,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
                         {selectedPOD === 'Primary Speciality Board Certification'? (
                           <InputGroup value={specialityBoardName}
                           onChange={(e) => setSpecialityBoardName(e.target.value)} />
-                        ) : 
+                        ) :
                         (
                         <select
                           name="class"

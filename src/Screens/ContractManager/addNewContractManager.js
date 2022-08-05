@@ -9,6 +9,7 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
     const [selectedRoles,setSelectedRoles] = useState([]);
     const [userData,setUserData] = useState({firstName:'',lastName:'',email:'',phone:''});
     const [roles,setRoles] = useState();
+    const id = window.location.hash.substr(1);
 
     console.log('contract type',contractType);
 
@@ -42,7 +43,7 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
             "contractType": contractType
           },
           "contractID": {
-            "contractID": ""
+            "contractID": id
           },
           "email": {
             "officialEmail": userData.email
