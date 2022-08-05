@@ -52,7 +52,7 @@ const ITEM_PADDING_TOP = 8;
   let siteTitleValues = [];
   let departmentTitleValues = [];
 const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId}) => {
-    const testContractId = 'e96eca5e-40cd-47b8-b1cc-c5cb4be9fdbf';
+    const testContractId = contractId;
     const [siteLevel, setSiteLevel] = useState(false);
     const [departmentLevel, setDepartmentLevel] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
@@ -81,14 +81,52 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     const [tags, setTags] = useState(VALUES);
     const [tagSet2, setTagSet2] = useState(siteTitleValues);
     const [tagSet3, setTagSet3] = useState(departmentTitleValues);
-    const id = window.location.hash.substr(1);
+    const id = contractId;
     const [contractData, setContractData] = useState([])
     const [userProviderData, setUserProviderData] = useState({});
+    const [isUserPresent,setIsUserPresent] = useState(false);
+
+    useEffect(()=>{
+        getRoles();
+        getUserData();
+    },[])
+
+    useEffect(() => {
+      setTagSet2(siteTitleValues);
+    }, [siteTitleValues])
+
+    useEffect(() =>{
+      console.log('above if');
+      if(isUserPresent) {
+        console.log('in if');
+        setServiceProviderType(userProviderData?.serviceProviderType);
+        setNpin(userProviderData?.npin?.npin);
+        setNpinMissing(userProviderData?.npin?.missing);
+        setNpinNotApplicable(userProviderData?.npin?.notApplicable);
+        setContractorFirstName(userProviderData?.name?.firstName);
+        setContractorLastName(userProviderData?.name?.lastName);
+        setContractorNameSuffix(userProviderData?.name?.suffix);
+        setContractorMiddleName('');
+        setContractorPhone(userProviderData?.communication?.mobileNumber);
+        setContractorEmail(userProviderData?.email?.officialEmail);
+        setCity(userProviderData?.address?.city);
+        setState(userProviderData?.address?.state);
+        setZipCode(userProviderData?.address?.zipcode);
+        setSiteLevel(userProviderData?.siteLevelResponsible);
+        setDepartmentLevel(userProviderData?.departmentLevelResponsible);
+        setSelectedRoles(userProviderData?.roles);
+      }
+    }, [contractId, userProviderData])
+
+    useEffect(()=>{
+      setIsUserPresent(userProviderData?.length !== 0? true:false);
+    })
 
     const getUserData = async() => {
       const {data: userData} = await GET(`user-management-service/user?contractID=${testContractId}`);
       if(userData){
         setUserProviderData(userData[0]);
+        setIsUserPresent(userData?.length !== 0 ? true : false);
       }
     }
     const [siteList, setSiteList] = useState([
@@ -198,9 +236,11 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     console.log(selectedDepartmentSpecificSite, departmentLevelSite, possibleDepartments)
   }
 
+  console.log('userProviderData',userProviderData);
+
     const handleSave = async() => {
         const data = {
-            ...( userProviderData !== "" && {'id': userProviderData?.id}),
+            ...( isUserPresent && {'id': userProviderData?.id}),
             "name": {
                 "firstName": contractorFirstName,
                 "lastName": contractorLastName,
@@ -221,7 +261,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
               "email": {
                 "officialEmail": contractorEmail
               },
-              ...( userProviderData === "" && {"password": {
+              ...( !isUserPresent && {"password": {
                 "password": "string"
               }}),
               "communication": {
@@ -270,10 +310,10 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
               },
               "serviceProviderType": serviceProviderType,
               "licenceDetails": {
-                "medicalLicense": "string",
-                "licenseExpiryDate": "2022-07-26",
-                "deaNumber": "string",
-                "deaExpiryDate": "2022-07-26",
+                "medicalLicense": "",
+                "licenseExpiryDate": "",
+                "deaNumber": "",
+                "deaExpiryDate": "",
                 "boardCertification": [
                   "string"
                 ]
@@ -282,16 +322,16 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 "myProxy": {
                   "proxyIdList": [
                     {
-                      "id": "string",
-                      "name": "string"
+                      "id": "",
+                      "name": ""
                     }
                   ]
                 },
                 "proxyFor": {
                   "proxyIdList": [
                     {
-                      "id": "string",
-                      "name": "string"
+                      "id": "",
+                      "name": ""
                     }
                   ]
                 }
@@ -306,7 +346,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 "npin": npin
               }
           }
-          if(userProviderData !== ''){
+          if(isUserPresent){
             const response = await PUT('user-management-service/user', JSON.stringify(data));
             if(response){
                 SuccessToaster('User Updated Successfully');
@@ -356,37 +396,12 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     };
 
     console.log(roles)
-    useEffect(() => {
-      setTagSet2(siteTitleValues);
-    }, [siteTitleValues])
 
-    useEffect(() =>{
-      if(userProviderData !== '') {
-        setServiceProviderType(userProviderData?.serviceProviderType);
-        setNpin(userProviderData?.npin?.npin);
-        setNpinMissing(userProviderData?.npin?.missing);
-        setNpinNotApplicable(userProviderData?.npin?.notApplicable);
-        setContractorFirstName(userProviderData?.name?.firstName);
-        setContractorLastName(userProviderData?.name?.lastName);
-        setContractorNameSuffix(userProviderData?.name?.suffix);
-        setContractorMiddleName('');
-        setContractorPhone(userProviderData?.communication?.mobileNumber);
-        setContractorEmail(userProviderData?.email?.officialEmail);
-        setCity(userProviderData?.address?.city);
-        setState(userProviderData?.address?.state);
-        setZipCode(userProviderData?.address?.zipcode);
-        setSiteLevel(userProviderData?.siteLevelResponsible);
-        setDepartmentLevel(userProviderData?.departmentLevelResponsible);
-        setSelectedRoles(userProviderData?.roles);
-      }
-    }, [userProviderData])
 
     console.log(siteTitleValues, tagSet2, siteLevelSite, siteLevelTitle)
 
-    useEffect(()=>{
-        getRoles();
-        getUserData();
-    },[])
+
+
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>

@@ -5,8 +5,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
-const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPage}) => {
-    const contractId = window.location.hash.substr(1);
+const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPage, contractId}) => {
     const [compensation, setCompensation] = useState('RVUBASED');
     const [paymentAndCompensation, setPaymentAndCompensation] = useState({});
     const [rvuQuantity, setRvuQuantity] =useState({

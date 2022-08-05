@@ -9,8 +9,7 @@ import style from './index.module.scss';
 const VALUES4 = ['Activity 1', 'Activity 2', 'Activity 3'];
 const VALUES3 = ['Activity Reviewer'];
 
-const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage}) => {
-    const contractId = window.location.hash.substr(1);
+const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) => {
     const [timeSheetCount, setTimeSheetCount] = useState(0);
     const [contractedTimeCommitment, setContractedTimeCommitment] = useState(false);
     const [activityTags, setActivityTags] = useState(VALUES3);

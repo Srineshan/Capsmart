@@ -4,12 +4,12 @@ import style from './index.module.scss';
 import {GET,PUT,POST,role,TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
-const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserData}) => {
+const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserData, contractId}) => {
     const [selectedRole, setSelectedRole] = useState('Contract Manager');
     const [selectedRoles,setSelectedRoles] = useState([]);
     const [userData,setUserData] = useState({firstName:'',lastName:'',email:'',phone:''});
     const [roles,setRoles] = useState();
-    const id = window.location.hash.substr(1);
+    const id = contractId;
 
     console.log('contract type',contractType);
 

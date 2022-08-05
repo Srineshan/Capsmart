@@ -3,7 +3,7 @@ import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import style from './index.module.scss';
 import AddProofOfDocumentation from './addProofOfDocumentation';
 
-const Alert = ({getShowAlertDialog, isMultipleContract}) => {
+const Alert = ({getShowAlertDialog, isMultipleContract, contractId}) => {
   const [showProofDialog,setShowProofDialog] = useState(false);
 
   const getShowProofDialog = (value) => {
@@ -35,7 +35,7 @@ const Alert = ({getShowAlertDialog, isMultipleContract}) => {
 
         {
           showProofDialog &&
-          <AddProofOfDocumentation getShowProofDialog={getShowProofDialog} isMultipleContract={isMultipleContract} />
+          <AddProofOfDocumentation getShowProofDialog={getShowProofDialog} isMultipleContract={isMultipleContract} contractId={contractId}/>
         }
       </>
     )

@@ -3,8 +3,8 @@ import {GET, PUT, POST, TenantID} from './../dataSaver';
 import EditServiceProvider from './editServiceProviderDialog';
 import style from './index.module.scss';
 
-const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage}) => {
-    const contractID = window.location.hash.substr(1);
+const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage, contractId}) => {
+  const contractID = contractId;
     const [users,setUsers] = useState([]);
     const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
     const [userProviderData, setUserProviderData] = useState({});
@@ -58,7 +58,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
                 <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {{getViewPage2 ? getViewPage3(true) : getViewPage2(true)};getViewPage1(false);getCurrentPage('Contracted Services Provider(s)')}}>CONTINUE</button>
             </div>
             {editServiceProviderDialog && (
-              <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} />
+              <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId}/>
             )}
         </div>
     )

@@ -31,9 +31,16 @@ const Contracts = () => {
     const [activeContracts, setActiveContracts] = useState([]);
     const [upcomingContracts, setUpcomingContracts] = useState([]);
     const [expiredContracts, setExpiredContracts] = useState([]);
+    const [contractId, setContractId] = useState('');
+    const [method,setMethod] = useState('');
 
     const getSelectedContract = (value) => {
         setSelectedContract(value);
+    }
+
+    const getContractIdFromActive = (value) => {
+        setContractId(value);
+        console.log('id', value, contractId)
     }
 
     const getAddContract = (value) => {
@@ -77,6 +84,10 @@ const Contracts = () => {
         setContracts(contracts);
     };
 
+    const getMethod = (value) => {
+      setMethod(value);
+    }
+
     useEffect(()=>{
         setDraftContracts(contracts?.filter(data => data?.contractStatus === "DRAFT")?.map(data => data));
         setActiveContracts(contracts?.filter(data => data?.contractStatus === "ACTIVE")?.map(data => data));
@@ -90,9 +101,9 @@ const Contracts = () => {
 
     return(
         addContract ? (
-            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType}/>
+            <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType} getMethod={getMethod}/>
         ) : newContractFromClone ? (
-            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType}/>
+            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType} contractIdFromActive={contractId} getContractIdFromActive={getContractIdFromActive} method={method}/>
         ) : (
             <Fragment>
                 <Navbar />
@@ -122,6 +133,7 @@ const Contracts = () => {
                     getNewContract={getNewContract}
                     getContractType={getContractType}
                     getSelectedContractType={getSelectedContractType}
+                    getContractIdFromActive={getContractIdFromActive}
                      />
                 )}
                 {extensionDialog && (

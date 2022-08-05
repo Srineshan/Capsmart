@@ -19,7 +19,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import ContractExtensionDialog from './contractExtensionDialog';
 import style from './index.module.scss';
 
-const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType}) => {
+const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive}) => {
     const [showOptions, setShowOptions] = useState(false);
 
     const menuRef = useRef(null);
@@ -40,7 +40,6 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
       }
 
       const handleAddContract = () => {
-        window.location.hash = 'new';
         getAddContract(true);
       }
     return(
@@ -172,7 +171,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             <p className={style.tableHeaderFontStyle}>ACTION</p>
                         </div>
                         {activeContracts?.map((data, index) => (
-                            <div className={`${style.tableData} ${style.displayInRow} ${index%2 === 0 && style.alternativeBackgroundColor}`} key={index} onClick={() => {getNewContract(true);getContractType(data?.contractType);getSelectedContractType('New Contract')}}>
+                            <div className={`${style.tableData} ${style.displayInRow} ${index%2 === 0 && style.alternativeBackgroundColor}`} key={index} onClick={() => {getNewContract(true);getContractType(data?.contractType);getSelectedContractType('New Contract');getContractIdFromActive(data?.id);console.log(data?.id)}}>
                                 <div className={`${style.displayInRow} ${style.width10} ${style.marginLeft30}`}>
                                     <div className={`${style.green} ${style.greenDotStyle}`}></div>
                                 </div>

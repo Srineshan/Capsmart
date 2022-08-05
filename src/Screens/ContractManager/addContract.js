@@ -6,10 +6,11 @@ import HighlightedDoctor from './../../images/highlightedDoctor.png';
 import style from './index.module.scss';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
-const AddContract = ({getAddContract, getNewContract, getContractType, getSelectedContractType}) => {
+const AddContract = ({getAddContract, getNewContract, getContractType, getSelectedContractType, getMethod}) => {
     const [selectedContract, setSelectedContract] = useState('0');
     const [selectedContractOnClick, setSelectedContractOnClick] = useState(false);
     const [contractType, setContractType] = useState('INDIVIDUAL');
+
 
     const handleNext = () => {
       if(selectedContract === '0'){
@@ -17,6 +18,7 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
 
       }
       else{
+        getMethod('POST')
         getNewContract(true);
         getAddContract(false);
         getContractType(contractType);

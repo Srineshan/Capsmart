@@ -15,7 +15,7 @@ import style from './index.module.scss';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
-const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields}) => {
+const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields, contractIdFromActive, method}) => {
     const [selectContractManager, setSelectContractManager] = useState('');
     const [siteSpecific, setSiteSpecific] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
@@ -52,15 +52,14 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [selectedSite,setSelectedSite] = useState('');
     const [departmentsName,setDepartmentsName] = useState([]);
     // const id = '50785c4d-056f-4a71-a066-18212905fc44';
-    const id = window.location.hash.substr(1);
-    console.log('id',id);
+    const id = contractIdFromActive;
 
     useEffect(() => {
       getUserData();
       getContracts();
       getSites();
       getDocumentFields();
-      if(id !== 'new'){
+      if(method !== 'POST'){
         getContractDetail();
       }
     },[])
@@ -93,13 +92,13 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         setAutoRenewal({renewalTerm:continuation?.autoRenewalTerm?.term.toString(),allowableRenewalTerm:continuation?.allowableAutoRenewalTerm?.term.toString(),calendar:continuation?.autoRenewalCalender})
         setRenewalreminder(contractDetail?.continuationPolicy?.reminderList?.renewalReminderList);
         if(contractDetail?.siteSpecificContract){
-          setSelectedSites(contractDetail?.site?.sites);
+          setSelectedSites(contractDetail?.site?.sites || []);
         }
         else if(contractDetail?.departmentSpecificContract){
-          setSelectedDepartmentSites(contractDetail?.site?.sites);
+          setSelectedDepartmentSites(contractDetail?.site?.sites || []);
         }
         else{
-          setSites(contractDetail?.site?.sites);
+          setSites(contractDetail?.site?.sites || []);
         }
       }
     }
@@ -147,7 +146,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         })
       })
       let data = {
-        ...( id !== 'new' && {'id':id}),
+        ...( method !== 'POST' && {'id':id}),
         "contractName": {
           "contractName": contractName
         },
@@ -202,17 +201,16 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
             type: "application/json"
         }));
        formData.append('contractFiles',file);
-       if(id === 'new'){
+       if(method === 'POST'){
          await POST('contract-managment-service/contracts/contractDetail',formData)
          .then(response=>{getContractId(response?.data);
            console.log('response',response);
-          window.location.hash = response?.data;
          SuccessToaster('Contract Created Successfully');
        }).catch(error=>{
          ErrorToaster('Unexpected Error Creating Contract');
        })
      }else{
-       await PUT('contract-managment-service/contracts/contractDetail',formData)
+       await PUT(`contract-managment-service/contracts/${id}/contractDetail`,formData)
        .then(response=>{
        SuccessToaster('Contract Updated Successfully');
      }).catch(error=>{
@@ -461,7 +459,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                     <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
                     <div className={style.displayInRow}>
                     <div>
-                        <DatalistInput items={items} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager)?.map(data=>data?.value)[0]}/>
+                        <DatalistInput items={items || []} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager)?.map(data=>data?.value)[0]}/>
                         {!items?.map(data=>data.name?.firstName)?.includes(userName) && !userName === '' &&(
                             <div className={style.addBoxDescription}>
                             The Contract Manager you are trying to add is not a registered
@@ -605,7 +603,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                         {departmentSpecific && (
                             <TagInput
                                 placeholder="Enter tags/keywords relative to the post"
-                                values={departmentsName?.map(data=>data.name)}
+                                values={departmentsName?.map(data=>data.name) || []}
                                 className={`${style.marginTop20}`}
                                 onRemove={handleTagSet2Remove}
                                 separator={/[\s,]/}
@@ -721,7 +719,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                 <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {getViewPage2(true);getViewPage1(false);getCurrentPage('Contracted Services Provider(s)')}}>CONTINUE</button>
             </div>
             {addNewManagerDialog && (
-                <AddNewContractManager getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUserData}/>
+                <AddNewContractManager getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUserData} contractId={contractIdFromActive}/>
             )}
         </div>
     )

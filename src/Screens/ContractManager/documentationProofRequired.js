@@ -6,8 +6,8 @@ import RedWarning from './../../images/redWarning.png';
 import FileImg from './../../images/fileImg.png';
 import style from './index.module.scss';
 
-const DocumentationProofRequired = ({getShowAlertDialog, getViewPage5, getCurrentPage}) => {
-  const contractId = window.location.hash.substr(1);
+const DocumentationProofRequired = ({getShowAlertDialog, getViewPage5, getCurrentPage, contractId}) => {
+
   const [documents,setDocuments] = useState([]);
 
   useEffect(()=>{

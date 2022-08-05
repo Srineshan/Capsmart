@@ -8,8 +8,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import {format} from 'date-fns';
 import style from './index.module.scss';
 
-const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract}) => {
-    const contractId = window.location.hash.substr(1);
+const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contractId}) => {
     const [certificateCopyAvbl,setCertificateCopyAvbl] = useState(true);
     const podTypes = ['Medical Staff Membership & Privileges',
                       'Primary Speciality Board Certification',

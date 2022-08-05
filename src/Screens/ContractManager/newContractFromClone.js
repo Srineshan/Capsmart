@@ -20,7 +20,7 @@ import TimesheetProcessingWorkflow from './timesheetProcessingWorkflow';
 
 import style from './index.module.scss';
 
-const NewContractFromClone = ({getNewContract, contractType, selectedContract, selectedContractType}) => {
+const NewContractFromClone = ({getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method}) => {
     const [selectContractInfo, setSelectContractInfo] = useState(contractType);
     const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] = useState(false);
     const [newServiceProviderDialog, setNewServiceProviderDialog] = useState(false);
@@ -36,7 +36,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
     const [viewPage8, setViewPage8] = useState(false);
     const [currentPage, setCurrentPage] = useState('Contract ID & Term Limit');
     const [isMultipleContract, setIsMultipleContract] = useState(false);
-    const [contractId,setContractId] = useState('');
+    const [contractId,setContractId] = useState(contractIdFromActive);
     const [fileFields,setFileFields] = useState([]);
     const [contractName, setContractName] = useState('');
 
@@ -109,7 +109,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
         setIsMultipleContract(selectContractInfo === "MULTIPLE" ? true : false);
       }, [selectContractInfo]);
 
-    console.log('fileFields',fileFields, contractType);
+    console.log('fileFields',fileFields, contractType, contractIdFromActive);
 
     return(
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
@@ -237,7 +237,10 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     getContractId={getContractId}
                     getCurrentPage={getCurrentPage}
                     setFileFields={getFileFields}
-                    setName={getContractName}/>
+                    contractIdFromActive={contractId}
+                    setName={getContractName}
+                    method={method}
+                    />
                 ) : (selectContractInfo === "MULTIPLE" && currentPage === "Contracted Services Provider(s)") ? (
                     <ContractedServicesProviderMultiple
                     getNewServiceProviderDialog={getNewServiceProviderDialog}
@@ -305,10 +308,10 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                 <DeleteExecutedContractDialog getDeleteExecutedContractDialog={getDeleteExecutedContractDialog} />
             )}
             {newServiceProviderDialog && (
-                <NewServiceProvider getNewServiceProviderDialog={getNewServiceProviderDialog} />
+                <NewServiceProvider getNewServiceProviderDialog={getNewServiceProviderDialog} contractId={contractId}/>
             )}
             {showAlertDialog && (
-              <Alert getShowAlertDialog={getShowAlertDialog} isMultipleContract={isMultipleContract} />
+              <Alert getShowAlertDialog={getShowAlertDialog} isMultipleContract={isMultipleContract} contractId={contractId}/>
             )}
         </div>
     )

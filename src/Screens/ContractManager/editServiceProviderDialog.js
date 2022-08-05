@@ -7,8 +7,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
-const EditServiceProvider = ({getEditServiceDialog, userProviderData}) => {
-    const contractId = window.location.hash.substr(1);
+const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId}) => {
     const [selectedContract, setSelectedContract] = useState('Written Contract Extension For Fixed Term');
     const [startDate, setStartDate] = useState(new Date);
     const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration');

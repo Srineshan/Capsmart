@@ -8,8 +8,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
-const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContractInfo }) => {
-    const contractId = window.location.hash.substr(1);
+const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContractInfo, contractId }) => {
     const [applyWorkflowToAll, setApplyWorkflowToAll] = useState(true);
     const [viewWorkflowDialog, setViewWorkflowDialog] = useState(false);
     const [workflowName, setWorkflowName] = useState('');

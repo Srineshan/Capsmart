@@ -7,8 +7,8 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
-const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractInfo}) => {
-    const contractId = window.location.hash.substr(1);
+const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractInfo, contractId}) => {
+
     const [sameAsContractor, setSameAsContractor] = useState(false);
     const [contractorNPIN, setContractorNPIN] = useState({
         notApplicable: true,
@@ -71,9 +71,9 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
 
     const handleRoles = (value) => {
         if (value !== '0') {
-          const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
+          const selectedValue = roles?.filter(data => data?.roleName === value)?.map(data => data)[0];
 
-          if (!selectedRoles.map(data => data?.roleName).includes(value)) {
+          if (!selectedRoles?.map(data => data?.roleName)?.includes(value)) {
             setSelectedRoles([...selectedRoles, selectedValue]);
           }
         }
@@ -83,7 +83,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
     ?.filter(data => roles?.map(role => role.id === data?.id))
     .map((tag, index) => {
       const onRemove = () => {
-        setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName));
+        setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName)?.map(data=>data));
       };
       return (
         <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
@@ -109,7 +109,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
         setContractorEntityTaxId(contractorBusinessEntity?.contractorEntityTaxId);
         setBusinessEntityUser(contractorBusinessEntity?.businessEntityUser);
         setAppRoleRequired(contractorBusinessEntity?.appRoleRequired);
-        setSelectedRoles(contractorBusinessEntity?.roles);
+        setSelectedRoles(contractorBusinessEntity?.roles || []);
         setMailingAddress(contractorBusinessEntity?.mailingAddress);
     },[contractorBusinessEntity])
 
@@ -118,7 +118,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
         getContractorBusinessEntity();
     },[])
 
-    console.log(businessEntityUser)
+    console.log('roles',selectedRoles);
 
     return (
         <div className={style.cloneBlockStyle}>
