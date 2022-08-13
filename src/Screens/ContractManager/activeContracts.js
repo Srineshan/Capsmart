@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Navbar from './../../Components/Navbar';
+import {GET, PUT, POST, TenantID} from './../dataSaver';
 import UserLogo from './../../images/userLogo.jpg';
+import DefaultUserLogo from './../../images/defaultUserLogo.jpg';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
 import Filter from './../../images/filter.png';
@@ -18,8 +20,9 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import ContractExtensionDialog from './contractExtensionDialog';
 import style from './index.module.scss';
 
-const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog}) => {
+const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive}) => {
     const [showOptions, setShowOptions] = useState(false);
+
     const menuRef = useRef(null);
     useOptionsHide(menuRef);
 
@@ -36,12 +39,19 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
           };
         }, [ref]);
       }
+
+      const handleAddContract = () => {
+        getAddContract(true);
+      }
     return(
         <div className={style.margin20}>
             <div className={`${style.grid5}`}>
                 <div className={style.cardStyle}>
                     <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                        <img src={UserLogo} className={style.userLogo} />
+                        <label for="file-upload">
+                            <img src={DefaultUserLogo} className={`${style.userLogo} ${style.cursorPointer}`} />
+                        </label>
+                        <input id="file-upload" type="file"/>
                         <div className={style.marginLeft20}>
                             <div className={style.userNameStyle}>
                                 User
@@ -149,7 +159,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             <img src={Bell} alt="Bell" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />
                         </div>
-                        <button className={style.contractButton} onClick={() => getAddContract(true)} >ADD CONTRACT</button>
+                        <button className={style.contractButton} onClick={() => {handleAddContract()}} >ADD CONTRACT</button>
                     </div>
                     <div>
                         <div className={`${style.tableHeader} ${style.marginTop40}`}>
@@ -164,26 +174,28 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             <p className={style.tableHeaderFontStyle}>LAST UPDATED</p>
                             <p className={style.tableHeaderFontStyle}>ACTION</p>
                         </div>
-                        <div className={`${style.tableData} ${style.displayInRow}`}>
-                            <div className={`${style.displayInRow} ${style.width10} ${style.marginLeft30}`}>
-                                <div className={`${style.green} ${style.greenDotStyle}`}></div>
+                        {activeContracts?.map((data, index) => (
+                            <div className={`${style.tableData} ${style.displayInRow} ${index%2 === 0 && style.alternativeBackgroundColor}`} key={index} onClick={() => {getNewContract(true);getContractType(data?.contractType);getSelectedContractType('New Contract');getContractIdFromActive(data?.id);console.log(data?.id)}}>
+                                <div className={`${style.displayInRow} ${style.width10} ${style.marginLeft30}`}>
+                                    <div className={`${style.green} ${style.greenDotStyle}`}></div>
+                                </div>
+                                <p className={style.tableDataFontStyle}>{data?.contractType}</p>
+                                <p className={style.tableDataFontStyle}>{data?.contractDetail?.contractId?.id}</p>
+                                <p className={style.tableDataFontStyle}>{data?.contractName?.contractName}</p>
+                                <p className={style.tableDataFontStyle}> - </p>
+                                <p className={style.tableDataFontStyle}>{data?.contractDetail?.contractTerm?.effectiveDate}</p>
+                                <div className={style.displayInRow}>
+                                    <img src={GreenPage} alt="warning" className={style.colorFileStyle} />
+                                    <p className={style.tableDataFontStyle}>5</p>
+                                </div>
+                                <p className={style.tableDataFontStyle}>Alex Ball MD</p>
+                                <p className={style.tableDataFontStyle}>07/19/2019</p>
+                                <div className={style.tableDataFontStyle}>
+                                    <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
+                                </div>
                             </div>
-                            <p className={style.tableDataFontStyle}>Multiple</p>
-                            <p className={style.tableDataFontStyle}>7837428</p>
-                            <p className={style.tableDataFontStyle}>Jane Smith MD </p>
-                            <p className={style.tableDataFontStyle}>3</p>
-                            <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <div className={style.displayInRow}>
-                                <img src={GreenPage} alt="warning" className={style.colorFileStyle} />
-                                <p className={style.tableDataFontStyle}>5</p>
-                            </div>
-                            <p className={style.tableDataFontStyle}>Alex Ball MD</p>
-                            <p className={style.tableDataFontStyle}>07/19/2019</p>
-                            <div className={style.tableDataFontStyle}>
-                                <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
-                            </div>
-                        </div>
-                        <div className={`${style.tableData} ${style.displayInRow}`}>
+                        ))}
+                        {/* <div className={`${style.tableData} ${style.displayInRow}`}>
                             <div className={`${style.displayInRow} ${style.width10} ${style.marginLeft30}`}>
                                 <div className={`${style.green} ${style.yellowDotStyle}`}></div>
                             </div>
@@ -240,7 +252,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                             <div className={style.tableDataFontStyle}>
                                 <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
                             </div>
-                        </div>
+                        </div> */}
                         {showOptions && (
                             <div className={`${style.displayInCol} ${style.actionCard} ${style.cursorPointer}`} ref={menuRef}>
                                 <img src={ContractExtension} className={style.actionsIcon} onClick={() => getExtensionDialog(true)} />
@@ -258,7 +270,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                     </div>
                 </div>
             </div>
-            <div className={style.spaceBetween}>                        
+            <div className={style.spaceBetween}>
                 <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
                 <p className={style.poweredBy}>© TimeSmart.AI</p>
             </div>

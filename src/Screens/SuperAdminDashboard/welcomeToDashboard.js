@@ -13,15 +13,15 @@ const WelcomeToDashboard = () => {
                 <div className={style.completedHeading}>
                 WELCOME TO TIMESMARTAI
                 </div>
-                <div className={style.accountTypeStyle}>Trial Account</div> 
+                <div className={style.accountTypeStyle}>Trial Account</div>
                 <div className={style.alignCenter}>
                     <img src={WelcomeImg} alt="Welcome Img" className={style.welcomeDashboardImgStyle} />
                 </div>
                 <div className={`${style.welcomeDescription} ${style.marginTop20}`}>
-                {`This setup wizard will guide you to quickly activate your account. Once your 
-                account is activated you will be able to invite other users from your organization. 
-                Experience the difference in better managing contractor activity logs and timesheet 
-                processing. Refer to the quick <Setup Guide> or <Setup Tutorial> to see how easy it 
+                {`This setup wizard will guide you to quickly activate your account. Once your
+                account is activated you will be able to invite other users from your organization.
+                Experience the difference in better managing contractor activity logs and timesheet
+                processing. Refer to the quick <Setup Guide> or <Setup Tutorial> to see how easy it
                 is to activate a customer account.`}
                 </div>
                 <div className={`${style.welcomeDescription}`}>

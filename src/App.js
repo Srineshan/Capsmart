@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { BrowserRouter as Router , Routes , Route} from 'react-router-dom';
 import ActiveContracts from './Screens/ContractManager';
 import Welcome from './Screens/SuperAdminDashboard/welcome';
 import Login from './Screens/SuperAdminDashboard/login';
-import ForgotPassword from './Screens/SuperAdminDashboard/forgotPassword';
+import SetPassword from './Screens/SuperAdminDashboard/setPassword';
 import EntitySetup from './Screens/SuperAdminDashboard/entitySetup';
 import EntitySystemAdmin from './Screens/SuperAdminDashboard/entitySystemAdmin';
 import SiteInformation from './Screens/SuperAdminDashboard/siteInformation';
@@ -15,24 +15,51 @@ import WelcomeToDashboard from './Screens/SuperAdminDashboard/welcomeToDashboard
 import './App.css'
 import history from './routes/history';
 import EntryPage from './Screens';
-import Contracts from './Screens/UserManagement';
+import Users from './Screens/UserManagement';
 import ReportsHome from './Screens/Reports';
 import TimeSheetReportsBase from './Screens/Reports/reports';
 import ChartPage from './Screens/Reports/chart';
 import HelpHome from './Screens/HelpManagement';
+import TasksAndAlerts from './Screens/SuperAdminDashboard/tasksAndAlerts';
+import ReferenceList from './Screens/ReferenceList';
+import CustomerManagement from './Screens/SuperAdminDashboard/customerManagement';
+import Cookie from 'universal-cookie';
+import CustomerSetup from './Screens/SuperAdminDashboard/customerSetup';
+import {Auth} from './utils/auth'
 
 const App = ({props}) => {
+  const [accessToken,setAccessToken] = useState(Auth());
+
+  useEffect(()=>{
+    if(accessToken === false){
+      let cookie = new Cookie();
+      let authValue = cookie.get('user');
+      setAccessToken(authValue);
+    }
+    if(accessToken === false && window.location.pathname !== '/'){
+      window.location.pathname = '/';
+    }
+  },[window.location.pathname])
+  if(accessToken === false && window.location.pathname !=='/'){
+    window.location.pathname = '/';
+    history.push('/');
+  }
+
+
   return (
     <Router>
       <div className="App">
-        <Routes>
-          <Route  path="/" element={<EntryPage />}/>
-          <Route  path="/activeContracts" element={<ActiveContracts />}/>
-          <Route  path="/contracts" element={<Contracts />}/>
-          <Route  path="/login" element={<Login />} {...props}/>
-          <Route  path="/forgotPassword" element={<ForgotPassword />}/>
+        {
+          accessToken !== false ?
+        (
+          <Routes>
+          <Route  path="/" element={<Login />} {...props}/>
+          <Route  path="/contracts" element={<ActiveContracts />}/>
+          <Route  path="/user" element={<Users />}/>
+          <Route  path="/pages" element={<EntryPage />}/>
+          <Route  path="/setPassword" element={<SetPassword />}/>
           <Route  path="/welcome" element={<Welcome />}/>
-          <Route  path="/entitySetup" element={<EntitySetup />}/>
+          <Route  path="/entitySetup/:id" element={<EntitySetup />}/>
           <Route  path="/entitySystemAdmin" element={<EntitySystemAdmin />}/>
           <Route  path="/siteInformation" element={<SiteInformation />}/>
           <Route  path="/siteUsers" element={<SiteUsers />}/>
@@ -44,7 +71,17 @@ const App = ({props}) => {
           <Route  path="/reports" element={<TimeSheetReportsBase />}/>
           <Route  path="/chart" element={<ChartPage />}/>
           <Route  path="/help" element={<HelpHome />}/>
-        </Routes>
+          <Route  path="/tasksAndAlerts" element={<TasksAndAlerts />}/>
+          <Route  path="/activeCustomers" element={<CustomerManagement />}/>
+          <Route path="/customerSetup" element={<CustomerSetup />} />
+          <Route path="/referenceList" element={<ReferenceList />} />
+          </Routes>
+        ):(
+          <Routes>
+          <Route  path="*" element={<Login />} {...props} exact={true}/>
+          </Routes>
+        )
+      }
       </div>
     </Router>
   );

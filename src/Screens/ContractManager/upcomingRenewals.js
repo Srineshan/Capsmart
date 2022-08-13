@@ -14,7 +14,7 @@ import ThreeDot from './../../images/threeDot.png';
 import ProgressBar from "@ramonak/react-progress-bar";
 import style from './index.module.scss';
 
-const UpcomingRenewals = ({getSelectedContract, getAddContract}) => {
+const UpcomingRenewals = ({getSelectedContract, getAddContract, upcomingContracts}) => {
     const [showOptions, setShowOptions] = useState(false);
     const menuRef = useRef(null);
     useOptionsHide(menuRef);
@@ -238,7 +238,7 @@ const UpcomingRenewals = ({getSelectedContract, getAddContract}) => {
                     </div>
                 </div>
             </div>
-            <div className={style.spaceBetween}>                        
+            <div className={style.spaceBetween}>
                 <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
                 <p className={style.poweredBy}>© TimeSmart.AI</p>
             </div>

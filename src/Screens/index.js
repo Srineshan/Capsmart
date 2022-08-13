@@ -1,5 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
+import {isSuperAdminAccess} from './dataSaver';
 import style from './index.module.scss';
 
 const EntryPage = () => {
@@ -20,27 +21,37 @@ const EntryPage = () => {
                         <div className={style.headingStyle}>Help Management</div>
                     </div>
                 </Link>
-                <Link to={'/activeContracts'}>
+                <Link to={'/contracts'}>
                     <div className={`${style.padding} ${style.cursorPointer}`}>
                         <div className={style.roundedBackgrounds}>
                         </div>
                         <div className={style.headingStyle}>Contract Dashboard</div>
                     </div>
                 </Link>
-                <Link to={'/contracts'}>
+                <Link to={'/user'}>
                     <div className={`${style.padding} ${style.cursorPointer}`}>
                         <div className={style.roundedBackgrounds}>
                         </div>
                         <div className={style.headingStyle}>User Management</div>
                     </div>
                 </Link>
-                <Link to={'/login'}>
+                <Link to={isSuperAdminAccess ? '/tasksAndAlerts' : '/welcome'}>
                     <div className={style.cursorPointer}>
                         <div className={style.roundedBackgrounds}>
                         </div>
                         <div className={style.headingStyle}>Super Admin Dashboard</div>
                     </div>
                 </Link>
+                {
+                  // <Link to={'/referenceList'}>
+                  //     <div className={`${style.marginLeft20} ${style.cursorPointer}`}>
+                  //         <div className={style.roundedBackgrounds}>
+                  //         </div>
+                  //         <div className={style.headingStyle}>Reference List</div>
+                  //     </div>
+                  // </Link>
+                }
+
             </div>
         </div>
     )

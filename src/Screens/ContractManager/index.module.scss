@@ -1,8 +1,11 @@
 @import '../../styles/mixins.scss';
 
+$headingBlue: #003685;
+$shiningBlue: #0067ff;
+
 body{
     background: #F8FCFF 0% 0% no-repeat padding-box;
-    -ms-overflow-style: none !important; 
+    -ms-overflow-style: none !important;
     scrollbar-width: none !important;
     ::-webkit-scrollbar {
         display: none !important;
@@ -81,7 +84,7 @@ body{
     width: 53px;
     height: 53px;
     border-radius: 50%;
-
+    object-fit: contain;
 }
 
 .alignCenter{
@@ -305,7 +308,6 @@ body{
     height: 15px;
     width: 15px;
     margin-right: 5px;
-    margin-top: 10px;
 }
 
 .colorIconsStyle{
@@ -399,7 +401,6 @@ body{
 
 .documentDataProof{
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    height: 50px;
     width: 96%;
     margin-left: 2%;
     border-radius: 6px;
@@ -408,11 +409,11 @@ body{
     margin-top: 5px;
     display: grid;
     grid-template-columns: 10% 25% 20% 20% 20% 5%;
+    word-break: break-word !important;
 }
 
 .serviceSpecificationTableData{
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    height: 50px;
     width: 96%;
     margin-left: 2%;
     border-radius: 6px;
@@ -715,7 +716,7 @@ body{
 }
 
 .fullWidth{
-    width: 100%;
+    width: 100% !important;
 }
 
 .contractId{
@@ -1175,6 +1176,7 @@ select {
     opacity: 1;
     height: 80px;
     min-width: 100%;
+    cursor: pointer;
 }
 
 .completedEntityCardStyle{
@@ -1264,9 +1266,8 @@ select {
     border-radius: 6px;
     opacity: 1;
     padding: 20px;
-    width: 62%;
-    margin-left: 38%;
-    margin-top: -60px;
+    width: 100%;
+    display: block;
 }
 
 .blueColor{
@@ -1377,11 +1378,9 @@ select {
 
   .editableTextSpecifiedStyle{
     height: 35px;
-    display: flex;
-    align-items: center;
+    padding-left:20px;
+    padding-top: 8px;
     text-align: left;
-    padding-left:15px;
-    margin-top: 8px;
     width: 65px;
     border-radius: 4px !important;
   }
@@ -1549,7 +1548,6 @@ select {
     text-align: left;
     border: 1px solid #B3B8BD;
     border-radius: 10px;
-    height: 100px;
     font: normal normal normal 13px/15px Montserrat;
     margin-top: 10px;
     padding: 15px;
@@ -1571,7 +1569,7 @@ select {
     border-radius: 4px;
     padding: 7px 0 0 25px;
     color: black;
-    width: 80%;
+    width: 50%;
 }
 
 .renewalBoxGrid{
@@ -1703,7 +1701,7 @@ select {
 
   .selectedTimesheetButton{
     background: #D7D4F7 0% 0% no-repeat padding-box;
-  } 
+  }
 
   .timeSheetBoxStyle{
     border: 1px solid #7165E3;
@@ -1749,7 +1747,7 @@ select {
 
   .selectedWorkFlowButton{
     background: #D7D4F7 0% 0% no-repeat padding-box;
-  } 
+  }
 
   .shapeBackground{
     background: black 0% 0% no-repeat padding-box;
@@ -1762,3 +1760,42 @@ select {
   .disabledView{
       opacity: 0.5;
   }
+
+  .tagStyle {
+    margin: 0 5px 10px 0 !important;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  .customFileUpload {
+    cursor: pointer;
+    width:70px;
+    height: 50px;
+    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 1.25;
+    background-color: #f1f2f3;
+    color: #7165E3;
+    border: none;
+    position: relative;
+    top: 7px;
+  }
+  
+  .selectMultipleCheckbox{
+    height: auto;
+    min-height: 1em !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .addButtonPosition{
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .alternativeBackgroundColor{
+    background-color: #ebe9fb !important;
+}

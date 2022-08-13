@@ -41,7 +41,7 @@
 .activeMenuColor{
     color: #7165E3;
     border-bottom:2px solid #7165E3;
-    padding-bottom:2px;
+    padding-bottom:15px;
     font: normal normal 600 15px/25px Montserrat;
     margin-top: 27px;
 }
@@ -90,6 +90,7 @@
 
 .options{
     padding: 10px;
+    font-size: 12px;
 }
 
 .options:hover{

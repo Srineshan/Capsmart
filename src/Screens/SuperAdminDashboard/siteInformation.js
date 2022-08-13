@@ -3,10 +3,10 @@ import { InputGroup, Icon, Intent, TagInput, Dialog, Classes, Spinner } from '@b
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
-import {Link} from 'react-router-dom';
-import {GET,PUT,POST,tenantID} from './entityDataSaver';
+import {Link, useParams} from 'react-router-dom';
+import {GET,PUT,POST,TenantID,isSuperAdminAccess} from './../dataSaver';
 import Step1 from './../../images/step12.png';
-import Step2 from './../../images/step23.png';
+import Step2 from './../../images/step2.png';
 import Step3 from './../../images/step33.png';
 import Step4 from './../../images/step4.png';
 import Step5 from './../../images/step5.png';
@@ -14,27 +14,31 @@ import UploadImg from './../../images/uploadImg.png';
 import style from './index.module.scss';
 import {Auth} from './../../utils/auth';
 import 'react-datalist-input/dist/styles.css';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 // const VALUES = ['Department 1', "Department 2"];
 
 const SiteInformation = ({getActiveStep}) => {
+    const {id} = useParams();
     const [tags, setTags] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
-    const [showSiteTable, setShowSiteTable] = useState(false);
+    const [siteList,setSiteList] = useState([]);
+    const [showSiteTable, setShowSiteTable] = useState(true);
     const [selectDepartment, setSelectDepartment] = useState('');
     const [siteID, setSiteID] = useState('3578689');
     const [alertDialog, setAlertDialog] = useState(false);
     const [item, setItem] = useState();
     const [departmentValue,setDepartmentValue] = useState([]);
-    const [siteList,setSiteList] = useState([]);
     const [entityData,setEntityData] = useState();
+    const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [loading,setLoading] = useState(false);
     const [address,setAddress] = useState({
       city:'',state:'',zipcode:'',country:''
     })
-    const [site,setSite] = useState({name:'',type:'',canSetupDepartment:false,npin:''});
+    const [site,setSite] = useState({name:'',type:'',canSetupDepartment:true,npin:''});
     let options = [];
     const accessToken = Auth();
+    const role = '';
 
     useEffect(()=>{
       getDepartmentData();
@@ -42,19 +46,32 @@ const SiteInformation = ({getActiveStep}) => {
     },[]);
 
     const getEntityData = async() => {
-      const {data: data} = await GET(`entity-service/entity/${tenantID}`);
+      const {data: data} = await GET(`entity-service/entity/${id}`);
       setEntityData(data);
+      if(data?.canPrimarySiteToUseApp){
+        setSiteList(data?.sites);
+      }else{
+        let sites = data?.sites;
+        setSiteList(sites?.filter(data=>data.primarySite === false)?.map(data=>data));
+      }
     }
 
-    const updateEntitySite = async() => {
-      console.log('inside func');
+    const updateEntitySite = async(buttonText) => {
+      if(site.name === '' || site.type === '' || site.npin === '' || address.city === '' || address.state === '' || address.zipcode === '' || address.country === ''){
+        ErrorToaster('All Fields are mandatory');
+        return;
+      }
       let temp = entityData?.sites;
+      console.log('temp',temp);
       temp.push({
         "siteName": {
           "siteName": site.name
         },
         "siteAdmin": {
           "id": ""
+        },
+        "siteDisplayId": {
+            "id": ""
         },
         "siteType": {
           "type": site.type
@@ -64,17 +81,7 @@ const SiteInformation = ({getActiveStep}) => {
         },
         "canSetupDepartment": site.canSetupDepartment,
         "departmentList": {
-          "departments": [
-            {
-              "id": "string",
-              "departmentName": {
-                "name": "string"
-              },
-              "departmentHead": {
-                "id": "string"
-              }
-            }
-          ]
+          "departments":departmentSpecific?selectedDepartment:departmentValue,
         },
         "address": {
           "addressLine": "",
@@ -85,15 +92,13 @@ const SiteInformation = ({getActiveStep}) => {
         },
         "primarySite": false
       });
+      console.log('temp down',temp);
       const updatedValue =
       {
       "id": entityData.id,
-      "entityName": {
-        "entityName": entityData.name,
-      },
-      "entityType": {
-        "type": entityData.type,
-      },
+      "entityName": entityData?.entityName,
+      "entityType": entityData?.entityType,
+      "entityDisplayId": entityData?.entityDisplayId,
       "customerType": "HEALTHCARE",
       "sites": temp,
       "subscriptionPlan": entityData.subscriptionPlan,
@@ -101,78 +106,73 @@ const SiteInformation = ({getActiveStep}) => {
       "contractDetails": entityData.contractDetails,
       "accountManager":entityData.accountManager,
       "appUserRoles": entityData.appUserRoles,
+      "websiteURL":entityData?.websiteURL,
     }
     await PUT('entity-service/entity',updatedValue)
+    .then(response=>{
+    SuccessToaster('Site Created Successfully');
+    }).catch(error=>{
+      ErrorToaster('Unexpected Error Creating Site');
+    });
+    if(buttonText === 'Continue'){
+      getActiveStep('siteUsers');
+      resetSiteValues();
+    }else if(buttonText === 'Saveinprogress'){
+      setShowSiteTable(true);
+      resetSiteValues();
+    }else{
+      getEntityData();
+      resetSiteValues();
+      setShowSiteTable(false);
+    }
+  }
+
+  const getDepartmentData = async() => {
+    const {data: department} = await GET('entity-service/department');
+    if(department){
+      setDepartmentValue(department)
+      setShowSiteTable(siteList?.filter(data=>data.primarySite !== true)?.map(data=>data)?.length !== 0 ? false:true);
+    }else{
+      console.log('error');
+    }
   }
 
 
-    const getDepartmentData = () => {
-      setLoading(true);
-      let temp = [];
-      const department = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json',
-                  'X-tenantID' : '6242845f95690b3822cb96a5',
-                  'Authorization': `Bearer ${accessToken}`}
-        };
-        fetch('http://ec2-184-72-207-241.compute-1.amazonaws.com:8000/entity-service/department', department)
-        .then(response => response.json())
-        .then(data => {
-          data?.map(dept=>{
-            temp.push(dept.departmentName.name);
-          })
-          setDepartmentValue(temp);
-          setTags(temp);
-          setLoading(false);
-          return true;
-        }
-       )
+    const onSelect = (selectedItem) => {
+      setItem(selectedItem);
+      let temp = selectedDepartment;
+      temp.push(selectedItem);
+      setSelectedDepartment(temp);
+      setSelectDepartment('');
     }
 
-    departmentValue?.map(data=>{
-      options.push({'name':data})
-    });
-
-    // const options = [
-    //     { name: 'Department 1' },
-    //     { name: 'Department 2' },
-    //     { name: 'Department 3' },
-    //     { name: 'Department 4' },
-    //     { name: 'Department 5' },
-    //     { name: 'Department 6' },
-    //   ];
-
-    const onSelect = useCallback((selectedItem) => {
-      console.log('selectedItem', selectedItem);
-      setItem(selectedItem);
-      setSelectDepartment('');
-    }, []);
-
     const handleTagsAdd = values => {
-        setTags([...tags, values]);
-        setDepartmentValue(tags);
-        setSelectDepartment('');
+      setItem(values);
+      let temp = selectedDepartment;
+      temp.push({
+          "departmentName": {
+            "name": values
+          },
+          "departmentHead": {
+            "id": ""
+          }
+        })
+      setSelectedDepartment(temp);
+      setSelectDepartment('');
     };
 
-    const getTagProps = (_v, index) => ({
-        minimal: true,
-    });
-
     const handleTagsRemove = (tags, index) => {
-        const updatedTags = [tags];
-        updatedTags.splice(index, 1);
-        tags = updatedTags;
-        setTags(tags);
-      };
+      setSelectedDepartment(selectedDepartment?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
+    };
 
       const items = useMemo(
         () =>
-          options.map((option) => ({
-            id: option.name,
-            value: option.name,
+          departmentValue.map((option) => ({
+            id: option?.id,
+            value: option?.departmentName.name,
             ...option,
           })),
-        [item],
+        [departmentValue],
       );
 
     const handleSite = (name,value) => {
@@ -187,45 +187,54 @@ const SiteInformation = ({getActiveStep}) => {
       <Spinner intent={Intent.PRIMARY} />
     }
 
-    console.log('siltelist',siteList);
+    const resetSiteValues = () => {
+      setAddress({
+        city:'',state:'',zipcode:'',country:''
+      });
+      setSite({name:'',type:'',canSetupDepartment:true,npin:''});
+      setSelectedDepartment([]);
+    }
+
 
     return(
         <div className={style.entitySetupBackground}>
             <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
             <div className={style.stepperMargin}>
-                <div className={style.stepperGrid}>
+                <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>
                         <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                             <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
                         </div>
-                        <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
+                        <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
-                    {/* <div>
-                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
-                            <img src={Step2} alt="Step2" className={style.stepperImgStyle} />
-                        </div>
-                        <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
-                    </div> */}
                     <div onClick={() => getActiveStep('siteInformation')}>
                         <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
-                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
+                            <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
                         </div>
-                        <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
+                        <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
+                    {isSuperAdminAccess && (
+                      <div onClick={() => getActiveStep('entitySystemAdmin')}>
+                        <div className={style.stepperImgBackground}>
+                            <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                        </div>
+                        <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>ENTITY SYSTEM ADMIN</p>
+                      </div>
+                    )}
                     <div onClick={() => getActiveStep('siteUsers')}>
                         <div className={style.stepperImgBackground}>
                             <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                         </div>
-                        <p className={style.entityTextColor}>SITE USERS</p>
+                        <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>SITE USERS</p>
                     </div>
                     <div onClick={() => getActiveStep('appSubscription')}>
                         <div className={style.stepperImgBackground}>
                             <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                         </div>
-                        <p className={style.entityTextColor}>APP SUBSCRIPTION</p>
+                        <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>APP SUBSCRIPTION</p>
                     </div>
                 </div>
-                <div className={style.stepperDivider3}></div>
+                <div className={isSuperAdminAccess ? style.stepperDivider2 : style.stepperDivider2grid4}></div>
             </div>
             {!showSiteTable ? (
                 <div className={style.entitySetupCardStyle}>
@@ -245,15 +254,17 @@ const SiteInformation = ({getActiveStep}) => {
                                 <div className={`${style.extentionGrid}`}>
                                     <div className={style.extentionLableStyle}>NPIN*</div>
                                     <div className={style.spaceBetween}>
-                                        <InputGroup className={style.fourFieldWidth} value={entityData?.npin} />
-                                        <button className={style.entityIDButton} onClick={()=> setShowSiteTable(true)}>
-                                            <span>{siteID !== 'XX689- 64768' ? 'ENTITY ID:' : 'SITE ID:'}</span>{siteID}
-                                        </button>
+                                        <InputGroup className={style.fourFieldWidth} value={site?.npin} onChange={(e)=>handleSite('npin',e.target.value)}/>
+                                        {
+                                          // <button className={style.entityIDButton} onClick={()=> setShowSiteTable(true)}>
+                                          //     <span>{siteID !== 'XX689- 64768' ? 'ENTITY ID:' : 'SITE ID:'}</span>{siteID}
+                                          // </button>
+                                        }
                                     </div>
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Site Name*</div>
-                                    <InputGroup className={style.threeFieldWidth} defaultValue={site.name} onChange={(e)=>handleSite('name',e.target.value)} />
+                                    <InputGroup className={style.threeFieldWidth} placeholder="Site Name" value={site.name} onChange={(e)=>handleSite('name',e.target.value)} />
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Site Type*</div>
@@ -295,35 +306,34 @@ const SiteInformation = ({getActiveStep}) => {
                                         />
                                             {departmentSpecific && (
                                                 <>
-                                                    <DatalistInput items={items} placeholder="Enter Departments" onSelect={onSelect} onChange={(e) => {setSelectDepartment(e.target.value); setSiteID('XX689- 64768')} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition}>+</span></div>
+                                                    <DatalistInput items={items} placeholder="Enter Departments" onSelect={onSelect} value={selectDepartment} onChange={(e) => {setSelectDepartment(e.target.value); setSiteID('XX689- 64768')} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
+                                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition} onClick={(e)=>handleTagsAdd(selectDepartment)}>+</span></div>
                                                 </>
                                             )}
                                         </div>
-                                        {selectDepartment.length !== 0 && (
-                                            <div className={`${style.reqDeptCard} ${style.marginTop}`}>
-                                                <div className={style.addBoxDescription}>
-                                                The Department you are trying to add is not on the list.
-                                                To add a new department enter the exact name below and click
-                                                on the "REQUEST & ADD" button.
-                                                </div>
-                                                <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                                    <InputGroup value={selectDepartment} className={style.threeFieldWidth} onChange={(e)=>setSelectDepartment(e.target.value)}/>
-                                                    <button className={`${style.reqButton} ${style.marginLeft20}`} onClick={() => {handleTagsAdd(selectDepartment)}}>REQUEST & ADD</button>
-                                                </div>
-                                            </div>
-                                        )}
+                                        {selectDepartment.length !== 0 && !departmentValue?.map(data=>data.departmentName?.name).includes(selectDepartment) &&(
+                                          <div className={`${style.reqDeptCard} ${style.marginTop}`}>
+                                              <div className={style.addBoxDescription}>
+                                              The Department you are trying to add is not on the list.
+                                              To add a new department enter the exact name below and click
+                                              on the "REQUEST & ADD" button.
+                                              </div>
+                                              <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                                                  <InputGroup value={selectDepartment} className={style.threeFieldWidth} onChange={(e)=>setSelectDepartment(e.target.value)}/>
+                                                  <button className={`${style.reqButton} ${style.marginLeft20}`} onClick={() => {handleTagsAdd(selectDepartment)}}>REQUEST & ADD</button>
+                                              </div>
+                                          </div>
+                                      )}
                                         {departmentSpecific && (
                                             <TagInput
                                                 placeholder="Enter tags/keywords relative to the post"
-                                                values={tags}
+                                                values={selectedDepartment?.map(data=>data?.departmentName?.name)}
                                                 className={`${style.marginTop20} ${style.tagInputStyle}`}
                                                 onAdd={handleTagsAdd}
                                                 onRemove={handleTagsRemove}
                                                 separator={/[\s,]/}
                                                 addOnBlur={true}
                                                 addOnPaste={true}
-                                                tagProps={getTagProps}
                                             />
                                         )}
                                     </div>
@@ -334,10 +344,10 @@ const SiteInformation = ({getActiveStep}) => {
                                     <button className={style.outlinedButton}>BULK UPLOAD</button>
                                 </div>
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                    <button className={style.outlinedButton} onClick={()=>updateEntitySite()}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & ADD MORE</button>
+                                    <button className={style.outlinedButton} onClick={()=>{updateEntitySite('Saveinprogress');}}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{updateEntitySite('Addmore');}}>SAVE & ADD MORE</button>
                                     {/* <Link to={'/siteUsers'}> */}
-                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => getActiveStep('siteUsers')}>CONTINUE</button>
+                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {updateEntitySite('Continue');}}>CONTINUE</button>
                                     {/* </Link> */}
                                 </div>
                             </div>
@@ -362,17 +372,17 @@ const SiteInformation = ({getActiveStep}) => {
                             <p className={style.tableHeaderFontStyle}>CREATED BY</p>
                             <p className={style.tableHeaderFontStyle}>SOURCE</p>
                         </div>
-                        <div className={`${style.tableData} ${style.displayInCol}`} >
+                        <div className={`${style.tableData} ${style.displayInCol}`}>
                         {
                           siteList?.map(data=>(
                             <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                                <p className={style.tableDataFontStyle}>{data.name}</p>
-                                <p className={style.tableDataFontStyle}>{data.type}</p>
+                                <p className={style.tableDataFontStyle}>{data?.siteName?.siteName}</p>
+                                <p className={style.tableDataFontStyle}>{data?.siteType?.type}</p>
                                 <p className={style.tableDataFontStyle}>{data.address.city}</p>
                                 <p className={style.tableDataFontStyle}>{data.address.state}</p>
-                                <p className={style.tableDataFontStyle}>11-06-2021 </p>
-                                <p className={style.tableDataFontStyle}>SWA Shah</p>
-                                <p className={style.tableDataFontStyle}>manual</p>
+                                <p className={style.tableDataFontStyle}>-</p>
+                                <p className={style.tableDataFontStyle}>-</p>
+                                <p className={style.tableDataFontStyle}>-</p>
                             </div>
                           ))
                         }
@@ -396,7 +406,7 @@ const SiteInformation = ({getActiveStep}) => {
                         <div className={`${style.positionCenter} ${style.marginTop20}`}>
                             <button className={`${style.cloneOutlinedButton} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => setAlertDialog(false)}>NO</button>
                             {/* <Link to={'/siteUsers'}> */}
-                                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => getActiveStep('siteUsers')}>YES</button>
+                                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => getActiveStep(isSuperAdminAccess ? 'entitySystemAdmin' : 'siteUsers')}>YES</button>
                             {/* </Link> */}
                         </div>
                     </div>

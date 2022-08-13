@@ -1,15 +1,18 @@
 import React, {useState, useRef, useEffect} from 'react';
 import logo from './../../images/metropolitan-hospital-logo.png';
 import NotificationsIcon from './../../images/notificationsIcon.png';
+import {useNavigate} from 'react-router-dom';
+import Cookies from 'universal-cookie';
 import PrintIcon from './../../images/printIcon.png';
 import RedBackground from './../../images/redBackground.png';
 import NotificationCount from './../../images/notificationCount.png';
 import File from './../../images/file.png';
 import {Link} from 'react-router-dom';
-import LogoutIcon from './../../images/logoutIcon.png'; 
+import LogoutIcon from './../../images/logoutIcon.png';
 import style from './index.module.scss';
 
 const ReportsNavbar = () => {
+    const navigate = useNavigate()
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef(null);
     useMenuHide(menuRef);
@@ -27,6 +30,13 @@ const ReportsNavbar = () => {
           };
         }, [ref]);
     }
+
+    const logout = () => {
+     const cookies = new Cookies();
+     cookies.remove('user');
+     navigate('/');
+   }
+
     return(
         <div className={style.navbarStyle}>
             <div className={style.spaceBetween}>
@@ -80,10 +90,10 @@ const ReportsNavbar = () => {
                 <img src={NotificationsIcon} alt="print" className={style.icons} />
                 <img src={RedBackground} alt="print" className={style.notificationIcon} />
                 <img src={NotificationCount} alt="print" className={style.notificationCount} />
-                <div className={style.logoutStyle}>
+                <div className={style.logoutStyle} onClick={logout}>
                     <p>Logout</p>
                 </div>
-                <img src={LogoutIcon} alt="print" className={style.logoutIcons} />
+                <img src={LogoutIcon} alt="print" className={style.logoutIcons} onClick={logout}/>
             </div>
             </div>
         </div>

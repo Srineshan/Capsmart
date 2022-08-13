@@ -1,4 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
 import logo from './../../images/metropolitan-hospital-logo.png';
 import TenetLogo from './../../images/Tenet_Health_logo.png';
 import NotificationsIcon from './../../images/notificationsIcon.png';
@@ -7,13 +8,24 @@ import RedBackground from './../../images/redBackground.png';
 import NotificationCount from './../../images/notificationCount.png';
 import File from './../../images/file.png';
 import {Link} from 'react-router-dom';
-import LogoutIcon from './../../images/logoutIcon.png'; 
+import LogoutIcon from './../../images/logoutIcon.png';
+import Cookies from 'universal-cookie';
+import {isSuperAdminAccess} from '../../Screens/dataSaver';
 import style from './index.module.scss';
 
 const Navbar = () => {
+    const navigate = useNavigate()
     const [showMenu, setShowMenu] = useState(false);
+    const [showToolsMenu, setShowToolsMenu] = useState(false);
+    const [showReportsMenu, setShowReportsMenu] = useState(false);
+
     const menuRef = useRef(null);
+    const toolsMenuRef = useRef(null);
+    const reportsMenuRef = useRef(null);
+
     useMenuHide(menuRef);
+    useToolsMenuHide(toolsMenuRef);
+    useReportsMenuHide(reportsMenuRef);
 
     function useMenuHide(ref) {
         useEffect(() => {
@@ -28,6 +40,42 @@ const Navbar = () => {
           };
         }, [ref]);
     }
+
+    function useToolsMenuHide(ref) {
+        useEffect(() => {
+          function handleToolsClickOutside(event) {
+            if (ref.current && !ref.current.contains(event.target)) {
+              setShowToolsMenu(false)
+            }
+          }
+          document.addEventListener("mousedown", handleToolsClickOutside);
+          return () => {
+            document.removeEventListener("mousedown", handleToolsClickOutside);
+          };
+        }, [ref]);
+    }
+
+    function useReportsMenuHide(ref) {
+        useEffect(() => {
+          function handleReportsClickOutside(event) {
+            if (ref.current && !ref.current.contains(event.target)) {
+              setShowReportsMenu(false)
+            }
+          }
+          document.addEventListener("mousedown", handleReportsClickOutside);
+          return () => {
+            document.removeEventListener("mousedown", handleReportsClickOutside);
+          };
+        }, [ref]);
+    }
+
+    const logout = () => {
+      const cookies = new Cookies();
+      cookies.remove('user');
+      navigate('/');
+    }
+
+
     return(
         <div className={style.navbarStyle}>
             <div className={style.spaceBetween}>
@@ -39,14 +87,43 @@ const Navbar = () => {
                 <div className={style.menuStyle}>
                     <p>TIMESHEETS</p>
                 </div>
-                <div className={`${style.menuStyle} ${window.location.pathname !== ("/contracts" && "/help") && style.activeMenuColor}`}>
-                    <p>CONTRACT MANAGER</p>
-                </div>
-                <div className={style.menuStyle}>
-                    <p>REPORT</p>
-                </div>
-                <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
+                <Link to={'/contracts'} className={style.noFontStyle}>
+                    <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
+                        <p>CONTRACT MANAGER</p>
+                    </div>
+                </Link>
+                <Link to={'/tasks'} className={style.noFontStyle}>
+                    <div className={`${style.menuStyle} ${(window.location.pathname === "/tasks" || window.location.pathname === "/reports") && style.activeMenuColor}`} onClick={() => setShowReportsMenu(true)}>
+                        <p>REPORT</p>
+                        {showReportsMenu && (
+                            <div className={style.optionsCardStyle} ref={menuRef}>
+                                <Link to={'/reports'} className={style.noFontStyle}>
+                                    <div className={style.options}>Services/ Activities Logs</div>
+                                </Link>
+                                <div className={style.options}>Timesheets</div>
+                                <div className={style.options}>Reviews & Approvals</div>
+                                <div className={style.options}>Task Management</div>
+                                <div className={style.options}>Payments</div>
+                                <div className={style.options}>Contract Management</div>
+                                <div className={style.options}>Contract Compliance</div>
+                                <div className={style.options}>Contract Performance</div>
+                                <div className={style.options}>System Administration</div>
+                            </div>
+                        )}
+                    </div>
+                </Link>
+                <div className={`${style.menuStyle} ${(window.location.pathname === "/user" || window.location.pathname === "/welcome" || window.location.pathname === "/tasksAndAlerts") && style.activeMenuColor}`} onClick={() => setShowToolsMenu(true)}>
                     <p>TOOLS</p>
+                    {showToolsMenu && (
+                        <div className={style.optionsCardStyle} ref={toolsMenuRef}>
+                            <Link to={'/user'} className={style.noFontStyle}>
+                                <div className={style.options}>USER MANAGEMENT</div>
+                            </Link>
+                            <Link to={isSuperAdminAccess ? '/tasksAndAlerts' : '/welcome'} className={style.noFontStyle}>
+                                <div className={style.options}>ENTITY MANAGEMENT</div>
+                            </Link>
+                        </div>
+                    )}
                 </div>
                 <div>
                     <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} onClick={() => setShowMenu(true)}>
@@ -65,13 +142,13 @@ const Navbar = () => {
             <div className={style.displayInRow}>
                 <img src={File} alt="print" className={style.icons} />
                 <img src={PrintIcon} alt="print" className={style.icons} />
-                <img src={NotificationsIcon} alt="print" className={style.icons} />
+                {/* <img src={NotificationsIcon} alt="print" className={style.icons} />
                 <img src={RedBackground} alt="print" className={style.notificationIcon} />
-                <img src={NotificationCount} alt="print" className={style.notificationCount} />
-                <div className={style.logoutStyle}>
+                <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
+                <div className={style.logoutStyle} onClick={logout}>
                     <p>Logout</p>
                 </div>
-                <img src={LogoutIcon} alt="print" className={style.logoutIcons} />
+                <img src={LogoutIcon} alt="print" className={style.logoutIcons} onClick={logout}/>
             </div>
             </div>
         </div>

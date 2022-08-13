@@ -7,9 +7,9 @@ import Reject from './../../images/reject-report.png';
 import Request from './../../images/request-report.png';
 import ToDoReport from './../../images/todo-report.png';
 import style from './index.module.scss';
-import ReportsNavbar from '../../Components/ReportsNavbar';
 import TimeSheetReports from './timeSheetReport';
 import SampleReport from './sampleReport';
+import Navbar from '../../Components/Navbar';
 
 const TimeSheetReportsBase = () => {
     const [showSampleReport, setShowSampleReport] = useState(false);
@@ -20,7 +20,7 @@ const TimeSheetReportsBase = () => {
 
     return(
         <Fragment> 
-            <ReportsNavbar />
+            <Navbar />
             {!showSampleReport ? (
                 <TimeSheetReports getShowSampleReport={getShowSampleReport} />
             ) : (

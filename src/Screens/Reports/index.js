@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import ReportsNavbar from './../../Components/ReportsNavbar';
+import Navbar from '../../Components/Navbar';
 import Tasks from './tasks';
 import './../../index.scss';
 
@@ -7,7 +7,7 @@ const ReportsHome = () => {
 
     return(
         <Fragment> 
-            <ReportsNavbar />
+            <Navbar />
             <Tasks />
         </Fragment>
     )

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, Tag } from '@blueprintjs/core';
-import {GET, PUT} from './userDataSaver';
+import {GET, PUT} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
@@ -8,46 +8,37 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
 
   const [userData, setUserData] = useState(selectedUsers);
   const [blockedData, setBlockedData] = useState(selectedUsers);
-  const [rolesTagsToUse, setRolesTagsToUse] = useState([])
-  const [departmentsTagsToUse, setDepartmentsTagsToUse] = useState([])
-  console.log('userDate', userData)
 
   const [roles, setRoles] = useState([])
   const [department, setDepartment] = useState([])
+  const [sites, setSites] = useState([])
 
     const [selectedRoles, setSelectedRoles] = useState(userData?.roles)
     const [selectedDepartments, setSelectedDepartments] = useState(selectedUsers?.sites?.sites[0]?.departmentList?.departments)
+    const [selectedSites, setSelectedSites] = useState(selectedUsers?.sites?.sites)
 
     const handleRoles = (value) => {
       if (value !== '0') {
         const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
- 
+
         if (!selectedRoles.map(data => data?.roleName).includes(value)) {
           setSelectedRoles([...selectedRoles, selectedValue]);
         }
         setUserData({...userData, roles: [...selectedRoles, selectedValue]})}
     }
 
-    const handleDepartments = (value) => {
+
+    const handleSites = (value) => {
       if (value !== '0') {
-        const tempSelectedDepartments = department.filter(data => data?.departmentName?.name === value).map(data => data)[0];
- 
-        if (!selectedDepartments.map(data => data?.id).includes(tempSelectedDepartments?.id)) {
-          setSelectedDepartments([...selectedDepartments, tempSelectedDepartments]);
+        const tempSelectedSites = sites.filter(data => data?.siteName?.siteName === value).map(data => data)[0];
+
+        if (!selectedSites.map(data => data?.id).includes(tempSelectedSites?.id)) {
+          setSelectedSites([...selectedSites, tempSelectedSites]);
         }
         setUserData({...userData, sites: {
-          "sites": [
-            {
-              "id": "string",
-              "siteName": {
-                "siteName": "string"
-              },
-              "departmentList": {
-                "departments": [...selectedDepartments, tempSelectedDepartments]
-              }
-            }
-          ]
+          "sites": [...selectedSites, tempSelectedSites]
         }})
+        console.log(selectedSites, tempSelectedSites)
       }
     }
 
@@ -66,8 +57,8 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
     });
 
       const departmentsTags = selectedDepartments
-      .filter(data => department.map(dept => dept?.id === data?.id))
-      .map((tag, index) => {
+      ?.filter(data => department?.map(dept => dept?.id === data?.id))
+      ?.map((tag, index) => {
         const onRemoveDepartment = () => {
           setSelectedDepartments(selectedDepartments.filter((t) => t?.departmentName?.name !== tag?.departmentName?.name));
           setUserData({...userData, sites: {
@@ -91,7 +82,21 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
         );
       });
 
-      console.log("Console",departmentsTags, rolesTags, departmentsTagsToUse, rolesTagsToUse, selectedRoles, selectedDepartments, department, roles)
+      const sitesTags = selectedSites
+    ?.filter(data => sites.map(site => site?.id === data?.id))
+    ?.map((tag, index) => {
+      const onRemoveSite = () => {
+        setSelectedSites(selectedSites.filter((t) => t?.siteName?.siteName !== tag?.siteName?.siteName));
+        setUserData({...userData, sites: {
+          "sites": selectedSites.filter((t) => t?.siteName?.siteName !== tag?.siteName?.siteName)
+        }})
+      };
+      return (
+        <Tag key={index} onRemove={onRemoveSite} large={true} className={style.tagStyle}>
+          {tag?.siteName?.siteName}
+        </Tag>
+      );
+    });
 
     const getRoles = async() => {
       const {data: roles} = await GET('user-management-service/roles');
@@ -103,12 +108,16 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
       setDepartment(department);
     };
 
+    const getSites = async() => {
+      const {data: sites} = await GET('entity-service/sites');
+      setSites(sites);
+    };
+
     useEffect(()=>{
       getRoles();
       getDepartments();
-    },[])
-
-    // console.log(roles, userData , department,selectedDepartments, selectedRoles, rolesTagsToUse, selectedUsers?.sites?.sites[0]?.departmentList?.departments)
+      getSites();
+  },[])
 
   const submitUserDetails = async () => {
     const response = await PUT('user-management-service/user', JSON.stringify(userData));
@@ -167,26 +176,26 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
                 <InputGroup value={userData?.email?.officialEmail} readOnly onChange={(e) => setUserData({...userData, email: {officialEmail: e.target.value}})} />
               </div>
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <div className={style.extentionLableStyle}>Department*</div>
-                  <div className={`${style.reduce10Left} ${style.marginRight}`}>
-                      <select
-                          name="class"
-                          id="Class"
-                          onChange={(e) => handleDepartments(e.target.value)}
-                          className={`${style.fullWidth} ${style.marginLeft20} `}>
-                              <option value="Select Department" >
-                                Select Department
-                              </option>
-                              {department?.map((data, index) => (
-                                <option key={`${data}-${index}`} value={data?.departmentName?.name} >
-                                  {data?.departmentName?.name}
-                                </option>
-                              ))}
-                      </select>
-                      <div className={`${style.marginTop20} ${style.marginLeft20}`}>
-                        {departmentsTags}
-                      </div>
-                    </div>
+                <div className={style.extentionLableStyle}>Sites*</div>
+                <div className={`${style.reduce10Left} ${style.marginRight}`}>
+                  <select
+                      name="class"
+                      id="Class"
+                      onChange={(e) => handleSites(e.target.value)}
+                      className={`${style.fullWidth} ${style.marginLeft20} `}>
+                          <option value="0" >
+                            Select Sites
+                          </option>
+                          {sites?.map((data, index) => (
+                            <option key={`${data}-${index}`} value={data?.siteName?.siteName} >
+                              {data?.siteName?.siteName}
+                            </option>
+                          ))}
+                  </select>
+                  <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                    {sitesTags}
+                  </div>
+                </div>
               </div>
               <div className={`${style.addManagerGrid}`}>
                   <div className={style.extentionLableStyle}>Role*</div>
