@@ -105,7 +105,11 @@ const FlowChartProcedureGroup = ({
           stroke="#A39CEB"
       />
     </Group>
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f8f9ecc863c57cc79418ff16f546ffbb7a7cf4d8
   )
 }
 

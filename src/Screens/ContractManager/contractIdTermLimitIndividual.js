@@ -146,7 +146,6 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
           documentName:data.name,
         })
       })
-
       let data = {
         ...( method !== 'POST' && {'id':id}),
         "contractName": {

@@ -224,7 +224,7 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract, expiredContra
                     </div>
                 </div>
             </div>
-            <div className={style.spaceBetween}>                        
+            <div className={style.spaceBetween}>
                 <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
                 <p className={style.poweredBy}>© TimeSmart.AI</p>
             </div>
