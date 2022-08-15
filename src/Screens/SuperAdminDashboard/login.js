@@ -67,7 +67,7 @@ const Login = (props) => {
                     <button className={`${style.loginButton} ${style.marginTop30}`}>LOGIN</button>
                   </Link> */}
                   {
-                  // <Link to={'/pages'}>
+                  // <Link to={'/referenceList'}>
                   //   <button className={`${style.loginButton} ${style.marginTop30}`}>LOGIN</button>
                   // </Link>
                   }

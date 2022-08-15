@@ -36,22 +36,19 @@ const EntryPage = () => {
                     </div>
                 </Link>
                 <Link to={isSuperAdminAccess ? '/tasksAndAlerts' : '/welcome'}>
-                    <div className={style.cursorPointer}>
+                    <div className={`${style.padding} ${style.cursorPointer}`}>
                         <div className={style.roundedBackgrounds}>
                         </div>
                         <div className={style.headingStyle}>Super Admin Dashboard</div>
                     </div>
                 </Link>
-                {
-                  // <Link to={'/referenceList'}>
-                  //     <div className={`${style.marginLeft20} ${style.cursorPointer}`}>
-                  //         <div className={style.roundedBackgrounds}>
-                  //         </div>
-                  //         <div className={style.headingStyle}>Reference List</div>
-                  //     </div>
-                  // </Link>
-                }
-
+                <Link to={'/referenceList'}>
+                    <div className={`${style.cursorPointer}`}>
+                        <div className={style.roundedBackgrounds}>
+                        </div>
+                        <div className={style.headingStyle}>Reference List</div>
+                    </div>
+                </Link>
             </div>
         </div>
     )

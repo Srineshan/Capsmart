@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, Classes, Icon, Intent, InputGroup, EditableText, RadioGroup, Radio, Checkbox } from '@blueprintjs/core';
+import { Dialog, Classes, Icon, Intent, InputGroup, EditableText, RadioGroup, Radio, Checkbox, Tag } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {PUT, GET} from './../dataSaver';
@@ -8,7 +8,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 import SendEmailUserList from './mailUser';
 
-const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selectedService}) => {
+const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selectedService, selectContractInfo}) => {
     const [sendEmailNotification, setSendEmailNotification] = useState(false);
     const [activityType, setActivityType] = useState('OutPatient Surgery Clinic Session');
     const [activityContractedFor, setActivityContractedFor] = useState('Clinic Session Blocks');
@@ -44,6 +44,8 @@ const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selec
     const [coverageCallDutyType, setCoverageCallDutyType] = useState('All On Call Service Duty');
     const [contractedServices, setContractedServices] = useState([]);
     const [users,setUsers] = useState([]);
+    const [selectedUser, setSelectedUser] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
 
     const getSendEmailNotification = (value) => {
         setSendEmailNotification(value)
@@ -78,23 +80,24 @@ const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selec
         setRegularClinicScheduleFrequency(selectedService?.frequency);
         setFrequency(selectedService?.schedule?.frequency);
         setActivityOrServiceType(selectedService?.activityType?.activityType);
-        if(activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "On Call Coverage Duty Days" ){
+        setContractedServiceProvider(selectedService?.users?.[0]?.id)
+        setSelectedUsers(selectedService?.users);
+        if(selectedService?.activityType?.activityType === "Medical / Surgical Care Contracted Services" &&  selectedService?.performingActivity?.activity === "On Call Coverage Duty Days" ){
             setDutyDays(selectedService?.activityResponse?.dataMap?.dutyDays);
             setCoverageCallDutyType(selectedService?.activityResponse?.dataMap?.coverageCallDutyType);
         }
-        if(activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Department Oversight Role & Responsibility"){
+        if(selectedService?.activityType?.activityType === "Medical / Surgical Care Contracted Services" &&  selectedService?.performingActivity?.activity === "Department Oversight Role & Responsibility"){
             setAdditionalCompensationTitle(selectedService?.activityResponse?.dataMap?.additionalCompensationTitle);
             setAdditionalCompensationPerMonth(selectedService?.activityResponse?.dataMap?.additionalCompensationPerMonth);
         }
 
     }, [])
 
-    console.log(contractId)
+    console.log(contractId, selectedUsers)
 
     const getContractedServices = async() => {
         const {data: contractedServices} = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
         setContractedServices(contractedServices?.contractedServices)
-        console.log(contractedServices);
     }
 
     const getUserData = async() => {
@@ -114,23 +117,7 @@ const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selec
                     "activityType": {
                         "activityType": activityOrServiceType
                     },
-                    "users": [
-                        {
-                        "id": "string",
-                        "name": {
-                            "firstName": "string",
-                            "lastName": "string",
-                            "suffix": "string"
-                        },
-                        "email": {
-                            "officialEmail": "string"
-                        },
-                        "contactNumber": {
-                            "number": 0,
-                            "missing": true
-                        }
-                        }
-                    ],
+                    "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
                     "performingActivity": {
                         "activity": activityContractedFor
                     },
@@ -182,8 +169,9 @@ const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selec
                     "designateSpecificContractor": isDesignatedSpecificContractor
                 }
 
-            let services = contractedServices?.contractedServices;
-            services.push(data);
+            let services = contractedServices;
+            let selectedServiceIndex = contractedServices?.findIndex(data => data?.performingActivity?.activity === activityContractedFor);
+            services[selectedServiceIndex] = data;
             let formattedData = {
                 contractedServices: services
             } 
@@ -200,23 +188,7 @@ const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selec
                     "activityType": {
                         "activityType": activityOrServiceType
                     },
-                    "users": [
-                        {
-                        "id": "string",
-                        "name": {
-                            "firstName": "string",
-                            "lastName": "string",
-                            "suffix": "string"
-                        },
-                        "email": {
-                            "officialEmail": "string"
-                        },
-                        "contactNumber": {
-                            "number": 0,
-                            "missing": true
-                        }
-                        }
-                    ],
+                    "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
                     "performingActivity": {
                         "activity": activityContractedFor
                     },
@@ -259,8 +231,9 @@ const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selec
                     "designateSpecificContractor": isDesignatedSpecificContractor
             }
 
-            let services = contractedServices?.contractedServices;
-            services.push(data);
+            let services = contractedServices;
+            let selectedServiceIndex = contractedServices?.findIndex(data => data?.performingActivity?.activity === activityContractedFor);
+            services[selectedServiceIndex] = data;
             let formattedData = {
                 contractedServices: services
             } 
@@ -274,6 +247,29 @@ const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selec
             }
         }
     }
+
+    const handleUsers = (value) => {
+        if (value !== '0') {
+          const selectedValue = users?.filter(data => data?.id === value)?.map(data => data)[0];
+          if (!selectedUsers?.map(data => data?.id)?.includes(value)) {
+            setSelectedUsers([...selectedUsers, selectedValue]);
+          }
+          console.log(selectedValue)
+        }
+    }
+
+    const usersTags = selectedUsers
+    ?.filter(data => users?.map(user => user.id === data?.id))
+    .map((tag, index) => {
+      const onRemove = () => {
+        setSelectedUsers(selectedUsers.filter((user) => user?.id !== tag?.id)?.map(data=>data));
+      };
+      return (
+        <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
+          {tag?.name?.firstName} {tag?.name?.lastName}
+        </Tag>
+      );
+    });
 
     const reset = () => {
         setMin(0);
@@ -340,7 +336,7 @@ const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selec
                     </div>
                     <div className={style.extensionBorder}></div>
                     <div className={style.proofBorder}>
-                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={`${style.addManagerGrid}`}>
                             <div className={style.extentionLableStyle}>Activity /Service Type*</div>
                             <div>
                                 <select
@@ -364,27 +360,35 @@ const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selec
                         </div>
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>
-                            <div className={`${style.displayInRow} `}>
-                                <FormControlLabel
-                                    control={
-                                        <Switch checked={isDesignatedSpecificContractor} className={`${style.textAlignLeft}`} onChange={() => setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor)} />
-                                    }
-                                    className={`${style.switchFontStyle} ${style.flexLeft} ${style.marginTop10} `}
-                                    label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
-                                />
-                                {isDesignatedSpecificContractor && <select
-                                    name="class"
-                                    id="Class"
-                                    value={contractedServiceProvider}
-                                    onChange={(e) => setContractedServiceProvider(e.target.value)}
-                                    className={`${style.fullWidth} ${style.marginLeft20} `}>
-                                    <option value="Select Contracted Services Provided" >
-                                        Select Contracted Services Provided
-                                    </option>
-                                    <option value="User" >
-                                        User
-                                    </option>
-                                </select>}
+                            <div>
+                                <div className={`${style.displayInRow} `}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor)} />
+                                        }
+                                        className={`${style.switchFontStyle} ${style.flexLeft} ${style.marginTop10} `}
+                                        label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
+                                    />
+                                    {isDesignatedSpecificContractor && <select
+                                        name="class"
+                                        id="Class"
+                                        disabled={(selectContractInfo === "INDIVIDUAL") && true}
+                                        onChange={(e) => handleUsers(e.target.value)}                                    className={`${style.fullWidth} ${style.marginLeft20} `}>
+                                        <option value="0" >
+                                            Select Contracted Services Provided
+                                        </option>
+                                        {users?.map((data, index) => (
+                                            <option value={data?.id} key={index}>
+                                                {data?.name?.firstName} {data?.name?.lastName}
+                                            </option>
+                                        ))}
+                                    </select>}
+                                </div>
+                                {(selectContractInfo !== "INDIVIDUAL") && (
+                                    <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                                        {usersTags}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         {activityOrServiceType === "Medical / Surgical Care Contracted Services" && (
@@ -1213,7 +1217,7 @@ const EditServiceProvided = ({ getEditServiceDialog, getAddOn, contractId, selec
                 </div>
                 <div>
                     <div className={`${style.floatRight}`}>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => handleSave()}>UPDATE</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave();getEditServiceDialog(false)}}>UPDATE</button>
                     </div>
                 </div>
             </Dialog>

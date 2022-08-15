@@ -9,7 +9,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
-const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractType, contractName}) => {
+const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractType}) => {
     const [selectedContract, setSelectedContract] = useState('Written Contract Extension For Fixed Term');
     const [startDate, setStartDate] = useState(new Date);
     const [user,setUsers] = useState([]);
@@ -35,6 +35,8 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     const [departmentLevelSite, setDepartmentLevelSite] = useState({id:'',name:''});
     const [siteTitleValues, setSiteTitleValues] = useState([]);
     const [departmentTitleValues, setDepartmentTitleValues] = useState([]);
+    const [contractName, setContractName] = useState('');
+    const [contracts,setContracts] = useState([]);
 
     const titleList = ['Anesthesiologist', 'Cardiologist', 'Chief Medical Information Officer', 'Chief Medical Officer', 'Chief of Staff'];
 
@@ -54,6 +56,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
       getRolesData();
       getUsersData();
       getSites();
+      getContractName();
     },[])
 
     useEffect(()=>{
@@ -65,21 +68,48 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
       setSelectedSitesDepartment(depts);
     },[departmentLevelSite])
 
+    useEffect(()=>{
+      let selectedUserData = user?.filter(data=>data?.id === selectContractManager)?.map(data=>data)[0];
+      setUserDetails({firstName:selectedUserData?.name?.firstName,middleName:'',lastName:selectedUserData?.name?.lastName,suffix:selectedUserData?.name?.suffix,email:selectedUserData?.email?.officialEmail,phone:selectedUserData?.communication?.mobileNumber})
+      setAddress({city:selectedUserData?.address?.city,state:selectedUserData?.address?.state,zipcode:selectedUserData?.address?.zipcode});
+      setSiteLevel(selectedUserData?.siteLevelResponsible);
+      setDepartmentLevel(selectedUserData?.departmentLevelResponsible);
+      setNpin({missing:selectedUserData?.npin?.missing,notApplicable:selectedUserData?.npin?.notApplicable,npin:selectedUserData?.npin?.npin});
+      setSelectedRoles(selectedUserData?.roles);
+      setContracts(selectedUserData?.contracts);
+      setSiteList(selectedUserData?.sites?.sites);
+    }, [user,selectContractManager])
+
     const getTitleData = () => {
       let temp = [];
+      let siteValue = siteTitleValues;
+      let deptValue = departmentTitleValues;
       siteList?.map(data=>{
         let dept = [];
         data?.departmentList?.departments?.map(deptData=>{
-          dept.push({id:deptData?.id,name:deptData?.departmentName?.name,title:''})
-        })
-        temp.push({id:data?.id,name:data?.siteName?.siteName,title:'',department:dept});
-      })
+          dept.push({id:deptData?.id,name:deptData?.departmentName?.name,title:deptData?.departmentResponsibility?.title || ''});
+          if(deptData?.departmentResponsibility?.title !== '' && deptData?.departmentResponsibility?.title !== undefined){
+            let valueString = `${data?.siteName?.siteName} - ${deptData?.departmentName?.name} - ${deptData?.departmentResponsibility?.title}`
+            if(!deptValue.includes(valueString)){
+              deptValue.push(valueString);
+            }
+          }
+          })
+        temp.push({id:data?.id,name:data?.siteName?.siteName,title:data?.siteResponsibility?.title || '',department:dept});
+        if(data?.siteResponsibility?.title !== '' && data?.siteResponsibility?.title !== undefined){
+          let valueString = `${data?.siteName?.siteName} - ${data?.siteResponsibility?.title}`;
+          if(!siteValue.includes(valueString)){
+            siteValue.push(valueString);
+          }
+      }})
     setSites(temp);
+    setSiteTitleValues(siteValue);
+    setDepartmentTitleValues(deptValue);
     }
 
     const getSites = async () => {
       const {data:sites} = await GET('entity-service/sites');
-      if(sites){
+      if(sites && selectContractManager === ''){
         setSiteList(sites);
         getTitleData();
       }
@@ -96,8 +126,8 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     }
 
     const rolesTags = selectedRoles
-    .filter(data => roles.map(role => role).includes(data))
-    .map((tag, index) => {
+    ?.filter(data => roles.map(role => role).includes(data))
+    ?.map((tag, index) => {
       const onRemove = () => {
         setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName));
       };
@@ -116,6 +146,13 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
       }
     }
 
+    const getContractName = async() => {
+      const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
+      if(contractData){
+        setContractName(contractData?.contractName?.contractName);
+      }
+    }
+
     const handleUserData = (name,value) => {
       setUserDetails({...userDetails, [name]:value});
     }
@@ -125,130 +162,110 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     }
 
     const handleSave = async(type) => {
-        // const data = {
-        //     "name": {
-        //         "firstName": userDetails?.firstName,
-        //         "lastName": userDetails?.lastName,
-        //         "suffix": userDetails?.suffix
-        //       },
-        //       "userType": "ADMIN",
-        //       "contracts": [
-        //         {
-        //           "id": contractId,
-        //           "contractName": {
-        //             "contractName": "Sample Contract 2"
-        //           }
-        //         }
-        //       ],
-        //       "title": {
-        //         "title": "string"
-        //       },
-        //       "email": {
-        //         "officialEmail": userDetails?.email
-        //       },
-        //       "password": {
-        //         "password": "string"
-        //       },
-        //       "communication": {
-        //         "personalEmail": userDetails?.email,
-        //         "mobileNumber": userDetails?.phone,
-        //         "landlineNumber": "string",
-        //         "mobileNumberNotApplicable": true
-        //       },
-        //       "roles": selectedRoles,
-        //       "address": {
-        //         "city": address?.city,
-        //         "state": address?.state,
-        //         "zipcode": address?.zipcode
-        //       },
-        //       "tenant": {
-        //         "tenantId": TenantID
-        //       },
-        //       "sites": {
-        //         "sites": [
-        //           {
-        //             "id": "string",
-        //             "siteName": {
-        //               "siteName": "string"
-        //             },
-        //             "departmentList": {
-        //               "departments": [
-        //                 {
-        //                   "id": "string",
-        //                   "departmentName": {
-        //                     "name": "string"
-        //                   },
-        //                   "departmentHead": {
-        //                     "id": "string"
-        //                   },
-        //                   "departmentResponsibility": {
-        //                     "title": "string"
-        //                   }
-        //                 }
-        //               ]
-        //             },
-        //             "siteResponsibility": {
-        //               "title": "string"
-        //             }
-        //           }
-        //         ]
-        //       },
-        //       "serviceProviderType": providerType,
-        //       "licenceDetails": {
-        //         "medicalLicense": "string",
-        //         "licenseExpiryDate": "2022-07-26",
-        //         "deaNumber": "string",
-        //         "deaExpiryDate": "2022-07-26",
-        //         "boardCertification": [
-        //           "string"
-        //         ]
-        //       },
-        //       "userProxy": {
-        //         "myProxy": {
-        //           "proxyIdList": [
-        //             {
-        //               "id": "string",
-        //               "name": "string"
-        //             }
-        //           ]
-        //         },
-        //         "proxyFor": {
-        //           "proxyIdList": [
-        //             {
-        //               "id": "string",
-        //               "name": "string"
-        //             }
-        //           ]
-        //         }
-        //       },
-        //       "activated": true,
-        //       "siteLevelResponsible": siteLevel,
-        //       "departmentLevelResponsible": deptLevel,
-        //       "blocked": false,
-        //       "npin": {
-        //         "missing": npin?.missing,
-        //         "notApplicable": npin.na,
-        //         "npin": npin?.npin
-        //       }
-        //   }
-          // const response = await POST('user-management-service/user/register', JSON.stringify(data));
-          //   if(response){
-          //       SuccessToaster('User Added Successfully');
-          //   }
-          //   else {
-          //       ErrorToaster('Unexpected Error');
-          //   }
-          //   if(type === 'Add More'){
-          //     setUserDetails({firstName:'',middleName:'',lastName:'',suffix:'',email:'',phone:''});
-          //     setProviderType('');
-          //     setAddress({city:'',state:'',zipcode:''});
-          //     setSiteLevel(false);
-          //     setDeptLevel(false);
-          //     setSelectedRoles([]);
-          //     setNpin({npin:'',missing:false,na:false});
-          //   }else{
-          //     getNewServiceProviderDialog(false);
-          //   }
+      if(selectContractManager === ''){
+        ErrorToaster('Select a user to contract');
+        return;
+      }
+      let isContractpresent = contracts?.filter(data=>data?.id === contractId)?.map(data=>data)?.length || 0;
+      if(!isContractpresent){
+        let temp = contracts;
+        temp.push({
+          "id": contractId,
+          "contractName": {
+            "contractName": contractName
+          }
+        });
+        setContracts(temp);
+      }
+        const data = {
+            "id": selectContractManager,
+            "name": {
+                "firstName": userDetails?.firstName,
+                "lastName": userDetails?.lastName,
+                "suffix": userDetails?.suffix
+              },
+              "userType": "ADMIN",
+              "contracts": contracts,
+              "title": {
+                "title": "string"
+              },
+              "email": {
+                "officialEmail": userDetails?.email
+              },
+              "communication": {
+                "personalEmail": userDetails?.email,
+                "mobileNumber": userDetails?.phone,
+                "landlineNumber": "string",
+                "mobileNumberNotApplicable": true
+              },
+              "roles": selectedRoles,
+              "address": {
+                "city": address?.city,
+                "state": address?.state,
+                "zipcode": address?.zipcode
+              },
+              "tenant": {
+                "tenantId": TenantID
+              },
+              "sites": {
+                "sites": getSiteData(),
+              },
+              "serviceProviderType": providerType,
+              "licenceDetails": {
+                "medicalLicense": "string",
+                "licenseExpiryDate": "2022-07-26",
+                "deaNumber": "string",
+                "deaExpiryDate": "2022-07-26",
+                "boardCertification": [
+                  "string"
+                ]
+              },
+              "userProxy": {
+                "myProxy": {
+                  "proxyIdList": [
+                    {
+                      "id": "string",
+                      "name": "string"
+                    }
+                  ]
+                },
+                "proxyFor": {
+                  "proxyIdList": [
+                    {
+                      "id": "string",
+                      "name": "string"
+                    }
+                  ]
+                }
+              },
+              "activated": true,
+              "siteLevelResponsible": setSiteLevel,
+              "departmentLevelResponsible": departmentLevel,
+              "blocked": false,
+              "npin": {
+                "missing": npin?.missing,
+                "notApplicable": npin.na,
+                "npin": npin?.npin
+              }
+          }
+          const response = await PUT(`user-management-service/user`, JSON.stringify(data));
+            if(response){
+                SuccessToaster('User Added Successfully');
+            }
+            else {
+                ErrorToaster('Unexpected Error');
+            }
+            if(type === 'Add More'){
+              setUserDetails({firstName:'',middleName:'',lastName:'',suffix:'',email:'',phone:''});
+              setProviderType('');
+              setAddress({city:'',state:'',zipcode:''});
+              setSiteLevel(false);
+              setDepartmentLevel(false);
+              setSelectedRoles([]);
+              setNpin({npin:'',missing:false,na:false});
+            }else{
+              getNewServiceProviderDialog(false);
+            }
     }
     const getUsersData = async() => {
       const {data: user} = await GET('user-management-service/user');
@@ -363,6 +380,42 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     }
 
 
+    const getSiteData  = () => {
+      let siteData = [];
+      sites?.map(data=>{
+        let deptData = [];
+        data?.department?.map(dept=>{
+          deptData.push({
+              "id": dept?.id,
+              "departmentName": {
+                "name": dept?.name
+              },
+              "departmentHead": {
+                "id": ""
+              },
+              "departmentResponsibility": {
+                "title": dept?.title
+              }
+          })
+        })
+        siteData.push({
+        id: data?.id,
+        "siteName": {
+          "siteName": data?.name
+        },
+        "departmentList": {
+          "departments": deptData
+        },
+        "siteResponsibility": {
+          "title": data?.title
+        }
+      })
+      })
+      return siteData;
+    }
+
+
+
     return(
         <Dialog isOpen={getNewServiceProviderDialog} onClose={() => getNewServiceProviderDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
           <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
@@ -387,119 +440,116 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                 <button className={`${style.disabledButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={() =>setAddNewManagerDialog(true)}>ADD</button>
                 </div>
             </div>
-            {
-              // <>
-              // <div className={`${style.extentionGrid}`}>
-              //     <div className={style.extentionLableStyle}>NPIN*</div>
-              //     <div className={style.grid3}>
-              //     <InputGroup className={style.fullWidth} value={npin?.npin} onChange={(e)=>setNpin({npin:e.target.value,na:false,missing:false})}/>
-              //     <RadioGroup
-              //         inline={true}
-              //         className={`${style.marginTop}`}
-              //         selectedValue={npin?.missing}
-              //         onChange={(e)=>setNpin({npin:'',missing:e.target.value,na:false})}
-              //     >
-              //         <Radio label="Missing" value="Missing" checked={npin?.missing} />
-              //     </RadioGroup>
-              //     <RadioGroup
-              //         inline={true}
-              //         className={`${style.marginTop} ${style.reduce30Left}`}
-              //         selectedValue={npin?.na}
-              //         onChange={(e)=>setNpin({npin:'',missing:false,na:e.target.value})}
-              //     >
-              //         <Radio label="Not Available" value="Not Available" checked={npin?.na}/>
-              //     </RadioGroup>
-              //     </div>
-              // </div>
-              // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //     <div className={style.extentionLableStyle}>Contractor Name*</div>
-              //     <div className={style.grid3}>
-              //     <InputGroup className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e)=>handleUserData('firstName',e.target.value)}/>
-              //     <InputGroup className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e)=>handleUserData('middleName',e.target.value)}/>
-              //     <InputGroup className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e)=>handleUserData('lastName',e.target.value)}/>
-              //     </div>
-              // </div>
-              //
-              //   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //       <div className={style.extentionLableStyle}>Suffix*</div>
-              //       <div className={style.grid3}>
-              //           <select
-              //               name="class"
-              //               id="Class"
-              //               className={style.fullWidth}
-              //               onChange={(e)=>handleUserData('suffix',e.target.value)}>
-              //                   <option value="Text" >
-              //                   Text
-              //                   </option>
-              //           </select>
-              //       </div>
-              //   </div>
-              //   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //       <div className={style.extentionLableStyle}>Service Provider Type*</div>
-              //       <div className={style.grid3}>
-              //           <select
-              //               name="class"
-              //               id="Class"
-              //               value={providerType}
-              //               className={style.fullWidth}
-              //               onChange={(e)=>setProviderType(e.target.value)}>
-              //                   <option value="Text" >
-              //                   Text
-              //                   </option>
-              //                   <option value="Physician" >
-              //                   Physician
-              //                   </option>
-              //                   <option value="Nurse" >
-              //                   Nurse
-              //                   </option>
-              //                   <option value="Admin Staff" >
-              //                   Admin Staff
-              //                   </option>
-              //                   <option value="Other" >
-              //                   Other
-              //                   </option>
-              //           </select>
-              //       </div>
-              //   </div>
-              //   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //       <div className={style.extentionLableStyle}>Email Contractor id*</div>
-              //       <div className={style.displayInRow}>
-              //           <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e)=>handleUserData('email',e.target.value)}/>
-              //           {
-              //             // <RadioGroup
-              //             //     inline={true}
-              //             //     className={`${style.marginTop} ${style.marginLeft20}`}
-              //             // >
-              //             //     <Radio label="Not Available" value="Not Available" />
-              //             // </RadioGroup>
-              //           }
-              //       </div>
-              //   </div>
-              //   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //       <div className={style.extentionLableStyle}>Cell Phone*</div>
-              //       <div className={style.grid2}>
-              //       <InputGroup placeholder="Numeric" value={userDetails?.phone} className={style.fullWidth} onChange={(e)=>handleUserData('phone',e.target.value)}/>
-              //       {
-              //         // <RadioGroup
-              //         //     inline={true}
-              //         //     className={`${style.marginTop} ${style.leftAlign}`}
-              //         //     selectedValue={"Missing"}
-              //         // >
-              //         //     <Radio label="Not Available" value="Not Available" />
-              //         // </RadioGroup>
-              //       }
-              //       </div>
-              //   </div>
-              //   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //       <div className={style.extentionLableStyle}>Address*</div>
-              //       <div className={style.grid3}>
-              //       <InputGroup className={style.fullWidth} placeholder="City" value={address.city} onChange={(e)=>handleAddress('city',e.target.value)}/>
-              //       <InputGroup className={style.fullWidth} placeholder="State" value={address.state} onChange={(e)=>handleAddress('state',e.target.value)}/>
-              //       <InputGroup className={style.fullWidth} placeholder="Zipcode" value={address.zipcode} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
-              //       </div>
-              //   </div>
-            // </>
-            }
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={style.extentionLableStyle}>NPIN*</div>
+                  <div className={style.grid3}>
+                  <InputGroup className={style.fullWidth} value={npin?.npin} onChange={(e)=>setNpin({npin:e.target.value,na:false,missing:false})}/>
+                  <RadioGroup
+                      inline={true}
+                      className={`${style.marginTop}`}
+                      selectedValue={npin?.missing}
+                      onChange={(e)=>setNpin({npin:'',missing:e.target.value,na:false})}
+                  >
+                      <Radio label="Missing" value="Missing" checked={npin?.missing} />
+                  </RadioGroup>
+                  <RadioGroup
+                      inline={true}
+                      className={`${style.marginTop} ${style.reduce30Left}`}
+                      selectedValue={npin?.na}
+                      onChange={(e)=>setNpin({npin:'',missing:false,na:e.target.value})}
+                  >
+                      <Radio label="Not Available" value="Not Available" checked={npin?.na}/>
+                  </RadioGroup>
+                  </div>
+              </div>
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={style.extentionLableStyle}>Contractor Name*</div>
+                  <div className={style.grid3}>
+                  <InputGroup className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e)=>handleUserData('firstName',e.target.value)}/>
+                  <InputGroup className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e)=>handleUserData('middleName',e.target.value)}/>
+                  <InputGroup className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e)=>handleUserData('lastName',e.target.value)}/>
+                  </div>
+              </div>
+
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Suffix*</div>
+                    <div className={style.grid3}>
+                        <select
+                            name="class"
+                            id="Class"
+                            className={style.fullWidth}
+                            onChange={(e)=>handleUserData('suffix',e.target.value)}>
+                                <option value="Text" >
+                                Text
+                                </option>
+                        </select>
+                    </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Service Provider Type*</div>
+                    <div className={style.grid3}>
+                        <select
+                            name="class"
+                            id="Class"
+                            value={providerType}
+                            className={style.fullWidth}
+                            onChange={(e)=>setProviderType(e.target.value)}>
+                                <option value="Text" >
+                                Text
+                                </option>
+                                <option value="Physician" >
+                                Physician
+                                </option>
+                                <option value="Nurse" >
+                                Nurse
+                                </option>
+                                <option value="Admin Staff" >
+                                Admin Staff
+                                </option>
+                                <option value="Other" >
+                                Other
+                                </option>
+                        </select>
+                    </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Email Contractor id*</div>
+                    <div className={style.displayInRow}>
+                        <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e)=>handleUserData('email',e.target.value)}/>
+                        {
+                          // <RadioGroup
+                          //     inline={true}
+                          //     className={`${style.marginTop} ${style.marginLeft20}`}
+                          // >
+                          //     <Radio label="Not Available" value="Not Available" />
+                          // </RadioGroup>
+                        }
+                    </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Cell Phone*</div>
+                    <div className={style.grid2}>
+                    <InputGroup placeholder="Numeric" value={userDetails?.phone} className={style.fullWidth} onChange={(e)=>handleUserData('phone',e.target.value)}/>
+                    {
+                      // <RadioGroup
+                      //     inline={true}
+                      //     className={`${style.marginTop} ${style.leftAlign}`}
+                      //     selectedValue={"Missing"}
+                      // >
+                      //     <Radio label="Not Available" value="Not Available" />
+                      // </RadioGroup>
+                    }
+                    </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Address*</div>
+                    <div className={style.grid3}>
+                    <InputGroup className={style.fullWidth} placeholder="City" value={address.city} onChange={(e)=>handleAddress('city',e.target.value)}/>
+                    <InputGroup className={style.fullWidth} placeholder="State" value={address.state} onChange={(e)=>handleAddress('state',e.target.value)}/>
+                    <InputGroup className={style.fullWidth} placeholder="Zipcode" value={address.zipcode} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
+                    </div>
+                </div>
+
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Site Level Responsibility*</div>
                 <div>

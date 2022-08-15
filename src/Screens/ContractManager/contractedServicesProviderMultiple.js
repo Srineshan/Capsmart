@@ -3,7 +3,7 @@ import {GET, PUT, POST, TenantID} from './../dataSaver';
 import EditServiceProvider from './editServiceProviderDialog';
 import style from './index.module.scss';
 
-const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage, contractId}) => {
+const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage, contractId, contractName}) => {
   const contractID = contractId;
     const [users,setUsers] = useState([]);
     const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
@@ -44,7 +44,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
                     <div className={`${style.tableData} ${style.displayInRow}`} onClick={() => {setUserProviderData(data);setEditServiceProviderDialog(true)}}>
                         <div className={`${style.multipleDataTextWidth}`}></div>
                         <p className={style.multipleDataTextWidth}>{`${data?.name?.firstName} ${data?.name?.lastName} - ${data?.name?.suffix}`}</p>
-                        <p className={style.multipleDataTextWidth}>Physician </p>
+                        <p className={style.multipleDataTextWidth}>{data?.serviceProviderType} </p>
                         <p className={style.multipleDataTextWidth}>Chief Medical Officer</p>
                         <p className={style.multipleDataTextWidth}>-</p>
                     </div>

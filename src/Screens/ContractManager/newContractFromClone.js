@@ -8,6 +8,8 @@ import WritingFile from './../../images/writingFile.png';
 import CompletedIcon from './../../images/completedIcon.png';
 import RedWarning from './../../images/redWarning.png';
 import ServiceSpecification from './serviceSpecification';
+import {DELETE} from './../dataSaver';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import 'react-datalist-input/dist/styles.css';
 import ContractIdTermLimitIndividual from './contractIdTermLimitIndividual';
 import ContractedServicesProviderMultiple from './contractedServicesProviderMultiple';
@@ -143,8 +145,13 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
         setIsMultipleContract(selectContractInfo === "MULTIPLE" ? true : false);
       }, [selectContractInfo]);
 
-    const handleFileDeletion = () => {
+    const handleFileDeletion = async() => {
+      let fileIdToDelete = fileFields?.filter((data,index)=>index === fileDeletionIndex)?.map(data=>data?.id)[0];
       setFileFields(fileFields?.filter((data,index)=>index !== fileDeletionIndex)?.map(data=>data));
+      await DELETE(`contract-managment-service/contracts/contractFile/${fileIdToDelete}`)
+      .then(response=>{
+        SuccessToaster('Document Deleted Successfully');
+      })
       getDeleteExecutedContractDialog(false);
       setFileDeletionIndex();
     }
@@ -246,7 +253,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     contractId = {contractId}
                      />
                 ) : (currentPage === "Contracted Add on service specification" || currentPage === "Contracted Services Specification")  ?
-                  <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId = {contractId} getCurrentPage={getCurrentPage}/>
+                  <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId = {contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo}/>
                   :currentPage === "Documentation Proof Required"  ? (
                     <DocumentationProofRequired
                     getShowAlertDialog={getShowAlertDialog}
@@ -266,8 +273,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     getViewPage3={getViewPage3}
                     getCurrentPage={getCurrentPage}
                     contractType = {contractType}
-                    contractId = {contractId}
-                    contractName={contractName}/>
+                    contractId = {contractId}/>
                 ) : (currentPage === "Contract ID & Term Limit") ? (
                     <ContractIdTermLimitIndividual
                     getViewPage1={getViewPage1}
@@ -289,7 +295,9 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     getViewPage2={getViewPage2}
                     getViewPage3={getViewPage3}
                     getCurrentPage={getCurrentPage}
-                    contractId = {contractId}/>
+                    contractId={contractId}
+                    contractName={contractName}/>
+
                 ) : ''}
                 <div className={style.cloneBlockStyle}>
                     <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Indentification Information</p>

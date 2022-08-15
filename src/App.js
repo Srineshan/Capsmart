@@ -22,9 +22,20 @@ import ChartPage from './Screens/Reports/chart';
 import HelpHome from './Screens/HelpManagement';
 import TasksAndAlerts from './Screens/SuperAdminDashboard/tasksAndAlerts';
 import ReferenceList from './Screens/ReferenceList';
+import IndustriesWithEntityTypes from './Screens/ReferenceList/industriesWithEntityTypes';
+import DepartmentsByEntityTypes from './Screens/ReferenceList/departmentsByEntityTypes';
+import FunctionalTitles from './Screens/ReferenceList/functionalTitles';
+import BoardCertification from './Screens/ReferenceList/boardCertification';
+import HolidayListByIndustries from './Screens/ReferenceList/holidayListByIndustries';
+import TerminationReasons from './Screens/ReferenceList/terminationReasons';
+import HolidayScheduleForCustomers from './Screens/ReferenceList/holidayScheduleForCustomers';
+import DepartmentsForCustomers from './Screens/ReferenceList/departmentsForCustomers';
 import CustomerManagement from './Screens/SuperAdminDashboard/customerManagement';
 import Cookie from 'universal-cookie';
 import CustomerSetup from './Screens/SuperAdminDashboard/customerSetup';
+import AbsenseReasonsByIndustries from './Screens/ReferenceList/absenseReasonsByIndustries';
+import SuffixByIndustries from './Screens/ReferenceList/suffixByIndustries';
+import ContractedServiceProvidedByIndustries from './Screens/ReferenceList/contractedServiceProvider';
 import {Auth} from './utils/auth'
 
 const App = ({props}) => {
@@ -75,6 +86,17 @@ const App = ({props}) => {
           <Route  path="/activeCustomers" element={<CustomerManagement />}/>
           <Route path="/customerSetup" element={<CustomerSetup />} />
           <Route path="/referenceList" element={<ReferenceList />} />
+          <Route path="/referenceList/industriesWithEntityTypes" element={<IndustriesWithEntityTypes />} />
+          <Route path="/referenceList/departmentsByEntityTypes" element={<DepartmentsByEntityTypes />} />
+          <Route path="/referenceList/functionalTitles" element={<FunctionalTitles />} />
+          <Route path="/referenceList/boardCertification" element={<BoardCertification />} />
+          <Route path="/referenceList/holidayListByIndustries" element={<HolidayListByIndustries />} />
+          <Route path="/referenceList/terminationReasons" element={<TerminationReasons />} />
+          <Route path="/referenceList/holidayScheduleForCustomers" element={<HolidayScheduleForCustomers />} />
+          <Route path="/referenceList/departmentsForCustomers" element={<DepartmentsForCustomers />} />
+          <Route path="/referenceList/absenseReasonsByIndustries" element={<AbsenseReasonsByIndustries />} />
+          <Route path="/referenceList/suffixByIndustries" element={<SuffixByIndustries />} />
+          <Route path="/referenceList/contractedServiceProviderByIndustries" element={<ContractedServiceProvidedByIndustries />} />
           </Routes>
         ):(
           <Routes>

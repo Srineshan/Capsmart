@@ -53,7 +53,7 @@ const ITEM_PADDING_TOP = 8;
   // const VALUES2 = ['Site 1 - Department 1 - Title 1', "Site 2 - Department 2 - Title 2", "Site 3 - Department 3 - Title 3"];
   // let siteTitleValues = [];
   // let departmentTitleValues = [];
-const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId, contractType, contractName}) => {
+const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId, contractType}) => {
     const testContractId = contractId;
     const [user,setUsers] = useState([]);
     const [userName, setUserName] = useState('');
@@ -67,6 +67,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     const [serviceProviderType, setServiceProviderType] = useState('');
     const [npin, setNpin] = useState('');
     const [npinMissing, setNpinMissing] = useState(false);
+    const [contractName,setContractName] = useState('');
     const [npinNotApplicable, setNpinNotApplicable] = useState(false);
     const [contractorFirstName, setContractorFirstName] = useState('');
     const [contractorMiddleName, setContractorMiddleName] = useState('');
@@ -94,13 +95,20 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     const [siteList,setSiteList] = useState([]);
     const [sites,setSites] = useState([]);
     const [selectedSitesDept,setSelectedSitesDepartment] = useState([]);
+    const [isUserSelected,setIsUserSelected] = useState(false);
+    const [contracts,setContracts] = useState([]);
 
+    console.log('deptLevelValue',departmentTitleValues,'site',siteTitleValues);
     useEffect(()=>{
         getRoles();
         getUserData();
         getUsersData();
-        getSites();
+        getContractName();
     },[])
+
+    useEffect(()=>{
+      getSelectedUserData();
+    },[selectContractManager])
 
     useEffect(()=>{
       let depts = sites?.filter(data=>data?.id === departmentLevelSite?.id)?.map(data=>data.department)[0];
@@ -108,28 +116,27 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     },[departmentLevelSite])
 
 
-    // useEffect(() =>{
-    //   if(isUserPresent) {
-    //     setServiceProviderType(userProviderData?.serviceProviderType);
-    //     setNpin(userProviderData?.npin?.npin);
-    //     setNpinMissing(userProviderData?.npin?.missing);
-    //     setNpinNotApplicable(userProviderData?.npin?.notApplicable);
-    //     setContractorFirstName(userProviderData?.name?.firstName);
-    //     setContractorLastName(userProviderData?.name?.lastName);
-    //     setContractorNameSuffix(userProviderData?.name?.suffix);
-    //     setContractorMiddleName('');
-    //     setContractorPhone(userProviderData?.communication?.mobileNumber);
-    //     setContractorEmail(userProviderData?.email?.officialEmail);
-    //     setCity(userProviderData?.address?.city);
-    //     setState(userProviderData?.address?.state);
-    //     setZipCode(userProviderData?.address?.zipcode);
-    //     setSiteLevel(userProviderData?.siteLevelResponsible);
-    //     setDepartmentLevel(userProviderData?.departmentLevelResponsible);
-    //     setSelectedRoles(userProviderData?.roles);
-    //     // setSiteList(userProviderData?.sites?.sites);
-    //     getTitleData();
-    //   }
-    // }, [contractId, userProviderData])
+    useEffect(() =>{
+        setServiceProviderType(userProviderData?.serviceProviderType);
+        setNpin(userProviderData?.npin?.npin);
+        setNpinMissing(userProviderData?.npin?.missing);
+        setNpinNotApplicable(userProviderData?.npin?.notApplicable);
+        setContractorFirstName(userProviderData?.name?.firstName);
+        setContractorLastName(userProviderData?.name?.lastName);
+        setContractorNameSuffix(userProviderData?.name?.suffix);
+        setContractorMiddleName('');
+        setContractorPhone(userProviderData?.communication?.mobileNumber);
+        setContractorEmail(userProviderData?.email?.officialEmail);
+        setCity(userProviderData?.address?.city);
+        setState(userProviderData?.address?.state);
+        setZipCode(userProviderData?.address?.zipcode);
+        setSiteLevel(userProviderData?.siteLevelResponsible);
+        setDepartmentLevel(userProviderData?.departmentLevelResponsible);
+        setSelectedRoles(userProviderData?.roles);
+        setContracts(userProviderData?.contracts);
+        setSiteList(userProviderData?.sites?.sites);
+    }, [contractId, userProviderData])
+
 
     useEffect(()=>{
       getTitleData();
@@ -137,27 +144,58 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
 
     const getTitleData = () => {
       let temp = [];
+      let siteValue = siteTitleValues;
+      let deptValue = departmentTitleValues;
       siteList?.map(data=>{
         let dept = [];
         data?.departmentList?.departments?.map(deptData=>{
-          dept.push({id:deptData?.id,name:deptData?.departmentName?.name,title:''})
-        })
-        temp.push({id:data?.id,name:data?.siteName?.siteName,title:'',department:dept});
-      })
+          dept.push({id:deptData?.id,name:deptData?.departmentName?.name,title:deptData?.departmentResponsibility?.title || ''});
+          if(deptData?.departmentResponsibility?.title !== '' && deptData?.departmentResponsibility?.title !== undefined){
+            let valueString = `${data?.siteName?.siteName} - ${deptData?.departmentName?.name} - ${deptData?.departmentResponsibility?.title}`
+            if(!deptValue.includes(valueString)){
+              deptValue.push(valueString);
+            }
+          }
+          })
+        temp.push({id:data?.id,name:data?.siteName?.siteName,title:data?.siteResponsibility?.title || '',department:dept});
+        if(data?.siteResponsibility?.title !== '' && data?.siteResponsibility?.title !== undefined){
+          let valueString = `${data?.siteName?.siteName} - ${data?.siteResponsibility?.title}`;
+          if(!siteValue.includes(valueString)){
+            siteValue.push(valueString);
+          }
+      }})
     setSites(temp);
+    setSiteTitleValues(siteValue);
+    setDepartmentTitleValues(deptValue);
+    }
+
+    
+    const getContractName = async() => {
+      const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
+      if(contractData){
+        setContractName(contractData?.contractName?.contractName);
+      }
     }
 
     const getSelectedUserData = async() => {
-      const {data: userData} = await GET(`user-management-service/user/${selectContractManager}`);
-      if(userData){
-        setUserProviderData(userData);
-        // setIsUserPresent(userData !== {} ? true : false);
+      if(selectContractManager !== ''){
+        const {data: userData} = await GET(`user-management-service/user/${selectContractManager}`);
+        if(userData){
+          setUserProviderData(userData);
+        }
       }
     }
 
     const getUserData = async() => {
       const {data: userData} = await GET(`user-management-service/user?contractID=${contractId}`);
       if(userData){
+        if(userData?.length !== 0){
+          setUserProviderData(userData[0]);
+          setIsUserSelected(true);
+        }else{
+            getSites();
+            getSelectedUserData();
+        }
         setUsers(userData);
       }
     }
@@ -170,15 +208,19 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     }
 
     const getSites = async () => {
-      const {data:sites} = await GET('entity-service/sites');
-      if(sites){
+      const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
+      let contractDetail = contractData?.contractDetail;
+      let sites = contractDetail?.site?.sites;
+      if(sites && siteList?.length === 0){
+        console.log('inside site setting');
         setSiteList(sites);
         getTitleData();
       }
     }
 
+    console.log('sites',sites);
 
-  const titleList = ['Anesthesiologist', 'Cardiologist', 'Chief Medical Information Officer', 'Chief Medical Officer', 'Chief of Staff'];
+    const titleList = ['Anesthesiologist', 'Cardiologist', 'Chief Medical Information Officer', 'Chief Medical Officer', 'Chief of Staff'];
 
     const getTagProps = (_v, index) => ({
       minimal: true,
@@ -224,136 +266,132 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     setDepartmentLevelSite({id:id,name:sites?.filter(data => data?.id === id)?.map(data => data?.name)[0]});
   }
 
-  console.log('sites',sites);
+
+  const getSiteData  = () => {
+    let siteData = [];
+    sites?.map(data=>{
+      let deptData = [];
+      data?.department?.map(dept=>{
+        deptData.push({
+            "id": dept?.id,
+            "departmentName": {
+              "name": dept?.name
+            },
+            "departmentHead": {
+              "id": ""
+            },
+            "departmentResponsibility": {
+              "title": dept?.title
+            }
+        })
+      })
+      siteData.push({
+      id: data?.id,
+      "siteName": {
+        "siteName": data?.name
+      },
+      "departmentList": {
+        "departments": deptData
+      },
+      "siteResponsibility": {
+        "title": data?.title
+      }
+    })
+    })
+    return siteData;
+  }
 
     const handleSave = async() => {
+        let isContractpresent = contracts?.filter(data=>data?.id === testContractId)?.map(data=>data)?.length || 0;
+        if(!isContractpresent){
+          let temp = contracts;
+          temp.push({
+            "id": testContractId,
+            "contractName": {
+              "contractName": contractName
+            }
+          });
+          setContracts(temp);
+        }
+        const data = {
+            'id': userProviderData?.id,
+            "name": {
+                "firstName": contractorFirstName,
+                "lastName": contractorLastName,
+                "suffix": contractorNameSuffix
+              },
+              "userType": "ADMIN",
+              "contracts": contracts,
+              "title": {
+                "title": ""
+              },
+              "email": {
+                "officialEmail": contractorEmail
+              },
+              "communication": {
+                "personalEmail": contractorEmail,
+                "mobileNumber": contractorPhone,
+                "landlineNumber": "string",
+                "mobileNumberNotApplicable": true
+              },
+              "roles": selectedRoles,
+              "address": {
+                "city": city,
+                "state": state,
+                "zipcode": zipCode
+              },
+              "tenant": {
+                "tenantId": TenantID
+              },
+              "sites": {
+                "sites": getSiteData(),
+              },
+              "serviceProviderType": serviceProviderType,
+              "licenceDetails": {
+                "medicalLicense": "",
+                "licenseExpiryDate": "",
+                "deaNumber": "",
+                "deaExpiryDate": "",
+                "boardCertification": [
+                  "string"
+                ]
+              },
+              "userProxy": {
+                "myProxy": {
+                  "proxyIdList": [
+                    {
+                      "id": "",
+                      "name": ""
+                    }
+                  ]
+                },
+                "proxyFor": {
+                  "proxyIdList": [
+                    {
+                      "id": "",
+                      "name": ""
+                    }
+                  ]
+                }
+              },
+              "activated": true,
+              "siteLevelResponsible": siteLevel,
+              "departmentLevelResponsible": departmentLevel,
+              "blocked": true,
+              "npin": {
+                "missing": npinMissing,
+                "notApplicable": npinNotApplicable,
+                "npin": npin
+              }
+          }
+            const response = await PUT('user-management-service/user', JSON.stringify(data));
+            if(response){
+              SuccessToaster('User Updated Successfully');
+            }
+            else {
+                ErrorToaster('Unexpected Error');
+            }
 
-
-        // const data = {
-          //   ...( isUserPresent && {'id': userProviderData?.id}),
-          //   "name": {
-          //       "firstName": contractorFirstName,
-          //       "lastName": contractorLastName,
-          //       "suffix": contractorNameSuffix
-          //     },
-          //     "userType": "ADMIN",
-          //     "contracts": [
-          //       {
-          //         "id": testContractId,
-          //         "contractName": {
-          //           "contractName": contractName
-          //         }
-          //       }
-          //     ],
-          //     "title": {
-          //       "title": "string"
-          //     },
-          //     "email": {
-          //       "officialEmail": contractorEmail
-          //     },
-          //     ...( !isUserPresent && {"password": {
-          //       "password": "string"
-          //     }}),
-          //     "communication": {
-          //       "personalEmail": contractorEmail,
-          //       "mobileNumber": contractorPhone,
-          //       "landlineNumber": "string",
-          //       "mobileNumberNotApplicable": true
-          //     },
-          //     "roles": selectedRoles,
-          //     "address": {
-          //       "city": city,
-          //       "state": state,
-          //       "zipcode": zipCode
-          //     },
-          //     "tenant": {
-          //       "tenantId": TenantID
-          //     },
-          //     "sites": {
-          //       "sites": [],
-          //       // [
-          //       //   {
-          //       //     "id": "string",
-          //       //     "siteName": {
-          //       //       "siteName": "string"
-          //       //     },
-          //       //     "departmentList": {
-          //       //       "departments": [
-          //       //         {
-          //       //           "id": "string",
-          //       //           "departmentName": {
-          //       //             "name": "string"
-          //       //           },
-          //       //           "departmentHead": {
-          //       //             "id": "string"
-          //       //           },
-          //       //           "departmentResponsibility": {
-          //       //             "title": "string"
-          //       //           }
-          //       //         }
-          //       //       ]
-          //       //     },
-          //       //     "siteResponsibility": {
-          //       //       "title": "string"
-          //       //     }
-          //       //   }
-          //       // ]
-          //     },
-          //     "serviceProviderType": serviceProviderType,
-          //     "licenceDetails": {
-          //       "medicalLicense": "",
-          //       "licenseExpiryDate": "",
-          //       "deaNumber": "",
-          //       "deaExpiryDate": "",
-          //       "boardCertification": [
-          //         "string"
-          //       ]
-          //     },
-          //     "userProxy": {
-          //       "myProxy": {
-          //         "proxyIdList": [
-          //           {
-          //             "id": "",
-          //             "name": ""
-          //           }
-          //         ]
-          //       },
-          //       "proxyFor": {
-          //         "proxyIdList": [
-          //           {
-          //             "id": "",
-          //             "name": ""
-          //           }
-          //         ]
-          //       }
-          //     },
-          //     "activated": true,
-          //     "siteLevelResponsible": siteLevel,
-          //     "departmentLevelResponsible": departmentLevel,
-          //     "blocked": true,
-          //     "npin": {
-          //       "missing": npinMissing,
-          //       "notApplicable": npinNotApplicable,
-          //       "npin": npin
-          //     }
-          // }
-          // if(isUserPresent){
-          //   const response = await PUT('user-management-service/user', JSON.stringify(data));
-          //   if(response){
-          //       SuccessToaster('User Updated Successfully');
-          //   }
-          //   else {
-          //       ErrorToaster('Unexpected Error');
-          //   }
-          // } else {
-          //   const response = await POST('user-management-service/user/register', JSON.stringify(data));
-          //   if(response){
-          //     SuccessToaster('User Added Successfully');
-          //   }
-          //   else {
-          //       ErrorToaster('Unexpected Error');
-          //   }
-          // }
     }
 
     const handleRoles = (value) => {
@@ -453,186 +491,128 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
-
-            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
-                <div className={style.displayInRow}>
-                <div>
-                    <DatalistInput items={items || []} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager)?.map(data=>data?.value)[0]}/>
-                    {!items?.map(data=>data.name?.firstName)?.includes(userName) && !userName === '' &&(
-                        <div className={style.addBoxDescription}>
-                        The Contract Manager you are trying to add is not a registered
-                        user. to add a new contract manager click on the "ADD" button.
-                        </div>
-                    )}
-                </div>
-                <button className={`${style.disabledButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={() =>setAddNewManagerDialog(true)}>ADD</button>
-                </div>
-            </div>
-
             {
-              // <div className={`${style.extentionGrid}`}>
-              // <div className={style.extentionLableStyle}>Service Provider Type*</div>
-              //     <div className={style.grid3}>
-              //         <select
-              //             name="class"
-              //             id="Class"
-              //             value={serviceProviderType}
-              //             onChange={(e) => setServiceProviderType(e.target.value)}
-              //             className={style.fullWidth}>
-              //                 <option value="Text" >
-              //                 Text
-              //                 </option>
-              //                 <option value="Physician" >
-              //                 Physician
-              //                 </option>
-              //                 <option value="Nurse" >
-              //                 Nurse
-              //                 </option>
-              //                 <option value="Admin Staff" >
-              //                 Admin Staff
-              //                 </option>
-              //                 <option value="Other" >
-              //                 Other
-              //                 </option>
-              //         </select>
-              //     </div>
-                // </div>
-                // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                //     <div className={style.extentionLableStyle}>NPIN*</div>
-                //     <div className={style.grid3}>
-                //     <InputGroup className={style.fullWidth}
-                //     placeholder="NPIN"
-                //     value={npin}
-                //     onChange={(e) => setNpin(e.target.value)}/>
-                //     <FormGroup>
-                //         <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => setNpinMissing(e.target.checked)} />} label="Missing" />
-                //     </FormGroup>
-                //     <FormGroup>
-                //         <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => setNpinNotApplicable(e.target.checked)} />} label="NA" />
-                //     </FormGroup>
-                //     </div>
-                // </div>
-                // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                //     <div className={style.extentionLableStyle}>Contractor Name*</div>
-                //     <div className={style.grid3}>
-                //         <InputGroup className={style.fullWidth} placeholder="First"
-                //         value={contractorFirstName}
-                //         onChange={(e) => setContractorFirstName(e.target.value)} />
-                //         <InputGroup className={style.fullWidth} placeholder="Middle"
-                //         value={contractorMiddleName}
-                //         onChange={(e) => setContractorMiddleName(e.target.value)}/>
-                //         <InputGroup className={style.fullWidth} placeholder="Last"
-                //         value={contractorLastName}
-                //         onChange={(e) => setContractorLastName(e.target.value)}/>
-                //     </div>
-                // </div>
-                // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                //     <div className={style.extentionLableStyle}>Suffix*</div>
-                //     <div className={style.grid3}>
-                //         <select
-                //             name="class"
-                //             id="Class"
-                //             value={contractorNameSuffix}
-                //             onChange={(e) => setContractorNameSuffix(e.target.value)}
-                //             className={style.fullWidth}>
-                //                 <option value="Text" >
-                //                 Text
-                //                 </option>
-                //         </select>
-                //     </div>
-                // </div>
-
-                // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                //     <div className={style.extentionLableStyle}>Email Contractor id*</div>
-                //     <div className={style.displayInRow}>
-                //         <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
-                //         value={contractorEmail}
-                //         onChange={(e) => setContractorEmail(e.target.value)}/>
-                //     </div>
-                // </div>
-                // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                //     <div className={style.extentionLableStyle}>Cell Phone*</div>
-                //     <div className={style.grid2}>
-                //     <InputGroup placeholder="Numeric" className={style.fullWidth}
-                //     value={contractorPhone}
-                //     onChange={(e) => setContractorPhone(e.target.value)}/>
-                //     </div>
-                // </div>
-                // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                //     <div className={style.extentionLableStyle}>Address*</div>
-                //     <div className={style.grid3}>
-                //     <InputGroup className={style.fullWidth} placeholder="City"
-                //     value={city}
-                //     onChange={(e) => setCity(e.target.value)}/>
-                //     <InputGroup className={style.fullWidth} placeholder="State"
-                //     value={state}
-                //     onChange={(e) => setState(e.target.value)}/>
-                //     <InputGroup className={style.fullWidth} placeholder="Zipcode"
-                //     value={zipCode}
-                //     onChange={(e) => setZipCode(e.target.value)}/>
-                //     </div>
-                // </div>
-
-
-                // ******This should come after site and dept Responsibility as per UX*****
-
-            //     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            //         <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
-            //         {/* <div>
-            //             <FormControl sx={{ width: '100%'}}>
-            //                 <Select
-            //                 labelId="demo-multiple-chip-label"
-            //                 id="demo-multiple-chip"
-            //                 multiple
-            //                 value={personName}
-            //                 onChange={(e) => handleRoles(e.target.value)}
-            //                 renderValue={(selected) => (
-            //                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }} className={style.selectMultipleCheckbox}>
-            //                     {selected.map((value) => (
-            //                         <Chip key={value} label={value} />
-            //                     ))}
-            //                     </Box>
-            //                 )}
-            //                 MenuProps={MenuProps}
-            //                 >
-            //                 {roles.map((role) => (
-            //                     <MenuItem
-            //                     key={role?.id}
-            //                     value={role?.roleName}
-            //                     style={getStyles(role, personName, theme)}
-            //                     >
-            //                         <Checkbox checked={personName.indexOf(role) > -1} />
-            //                         <ListItemText primary={role?.roleName} />
-            //                     </MenuItem>
-            //                 ))}
-            //                 </Select>
-            //             </FormControl>
-            //         </div> */}
-            //         <div className={`${style.reduce10Left} ${style.marginRight}`}>
-            //             <select
-            //                 name="class"
-            //                 id="Class"
-            //                 onChange={(e) => handleRoles(e.target.value)}
-            //                 className={`${style.fullWidth} ${style.marginLeft20} `}>
-            //                     <option value="0" >
-            //                     Select Role-multi select
-            //                     </option>
-            //                     {roles?.map((data, index) => (
-            //                     <option key={`${data}-${index}`} value={data?.roleName} >
-            //                         {data?.roleName}
-            //                     </option>
-            //                     ))}
-            //             </select>
-            //             <div className={`${style.marginTop20} ${style.marginLeft20}`}>
-            //             {rolesTags}
-            //             </div>
-            //         </div>
-            //     </div>
-            //
+              !isUserSelected &&
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
+                  <div className={style.displayInRow}>
+                  <div>
+                      <DatalistInput items={items || []} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager)?.map(data=>data?.value)[0]}/>
+                      {!items?.map(data=>data.name?.firstName)?.includes(userName) && !userName === '' &&(
+                          <div className={style.addBoxDescription}>
+                          The Contract Manager you are trying to add is not a registered
+                          user. to add a new contract manager click on the "ADD" button.
+                          </div>
+                      )}
+                  </div>
+                  <button className={`${style.disabledButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={() =>setAddNewManagerDialog(true)}>ADD</button>
+                  </div>
+              </div>
             }
+              <div>
+                <div className={`${style.extentionGrid}`}>
+                <div className={style.extentionLableStyle}>Service Provider Type*</div>
+                    <div className={style.grid3}>
+                        <select
+                            name="class"
+                            id="Class"
+                            value={serviceProviderType}
+                            onChange={(e) => setServiceProviderType(e.target.value)}
+                            className={style.fullWidth}>
+                                <option value="Text" >
+                                Text
+                                </option>
+                                <option value="Physician" >
+                                Physician
+                                </option>
+                                <option value="Nurse" >
+                                Nurse
+                                </option>
+                                <option value="Admin Staff" >
+                                Admin Staff
+                                </option>
+                                <option value="Other" >
+                                Other
+                                </option>
+                        </select>
+                    </div>
+                  </div>
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>NPIN*</div>
+                      <div className={style.grid3}>
+                      <InputGroup className={style.fullWidth}
+                      placeholder="NPIN"
+                      value={npin}
+                      onChange={(e) => setNpin(e.target.value)}/>
+                      <FormGroup>
+                          <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => setNpinMissing(e.target.checked)} />} label="Missing" />
+                      </FormGroup>
+                      <FormGroup>
+                          <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => setNpinNotApplicable(e.target.checked)} />} label="NA" />
+                      </FormGroup>
+                      </div>
+                  </div>
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Contractor Name*</div>
+                      <div className={style.grid3}>
+                          <InputGroup className={style.fullWidth} placeholder="First"
+                          value={contractorFirstName}
+                          onChange={(e) => setContractorFirstName(e.target.value)} />
+                          <InputGroup className={style.fullWidth} placeholder="Middle"
+                          value={contractorMiddleName}
+                          onChange={(e) => setContractorMiddleName(e.target.value)}/>
+                          <InputGroup className={style.fullWidth} placeholder="Last"
+                          value={contractorLastName}
+                          onChange={(e) => setContractorLastName(e.target.value)}/>
+                      </div>
+                  </div>
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Suffix*</div>
+                      <div className={style.grid3}>
+                          <select
+                              name="class"
+                              id="Class"
+                              value={contractorNameSuffix}
+                              onChange={(e) => setContractorNameSuffix(e.target.value)}
+                              className={style.fullWidth}>
+                                  <option value="Text" >
+                                  Text
+                                  </option>
+                          </select>
+                      </div>
+                  </div>
 
-
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Email Contractor id*</div>
+                      <div className={style.displayInRow}>
+                          <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
+                          value={contractorEmail}
+                          onChange={(e) => setContractorEmail(e.target.value)}/>
+                      </div>
+                  </div>
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Cell Phone*</div>
+                      <div className={style.grid2}>
+                      <InputGroup placeholder="Numeric" className={style.fullWidth}
+                      value={contractorPhone}
+                      onChange={(e) => setContractorPhone(e.target.value)}/>
+                      </div>
+                  </div>
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Address*</div>
+                      <div className={style.grid3}>
+                      <InputGroup className={style.fullWidth} placeholder="City"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}/>
+                      <InputGroup className={style.fullWidth} placeholder="State"
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}/>
+                      <InputGroup className={style.fullWidth} placeholder="Zipcode"
+                      value={zipCode}
+                      onChange={(e) => setZipCode(e.target.value)}/>
+                      </div>
+                  </div>
+              </div>
 
 
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>

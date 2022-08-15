@@ -25,7 +25,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [priorContractItem, setPriorContractItem] = useState();
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
     const [fullyExecutedContractData,setFullyExecutedContractData] = useState(fileData);
-    const [fileFieldData,setFileFieldData] = useState({type:'',name:'',desc:'',fileName:'',file:null,filePath:''});
+    const [fileFieldData,setFileFieldData] = useState({id:'',type:'',name:'',desc:'',fileName:'',file:null,filePath:''});
     const [files,setFiles] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(false);
     const [tags, setTags] = useState(VALUES);
@@ -39,6 +39,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [contractNA,setContractNA] = useState(false);
     const [user,setUsers] = useState([]);
     const [contracts,setContracts] = useState();
+    const [selectedItem,setSelectedItem] = useState();
     const [sites,setSites] = useState();
     const [selectedSites,setSelectedSites] = useState([]);
     const [autoRenewal,setAutoRenewal] = useState({renewalTerm:'0',allowableRenewalTerm:'0',calendar:'WEEKS'});
@@ -71,6 +72,10 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       setFullyExecutedContractData(fileData);
     },[fileData])
 
+    useEffect(()=>{
+      setFileFields(fullyExecutedContractData);
+    },[fullyExecutedContractData])
+
     console.log('contractFiles',selectedDepartmentSites);
 
     const getContractDetail = async() => {
@@ -92,14 +97,33 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
         setAutoRenewal({renewalTerm:continuation?.autoRenewalTerm?.term.toString(),allowableRenewalTerm:continuation?.allowableAutoRenewalTerm?.term.toString(),calendar:continuation?.autoRenewalCalender})
         setRenewalreminder(contractDetail?.continuationPolicy?.reminderList?.renewalReminderList);
-        if(contractDetail?.siteSpecificContract){
+        let fileData = [];
+        contractDetail?.contractFiles?.map(data=>{
+          fileData.push({id:data?.id, type:data?.documentType,name:data?.documentName,desc:data?.documentDescription,fileName:data?.fileName,file:null,filePath:data?.fileURL})
+        })
+        setFullyExecutedContractData(fileData);
+        if(contractDetail?.siteSpecificContract && !contractDetail?.departmentSpecificContract){
           setSelectedSites(contractDetail?.site?.sites || []);
         }
-        else if(contractDetail?.departmentSpecificContract){
-          setSelectedDepartmentSites(contractDetail?.site?.sites || []);
+        else if(contractDetail?.siteSpecificContract && contractDetail?.departmentSpecificContract){
+          let deptTemp = [];
+          let temp = contractDetail?.site?.sites;
+          contractDetail?.site?.sites?.map(data=>{
+            data.departmentList?.departments?.map(dept=>{
+                deptTemp.push({id:dept?.id, name: dept?.departmentName?.name, site_id: data?.id});
+                console.log('dept inside condition',dept);
+                console.log('deptTemp',deptTemp)
+            })
+          })
+          setSelectedDepartmentSites(deptTemp || []);
+
+          temp?.map(data=>{
+            data.departmentList.departments = sites?.filter(site=>site?.id === data?.id)?.map(site=>site?.departmentList?.departments)?.[0];
+          })
+          setSelectedSites(temp);
         }
         else{
-          setSites(contractDetail?.site?.sites || []);
+          console.log('No data');
         }
       }
     }
@@ -130,8 +154,31 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     }
 
     const handleFileUpload = (e) => {
-      console.log('file sample test', fileFieldData);
       setFileFieldData({...fileFieldData, file: e.target.files[0], fileName: e.target.files?.[0]?.name});
+    }
+
+    const getSiteData = () => {
+      let siteData = [];
+
+      if(!siteSpecific && !departmentSpecific){
+        siteData = sites;
+      }else if(siteSpecific && !departmentSpecific){
+        siteData = selectedSites;
+      }else{
+        let temp = selectedSites;
+        temp?.map(data=>{
+          let departments = [];
+          let siteDepartments = selectedDepartmentSites?.filter(dept=>dept?.site_id === data?.id)?.map(data=>data);
+          if(siteDepartments?.length !== 0){
+            siteDepartments?.map(dept=>{
+              departments?.push({id:dept?.id,departmentHead:{id:dept?.name},departmentName:{name:dept?.name}})
+            })
+            data.departmentList.departments = departments;
+          }
+        })
+        siteData = temp;
+      }
+      return siteData;
     }
 
 
@@ -146,6 +193,8 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
           documentName:data.name,
         })
       })
+
+
       let data = {
         ...( method !== 'POST' && {'id':id}),
         "contractName": {
@@ -166,7 +215,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
           },
           "contractFiles": contractFiles,
           "site": {
-            "sites": !siteSpecific ? sites : siteSpecific && !departmentSpecific ? selectedSites : siteSpecific && departmentSpecific ? selectedDepartmentSites : !siteSpecific && !departmentSpecific ? sites : [],
+            "sites": getSiteData(),
           },
           "contractTerm": {
             "startDate": format(contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
@@ -218,6 +267,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
        ErrorToaster('Unexpected Error Updating Contract');
      })
      }
+
     }
 
     const onSelect = (selectedItem) => {
@@ -225,16 +275,11 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     }
 
     const onSelectSite = (selectedItem) => {
-      console.log('selectedSite',selectedItem);
       setItem(selectedItem);
       let temp = selectedSites;
       temp.push(selectedItem);
       setSelectedSites(temp);
-      let deptTemp = selectedDepartmentSites;
-      deptTemp.push(selectedItem);
-      setSelectedDepartmentSites(deptTemp);
     }
-
 
 
     const onSelectContractId = (selectedItem) => {
@@ -247,15 +292,14 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     });
 
     const handleTagsRemove = (tags, index) => {
+        let siteId = selectedSites?.filter((data,indexVal)=>index === indexVal)?.map(data=>data?.id)[0];
         setSelectedSites(selectedSites?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data));
+        setSelectedDepartmentSites(selectedDepartmentSites?.filter(data=>data?.site_id !== siteId)?.map(data=>data));
     };
 
 
     const handleTagSet2Remove = (tags, index) => {
-      const updatedTags = [tags];
-      updatedTags.splice(index, 1);
-      tags = updatedTags;
-      setTagSet2(tags);
+      setSelectedDepartmentSites(selectedDepartmentSites?.filter((data,indexVal)=>index !== indexVal)?.map(data=>data));
     };
 
     const items = useMemo(
@@ -315,16 +359,15 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         temp[i] = (
           <div className={`${style.renewalRemainderBoxGrid} ${style.marginBottom}`} key={`reminder${i}`}>
               <div className={style.marginTop}>Set Renewal Reminder*</div>
-              <EditableText className={style.inputRenewalRemainderStyle} defaultValue={renewalReminder?.[i]?.days} placeholder="" onChange={(e)=>handleReminder(e,i)} key={`days${i}`}/>
+              <div className={style.displayInRow}>
+                <EditableText className={style.inputRenewalRemainderStyle} defaultValue={renewalReminder?.[i]?.days} placeholder="" onChange={(e)=>handleReminder(e,i)} key={`days${i}`}/>
+                <div className={`${style.marginTop10} ${style.marginLeft20}`}>Days</div>
+              </div>
               <Icon icon="cross" className={style.marginTop10} color="black" onClick={()=>removeReminder(i)}/>
           </div>
         )
       }
       setReminderFields(temp);
-    }
-
-    const removeContractData = (index) => {
-      setFullyExecutedContractData(fullyExecutedContractData?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
     }
 
     const handlContractManagerOnChange = (e) => {
@@ -341,22 +384,26 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       temp.push(fileFieldData);
       setFileFields(temp);
       setFullyExecutedContractData(temp);
-      setFileFieldData({type:'',name:'',desc:'',fileName:'',file:null,filePath:''});
+      setFileFieldData({id:'',type:'',name:'',desc:'',fileName:'',file:null,filePath:''});
 
     }
 
-    const onSelectDepartment = (value, siteId, deptIndex, deptValue) => {
-      console.log('deptValue',deptValue);
+    const onSelectDepartment = (deptId) => {
+      setSelectedItem(deptId);
       let temp = selectedDepartmentSites;
-      temp?.filter(data=>data?.id === siteId)?.map(data=>{
-        console.log('inside filter dept',deptValue);
-        let deptTemp = data?.departmentList?.departments;
-        deptTemp.push(deptValue);
+      let name = '';
+      selectedSites?.filter(data=>data?.id === selectedSite)?.map(data=>{
+        data?.departmentList?.departments?.map(dept=>{
+          if(dept?.id === deptId){
+            name = dept?.departmentName?.name;
+          }
+        })
       })
+      const isAlreadyPresent = temp?.filter(data=>data.id === deptId && data.site_id === selectedSite)?.map(data=>data)?.length || 0;
+      if(!isAlreadyPresent){
+        temp.push({id:deptId,name:name,site_id:selectedSite});
+      }
       setSelectedDepartmentSites(temp);
-      let tempDeptId = selectedDepartmentId;
-      tempDeptId.push(deptValue?.id);
-      setSelectedDepartmentId(tempDeptId);
     }
 
     const getDocumentFields = () => {
@@ -413,6 +460,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         )
     }
 
+    console.log('Selected Sites',selectedSites);
+    console.log('selectedDepartmet', selectedDepartmentSites);
+
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -464,7 +514,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                 label={fullyExecutedContract ? 'YES' : "NO"}
                             />
                             {fullyExecutedContract && (
-                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={()=>{addNewDocumentField()}}>ADD MORE</button>
+                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={()=>{addNewDocumentField()}}>ADD</button>
                             )}
                         </div>
                         {fullyExecutedContract && (
@@ -547,7 +597,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                         <div className={style.displayInRow}>
                             <FormControlLabel
                                 control={
-                                    <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={()=>setDepartmentSpecific(!departmentSpecific)}  />
+                                    <Switch checked={departmentSpecific && siteSpecific} className={` ${style.textAlignLeft}`} onChange={()=>{if(siteSpecific){setDepartmentSpecific(!departmentSpecific)}}}  />
                                 }
                                 className={`${style.switchFontStyle}`}
                                 label={departmentSpecific ? 'YES' : "NO"}
@@ -566,29 +616,43 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                           </option>
                                           {
                                             selectedSites?.map(data=>(
-                                              <option value={data?.siteName?.siteName}>
+                                              <option value={data?.id}>
                                                 {data?.siteName?.siteName}
                                               </option>
                                             ))
                                           }
                                       </select>
                                   </div>
-                                  {selectedSites?.map((data)=>data?.siteName?.siteName)?.includes(selectedSite) && (
-                                    <div className={`${style.roleBoxStyle} ${style.marginLeft20} ${style.floatRight}`}>
-                                      {
-                                        selectedSites?.filter(site=>site?.siteName?.siteName === selectedSite)?.map((site)=>site?.departmentList?.departments?.map((dept,deptIndex)=>(
-                                            <Checkbox label={dept?.departmentName?.name} checked={site?.siteName?.siteName === selectedSite && selectedDepartmentId.includes(dept?.id)} onChange={(e)=>onSelectDepartment(e.target.checked,site?.id,deptIndex,dept)} key={`dept${deptIndex}`}/>
-                                        )))
-                                    }
-                                    </div>
-                                  )}
+                                  {
+                                    selectedSites?.filter(data=>data?.id === selectedSite)?.map(data=>(
+                                      <div>
+                                          <select
+                                              name="class"
+                                              id="Class"
+                                              onChange={(e) => onSelectDepartment(e.target.value)}
+                                              className={`${style.fullWidth} ${style.marginLeft20} ${style.marginTop20}`}>
+                                              <option value='Select...'>
+                                                Select Department...
+                                              </option>
+                                              {
+                                                data?.departmentList?.departments?.map(dept=>(
+                                                  <option value={dept?.id}>
+                                                    {dept?.departmentName?.name}
+                                                  </option>
+                                                ))
+                                              }
+                                          </select>
+                                      </div>
+                                    ))
+                                  }
+
                                 </div>
                             )}
                         </div>
                         {departmentSpecific && (
                             <TagInput
                                 placeholder="Enter tags/keywords relative to the post"
-                                values={departmentsName?.map(data=>data?.name) || []}
+                                values={selectedDepartmentSites?.filter(data=>data?.site_id === selectedSite)?.map(data=>data?.name) || []}
                                 className={`${style.marginTop20}`}
                                 onRemove={handleTagSet2Remove}
                                 separator={/[\s,]/}
@@ -665,7 +729,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                             <div className={`${style.renewalBoxStyle}`}>
                                 <div className={`${style.renewalBoxGrid}`}>
                                     <div className={style.marginTop}>Auto Renewal Term*</div>
-                                    <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e)=>setAutoRenewal({...autoRenewal, renewalTerm:e})} />
+                                    <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e)=>setAutoRenewal({...autoRenewal, renewalTerm:e})} />
                                     <select
                                         name="class"
                                         id="Class"

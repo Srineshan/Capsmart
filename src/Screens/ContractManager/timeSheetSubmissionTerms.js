@@ -6,14 +6,13 @@ import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
-const VALUES4 = ['Activity 1', 'Activity 2', 'Activity 3'];
 const VALUES3 = ['Activity Reviewer'];
 
 const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) => {
     const [timeSheetCount, setTimeSheetCount] = useState(0);
     const [contractedTimeCommitment, setContractedTimeCommitment] = useState(false);
     const [activityTags, setActivityTags] = useState(VALUES3);
-    const [contractedActivityTags, setContractedActivityTags] = useState(VALUES4);
+    const [contractedActivityTags, setContractedActivityTags] = useState([]);
     const [timeSheetLabelOne, setTimeSheetLabelOne] = useState('');
     const [servicePeriod, setServicePeriod] = useState('');
     const [contractedTimeCommitmentHour, setContractedTimeCommitmentHour] = useState('');
@@ -27,109 +26,144 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
     const [dayLimitForSubmissionBasedOnContractEndDate, setDayLimitForSubmissionBasedOnContractEndDate] = useState(0);
     const [timesheetSubmissionTerms, setTimesheetSubmissionTerms] = useState({});
     const [timesheetFields, setTimesheetFields] = useState([]);
+    const [contractedServices, setContractedServices] = useState([]);
+    const [selectedItems, setSelectedItems] = useState();
     const limit = 2;
-
-    const [timesheetValues, setTimesheetValues] = useState([{
-        "timesheetLabel": {
-            "label": ""
-          },
-          "activities": [
-            {
-              "activityType": {
-                "activityType": ""
-              },
-              "performingActivity": {
-                "activity": ""
-              }
-            }
-          ],
-          "servicePeriod": {
-            "value": ""
-          }
-    }]);
-    const [timesheetValuesToUse, setTimesheetValuesToUse] = useState([]);
+    const [timeSheetLabelData,setTimeSheetLabelData] = useState([]);
+    const [timesheetValues, setTimesheetValues] = useState([]);
     const [timesheetActivity, setTimesheetActivity] = useState([{
         activityType: '', performingActivity: ''
     }]);
 
-    const handleContractedActivityTagsAdd = values => {
-        setContractedActivityTags([...activityTags, values]);
+    const getContractedServices = async () => {
+        const { data: contractedServices } = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
+        setContractedServices(contractedServices?.contractedServices)
+    }
+
+    useEffect(()=>{
+        getContractedServices();
+        getTimeSheetSubmissionTerms();
+        getTimesheetFields();
+    },[])
+
+    useEffect(()=>{
+        getTimesheetFields();
+        setContractedActivityTags([]);
+        setTimeSheetLabelData([]);
+    },[timeSheetCount])
+
+    useEffect(()=>{
+      formatActivities();
+      getTimesheetFields();
+    },[contractedActivityTags?.length, timeSheetLabelData, contractedServices])
+
+
+    const handleContractedActivityTagsAdd = (values, i) => {
+        setSelectedItems(values);
+        let temp = contractedActivityTags;
+        temp.push({index: i,type: contractedServices?.filter(data => data?.performingActivity?.activity === values)?.map(data => data?.activityType?.activityType)[0], activity: values});
+        setContractedActivityTags(temp);
+
     };
 
-    const handleContractedActivityTagsRemove = (tags, index) => {
-        const updatedTags4 = [tags];
-        updatedTags4.splice(index, 1);
-        tags = updatedTags4;
-        setContractedActivityTags(tags);
-      };
+
+    const formatActivities = () => {
+        let timeSheetValueData = [];
+        for(let i=0; i<timeSheetCount;i++){
+          timeSheetValueData[i] = {
+                  "timesheetLabel": {
+                      "label": ""
+                    },
+                    "activities": [
+                      {
+                        "activityType": {
+                          "activityType": ""
+                        },
+                        "performingActivity": {
+                          "activity": ""
+                        }
+                      }
+                    ],
+                    "servicePeriod": {
+                      "value": ""
+                    }
+              }
+        }
+        timeSheetValueData?.map((data, index) => {
+            let temp = [];
+            contractedActivityTags?.filter(innerData => innerData?.index === index)?.map((activityData) => {
+                temp.push({
+                    activityType: {
+                        activityType: activityData?.type
+                    }, performingActivity: {
+                        activity: activityData?.activity
+                    }
+                })
+            })
+            data.activities = temp;
+            data.timesheetLabel = timeSheetLabelData?.[index]?.label;
+            data.servicePeriod = timeSheetLabelData?.[index]?.value;
+        })
+        setTimesheetValues(timeSheetValueData);
+    }
 
       const getTagProps = (_v, index) => ({
         minimal: true,
     });
 
     const handleTimesheetValue = (i, name, value) => {
-        console.log(i, name, value)
-        let temp = timesheetValues;
-        if(name === 'label'){
-            temp[i] = {
-                timesheetLabel: {label: value},
-                servicePeriod: temp[i]?.servicePeriod,
-                activities: temp[i]?.activities
-            }
-        }
-        if(name === 'period'){
-            temp[i] = {
-                timesheetLabel: temp[i]?.timesheetLabel,
-                servicePeriod: {value: value},
-                activities: temp[i]?.activities
-            }
-        }
-        setTimesheetValues(temp)
+      let temp = timeSheetLabelData;
+      if(name === 'label'){
+        temp[i] = {label:value, value:temp[i]?.value}
+      }else{
+        temp[i] = {label: temp[i]?.label, value:value}
+      }
+      setTimeSheetLabelData(temp);
+    }
+
+    const handleContractedActivityTagsRemove = (tags,index) => {
+      setContractedActivityTags(contractedActivityTags?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data));
     }
 
     const getTimesheetFields = () => {
-        let tempValues = [];
-        for(let i=timesheetValues?.length; i<timeSheetCount;i++){
-            tempValues.push({
-                "timesheetLabel": {
-                    "label": ""
-                },
-                "activities": [
-                {
-                    "activityType": {
-                    "activityType": ""
-                    },
-                    "performingActivity": {
-                    "activity": ""
-                    }
-                }
-                ],
-                "servicePeriod": {
-                "value": ""
-                }
-            })
-        }
         let temp = [];
         for(let i=0;i<timeSheetCount;i++){
           temp[i] = (
             <div key={`${i}temp${timeSheetCount + 1}`} className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20}`}>
                 <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>{`Timesheets lable ${i+1} for processing`}</div>
-                    <InputGroup className={style.fullWidth} value={timesheetValues?.[i]?.timesheetLabel?.label} onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)} />
+                    <InputGroup className={style.fullWidth} value={timeSheetLabelData?.[i]?.label} onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)} />
                 </div>
                 {timeSheetCount > 1 && (
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Site Specific Contract*</div>
-                        <TagInput
-                            placeholder="Contracted Activity to include for timesheet 1*"
-                            values={contractedActivityTags}
-                            onAdd={handleContractedActivityTagsAdd}
-                            onRemove={handleContractedActivityTagsRemove}
-                            separator={/[\s,]/}
-                            addOnBlur={true}
-                            addOnPaste={true}
-                            tagProps={getTagProps}
-                        />
+                        <div>
+                            <select
+                                name="class"
+                                id="Class"
+                                onChange={(e) => {handleContractedActivityTagsAdd(e.target.value, i)}}
+                                className={`${style.fullWidth} `}>
+                                <option value="0" >
+                                    Select Contracted Services Provided
+                                </option>
+                                {contractedServices?.map((data, index) => (
+                                    <option value={data?.performingActivity?.activity} key={index}
+                                    disabled={contractedActivityTags?.map(data => data?.activity)?.includes(data?.performingActivity?.activity)} >
+                                        {`${data?.activityType?.activityType} - ${data?.performingActivity?.activity}`}
+                                    </option>
+                                ))}
+                            </select>
+                            <TagInput
+                                placeholder="Contracted Activity to include for timesheet 1*"
+                                values={contractedActivityTags?.filter((data,index)=>data?.index === i)?.map(data=>`${data?.type}-${data?.activity}`) || []}
+                                onRemove={handleContractedActivityTagsRemove}
+                                separator={/[\s,]/}
+                                addOnBlur={true}
+                                addOnPaste={true}
+                                tagProps={getTagProps}
+                                className={style.marginTop20}
+                            />
+                        </div>
                     </div>
                 )}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -138,9 +172,12 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                         <select
                             name="class"
                             id="Class"
-                            value={timesheetValues?.[i]?.servicePeriod?.value}
-                            onChange={(e) => handleTimesheetValue(i, 'period', e.target.value)}
+                            value={timeSheetLabelData?.[i]?.value}
+                            onChange={(e) => handleTimesheetValue(i, 'value', e.target.value)}
                             className={`${style.fullWidth}`}>
+                            <option value="0" >
+                                Select Service Log Period...
+                            </option>
                             <option value="End of the month" >
                                 End of the month
                             </option>
@@ -164,13 +201,23 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
           )
         }
         setTimesheetFields(temp);
-        setTimesheetValuesToUse(timesheetValues);
-        setTimesheetValues(tempValues);
       }
 
     const getTimeSheetSubmissionTerms = async() => {
         const {data: timesheetSubmissionTerms} = await GET(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`);
-        setTimesheetSubmissionTerms(timesheetSubmissionTerms);
+        if(timesheetSubmissionTerms){
+          setTimesheetSubmissionTerms(timesheetSubmissionTerms);
+          let labelTemp = [];
+          let temp = [];
+          timesheetSubmissionTerms?.timesheetActivitiesPeriods?.map((data,index)=>{
+            labelTemp.push({label:data?.timesheetLabel?.label, value:data?.servicePeriod?.value});
+            data?.activities?.map(activityData=>{
+              temp.push({index:index,type:activityData?.activityType?.activityType,activity:activityData?.performingActivity?.activity});
+            })
+          });
+          setTimeSheetLabelData(labelTemp);
+          setContractedActivityTags(temp);
+        }
     };
 
     const handleContinue = async() => {
@@ -212,10 +259,8 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
         else {
             ErrorToaster('Unexpected Error');
         }
-        console.log(data)
     }
 
-    console.log(timesheetValues, timesheetValuesToUse)
 
     useEffect(()=>{
         setTimeSheetCount(timesheetSubmissionTerms?.timesheetSubmissionServicesCount?.count);
@@ -232,13 +277,6 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
         setTimesheetValues(timesheetSubmissionTerms?.timesheetActivitiesPeriods);
     },[timesheetSubmissionTerms]);
 
-    useEffect(()=>{
-        getTimeSheetSubmissionTerms();
-    },[])
-
-    useEffect(()=>{
-        getTimesheetFields();
-    },[timeSheetCount])
 
     return (
         <div className={style.cloneBlockStyle}>

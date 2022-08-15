@@ -200,7 +200,7 @@ const SiteUsers = ({getActiveStep}) => {
           "lastName": userData.lastName,
           "suffix": userData.suffix,
         },
-        "userType": userData.isAdmin ? "ADMIN" : "",
+        "userType": "ADMIN",
         "contracts": isAppUserContractor ? [
           {
             "id": contractId,
@@ -250,8 +250,8 @@ const SiteUsers = ({getActiveStep}) => {
     setUserData({firstName:'',lastName:'',suffix:'',isAdmin:false,title:'',email:'',phone:''});
     setSelectedRoles([]);
     setSelectedSites([]);
+    setContractId('');
   }
-    console.log('user data',userData);
 
     return(
         <div className={style.entitySetupBackground}>
@@ -322,6 +322,7 @@ const SiteUsers = ({getActiveStep}) => {
                                           <select
                                               name="class"
                                               id="Class"
+                                              value={contractId}
                                               className={`${style.twoFieldWidth} ${style.marginLeft20}`}
                                               onChange={(e)=>setContractId(e.target.value)}>
                                                   <option value="Select Contractor" >
