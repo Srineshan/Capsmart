@@ -2,12 +2,12 @@ import { Intent, Position, Toaster } from '@blueprintjs/core';
 
 /** Singleton toaster instance. Create separate instances for different options. */
 export const CommonToaster = Toaster.create({
-  position: Position.BOTTOM_RIGHT,
+  position: Position.TOP,
 });
 
 export const CommonToasterInstance = () =>
   Toaster.create({
-    position: Position.BOTTOM_RIGHT,
+    position: Position.TOP,
     className: 'toast-container',
   });
 

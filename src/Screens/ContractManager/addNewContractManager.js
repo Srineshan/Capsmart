@@ -66,7 +66,7 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
         SuccessToaster('User Added Successfully');
       })
       .catch(error=>{
-        ErrorToaster('Adding User Faield');
+        ErrorToaster('Adding User Failed');
       })
       getAddNewManagerDialog(false);
       getUserData();
@@ -75,8 +75,6 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
     }
   }
 
-
-    console.log('roles',roles);
 
     return(
         <Dialog isOpen={getAddNewManagerDialog} onClose={() => getAddNewManagerDialog(false)} className={`${style.addManagerDialogStyle} ${style.addManagerDialogBackground}`}>

@@ -91,7 +91,7 @@ const AddContractUser = ({getAddNewManagerDialog, contractType, getUserData, con
         SuccessToaster('User Added Successfully');
       })
       .catch(error=>{
-        ErrorToaster('Adding User Faield');
+        ErrorToaster('Adding User Failed');
       })
       getAddNewManagerDialog(false);
       getUserData();

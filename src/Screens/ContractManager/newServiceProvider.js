@@ -3,7 +3,6 @@ import { Dialog, Classes, Icon, Intent, Tag, InputGroup, Button, RadioGroup, Rad
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
-import AddContractUser from './addContractUser';
 import {GET, PUT, POST, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
@@ -14,7 +13,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     const [startDate, setStartDate] = useState(new Date);
     const [user,setUsers] = useState([]);
     const [selectContractManager, setSelectContractManager] = useState('');
-    const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
     const [userName, setUserName] = useState('');
     const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration');
     const [roles,setRoles] = useState([]);
@@ -55,30 +53,24 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     useEffect(()=>{
       getRolesData();
       getUsersData();
-      getSites();
-      getContractName();
+      getContractDetail();
     },[])
 
     useEffect(()=>{
       getTitleData();
     }, [siteList])
 
+
+    useEffect(()=>{
+      if(siteList?.length === 0){
+        getContractDetail();
+      }
+    },[siteLevel,departmentLevel])
+
     useEffect(()=>{
       let depts = sites?.filter(data=>data?.id === departmentLevelSite?.id)?.map(data=>data.department)[0];
       setSelectedSitesDepartment(depts);
     },[departmentLevelSite])
-
-    useEffect(()=>{
-      let selectedUserData = user?.filter(data=>data?.id === selectContractManager)?.map(data=>data)[0];
-      setUserDetails({firstName:selectedUserData?.name?.firstName,middleName:'',lastName:selectedUserData?.name?.lastName,suffix:selectedUserData?.name?.suffix,email:selectedUserData?.email?.officialEmail,phone:selectedUserData?.communication?.mobileNumber})
-      setAddress({city:selectedUserData?.address?.city,state:selectedUserData?.address?.state,zipcode:selectedUserData?.address?.zipcode});
-      setSiteLevel(selectedUserData?.siteLevelResponsible);
-      setDepartmentLevel(selectedUserData?.departmentLevelResponsible);
-      setNpin({missing:selectedUserData?.npin?.missing,notApplicable:selectedUserData?.npin?.notApplicable,npin:selectedUserData?.npin?.npin});
-      setSelectedRoles(selectedUserData?.roles);
-      setContracts(selectedUserData?.contracts);
-      setSiteList(selectedUserData?.sites?.sites);
-    }, [user,selectContractManager])
 
     const getTitleData = () => {
       let temp = [];
@@ -107,14 +99,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     setDepartmentTitleValues(deptValue);
     }
 
-    const getSites = async () => {
-      const {data:sites} = await GET('entity-service/sites');
-      if(sites && selectContractManager === ''){
-        setSiteList(sites);
-        getTitleData();
-      }
-    }
-
     const handleRoles = (value) => {
         if (value !== '0') {
           const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
@@ -141,15 +125,15 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     const getRolesData = async() => {
       const {data: roles} = await GET(`user-management-service/roles`);
       if(roles){
-        console.log('roles',roles);
         setRoles(roles);
       }
     }
 
-    const getContractName = async() => {
+    const getContractDetail = async() => {
       const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
       if(contractData){
         setContractName(contractData?.contractName?.contractName);
+        setSiteList(contractData?.contractDetail?.site?.sites);
       }
     }
 
@@ -162,35 +146,36 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     }
 
     const handleSave = async(type) => {
-      if(selectContractManager === ''){
-        ErrorToaster('Select a user to contract');
-        return;
-      }
-      let isContractpresent = contracts?.filter(data=>data?.id === contractId)?.map(data=>data)?.length || 0;
-      if(!isContractpresent){
-        let temp = contracts;
-        temp.push({
+        let contractData = [];
+        contractData.push({
           "id": contractId,
           "contractName": {
             "contractName": contractName
-          }
+          },
+          "roles":[],
+          "sites":{
+            "sites":getSiteData()
+          },
+          "departmentLevelResponsible":departmentLevel,
+          "siteLevelResponsible":siteLevel,
         });
-        setContracts(temp);
-      }
+
         const data = {
-            "id": selectContractManager,
             "name": {
                 "firstName": userDetails?.firstName,
                 "lastName": userDetails?.lastName,
                 "suffix": userDetails?.suffix
               },
               "userType": "ADMIN",
-              "contracts": contracts,
+              "contracts": contractData,
               "title": {
-                "title": "string"
+                "title": ''
               },
               "email": {
                 "officialEmail": userDetails?.email
+              },
+              "password": {
+                "password": ''
               },
               "communication": {
                 "personalEmail": userDetails?.email,
@@ -208,88 +193,42 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                 "tenantId": TenantID
               },
               "sites": {
-                "sites": getSiteData(),
+                "sites": [],
               },
               "serviceProviderType": providerType,
-              "licenceDetails": {
-                "medicalLicense": "string",
-                "licenseExpiryDate": "2022-07-26",
-                "deaNumber": "string",
-                "deaExpiryDate": "2022-07-26",
-                "boardCertification": [
-                  "string"
-                ]
-              },
-              "userProxy": {
-                "myProxy": {
-                  "proxyIdList": [
-                    {
-                      "id": "string",
-                      "name": "string"
-                    }
-                  ]
-                },
-                "proxyFor": {
-                  "proxyIdList": [
-                    {
-                      "id": "string",
-                      "name": "string"
-                    }
-                  ]
-                }
-              },
-              "activated": true,
-              "siteLevelResponsible": setSiteLevel,
-              "departmentLevelResponsible": departmentLevel,
+              "activated": false,
               "blocked": false,
               "npin": {
                 "missing": npin?.missing,
-                "notApplicable": npin.na,
+                "notApplicable": npin?.na,
                 "npin": npin?.npin
               }
           }
-          const response = await PUT(`user-management-service/user`, JSON.stringify(data));
-            if(response){
-                SuccessToaster('User Added Successfully');
-            }
-            else {
-                ErrorToaster('Unexpected Error');
-            }
-            if(type === 'Add More'){
-              setUserDetails({firstName:'',middleName:'',lastName:'',suffix:'',email:'',phone:''});
-              setProviderType('');
-              setAddress({city:'',state:'',zipcode:''});
-              setSiteLevel(false);
-              setDepartmentLevel(false);
-              setSelectedRoles([]);
-              setNpin({npin:'',missing:false,na:false});
-            }else{
-              getNewServiceProviderDialog(false);
-            }
+          await POST(`user-management-service/user/register`, JSON.stringify(data))
+          .then(response=>{
+              SuccessToaster('User Added Successfully');
+          })
+          .catch(error=>{
+              ErrorToaster('Unexpected Error');
+          })
+          setUserDetails({firstName:'',middleName:'',lastName:'',suffix:'',email:'',phone:''});
+          setProviderType('');
+          setAddress({city:'',state:'',zipcode:''});
+          setSiteLevel(false);
+          setDepartmentLevel(false);
+          setSelectedRoles([]);
+          setDepartmentTitleValues([]);
+          setSiteTitleValues([]);
+          setNpin({npin:'',missing:false,na:false});
+          if(type !== 'Add More'){
+            getNewServiceProviderDialog(false);
+          }
     }
     const getUsersData = async() => {
       const {data: user} = await GET('user-management-service/user');
       if(user){
         setUsers(user);
       }
-    }
-
-    const getAddNewManagerDialog = (value) => {
-      setAddNewManagerDialog(value);
-    }
-
-    const items = useMemo(
-        () =>
-          user.map((option) => ({
-            id: option?.id,
-            value: `${option.name.firstName} ${option.name.lastName} ${option.name.suffix}`,
-            ...option,
-          })),
-        [user],
-      );
-
-    const onSelect = (selectedItem) => {
-      setSelectContractManager(selectedItem.id);
     }
 
     const onSelectDepartment = (deptId) => {
@@ -425,21 +364,41 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
             </div>
             <div className={style.extensionBorder}></div>
             <div className={`${style.serviceBoxStyle}`}>
-            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
-                <div className={style.displayInRow}>
-                <div>
-                    <DatalistInput items={items || []} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager)?.map(data=>data?.value)[0]}/>
-                    {!items?.map(data=>data.name?.firstName)?.includes(userName) && !userName === '' &&(
-                        <div className={style.addBoxDescription}>
-                        The Contract Manager you are trying to add is not a registered
-                        user. to add a new contract manager click on the "ADD" button.
-                        </div>
-                    )}
-                </div>
-                <button className={`${style.disabledButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={() =>setAddNewManagerDialog(true)}>ADD</button>
-                </div>
-            </div>
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={style.extentionLableStyle}>Contractor Name*</div>
+                  <div className={style.grid3}>
+                  <InputGroup className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e)=>handleUserData('firstName',e.target.value)}/>
+                  <InputGroup className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e)=>handleUserData('middleName',e.target.value)}/>
+                  <InputGroup className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e)=>handleUserData('lastName',e.target.value)}/>
+                  </div>
+              </div>
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={style.extentionLableStyle}>Service Provider Type*</div>
+                  <div className={style.grid3}>
+                      <select
+                          name="class"
+                          id="Class"
+                          value={providerType}
+                          className={style.fullWidth}
+                          onChange={(e)=>setProviderType(e.target.value)}>
+                              <option value="Text" >
+                              Text
+                              </option>
+                              <option value="Physician" >
+                              Physician
+                              </option>
+                              <option value="Nurse" >
+                              Nurse
+                              </option>
+                              <option value="Admin Staff" >
+                              Admin Staff
+                              </option>
+                              <option value="Other" >
+                              Other
+                              </option>
+                      </select>
+                  </div>
+              </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>NPIN*</div>
                   <div className={style.grid3}>
@@ -462,14 +421,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                   </RadioGroup>
                   </div>
               </div>
-              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                  <div className={style.extentionLableStyle}>Contractor Name*</div>
-                  <div className={style.grid3}>
-                  <InputGroup className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e)=>handleUserData('firstName',e.target.value)}/>
-                  <InputGroup className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e)=>handleUserData('middleName',e.target.value)}/>
-                  <InputGroup className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e)=>handleUserData('lastName',e.target.value)}/>
-                  </div>
-              </div>
 
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Suffix*</div>
@@ -486,59 +437,15 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Service Provider Type*</div>
-                    <div className={style.grid3}>
-                        <select
-                            name="class"
-                            id="Class"
-                            value={providerType}
-                            className={style.fullWidth}
-                            onChange={(e)=>setProviderType(e.target.value)}>
-                                <option value="Text" >
-                                Text
-                                </option>
-                                <option value="Physician" >
-                                Physician
-                                </option>
-                                <option value="Nurse" >
-                                Nurse
-                                </option>
-                                <option value="Admin Staff" >
-                                Admin Staff
-                                </option>
-                                <option value="Other" >
-                                Other
-                                </option>
-                        </select>
-                    </div>
-                </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Email Contractor id*</div>
                     <div className={style.displayInRow}>
                         <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e)=>handleUserData('email',e.target.value)}/>
-                        {
-                          // <RadioGroup
-                          //     inline={true}
-                          //     className={`${style.marginTop} ${style.marginLeft20}`}
-                          // >
-                          //     <Radio label="Not Available" value="Not Available" />
-                          // </RadioGroup>
-                        }
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Cell Phone*</div>
                     <div className={style.grid2}>
                     <InputGroup placeholder="Numeric" value={userDetails?.phone} className={style.fullWidth} onChange={(e)=>handleUserData('phone',e.target.value)}/>
-                    {
-                      // <RadioGroup
-                      //     inline={true}
-                      //     className={`${style.marginTop} ${style.leftAlign}`}
-                      //     selectedValue={"Missing"}
-                      // >
-                      //     <Radio label="Not Available" value="Not Available" />
-                      // </RadioGroup>
-                    }
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -564,7 +471,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                     </div>
                     {siteLevel && (
                         <div className={`${style.siteLevelBoxStyle}`}>
-                          {/* {selectedContract === "Multiple Contractor" && ( */}
                           <div className={`${style.siteLevelGrid}`}>
                                     <div className={style.marginTop}>Site*</div>
                                     <select
@@ -633,7 +539,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                     <div>
                         {departmentLevel && (
                             <div className={`${style.departmentLevelBoxStyle}`}>
-                              {/* {selectedContract === "Multiple Contractor" && ( */}
                                 <div className={`${style.siteLevelGrid}`}>
                                     <div className={style.marginTop}>Site*</div>
                                     <select
@@ -652,7 +557,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                                             ))}
                                     </select>
                                   </div>
-                                {/* )} */}
                                 <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                                     <div className={style.marginTop}>Department*</div>
                                     <select
@@ -694,7 +598,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                                   <Button variant="outlined" onClick={() => handleDepartmentLevelValues()}>Add</Button>
                                 </div>
                                 <TagInput
-                                    // placeholder="Enter tags/keywords relative to the post"
                                     values={departmentTitleValues}
                                     className={`${style.marginTop20}`}
                                     onRemove={handleDeptRemove}
@@ -705,10 +608,33 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                             </div>
                         )}
                     </div>
+                    </div>
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                         <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
+                         <div className={style.displayInRow}>
+                             <select
+                                 name="class"
+                                 id="Class"
+                                 onChange={(e) => handleRoles(e.target.value)}
+                                 className={`${style.fullWidth} ${style.marginLeft20} `}>
+                                     <option value="0" >
+                                     Select Role-multi select
+                                     </option>
+                                     {roles?.map((data, index) => (
+                                     <option key={`${data}-${index}`} value={data?.roleName} >
+                                         {data?.roleName}
+                                     </option>
+                                     ))}
+                             </select>
+                          </div>
+                             <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                             {rolesTags}
+                             </div>
+                     </div>
                 </div>
             </div>
 
-            </div>
+
 
             <div>
                 <div className={`${style.floatRight} ${style.marginTop20}`}>
@@ -717,9 +643,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                 </div>
             </div>
           </div>
-          {addNewManagerDialog && (
-              <AddContractUser getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUsersData} contractId={contractId} contractName={contractName}/>
-          )}
         </Dialog>
     )
 }

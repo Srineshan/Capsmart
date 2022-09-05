@@ -99,7 +99,7 @@ const TasksAndAlerts = () => {
                     </div>
                 </div>
                 <div className={style.bigCardGrid}>
-                    <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
+                    <div className={`${style.bigCardStyleEntryPage} ${style.bigCalendarLeftCardWidth}`}>
                         <h5 className={style.statisticsHeading}>February 2022 Summary Statistics</h5>
                         <div className={style.scrollStyle}>
                             <h5 className={`${style.textAlignLeft} ${style.sideBarHeadingStyle}`}>To Do Status</h5>
@@ -149,7 +149,7 @@ const TasksAndAlerts = () => {
                         </div>
                         <img src={PageFooterIcon} alt="footer" className={style.footerIconStyle} />
                     </div>
-                    <div className={style.bigCardStyle}>
+                    <div className={style.bigCardStyleEntryPage}>
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                             <p className={`${style.marginLeft30} ${style.activeContractsWidth}`}>{`{{Today Date}}`}</p>
                             <div className={`${style.displayInRow}`}>

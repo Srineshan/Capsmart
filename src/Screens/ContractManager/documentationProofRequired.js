@@ -5,21 +5,42 @@ import {ErrorToaster, SuccessToaster}  from './../../utils/toaster';
 import CompletedIcon from './../../images/completedIcon.png';
 import RedWarning from './../../images/redWarning.png';
 import FileImg from './../../images/fileImg.png';
+import AddProofOfDocumentation from './addProofOfDocumentation';
+
 import style from './index.module.scss';
 
-const DocumentationProofRequired = ({getShowAlertDialog, getViewPage5, getCurrentPage, contractId}) => {
+const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, isMultipleContract}) => {
   const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] = useState(false);
   const [documents,setDocuments] = useState([]);
   const [fileToDelete,setFileToDelete] = useState('');
+  const [showProofDialog,setShowProofDialog] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [userLength, setUserLength] = useState(0);
 
   useEffect(()=>{
     getDocumentationData();
-  },[])
+    getUserData();
+  },[showProofDialog])
+
+  useEffect(() => {
+    setUserLength(users?.length);
+  }, [users])
+
+  const getShowProofDialog = (value) => {
+    setShowProofDialog(value);
+  }
 
   const getDocumentationData = async() => {
     const {data: documentsData} = await GET(`contract-managment-service/contracts/${contractId}/DocumentationProof`);
     if(documentsData){
       setDocuments(documentsData?.documentProofs);
+    }
+  }
+
+  const getUserData = async () => {
+    const { data: userData } = await GET(`user-management-service/user?contractID=${contractId}`);
+    if (userData) {
+      setUsers(userData);
     }
   }
 
@@ -38,6 +59,8 @@ const DocumentationProofRequired = ({getShowAlertDialog, getViewPage5, getCurren
   }
 
     return(
+      <>
+      {userLength !== 0 ? (
         <div className={style.cloneBlockStyle}>
             <div className={style.tableHeight}>
                 <div>
@@ -46,7 +69,7 @@ const DocumentationProofRequired = ({getShowAlertDialog, getViewPage5, getCurren
                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                     <div className={`${style.extentionLableStyle} ${style.marginTop20} ${style.marginLeft20} ${style.blackText}`}>DOCUMENT DATA STATUS</div>
                     <button className={`${style.addCotractorButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.marginRight20}`}
-                        onClick={()=> getShowAlertDialog(true)} >ADD PROOF OF DOCUMENTATION</button>
+                        onClick={()=>{setShowProofDialog(true)}} >ADD PROOF OF DOCUMENTATION</button>
                 </div>
                 <div className={`${style.documentPageHeader} ${style.marginTop10}`}>
                     <p className={style.documentProofTextWidth}></p>
@@ -62,7 +85,7 @@ const DocumentationProofRequired = ({getShowAlertDialog, getViewPage5, getCurren
                         <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
                         <p className={style.documentProofDataTextWidth}>{data?.podType?.type}</p>
                         <p className={style.documentProofDataTextWidth}>{data?.dataMap?.dataMap?.privilegingFacility?.siteName?.siteName}</p>
-                        <p className={style.documentProofDataTextWidth}>name</p>
+                        <p className={style.documentProofDataTextWidth}>{users?.filter(userData => data?.dataMap?.dataMap?.contractedServiceProvider === userData?.id)?.map(data => data)[0]?.name?.firstName} {users?.filter(userData => data?.dataMap?.dataMap?.contractedServiceProvider === userData?.id)?.map(data => data)[0]?.name?.lastName}</p>
                         <div className={`${style.displayInRow} ${style.alignCenter}`}>
                             <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />
                             <p className={style.documentProofDataTextWidth}>{data?.file?.fileName !== '' ? data?.file?.fileName : 'Missing'}</p>
@@ -124,7 +147,33 @@ const DocumentationProofRequired = ({getShowAlertDialog, getViewPage5, getCurren
                     onClick={()=>{getViewPage5(true);getCurrentPage('Contracted Services Specification')}}>CONTINUE</button>
                 </div>
             </div>
+
+            {
+              showProofDialog &&
+              <AddProofOfDocumentation getShowProofDialog={getShowProofDialog} isMultipleContract={isMultipleContract} contractId={contractId}/>
+            }
         </div>
+        ) : (
+          <>
+            <div className={style.cloneBlockStyle}></div>
+            <Dialog isOpen={true} className={`${style.cloneDialog}`} canOutsideClickClose={false}>
+              <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
+                <div className={style.spaceBetween}>
+                  <p className={style.extensionStyle}>NO USERS FOUND</p>
+                </div>
+                <div className={style.extensionBorder}></div>
+                <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
+                  No contractor assigned for the contract! First add contractor to assign the services.
+                </p>
+                <div className={`${style.positionCenter} ${style.marginTop20}`}>
+                  <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => getCurrentPage('Contracted Services Provider(s)')}>ADD CONTRACTOR</button>
+                </div>
+                <br />
+              </div>
+            </Dialog>
+          </>
+        )}
+      </>
     )
 }
 

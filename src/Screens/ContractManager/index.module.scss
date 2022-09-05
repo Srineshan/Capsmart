@@ -69,6 +69,12 @@ body{
     grid-gap: 20px;
 }
 
+.grid4{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
 .bigCardGrid{
     display: grid;
     grid-template-columns: 1fr 4fr;
@@ -350,7 +356,7 @@ body{
 
 .tableHeader{
     background: #BEB9F2 0% 0% no-repeat padding-box;
-    height: 50px;
+    min-height: 50px;
     width: 96%;
     margin-left: 2%;
     border-radius: 6px;
@@ -377,7 +383,8 @@ body{
     border-radius: 6px;
     text-align: left;
     display: grid;
-    grid-template-columns: 10% 30% 25% 25% 10%;
+    grid-template-columns: 10% 28% 24% 24% 10%;
+    grid-gap: 10px;
 }
 
 .documentProofInputWidth{
@@ -390,13 +397,31 @@ body{
 
 .tableData{
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    height: 50px;
+    min-height: 50px;
     width: 96%;
     margin-left: 2%;
     border-radius: 6px;
     display: flex;
     align-items: center;
     margin-top: 5px;
+}
+
+.activeContractGrid{
+    display: grid;
+    grid-template-columns: 5% 10% 10% 10% 10% 10% 7% 10% 10% 5%;
+    grid-gap: 10px;
+}
+
+.draftContractGrid{
+    display: grid;
+    grid-template-columns: 8% 10% 10% 10% 10% 10% 10% 12% 10%;
+    grid-gap: 10px;
+}
+
+.expiredContractGrid{
+    display: grid;
+    grid-template-columns: 10% 12% 10% 12% 12% 12% 10% 12%;
+    grid-gap: 10px;
 }
 
 .documentDataProof{
@@ -421,7 +446,8 @@ body{
     align-items: center;
     margin-top: 5px;
     display: grid;
-    grid-template-columns: 10% 30% 25% 25% 10%;
+    grid-template-columns: 10% 28% 24% 24% 10%;
+    grid-gap: 10px;
 }
 
 .checkBoxHeader{
@@ -445,9 +471,7 @@ body{
     color: #52575D;
     text-transform: uppercase;
     opacity: 1;
-    margin-right: 20px;
     text-align: left;
-    width: 10%;
     margin-top: 10px;
 }
 
@@ -478,10 +502,7 @@ body{
     letter-spacing: 0px;
     color: #52575D;
     text-transform: uppercase;
-    opacity: 1;
-    margin-right: 20px;
-    text-align: center;
-    width: 10%;
+    text-align: left;
     margin-top: 10px;
 }
 
@@ -591,10 +612,6 @@ body{
     background: #D8D7EE 0% 0% no-repeat padding-box;
     opacity: 0.99;
     width: 40px;
-    position: absolute;
-    right: 50;
-    margin-top: -160px;
-    margin-left: 70%;
 }
 
 .poweredBy{
@@ -887,6 +904,10 @@ body{
     width: 350px;
 }
 
+.addContractTextFieldWidth{
+    width: 400px;
+}
+
 select {
     line-height: 1.3;
     padding: 0.6em 1.4em 0.5em 0.8em;
@@ -1102,6 +1123,12 @@ select {
     border-radius: 10px;
   }
 
+  @media screen and (max-width: 1350px) {
+    .newContractButtonStyle, .newContractOutlinedButton{
+        width: 140px;
+    }
+  }
+
   .floatRight{
       float: right;
   }
@@ -1174,13 +1201,13 @@ select {
     background: #EBF2F7 0% 0% no-repeat padding-box;
     border-radius: 10px;
     opacity: 1;
-    height: 80px;
+    min-height: 80px;
     min-width: 100%;
     cursor: pointer;
 }
 
 .completedEntityCardStyle{
-    background-color: #BEB9F2;
+    background-color: #d7d4f7;
     color: black;
     font-weight: 600 !important;
     display: grid;
@@ -1365,6 +1392,16 @@ select {
     border-radius: 4px !important;
   }
 
+  .serviceProvidedEditableTextStyle{
+    height: 35px;
+    display: flex;
+    align-items: center;
+    padding-left:10px;
+    padding-top: 8px;
+    width: 50px;
+    border-radius: 4px !important;
+  }
+
   .editableTextThresholdStyle{
     height: 35px;
     display: flex;
@@ -1372,7 +1409,7 @@ select {
     text-align: left;
     padding-left:15px;
     padding-top: 8px;
-    width: 50px;
+    width: 60px;
     border-radius: 4px !important;
   }
 
@@ -1391,9 +1428,13 @@ select {
     align-items: center;
     text-align: left;
     padding-top: 8px;
-    padding-left:20px;
+    padding-left:10px;
     width: 50px;
     border-radius: 4px !important;
+  }
+
+  .editableTextStyle4DaysWidth{
+    width: 55px !important;
   }
 
   .textElementWithoutBackgroundDays{
@@ -1420,8 +1461,8 @@ select {
     height: 35px;
     display: flex;
     align-items: center;
-    padding: 8px 30px;
-    width: 75px;
+    padding: 8px 15px;
+    width: 75px !important;
     border-radius: 4px !important;
   }
 
@@ -1798,4 +1839,9 @@ select {
 
   .alternativeBackgroundColor{
     background-color: #ebe9fb !important;
+}
+
+.dateInputStyle{
+    height: 40px !important;
+    padding: 0px;
 }

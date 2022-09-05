@@ -28,7 +28,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
     const [timesheetFields, setTimesheetFields] = useState([]);
     const [contractedServices, setContractedServices] = useState([]);
     const [selectedItems, setSelectedItems] = useState();
-    const limit = 2;
+    const limit = 3;
     const [timeSheetLabelData,setTimeSheetLabelData] = useState([]);
     const [timesheetValues, setTimesheetValues] = useState([]);
     const [timesheetActivity, setTimesheetActivity] = useState([{
@@ -100,9 +100,25 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                     }
                 })
             })
-            data.activities = temp;
-            data.timesheetLabel = timeSheetLabelData?.[index]?.label;
-            data.servicePeriod = timeSheetLabelData?.[index]?.value;
+            let tempFor1TimeSheet = [];
+            contractedServices?.map((data) => {
+                tempFor1TimeSheet.push({
+                    activityType: {
+                        activityType: data?.activityType?.activityType
+                    }, performingActivity: {
+                        activity: data?.performingActivity?.activity
+                    }
+                })
+            })
+            if(timeSheetCount > 1){
+                data.activities = temp;
+                data.timesheetLabel = timeSheetLabelData?.[index]?.label;
+                data.servicePeriod = timeSheetLabelData?.[index]?.value;
+            } else {
+                data.activities = tempFor1TimeSheet;
+                data.timesheetLabel = timeSheetLabelData?.[index]?.label;
+                data.servicePeriod = timeSheetLabelData?.[index]?.value;
+            }
         })
         setTimesheetValues(timeSheetValueData);
     }
@@ -118,8 +134,12 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
       }else{
         temp[i] = {label: temp[i]?.label, value:value}
       }
+      console.log('entered', temp)
       setTimeSheetLabelData(temp);
+      formatActivities();
     }
+
+    console.log(timeSheetLabelData)
 
     const handleContractedActivityTagsRemove = (tags,index) => {
       setContractedActivityTags(contractedActivityTags?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data));
@@ -219,6 +239,8 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
           setContractedActivityTags(temp);
         }
     };
+
+    console.log(timesheetValues)
 
     const handleContinue = async() => {
         let data = {
@@ -320,7 +342,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                                 </select>
                             </div>
                         )}
-                        {timeSheetCount === 2 && (
+                        {timeSheetCount > 1 && (
                             <div className={style.displayInRow}>
                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} ${style.marginTop10}`}>
                                     <EditableText  placeholder="HH" type='number' className={style.editableTextSpecifiedStyle}
@@ -397,7 +419,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                 <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Payment & Compensation')}}>BACK</button>
                 <div>
                     <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
-                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') }}>CONTINUE</button>
+                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleContinue(); getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') }}>CONTINUE</button>
                 </div>
             </div>
         </div>

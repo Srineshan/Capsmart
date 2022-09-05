@@ -7,6 +7,10 @@ import DatalistInput from 'react-datalist-input';
 import SetupComplete from './setupComplete';
 import {format} from 'date-fns';
 import { DateInput } from "@blueprintjs/datetime";
+import TextField from '@mui/material/TextField';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import {GET, TenantID, PUT, isSuperAdminAccess} from './../dataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step23.png';
@@ -42,16 +46,16 @@ const AppSubscription = ({getActiveStep}) => {
             contractName: "",
             contractID: "",
             missing:false,
-            startDate: new Date(),
-            endDate: new Date(),
-            date: new Date(),
+            startDate: null,
+            endDate: null,
+            date: null,
             contractContinuationPolicy: "AUTORENEWAL",
         }
     );
     const [trial,setTrial] = useState({
       trialPeriod:7,
-      startDate:new Date(),
-      endDate: new Date()
+      startDate:null,
+      endDate: null
     })
     const [contractFiles,setContractFiles] = useState([{type:'',name:'',desc:'',file:null,path:''}])
 
@@ -76,9 +80,9 @@ const AppSubscription = ({getActiveStep}) => {
             contractName: contractData?.contractName,
             contractID: contractData?.contractID,
             missing:false,
-            startDate: contractData?.contractTermPeriod?.startDate !== undefined? new Date(contractData?.contractTermPeriod?.startDate) : new Date(),
-            endDate: contractData?.contractTermPeriod?.endDate !== undefined ? new Date(contractData?.contractTermPeriod?.endDate) : new Date(),
-            date: contractData?.plannedGoLive?.date !== undefined ? new Date(contractData?.plannedGoLive?.date) : new Date(),
+            startDate: contractData?.contractTermPeriod?.startDate !== undefined? new Date(contractData?.contractTermPeriod?.startDate) : undefined,
+            endDate: contractData?.contractTermPeriod?.endDate !== undefined ? new Date(contractData?.contractTermPeriod?.endDate) : undefined,
+            date: contractData?.plannedGoLive?.date !== undefined ? new Date(contractData?.plannedGoLive?.date) : undefined,
             contractContinuationPolicy: contractData?.contractContinuationPolicy,
         })
     }
@@ -129,6 +133,12 @@ const AppSubscription = ({getActiveStep}) => {
         "entityDisplayId": entityData?.entityDisplayId,
         "customerType": entityData?.customerType,
         "sites": entityData?.sites,
+        "subdomain":entityData?.subdomain,
+        "multiSiteEntity":entityData?.multiSiteEntity,
+        "canPrimarySiteToUseApp":entityData?.canPrimarySiteToUseApp,
+        "accountManager":entityData?.accountManager,
+        "appUserRoles":entityData?.appUserRoles,
+
         "subscriptionPlan": {
           "planName": plan?.planName || 'BASIC',
           "allowableRegisteredUsers": {
@@ -141,9 +151,6 @@ const AppSubscription = ({getActiveStep}) => {
           "billingFrequency": plan?.billingFrequency || 'MONTHLY',
           "discount": {
             "discount": parseInt(plan?.discount)
-          },
-          "plannedToGoLive": {
-            "date": format(contract?.date, 'yyyy-MM-dd').toString(),
           },
           "poaNumber": {
             "poaNumber": contract?.poaNumber,
@@ -166,16 +173,16 @@ const AppSubscription = ({getActiveStep}) => {
         "contractID": contract?.contractID,
         "contractDocuments": [],
         "contractTermPeriod": {
-          "startDate": format(contract?.startDate, 'yyyy-MM-dd').toString(),
-          "endDate": format(contract?.endDate, 'yyyy-MM-dd').toString(),
+          "startDate": contract?.startDate ? format(contract?.startDate, 'yyyy-MM-dd').toString() : null,
+          "endDate": contract?.endDate ? format(contract?.endDate, 'yyyy-MM-dd').toString() : null,
         },
         "plannedGoLive": {
-          "date": format(contract?.date, 'yyyy-MM-dd').toString(),
+          "date": contract?.date ? format(contract?.date, 'yyyy-MM-dd').toString() : null,
         },
         "contractContinuationPolicy": contract?.contractContinuationPolicy,
         "fullyExecutedContractOnFile": fullyExecutedContract,
-      },
       }
+    }
       if(isUpdated){
         await PUT('entity-service/entity',data)
           .then(response=>{
@@ -226,34 +233,44 @@ const AppSubscription = ({getActiveStep}) => {
             <div className={style.stepperMargin}>
                 <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>
-                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                              <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
                     <div onClick={() => getActiveStep('siteInformation')}>
-                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                              <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
                     {isSuperAdminAccess && (
                     <div onClick={() => getActiveStep('entitySystemAdmin')}>
-                      <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                          <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                      <div className={style.justifyCenter}>
+                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                            <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                        </div>
                       </div>
                       <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div>
                     )}
                     <div onClick={() => getActiveStep('siteUsers')}>
-                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                              <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP USERS</p>
                     </div>
                     <div onClick={() => getActiveStep('appSubscription')}>
-                        <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
-                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
+                              <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP SUBSCRIPTION</p>
                     </div>
@@ -441,30 +458,61 @@ const AppSubscription = ({getActiveStep}) => {
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Contract Term Period*</div>
                                         <div className={style.displayInRow}>
-                                        <DateInput
+                                        {/* <DateInput
                                             formatDate={date => date.toLocaleDateString()}
                                             parseDate={str => new Date(str)}
                                             placeholder={"MM-DD-YYYY"}
-                                            value={contract?.startDate || new Date()}
+                                            value={contract?.startDate}
                                             onChange={(e)=> handleContract('startDate',e)}
                                             rightElement={calendarIcon()}
-                                        />
+                                        /> */}
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                          <DatePicker
+                                            value={contract?.startDate}
+                                            onChange={(newValue) => {
+                                              handleContract('startDate',newValue);
+                                            }}
+                                            InputProps={{
+                                              style: {
+                                                  fontSize: 14,
+                                                  height: 30,
+                                              }
+                                          }}
+                                            renderInput={(params) => <TextField  {...params} />}
+                                          />
+                                        </LocalizationProvider>
                                         <p className={style.toStyle}>To</p>
-                                        <DateInput
+                                        {/* <DateInput
                                             formatDate={date => date.toLocaleDateString()}
                                             parseDate={str => new Date(str)}
                                             placeholder={"MM-DD-YYYY"}
-                                            value={contract?.endDate || new Date()}
+                                            value={contract?.endDate}
                                             onChange={(e)=> handleContract('endDate', e)}
                                             minDate={contract?.startDate || new Date()}
                                             rightElement={calendarIcon()}
-                                        />
+                                        /> */}
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                          <DatePicker
+                                            value={contract?.endDate}
+                                            onChange={(newValue) => {
+                                              handleContract('endDate', newValue);
+                                            }}
+                                            minDate={contract?.startDate}
+                                            InputProps={{
+                                              style: {
+                                                  fontSize: 14,
+                                                  height: 30,
+                                              }
+                                          }}
+                                            renderInput={(params) => <TextField  {...params} />}
+                                          />
+                                        </LocalizationProvider>
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Planned Go Live</div>
                                         <div className={style.displayInRow}>
-                                        <DateInput
+                                        {/* <DateInput
                                             formatDate={date => date.toLocaleDateString()}
                                             parseDate={str => new Date(str)}
                                             placeholder={"MM-DD-YYYY"}
@@ -472,7 +520,23 @@ const AppSubscription = ({getActiveStep}) => {
                                             onChange={(e)=> handleContract('date', e)}
                                             minDate={contract?.startDate || new Date()}
                                             rightElement={calendarIcon()}
-                                        />
+                                        /> */}
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                          <DatePicker
+                                            value={contract?.date}
+                                            onChange={(newValue) => {
+                                              handleContract('date', newValue);
+                                            }}
+                                            minDate={contract?.startDate}
+                                            InputProps={{
+                                              style: {
+                                                  fontSize: 14,
+                                                  height: 30,
+                                              }
+                                          }}
+                                            renderInput={(params) => <TextField  {...params} />}
+                                          />
+                                        </LocalizationProvider>
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -572,16 +636,31 @@ const AppSubscription = ({getActiveStep}) => {
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>Trial Start Date</div>
                                         <div className={style.displayInRow}>
-                                        <DateInput
+                                        {/* <DateInput
                                             formatDate={date => date.toLocaleDateString()}
                                             parseDate={str => new Date(str)}
                                             placeholder={"MM-DD-YYYY"}
                                             value={trial?.startDate}
                                             onChange={(e)=> handleTrial('startDate', e)}
                                             rightElement={calendarIcon()}
-                                        />
+                                        /> */}
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                          <DatePicker
+                                            value={trial?.startDate}
+                                            onChange={(newValue) => {
+                                              handleTrial('startDate', newValue);
+                                            }}
+                                            InputProps={{
+                                              style: {
+                                                  fontSize: 14,
+                                                  height: 30,
+                                              }
+                                          }}
+                                            renderInput={(params) => <TextField  {...params} />}
+                                          />
+                                        </LocalizationProvider>
                                         <p className={style.toStyle}>To</p>
-                                        <DateInput
+                                        {/* <DateInput
                                             formatDate={date => date.toLocaleDateString()}
                                             parseDate={str => new Date(str)}
                                             placeholder={"MM-DD-YYYY"}
@@ -589,7 +668,23 @@ const AppSubscription = ({getActiveStep}) => {
                                             onChange={(e)=> handleTrial('endDate', e)}
                                             minDate={trial?.startDate}
                                             rightElement={calendarIcon()}
-                                        />
+                                        /> */}
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                          <DatePicker
+                                            value={trial?.endDate}
+                                            onChange={(newValue) => {
+                                              handleTrial('endDate', newValue);
+                                            }}
+                                            minDate={trial?.startDate}
+                                            InputProps={{
+                                              style: {
+                                                  fontSize: 14,
+                                                  height: 30,
+                                              }
+                                          }}
+                                            renderInput={(params) => <TextField  {...params} />}
+                                          />
+                                        </LocalizationProvider>
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>

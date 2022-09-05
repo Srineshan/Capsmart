@@ -8,7 +8,7 @@ import { Checkbox } from '@material-ui/core';
 import SideBar from '../../Components/Sidebar';
 import Navbar from '../../Components/Navbar';
 
-const FeedbackCustomers = ({getSelectedCustomer, getAddContract}) => {
+const FeedbackCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
     return(
         <Fragment>
             <Navbar />
@@ -28,7 +28,7 @@ const FeedbackCustomers = ({getSelectedCustomer, getAddContract}) => {
                             <div className={`${style.cardStyle}`} onClick={() => getSelectedCustomer('ACTIVE CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>ACTIVE CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>4</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data=>data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.red}>1 </span> RENEWAL PAST DUE</span>
                                         <span><span className={style.yellow}>1 </span> AUTO RENEWED</span>
@@ -39,7 +39,7 @@ const FeedbackCustomers = ({getSelectedCustomer, getAddContract}) => {
                             <div className={style.cardStyle} onClick={() => getSelectedCustomer('IN-PROGRESS / TRIAL CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>IN-PROGRESS / TRIAL CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>3</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data=>data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.green}>1 </span> ON TRIAL</span>
                                         <span><span className={style.yellow}>1 </span> OVER 30 DAYS</span>
@@ -60,7 +60,7 @@ const FeedbackCustomers = ({getSelectedCustomer, getAddContract}) => {
                             <div className={`${style.cardStyle} ${style.selectedContractBackground}`} onClick={() => getSelectedCustomer('FEEDBACK TICKETS')}>
                                 <h5 className={`${style.headingForContracts}`}>FEEDBACK TICKETS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>5</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>3</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.green}>1 </span> NEW</span>
                                         <span><span className={style.yellow}>1 </span> HIGH PRIORITY</span>

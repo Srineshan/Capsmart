@@ -103,7 +103,7 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
                             <div className={style.cardStyle} onClick={() => getSelectedCustomer('FEEDBACK TICKETS')}>
                                 <h5 className={`${style.headingForContracts}`}>FEEDBACK TICKETS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>5</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>3</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.green}>1 </span> NEW</span>
                                         <span><span className={style.yellow}>1 </span> HIGH PRIORITY</span>

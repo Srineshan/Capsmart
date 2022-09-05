@@ -37,6 +37,7 @@ import AbsenseReasonsByIndustries from './Screens/ReferenceList/absenseReasonsBy
 import SuffixByIndustries from './Screens/ReferenceList/suffixByIndustries';
 import ContractedServiceProvidedByIndustries from './Screens/ReferenceList/contractedServiceProvider';
 import {Auth} from './utils/auth'
+import Thankyou from './Screens/SuperAdminDashboard/thankyou';
 
 const App = ({props}) => {
   const [accessToken,setAccessToken] = useState(Auth());
@@ -47,18 +48,17 @@ const App = ({props}) => {
       let authValue = cookie.get('user');
       setAccessToken(authValue);
     }
-    if(accessToken === false && window.location.pathname !== '/'){
-      window.location.pathname = '/';
+    if(accessToken === false && (window.location.pathname !== '/app' && !window.location.pathname.includes('/setPassword'))){
+      window.location.pathname = '/app';
     }
   },[window.location.pathname])
-  if(accessToken === false && window.location.pathname !=='/'){
-    window.location.pathname = '/';
-    history.push('/');
+  if(accessToken === false && (window.location.pathname !=='/app' && !window.location.pathname.includes('/setPassword'))){
+    window.location.pathname = '/app';
+    history.push('/app');
   }
 
-
   return (
-    <Router>
+    <Router basename="/app">
       <div className="App">
         {
           accessToken !== false ?
@@ -68,7 +68,7 @@ const App = ({props}) => {
           <Route  path="/contracts" element={<ActiveContracts />}/>
           <Route  path="/user" element={<Users />}/>
           <Route  path="/pages" element={<EntryPage />}/>
-          <Route  path="/setPassword" element={<SetPassword />}/>
+          <Route  path="/setPassword/:userId" element={<SetPassword />}/>
           <Route  path="/welcome" element={<Welcome />}/>
           <Route  path="/entitySetup/:id" element={<EntitySetup />}/>
           <Route  path="/entitySystemAdmin" element={<EntitySystemAdmin />}/>
@@ -84,19 +84,20 @@ const App = ({props}) => {
           <Route  path="/help" element={<HelpHome />}/>
           <Route  path="/tasksAndAlerts" element={<TasksAndAlerts />}/>
           <Route  path="/activeCustomers" element={<CustomerManagement />}/>
-          <Route path="/customerSetup" element={<CustomerSetup />} />
-          <Route path="/referenceList" element={<ReferenceList />} />
-          <Route path="/referenceList/industriesWithEntityTypes" element={<IndustriesWithEntityTypes />} />
-          <Route path="/referenceList/departmentsByEntityTypes" element={<DepartmentsByEntityTypes />} />
-          <Route path="/referenceList/functionalTitles" element={<FunctionalTitles />} />
-          <Route path="/referenceList/boardCertification" element={<BoardCertification />} />
-          <Route path="/referenceList/holidayListByIndustries" element={<HolidayListByIndustries />} />
-          <Route path="/referenceList/terminationReasons" element={<TerminationReasons />} />
-          <Route path="/referenceList/holidayScheduleForCustomers" element={<HolidayScheduleForCustomers />} />
-          <Route path="/referenceList/departmentsForCustomers" element={<DepartmentsForCustomers />} />
-          <Route path="/referenceList/absenseReasonsByIndustries" element={<AbsenseReasonsByIndustries />} />
-          <Route path="/referenceList/suffixByIndustries" element={<SuffixByIndustries />} />
-          <Route path="/referenceList/contractedServiceProviderByIndustries" element={<ContractedServiceProvidedByIndustries />} />
+          <Route  path="/customerSetup" element={<CustomerSetup />} />
+          <Route  path="/referenceList" element={<ReferenceList />} />
+          <Route  path="/referenceList/industriesWithEntityTypes" element={<IndustriesWithEntityTypes />} />
+          <Route  path="/referenceList/departmentsByEntityTypes" element={<DepartmentsByEntityTypes />} />
+          <Route  path="/referenceList/functionalTitles" element={<FunctionalTitles />} />
+          <Route  path="/referenceList/boardCertification" element={<BoardCertification />} />
+          <Route  path="/referenceList/holidayListByIndustries" element={<HolidayListByIndustries />} />
+          <Route  path="/referenceList/terminationReasons" element={<TerminationReasons />} />
+          <Route  path="/referenceList/holidayScheduleForCustomers" element={<HolidayScheduleForCustomers />} />
+          <Route  path="/referenceList/departmentsForCustomers" element={<DepartmentsForCustomers />} />
+          <Route  path="/referenceList/absenseReasonsByIndustries" element={<AbsenseReasonsByIndustries />} />
+          <Route  path="/referenceList/suffixByIndustries" element={<SuffixByIndustries />} />
+          <Route  path="/referenceList/contractedServiceProviderByIndustries" element={<ContractedServiceProvidedByIndustries />} />
+          <Route  path="/thankyou" element={<Thankyou />} />
           </Routes>
         ):(
           <Routes>

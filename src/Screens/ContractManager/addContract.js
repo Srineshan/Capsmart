@@ -9,7 +9,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 const AddContract = ({getAddContract, getNewContract, getContractType, getSelectedContractType, getMethod}) => {
     const [selectedContract, setSelectedContract] = useState('0');
     const [selectedContractOnClick, setSelectedContractOnClick] = useState(false);
-    const [contractType, setContractType] = useState('INDIVIDUAL');
+    const [contractType, setContractType] = useState('');
 
 
     const handleNext = () => {
@@ -48,7 +48,7 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
                         id="Class"
                         value={selectedContract || '0'}
                         onChange={(e) => setSelectedContract(e.target.value)}
-                        className={`${style.textFieldWidth} ${style.marginLeft20}`}>
+                        className={`${style.addContractTextFieldWidth} ${style.marginLeft20}`}>
                             <option value="0" >
                              Select...
                             </option>
@@ -60,7 +60,7 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
                             </option>
                         </select>
                 </div>
-                <div className={style.displayInRow}>
+                <div className={`${style.displayInRow} ${style.marginLeft20}`}>
                     <div className={`${style.contractCards} ${contractType === "INDIVIDUAL" && style.selectedContractCard}`} onClick={() => {setSelectedContractOnClick(true);setContractType('INDIVIDUAL')}}>
                         <div className={style.alignCenter}>
                             <div>

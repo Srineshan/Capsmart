@@ -157,10 +157,15 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
                           name="class"
                           id="Class"
                           className={`${style.fullWidth} ${style.marginLeft20} `}>
-
-                              <option value="Select Customer Type" >
-                                Select Customer Type
-                              </option>
+                          <option value="HEALTHCARE" >
+                          HEALTHCARE
+                          </option>
+                          <option value="FINANCE" disabled>
+                          FINANCE
+                          </option>
+                          <option value="GOVERNMENT" disabled>
+                          GOVERNMENT
+                          </option>
                       </select>
                     </div>
               </div>
@@ -219,10 +224,12 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
                       </div>
                     </div>
               </div>
-              <div className={`${style.addManagerGrid}`}>
-                <div className={style.extentionLableStyle}>Title*</div>
-                <InputGroup value={userData?.title?.title} onChange={(e) => setUserData({...userData, title: {title: e.target.value}})} />
-              </div>
+              {
+                // <div className={`${style.addManagerGrid}`}>
+                //   <div className={style.extentionLableStyle}>Title*</div>
+                //   <InputGroup value={userData?.title?.title} onChange={(e) => setUserData({...userData, title: {title: e.target.value}})} />
+                // </div>
+              }
             </div>
             <div className={` ${style.marginTop20}`}>
             <button className={`${style.outlinedButton} ${style.marginLeft20}`} onClick={() => handleUserBlockDetails()}>BLOCK</button>

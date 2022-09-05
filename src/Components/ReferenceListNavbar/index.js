@@ -7,7 +7,7 @@ import RedBackground from './../../images/redBackground.png';
 import NotificationCount from './../../images/notificationCount.png';
 import File from './../../images/file.png';
 import {Link} from 'react-router-dom';
-import LogoutIcon from './../../images/logoutIcon.png'; 
+import LogoutIcon from './../../images/logoutIcon.png';
 import style from './index.module.scss';
 
 const ReferenceListNavbar = () => {
@@ -32,7 +32,7 @@ const ReferenceListNavbar = () => {
         <div className={style.navbarStyle}>
             <div className={style.spaceBetween}>
             <div className={style.displayInRow}>
-                <img src={logo} alt="Metropolitan Hospital" className={style.logo} />
+                <img src={logo} alt="SAN MATEO MEDICAL CENTER" className={style.logo} />
                 <div className={`${style.menuStyle} ${style.marginLeft30}`}>
                     <p>HOME</p>
                 </div>

@@ -53,9 +53,10 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
         setUserDetails({...userDetails, firstName:userProviderData?.name?.firstName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || ''});
         setProviderType(userProviderData?.serviceProviderType || '');
         setAddress({city:userProviderData?.address?.city || '',state:userProviderData?.address?.state || '',zipcode:userProviderData?.address?.zipcode || ''});
-        setSiteLevel(userProviderData?.siteLevelResponsible);
-        setDepartmentLevel(userProviderData?.departmentLevelResponsible);
-        setSiteList(userProviderData?.sites?.sites);
+        let contractData = userProviderData?.contracts?.filter(data=>data?.id === contractId)?.map(data=>data)[0];
+        setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : [] );
+        setSiteLevel(contractData?.siteLevelResponsible);
+        setDepartmentLevel(contractData?.departmentLevelResponsible);
     }, [])
 
     const getTitleData = () => {
@@ -130,7 +131,6 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
     const getRolesData = async() => {
       const {data: roles} = await GET(`user-management-service/roles`);
       if(roles){
-        console.log('roles',roles);
         setRoles(roles);
       }
     }
@@ -266,6 +266,18 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
     }
 
     const handleSave = async() => {
+      let contractData = userProviderData?.contracts;
+      contractData?.filter(data=>data?.id === contractId)?.map(data=>{
+        let site = {
+          sites:getSiteData()
+        }
+        data.roles = selectedRoles;
+        data.sites =site;
+        data.departmentLevelResponsible = departmentLevel;
+        data.siteLevelResponsible = siteLevel;
+      });
+
+
         const data = {
             "id": userProviderData?.id,
             "name": {
@@ -274,7 +286,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                 "suffix": userDetails?.suffix
               },
               "userType": "ADMIN",
-              "contracts":userProviderData?.contracts,
+              "contracts":contractData,
               "title": {
                 "title": ""
               },
@@ -296,9 +308,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
               "tenant": {
                 "tenantId": TenantID
               },
-              "sites": {
-                "sites": getSiteData()
-              },
+              "sites": userProviderData?.sites,
               "serviceProviderType": providerType,
               "licenceDetails": {
                 "medicalLicense": "string",
@@ -328,26 +338,22 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                 }
               },
               "activated": true,
-              "siteLevelResponsible": siteLevel,
-              "departmentLevelResponsible": departmentLevel,
               "blocked": false,
               "npin": {
                 "missing": npin?.missing,
-                "notApplicable": npin.na,
+                "notApplicable": npin?.na,
                 "npin": npin?.npin
               }
           }
 
-          const response = await PUT('user-management-service/user', JSON.stringify(data));
-            if(response){
-                SuccessToaster('User Updated Successfully');
-            }
-            else {
-                ErrorToaster('Unexpected Error');
-            }
-
+          await PUT('user-management-service/user', JSON.stringify(data))
+          .then(response=>{
+              SuccessToaster('User Updated Successfully');
+          })
+          .catch(error=>{
+              ErrorToaster('Unexpected Error');
+          })
     }
-
 
 
     return(
@@ -367,7 +373,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                         inline={true}
                         className={`${style.marginTop}`}
                         selectedValue={npin?.missing}
-                        onChange={(e)=>setNpin({npin:'',missing:e.target.value,na:false})}
+                        onChange={(e)=>setNpin({npin:'',missing:true,na:false})}
                     >
                         <Radio label="Missing" value="Missing" checked={npin?.missing} />
                     </RadioGroup>

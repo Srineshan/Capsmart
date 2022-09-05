@@ -33,6 +33,7 @@ const Contracts = () => {
     const [expiredContracts, setExpiredContracts] = useState([]);
     const [contractId, setContractId] = useState('');
     const [method,setMethod] = useState('');
+    const [users, setUsers] = useState([]);
 
     const getSelectedContract = (value) => {
         setSelectedContract(value);
@@ -84,6 +85,13 @@ const Contracts = () => {
         setContracts(contracts);
     };
 
+    const getUserData = async () => {
+        const { data: userData } = await GET(`user-management-service/user`);
+        if (userData) {
+          setUsers(userData);
+        }
+    }
+
     const getMethod = (value) => {
       setMethod(value);
     }
@@ -97,6 +105,7 @@ const Contracts = () => {
 
     useEffect(()=>{
         getContracts();
+        getUserData();
     },[])
 
     return(
@@ -110,18 +119,37 @@ const Contracts = () => {
                 {selectedContract === 'expired or terminated' ? (
                     <ExpiredOrTerminated getSelectedContract={getSelectedContract}
                     getAddContract={getAddContract}
-                    expiredContracts={expiredContracts} />
+                    expiredContracts={expiredContracts}
+                    selectedContract={selectedContract}
+                    users={users}
+                    activeContractsLength={activeContracts?.length}
+                    draftContractsLength={draftContracts?.length}
+                    upcomingContractsLength={upcomingContracts?.length}
+                    expiredContractsLength={expiredContracts?.length} />
                 ) : selectedContract === 'draft' ? (
                     <Draft
                     getSelectedContract={getSelectedContract}
                     getDeleteDraftDialog={getDeleteDraftDialog}
                     getContractActivationDialog={getContractActivationDialog}
                     getAddContract={getAddContract}
-                    draftContracts={draftContracts} />
+                    draftContracts={draftContracts}
+                    selectedContract={selectedContract}
+                    users={users}
+                    activeContractsLength={activeContracts?.length}
+                    draftContractsLength={draftContracts?.length}
+                    upcomingContractsLength={upcomingContracts?.length}
+                    expiredContractsLength={expiredContracts?.length}
+                    getContracts={getContracts} />
                 ) : selectedContract === 'upcoming renewals' ? (
                     <UpcomingRenewals getSelectedContract={getSelectedContract}
                     getAddContract={getAddContract}
-                    upcomingContracts={upcomingContracts} />
+                    upcomingContracts={upcomingContracts}
+                    selectedContract={selectedContract}
+                    users={users}
+                    activeContractsLength={activeContracts?.length}
+                    draftContractsLength={draftContracts?.length}
+                    upcomingContractsLength={upcomingContracts?.length}
+                    expiredContractsLength={expiredContracts?.length} />
                 ) : (
                     <ActiveContracts
                     getSelectedContract={getSelectedContract}
@@ -134,6 +162,12 @@ const Contracts = () => {
                     getContractType={getContractType}
                     getSelectedContractType={getSelectedContractType}
                     getContractIdFromActive={getContractIdFromActive}
+                    selectedContract={selectedContract}
+                    users={users}
+                    activeContractsLength={activeContracts?.length}
+                    draftContractsLength={draftContracts?.length}
+                    upcomingContractsLength={upcomingContracts?.length}
+                    expiredContractsLength={expiredContracts?.length}
                      />
                 )}
                 {extensionDialog && (

@@ -40,19 +40,7 @@ const ITEM_PADDING_TOP = 8;
     },
   };
 
-  const names = [
-    'Activity Logger',
-    'Reviewer',
-    'Approver',
-    'Accounts Payable',
-    'Contracts manager',
-    'Report viewer',
-  ];
-
   const VALUES = ['Site 1', "Site 2"];
-  // const VALUES2 = ['Site 1 - Department 1 - Title 1', "Site 2 - Department 2 - Title 2", "Site 3 - Department 3 - Title 3"];
-  // let siteTitleValues = [];
-  // let departmentTitleValues = [];
 const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId, contractType}) => {
     const testContractId = contractId;
     const [user,setUsers] = useState([]);
@@ -85,7 +73,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     const [departmentLevelSite, setDepartmentLevelSite] = useState({id:'',name:''});
     const [roles, setRoles] = useState([])
     const [selectedRoles, setSelectedRoles] = useState([]);
-    const [tags, setTags] = useState(VALUES);
     const [siteTitleValues, setSiteTitleValues] = useState([]);
     const [departmentTitleValues, setDepartmentTitleValues] = useState([]);
     const id = contractId;
@@ -95,10 +82,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     const [siteList,setSiteList] = useState([]);
     const [sites,setSites] = useState([]);
     const [selectedSitesDept,setSelectedSitesDepartment] = useState([]);
-    const [isUserSelected,setIsUserSelected] = useState(false);
     const [contracts,setContracts] = useState([]);
 
-    console.log('deptLevelValue',departmentTitleValues,'site',siteTitleValues);
     useEffect(()=>{
         getRoles();
         getUserData();
@@ -106,9 +91,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
         getContractName();
     },[])
 
-    useEffect(()=>{
-      getSelectedUserData();
-    },[selectContractManager])
+
 
     useEffect(()=>{
       let depts = sites?.filter(data=>data?.id === departmentLevelSite?.id)?.map(data=>data.department)[0];
@@ -117,6 +100,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
 
 
     useEffect(() =>{
+      if(isUserPresent){
         setServiceProviderType(userProviderData?.serviceProviderType);
         setNpin(userProviderData?.npin?.npin);
         setNpinMissing(userProviderData?.npin?.missing);
@@ -130,13 +114,14 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
         setCity(userProviderData?.address?.city);
         setState(userProviderData?.address?.state);
         setZipCode(userProviderData?.address?.zipcode);
-        setSiteLevel(userProviderData?.siteLevelResponsible);
-        setDepartmentLevel(userProviderData?.departmentLevelResponsible);
-        setSelectedRoles(userProviderData?.roles);
+        setSelectedRoles(userProviderData?.roles || []);
         setContracts(userProviderData?.contracts);
-        setSiteList(userProviderData?.sites?.sites);
-    }, [contractId, userProviderData])
-
+        let contractData = userProviderData?.contracts?.filter(data=>data?.id === contractId)?.map(data=>data)[0];
+        setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : [] );
+        setSiteLevel(contractData?.siteLevelResponsible);
+        setDepartmentLevel(contractData?.departmentLevelResponsible);
+      }
+    }, [contractId, userProviderData, isUserPresent])
 
     useEffect(()=>{
       getTitleData();
@@ -169,7 +154,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     setDepartmentTitleValues(deptValue);
     }
 
-    
+
     const getContractName = async() => {
       const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
       if(contractData){
@@ -177,26 +162,20 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
       }
     }
 
-    const getSelectedUserData = async() => {
-      if(selectContractManager !== ''){
-        const {data: userData} = await GET(`user-management-service/user/${selectContractManager}`);
-        if(userData){
-          setUserProviderData(userData);
-        }
-      }
-    }
-
     const getUserData = async() => {
-      const {data: userData} = await GET(`user-management-service/user?contractID=${contractId}`);
-      if(userData){
-        if(userData?.length !== 0){
-          setUserProviderData(userData[0]);
-          setIsUserSelected(true);
-        }else{
-            getSites();
-            getSelectedUserData();
+      if(contractId !== '' && contractId !== undefined){
+        const {data: userData} = await GET(`user-management-service/user?contractID=${contractId}`);
+        if(userData){
+          if(userData?.length !== 0){
+            setUserProviderData(userData[0]);
+            setIsUserPresent(true);
+            if(userData?.contracts?.filter(data=>data?.id === contractId && data?.sites !== null)?.map(data=>data)?.length !== 0)
+            {
+              getSites();
+            }
+          }
+          setUsers(userData);
         }
-        setUsers(userData);
       }
     }
 
@@ -212,13 +191,10 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
       let contractDetail = contractData?.contractDetail;
       let sites = contractDetail?.site?.sites;
       if(sites && siteList?.length === 0){
-        console.log('inside site setting');
         setSiteList(sites);
         getTitleData();
       }
     }
-
-    console.log('sites',sites);
 
     const titleList = ['Anesthesiologist', 'Cardiologist', 'Chief Medical Information Officer', 'Chief Medical Officer', 'Chief of Staff'];
 
@@ -266,7 +242,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     setDepartmentLevelSite({id:id,name:sites?.filter(data => data?.id === id)?.map(data => data?.name)[0]});
   }
 
-
   const getSiteData  = () => {
     let siteData = [];
     sites?.map(data=>{
@@ -301,40 +276,68 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     return siteData;
   }
 
-    const handleSave = async() => {
-        let isContractpresent = contracts?.filter(data=>data?.id === testContractId)?.map(data=>data)?.length || 0;
-        if(!isContractpresent){
-          let temp = contracts;
-          temp.push({
-            "id": testContractId,
-            "contractName": {
-              "contractName": contractName
-            }
-          });
-          setContracts(temp);
+  const getContractsData = () => {
+    let isContractpresent = contracts?.filter(data=>data?.id === testContractId)?.map(data=>data)?.length || 0;
+    let value = [];
+    if(isContractpresent === 0){
+      let temp = contracts !== null ? contracts : [];
+      temp.push({
+        "id": testContractId,
+        "contractName": {
+          "contractName": contractName
+        },
+        "roles":[],
+        "sites":{
+          "sites":getSiteData()
+        },
+        "siteLevelResponsible":siteLevel,
+        "departmentLevelResponsible":departmentLevel,
+      });
+      setContracts(temp);
+      value = temp;
+    }else{
+      let temp = contracts;
+      temp?.filter(data=>data?.id === testContractId)?.map(data=>{
+        data.roles = selectedRoles;
+        let siteValue = {
+          sites: getSiteData()
         }
+        data.sites = siteValue;
+        data.siteLevelResponsible = siteLevel;
+        data.departmentLevelResponsible = departmentLevel;
+      })
+      setContracts(temp);
+      value = temp;
+    }
+    return value;
+  }
+
+    const handleSave = async() => {
         const data = {
-            'id': userProviderData?.id,
+            ...(isUserPresent && {'id': userProviderData?.id}),
             "name": {
                 "firstName": contractorFirstName,
                 "lastName": contractorLastName,
                 "suffix": contractorNameSuffix
               },
               "userType": "ADMIN",
-              "contracts": contracts,
+              "contracts": getContractsData(),
               "title": {
                 "title": ""
               },
               "email": {
                 "officialEmail": contractorEmail
               },
+              ...( !isUserPresent && {"password": {
+                "password": "string"
+              }}),
               "communication": {
                 "personalEmail": contractorEmail,
                 "mobileNumber": contractorPhone,
                 "landlineNumber": "string",
                 "mobileNumberNotApplicable": true
               },
-              "roles": selectedRoles,
+              "roles": userProviderData?.roles,
               "address": {
                 "city": city,
                 "state": state,
@@ -343,9 +346,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
               "tenant": {
                 "tenantId": TenantID
               },
-              "sites": {
-                "sites": getSiteData(),
-              },
+              "sites":  userProviderData?.sites,
               "serviceProviderType": serviceProviderType,
               "licenceDetails": {
                 "medicalLicense": "",
@@ -375,8 +376,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 }
               },
               "activated": true,
-              "siteLevelResponsible": siteLevel,
-              "departmentLevelResponsible": departmentLevel,
               "blocked": true,
               "npin": {
                 "missing": npinMissing,
@@ -384,21 +383,30 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 "npin": npin
               }
           }
-            const response = await PUT('user-management-service/user', JSON.stringify(data));
-            if(response){
-              SuccessToaster('User Updated Successfully');
-            }
-            else {
+          if(!isUserPresent){
+            await POST('user-management-service/user/register', JSON.stringify(data))
+            .then(response=>{
+              SuccessToaster('User Added Successfully');
+            })
+            .catch(error=>{
                 ErrorToaster('Unexpected Error');
-            }
-
+            })
+          }
+          else{
+            await PUT('user-management-service/user', JSON.stringify(data))
+            .then(response=>{
+              SuccessToaster('User Updated Successfully');
+            })
+            .catch(error=>{
+                ErrorToaster('Unexpected Error');
+            });
+          }
     }
 
     const handleRoles = (value) => {
         if (value !== '0') {
           const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
-
-          if (!selectedRoles.map(data => data?.roleName).includes(value)) {
+          if (!selectedRoles?.map(data => data?.roleName).includes(value)) {
             setSelectedRoles([...selectedRoles, selectedValue]);
           }
         }
@@ -408,7 +416,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     ?.filter(data => roles.map(role => role?.id === data?.id))
     ?.map((tag, index) => {
       const onRemove = () => {
-        setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName));
+        setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName)?.map(data=>data));
       };
       return (
         <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
@@ -487,28 +495,9 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
       setAddNewManagerDialog(value);
   }
 
-
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
-            {
-              !isUserSelected &&
-              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                  <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
-                  <div className={style.displayInRow}>
-                  <div>
-                      <DatalistInput items={items || []} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager)?.map(data=>data?.value)[0]}/>
-                      {!items?.map(data=>data.name?.firstName)?.includes(userName) && !userName === '' &&(
-                          <div className={style.addBoxDescription}>
-                          The Contract Manager you are trying to add is not a registered
-                          user. to add a new contract manager click on the "ADD" button.
-                          </div>
-                      )}
-                  </div>
-                  <button className={`${style.disabledButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={() =>setAddNewManagerDialog(true)}>ADD</button>
-                  </div>
-              </div>
-            }
               <div>
                 <div className={`${style.extentionGrid}`}>
                 <div className={style.extentionLableStyle}>Service Provider Type*</div>
@@ -629,7 +618,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                         </div>
                         {siteLevel && (
                             <div className={`${style.siteLevelBoxStyle}`}>
-                              {/* {selectedContract === "Multiple Contractor" && ( */}
                               <div className={`${style.siteLevelGrid}`}>
                                         <div className={style.marginTop}>Site*</div>
                                         <select
@@ -671,7 +659,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                                   <Button variant="outlined" onClick={() => handleSiteLevelValues()}>Add</Button>
                                 </div>
                                 <TagInput
-                                    // placeholder="Enter tags/keywords relative to the post"
                                     values={siteTitleValues}
                                     className={`${style.marginTop20}`}
                                     onRemove={handleSiteRemove}
@@ -759,7 +746,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                                       <Button variant="outlined" onClick={() => handleDepartmentLevelValues()}>Add</Button>
                                     </div>
                                     <TagInput
-                                        // placeholder="Enter tags/keywords relative to the post"
                                         values={departmentTitleValues}
                                         className={`${style.marginTop20}`}
                                         onRemove={handleDeptRemove}
@@ -772,7 +758,30 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                         </div>
                     </div>
                 </div>
-              </div>
+
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                   <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
+                   <div className={`${style.reduce10Left} ${style.marginRight}`}>
+                       <select
+                           name="class"
+                           id="Class"
+                           onChange={(e) => handleRoles(e.target.value)}
+                           className={`${style.fullWidth} ${style.marginLeft20} `}>
+                               <option value="0" >
+                               Select Role-multi select
+                               </option>
+                               {roles?.map((data, index) => (
+                               <option key={`${data}-${index}`} value={data?.roleName} >
+                                   {data?.roleName}
+                               </option>
+                               ))}
+                       </select>
+                       <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                       {rolesTags}
+                       </div>
+                   </div>
+               </div>
+            </div>
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
               <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contract ID & Term Limit')}}>BACK</button>
               <div>

@@ -7,7 +7,7 @@ import style from './index.module.scss';
 const AddUser = ({getAddUserDialog}) => {
 
     const [addUser, setAddUser] = useState({firstName: "", lastName: "", email: "", roles: [{id: "", roleName: ""}], title: ""});
-    const [customerType, setCustomerType] = useState('')
+    const [customerType, setCustomerType] = useState('HEALTHCARE');
     const [roles, setRoles] = useState([])
     const [department, setDepartment] = useState([])
     const [sites, setSites] = useState([])
@@ -93,7 +93,7 @@ const AddUser = ({getAddUserDialog}) => {
         ErrorToaster('Enter a valid mail-id');
         return;
       }
-      if(addUser?.firstName === '' && addUser?.email === '' && addUser?.title === '' && selectedRoles?.length ===0 && selectedSites?.length === 0)
+      if(addUser?.firstName === '' && addUser?.email === '' && selectedRoles?.length ===0 && selectedSites?.length === 0)
       {
         ErrorToaster('All Fields are Mandatory');
         return;
@@ -125,13 +125,13 @@ const AddUser = ({getAddUserDialog}) => {
         "blocked": false
       }
 
-      const response = await POST('user-management-service/user/register', JSON.stringify(user));
-      if(response){
+    await POST('user-management-service/user/register', JSON.stringify(user))
+      .then(response=>{
         SuccessToaster('User Added Successfully');
-      }
-      else {
+      })
+      .catch(error=>{
         ErrorToaster('Unexpected Error');
-      }
+      })
       getAddUserDialog(false)
     }
 
@@ -179,10 +179,10 @@ const AddUser = ({getAddUserDialog}) => {
                             <option value="HEALTHCARE" >
                             HEALTHCARE
                             </option>
-                            <option value="FINANCE" >
+                            <option value="FINANCE" disabled>
                             FINANCE
                             </option>
-                            <option value="GOVERNMENT" >
+                            <option value="GOVERNMENT" disabled >
                             GOVERNMENT
                             </option>
                     </select>
@@ -248,12 +248,12 @@ const AddUser = ({getAddUserDialog}) => {
                 </div>
               </div>
             </div>
-
-            <div className={`${style.addManagerGrid}`}>
-              <div className={style.extentionLableStyle}>Title*</div>
-              <InputGroup value={addUser?.title} onChange={(e) => setAddUser({...addUser, title: e.target.value})} />
-            </div>
-
+            {
+              // <div className={`${style.addManagerGrid}`}>
+              //   <div className={style.extentionLableStyle}>Title*</div>
+              //   <InputGroup value={addUser?.title} onChange={(e) => setAddUser({...addUser, title: e.target.value})} />
+              // </div>
+            }
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Role*</div>
                 <div className={`${style.reduce10Left} ${style.marginRight}`}>

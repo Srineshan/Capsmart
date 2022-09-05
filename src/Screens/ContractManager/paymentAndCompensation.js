@@ -35,7 +35,10 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
         reducedNumberOfServices: '',
         providingAdditionalServices: ''
     })
-    const limit = 2;
+    const limit3 = 3;
+    const limit4 = 4;
+    const limit5 = 5;
+    const limit7 = 7;
 
     const handleContinue = async() => {
         const data = {
@@ -106,7 +109,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                             <div className={style.displayInRow}>
                                 <InputGroup className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0" type='number'
                                 onChange={(e) => setRvuQuantity({
-                                    ...rvuQuantity, quantity: e.target.value.slice(0, limit)
+                                    ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
                                 })} />
                                 <select
                                     name="class"
@@ -120,6 +123,9 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                                     <option value="MONTH" >
                                         Per Month
                                     </option>
+                                    <option value="YEAR" >
+                                        Per Year
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -127,7 +133,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                             <div className={style.extentionLableStyle}>FTE Equivalent</div>
                             <InputGroup className={style.twoFieldWidth} value={fteEquivalent?.value} placeholder="0" type='number'
                             onChange={(e) => setFteEquivalent({
-                                ...fteEquivalent, value: e.target.value.slice(0, limit)
+                                ...fteEquivalent, value: e.target.value.slice(0, limit3)
                             })} />
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -141,15 +147,15 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                             <div className={style.extentionLableStyle}>RVU Quantity Variance (+/-)</div>
                             <InputGroup className={style.twoFieldWidth} value={rvuQuantityVariance?.value} placeholder="0" type='number'
                             onChange={(e) => setRvuQuantityVariance({
-                                ...rvuQuantityVariance, value: e.target.value.slice(0, limit)
+                                ...rvuQuantityVariance, value: e.target.value.slice(0, limit3)
                             })} />
                         </div>
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>RVU Quantity Period</div>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                                <EditableText className={style.editableTextStyleDays} value={rvuQuantityPeriod?.days} placeholder="0" type='number'
+                                <EditableText className={`${style.editableTextStyleDays} ${style.editableTextStyle4DaysWidth}`} value={rvuQuantityPeriod?.days} placeholder="0" type='number'
                                 onChange={(e) => setRvuQuantityPeriod({
-                                    ...rvuQuantityPeriod, days: e.slice(0, limit)
+                                    ...rvuQuantityPeriod, days: e.slice(0, limit4)
                                 })} />
                                 <div className={style.textElementWithoutBackgroundDays}>Days</div>
                             </div>
@@ -160,21 +166,21 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                     <div className={style.extentionLableStyle}>Dollar Hourly Rate*</div>
                     <InputGroup className={style.fourFieldWidth} value={dollarRate?.hour} placeholder="0" type='number'
                         onChange={(e) => setDollarRate({
-                            ...dollarRate, hour: e.target.value.slice(0, limit)
+                            ...dollarRate, hour: e.target.value.slice(0, limit5)
                         })} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Dollar Value per Timesheet Submission*</div>
                     <InputGroup className={style.fourFieldWidth} value={dollarValue?.perTimesheetSubmission} placeholder="0" type='number'
                     onChange={(e) => setDollarValue({
-                        ...dollarValue, perTimesheetSubmission: e.target.value.slice(0, limit), perContractedPeriod: dollarValue?.perContractedPeriod
+                        ...dollarValue, perTimesheetSubmission: e.target.value.slice(0, limit5), perContractedPeriod: dollarValue?.perContractedPeriod
                     })} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Dollar Value for per Contracted Year/Period*</div>
                     <InputGroup className={style.fourFieldWidth} value={dollarValue?.perContractedPeriod} placeholder="0" type='number'
                     onChange={(e) => setDollarValue({
-                        ...dollarValue, perContractedPeriod: e.target.value.slice(0, limit), perTimesheetSubmission: dollarValue?.perTimesheetSubmission
+                        ...dollarValue, perContractedPeriod: e.target.value.slice(0, limit7), perTimesheetSubmission: dollarValue?.perTimesheetSubmission
                     })} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -213,8 +219,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                 <div>
                     <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                    onClick={() => { getViewPage7(true); getCurrentPage('Timesheet Submission Terms') }}
-                    // onClick={() => { handleContinue() }}
+                    onClick={() => { handleContinue(); getViewPage7(true); getCurrentPage('Timesheet Submission Terms') }}
                     >CONTINUE</button>
                 </div>
             </div>

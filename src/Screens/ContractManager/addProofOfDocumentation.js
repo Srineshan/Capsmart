@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, Checkbox, FileInput, RadioGroup, Radio } from '@blueprintjs/core';
 import { DateInput } from "@blueprintjs/datetime";
+import TextField from '@mui/material/TextField';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {GET, PUT, POST, TenantID} from './../dataSaver';
@@ -33,13 +37,30 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
     const [stateOfLicensure, setStateOfLicensure] = useState('');
     const [licenseId, setLicenseId] = useState('');
     const [certificateId, setCertificateId] = useState('');
-    const [membershipRenewalDate, setmembershipRenewalDate] = useState(new Date());
+    const [membershipRenewalDate, setmembershipRenewalDate] = useState(null);
     const [expirationDate, setExpirationDate] = useState(new Date());
     const [fileName, setFileName] = useState('');
     const [fileData, setFileData] = useState(null);
     const [users,setUsers] = useState([]);
     const [sites, setSites] = useState([]);
     const [selectedSite, setSelectedSite] = useState({});
+
+    const handleReset = () => {
+      setSelectedPOD('Medical Staff Membership & Privileges');
+      setContractorName('');
+      setSpecialityBoardName('');
+      setMedicalStaffId('');
+      setSpecialityBoardCertificateId('');
+      setInsuranceCarrierName('');
+      setInsuranceCertificateId('');
+      setStateOfLicensure(''); 
+      setLicenseId('');
+      setCertificateId('');
+      setmembershipRenewalDate(null);
+      setFileName('');
+      setFileData(null);
+      setSelectedSite({});
+    }
 
     useEffect(()=>{
       getUserData();
@@ -284,6 +305,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
        await POST(`contract-managment-service/contracts/${contractId}/DocumentationProof`, formData)
        .then(response=>{
          SuccessToaster('Documentation Proof Updated Successfully');
+         handleReset();
        })
        .catch(error=>{
          ErrorToaster('Unexpected Error Occured');
@@ -317,14 +339,14 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
 
             <div className={style.extensionBorder}></div>
             <div className={style.proofBorder}>
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <div className={`${style.addManagerGrid}`}>
                 <div className={style.extentionLableStyle}>POD Type*</div>
-                <div className={style.reduce10Left}>
+                <div>
                     <select
                         name="class"
                         id="Class"
                         onChange={(e)=>{setSelectedPOD(e.target.value)}}
-                        className={`${style.fullWidth} ${style.marginLeft20} `}>
+                        className={`${style.fullWidth}`}>
                         {
                           podTypes?.map(data=>(
                             <option value={data} >
@@ -382,10 +404,10 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
                  </div>
                 </>:
                   <>
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Contracted Service Provider*</div>
                       <InputGroup value={users?.length !== 0 ? `${users?.[0]?.name?.firstName} ${users?.[0]?.name?.lastName}` : 'No Users found'} readOnly />
-                    </div>
+                    </div> */}
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>{selectedPOD === 'Primary Speciality Board Certification'?'Speciality Board':'Privileging Facility'}*</div>
                         {selectedPOD === 'Primary Speciality Board Certification'? (
@@ -421,10 +443,10 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
               {
                 !isMultipleContract?
                 <>
-                  <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contracted Service Provider*</div>
                     <InputGroup value={users?.length !== 0 ? `${users?.[0]?.name?.firstName} ${users?.[0]?.name?.lastName}` : 'No Users found'} readOnly />
-                  </div>
+                  </div> */}
                   <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Speciality Board</div>
                       <InputGroup value={specialityBoardName} onChange={(e) => setSpecialityBoardName(e.target.value)} />
@@ -578,13 +600,29 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>{selectedPOD === 'Medical Staff Membership & Privileges' ? 'Membership Renewal Date' : 'Expiration Date'}*</div>
-                    <DateInput
+                    {/* <DateInput
                         formatDate={date => date.toLocaleDateString()}
                         parseDate={str => new Date(str)}
                         placeholder={"MM-DD-YYYY"}
                         value={membershipRenewalDate}
                         onChange={(e) => setmembershipRenewalDate(e)}
-                    />
+                    /> */}
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <DatePicker
+                        value={membershipRenewalDate}
+                        onChange={(newValue) => {
+                          setmembershipRenewalDate(newValue);
+                        }}
+                        InputProps={{
+                          style: {
+                              fontSize: 14,
+                              height: 30,
+                              width: '50%'
+                          }
+                      }}
+                        renderInput={(params) => <TextField  {...params} />}
+                      />
+                    </LocalizationProvider>
                 </div>
 
             <div>
@@ -604,7 +642,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
                 </div>
               </div>
               <div className={`${style.floatRight} ${style.marginTop20}`}>
-                  <button className={`${style.buttonStyle} ${style.marginLeft20}`} >ADD MORE</button>
+                  <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => handleContinue()}>ADD MORE</button>
                   <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleContinue(); getShowProofDialog(false)}}>SAVE & EXIT</button>
               </div>
             </div>

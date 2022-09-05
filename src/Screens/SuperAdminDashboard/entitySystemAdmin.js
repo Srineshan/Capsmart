@@ -10,19 +10,20 @@ import Step4 from './../../images/step4.png';
 import Step5 from './../../images/step5.png';
 import UploadImg from './../../images/uploadImg.png';
 import {ErrorToaster, SuccessToaster} from './../../utils/toaster';
+import {Auth} from './../../utils/auth';
+import axios from 'axios';
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 
 
 const EntitySystemAdmin = ({getActiveStep}) => {
   const navigate = useNavigate();
-  // const {id} = useParams();
-  const id = TenantID;
+  const {id} = useParams();
   const [billingAddress,setBillingAddress] = useState({fname:'',lname:'',title:'',email:'',phone:0});
   const [users,setUsers] = useState([]);
   const [roles,setRoles] = useState([]);
   const [userData,setUserData] = useState({firstName:'',lastName:'',title:'',email:'',phone:''});
-  const [selectedRoles,setSelectedRoles] = useState([]);
+  const [selectedRoles,setSelectedRoles] = useState(roles?.filter(data=>data?.roleName === 'Entity Sys Admin')?.map(data=>data));
   const [accountManager,setAccountManager] = useState('');
   const [entity,setEntity] = useState()
   const handleBillingData = (name,value) => {
@@ -41,13 +42,24 @@ const EntitySystemAdmin = ({getActiveStep}) => {
   }
 
   const getUserData = async() => {
-      const {data: user} = await GET('user-management-service/user');
-      setUsers(user);
+    await axios(`https://rest.timesmart.live/user-management-service/user`,{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-tenantID' : id,
+          'Authorization': `Bearer ${Auth()}`
+        },
+    }).then(response=>{
+      setUsers(response?.data);
+    }).catch(error=>{
+      console.log('error',error)
+    })
   };
 
   const getRolesData = async() => {
     const {data:rolesData} = await GET('user-management-service/roles');
     setRoles(rolesData);
+    setSelectedRoles(rolesData?.filter(data=>data?.roleName === 'Entity Sys Admin')?.map(data=>data));
   }
 
   const addRole = (id) => {
@@ -61,7 +73,7 @@ const EntitySystemAdmin = ({getActiveStep}) => {
   }
 
   const handleUpdate = async(buttonType) => {
-    if(userData?.firsName === '' || userData?.lastName === '' || userData?.title === '' || userData?.phone === '' || userData?.email === '' || accountManager === '' || selectedRoles?.length === 0){
+    if(userData?.firsName === '' || userData?.lastName === '' || userData?.email === ''){
       ErrorToaster('All Fields are mandatory');
       return;
     }
@@ -73,8 +85,7 @@ const EntitySystemAdmin = ({getActiveStep}) => {
     temp.accountManager = {
       "id":accountManager
     }
-    // setEntity(temp);
-    // console.log('temp',temp)
+
     let data = {
         "name": {
           "firstName": userData?.firstName,
@@ -98,7 +109,7 @@ const EntitySystemAdmin = ({getActiveStep}) => {
           "landlineNumber": "",
           "mobileNumberNotApplicable": false
         },
-        "roles": selectedRoles,
+        "roles": roles?.filter(data=>data?.roleName === 'Entity Sys Admin')?.map(data=>data),
         "address": {
           "city": "",
           "state": "",
@@ -125,19 +136,21 @@ const EntitySystemAdmin = ({getActiveStep}) => {
     .then(response=>{
       SuccessToaster('System Admin created Successfully');
     })
-    .then(error=>{
+    .catch(error=>{
       ErrorToaster('Error creating system admin');
     })
-    await PUT('entity-service/entity',temp)
-    .then((response)=>{
-      SuccessToaster('Account manager added Successfully');
-    })
-    .then(error=>{
-        ErrorToaster('Error adding account manager');
-    })
+    if(accountManager !== ''){
+      await PUT('entity-service/entity',temp)
+      .then((response)=>{
+        SuccessToaster('Account manager added Successfully');
+      })
+      .catch(error=>{
+          ErrorToaster('Error adding account manager');
+      })
+    }
 
     if(buttonType === 'Continue'){
-      navigate('/siteInformation');
+      getActiveStep('siteUsers');
     }
   }
 
@@ -147,32 +160,42 @@ const EntitySystemAdmin = ({getActiveStep}) => {
             <div className={style.stepperMargin}>
                 <div className={style.stepperGrid}>
                     <div onClick={() => getActiveStep('entitySetup')}>
-                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                              <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
                     <div onClick={() => getActiveStep('siteInformation')}>
-                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
-                            <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
+                              <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
                     <div onClick={() => getActiveStep('entitySystemAdmin')}>
-                        <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
-                            <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
+                              <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                     </div>
                     <div onClick={() => getActiveStep('siteUsers')}>
-                        <div className={style.stepperImgBackground}>
-                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={style.stepperImgBackground}>
+                              <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={style.entityTextColor}>APP USERS</p>
                     </div>
                     <div onClick={() => getActiveStep('appSubscription')}>
-                        <div className={style.stepperImgBackground}>
-                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={style.stepperImgBackground}>
+                              <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={style.entityTextColor}>APP SUBSCRIPTION</p>
                     </div>
@@ -217,27 +240,33 @@ const EntitySystemAdmin = ({getActiveStep}) => {
                                     </select>
                                 </div>
                             </div>
-                            <div className={`${style.extentionGrid} ${style.marginTop30}`}>
-                                <div className={style.extentionLableStyle}>App User Role*</div>
-                                <div className={`${style.leftAlign} `}>
-                                    <select
-                                        name="class"
-                                        id="Class"
-                                        className={style.fullWidth}
-                                        onChange={(e)=>addRole(e.target.value)}>
-                                            <option value="" >
-                                            Select User Role
-                                            </option>
-                                            {
-                                              roles?.map(data=>(
-                                                <option value={data.id} >
-                                                {data?.roleName}
-                                                </option>
-                                              ))
-                                            }
-                                    </select>
-                                </div>
-                            </div>
+                            {
+                              // <div className={`${style.extentionGrid} ${style.marginTop30}`}>
+                              //     <div className={style.extentionLableStyle}>App User Role*</div>
+                              //     <div className={`${style.leftAlign} `}>
+                              //         <select
+                              //             name="class"
+                              //             id="Class"
+                              //             className={style.fullWidth}
+                              //             // onChange={(e)=>addRole(e.target.value)}
+                              //             >
+                              //             {
+                              //               // <option value="" >
+                              //               // Select User Role
+                              //               // </option>
+                              //             }
+                              //
+                              //                 {
+                              //                   roles?.filter(data=>data?.roleName === 'Entity Sys User')?.map(data=>(
+                              //                     <option value={data.id} >
+                              //                     {data?.roleName}
+                              //                     </option>
+                              //                   ))
+                              //                 }
+                              //         </select>
+                              //     </div>
+                              // </div>
+                            }
                             <div className={`${style.textAlignLeft} ${style.marginTop20}`}>
                                 <Checkbox checked label="CREATE ENTITY USER WITH SYS ADMIN PROFILE*" />
                             </div>
@@ -248,36 +277,38 @@ const EntitySystemAdmin = ({getActiveStep}) => {
                                     <InputGroup className={`${style.textFieldWidth} ${style.marginLeft20}`} value={userData.lastName} placeholder="Last Name" onChange={(e)=>handleUserData('lastName',e.target.value)} />
                                 </div>
                             </div>
-                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Functional Title*</div>
-                                <div className={`${style.leftAlign} `}>
-                                    <select
-                                        name="class"
-                                        id="Class"
-                                        value={userData?.title}
-                                        onChange={(e)=>handleUserData('title',e.target.value)}
-                                        className={style.twoFieldWidth}>
-                                        <option value="select title" >
-                                        select title
-                                        </option>
-                                            <option value="Anesthesiologist" >
-                                            Anesthesiologist
-                                            </option>
-                                            <option value="Cardiologist" >
-                                            Cardiologist
-                                            </option>
-                                            <option value="Chief Medical Information Officer" >
-                                            Chief Medical Information Officer
-                                            </option>
-                                            <option value="Chief Medical Officer" >
-                                            Chief Medical Officer
-                                            </option>
-                                            <option value="Chief of Staff" >
-                                            Chief of Staff
-                                            </option>
-                                    </select>
-                                </div>
-                            </div>
+                            {
+                              // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                              //     <div className={style.extentionLableStyle}>Functional Title*</div>
+                              //     <div className={`${style.leftAlign} `}>
+                              //         <select
+                              //             name="class"
+                              //             id="Class"
+                              //             value={userData?.title}
+                              //             onChange={(e)=>handleUserData('title',e.target.value)}
+                              //             className={style.twoFieldWidth}>
+                              //             <option value="select title" >
+                              //             select title
+                              //             </option>
+                              //                 <option value="Anesthesiologist" >
+                              //                 Anesthesiologist
+                              //                 </option>
+                              //                 <option value="Cardiologist" >
+                              //                 Cardiologist
+                              //                 </option>
+                              //                 <option value="Chief Medical Information Officer" >
+                              //                 Chief Medical Information Officer
+                              //                 </option>
+                              //                 <option value="Chief Medical Officer" >
+                              //                 Chief Medical Officer
+                              //                 </option>
+                              //                 <option value="Chief of Staff" >
+                              //                 Chief of Staff
+                              //                 </option>
+                              //         </select>
+                              //     </div>
+                              // </div>
+                            }
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Email Address*</div>
                                 <InputGroup placeholder="Email@lorem.com" className={`${style.twoFieldWidth}`} value={userData?.email} onChange={(e)=>handleUserData('email',e.target.value)}/>

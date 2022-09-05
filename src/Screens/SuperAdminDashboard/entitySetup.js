@@ -25,12 +25,10 @@ import EntitySystemAdmin from './entitySystemAdmin';
 
 const EntitySetup = () => {
     let {id} = useParams();
-    console.log('id',id);
     const [tags, setTags] = useState([]);
-    const [departmentSpecific, setDepartmentSpecific] = useState(true);
+    const [departmentSpecific, setDepartmentSpecific] = useState(false);
     const [departmentValue, setDepartmentValue] = useState('');
     const [item, setItem] = useState();
-    const [websiteUrl,setWebsiteUrl] = useState('');
     const [multiSiteEntity,setMultiSiteEntity] = useState(false);
     const [department,setDepartment] = useState([]);
     const [allSites,setAllSites] = useState([]);
@@ -42,7 +40,9 @@ const EntitySetup = () => {
     const [entityDepartments,setEntityDepartments] = useState([]);
     const [selectDepartments, setSelectDepartments] = useState([]);
     const [entityData,setEntityData] = useState();
-    const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",name:'',type:'',websiteURL:'',multiSiteEntity:false,primarySiteToUseApp:false,npin:'',canSetupDepartment:true});
+    const [logo,setLogo] = useState();
+    const [thumbnail,setThumbnail] = useState();
+    const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",name:'',type:'',subdomain:'',multiSiteEntity:false,primarySiteToUseApp:false,npin:'',canSetupDepartment:false});
     const [address,setAddress] = useState({city:'',state:'',zipcode:'',addressLine:'',country:''});
     const [isUpdated,setIsUpdated] = useState(false);
     const role = '';
@@ -63,9 +63,10 @@ const EntitySetup = () => {
       const {data: data} = await GET(`entity-service/entity/${id}`);
       setEntityData(data);
       let siteData = data?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
-      setEntity({id:'',customerType:"HEALTHCARE",name:data?.entityName?.entityName,type:data?.entityType?.type,websiteURL:data?.websiteURL,multiSiteEntity:data?.sites?.length > 1,primarySiteToUseApp:data.canPrimarySiteToUseApp,npin:siteData?.npin?.id});
+      setEntity({id:'',customerType:"HEALTHCARE",name:data?.entityName?.entityName,type:data?.entityType?.type,subdomain:data?.subdomain,multiSiteEntity:data?.multiSiteEntity,primarySiteToUseApp:data.canPrimarySiteToUseApp,npin:siteData?.npin?.id});
       setAddress({city:siteData?.address?.city,state:siteData?.address?.state,zipcode:siteData?.address?.zipcode,addressLine:siteData?.address?.addressLine,country:siteData?.address?.country});
       setSelectDepartments(siteData?.departmentList?.departments);
+      setDepartmentSpecific(siteData?.canSetupDepartment);
     }
 
     const getDepartmentData = async() => {
@@ -75,6 +76,12 @@ const EntitySetup = () => {
       }else{
         console.log('error');
       }
+    }
+
+    const inputGroupElement = (value) => {
+        return(
+            <p className={value === 'https://' ? `${style.marginTop} ${style.marginLeft10}` : `${style.marginTop}`}>{value}</p>
+        )
     }
 
     const handleTagsAdd = async(values) => {
@@ -126,19 +133,15 @@ const EntitySetup = () => {
         [entityDepartments],
       );
 
-    console.log('websiteURL',entity);
 
     const updateEntity = async(type) => {
       let filteredValue = entityData?.sites?.filter(data=>data.primarySite !== true)?.map(data=>data) || [];
+      console.log('filtereedValue', filteredValue);
       let primarySiteValue = entityData?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
-      if(entity?.name === '' || entity?.type === '' || entity?.npin === '' || address?.addressLine === '' || address?.city === '' || address?.state === '' || address?.country === '' || address?.zipcode === '' || address?.addressLine === null || address?.city === null || address?.state === null || address?.country === null || address?.zipcode === null || entity?.websiteURL === null){
+      if(entity?.name === '' || entity?.type === '' || entity?.npin === '' || address?.addressLine === '' || address?.city === '' || address?.state === '' || address?.country === '' || address?.zipcode === '' || address?.addressLine === null || address?.city === null || address?.state === null || address?.country === null || address?.zipcode === null || entity?.subdomain === null){
         ErrorToaster('All Fields are Mandatory');
         return;
       }
-      // if((!entity?.websiteURL?.includes('https://') && !entity?.websiteURL?.includes('http://')) || !entity?.websiteURL?.includes('.')){
-      //   ErrorToaster('Enter a valid Website URL');
-      //   return;
-      // }
       let temp = {
           ...( entityData?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)?.length !== 0 && {'id':primarySiteValue?.id}),
           "siteName": {
@@ -156,7 +159,7 @@ const EntitySetup = () => {
         "npin": {
           "id": entity?.npin
         },
-        "canSetupDepartment": entity?.canSetupDepartment,
+        "canSetupDepartment": departmentSpecific,
         "departmentList": {
           "departments": departmentSpecific ? selectDepartments : entityDepartments,
         },
@@ -179,13 +182,17 @@ const EntitySetup = () => {
           "entityType": {
             "type": entity?.type,
           },
+          "multiSiteEntity":entity?.multiSiteEntity,
           "entityDisplayId": entityData?.entityDisplayId,
-          "customerType": "HEALTHCARE",
-          "websiteURL":entity?.websiteURL,
+          "customerType": entity?.customerType,
+          "subdomain":entity?.subdomain,
           "canPrimarySiteToUseApp":entity?.primarySiteToUseApp,
           "sites": filteredValue,
           "subscriptionPlan": entityData?.subscriptionPlan,
           "billingDetails": entityData?.billingDetails,
+          "contractDetails":entityData?.contractDetails,
+          "accountManager":entityData?.accountManager,
+          "appUserRoles":entityData?.appUserRoles
         }
       if(isUpdated){
         if(id !== 'new'){
@@ -221,6 +228,14 @@ const EntitySetup = () => {
       }
     }
 
+    const handleLogoUpload = (e) => {
+      setLogo(URL.createObjectURL(e.target.files[0]));
+    }
+
+    const handleThumbnailUplaod = (e) => {
+      setThumbnail(URL.createObjectURL(e.target.files[0]));
+    }
+
     return(
       <>
         {activeStep === "entitySetup" ? (
@@ -229,34 +244,44 @@ const EntitySetup = () => {
           <div className={style.stepperMargin}>
               <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                   <div onClick={() => getActiveStep('entitySetup')}>
-                      <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
-                          <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
+                      <div className={style.justifyCenter}>
+                        <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
+                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
+                        </div>
                       </div>
                       <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                   </div>
                   <div onClick={() => getActiveStep('siteInformation')}>
-                      <div className={style.stepperImgBackground}>
-                          <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
+                      <div className={style.justifyCenter}>
+                        <div className={style.stepperImgBackground}>
+                            <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
+                        </div>
                       </div>
                       <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>SITES FOR APP USE</p>
                   </div>
                   {isSuperAdminAccess && (
                   <div onClick={() => getActiveStep('entitySystemAdmin')}>
-                      <div className={style.stepperImgBackground}>
-                          <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                      <div className={style.justifyCenter}>
+                        <div className={style.stepperImgBackground}>
+                            <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                        </div>
                       </div>
                       <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>ENTITY SYSTEM ADMIN</p>
                   </div>
                   )}
                   <div onClick={() => getActiveStep('siteUsers')}>
-                      <div className={style.stepperImgBackground}>
-                          <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
+                      <div className={style.justifyCenter}>
+                        <div className={style.stepperImgBackground}>
+                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
+                        </div>
                       </div>
                       <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>APP USERS</p>
                   </div>
                   <div onClick={() => getActiveStep('appSubscription')}>
-                      <div className={style.stepperImgBackground}>
-                          <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
+                      <div className={style.justifyCenter}>
+                        <div className={style.stepperImgBackground}>
+                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
+                        </div>
                       </div>
                       <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>APP SUBSCRIPTION</p>
                   </div>
@@ -279,9 +304,15 @@ const EntitySetup = () => {
                           <div className={`${style.newContractFromCloneBoxStyle}`}>
                               <div className={style.spaceBetween}>
                                   <div className={style.displayInRow}>
-                                      <img src={UploadImg} alt="Upload" className={style.companyLogoUpload} />
+                                  <label for="logo-upload">
+                                      <img src={logo||UploadImg} alt="Upload" className={`${style.companyLogoUpload} ${style.cursor}`} />
+                                  </label>
+                                    <input id="logo-upload" type="file" onChange={handleLogoUpload}/>
                                       <p className={style.uploadText}>Click To Upload Company Logo</p>
-                                      <img src={UploadImg} alt="Upload" className={style.logoThumbnailUpload} />
+                                    <label for="thumbnail-upload">
+                                      <img src={thumbnail||UploadImg} alt="Upload" className={`${style.logoThumbnailUpload} ${style.cursor}`} />
+                                    </label>
+                                    <input id="thumbnail-upload" type="file" onChange={handleThumbnailUplaod}/>
                                       <p className={style.uploadText}>Click To Upload Logo Thumbnail</p>
                                   </div>
                                 {entityData?.entityDisplayId?.id ?  <div>
@@ -347,8 +378,8 @@ const EntitySetup = () => {
                                   </div>
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                  <div className={style.extentionLableStyle}>Website URL*</div>
-                                  <InputGroup value={entity.websiteURL} placeholder="Enter Subdomain Name" className={`${style.fullWidth}`} value={entity.websiteURL} onChange={(e)=>handleEntity('websiteURL',e.target.value)}/>
+                                  <div className={style.extentionLableStyle}>Subdomain*</div>
+                                  <InputGroup value={entity.subdomain} leftElement={inputGroupElement('https://')} rightElement={inputGroupElement('.timesmartai.com')} placeholder="Subdomain Name"  className={style.subdomainFieldWidth} onChange={(e)=>handleEntity('subdomain',e.target.value)}/>
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Multi-site Entity*</div>
@@ -356,10 +387,10 @@ const EntitySetup = () => {
                                       <div className={style.displayInRow}>
                                           <FormControlLabel
                                               control={
-                                                  <Switch checked={entity.multiSiteEntity} className={` ${style.textAlignLeft}`}  value={entity.multiSiteEntity} onChange={(e)=>handleEntity('multiSiteEntity',e.target.checked)}/>
+                                                  <Switch checked={entity.multiSiteEntity} className={` ${style.textAlignLeft}`}  value={entity.multiSiteEntity} onChange={(e)=>{ handleEntity('multiSiteEntity',e.target.checked) }}/>
                                               }
                                               className={style.switchFontStyle}
-                                              label={'YES'}
+                                              label={entity?.multiSiteEntity?'YES':'NO'}
                                           />
                                           <div className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Primary Site To Use App*</div>
                                           <FormControlLabel
@@ -367,47 +398,50 @@ const EntitySetup = () => {
                                                   <Switch checked={entity.primarySiteToUseApp} onChange={(e)=>handleEntity('primarySiteToUseApp',e.target.checked)} className={` ${style.textAlignLeft} ${style.marginLeft20}`}  />
                                               }
                                               className={style.switchFontStyle}
-                                              label={'YES'}
+                                              label={entity?.primarySiteToUseApp?'YES':'NO'}
                                           />
                                       </div>
                                   </div>
                               </div>
-                              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                  <div className={style.extentionLableStyle}>Setup Department*</div>
-                                  <div>
-                                      <div className={style.displayInRow}>
-                                          <FormControlLabel
-                                              control={
-                                                  <Switch checked={departmentSpecific} className={`${style.textAlignLeft}`} onChange={() => {setDepartmentSpecific(!departmentSpecific)}}  />
-                                              }
-                                              className={style.switchFontStyle}
-                                              label={departmentSpecific ? 'YES' : "NO"}
-                                          />
-                                          {departmentSpecific && (
-                                              <>
+                              {
+                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                    <div className={style.extentionLableStyle}>Setup Department*</div>
+                                    <div>
+                                        <div className={style.displayInRow}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch checked={departmentSpecific} className={`${style.textAlignLeft}`} onChange={() => {setDepartmentSpecific(!departmentSpecific);setIsUpdated(true);}}  />
+                                                }
+                                                className={style.switchFontStyle}
+                                                label={departmentSpecific ? 'YES' : "NO"}
+                                            />
+                                            {departmentSpecific && (
                                                 <>
-                                                    <DatalistInput items={items} placeholder="Select Departments" onSelect={onSelect} onChange={(e) => {handleDeptChange(e.target.value)} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20} ${style.cursor}`}><span className={style.plusSymbolPosition} onClick={()=>{handleTagsAdd(departmentValue);setDepartmentValue('');}}>+</span></div>
+                                                  <>
+                                                      <DatalistInput items={items} placeholder="Select Departments" onSelect={onSelect} onChange={(e) => {handleDeptChange(e.target.value)} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
+                                                      <div className={`${style.addSymbolStyle} ${style.marginLeft20} ${style.cursor}`}><span className={style.plusSymbolPosition} onClick={()=>{handleTagsAdd(departmentValue);setDepartmentValue('');}}>+</span></div>
+                                                  </>
                                                 </>
-                                              </>
-                                          )}
-                                      </div>
-                                      {departmentSpecific && (
-                                        <TagInput
-                                            placeholder="Enter tags/keywords relative to the post"
-                                            values={selectDepartments?.map(data=>data?.departmentName?.name) || []}
-                                            key={`tags${tags}`}
-                                            className={`${style.marginTop20} ${style.tagInputStyle}`}
-                                            onAdd={handleTagsAdd}
-                                            onRemove={handleTagsRemove}
-                                            separator={/[\s,]/}
-                                            addOnBlur={true}
-                                            addOnPaste={true}
-                                        />
-                                      )}
-                                  </div>
-                              </div>
-                          </div>
+                                            )}
+                                        </div>
+                                        {departmentSpecific && (
+                                          <TagInput
+                                              placeholder="Enter tags/keywords relative to the post"
+                                              values={selectDepartments?.map(data=>data?.departmentName?.name) || []}
+                                              key={`tags${tags}`}
+                                              className={`${style.marginTop20} ${style.tagInputStyle}`}
+                                              onAdd={handleTagsAdd}
+                                              onRemove={handleTagsRemove}
+                                              separator={/[\s,]/}
+                                              addOnBlur={true}
+                                              addOnPaste={true}
+                                          />
+                                        )}
+                                    </div>
+                                </div>
+
+                              }
+                            </div>
                           <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
                               <button className={style.outlinedButton} onClick={()=>{updateEntity('SaveInProgress')}}>SAVE IN-PROGRESS</button>
                               {/* <Link to={`/${nextStep}`}> */}

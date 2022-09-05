@@ -34,6 +34,7 @@ const ReportsNavbar = () => {
     const logout = () => {
      const cookies = new Cookies();
      cookies.remove('user');
+     cookies.remove('entityId');
      navigate('/');
    }
 
@@ -41,7 +42,7 @@ const ReportsNavbar = () => {
         <div className={style.navbarStyle}>
             <div className={style.spaceBetween}>
             <div className={style.displayInRow}>
-                <img src={logo} alt="Metropolitan Hospital" className={style.logo} />
+                <img src={logo} alt="SAN MATEO MEDICAL CENTER" className={style.logo} />
                 <div className={style.menuStyle}>
                     <p>HOME-LOG ACTIVITY</p>
                 </div>

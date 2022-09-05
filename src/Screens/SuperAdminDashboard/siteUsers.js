@@ -18,6 +18,7 @@ import Dropzone from "react-dropzone";
 import {Auth} from './../../utils/auth';
 import { CSVLink } from "react-csv";
 import Papa from 'papaparse';
+import axios from 'axios';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
@@ -40,7 +41,7 @@ const SiteUsers = ({getActiveStep}) => {
     const [tags, setTags] = useState(VALUES);
     const [entityRoles,setEntityRoles] = useState([]);
     const [selectedRoles,setSelectedRoles] = useState([]);
-    const [siteSpecific, setSiteSpecific] = useState(true);
+    const [siteSpecific, setSiteSpecific] = useState(false);
     const [showUserTable, setShowUserTable] = useState(true);
     const [selectedSites, setSelectedSites] = useState([]);
     const [siteID, setSiteID] = useState('3578689');
@@ -54,6 +55,7 @@ const SiteUsers = ({getActiveStep}) => {
     const [userDataCSV,setUserDataCSV] = useState([]);
     const [contracts,setContracts] = useState([]);
     const [contractId,setContractId] = useState('');
+    const [entityData, setEntityData] = useState();
     const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:'',isAdmin:false,title:'',email:'',phone:''});
     const role = '';
 
@@ -103,22 +105,46 @@ const SiteUsers = ({getActiveStep}) => {
 
     useEffect(()=>{
       getUserData();
+      getEntityData();
       getSiteData();
       getRolesData();
       getContracts();
     },[])
 
+    const getEntityData = async() => {
+      const {data: data} = await GET(`entity-service/entity/${id}`);
+      setEntityData(data);
+    }
+
     const getContracts = async() => {
-      const {data:contracts} = await GET('contract-managment-service/contracts');
-      if(contracts){
-        setContracts(contracts);
-      }
+      await axios(`https://rest.timesmart.live/contract-managment-service/contracts`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-tenantID' : id,
+            'Authorization': `Bearer ${Auth()}`
+          },
+      }).then(response=>{
+        setContracts(response?.data);
+      }).catch(error=>{
+        console.log('error',error)
+      })
     }
 
     const getUserData = async() => {
-      const {data: users} = await GET('user-management-service/user');
-      setUser(users);
-      setShowUserTable(user?.length !==0?true:false);
+      await axios(`https://rest.timesmart.live/user-management-service/user`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-tenantID' : id,
+            'Authorization': `Bearer ${Auth()}`
+          },
+      }).then(response=>{
+        setUser(response?.data);
+        setShowUserTable(response?.data?.length === 0 ? true : false);
+      }).catch(error=>{
+        console.log('error',error)
+      })
     }
 
     const getSiteData = async() =>{
@@ -128,8 +154,16 @@ const SiteUsers = ({getActiveStep}) => {
 
     const getRolesData = async() =>{
       const {data: data} = await GET(`user-management-service/roles`);
-      setEntityRoles(data);
-    }
+      if(data && isSuperAdminAccess){
+        let roles = data?.filter(data=> !['Activity Logger','Accounts Payable','Super Sys Admin','Distributor Admin','Entity Sys Admin']?.includes(data?.roleName))?.map(data=>data);
+        setEntityRoles(roles);
+        console.log('roles',roles);
+      }if(data && !isSuperAdminAccess){
+        let roles = data?.filter(data=> !['Activity Logger','Super Sys Admin','Distributor Admin','Entity Sys Admin']?.includes(data?.roleName))?.map(data=>data);
+        setEntityRoles(roles);
+        console.log('roles',roles);
+      }
+  }
 
     const items = useMemo(
         () =>
@@ -240,9 +274,6 @@ const SiteUsers = ({getActiveStep}) => {
       ErrorToaster('Unexpected Error Creating User');
     });
     }
-    else{
-      ErrorToaster('First Name, Phone and valid Email fields are mandatory')
-    }
 
   }
 
@@ -259,34 +290,44 @@ const SiteUsers = ({getActiveStep}) => {
             <div className={style.stepperMargin}>
                 <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>
-                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                              <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                     </div>
                     <div onClick={() => getActiveStep('siteInformation')}>
-                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
-                            <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
+                              <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                     </div>
                     {isSuperAdminAccess && (
                       <div onClick={() => getActiveStep('entitySystemAdmin')}>
-                        <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                            <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                              <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                       </div>
                     )}
                     <div onClick={() => getActiveStep('siteUsers')}>
-                        <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
-                            <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
+                              <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP USERS</p>
                     </div>
                     <div onClick={() => getActiveStep('appSubscription')}>
-                        <div className={style.stepperImgBackground}>
-                            <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
+                        <div className={style.justifyCenter}>
+                          <div className={style.stepperImgBackground}>
+                              <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
+                          </div>
                         </div>
                         <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>APP SUBSCRIPTION</p>
                     </div>
@@ -308,6 +349,8 @@ const SiteUsers = ({getActiveStep}) => {
                     <div>
                         <div className={style.cloneBlockStyle}>
                             <div className={`${style.newContractFromCloneBoxStyle}`}>
+                            {
+                              !isSuperAdminAccess &&
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Is App User A Contractor? *</div>
                                     <div className={style.displayInRow}>
@@ -340,6 +383,7 @@ const SiteUsers = ({getActiveStep}) => {
                                         <p className={`${style.fourFieldWidth}`}></p>
                                     </div>
                                 </div>
+                              }
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Name*</div>
                                     <div className={`${style.displayInRow}`}>
@@ -349,34 +393,36 @@ const SiteUsers = ({getActiveStep}) => {
                                         <p className={`${style.fourFieldWidth}`}></p>
                                     </div>
                                 </div>
-                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                    <div className={style.extentionLableStyle}>Functional Title *</div>
-                                    <select
-                                        name="class"
-                                        id="Class"
-                                        className={style.fullWidth}
-                                        value={userData.title}
-                                        onChange={(e)=>handleUserData('title',e.target.value)}>
-                                            <option value="Select" >
-                                            Select
-                                            </option>
-                                            <option value="Anesthesiologist" >
-                                            Anesthesiologist
-                                            </option>
-                                            <option value="Cardiologist" >
-                                            Cardiologist
-                                            </option>
-                                            <option value="Chief Medical Information" >
-                                            Chief Medical Information
-                                            </option>
-                                            <option value="Chief Medical Officer" >
-                                            Chief Medical Officer
-                                            </option>
-                                            <option value="Chief of Staff" >
-                                            Chief of Staff
-                                            </option>
-                                    </select>
-                                </div>
+                                {
+                                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                  //     <div className={style.extentionLableStyle}>Functional Title *</div>
+                                  //     <select
+                                  //         name="class"
+                                  //         id="Class"
+                                  //         className={style.fullWidth}
+                                  //         value={userData.title}
+                                  //         onChange={(e)=>handleUserData('title',e.target.value)}>
+                                  //             <option value="Select" >
+                                  //             Select
+                                  //             </option>
+                                  //             <option value="Anesthesiologist" >
+                                  //             Anesthesiologist
+                                  //             </option>
+                                  //             <option value="Cardiologist" >
+                                  //             Cardiologist
+                                  //             </option>
+                                  //             <option value="Chief Medical Information" >
+                                  //             Chief Medical Information
+                                  //             </option>
+                                  //             <option value="Chief Medical Officer" >
+                                  //             Chief Medical Officer
+                                  //             </option>
+                                  //             <option value="Chief of Staff" >
+                                  //             Chief of Staff
+                                  //             </option>
+                                  //     </select>
+                                  // </div>
+                                }
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Email Address*</div>
                                     <InputGroup placeholder="Email" className={`${style.twoFieldWidth}`} value={userData.email} onChange={(e)=>handleUserData('email',e.target.value)}/>
@@ -385,52 +431,57 @@ const SiteUsers = ({getActiveStep}) => {
                                     <div className={style.extentionLableStyle}>Cell Phone</div>
                                     <InputGroup placeholder="+1 (342) 444-5505" className={`${style.twoFieldWidth}`} value={userData.phone} onChange={(e)=>handleUserData('phone',e.target.value)}/>
                                 </div>
-                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                    <div className={style.extentionLableStyle}>Specific Site Access*</div>
-                                    <div>
-                                        <div className={style.displayInRow}>
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch checked={siteSpecific} className={` ${style.textAlignLeft}`} onChange={() => setSiteSpecific(!siteSpecific)}  />
-                                                }
-                                                className={`${style.switchFontStyle}`}
-                                                label={siteSpecific ? 'YES' : "NO"}
-                                            />
-                                            {siteSpecific && (
-                                                <>
-                                                    <DatalistInput items={items} placeholder="Select sites" onSelect={onSelect} className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                                </>
-                                            )}
-                                        </div>
+                                {
+                                  entityData?.multiSiteEntity &&
+                                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                      <div className={style.extentionLableStyle}>Specific Site Access*</div>
+                                      <div>
+                                          <div className={style.displayInRow}>
+                                              <FormControlLabel
+                                                  control={
+                                                      <Switch checked={siteSpecific} className={` ${style.textAlignLeft}`} onChange={() => setSiteSpecific(!siteSpecific)}  />
+                                                  }
+                                                  className={`${style.switchFontStyle}`}
+                                                  label={siteSpecific ? 'YES' : "NO"}
+                                              />
+                                              {siteSpecific && (
+                                                  <>
+                                                      <DatalistInput items={items} placeholder="Select sites" onSelect={onSelect} className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
+                                                  </>
+                                              )}
+                                          </div>
 
-                                        {siteSpecific && (
-                                            <TagInput
-                                                placeholder="Enter tags/keywords relative to the post"
-                                                values={selectedSites?.map(data=>data?.siteName?.siteName)}
-                                                className={`${style.marginTop20} ${style.tagInputStyle}`}
-                                                onRemove={handleTagsRemove}
-                                                separator={/[\s,]/}
-                                                addOnBlur={true}
-                                                addOnPaste={true}
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                    <div className={style.extentionLableStyle}>Sys admin access*</div>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch checked={userData.isAdmin} onChange={(e)=>setUserData({...userData, isAdmin:(!userData.isAdmin)})} className={` ${style.textAlignLeft}`}  />
-                                            }
-                                            className={`${style.switchFontStyle} ${style.fourFieldWidth}`}
-                                            label={'YES'}
-                                        />
-                                </div>
+                                          {siteSpecific && (
+                                              <TagInput
+                                                  placeholder="Enter tags/keywords relative to the post"
+                                                  values={selectedSites?.map(data=>data?.siteName?.siteName)}
+                                                  className={`${style.marginTop20} ${style.tagInputStyle}`}
+                                                  onRemove={handleTagsRemove}
+                                                  separator={/[\s,]/}
+                                                  addOnBlur={true}
+                                                  addOnPaste={true}
+                                              />
+                                          )}
+                                      </div>
+                                  </div>
+                                }
+
+                                {
+                                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                  //     <div className={style.extentionLableStyle}>Sys admin access*</div>
+                                  //         <FormControlLabel
+                                  //             control={
+                                  //                 <Switch checked={userData.isAdmin} onChange={(e)=>setUserData({...userData, isAdmin:(!userData.isAdmin)})} className={` ${style.textAlignLeft}`}  />
+                                  //             }
+                                  //             className={`${style.switchFontStyle} ${style.fourFieldWidth}`}
+                                  //             label={userData?.isAdmin? 'YES' : 'NO'}
+                                  //         />
+                                  // </div>
+                                }
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Other App Role*</div>
                                     <div>
                                             <DatalistInput items={roleItems} placeholder="Select Roles" onSelect={onSelectRoles} className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-
                                             <TagInput
                                                 placeholder="Enter tags/keywords relative to the post"
                                                 values={selectedRoles?.map(data=>data?.roleName)}
@@ -449,11 +500,9 @@ const SiteUsers = ({getActiveStep}) => {
                                     <button className={style.outlinedButton}>BULK UPLOAD</button>
                                 </div>
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                    <button className={style.outlinedButton} onClick={addUser}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={addUser}>SAVE & ADD MORE</button>
-                                    {/* <Link to={'/appSubscription'}> */}
-                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {getActiveStep('appSubscription')}}>CONTINUE</button>
-                                    {/* </Link> */}
+                                    <button className={style.outlinedButton} onClick={()=>addUser()}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>addUser()}>SAVE & ADD MORE</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {addUser();getActiveStep('appSubscription')}}>CONTINUE</button>
                                 </div>
                             </div>
                         </div>
@@ -495,9 +544,7 @@ const SiteUsers = ({getActiveStep}) => {
                     </div>
                     <div className={` ${style.floatRight} ${style.marginTop20} ${style.marginRightForPositionButton}`}>
                         <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
-                        <Link to={'/appSubscription'}>
-                            <button className={`${style.buttonStyle} ${style.marginLeft20}`}>CONTINUE</button>
-                        </Link>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>getActiveStep('appSubscription')}>CONTINUE</button>
                     </div>
                 </div>
             )}

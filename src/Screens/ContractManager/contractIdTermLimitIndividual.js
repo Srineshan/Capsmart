@@ -3,6 +3,10 @@ import { TextArea, InputGroup, Icon, TagInput, Checkbox, FileInput, EditableText
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { DateInput } from "@blueprintjs/datetime";
+import TextField from '@mui/material/TextField';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import DatalistInput from 'react-datalist-input';
 import {GET,PUT,POST,role,tenantID} from './../dataSaver';
 import AddNewContractManager from './addNewContractManager';
@@ -30,9 +34,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [departmentSpecific, setDepartmentSpecific] = useState(false);
     const [tags, setTags] = useState(VALUES);
     const [tagSet2, setTagSet2] = useState(VALUES2);
-    const [contractTermPeriodFrom, setContractTermPeriodFrom] = useState(new Date());
-    const [contractTermPeriodTo, setContractTermPeriodTo] = useState(new Date());
-    const [contractEffectiveDate, setContractEffectiveDate] = useState(new Date());
+    const [contractTermPeriodFrom, setContractTermPeriodFrom] = useState(null);
+    const [contractTermPeriodTo, setContractTermPeriodTo] = useState(null);
+    const [contractEffectiveDate, setContractEffectiveDate] = useState(null);
     const [contractName,setContractName] = useState('');
     const [contractId,setContractId] = useState({id:'',missing:false});
     const [contractPriorId,setContractPriorId] = useState({id:'',na:false});
@@ -53,7 +57,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [selectedSite,setSelectedSite] = useState('');
     const [departmentsName,setDepartmentsName] = useState([]);
     const [selectedDepartmentId,setSelectedDepartmentId] = useState([]);
-    const id = contractIdFromActive;
+    const [createdContractId,setCreatedContractId] = useState(contractIdFromActive);
 
     useEffect(() => {
       getUserData();
@@ -69,6 +73,10 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     },[renewalReminder])
 
     useEffect(()=>{
+      getContractDetail();
+    },[createdContractId])
+
+    useEffect(()=>{
       setFullyExecutedContractData(fileData);
     },[fileData])
 
@@ -76,10 +84,8 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       setFileFields(fullyExecutedContractData);
     },[fullyExecutedContractData])
 
-    console.log('contractFiles',selectedDepartmentSites);
-
     const getContractDetail = async() => {
-      const {data: contractData} = await GET(`contract-managment-service/contracts/${id}/contractDetail`);
+      const {data: contractData} = await GET(`contract-managment-service/contracts/${createdContractId}/contractDetail`);
       if(contractData){
         let contractDetail = contractData?.contractDetail;
         setName(contractData?.contractName?.contractName || '');
@@ -101,7 +107,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         contractDetail?.contractFiles?.map(data=>{
           fileData.push({id:data?.id, type:data?.documentType,name:data?.documentName,desc:data?.documentDescription,fileName:data?.fileName,file:null,filePath:data?.fileURL})
         })
-        setFullyExecutedContractData(fileData);
+        if(fullyExecutedContractData?.length === 0){
+          setFullyExecutedContractData(fileData);
+        }
         if(contractDetail?.siteSpecificContract && !contractDetail?.departmentSpecificContract){
           setSelectedSites(contractDetail?.site?.sites || []);
         }
@@ -111,8 +119,6 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
           contractDetail?.site?.sites?.map(data=>{
             data.departmentList?.departments?.map(dept=>{
                 deptTemp.push({id:dept?.id, name: dept?.departmentName?.name, site_id: data?.id});
-                console.log('dept inside condition',dept);
-                console.log('deptTemp',deptTemp)
             })
           })
           setSelectedDepartmentSites(deptTemp || []);
@@ -183,6 +189,10 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
 
 
     const addContract = async() => {
+      if(selectedContractContinuationPolicy === 'Select Value'){
+        ErrorToaster('Select Contract Continuation Policy');
+        return;
+      }
       let contractFiles = [];
       fullyExecutedContract && fullyExecutedContractData?.map(data=>{
         contractFiles?.push({
@@ -196,12 +206,12 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
 
 
       let data = {
-        ...( method !== 'POST' && {'id':id}),
+        ...( method !== 'POST' && {'id':createdContractId}),
         "contractName": {
           "contractName": contractName
         },
         "contractType": contractType,
-        "contractStatus": "ACTIVE",
+        "contractStatus": "DRAFT",
         "contractDetail": {
           "contractId": {
             "id": contractId?.id,
@@ -220,7 +230,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
           "contractTerm": {
             "startDate": format(contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
             "endDate": format(contractTermPeriodTo, 'yyyy-MM-dd').toString(),
-            "effectiveDate": format(contractEffectiveDate, 'yyyy-MM-dd').toString(),
+            "effectiveDate": contractEffectiveDate === null ?  format(contractTermPeriodFrom, 'yyyy-MM-dd').toString() : format(contractEffectiveDate, 'yyyy-MM-dd').toString(),
           },
           "continuationPolicy": {
             "contractPolicyType": selectedContractContinuationPolicy,
@@ -254,13 +264,12 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
        if(method === 'POST'){
          await POST('contract-managment-service/contracts/contractDetail',formData)
          .then(response=>{getContractId(response?.data);
-           console.log('response',response);
          SuccessToaster('Contract Created Successfully');
        }).catch(error=>{
          ErrorToaster('Unexpected Error Creating Contract');
        })
      }else{
-       await PUT(`contract-managment-service/contracts/${id}/contractDetail`,formData)
+       await PUT(`contract-managment-service/contracts/${createdContractId}/contractDetail`,formData)
        .then(response=>{
        SuccessToaster('Contract Updated Successfully');
      }).catch(error=>{
@@ -357,10 +366,10 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       let temp = [];
       for(let i=0;i<renewalReminder?.length;i++){
         temp[i] = (
-          <div className={`${style.renewalRemainderBoxGrid} ${style.marginBottom}`} key={`reminder${i}`}>
+          <div className={`${style.renewalRemainderBoxGrid} ${style.marginBottom}`} key={`reminder${i}-${renewalReminder?.[i]?.days}`}>
               <div className={style.marginTop}>Set Renewal Reminder*</div>
               <div className={style.displayInRow}>
-                <EditableText className={style.inputRenewalRemainderStyle} defaultValue={renewalReminder?.[i]?.days} placeholder="" onChange={(e)=>handleReminder(e,i)} key={`days${i}`}/>
+                <EditableText className={style.inputRenewalRemainderStyle} defaultValue={renewalReminder?.[i]?.days} placeholder="" onChange={(e)=>handleReminder(e,i)} key={`days${i}${renewalReminder?.[i]?.days}`}/>
                 <div className={`${style.marginTop10} ${style.marginLeft20}`}>Days</div>
               </div>
               <Icon icon="cross" className={style.marginTop10} color="black" onClick={()=>removeReminder(i)}/>
@@ -385,7 +394,6 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       setFileFields(temp);
       setFullyExecutedContractData(temp);
       setFileFieldData({id:'',type:'',name:'',desc:'',fileName:'',file:null,filePath:''});
-
     }
 
     const onSelectDepartment = (deptId) => {
@@ -460,8 +468,14 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         )
     }
 
-    console.log('Selected Sites',selectedSites);
-    console.log('selectedDepartmet', selectedDepartmentSites);
+    const disableFileAddButton = () => {
+      if(fileFieldData?.type !== '' && fileFieldData?.name !== '' && fileFieldData?.file !== null){
+        return false;
+      }else{
+        return true;
+      }
+    }
+
 
     return(
         <div className={style.cloneBlockStyle}>
@@ -514,7 +528,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                 label={fullyExecutedContract ? 'YES' : "NO"}
                             />
                             {fullyExecutedContract && (
-                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={()=>{addNewDocumentField()}}>ADD</button>
+                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={()=>{addNewDocumentField()}}>ADD</button>
                             )}
                         </div>
                         {fullyExecutedContract && (
@@ -603,52 +617,47 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                 label={departmentSpecific ? 'YES' : "NO"}
                             />
                             {departmentSpecific && (
-                                <div>
-                                  <div>
-                                      <select
-                                          name="class"
-                                          id="Class"
-                                          value={selectedSite || 'Select...'}
-                                          onChange={(e) => setSelectedSite(e.target.value)}
-                                          className={`${style.fullWidth} ${style.marginLeft20} `}>
-                                          <option value='Select...'>
-                                            Select Site...
-                                          </option>
-                                          {
-                                            selectedSites?.map(data=>(
-                                              <option value={data?.id}>
-                                                {data?.siteName?.siteName}
-                                              </option>
-                                            ))
-                                          }
-                                      </select>
-                                  </div>
-                                  {
-                                    selectedSites?.filter(data=>data?.id === selectedSite)?.map(data=>(
-                                      <div>
-                                          <select
-                                              name="class"
-                                              id="Class"
-                                              onChange={(e) => onSelectDepartment(e.target.value)}
-                                              className={`${style.fullWidth} ${style.marginLeft20} ${style.marginTop20}`}>
-                                              <option value='Select...'>
-                                                Select Department...
-                                              </option>
-                                              {
-                                                data?.departmentList?.departments?.map(dept=>(
-                                                  <option value={dept?.id}>
-                                                    {dept?.departmentName?.name}
-                                                  </option>
-                                                ))
-                                              }
-                                          </select>
-                                      </div>
-                                    ))
-                                  }
-
-                                </div>
+                                    <select
+                                        name="class"
+                                        id="Class"
+                                        value={selectedSite || 'Select...'}
+                                        onChange={(e) => setSelectedSite(e.target.value)}
+                                        className={`${style.fullWidth} ${style.marginLeft20} `}>
+                                        <option value='Select...'>
+                                          Select Site...
+                                        </option>
+                                        {
+                                          selectedSites?.map(data=>(
+                                            <option value={data?.id}>
+                                              {data?.siteName?.siteName}
+                                            </option>
+                                          ))
+                                        }
+                                    </select>
                             )}
                         </div>
+                        {departmentSpecific &&
+                            selectedSites?.filter(data=>data?.id === selectedSite)?.map(data=>(
+                              <div>
+                                  <select
+                                      name="class"
+                                      id="Class"
+                                      onChange={(e) => onSelectDepartment(e.target.value)}
+                                      className={`${style.fullWidth} ${style.marginTop20}`}>
+                                      <option value='Select...'>
+                                        Select Department...
+                                      </option>
+                                      {
+                                        data?.departmentList?.departments?.map(dept=>(
+                                          <option value={dept?.id}>
+                                            {dept?.departmentName?.name}
+                                          </option>
+                                        ))
+                                      }
+                                  </select>
+                              </div>
+                            )
+                        )}
                         {departmentSpecific && (
                             <TagInput
                                 placeholder="Enter tags/keywords relative to the post"
@@ -663,39 +672,191 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                         )}
                     </div>
                 </div>
+                {/* // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  //     <div className={style.extentionLableStyle}>Site Specific Contract*</div>
+                  //     <div>
+                  //         <div className={style.displayInRow}>
+                  //             <FormControlLabel
+                  //                 control={
+                  //                     <Switch checked={siteSpecific} className={`${style.textAlignLeft}`} onChange={() => setSiteSpecific(!siteSpecific)}  />
+                  //                 }
+                  //                 className={`${style.switchFontStyle}`}
+                  //                 label={siteSpecific ? 'YES' : "NO"}
+                  //             />
+                  //             {siteSpecific && (
+                  //                 <div className={style.displayInRow}>
+                  //                     <DatalistInput items={siteItems||[]} placeholder="Select Sites" onSelect={onSelectSite}  className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
+                  //                     {
+                  //                       // <div className={`${style.addSymbolStyle} ${style.marginLeft20}`} onClick={()=>{setSelectedSites([...selectedSites,])}}><span className={style.plusSymbolPosition}>+</span></div>
+                  //                     }
+                  //                     </div>
+                  //             )}
+                  //         </div>
+                  //         {siteSpecific && (
+                  //             <TagInput
+                  //                 placeholder="Enter tags/keywords relative to the post"
+                  //                 values={selectedSites?.map(data=>data?.siteName?.siteName)}
+                  //                 className={`${style.marginTop20}`}
+                  //                 onRemove={handleTagsRemove}
+                  //                 separator={/[\s,]/}
+                  //                 addOnBlur={true}
+                  //                 addOnPaste={true}
+                  //                 tagProps={getTagProps}
+                  //             />
+                  //         )}
+                  //     </div>
+                  // </div>
+                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  //     <div className={style.extentionLableStyle}>Department Specific Contract*</div>
+                  //     <div>
+                  //         <div className={style.displayInRow}>
+                  //             <FormControlLabel
+                  //                 control={
+                  //                     <Switch checked={departmentSpecific && siteSpecific} className={` ${style.textAlignLeft}`} onChange={()=>{if(siteSpecific){setDepartmentSpecific(!departmentSpecific)}}}  />
+                  //                 }
+                  //                 className={`${style.switchFontStyle}`}
+                  //                 label={departmentSpecific ? 'YES' : "NO"}
+                  //             />
+                  //             {departmentSpecific && (
+                  //                 <div>
+                  //                   <div>
+                  //                       <select
+                  //                           name="class"
+                  //                           id="Class"
+                  //                           value={selectedSite || 'Select...'}
+                  //                           onChange={(e) => setSelectedSite(e.target.value)}
+                  //                           className={`${style.fullWidth} ${style.marginLeft20} `}>
+                  //                           <option value='Select...'>
+                  //                             Select Site...
+                  //                           </option>
+                  //                           {
+                  //                             selectedSites?.map(data=>(
+                  //                               <option value={data?.id}>
+                  //                                 {data?.siteName?.siteName}
+                  //                               </option>
+                  //                             ))
+                  //                           }
+                  //                       </select>
+                  //                   </div>
+                  //                   {
+                  //                     selectedSites?.filter(data=>data?.id === selectedSite)?.map(data=>(
+                  //                       <div>
+                  //                           <select
+                  //                               name="class"
+                  //                               id="Class"
+                  //                               onChange={(e) => onSelectDepartment(e.target.value)}
+                  //                               className={`${style.fullWidth} ${style.marginLeft20} ${style.marginTop20}`}>
+                  //                               <option value='Select...'>
+                  //                                 Select Department...
+                  //                               </option>
+                  //                               {
+                  //                                 data?.departmentList?.departments?.map(dept=>(
+                  //                                   <option value={dept?.id}>
+                  //                                     {dept?.departmentName?.name}
+                  //                                   </option>
+                  //                                 ))
+                  //                               }
+                  //                           </select>
+                  //                       </div>
+                  //                     ))
+                  //                   }
+                  //
+                  //                 </div>
+                  //             )}
+                  //         </div>
+                  //         {departmentSpecific && (
+                  //             <TagInput
+                  //                 placeholder="Enter tags/keywords relative to the post"
+                  //                 values={selectedDepartmentSites?.filter(data=>data?.site_id === selectedSite)?.map(data=>data?.name) || []}
+                  //                 className={`${style.marginTop20}`}
+                  //                 onRemove={handleTagSet2Remove}
+                  //                 separator={/[\s,]/}
+                  //                 addOnBlur={true}
+                  //                 addOnPaste={true}
+                  //                 tagProps={getTagProps}
+                  //             />
+                  //         )}
+                  //     </div>
+                  // </div> */}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Term Period*</div>
                     <div className={style.displayInRow}>
-                        <DateInput
+                        {/* <DateInput
                             formatDate={date => date.toLocaleDateString()}
                             parseDate={str => new Date(str)}
                             placeholder={"MM-DD-YYYY"}
                             value={contractTermPeriodFrom}
-                            onChange={(e)=> setContractTermPeriodFrom(e) }
-                            minDate={contractTermPeriodFrom || new Date()}
-                        />
+                            onChange={(e)=> setContractTermPeriodFrom(e || new Date()) }
+                        /> */}
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <DatePicker
+                            value={contractTermPeriodFrom}
+                            onChange={(newValue) => {
+                              setContractTermPeriodFrom(newValue);
+                            }}
+                            InputProps={{
+                              style: {
+                                  fontSize: 14,
+                                  height: 30,
+                              }
+                          }}
+                            renderInput={(params) => <TextField  {...params} />}
+                          />
+                        </LocalizationProvider>
                     <p className={style.toStyle}>To</p>
-                        <DateInput
+                        {/* <DateInput
                             formatDate={date => date.toLocaleDateString()}
                             parseDate={str => new Date(str)}
                             placeholder={"MM-DD-YYYY"}
                             value={contractTermPeriodTo}
-                            onChange={(e)=> setContractTermPeriodTo(e) }
+                            onChange={(e)=> setContractTermPeriodTo(e || new Date()) }
                             minDate={contractTermPeriodFrom}
-                        />
+                        /> */}
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <DatePicker
+                            value={contractTermPeriodTo}
+                            onChange={(newValue) => {
+                              setContractTermPeriodTo(newValue);
+                            }}
+                            InputProps={{
+                              style: {
+                                  fontSize: 14,
+                                  height: 30,
+                              }
+                            }}
+                            minDate={contractTermPeriodFrom}
+                            renderInput={(params) => <TextField  {...params} />}
+                          />
+                        </LocalizationProvider>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contracted Services Effective Date*</div>
                     <div className={`${style.leftAlign} `}>
-                    <DateInput
+                    {/* <DateInput
                         formatDate={date => date.toLocaleDateString()}
                         parseDate={str => new Date(str)}
                         placeholder={"MM-DD-YYYY"}
                         value={contractEffectiveDate}
-                        onChange={(e)=> setContractEffectiveDate(e) }
-                        minDate={contractEffectiveDate||contractTermPeriodFrom}
-                    />
+                        onChange={(e)=> setContractEffectiveDate(e || new Date()) }
+                        minDate={contractTermPeriodFrom}
+                    /> */}
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DatePicker
+                          value={contractEffectiveDate}
+                          onChange={(newValue) => {
+                            setContractEffectiveDate(newValue);
+                          }}
+                          InputProps={{
+                            style: {
+                                fontSize: 14,
+                                height: 30,
+                            }
+                          }}
+                          minDate={contractTermPeriodFrom}
+                          renderInput={(params) => <TextField  {...params} />}
+                        />
+                      </LocalizationProvider>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -765,7 +926,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
             </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
                 <button className={style.newContractOutlinedButton} onClick={()=>addContract()}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {getViewPage2(true);getViewPage1(false);getCurrentPage('Contracted Services Provider(s)')}}>CONTINUE</button>
+                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {addContract();getViewPage2(true);getViewPage1(false);getCurrentPage('Contracted Services Provider(s)')}}>CONTINUE</button>
             </div>
             {addNewManagerDialog && (
                 <AddNewContractManager getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUserData} contractId={contractIdFromActive}/>

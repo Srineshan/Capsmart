@@ -44,9 +44,9 @@ const CustomerManagement = () => {
             ) : customerPage === "IN-PROGRESS / TRIAL CUSTOMERS" ? (
                 <TrialCustomers getSelectedCustomer={getSelectedCustomer} entityList={entityList}/>
             ) : customerPage === "ON HOLD / TERMINATED CUSTOMERS" ? (
-                <TerminatedCustomers getSelectedCustomer={getSelectedCustomer} />
+                <TerminatedCustomers getSelectedCustomer={getSelectedCustomer} entityList={entityList}/>
             ) : (
-                <FeedbackCustomers getSelectedCustomer={getSelectedCustomer}  />
+                <FeedbackCustomers getSelectedCustomer={getSelectedCustomer}  entityList={entityList}/>
             )}
         </div>
     )

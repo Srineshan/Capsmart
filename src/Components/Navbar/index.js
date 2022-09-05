@@ -2,6 +2,7 @@ import React, {useState, useRef, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import logo from './../../images/metropolitan-hospital-logo.png';
 import TenetLogo from './../../images/Tenet_Health_logo.png';
+import SanmateoLogo from './../../images/sanmateo.jpg';
 import NotificationsIcon from './../../images/notificationsIcon.png';
 import PrintIcon from './../../images/printIcon.png';
 import RedBackground from './../../images/redBackground.png';
@@ -11,6 +12,8 @@ import {Link} from 'react-router-dom';
 import LogoutIcon from './../../images/logoutIcon.png';
 import Cookies from 'universal-cookie';
 import {isSuperAdminAccess} from '../../Screens/dataSaver';
+import jwt from 'jwt-decode';
+
 import style from './index.module.scss';
 
 const Navbar = () => {
@@ -18,6 +21,8 @@ const Navbar = () => {
     const [showMenu, setShowMenu] = useState(false);
     const [showToolsMenu, setShowToolsMenu] = useState(false);
     const [showReportsMenu, setShowReportsMenu] = useState(false);
+    const [isContractManager, setIsContractManager] = useState(false);
+    const [isEntityLevelAdmin, setIsEntityLevelAdmin] = useState(false);
 
     const menuRef = useRef(null);
     const toolsMenuRef = useRef(null);
@@ -72,26 +77,40 @@ const Navbar = () => {
     const logout = () => {
       const cookies = new Cookies();
       cookies.remove('user');
+      cookies.remove('entityId');
       navigate('/');
     }
+
+    useEffect(() => {
+        var cookie = new Cookies();
+        var accessToken = cookie.get('user');
+        let roles = jwt(accessToken)?.roles?.split(',');
+        setIsContractManager(roles.includes('Contract Manager') ? true : false);
+        setIsEntityLevelAdmin((roles.includes('Super Sys Admin') || roles.includes('Entity Sys Admin') || roles.includes('Entity Sys User') || roles.includes('Distributor Admin')) ? true : false);
+    }, [])
 
 
     return(
         <div className={style.navbarStyle}>
             <div className={style.spaceBetween}>
             <div className={style.displayInRow}>
-                <img src={logo} alt="Metropolitan Hospital" className={style.logo} />
-                <div className={style.menuStyle}>
+                {
+                  // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
+                }
+                <img src={SanmateoLogo} alt="Hospital Logo" className={style.sanmateoLogo} />
+                {/* <div className={style.menuStyle}>
                     <p>HOME-LOG ACTIVITY</p>
                 </div>
                 <div className={style.menuStyle}>
                     <p>TIMESHEETS</p>
-                </div>
-                <Link to={'/contracts'} className={style.noFontStyle}>
-                    <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
-                        <p>CONTRACT MANAGER</p>
-                    </div>
-                </Link>
+                </div> */}
+                {isContractManager && (
+                    <Link to={'/contracts'} className={style.noFontStyle}>
+                        <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
+                            <p>CONTRACT MANAGER</p>
+                        </div>
+                    </Link>
+                )}
                 <Link to={'/tasks'} className={style.noFontStyle}>
                     <div className={`${style.menuStyle} ${(window.location.pathname === "/tasks" || window.location.pathname === "/reports") && style.activeMenuColor}`} onClick={() => setShowReportsMenu(true)}>
                         <p>REPORT</p>
@@ -112,19 +131,21 @@ const Navbar = () => {
                         )}
                     </div>
                 </Link>
-                <div className={`${style.menuStyle} ${(window.location.pathname === "/user" || window.location.pathname === "/welcome" || window.location.pathname === "/tasksAndAlerts") && style.activeMenuColor}`} onClick={() => setShowToolsMenu(true)}>
-                    <p>TOOLS</p>
-                    {showToolsMenu && (
-                        <div className={style.optionsCardStyle} ref={toolsMenuRef}>
-                            <Link to={'/user'} className={style.noFontStyle}>
-                                <div className={style.options}>USER MANAGEMENT</div>
-                            </Link>
-                            <Link to={isSuperAdminAccess ? '/tasksAndAlerts' : '/welcome'} className={style.noFontStyle}>
-                                <div className={style.options}>ENTITY MANAGEMENT</div>
-                            </Link>
-                        </div>
-                    )}
-                </div>
+                {isEntityLevelAdmin && (
+                    <div className={`${style.menuStyle} ${(window.location.pathname === "/user" || window.location.pathname === "/welcome" || window.location.pathname === "/tasksAndAlerts") && style.activeMenuColor}`} onClick={() => setShowToolsMenu(true)}>
+                        <p>TOOLS</p>
+                        {showToolsMenu && (
+                            <div className={style.optionsCardStyle} ref={toolsMenuRef}>
+                                <Link to={'/user'} className={style.noFontStyle}>
+                                    <div className={style.options}>USER MANAGEMENT</div>
+                                </Link>
+                                <Link to={isSuperAdminAccess ? '/tasksAndAlerts' : '/welcome'} className={style.noFontStyle}>
+                                    <div className={style.options}>ENTITY MANAGEMENT</div>
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                )}
                 <div>
                     <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} onClick={() => setShowMenu(true)}>
                         <p>HELP</p>

@@ -40,12 +40,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
     const [totalContractedService, setTotalContractedService] = useState(0);
     const [totalContractedServiceFrequency, setTotalContractedServiceFrequency] = useState('WEEK');
-    const [dutyDays, setDutyDays] = useState('');
+    const [dutyDays, setDutyDays] = useState([]);
     const [coverageCallDutyType, setCoverageCallDutyType] = useState('All On Call Service Duty');
     const [contractedServices, setContractedServices] = useState([]);
     const [users,setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
+    const limit = 3;
 
     const getSendEmailNotification = (value) => {
         setSendEmailNotification(value)
@@ -82,6 +83,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
     }
 
+    const handleDutyDays = (value) => {
+        if(!dutyDays.includes(value)){
+            setDutyDays([...dutyDays, value])
+        } else {
+            setDutyDays(dutyDays?.filter(data => data !== value)?.map(data => data))
+        }
+    }
+
     const handleSave = async() => {
         if(activityContractedFor === ''){
             ErrorToaster('Specific Activity Contracted For Is Mandatory');
@@ -101,13 +110,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     },
                     "activityResponse": {
                         "dataMap": {
-                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "On Call Coverage Duty Days" && 
+                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "On Call Coverage Duty Days" &&
                             {'dutyDays':dutyDays}),
-                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "On Call Coverage Duty Days" &&  
+                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "On Call Coverage Duty Days" &&
                             {'coverageCallDutyType': coverageCallDutyType}),
-                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Department Oversight Role & Responsibility" && 
+                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Department Oversight Role & Responsibility" &&
                             {'additionalCompensationTitle':additionalCompensationTitle}),
-                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Department Oversight Role & Responsibility" && 
+                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Department Oversight Role & Responsibility" &&
                             {'additionalCompensationPerMonth': additionalCompensationPerMonth}),
                         }
                     },
@@ -150,7 +159,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             services.push(data);
             let formattedData = {
                 contractedServices: services
-            } 
+            }
 
             const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
             if(response){
@@ -211,7 +220,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             services.push(data);
             let formattedData = {
                 contractedServices: services
-            } 
+            }
 
             const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
             if(response){
@@ -285,35 +294,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         )
     }
 
-    // const handleContinue = async() => {
-    //     const data = {
-    //         compensationBasis: compensation,
-    //         rvuQuantity: rvuQuantity,
-    //         frequency: frequency,
-    //         fteEquivalent: fteEquivalent,
-    //         rvuReferenceUsed: rvuReferenceUsed,
-    //         rvuQuantityVariance: rvuQuantityVariance,
-    //         rvuQuantityPeriod: rvuQuantityPeriod,
-    //         compensationOffsetCriteria: compensationOffsetCriteria,
-    //         dollarRate: dollarRate,
-    //         dollarValue: dollarValue,
-    //       }
-    //       const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
-    //         if(response){
-    //             SuccessToaster('Payment And Compensation Updated Successfully');
-    //         }
-    //         else {
-    //             ErrorToaster('Unexpected Error');
-    //         }
-    //     console.log(data)
-    // }
-
     useEffect(() => {
         if (activityContractedFor === "Add-On Services Allowed Upon Request Approval"
             || activityContractedFor === "Department Oversight Role & Responsibility"
             || activityContractedFor === "Administrative / Miscellaneous Services") {
             getAddOn(true);
-            console.log('entered')
         } else {
             getAddOn(false);
         }
@@ -338,7 +323,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                     name="class"
                                     id="Class"
                                     value={activityOrServiceType}
-                                    onChange={(e) => {setActivityOrServiceType(e.target.value);reset()}}
+                                    onChange={(e) => {setActivityOrServiceType(e.target.value);reset();setActivityContractedFor('')}}
                                     className={`${style.fullWidth} ${style.marginRight20}`}>
                                     <option value="Medical / Surgical Care Contracted Services" >
                                         Medical / Surgical Care Contracted Services
@@ -352,41 +337,39 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                 </select>
                             </div>
                         </div>
-                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>
-                            <div>
-                                <div className={`${style.displayInRow} `}>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor)} />
-                                        }
-                                        className={`${style.switchFontStyle} ${style.flexLeft} ${style.marginTop10} `}
-                                        label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
-                                    />
-                                    {isDesignatedSpecificContractor && <select
-                                        name="class"
-                                        id="Class"
-                                        value={(selectContractInfo === "INDIVIDUAL") && contractedServiceProvider}
-                                        disabled={(selectContractInfo === "INDIVIDUAL") && true}
-                                        onChange={(e) => handleUsers(e.target.value)}
-                                        className={`${style.fullWidth} ${style.marginLeft20} `}>
-                                        <option value="0" >
-                                            Select Contracted Services Provided
-                                        </option>
-                                        {users?.map((data, index) => (
-                                            <option value={data?.id} key={index}>
-                                                {data?.name?.firstName} {data?.name?.lastName}
+                        {selectContractInfo !== "INDIVIDUAL" && (
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>
+                                <div>
+                                    <div className={`${style.displayInRow} `}>
+                                        <FormControlLabel
+                                            control={
+                                                <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor)} />
+                                            }
+                                            className={`${style.switchFontStyle} ${style.flexLeft} ${style.marginTop10} `}
+                                            label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
+                                        />
+                                        {isDesignatedSpecificContractor && <select
+                                            name="class"
+                                            id="Class"
+                                            onChange={(e) => handleUsers(e.target.value)}
+                                            className={`${style.fullWidth} ${style.marginLeft20} `}>
+                                            <option value="0" >
+                                                Select Contracted Services Provided
                                             </option>
-                                        ))}
-                                    </select>}
-                                </div>
-                                {(selectContractInfo !== "INDIVIDUAL") && (
+                                            {users?.map((data, index) => (
+                                                <option value={data?.id} key={index}>
+                                                    {data?.name?.firstName} {data?.name?.lastName}
+                                                </option>
+                                            ))}
+                                        </select>}
+                                    </div>
                                     <div className={`${style.marginTop20} ${style.marginLeft20}`}>
                                         {usersTags}
                                     </div>
-                                )}
+                                </div>
                             </div>
-                        </div>
+                        )}
                         {activityOrServiceType === "Medical / Surgical Care Contracted Services" && (
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Specific Activity Contracted For*</div>
@@ -405,7 +388,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                          >
                                             Clinic Session Blocks
                                         </option>
-                                        <option value="On Call Coverage Duty Days" 
+                                        <option value="On Call Coverage Duty Days"
                                         disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('On Call Coverage Duty Days')}
                                         >
                                             On Call Coverage Duty Days
@@ -429,13 +412,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                     <div className={style.extentionLableStyle}>Regular {activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Schedule*</div>
                                     <div className={style.displayInRow}>
                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                            <EditableText value={regularClinicSchedule} onChange={(e) => setRegularClinicSchedule(e)} className={style.editableTextStyle} />
+                                            <EditableText value={regularClinicSchedule} placeholder="" type="number" onChange={(e) => setRegularClinicSchedule(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                             <div className={style.textElementWithoutBackground}>Hours</div>
                                         </div>
                                         <select
                                             name="class"
                                             id="Class"
-                                            value={regularClinicScheduleFrequency} 
+                                            value={regularClinicScheduleFrequency}
                                             onChange={(e) => setRegularClinicScheduleFrequency(e.target.value)}
                                             className={` ${style.threeFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
                                             <option value="WEEK" >
@@ -515,7 +498,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             <div className={style.displayInRow}>
                                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                     <div className={style.textElementWithoutBackground}>$</div>
-                                                    <EditableText value={additionalCompensationPerMonth} onChange={(e) => setAdditionalCompensationPerMonth(e)} className={style.editableTextStyleWithoutPadding} />
+                                                    <EditableText value={additionalCompensationPerMonth} placeholder="" type="number" onChange={(e) => setAdditionalCompensationPerMonth(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                                 </div>
                                                 <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Month</p>
                                             </div>
@@ -550,16 +533,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             <div className={style.displayInRow}>
                                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                     <div className={style.textElement}>MIN</div>
-                                                    <EditableText value={min} onChange={(e) => setMin(e)} className={style.editableTextStyle} />
+                                                    <EditableText value={min} placeholder="" type='number' onChange={(e) => setMin(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                                 </div>
                                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                     <div className={style.textElement}>MAX</div>
-                                                    <EditableText value={max} onChange={(e) => setMax(e)} className={style.editableTextStyle} />
+                                                    <EditableText value={max} placeholder="" type='number' onChange={(e) => setMax(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                                 </div>
                                                 <select
                                                     name="class"
                                                     id="Class"
-                                                    value={regularClinicScheduleFrequency} 
+                                                    value={regularClinicScheduleFrequency}
                                                     onChange={(e) => setRegularClinicScheduleFrequency(e.target.value)}
                                                     className={` ${style.threeFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
                                                     <option value="WEEK" >
@@ -581,11 +564,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <div className={`${style.displayInRow} ${style.fullWidth}`}>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.twoFieldWidth} `}>
                                                             <div className={style.textElementWithNurse}>WITH NURSE</div>
-                                                            <EditableText value={withNurse} onChange={(e) => setWithNurse(e)} className={style.editableTextStyle} />
+                                                            <EditableText value={withNurse} placeholder="" type='number' onChange={(e) => setWithNurse(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                                         </div>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.twoFieldWidth}`}>
                                                             <div className={style.textElementWithNurse}>WITHOUT NURSE</div>
-                                                            <EditableText value={withoutNurse} onChange={(e) => setWithoutNurse(e)} className={style.editableTextStyle} />
+                                                            <EditableText value={withoutNurse} placeholder="" type='number' onChange={(e) => setWithoutNurse(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                                         </div>
                                                     </div>
                                                 ) : (
@@ -611,7 +594,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                 <select
                                                     name="class"
                                                     id="Class"
-                                                    value={frequency} 
+                                                    value={frequency}
                                                     onChange={(e) => setFrequency(e.target.value)}
                                                     className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
                                                     <option value="WEEK" >
@@ -629,7 +612,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>{activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Session Duration</div>
                                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                <EditableText value={duration} onChange={(e) => setDuration(e)} className={style.editableTextStyle} />
+                                                <EditableText value={duration} placeholder="" type='number' onChange={(e) => setDuration(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                                 <div className={style.textElementWithoutBackground}>Hours</div>
                                             </div>
                                         </div>
@@ -637,20 +620,20 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             <div className={style.extentionLableStyle}>{activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Session Payment Amount*</div>
                                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                 <div className={style.textElementWithoutBackground}>$</div>
-                                                <EditableText value={payment} onChange={(e) => setPayment(e)} className={style.editableTextStyleWithoutPadding} />
+                                                <EditableText value={payment} placeholder="" type='number' onChange={(e) => setPayment(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                             </div>
                                         </div>
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
                                             <div className={style.twoCol}>
                                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                                    <EditableText value={totalContractedService} onChange={(e)=> setTotalContractedService(e)} className={style.editableSessionTextStyle} />
+                                                    <EditableText value={totalContractedService} placeholder="" type='number' onChange={(e)=> setTotalContractedService(e.slice(0, limit))} className={style.editableSessionTextStyle} />
                                                     <div className={style.textElement}>120 Specified</div>
                                                 </div>
                                                 <select
                                                     name="class"
                                                     id="Class"
-                                                    value={totalContractedServiceFrequency} 
+                                                    value={totalContractedServiceFrequency}
                                                     onChange={(e)=> setTotalContractedServiceFrequency(e.target.value)}
                                                     className={`${style.fullWidth} ${style.reduceTop} `}>
                                                     <option value="WEEK" >
@@ -668,14 +651,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>Allowable Working Day Hours For {activityType === "Surgery Session" ? 'Surgery' : 'Clinic'}*</div>
                                             <div className={style.displayInRow}>
-                                                <InputGroup 
+                                                <InputGroup
                                                     value={workingPeriodFrom}
                                                     placeholder="HH:MM"
-                                                    onChange={(e)=> setWorkingPeriodFrom(e.target.value) } 
-                                                    className={style.threeFieldWidth} 
-                                                />                                               
-                                                <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p> 
-                                                <InputGroup 
+                                                    onChange={(e)=> setWorkingPeriodFrom(e.target.value) }
+                                                    className={style.threeFieldWidth}
+                                                />
+                                                <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
+                                                <InputGroup
                                                     value={workingPeriodTo}
                                                     placeholder="HH:MM"
                                                     onChange={(e)=> setWorkingPeriodTo(e.target.value) }
@@ -684,20 +667,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             </div>
                                         </div>
                                     </div>
-                                ) : activityOrServiceType === "Medical / Surgical Care Contracted Services" && (
+                                ) : (activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor !== "") && (
                                     <div>
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>On Call Service Duty Days*</div>
-                                            <RadioGroup
-                                                inline={true}
-                                                className={`${style.marginLeft20} ${activityType === "Surgery Session" && style.marginTop} `}
-                                                selectedValue={dutyDays}
-                                                onChange={(e) => setDutyDays(e.target.value)}
-                                            >
-                                                <Radio label="Weekdays" value="Weekdays" />
-                                                <Radio label="Weekends" value="Weekends" />
-                                                <Radio label="Holidays" value="Holidays" />
-                                            </RadioGroup>
+                                            <div className={`${style.displayInRow} ${style.marginTop} `}>
+                                                <Checkbox checked={dutyDays.includes('Weekdays')} onChange={(e) => handleDutyDays('Weekdays')} label="Weekdays" />
+                                                <Checkbox checked={dutyDays.includes('Weekends')} onChange={(e) => handleDutyDays('Weekends')} label="Weekends" className={`${style.marginLeft20}`} />
+                                                <Checkbox checked={dutyDays.includes('Holidays')} onChange={(e) => handleDutyDays('Holidays')} label="Holidays" className={`${style.marginLeft20}`} />
+                                            </div>
                                         </div>
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>Coverage Call Duty Type*</div>
@@ -719,11 +697,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             <div className={style.displayInRow}>
                                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                     <div className={style.textElement}>MIN</div>
-                                                    <EditableText value={min} onChange={(e) => setMin(e)} className={style.editableTextStyle} />
+                                                    <EditableText value={min} placeholder="" type='number' onChange={(e) => setMin(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                                 </div>
                                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                     <div className={style.textElement}>MAX</div>
-                                                    <EditableText value={max} onChange={(e) => setMax(e)} className={style.editableTextStyle} />
+                                                    <EditableText value={max} placeholder="" type='number' onChange={(e) => setMax(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                                 </div>
                                                 <select
                                                     name="class"
@@ -746,48 +724,48 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>On Call Duty Duration</div>
                                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                <EditableText value={duration} onChange={(e) => setDuration(e)} className={style.editableTextStyle} />
+                                                <EditableText value={duration} placeholder="" type='number' onChange={(e) => setDuration(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                                 <div className={style.textElementWithoutBackground}>Hours</div>
                                             </div>
                                         </div>
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>On Call Start</div>
                                             <div className={style.displayInRow}>
-                                                <InputGroup 
+                                                <InputGroup
                                                     value={workingPeriodFrom}
                                                     placeholder="HH:MM"
-                                                    onChange={(e)=> setWorkingPeriodFrom(e.target.value) } 
-                                                    className={style.threeFieldWidth} 
-                                                />                                               
-                                                <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p> 
-                                                <InputGroup 
+                                                    onChange={(e)=> setWorkingPeriodFrom(e.target.value) }
+                                                    className={style.threeFieldWidth}
+                                                />
+                                                <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
+                                                <InputGroup
                                                     value={workingPeriodTo}
                                                     placeholder="HH:MM"
                                                     onChange={(e)=> setWorkingPeriodTo(e.target.value) }
                                                     className={style.threeFieldWidth}
-                                                /> 
+                                                />
                                             </div>
                                         </div>
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>On Call Coverage Session Unit Value*</div>
                                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                 <div className={style.textElementWithoutBackground}>$</div>
-                                                <EditableText value={payment} onChange={(e) => setPayment(e)} className={style.editableTextStyleWithoutPadding} />
+                                                <EditableText value={payment} placeholder="" type='number' onChange={(e) => setPayment(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                             </div>
                                         </div>
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
                                             <div className={style.twoCol}>
                                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                                    <EditableText value={totalContractedService} onChange={(e)=> setTotalContractedService(e)} className={style.editableSessionTextStyle} />
+                                                    <EditableText value={totalContractedService} placeholder="" type='number' onChange={(e)=> setTotalContractedService(e.slice(0, limit))} className={style.editableSessionTextStyle} />
                                                     <div className={style.textElement}>120 Specified</div>
                                                 </div>
                                                 <select
                                                     name="class"
                                                     id="Class"
-                                                    value={totalContractedServiceFrequency} 
+                                                    value={totalContractedServiceFrequency}
                                                     onChange={(e)=> setTotalContractedServiceFrequency(e.target.value)}
-                                                    className={`${style.fullWidth} `}>
+                                                    className={`${style.fullWidth} ${style.marginTop}`}>
                                                     <option value="WEEK" >
                                                         Per Contract Week
                                                     </option>
@@ -845,7 +823,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                 <div className={style.displayInRow}>
                                                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                         <div className={style.textElementWithoutBackground}>$</div>
-                                                        <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                                        <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                     </div>
                                                     <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Excess Coverage Day</p>
                                                 </div>
@@ -858,7 +836,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                 <div className={style.displayInRow}>
                                                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                         <div className={style.textElementWithoutBackground}>$</div>
-                                                        <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                                        <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                     </div>
                                                     <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Surgery Assist Session</p>
                                                 </div>
@@ -871,7 +849,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                 <div className={style.displayInRow}>
                                                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                         <div className={style.textElementWithoutBackground}>$</div>
-                                                        <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                                        <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                     </div>
                                                     <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Surgery Assist Session</p>
                                                 </div>
@@ -884,7 +862,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                 <div className={style.displayInRow}>
                                                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                         <div className={style.textElementWithoutBackground}>$</div>
-                                                        <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                                        <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                     </div>
                                                     <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
                                                 </div>
@@ -901,7 +879,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <div className={style.displayInRow}>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                             <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                         </div>
                                                         <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional Surgery Session</p>
                                                     </div>
@@ -909,7 +887,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                 <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
                                                     <div className={style.extentionLableStyle}>Surgery Session Duration*</div>
                                                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                        <EditableText value="4" className={style.editableTextStyle} />
+                                                        <EditableText value="4" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                         <div className={style.textElementWithoutBackground}>Hour</div>
                                                     </div>
                                                 </div>
@@ -921,7 +899,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <div className={style.displayInRow}>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                             <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                         </div>
                                                         <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
                                                     </div>
@@ -934,7 +912,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <div className={style.displayInRow}>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                             <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                         </div>
                                                         <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional Surgery Session</p>
                                                     </div>
@@ -942,7 +920,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                 <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
                                                     <div className={style.extentionLableStyle}>Surgery Assist Session Duration*</div>
                                                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                        <EditableText value="4" className={style.editableTextStyle} />
+                                                        <EditableText value="4" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                         <div className={style.textElementWithoutBackground}>Hour</div>
                                                     </div>
                                                 </div>
@@ -954,7 +932,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <div className={style.displayInRow}>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                             <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                         </div>
                                                         <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
                                                     </div>
@@ -967,7 +945,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <div className={style.displayInRow}>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                             <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                         </div>
                                                         <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
                                                     </div>
@@ -980,7 +958,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <div className={style.displayInRow}>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                             <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                         </div>
                                                         <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
                                                     </div>
@@ -993,7 +971,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <div className={style.displayInRow}>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                             <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" className={style.editableTextStyleWithoutPadding} />
+                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
                                                         </div>
                                                         <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
                                                     </div>
@@ -1019,8 +997,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                         <div className={style.displayInRow}>
                                                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                                 <div className={style.textElementWithoutBackground}>$</div>
-                                                                <EditableText value={outpatientClinicalSessionRate} className={style.editableTextStyleWithoutPadding}
-                                                                    onChange={(e) => setOutpatientClinicalSessionRate(e)} />
+                                                                <EditableText value={outpatientClinicalSessionRate} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
+                                                                    onChange={(e) => setOutpatientClinicalSessionRate(e.slice(0, limit))} />
                                                             </div>
                                                             <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional Clinic Session</p>
                                                         </div>
@@ -1028,8 +1006,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
                                                         <div className={style.extentionLableStyle}>Clinic Session Duration*</div>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <EditableText value={outpatientClinicalSessionDuration} className={style.editableTextStyle}
-                                                                onChange={(e) => setOutpatientClinicalSessionDuration(e)} />
+                                                            <EditableText value={outpatientClinicalSessionDuration} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
+                                                                onChange={(e) => setOutpatientClinicalSessionDuration(e.slice(0, limit))} />
                                                             <div className={style.textElementWithoutBackground}>Hour</div>
                                                         </div>
                                                     </div>
@@ -1041,8 +1019,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                         <div className={style.displayInRow}>
                                                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                                 <div className={style.textElementWithoutBackground}>$</div>
-                                                                <EditableText value={payment} className={style.editableTextStyleWithoutPadding}
-                                                                    onChange={(e) => setPayment(e)} />
+                                                                <EditableText value={payment} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
+                                                                    onChange={(e) => setPayment(e.slice(0, limit))} />
                                                             </div>
                                                             <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional Fracture Clinic Session</p>
                                                         </div>
@@ -1050,8 +1028,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
                                                         <div className={style.extentionLableStyle}>Fracture Session Duration*</div>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <EditableText value={fractureClinicalSessionDuration} className={style.editableTextStyle}
-                                                                onChange={(e) => setFractureClinicalSessionDuration(e)} />
+                                                            <EditableText value={fractureClinicalSessionDuration} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
+                                                                onChange={(e) => setFractureClinicalSessionDuration(e.slice(0, limit))} />
                                                             <div className={style.textElementWithoutBackground}>Hour</div>
                                                         </div>
                                                     </div>
@@ -1063,8 +1041,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                         <div className={style.displayInRow}>
                                                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                                 <div className={style.textElementWithoutBackground}>$</div>
-                                                                <EditableText value={clinicalSessionExtension} className={style.editableTextStyleWithoutPadding}
-                                                                    onChange={(e) => setClinicalSessionExtension(e)} />
+                                                                <EditableText value={clinicalSessionExtension} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
+                                                                    onChange={(e) => setClinicalSessionExtension(e.slice(0, limit))} />
                                                             </div>
                                                             <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
                                                         </div>
@@ -1073,14 +1051,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                                     <div className={style.extentionLableStyle}>Allowable Working Day Hours For Clinic Sessions*</div>
                                                     <div className={style.displayInRow}>
-                                                        <InputGroup 
+                                                        <InputGroup
                                                             value={workingPeriodFrom}
                                                             placeholder="HH:MM"
-                                                            onChange={(e)=> setWorkingPeriodFrom(e.target.value) } 
-                                                            className={style.threeFieldWidth} 
-                                                        />                                               
-                                                        <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p> 
-                                                        <InputGroup 
+                                                            onChange={(e)=> setWorkingPeriodFrom(e.target.value) }
+                                                            className={style.threeFieldWidth}
+                                                        />
+                                                        <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
+                                                        <InputGroup
                                                             value={workingPeriodTo}
                                                             placeholder="HH:MM"
                                                             onChange={(e)=> setWorkingPeriodTo(e.target.value) }
@@ -1140,85 +1118,89 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             </select>
                                         </div>
                                     </div>
-                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                        <div className={style.extentionLableStyle}>Contracted Number of Supplemental Hours*</div>
-                                        <div className={style.displayInRow}>
-                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                <div className={style.textElement}>MIN</div>
-                                                <EditableText value={min} onChange={(e) => setMin(e)} className={style.editableTextStyle} />
+                                    {activityContractedFor !== '' && (
+                                        <>
+                                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                                <div className={style.extentionLableStyle}>Contracted Number of Supplemental Hours*</div>
+                                                <div className={style.displayInRow}>
+                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                                        <div className={style.textElement}>MIN</div>
+                                                        <EditableText value={min} placeholder="" type='number' onChange={(e) => setMin(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
+                                                    </div>
+                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                                        <div className={style.textElement}>MAX</div>
+                                                        <EditableText value={max} placeholder="" type='number' onChange={(e) => setMax(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
+                                                    </div>
+                                                    <select
+                                                        name="class"
+                                                        id="Class"
+                                                        value={frequency}
+                                                        onChange={(e) => setFrequency(e.target.value)}
+                                                        className={` ${style.threeFieldWidth} ${style.marginLeft20}`}>
+                                                        <option value="WEEK" >
+                                                            Per Week
+                                                        </option>
+                                                        <option value="MONTH" >
+                                                            Per Month
+                                                        </option>
+                                                        <option value="YEAR" >
+                                                            Per Year
+                                                        </option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                <div className={style.textElement}>MAX</div>
-                                                <EditableText value={max} onChange={(e) => setMax(e)} className={style.editableTextStyle} />
+                                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                                <div className={style.extentionLableStyle}>Supplemental Clinical Service Hour Value*</div>
+                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                                    <div className={style.textElementWithoutBackground}>$</div>
+                                                    <EditableText value={payment} placeholder="" type='number' onChange={(e) => setPayment(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
+                                                </div>
                                             </div>
-                                            <select
-                                                name="class"
-                                                id="Class"
-                                                value={frequency}
-                                                onChange={(e) => setFrequency(e.target.value)}
-                                                className={` ${style.threeFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
-                                                <option value="WEEK" >
-                                                    Per Week
-                                                </option>
-                                                <option value="MONTH" >
-                                                    Per Month
-                                                </option>
-                                                <option value="YEAR" >
-                                                    Per Year
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                        <div className={style.extentionLableStyle}>Supplemental Clinical Service Hour Value*</div>
-                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                            <div className={style.textElementWithoutBackground}>$</div>
-                                            <EditableText value={payment} onChange={(e) => setPayment(e)} className={style.editableTextStyleWithoutPadding} />
-                                        </div>
-                                    </div>
-                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                        <div className={style.extentionLableStyle}>Total Contracted Suplemental Service Sessions*</div>
-                                        <div className={style.twoCol}>
-                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                                <EditableText value={totalContractedService} onChange={(e)=> setTotalContractedService(e)} className={style.editableSessionTextStyle} />
-                                                <div className={style.textElement}>120 Specified</div>
+                                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                                <div className={style.extentionLableStyle}>Total Contracted Suplemental Service Sessions*</div>
+                                                <div className={style.twoCol}>
+                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
+                                                        <EditableText value={totalContractedService} placeholder="" type='number' onChange={(e)=> setTotalContractedService(e.slice(0, limit))} className={style.editableSessionTextStyle} />
+                                                        <div className={style.textElement}>120 Specified</div>
+                                                    </div>
+                                                    <select
+                                                        name="class"
+                                                        id="Class"
+                                                        value={totalContractedServiceFrequency}
+                                                        onChange={(e)=> setTotalContractedServiceFrequency(e.target.value)}
+                                                        className={`${style.fullWidth} ${style.reduceTop} `}>
+                                                        <option value="WEEK" >
+                                                            Per Contract Week
+                                                        </option>
+                                                        <option value="MONTH" >
+                                                            Per Contract Month
+                                                        </option>
+                                                        <option value="YEAR" >
+                                                            Per Contract Year
+                                                        </option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                            <select
-                                                name="class"
-                                                id="Class"
-                                                value={totalContractedServiceFrequency} 
-                                                onChange={(e)=> setTotalContractedServiceFrequency(e.target.value)}
-                                                className={`${style.fullWidth} ${style.reduceTop} `}>
-                                                <option value="WEEK" >
-                                                    Per Contract Week
-                                                </option>
-                                                <option value="MONTH" >
-                                                    Per Contract Month
-                                                </option>
-                                                <option value="YEAR" >
-                                                    Per Contract Year
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                        <div className={style.extentionLableStyle}>Allowable Working Day Hours For Supplemental Services*</div>
-                                        <div className={style.displayInRow}>
-                                            <InputGroup 
-                                                value={workingPeriodFrom}
-                                                placeholder="HH:MM"
-                                                onChange={(e)=> setWorkingPeriodFrom(e.target.value) } 
-                                                className={style.threeFieldWidth} 
-                                            />                                               
-                                            <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p> 
-                                            <InputGroup 
-                                                value={workingPeriodTo}
-                                                placeholder="HH:MM"
-                                                onChange={(e)=> setWorkingPeriodTo(e.target.value) }
-                                                className={style.threeFieldWidth}
-                                            />
-                                        </div>
-                                    </div>
+                                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Supplemental Services*</div>
+                                                <div className={style.displayInRow}>
+                                                    <InputGroup
+                                                        value={workingPeriodFrom}
+                                                        placeholder="HH:MM"
+                                                        onChange={(e)=> setWorkingPeriodFrom(e.target.value) }
+                                                        className={style.threeFieldWidth}
+                                                    />
+                                                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
+                                                    <InputGroup
+                                                        value={workingPeriodTo}
+                                                        placeholder="HH:MM"
+                                                        onChange={(e)=> setWorkingPeriodTo(e.target.value) }
+                                                        className={style.threeFieldWidth}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
                                 </div> : ''
                         }
                     </div>
@@ -1227,7 +1209,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     <div className={`${style.floatRight}`}>
                         {/* <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setSendEmailNotification(true)}>ADD MORE</button> */}
                         <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave();resetAll()}}>ADD MORE</button>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & EXIT</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave();resetAll();getAddServiceDialog(false)}}>SAVE & EXIT</button>
                     </div>
                 </div>
             </Dialog>

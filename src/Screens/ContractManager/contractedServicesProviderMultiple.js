@@ -13,9 +13,11 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
     },[getNewServiceProviderDialog])
 
     const getUserData = async() => {
-      const {data: userData} = await GET(`user-management-service/user?contractID=${contractID}`);
-      if(userData){
-        setUsers(userData);
+      if(contractId !== ''){
+        const {data: userData} = await GET(`user-management-service/user?contractID=${contractID}`);
+        if(userData){
+          setUsers(userData);
+        }
       }
     }
 

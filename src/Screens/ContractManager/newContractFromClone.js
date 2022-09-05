@@ -148,10 +148,12 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
     const handleFileDeletion = async() => {
       let fileIdToDelete = fileFields?.filter((data,index)=>index === fileDeletionIndex)?.map(data=>data?.id)[0];
       setFileFields(fileFields?.filter((data,index)=>index !== fileDeletionIndex)?.map(data=>data));
-      await DELETE(`contract-managment-service/contracts/contractFile/${fileIdToDelete}`)
-      .then(response=>{
-        SuccessToaster('Document Deleted Successfully');
-      })
+      if(fileIdToDelete){
+        await DELETE(`contract-managment-service/contracts/contractFile/${fileIdToDelete}`)
+        .then(response=>{
+          SuccessToaster('Document Deleted Successfully');
+        })
+      }
       getDeleteExecutedContractDialog(false);
       setFileDeletionIndex();
     }
@@ -159,7 +161,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
     return(
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
             <div className={style.spaceBetween}>
-                <p className={style.welcomeStyle}>New Contract With No Prior Contract(s) With Entity</p>
+                <p className={style.welcomeStyle}>{selectedContractType === "New Contract" ? 'New Contract With No Prior Contract(s) With Entity' : 'Contracted Services Continuation Renewal Contract'}</p>
                 <div className={style.displayInRow}>
                     <img src={WritingFile} alt="Writing File" className={`${style.smallIcons} ${style.reduceTop10}`} />
                     <InputGroup
@@ -230,7 +232,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${currentPage === "Timesheet Processing Workflow" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Timesheet Processing Workflow')}>
-                        Timesheet Processing Workflow
+                        Timesheet Processing Workflow ( Under Developement )
                     </div>
                 </div>
                 {currentPage === "Timesheet Processing Workflow" ? (
@@ -256,10 +258,10 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                   <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId = {contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo}/>
                   :currentPage === "Documentation Proof Required"  ? (
                     <DocumentationProofRequired
-                    getShowAlertDialog={getShowAlertDialog}
                     getViewPage5={getViewPage5}
                     getCurrentPage={getCurrentPage}
                     contractId = {contractId}
+                    isMultipleContract={isMultipleContract}
                      />
                 ) : currentPage === "Contractor Business Entity"  ? (
                     <ContractorBusinessEntity
@@ -319,21 +321,23 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     )}
                     <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Reference Contract Documents</p>
                     <div className={style.welcomeBorder}></div>
-                    <div className={style.documentCard}>
-                        <div>
-                            <div>
-                                <p className={`${style.blackText} ${style.leftAlign}`}><strong>executed Contract (Current)</strong></p>
-                                <div className={style.spaceBetween}>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}>{contractName}</p>
-                                    {
-                                      // <div>
-                                      //     <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
-                                      // </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {
+                      // <div className={style.documentCard}>
+                      //     <div>
+                      //         <div>
+                      //             <p className={`${style.blackText} ${style.leftAlign}`}><strong>Executed Contract (Current)</strong></p>
+                      //             <div className={style.spaceBetween}>
+                      //                 <p className={`${style.blackText} ${style.leftAlign}`}>{contractName}</p>
+                      //                 {
+                      //                   // <div>
+                      //                   //     <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
+                      //                   // </div>
+                      //                 }
+                      //             </div>
+                      //         </div>
+                      //     </div>
+                      // </div>
+                    }
                     {fileItems}
                 </div>
             </div>

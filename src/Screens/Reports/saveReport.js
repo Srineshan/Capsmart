@@ -5,6 +5,9 @@ import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
 import { DateInput } from "@blueprintjs/datetime";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Typography from '@mui/material/Typography';
 import UserLogo1 from './../../images/userLogo3.png';
 import UserLogo2 from './../../images/userLogo4.png';
@@ -119,11 +122,22 @@ const SaveReport = ({getSaveReportDialog}) => {
                             <div className={`${style.displayInCol} ${style.marginTop5}`}>
                                 <label className={`${style.saveReportLabelStyle}`}>Start Date</label>
                                 <div className={style.marginTop10}>
-                                    <DateInput
+                                    {/* <DateInput
                                         formatDate={date => date.toLocaleDateString()}
                                         parseDate={str => new Date(str)}
                                         placeholder={"MM-DD-YYYY"}
-                                    />
+                                    /> */}
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DatePicker
+                                            InputProps={{
+                                            style: {
+                                                fontSize: 14,
+                                                height: 30,
+                                            }
+                                            }}
+                                            renderInput={(params) => <TextField  {...params} />}
+                                        />
+                                    </LocalizationProvider>
                                 </div>
                             </div>
                             <div className={style.marginLeft20}>

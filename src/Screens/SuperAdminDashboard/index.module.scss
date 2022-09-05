@@ -27,6 +27,12 @@ body{
     height: 100%;
 }
 
+.verticalAlignCenter{
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
 .welcomeImgCardStyle{
     box-shadow: 0px 3px 11px #52575D1A;
     border-radius: 0px 16px 16px 0px;
@@ -160,6 +166,10 @@ body{
 
 .padding150{
     padding: 150px;
+}
+
+.padding100{
+    padding: 100px 150px;
 }
 
 .loginButton{
@@ -320,6 +330,10 @@ body{
     padding: 60px 40px;
 }
 
+.thankyouPageAlign{
+    padding-top:150px;
+}
+
 .welcomeDescription{
     text-align: left;
     font: normal normal 500 14px/20px sans-serif;
@@ -387,7 +401,6 @@ body{
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    margin-left: 100px;
 }
 
 .activeStepperStyle{
@@ -489,7 +502,6 @@ body{
     letter-spacing: 0.8px;
     color: #CDCECE;
     padding-top: 10px;
-    margin-left: 15%;
 }
 
 .entityTextColor4grid{
@@ -498,7 +510,6 @@ body{
     letter-spacing: 0.8px;
     color: #CDCECE;
     padding-top: 10px;
-    margin-left: -7%;
 }
 
 .activeEntityTextColor{
@@ -1272,6 +1283,16 @@ body{
     padding: 5px;
 }
 
+.bigCardStyleEntryPage{
+    height: calc(100vh - 270px);
+    overflow: scroll;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 16px;
+    opacity: 1;
+    padding: 5px;
+}
+
 .grid4{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -1989,4 +2010,33 @@ body{
 
 .reduceTop10{
     margin-top: -10px;
+}
+
+.subdomainFieldWidth{
+  width:300px;
+}
+
+.logoLoginStyle{
+  margin-top: 20px;
+  height: 80px;
+  width: 220px;
+  object-fit: contain;
+}
+
+.loginBackground{
+  background-color: white;
+}
+
+.timeTextStyle{
+  text-align: left;
+  font: normal normal bold 25px/27px Montserrat;
+  letter-spacing: 0px;
+  color: #7165E3;
+}
+
+.smartTextStyle{
+  text-align: left;
+  font: normal normal normal 25px/27px Montserrat;
+  letter-spacing: 0px;
+  color: #7165E3;
 }

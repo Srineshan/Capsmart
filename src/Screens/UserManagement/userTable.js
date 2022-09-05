@@ -15,6 +15,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import AddUser from './addUser'
 import {GET, TenantID, PUT} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import {Auth} from './../../utils/auth';
 import EditUser from './editUser';
 import MailTemplate from './mailTemplate';
 import style from './index.module.scss';
@@ -34,6 +35,10 @@ const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, get
     const [registeredUsers, setRegisteredUsers] = useState([]);
     const [blockedUsers, setBlockedUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState();
+
+    useEffect(()=>{
+      getUser();
+    },[])
 
     const getUser = async() => {
         const {data: user} = await GET('user-management-service/user');

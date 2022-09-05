@@ -11,7 +11,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
 
     const [sameAsContractor, setSameAsContractor] = useState(false);
     const [contractorNPIN, setContractorNPIN] = useState({
-        notApplicable: true,
+        notApplicable: false,
         npin: "",
         missing: true
     });
@@ -150,8 +150,8 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                                 <InputGroup className={style.fullWidth} value={contractorNPIN?.npin} placeholder="Enter Contractor NPIN"
                                 onChange={(e) => setContractorNPIN({...contractorNPIN, npin: e.target.value})}  />
                                 <div className={`${style.displayInRow} ${style.marginTop10}`}>
-                                    <Checkbox label="Missing" checked={contractorNPIN?.missing} value="Missing" onChange={(e) => setContractorNPIN({...contractorNPIN, missing: e.target.checked})} />
-                                    <Checkbox label="NA" checked={contractorNPIN?.notApplicable} value="NA" className={style.marginLeft20}
+                                    <Checkbox label="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({...contractorNPIN, missing: e.target.checked})} />
+                                    <Checkbox label="NA" checked={contractorNPIN?.notApplicable}  className={style.marginLeft20}
                                     onChange={(e) => setContractorNPIN({...contractorNPIN, notApplicable: e.target.checked})}  />
                                 </div>
                             </div>
@@ -161,7 +161,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                             <div className={style.twoCol}>
                                 <InputGroup className={style.fullWidth} value={contractorEntityTaxId?.taxId} placeholder="Enter Contractor Entity Tax ID"
                                 onChange={(e) => setContractorEntityTaxId({...contractorEntityTaxId, taxId: e.target.value})} />
-                                <Checkbox label="Missing" checked={contractorEntityTaxId?.missing} value="Missing" className={`${style.marginTop10}`}
+                                <Checkbox label="Missing" checked={contractorEntityTaxId?.missing} className={`${style.marginTop10}`}
                                 onChange={(e) => setContractorEntityTaxId({...contractorEntityTaxId, missing: e.target.checked})}  />
                             </div>
                         </div>
@@ -186,7 +186,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                                 <InputGroup className={style.fullWidth} value={businessEntityUser?.contactNumber?.number} placeholder="Enter Phone Number" type='number'
                                 onChange={(e) => setBusinessEntityUser({...businessEntityUser, contactNumber: {number: e.target.value, missing: businessEntityUser?.contactNumber?.missing}})}
                                 />
-                                <Checkbox label="Missing" checked={businessEntityUser?.contactNumber?.missing} value="Missing" className={`${style.marginTop10}`}
+                                <Checkbox label="Missing" checked={businessEntityUser?.contactNumber?.missing} className={`${style.marginTop10}`}
                                 onChange={(e) => setBusinessEntityUser({...businessEntityUser, contactNumber: {missing: e.target.checked, number: businessEntityUser?.contactNumber?.number}})}  />
                             </div>
                         </div>
@@ -245,7 +245,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                 <div>
                     <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                    onClick={() => { getViewPage4(true); getCurrentPage('Documentation Proof Required') }}
+                    onClick={() => { handleContinue();getViewPage4(true); getCurrentPage('Documentation Proof Required') }}
                     >CONTINUE</button>
                 </div>
             </div>
