@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, Classes, Icon, Intent, Tag, InputGroup, Button, RadioGroup, Radio, TagInput } from '@blueprintjs/core';
+import { Dialog, Classes, Icon, Intent, Tag, InputGroup, Button, RadioGroup, Radio, TagInput, Checkbox } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {GET, PUT, POST, TenantID} from './../dataSaver';
@@ -48,7 +48,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
     },[departmentLevelSite])
 
     useEffect(() =>{
-        setNpin({npin:userProviderData?.npin?.npin, missing:userProviderData?.npin?.missing, notApplicable:userProviderData?.notApplicable});
+        setNpin({npin:userProviderData?.npin?.npin, missing:userProviderData?.npin?.missing, notApplicable:userProviderData?.npin?.notApplicable});
         setSelectedRoles(userProviderData?.roles || []);
         setUserDetails({...userDetails, firstName:userProviderData?.name?.firstName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || ''});
         setProviderType(userProviderData?.serviceProviderType || '');
@@ -369,22 +369,8 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                     <div className={style.extentionLableStyle}>NPIN*</div>
                     <div className={style.grid3}>
                     <InputGroup className={style.fullWidth} value={npin?.npin} onChange={(e)=>setNpin({npin:e.target.value,na:false,missing:false})}/>
-                    <RadioGroup
-                        inline={true}
-                        className={`${style.marginTop}`}
-                        selectedValue={npin?.missing}
-                        onChange={(e)=>setNpin({npin:'',missing:true,na:false})}
-                    >
-                        <Radio label="Missing" value="Missing" checked={npin?.missing} />
-                    </RadioGroup>
-                    <RadioGroup
-                        inline={true}
-                        className={`${style.marginTop} ${style.reduce30Left}`}
-                        selectedValue={npin?.na}
-                        onChange={(e)=>setNpin({npin:'',missing:false,na:true})}
-                    >
-                        <Radio label="Not Available" value={true} checked={npin?.na}/>
-                    </RadioGroup>
+                    <Checkbox label="Missing"  checked={npin?.missing} onChange={(e)=>setNpin({ npin:'',missing:e.target.checked, na:false})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
+                    <Checkbox label="Not Applicable"  checked={npin?.notApplicable} onChange={(e)=>setNpin({ npin:'',missing:false, na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -403,8 +389,41 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                             id="Class"
                             className={style.fullWidth}
                             onChange={(e)=>handleUserData('suffix',e.target.value)}>
-                                <option value="Text" >
-                                Text
+                                <option value="0" >
+                                Select Suffix
+                                </option>
+                                <option value="MD">
+                                MD
+                                </option>
+                                <option value="DO">
+                                DO
+                                </option>
+                                <option value="MS">
+                                MS
+                                </option>
+                                <option value="BD">
+                                BD
+                                </option>
+                                <option value="RN">
+                                RN
+                                </option>
+                                <option value="PA">
+                                PA
+                                </option>
+                                <option value="CPA">
+                                CPA
+                                </option>
+                                <option value="PHD">
+                                PHD
+                                </option>
+                                <option value="CISCO">
+                                CISCO
+                                </option>
+                                <option value="CEO">
+                                CEO
+                                </option>
+                                <option value="CFO">
+                                CFO
                                 </option>
                         </select>
                     </div>
@@ -418,8 +437,8 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                             value={providerType}
                             className={style.fullWidth}
                             onChange={(e)=>setProviderType(e.target.value)}>
-                                <option value="Text" >
-                                Text
+                                <option value="0" >
+                                Select provider Type
                                 </option>
                                 <option value="Physician" >
                                 Physician

@@ -75,6 +75,36 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
     }
   }
 
+  const formatPhoneNumber = (value) => {
+    if (!value) return value;
+
+    const phoneNumber = value.replace(/[^\d]/g, "");
+    const phoneNumberLength = phoneNumber.length;
+
+    if (phoneNumberLength < 4) return phoneNumber;
+
+    if (phoneNumberLength < 7) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    }
+
+    if (phoneNumberLength === 10) {
+      return '+1' + `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(
+        3,
+        6
+      )}-${phoneNumber.slice(6, 10)}`;
+    }
+
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(
+      3,
+      6
+    )}-${phoneNumber.slice(6, 10)}`;
+  }
+
+  const handleInput = (e) => {
+    const formattedPhoneNumber = formatPhoneNumber(e.target.value);
+    // setInputValue(formattedPhoneNumber);
+    setUserData({...userData, phone:formattedPhoneNumber})
+  };
 
     return(
         <Dialog isOpen={getAddNewManagerDialog} onClose={() => getAddNewManagerDialog(false)} className={`${style.addManagerDialogStyle} ${style.addManagerDialogBackground}`}>
@@ -97,13 +127,14 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Cell</div>
-                    <InputGroup value={userData.phone} placeholder="+14844608104" onChange={(e)=>setUserData({...userData, phone:e.target.value})} />
+                    <InputGroup value={userData.phone} placeholder="Enter Phone Number" onChange={(e)=> userData.phone?.length < 16 && handleInput(e)} />
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Role*</div>
                     <div>
-                    <div className={style.reduce10Left}>
-                        <select
+                    <div>
+                      <InputGroup value={selectedRole} readOnly />
+                        {/* <select
                             name="class"
                             id="Class"
                             value={selectedRole || 'Select...'}
@@ -115,7 +146,7 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
                                 <option value="User" >
                                 User
                                 </option>
-                        </select>
+                        </select> */}
                     </div>
                     {selectedRole === "User" && (
                     <div className={`${style.roleBoxStyle} ${style.marginLeft20} ${style.floatRight}`}>

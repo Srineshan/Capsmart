@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Dialog, Classes, Icon, Intent, Tag, InputGroup, Button, RadioGroup, Radio, TagInput } from '@blueprintjs/core';
+import { Dialog, Classes, Icon, Intent, Tag, InputGroup, Button, RadioGroup, Radio, TagInput, Checkbox } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
@@ -17,7 +17,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration');
     const [roles,setRoles] = useState([]);
     const [selectedRoles, setSelectedRoles] = useState([]);
-    const [npin,setNpin] = useState({npin:'',missing:false,na:false});
+    const [nPin,setNpin] = useState({npin:'',missing:false,na:false});
     const [userDetails,setUserDetails] = useState({firstName:'',middleName:'',lastName:'',suffix:'',email:'',phone:''});
     const [providerType,setProviderType] = useState('');
     const [address,setAddress] = useState({city:'',state:'',zipcode:''});
@@ -199,9 +199,9 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
               "activated": false,
               "blocked": false,
               "npin": {
-                "missing": npin?.missing,
-                "notApplicable": npin?.na,
-                "npin": npin?.npin
+                "missing": nPin?.missing,
+                "notApplicable": nPin?.na,
+                "npin": nPin?.npin
               }
           }
           await POST(`user-management-service/user/register`, JSON.stringify(data))
@@ -381,8 +381,8 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                           value={providerType}
                           className={style.fullWidth}
                           onChange={(e)=>setProviderType(e.target.value)}>
-                              <option value="Text" >
-                              Text
+                              <option value="0" >
+                              Select Service provider
                               </option>
                               <option value="Physician" >
                               Physician
@@ -402,23 +402,9 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>NPIN*</div>
                   <div className={style.grid3}>
-                  <InputGroup className={style.fullWidth} value={npin?.npin} onChange={(e)=>setNpin({npin:e.target.value,na:false,missing:false})}/>
-                  <RadioGroup
-                      inline={true}
-                      className={`${style.marginTop}`}
-                      selectedValue={npin?.missing}
-                      onChange={(e)=>setNpin({npin:'',missing:e.target.value,na:false})}
-                  >
-                      <Radio label="Missing" value="Missing" checked={npin?.missing} />
-                  </RadioGroup>
-                  <RadioGroup
-                      inline={true}
-                      className={`${style.marginTop} ${style.reduce30Left}`}
-                      selectedValue={npin?.na}
-                      onChange={(e)=>setNpin({npin:'',missing:false,na:e.target.value})}
-                  >
-                      <Radio label="Not Available" value="Not Available" checked={npin?.na}/>
-                  </RadioGroup>
+                  <InputGroup className={style.fullWidth} value={nPin?.npin} onChange={(e)=>setNpin({...nPin, npin:e.target.value,na:false,missing:false})}/>
+                  <Checkbox label="Missing"  checked={nPin?.missing} onChange={(e)=>setNpin({...nPin, npin:'',missing:e.target.checked, na:false})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
+                  <Checkbox label="Not Applicable"  checked={nPin?.na} onChange={(e)=>setNpin({...nPin, npin:'',missing:false, na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                   </div>
               </div>
 
@@ -430,8 +416,41 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                             id="Class"
                             className={style.fullWidth}
                             onChange={(e)=>handleUserData('suffix',e.target.value)}>
-                                <option value="Text" >
-                                Text
+                                <option value="0" >
+                                Select Suffix
+                                </option>
+                                <option value="MD">
+                                MD
+                                </option>
+                                <option value="DO">
+                                DO
+                                </option>
+                                <option value="MS">
+                                MS
+                                </option>
+                                <option value="BD">
+                                BD
+                                </option>
+                                <option value="RN">
+                                RN
+                                </option>
+                                <option value="PA">
+                                PA
+                                </option>
+                                <option value="CPA">
+                                CPA
+                                </option>
+                                <option value="PHD">
+                                PHD
+                                </option>
+                                <option value="CISCO">
+                                CISCO
+                                </option>
+                                <option value="CEO">
+                                CEO
+                                </option>
+                                <option value="CFO">
+                                CFO
                                 </option>
                         </select>
                     </div>
@@ -609,33 +628,30 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                         )}
                     </div>
                     </div>
-                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                         <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
-                         <div className={style.displayInRow}>
-                             <select
-                                 name="class"
-                                 id="Class"
-                                 onChange={(e) => handleRoles(e.target.value)}
-                                 className={`${style.fullWidth} ${style.marginLeft20} `}>
-                                     <option value="0" >
-                                     Select Role-multi select
-                                     </option>
-                                     {roles?.map((data, index) => (
-                                     <option key={`${data}-${index}`} value={data?.roleName} >
-                                         {data?.roleName}
-                                     </option>
-                                     ))}
-                             </select>
-                          </div>
-                             <div className={`${style.marginTop20} ${style.marginLeft20}`}>
-                             {rolesTags}
-                             </div>
-                     </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
+                  <div>
+                      <select
+                          name="class"
+                          id="Class"
+                          onChange={(e) => handleRoles(e.target.value)}
+                          className={`${style.fullWidth} ${style.marginLeft20} `}>
+                              <option value="0" >
+                              Select Role-multi select
+                              </option>
+                              {roles?.map((data, index) => (
+                              <option key={`${data}-${index}`} value={data?.roleName} >
+                                  {data?.roleName}
+                              </option>
+                              ))}
+                      </select>
+                      <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                      {rolesTags}
+                      </div>
+                  </div>
                 </div>
             </div>
-
-
-
             <div>
                 <div className={`${style.floatRight} ${style.marginTop20}`}>
                     <button className={`${style.buttonStyle}`} onClick={() => handleSave('Add More')}>ADD MORE</button>

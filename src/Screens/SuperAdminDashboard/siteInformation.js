@@ -3,7 +3,7 @@ import { InputGroup, Icon, Intent, TagInput, Dialog, Classes, Spinner } from '@b
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
-import {Link, useParams} from 'react-router-dom';
+import {Link, useParams, useNavigate} from 'react-router-dom';
 import {GET,PUT,POST,TenantID,isSuperAdminAccess} from './../dataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step2.png';
@@ -15,11 +15,14 @@ import style from './index.module.scss';
 import {Auth} from './../../utils/auth';
 import 'react-datalist-input/dist/styles.css';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import SaveInProgress from './saveInProgressAlert';
+
 
 // const VALUES = ['Department 1', "Department 2"];
 
 const SiteInformation = ({getActiveStep}) => {
     const {id} = useParams();
+    const navigate = useNavigate();
     const [tags, setTags] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [siteList,setSiteList] = useState([]);
@@ -33,9 +36,12 @@ const SiteInformation = ({getActiveStep}) => {
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [loading,setLoading] = useState(false);
     const [address,setAddress] = useState({
-      city:'',state:'',zipcode:'',country:''
+      addressLine:'',city:'',state:'',zipcode:'',country:''
     })
     const [site,setSite] = useState({name:'',type:'',canSetupDepartment:true,npin:''});
+    const [showSaveInProgress,setShowSaveInProgress] = useState(false);
+    const [unassignedKeys,setUnassignedKeys] = useState([]);
+    const Fields = {name:'Site Name', type:'Site Type', npin:'NPIN', addressLine:'Address Line', city:'City', state:'State', country:'Country', zipcode:'Zipcode'};
     let options = [];
     const accessToken = Auth();
     const role = '';
@@ -56,13 +62,40 @@ const SiteInformation = ({getActiveStep}) => {
       }
     }
 
-    const updateEntitySite = async(buttonText) => {
-      if(site.name === '' || site.type === '' || site.npin === '' || address.city === '' || address.state === '' || address.zipcode === '' || address.country === ''){
-        ErrorToaster('All Fields are mandatory');
+    const mandatoryFieldCheck = (buttonType) => {
+      if(site.name === ''){
+        ErrorToaster('Site Name is Mandatory');
         return;
       }
+      if(site.type === ''){
+        ErrorToaster('Site Type is Mandatory');
+        return;
+      }
+      if(buttonType === 'Saveinprogress'){
+        saveInProgressCheck();
+      }else{
+        updateEntitySite(buttonType);
+      }
+    }
+
+    const saveInProgressCheck = () => {
+      var keys = Object.keys(site)?.filter(key=> site[key] === '' && key !== 'id')?.map(data=>Fields[data]);
+      var addressKeys = Object.keys(address)?.filter(key => address[key] === '')?.map(data=>Fields[data]);
+      keys.push(...addressKeys);
+      setUnassignedKeys(keys);
+      if(keys?.length !== 0){
+        setShowSaveInProgress(true);
+      }else{
+        updateEntitySite('Saveinprogress');
+      }
+    }
+
+    const saveInProgressFunction = () => {
+      updateEntitySite('Saveinprogress');
+    }
+
+    const updateEntitySite = async(buttonText) => {
       let temp = entityData?.sites;
-      console.log('temp',temp);
       temp.push({
         "siteName": {
           "siteName": site.name
@@ -84,7 +117,7 @@ const SiteInformation = ({getActiveStep}) => {
           "departments":departmentSpecific?selectedDepartment:departmentValue,
         },
         "address": {
-          "addressLine": "",
+          "addressLine": address.addressLine,
           "city": address.city,
           "state": address.state,
           "zipcode": address.zipcode,
@@ -92,7 +125,6 @@ const SiteInformation = ({getActiveStep}) => {
         },
         "primarySite": false
       });
-      console.log('temp down',temp);
       const updatedValue =
       {
       "id": entityData.id,
@@ -120,13 +152,13 @@ const SiteInformation = ({getActiveStep}) => {
       getActiveStep('siteUsers');
       resetSiteValues();
     }else if(buttonText === 'Saveinprogress'){
-      setShowSiteTable(true);
       resetSiteValues();
+      navigate('/user');
     }else{
-      getEntityData();
       resetSiteValues();
       setShowSiteTable(false);
     }
+      getEntityData();
   }
 
   const getDepartmentData = async() => {
@@ -139,6 +171,9 @@ const SiteInformation = ({getActiveStep}) => {
     }
   }
 
+  const getSaveInProgressAlert = (value) => {
+    setShowSaveInProgress(value);
+  }
 
     const onSelect = (selectedItem) => {
       setItem(selectedItem);
@@ -298,11 +333,14 @@ const SiteInformation = ({getActiveStep}) => {
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Address*</div>
-                                    <div className={`${style.displayInRow}`}>
-                                        <InputGroup value={address.zipcode} placeholder="zipcode" className={`${style.fourFieldWidth}`} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
+                                    <div>
+                                    <InputGroup placeholder="Enter Address Line" value={address.addressLine} className={`${style.fullWidth}`} onChange={(e)=>handleAddress('addressLine',e.target.value)}/>
+                                      <div className={`${style.marginTop20} ${style.displayInRow}`}>
+                                        <InputGroup value={address.city} placeholder="city" className={`${style.fourFieldWidth}`} onChange={(e)=>handleAddress('city',e.target.value)}/>
                                         <InputGroup value={address.state} placeholder="state" className={`${style.fourFieldWidth} ${style.marginLeft20}`} onChange={(e)=>handleAddress('state',e.target.value)}/>
                                         <InputGroup value={address.country} placeholder="country" className={`${style.fourFieldWidth} ${style.marginLeft20}`} onChange={(e)=>handleAddress('country',e.target.value)}/>
-                                        <InputGroup value={address.city} placeholder="city" className={`${style.fourFieldWidth} ${style.marginLeft20}`} onChange={(e)=>handleAddress('city',e.target.value)}/>
+                                        <InputGroup value={address.zipcode} placeholder="zipcode" className={`${style.fourFieldWidth}`} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
+                                      </div>
                                     </div>
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -338,7 +376,7 @@ const SiteInformation = ({getActiveStep}) => {
                                       )}
                                         {departmentSpecific && (
                                             <TagInput
-                                                placeholder="Enter tags/keywords relative to the post"
+                                                placeholder="Selected Department list"
                                                 values={selectedDepartment?.map(data=>data?.departmentName?.name)}
                                                 className={`${style.marginTop20} ${style.tagInputStyle}`}
                                                 onAdd={handleTagsAdd}
@@ -356,11 +394,9 @@ const SiteInformation = ({getActiveStep}) => {
                                     <button className={style.outlinedButton}>BULK UPLOAD</button>
                                 </div>
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                    <button className={style.outlinedButton} onClick={()=>{updateEntitySite('Saveinprogress');}}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{updateEntitySite('Addmore');}}>SAVE & ADD MORE</button>
-                                    {/* <Link to={'/siteUsers'}> */}
-                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {updateEntitySite('Continue');}}>CONTINUE</button>
-                                    {/* </Link> */}
+                                    <button className={style.outlinedButton} onClick={()=>{mandatoryFieldCheck('Saveinprogress');}}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{mandatoryFieldCheck('Addmore');}}>SAVE & ADD MORE</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {mandatoryFieldCheck('Continue');}}>CONTINUE</button>
                                 </div>
                             </div>
                         </div>
@@ -401,7 +437,9 @@ const SiteInformation = ({getActiveStep}) => {
                         </div>
                     </div>
                     <div className={` ${style.floatRight} ${style.marginTop20} ${style.marginRightForPositionButton}`}>
-                        <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
+                    {
+                      // <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
+                    }
                         <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setAlertDialog(true)}>CONTINUE</button>
                     </div>
                 </div>
@@ -417,13 +455,12 @@ const SiteInformation = ({getActiveStep}) => {
                     <div>
                         <div className={`${style.positionCenter} ${style.marginTop20}`}>
                             <button className={`${style.cloneOutlinedButton} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => setAlertDialog(false)}>NO</button>
-                            {/* <Link to={'/siteUsers'}> */}
-                                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => getActiveStep(isSuperAdminAccess ? 'entitySystemAdmin' : 'siteUsers')}>YES</button>
-                            {/* </Link> */}
+                            <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => getActiveStep(isSuperAdminAccess ? 'entitySystemAdmin' : 'siteUsers')}>YES</button>
                         </div>
                     </div>
                 </div>
             </Dialog>
+            <SaveInProgress alert={showSaveInProgress} getSaveInProgressAlert={getSaveInProgressAlert} fieldData={unassignedKeys?.join(', ')} saveInProgressFunction={saveInProgressFunction}/>
         </div>
     )
 }

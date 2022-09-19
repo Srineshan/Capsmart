@@ -2,6 +2,10 @@
     margin: 20px;
 }
 
+.margin20WithoutTop{
+    margin: 0 20px 20px 20px !important;
+}
+
 .marginTop3{
     margin-top: 3px;
 }
@@ -18,8 +22,24 @@
     margin-top: 20px !important;
 }
 
+.marginBottom20{
+    margin-bottom: 20px !important;
+}
+
+.marginTop70{
+    margin-top: 70px !important;
+}
+
 .marginTop10{
     margin-top: 10px !important;
+}
+
+.marginTop40{
+    margin-top: 40px !important;
+}
+
+.marginRight20{
+    margin-right: 20px !important;
 }
 
 .bigCardGrid{
@@ -55,7 +75,7 @@
 }
 
 .cardStyle{
-    height: 105px;
+    height: 85px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
     border-radius: 8px;
@@ -65,7 +85,7 @@
 }
 
 .leftCard{
-    height: calc(100vh - 245px);
+    min-height: calc(100vh - 215px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -73,7 +93,6 @@
     opacity: 1;
     cursor: pointer;
     padding: 10px;
-    margin-top: 20px;
 }
 
 .displayInRow{
@@ -126,7 +145,7 @@
     text-align: left;
     font: italic normal normal 10px/15px Roboto;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
     margin-top: 5px;
     opacity: 1;
 }
@@ -165,7 +184,7 @@
 .accountActivityStyle{
     font: normal normal normal 15px/22px Montserrat;
     letter-spacing: 0.66px;
-    color: #B3B8BD;
+    color: #52575D;
     opacity: 0.38;
     margin-left: 20px;
     margin-top: 7px;
@@ -180,7 +199,7 @@
 }
 
 .leftChevronColor{
-    color: #B3B8BD;
+    color: #52575D;
 }
 
 .roundChevron{
@@ -232,7 +251,7 @@
     margin-left: 20px;
     font: normal normal medium 18px/23px Montserrat;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
     background-color: #E3E5F1;
     border-radius: 8px;
     display: flex;
@@ -367,7 +386,7 @@
 
 .blueBorderStyle{
     height: 1px;
-    background: #7165E3 0% 0% no-repeat padding-box;
+    background: #d7d4f7 0% 0% no-repeat padding-box;
     margin: 0 20px;
 }
 
@@ -375,6 +394,16 @@
     height: 2px;
     background: #EBF2F7 0% 0% no-repeat padding-box;
     margin-right: 20px;
+}
+
+.headerBorderStyle{
+    height: 1px;
+    background: #d7d4f7 0% 0% no-repeat padding-box;
+}
+
+.mildBorderStyle{
+    height: 1px;
+    background: #ebe9fb 0% 0% no-repeat padding-box;
 }
 
 .taskTableGrid{
@@ -450,13 +479,16 @@
 
 .reportTypeTextStyle{
     text-align: left;
-    font: normal normal 600 17px/15px Montserrat;
+    font: normal normal 600 17px/20px Montserrat;
     letter-spacing: 0px;
     color: #333333;
+    width: 250px;
+    display: flex;
+    align-items: center;
 }
 
 .cardPadding{
-    padding: 30px 20px;
+    padding: 20px 20px;
 }
 
 .infoStyle{
@@ -475,10 +507,11 @@
 .primaryButtonStyle{
     background: #7165E3 0% 0% no-repeat padding-box !important;
     border-radius: 6px;
-    padding: 5px;
     border: none;
     color: white !important;
     text-align: center;
+    height: 40px;
+    width: 250px;
 }
 
 .darkLabel{
@@ -551,7 +584,7 @@
     text-align: left;
     font: normal normal normal 13px/8px Montserrat;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
 }
 
 .saveReportFieldStyle{
@@ -698,7 +731,7 @@
     text-align: left;
     font: normal normal normal 12px/17px Montserrat;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
   }
 
   .chevronImgLeft{
@@ -736,8 +769,7 @@
       height: 55px;
       width: 55px;
       margin-top: 60px;
-      margin-bottom: 40px;
-      background-color: grey;
+      margin-bottom: 30px;
   }
 
   .titleStyle{
@@ -784,6 +816,36 @@
   .chartBackground{
     background: #F7F7F7 0% 0% no-repeat padding-box;
     padding: 80px;
+  }
+
+  .individualServiceReportGrid{
+    display: grid;
+    grid-template-columns: 11% 11% 11% 11% 11% 11% 11% 11%;
+    grid-gap: 20px;
+  }
+
+  .grid8{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+  }
+
+  .grid7{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+  }
+
+  .grid6{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+  }
+
+  .grid5{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
   }
 
   .grid4{
@@ -1020,6 +1082,10 @@
     text-align: left;
 }
 
+.textAlignCenter{
+    text-align: center !important;
+}
+
 .taskStyle1{
     border-left: 5px solid #4791FF;
     height: 55px;
@@ -1062,4 +1128,213 @@
     background-color: #52575D;
     color: #D3D3D3;
     margin-top: 10px;
+}
+
+.reportTypeBackground{
+    background: #F8FCFF 0% 0% no-repeat padding-box;
+    padding: 100px;
+}
+
+.reportTypeCardStyle{
+    background: #FEC106 0% 0% no-repeat padding-box;
+    border-radius: 65px;
+    height: 60px;
+    width: 80%;
+    font: normal normal bold 22px/20px Montserrat;
+    letter-spacing: 0px;
+    color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.linkStyle{
+    text-decoration: none !important;
+}
+
+.reportBackgroundCard{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 8px;
+    width: 100%;
+    padding: 30px 40px;
+}
+
+.doNotDisturbTextStyle{
+    font: normal normal 600 12px/20px Montserrat;
+    letter-spacing: 2.24px;
+    color: #F46044;
+    text-transform: capitalize;
+}
+
+.confidentialTextStyle{
+    font: normal normal bold 17px/20px Montserrat;
+    letter-spacing: 1.05px;
+    color: #F46044;
+}
+
+.confidentialBoxStyle{
+    border: 2px solid #F46044;
+    border-radius: 7px;
+    padding: 10px;
+}
+
+.headerLogo{
+    width: 130px;
+    height: 55px;
+    object-fit: contain;
+}
+
+.entityNameHeaderStyle{
+    font: normal normal bold 14px/15px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.reportRunByTextStyle{
+    text-align: left;
+    font: normal normal bold 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.reportFooterLogo{
+    width: 130px;
+    height: 70px;
+    object-fit: contain;
+}
+
+.reportFooterTextStyle{
+    text-align: left;
+    font: normal normal 600 13px/24px Montserrat;
+    letter-spacing: 0px;
+    color: #000;
+}
+
+.poweredByTextStyle{
+    text-align: left;
+    font: normal normal 600 13px/14px Montserrat;
+    letter-spacing: 0px;
+    color: #000;
+    margin: 20px 0 -20px 0px;
+}
+
+.reportTypeValueTextStyle{
+    font: normal normal medium 12px/24px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+}
+
+.reportTypeValueBoldTextStyle{
+    font: normal normal bold 12px/24px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+    text-align: left;
+    word-wrap: break-word;
+}
+
+.complianceGrid2{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 40px;
+}
+
+.complianceCardStyle{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 40% 60%;
+}
+
+.complianceRightCardStyle{
+    background-color: #ebe9fb;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.complianceLeftCardStyle{
+    background-color: #c4bef3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.complianPercentageStyle{
+    text-align: center;
+    font: normal normal bold 42px/53px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+    border: 5px solid #159d57;
+    border-radius: 50%;
+    height: 130px;
+    width: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.complianceHeadingStyle{
+    text-align: left;
+    font: normal normal bold 17px/23px Montserrat;
+    letter-spacing: 0px;
+    color: black;
+    text-transform: capitalize;
+}
+
+.greenDotStyle{
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: #00C07F;
+    margin-top: 8px;
+}
+
+.yellowDotStyle{
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: #FEC106;
+    margin-top: 8px;
+}
+
+
+.redDotStyle{
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: #FF6562;
+    margin-top: 8px;
+}
+
+.blueDotStyle{
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: #7165E3;
+    margin-top: 8px;
+}
+
+.complianceListGrid{
+    display: grid;
+    grid-template-columns: 15px 1fr 30px;
+}
+
+.contractNameCardStyle{
+    text-align: left;
+    font: normal normal bold 16px/24px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+    background: #E5E3F6 0% 0% no-repeat padding-box;
+    height: 45px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    margin-top: 20px;
 }

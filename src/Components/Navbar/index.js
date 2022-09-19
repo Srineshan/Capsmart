@@ -6,9 +6,11 @@ import SanmateoLogo from './../../images/sanmateo.jpg';
 import NotificationsIcon from './../../images/notificationsIcon.png';
 import PrintIcon from './../../images/printIcon.png';
 import RedBackground from './../../images/redBackground.png';
+import TenetHealthLogo from './../../images/Tenet_Health_logo.png';
 import NotificationCount from './../../images/notificationCount.png';
 import File from './../../images/file.png';
 import {Link} from 'react-router-dom';
+import {TenantID,GET} from './../../Screens/dataSaver';
 import LogoutIcon from './../../images/logoutIcon.png';
 import Cookies from 'universal-cookie';
 import {isSuperAdminAccess} from '../../Screens/dataSaver';
@@ -23,6 +25,7 @@ const Navbar = () => {
     const [showReportsMenu, setShowReportsMenu] = useState(false);
     const [isContractManager, setIsContractManager] = useState(false);
     const [isEntityLevelAdmin, setIsEntityLevelAdmin] = useState(false);
+    const [logo,setLogo] = useState(null);
 
     const menuRef = useRef(null);
     const toolsMenuRef = useRef(null);
@@ -31,6 +34,11 @@ const Navbar = () => {
     useMenuHide(menuRef);
     useToolsMenuHide(toolsMenuRef);
     useReportsMenuHide(reportsMenuRef);
+
+    const getLogo = async() => {
+      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
+      setLogo(data?.logo?.file?.fileURL);
+    }
 
     function useMenuHide(ref) {
         useEffect(() => {
@@ -78,13 +86,14 @@ const Navbar = () => {
       const cookies = new Cookies();
       cookies.remove('user');
       cookies.remove('entityId');
-      navigate('/');
+      window.location.href = '/';
     }
 
     useEffect(() => {
         var cookie = new Cookies();
         var accessToken = cookie.get('user');
         let roles = jwt(accessToken)?.roles?.split(',');
+        getLogo();
         setIsContractManager(roles.includes('Contract Manager') ? true : false);
         setIsEntityLevelAdmin((roles.includes('Super Sys Admin') || roles.includes('Entity Sys Admin') || roles.includes('Entity Sys User') || roles.includes('Distributor Admin')) ? true : false);
     }, [])
@@ -97,7 +106,7 @@ const Navbar = () => {
                 {
                   // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
                 }
-                <img src={SanmateoLogo} alt="Hospital Logo" className={style.sanmateoLogo} />
+                <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
                 {/* <div className={style.menuStyle}>
                     <p>HOME-LOG ACTIVITY</p>
                 </div>
@@ -116,17 +125,33 @@ const Navbar = () => {
                         <p>REPORT</p>
                         {showReportsMenu && (
                             <div className={style.optionsCardStyle} ref={menuRef}>
-                                <Link to={'/reports'} className={style.noFontStyle}>
+                                <Link to={'/reports/servicesOrActivities'} className={style.noFontStyle}>
                                     <div className={style.options}>Services/ Activities Logs</div>
                                 </Link>
-                                <div className={style.options}>Timesheets</div>
-                                <div className={style.options}>Reviews & Approvals</div>
-                                <div className={style.options}>Task Management</div>
-                                <div className={style.options}>Payments</div>
-                                <div className={style.options}>Contract Management</div>
-                                <div className={style.options}>Contract Compliance</div>
-                                <div className={style.options}>Contract Performance</div>
-                                <div className={style.options}>System Administration</div>
+                                <Link to={'/reports/timesheets'} className={style.noFontStyle}>
+                                    <div className={style.options}>Timesheets</div>
+                                </Link>
+                                <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
+                                    <div className={style.options}>Reviews & Approvals</div>
+                                </Link>
+                                <Link to={'/reports/taskManagement'} className={style.noFontStyle}>
+                                    <div className={style.options}>Task Management</div>
+                                </Link>
+                                <Link to={'/reports/payments'} className={style.noFontStyle}>
+                                    <div className={style.options}>Payments</div>
+                                </Link>
+                                <Link to={'/reports/contractManagement'} className={style.noFontStyle}>
+                                    <div className={style.options}>Contract Management</div>
+                                </Link>
+                                <Link to={'/reports/contractCompliance'} className={style.noFontStyle}>
+                                    <div className={style.options}>Contract Compliance</div>
+                                </Link>
+                                <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
+                                    <div className={style.options}>Contract Performance</div>
+                                </Link>
+                                <Link to={'/reports/systemAdministration'} className={style.noFontStyle}>
+                                    <div className={style.options}>System Administration</div>
+                                </Link>
                             </div>
                         )}
                     </div>
@@ -161,8 +186,12 @@ const Navbar = () => {
                 </div>
             </div>
             <div className={style.displayInRow}>
-                <img src={File} alt="print" className={style.icons} />
-                <img src={PrintIcon} alt="print" className={style.icons} />
+                {/* {!window.location.pathname.includes('reportTypeOverview') && (
+                    <>
+                        <img src={File} alt="print" className={style.icons} />
+                        <img src={PrintIcon} alt="print" className={style.icons} />
+                    </>
+                )} */}
                 {/* <img src={NotificationsIcon} alt="print" className={style.icons} />
                 <img src={RedBackground} alt="print" className={style.notificationIcon} />
                 <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}

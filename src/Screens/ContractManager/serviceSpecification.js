@@ -162,7 +162,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
               </div>
               <div className={style.extensionBorder}></div>
               <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
-                No contractor assigned for the contract! First add contractor to assign the services.
+              No Contracted Service Provider Is Found.
               </p>
               <div className={`${style.positionCenter} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => getCurrentPage('Contracted Services Provider(s)')}>ADD CONTRACTOR</button>

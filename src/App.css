@@ -5,11 +5,13 @@
 
 body {
 	font-family: 'Montserrat, Roboto, Proxima Nova';
-
+	scrollbar-width: none !important;
   }
 
 .App {
   text-align: center;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .App-logo {
@@ -121,6 +123,7 @@ select {
 ::-webkit-scrollbar {
     width: 0 !important;
     height: 0 !important;
+	display: none !important;
   }
 
   .toast-container {

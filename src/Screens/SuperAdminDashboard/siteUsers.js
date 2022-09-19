@@ -1,9 +1,18 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { InputGroup, Icon, Intent, TagInput, Dialog, Classes } from '@blueprintjs/core';
+import {
+  FormControl,
+  InputLabel,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Checkbox,
+  Select,
+  FormControlLabel
+} from "@material-ui/core";
 import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
-import {Link, useParams} from 'react-router-dom';
+import {Link, useParams, useNavigate} from 'react-router-dom';
 import {GET, TenantID, POST, isSuperAdminAccess} from './../dataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step23.png';
@@ -20,6 +29,8 @@ import { CSVLink } from "react-csv";
 import Papa from 'papaparse';
 import axios from 'axios';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import SaveInProgress from './saveInProgressAlert';
+import {Suffix} from './../../utils/dropDownValues';
 
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
@@ -37,6 +48,7 @@ const dropzoneStyle = {
 
 const SiteUsers = ({getActiveStep}) => {
     const {id} = useParams();
+    const navigate = useNavigate();
     const [isAppUserContractor,setIsAppUserContractor] = useState(true);
     const [tags, setTags] = useState(VALUES);
     const [entityRoles,setEntityRoles] = useState([]);
@@ -56,8 +68,11 @@ const SiteUsers = ({getActiveStep}) => {
     const [contracts,setContracts] = useState([]);
     const [contractId,setContractId] = useState('');
     const [entityData, setEntityData] = useState();
+    const [showSaveInProgress,setShowSaveInProgress] = useState(false);
+    const [unassignedKeys,setUnassignedKeys] = useState([]);
     const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:'',isAdmin:false,title:'',email:'',phone:''});
     const role = '';
+    const [suffixList,setSuffixList] = useState([]);
 
     const columns = [
       {
@@ -109,7 +124,18 @@ const SiteUsers = ({getActiveStep}) => {
       getSiteData();
       getRolesData();
       getContracts();
+      getSuffix();
     },[])
+
+     const getSuffix  = async() => {
+      await GET('entity-service/nameSuffix')
+      .then(response=>{
+        setSuffixList(response?.data);
+      })
+      .catch(error=>{
+        console.log('error',error);
+      })
+    }
 
     const getEntityData = async() => {
       const {data: data} = await GET(`entity-service/entity/${id}`);
@@ -117,7 +143,7 @@ const SiteUsers = ({getActiveStep}) => {
     }
 
     const getContracts = async() => {
-      await axios(`https://rest.timesmart.live/contract-managment-service/contracts`,{
+      await axios(`https://rest.timesmart.io/contract-managment-service/contracts`,{
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -132,7 +158,7 @@ const SiteUsers = ({getActiveStep}) => {
     }
 
     const getUserData = async() => {
-      await axios(`https://rest.timesmart.live/user-management-service/user`,{
+      await axios(`https://rest.timesmart.io/user-management-service/user`,{
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -198,13 +224,9 @@ const SiteUsers = ({getActiveStep}) => {
         [entityRoles],
       );
 
-      const onSelectRoles = (selectedItem) => {
-        setItem(selectedItem)
-        let temp = selectedRoles;
-        temp.push(selectedItem);
-        setSelectedRoles(temp);
-      }
-
+    const handleRoleChange = (value) => {
+      setSelectedRoles(value);
+    }
 
     const handleTagsRemoveRoles = (tags, index) => {
       setSelectedRoles(selectedRoles?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
@@ -226,9 +248,57 @@ const SiteUsers = ({getActiveStep}) => {
     });
   };
 
-  const addUser = async() => {
-    if(userData.firstName !== '' && userData.email !== '' && userData.phone !== '' && userData.email.includes('@') && userData.email.includes('.')){
-      let data = {
+  const mandatoryFieldCheck = (buttonType) => {
+    if(userData?.firstName === ''){
+      ErrorToaster('First Name is Mandatory');
+      return;
+    }
+    if(userData.email === ''){
+      ErrorToaster('Email is Mandatory');
+      return;
+    }
+    if(!userData.email.includes('@') || !userData.email.includes('.')){
+      ErrorToaster('Enter Valid Email-Id');
+      return;
+    }
+    if(buttonType === 'SaveInProgress'){
+      saveInProgressCheck();
+    }else if(buttonType === 'AddMore'){
+      addUser('AddMore');
+    }else{
+      addUser('Continue');
+      getActiveStep('appSubscription');
+    }
+  }
+
+  const saveInProgressCheck = () => {
+    var keys = [];
+    if(userData?.lastName === ''){
+      keys.push('Last Name');
+    }
+    if(userData?.suffix === ''){
+      keys.push('Suffix');
+    }
+    if(userData?.phone === ''){
+      keys.push("Cell Phone");
+    }if(selectedRoles?.length === 0){
+      keys.push('Other App Role')
+    }
+    setUnassignedKeys(keys);
+    if(keys?.length !== 0){
+      setShowSaveInProgress(true);
+    }else{
+      addUser('SaveInProgress');
+    }
+  }
+
+  const saveInProgressFunction = () => {
+    addUser('SaveInProgress');
+  }
+
+
+  const addUser = async(buttonType) => {
+        let data = {
         "name": {
           "firstName": userData.firstName,
           "lastName": userData.lastName,
@@ -273,8 +343,9 @@ const SiteUsers = ({getActiveStep}) => {
     }).catch(error=>{
       ErrorToaster('Unexpected Error Creating User');
     });
+    if(buttonType === 'SaveInProgress'){
+      navigate('/user');
     }
-
   }
 
   const resetValues = () => {
@@ -282,6 +353,10 @@ const SiteUsers = ({getActiveStep}) => {
     setSelectedRoles([]);
     setSelectedSites([]);
     setContractId('');
+  }
+
+  const getSaveInProgressAlert = (value) => {
+    setShowSaveInProgress(value);
   }
 
     return(
@@ -389,7 +464,23 @@ const SiteUsers = ({getActiveStep}) => {
                                     <div className={`${style.displayInRow}`}>
                                         <InputGroup placeholder="First Name" className={`${style.fourFieldWidth}`} value={userData.firstName} onChange={(e)=>handleUserData('firstName',e.target.value)}/>
                                         <InputGroup placeholder="LAST NAME" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={userData.lastName} onChange={(e)=>handleUserData('lastName',e.target.value)}/>
-                                        <InputGroup placeholder="Suffix" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={userData.suffix} onChange={(e)=>handleUserData('suffix',e.target.value)}/>
+                                        <select
+                                            name="class"
+                                            id="Class"
+                                            value={userData.suffix}
+                                            className={`${style.fourFieldWidth} ${style.marginLeft20}`}
+                                            onChange={(e)=>handleUserData('suffix',e.target.value)}>
+                                                <option value="0" >
+                                                Select Suffix
+                                                </option>
+                                                {
+                                                  suffixList?.map(data=>(
+                                                    <option value={data?.suffix} >
+                                                    {data.suffix}
+                                                    </option>
+                                                  ))
+                                                }
+                                        </select>
                                         <p className={`${style.fourFieldWidth}`}></p>
                                     </div>
                                 </div>
@@ -478,31 +569,61 @@ const SiteUsers = ({getActiveStep}) => {
                                   //         />
                                   // </div>
                                 }
+
+                                {
+                                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                  //     <div className={style.extentionLableStyle}>Other App Role*</div>
+                                  //     <div>
+                                  //             <DatalistInput items={roleItems} placeholder="Select Roles" onSelect={onSelectRoles} className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
+                                  //             <TagInput
+                                  //                 placeholder="Enter tags/keywords relative to the post"
+                                  //                 values={selectedRoles?.map(data=>data?.roleName)}
+                                  //                 className={`${style.marginTop20} ${style.tagInputStyle}`}
+                                  //                 onRemove={handleTagsRemoveRoles}
+                                  //                 separator={/[\s,]/}
+                                  //                 addOnBlur={true}
+                                  //                 addOnPaste={true}
+                                  //             />
+                                  //
+                                  //     </div>
+                                  // </div>
+                                }
+
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Other App Role*</div>
-                                    <div>
-                                            <DatalistInput items={roleItems} placeholder="Select Roles" onSelect={onSelectRoles} className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                            <TagInput
-                                                placeholder="Enter tags/keywords relative to the post"
-                                                values={selectedRoles?.map(data=>data?.roleName)}
-                                                className={`${style.marginTop20} ${style.tagInputStyle}`}
-                                                onRemove={handleTagsRemoveRoles}
-                                                separator={/[\s,]/}
-                                                addOnBlur={true}
-                                                addOnPaste={true}
-                                            />
-
-                                    </div>
+                                    <FormControl className={style.fullWidth}>
+                                    {
+                                      <InputLabel id="mutiple-select-label">Roles Multi Select</InputLabel>
+                                    }
+                                      <Select
+                                        labelId="mutiple-select-label"
+                                        multiple
+                                        value={selectedRoles}
+                                        onChange={(e)=>handleRoleChange(e.target.value)}
+                                        renderValue={selectedRoles=>selectedRoles.map(data=>data?.roleName)?.join(', ')}
+                                      >
+                                        {entityRoles.map((option) => (
+                                          <MenuItem key={option} value={option}>
+                                            <ListItemIcon>
+                                              <Checkbox checked={selectedRoles?.map(data=>data?.id)?.includes(option?.id)} style={{color:'#7165E3'}}/>
+                                            </ListItemIcon>
+                                            <ListItemText primary={option?.roleName} />
+                                          </MenuItem>
+                                        ))}
+                                      </Select>
+                                    </FormControl>
                                 </div>
+
+
                             </div>
                             <div className={style.spaceBetween}>
                                 <div className={`${style.marginTop20} ${style.buttonPositionLeft}`}>
                                     <button className={style.outlinedButton}>BULK UPLOAD</button>
                                 </div>
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                    <button className={style.outlinedButton} onClick={()=>addUser()}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>addUser()}>SAVE & ADD MORE</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {addUser();getActiveStep('appSubscription')}}>CONTINUE</button>
+                                    <button className={style.outlinedButton} onClick={()=>mandatoryFieldCheck('SaveInProgress')}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>mandatoryFieldCheck('AddMore')}>SAVE & ADD MORE</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {mandatoryFieldCheck('Continue')}}>CONTINUE</button>
                                 </div>
                             </div>
                         </div>
@@ -534,9 +655,9 @@ const SiteUsers = ({getActiveStep}) => {
                                 <p className={style.tableDataFontStyle}>{data?.name?.suffix}</p>
                                 <p className={style.tableDataFontStyle}>{data?.title?.title}</p>
                                 <p className={style.tableDataFontStyle}>{data?.sites?.sites?.length || 0}</p>
-                                <p className={style.tableDataFontStyle}>{data?.userType === "ADMIN"?'YES':'NO'}</p>
+                                <p className={style.tableDataFontStyle}>{data?.roles?.map(data=>data?.roleName).includes('Entity Sys Admin') ?'YES':'NO'}</p>
                                 <p className={style.tableDataFontStyle}>{data?.roles?.[0]?.roleName || ''}</p>
-                                <p className={style.tableDataFontStyle}>Upload</p>
+                                <p className={style.tableDataFontStyle}>Manual</p>
                             </div>
                           ))
                         }
@@ -643,6 +764,7 @@ const SiteUsers = ({getActiveStep}) => {
                     </div>
                 </div>
             </Dialog>
+            <SaveInProgress alert={showSaveInProgress} getSaveInProgressAlert={getSaveInProgressAlert} fieldData={unassignedKeys?.join(', ')} saveInProgressFunction={saveInProgressFunction}/>
         </div>
     )
 }

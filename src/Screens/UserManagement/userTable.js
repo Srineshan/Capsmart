@@ -12,8 +12,11 @@ import LockReset from './../../images/lockReset.png';
 import UploadUser from './../../images/uploadUser.png';
 import ContractExtension from './../../images/contractExtension.png';
 import ProgressBar from "@ramonak/react-progress-bar";
-import AddUser from './addUser'
+import AddUser from './addUser';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 import {GET, TenantID, PUT} from './../dataSaver';
+import {format} from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import {Auth} from './../../utils/auth';
 import EditUser from './editUser';
@@ -35,6 +38,9 @@ const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, get
     const [registeredUsers, setRegisteredUsers] = useState([]);
     const [blockedUsers, setBlockedUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState();
+    let cookie = new Cookie();
+    let userDetail = cookie.get('user');
+    const user = jwt(userDetail);
 
     useEffect(()=>{
       getUser();
@@ -102,7 +108,7 @@ const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, get
                 <div className={style.cardStyle}>
                     <div className={`${style.displayInCol} ${style.alignCenter}`}>
                          <div className={`${style.userNameStyle} `}>
-                            JOHN
+                            {user?.userName}
                         </div>
                         <img src={UserLogo} className={style.userLogo} />
                     </div>
@@ -147,7 +153,7 @@ const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, get
                 </div>
                 <div className={style.bigCardStyle}>
                     <div className={style.spaceBetween}>
-                        <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
+                        <p className={`${style.activeContractsWidth} ${style.uppercase}`}>{format(new Date(), 'MMM d, yyyy HH:mm')} EST</p>
                         <div className={`${style.displayInRow} ${style.marginTop20}`}>
                             <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
                                 <p>Search here</p>

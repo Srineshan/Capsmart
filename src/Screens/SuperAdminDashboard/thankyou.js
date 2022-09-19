@@ -23,7 +23,8 @@ const Thankyou = () => {
                     <div className={style.marginTop50}>
                         <button className={`${style.setupCompleteButton} ${style.cursor}`}
                         onClick={() =>
-                        {navigate('/');
+                        {
+                          window.location.href = '/';
                         }}>LOGIN</button>
                     </div>
                 </div>

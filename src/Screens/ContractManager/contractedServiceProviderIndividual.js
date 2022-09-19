@@ -508,8 +508,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                             value={serviceProviderType}
                             onChange={(e) => setServiceProviderType(e.target.value)}
                             className={style.fullWidth}>
-                                <option value="Text" >
-                                Text
+                                <option value="0" >
+                                Select Provider Type
                                 </option>
                                 <option value="Physician" >
                                 Physician
@@ -564,8 +564,41 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                               value={contractorNameSuffix}
                               onChange={(e) => setContractorNameSuffix(e.target.value)}
                               className={style.fullWidth}>
-                                  <option value="Text" >
-                                  Text
+                                  <option value="0" >
+                                  Select Suffix
+                                  </option>
+                                  <option value="MD">
+                                  MD
+                                  </option>
+                                  <option value="DO">
+                                  DO
+                                  </option>
+                                  <option value="MS">
+                                  MS
+                                  </option>
+                                  <option value="BD">
+                                  BD
+                                  </option>
+                                  <option value="RN">
+                                  RN
+                                  </option>
+                                  <option value="PA">
+                                  PA
+                                  </option>
+                                  <option value="CPA">
+                                  CPA
+                                  </option>
+                                  <option value="PHD">
+                                  PHD
+                                  </option>
+                                  <option value="CISCO">
+                                  CISCO
+                                  </option>
+                                  <option value="CEO">
+                                  CEO
+                                  </option>
+                                  <option value="CFO">
+                                  CFO
                                   </option>
                           </select>
                       </div>

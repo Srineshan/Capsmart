@@ -7,6 +7,8 @@ import DefaultUserLogo from './../../images/defaultUserLogo.jpg';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
 import Filter from './../../images/filter.png';
+import PrintIcon from './../../images/printIcon.png';
+import File from './../../images/file.png';
 import Bell from './../../images/bell.png';
 import Terminate from './../../images/terminate.png';
 import Clone from './../../images/clone.png';
@@ -23,6 +25,7 @@ import ContractTiles from './contractTiles';
 import {format} from 'date-fns';
 
 import style from './index.module.scss';
+import UserCard from './userCard';
 
 const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, activeContractsLength, draftContractsLength, upcomingContractsLength, expiredContractsLength}) => {
     const [showOptions, setShowOptions] = useState(false);
@@ -62,23 +65,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
     return(
         <div className={style.margin20}>
             <div className={`${style.bigCardGrid}`}>
-                <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
-                    <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                        <label for="file-upload">
-                            <img src={DefaultUserLogo} className={`${style.userLogo} ${style.cursorPointer}`} />
-                        </label>
-                        <input id="file-upload" type="file"/>
-                        <div className={style.marginLeft20}>
-                            <div className={style.userNameStyle}>
-                                User
-                            </div>
-                            <div className={style.loginStatus}>
-                                last login DEC 4,21 11:48 am
-                            </div>
-                        </div>
-                        <img src={ChevronRight} className={style.chevronRightStyle}/>
-                    </div>
-                </div>
+                <UserCard />
                 <ContractTiles getSelectedContract={getSelectedContract} selectedContract={selectedContract}
                 activeContractsLength={activeContractsLength}
                 draftContractsLength={draftContractsLength}
@@ -87,7 +74,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
             </div>
             <div className={style.bigCardGrid}>
                 <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
-                    <h5 className={style.statisticsHeading}>February 2022 Summary Statistics</h5>
+                    <h5 className={style.statisticsHeading}>September 2022 Summary Statistics</h5>
                     <div className={style.scrollStyle}>
                         <div className={style.progressbarStyle}>
                             <div className={style.spaceBetween}>
@@ -135,8 +122,8 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                                 <p>Search here</p>
                                 <p className={style.marginRight}>&#128269;</p>
                             </div>
-                            {/* <img src={Envelope} alt="Envelope" className={style.smallIcons} />
-                            <img src={Bell} alt="Bell" className={style.smallIcons} /> */}
+                            <img src={File} alt="File" className={style.smallIcons} />
+                            <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />
                         </div>
                         <button className={style.contractButton} onClick={() => {handleAddContract()}} >ADD CONTRACT</button>

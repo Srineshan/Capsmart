@@ -97,8 +97,8 @@ const Contracts = () => {
     }
 
     useEffect(()=>{
-        setDraftContracts(contracts?.filter(data => data?.contractStatus === "DRAFT")?.map(data => data));
-        setActiveContracts(contracts?.filter(data => data?.contractStatus === "ACTIVE")?.map(data => data));
+        setDraftContracts(contracts?.filter(data => data?.contractStatus === "DRAFT" && data?.status !== "ACTIVATE")?.map(data => data));
+        setActiveContracts(contracts?.filter(data => data?.contractStatus === "ACTIVE" || data?.status === "ACTIVATE")?.map(data => data));
         setUpcomingContracts(contracts?.filter(data => data?.contractStatus === "UPCOMING")?.map(data => data));
         setExpiredContracts(contracts?.filter(data => data?.contractStatus === "EXPIRED")?.map(data => data));
     },[contracts])
@@ -139,7 +139,11 @@ const Contracts = () => {
                     draftContractsLength={draftContracts?.length}
                     upcomingContractsLength={upcomingContracts?.length}
                     expiredContractsLength={expiredContracts?.length}
-                    getContracts={getContracts} />
+                    getContracts={getContracts}
+                    getNewContract={getNewContract}
+                    getContractType={getContractType}
+                    getSelectedContractType={getSelectedContractType}
+                    getContractIdFromActive={getContractIdFromActive}/>
                 ) : selectedContract === 'upcoming renewals' ? (
                     <UpcomingRenewals getSelectedContract={getSelectedContract}
                     getAddContract={getAddContract}

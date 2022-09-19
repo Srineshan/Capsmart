@@ -3,6 +3,8 @@ import UserLogo from './../../images/userLogo.jpg';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
 import Filter from './../../images/filter.png';
+import PrintIcon from './../../images/printIcon.png';
+import File from './../../images/file.png';
 import Bell from './../../images/bell.png';
 import RenewDark from './../../images/renewDark.png';
 import TermianteDark from './../../images/termianteDark.png';
@@ -15,6 +17,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import ContractTiles from './contractTiles';
 
 import style from './index.module.scss';
+import UserCard from './userCard';
 
 const UpcomingRenewals = ({getSelectedContract, getAddContract, upcomingContracts, selectedContract, activeContractsLength, draftContractsLength, upcomingContractsLength, expiredContractsLength}) => {
     const [showOptions, setShowOptions] = useState(false);
@@ -37,20 +40,7 @@ const UpcomingRenewals = ({getSelectedContract, getAddContract, upcomingContract
     return(
         <div className={style.margin20}>
             <div className={`${style.bigCardGrid}`}>
-                <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
-                    <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                        <img src={UserLogo} className={style.userLogo} />
-                        <div className={style.marginLeft20}>
-                            <div className={style.userNameStyle}>
-                                User
-                            </div>
-                            <div className={style.loginStatus}>
-                                last login DEC 4,21 11:48 am
-                            </div>
-                        </div>
-                        <img src={ChevronRight} className={style.chevronRightStyle}/>
-                    </div>
-                </div>
+                <UserCard />
                 <ContractTiles getSelectedContract={getSelectedContract} selectedContract={selectedContract}
                 activeContractsLength={activeContractsLength}
                 draftContractsLength={draftContractsLength}
@@ -59,7 +49,7 @@ const UpcomingRenewals = ({getSelectedContract, getAddContract, upcomingContract
             </div>
             <div className={style.bigCardGrid}>
                 <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
-                    <h5 className={style.statisticsHeading}>February 2022 Summary Statistics</h5>
+                    <h5 className={style.statisticsHeading}>September 2022 Summary Statistics</h5>
                     <div className={style.scrollStyle}>
                         <div className={style.progressbarStyle}>
                             <div className={style.spaceBetween}>
@@ -107,8 +97,8 @@ const UpcomingRenewals = ({getSelectedContract, getAddContract, upcomingContract
                                 <p>Search here</p>
                                 <p className={style.marginRight}>&#128269;</p>
                             </div>
-                            {/* <img src={Envelope} alt="Envelope" className={style.smallIcons} />
-                            <img src={Bell} alt="Bell" className={style.smallIcons} /> */}
+                            <img src={File} alt="File" className={style.smallIcons} />
+                            <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />
                         </div>
                         <button className={style.contractButton} onClick={() => getAddContract(true)} >ADD CONTRACT</button>

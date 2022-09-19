@@ -29,9 +29,8 @@ const SetPassword = () => {
       getUser();
     },[tenantId])
 
-
     const getEntityId = async() => {
-      await axios(`https://rest.timesmart.live/entity-service/entityID`,{
+      await axios(`https://rest.timesmart.io/entity-service/entityID`,{
           method: 'GET',
       }).then(response=>{
         var cookie = new Cookie();
@@ -48,7 +47,7 @@ const SetPassword = () => {
      }
 
     const getUser = async() => {
-        await axios('https://rest.timesmart.live/user-management-service/user',{
+        await axios('https://rest.timesmart.io/user-management-service/user',{
           method: 'GET',
           headers: headers,
         }).then(response=>{
@@ -73,7 +72,7 @@ const SetPassword = () => {
               "password": password,
             }
           }
-        axios('https://rest.timesmart.live/user-management-service/user/setpassword',{
+        axios('https://rest.timesmart.io/user-management-service/user/setpassword',{
           method: 'POST',
           headers: headers,
           data: JSON.stringify(data),

@@ -8,9 +8,10 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
     const [users,setUsers] = useState([]);
     const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
     const [userProviderData, setUserProviderData] = useState({});
+
     useEffect(()=>{
       getUserData();
-    },[getNewServiceProviderDialog])
+    },[editServiceProviderDialog])
 
     const getUserData = async() => {
       if(contractId !== ''){

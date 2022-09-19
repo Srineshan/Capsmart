@@ -4,6 +4,8 @@ import UserLogo from './../../images/userLogo.jpg';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
 import Filter from './../../images/filter.png';
+import PrintIcon from './../../images/printIcon.png';
+import File from './../../images/file.png';
 import Bell from './../../images/bell.png';
 import Activate from './../../images/activate.png';
 import Delete from './../../images/delete.png';
@@ -16,8 +18,9 @@ import {PUT} from './../dataSaver';
 import {SuccessToaster,ErrorToaster} from './../../utils/toaster';
 
 import style from './index.module.scss';
+import UserCard from './userCard';
 
-const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivationDialog, getAddContract, draftContracts, selectedContract, users, activeContractsLength, draftContractsLength, upcomingContractsLength, expiredContractsLength, getContracts}) => {
+const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivationDialog, getAddContract, draftContracts, selectedContract, users, activeContractsLength, draftContractsLength, upcomingContractsLength, expiredContractsLength, getContracts,getNewContract, getContractType, getSelectedContractType, getContractIdFromActive,}) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -51,7 +54,7 @@ const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivation
     const id = open ? 'simple-popover' : undefined;
 
     const activateContracts = async(id) => {
-      let status = 'ACTIVATE';
+      let status = 'ACTIVE';
       await PUT(`contract-managment-service/contracts/${id}/contractStatus/${status}`)
       .then(response=>{SuccessToaster('Contract Activated Successfully');getContracts();})
       .catch(error=>{ErrorToaster('Contract Activation Failed');})
@@ -61,20 +64,7 @@ const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivation
     return(
         <div className={style.margin20}>
             <div className={`${style.bigCardGrid}`}>
-                <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
-                    <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                        <img src={UserLogo} className={style.userLogo} />
-                        <div className={style.marginLeft20}>
-                            <div className={style.userNameStyle}>
-                                User
-                            </div>
-                            <div className={style.loginStatus}>
-                                last login DEC 4,21 11:48 am
-                            </div>
-                        </div>
-                        <img src={ChevronRight} className={style.chevronRightStyle}/>
-                    </div>
-                </div>
+                <UserCard />
                 <ContractTiles getSelectedContract={getSelectedContract} selectedContract={selectedContract}
                 activeContractsLength={activeContractsLength}
                 draftContractsLength={draftContractsLength}
@@ -83,7 +73,7 @@ const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivation
             </div>
             <div className={style.bigCardGrid}>
                 <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
-                    <h5 className={style.statisticsHeading}>February 2022 Summary Statistics</h5>
+                    <h5 className={style.statisticsHeading}>September 2022 Summary Statistics</h5>
                     <div className={style.scrollStyle}>
                         <div className={style.progressbarStyle}>
                             <div className={style.spaceBetween}>
@@ -131,8 +121,8 @@ const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivation
                                 <p>Search here</p>
                                 <p className={style.marginRight}>&#128269;</p>
                             </div>
-                            {/* <img src={Envelope} alt="Envelope" className={style.smallIcons} />
-                            <img src={Bell} alt="Bell" className={style.smallIcons} /> */}
+                            <img src={File} alt="File" className={style.smallIcons} />
+                            <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />
                         </div>
                         <button className={style.contractButton} onClick={() => getAddContract(true)} >ADD CONTRACT</button>
@@ -140,7 +130,7 @@ const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivation
                     <div>
                         <div className={`${style.tableHeader} ${style.draftContractGrid} ${style.marginTop40}`}>
                             <p className={style.marginLeft30}></p>
-                            <p className={`${style.tableHeaderFontStyle}`}>CONTRACT TYPE</p>
+                            <p className={`${style.tableHeaderFontStyle}`} >CONTRACT TYPE</p>
                             <p className={style.tableHeaderFontStyle}> ID</p>
                             <p className={style.tableHeaderFontStyle}> NAME</p>
                             <p className={style.tableHeaderFontStyle}>ACTIVATION STATUS</p>
@@ -155,7 +145,7 @@ const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivation
                                     <div className={`${style.displayInRow} ${style.marginLeft30}`}>
                                         <div className={`${style.yellow} ${style.yellowDotStyle}`}></div>
                                     </div>
-                                    <p className={style.tableDataFontStyle}>{data?.contractType}</p>
+                                    <p className={style.tableDataFontStyle} onClick={() => {getNewContract(true);getContractType(data?.contractType);getSelectedContractType('New Contract');getContractIdFromActive(data?.id);console.log(data?.id)}}>{data?.contractType}</p>
                                     <p className={style.tableDataFontStyle}>{data?.contractDetail?.contractId?.id}</p>
                                     <p className={style.tableDataFontStyle}>{data?.contractName?.contractName} </p>
                                     <p className={style.tableDataFontStyle}>{data?.status}</p>

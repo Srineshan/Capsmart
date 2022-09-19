@@ -6,7 +6,6 @@ import Alert from './../../images/alert.png';
 import style from './index.module.scss';
 
 const SetupComplete = ({data,setCompleteValue,operation}) => {
-    const [alertDialog, setAlertDialog] = useState(false);
     const navigate = useNavigate();
     return(
         <div className={style.welcomeBackground}>
@@ -52,37 +51,11 @@ const SetupComplete = ({data,setCompleteValue,operation}) => {
                     <button className={`${style.setupCompleteButton} ${style.cursor}`} onClick={()=>setCompleteValue(false)}>CANCEL</button>
                     <button className={`${style.setupCompleteButton} ${style.marginLeft20} ${style.cursor}`}
                     onClick={() =>
-                      {navigate('/activeCustomers');
-                        // setAlertDialog(true);
+                      {navigate('/user');
                     }}>DONE & EXIT SETUP</button>
                 </div>
             </div>
-            <Dialog isOpen={alertDialog} onClose={() => setAlertDialog(false)} className={`${style.bulkUploadDialog}`}>
-                <div className={`${Classes.DIALOG_BODY} ${style.bulkUploadDialogBackground}`}>
-                    <div className={style.spaceBetween}>
-                        <div className={style.displayInRow}>
-                            <img src={Alert} alt="alert" className={style.alertImgStyle} />
-                            <p className={`${style.extensionStyle} ${style.marginTop10} ${style.marginLeft10}`}>SAVE IN-PROGRESS ALERT</p>
-                        </div>
-                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.alertCrossStyle} onClick={() => setAlertDialog(false)}  />
-                    </div>
-                    <div className={style.extensionBorder}></div>
-                    <p className={`${style.descriptionHeading} ${style.marginTop30}`}>Following data are missing</p>
-                    <p className={`${style.cloneContent} ${style.marginTop20} ${style.alertTextColor}`}>
-                        Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus quam nec
-                        tellus dictum, vitae ultrices urna porttitor. donec commodo tellus dapibus semper mattis.
-                        aenean ut massa vitae tortor consequat tristique. etiam eget condimentum sapien. morbi est
-                        ante, sagittis ac rhoncus eget, faucibus ut felis. pellentesque iaculis aliquam massa.
-                        lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus quam nec tellus
-                        dictum.
-                    </p>
-                    <div className={`${style.floatRight} ${style.marginTop20}`}>
-                        <Link to={'/otpPage'}>
-                            <button className={`${style.buttonStyle} ${style.marginLeft20} ${style.marginBottom20}`}>SAVE & QUIT</button>
-                        </Link>
-                    </div>
-                </div>
-            </Dialog>
+
         </div>
     )
 }

@@ -7,6 +7,8 @@ import {Link} from 'react-router-dom';
 import PrintIcon from './../../images/printIcon.png';
 import Filter from './../../images/filter.png';
 import Bell from './../../images/bell.png';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 import Terminate from './../../images/terminate.png';
 import Clone from './../../images/clone.png';
 import RedPage from './../../images/redPage.png';
@@ -21,7 +23,9 @@ import style from './index.module.scss';
 
 const TasksAndAlerts = () => {
     const [viewToDo, setViewToDo] = useState(true);
-
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const user = jwt(userDetails);
     return(
         <Fragment>
             <Navbar />
@@ -32,10 +36,10 @@ const TasksAndAlerts = () => {
                             <img src={UserLogo} className={style.userLogo} />
                             <div className={style.marginLeft20}>
                                 <div className={style.userNameStyle}>
-                                    User
+                                {user?.userName}
                                 </div>
                                 <div className={style.loginStatus}>
-                                    last login DEC 4,21 11:48 am
+                                    last login SEP 7,21 11:48 am
                                 </div>
                             </div>
                             <img src={ChevronRight} className={style.chevronRightStyle}/>
@@ -100,7 +104,7 @@ const TasksAndAlerts = () => {
                 </div>
                 <div className={style.bigCardGrid}>
                     <div className={`${style.bigCardStyleEntryPage} ${style.bigCalendarLeftCardWidth}`}>
-                        <h5 className={style.statisticsHeading}>February 2022 Summary Statistics</h5>
+                        <h5 className={style.statisticsHeading}>September 2022 Summary Statistics</h5>
                         <div className={style.scrollStyle}>
                             <h5 className={`${style.textAlignLeft} ${style.sideBarHeadingStyle}`}>To Do Status</h5>
                             <div className={style.progressbarStyle}>

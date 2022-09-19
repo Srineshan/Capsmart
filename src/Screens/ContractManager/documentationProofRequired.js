@@ -8,19 +8,22 @@ import FileImg from './../../images/fileImg.png';
 import AddProofOfDocumentation from './addProofOfDocumentation';
 
 import style from './index.module.scss';
+import EditProofOfDocumentation from './editProofOfDocumentation';
 
 const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, isMultipleContract}) => {
   const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] = useState(false);
   const [documents,setDocuments] = useState([]);
   const [fileToDelete,setFileToDelete] = useState('');
   const [showProofDialog,setShowProofDialog] = useState(false);
+  const [showEditProofDialog,setShowEditProofDialog] = useState(false);
   const [users, setUsers] = useState([]);
   const [userLength, setUserLength] = useState(0);
+  const [selectedProof, setSelectedProof] = useState({});
 
   useEffect(()=>{
     getDocumentationData();
     getUserData();
-  },[showProofDialog])
+  },[showProofDialog, showEditProofDialog])
 
   useEffect(() => {
     setUserLength(users?.length);
@@ -28,6 +31,10 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
 
   const getShowProofDialog = (value) => {
     setShowProofDialog(value);
+  }
+
+  const getShowEditProofDialog = (value) => {
+    setShowEditProofDialog(value);
   }
 
   const getDocumentationData = async() => {
@@ -64,7 +71,7 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
         <div className={style.cloneBlockStyle}>
             <div className={style.tableHeight}>
                 <div>
-                    <InputGroup className={`${style.documentProofInputWidth} ${style.marginLeft20}`} placeholder="For this contract to be active, proof of documentation is required for items listed on the Right." />
+                    <InputGroup className={`${style.documentProofInputWidth} ${style.marginLeft20}`} placeholder="For this contract to be activated, data on specific POD items listed below are needed." />
                 </div>
                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                     <div className={`${style.extentionLableStyle} ${style.marginTop20} ${style.marginLeft20} ${style.blackText}`}>DOCUMENT DATA STATUS</div>
@@ -80,10 +87,10 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
                     <p className={style.documentProofTextWidth}></p>
                 </div>
                 {
-                  documents?.map(data=>(
-                    <div className={`${style.documentDataProof} ${style.displayInRow}`}>
+                  documents?.map((data, index)=>(
+                    <div className={`${style.documentDataProof} ${style.displayInRow}`} key={index} >
                         <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
-                        <p className={style.documentProofDataTextWidth}>{data?.podType?.type}</p>
+                        <p className={`${style.documentProofDataTextWidth} ${style.cursorPointer}`} onClick={() => {setSelectedProof(data);setShowEditProofDialog(true)}}>{data?.podType?.type}</p>
                         <p className={style.documentProofDataTextWidth}>{data?.dataMap?.dataMap?.privilegingFacility?.siteName?.siteName}</p>
                         <p className={style.documentProofDataTextWidth}>{users?.filter(userData => data?.dataMap?.dataMap?.contractedServiceProvider === userData?.id)?.map(data => data)[0]?.name?.firstName} {users?.filter(userData => data?.dataMap?.dataMap?.contractedServiceProvider === userData?.id)?.map(data => data)[0]?.name?.lastName}</p>
                         <div className={`${style.displayInRow} ${style.alignCenter}`}>
@@ -152,6 +159,10 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
               showProofDialog &&
               <AddProofOfDocumentation getShowProofDialog={getShowProofDialog} isMultipleContract={isMultipleContract} contractId={contractId}/>
             }
+            {
+              showEditProofDialog &&
+              <EditProofOfDocumentation getShowEditProofDialog={getShowEditProofDialog} isMultipleContract={isMultipleContract} contractId={contractId} selectedProof={selectedProof} />
+            }
         </div>
         ) : (
           <>
@@ -163,7 +174,7 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
                 </div>
                 <div className={style.extensionBorder}></div>
                 <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
-                  No contractor assigned for the contract! First add contractor to assign the services.
+                No Contracted Service Provider Is Found.
                 </p>
                 <div className={`${style.positionCenter} ${style.marginTop20}`}>
                   <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => getCurrentPage('Contracted Services Provider(s)')}>ADD CONTRACTOR</button>

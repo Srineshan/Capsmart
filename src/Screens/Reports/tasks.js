@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Checkbox, Icon } from '@blueprintjs/core';
 import UserLogo from './../../images/userLogo.jpg';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope-report.png';
 import Reject from './../../images/reject-report.png';
@@ -9,6 +11,9 @@ import ToDoReport from './../../images/todo-report.png';
 import style from './index.module.scss';
 
 const Tasks = () => {
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const user = jwt(userDetails);
     return(
         <div className={style.margin20}>
             <div className={style.bigCardGrid}>
@@ -19,10 +24,10 @@ const Tasks = () => {
                                 <img src={UserLogo} className={style.userLogo} />
                                 <div className={`${style.marginLeft10} ${style.marginTop}`}>
                                     <div className={style.userNameStyle}>
-                                        Hi, Ronald Jones, MD
+                                        Hi, {user?.userName}
                                     </div>
                                     <div className={style.loginStatus}>
-                                        last login DEC 4,21 11:48 am
+                                        last login SEP 7,21 11:48 am
                                     </div>
                                 </div>
                             </div>

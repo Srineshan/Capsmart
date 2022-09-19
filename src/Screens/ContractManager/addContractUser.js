@@ -123,8 +123,8 @@ const AddContractUser = ({getAddNewManagerDialog, contractType, getUserData, con
                     value={serviceProviderType}
                     onChange={(e) => setServiceProviderType(e.target.value)}
                     className={style.fullWidth}>
-                        <option value="Text" >
-                        Text
+                        <option value="0" >
+                        Select Provider Type
                         </option>
                         <option value="Physician" >
                         Physician

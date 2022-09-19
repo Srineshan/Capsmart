@@ -47,6 +47,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const [selectedUser, setSelectedUser] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const limit = 3;
+    const limit5 = 5;
 
     const getSendEmailNotification = (value) => {
         setSendEmailNotification(value)
@@ -388,6 +389,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                          >
                                             Clinic Session Blocks
                                         </option>
+                                        <option value="Surgery Block"
+                                         disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('Surgery Block')}
+                                         >
+                                            Surgery Block
+                                        </option>
                                         <option value="On Call Coverage Duty Days"
                                         disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('On Call Coverage Duty Days')}
                                         >
@@ -505,7 +511,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                         </div>
                                     </div>
                                 </div>
-                                : (activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Clinic Session Blocks") ? (
+                                : (activityOrServiceType === "Medical / Surgical Care Contracted Services" && ( activityContractedFor === "Clinic Session Blocks" || activityContractedFor === "Surgery Block")) ? (
                                     <div>
                                         {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Specify Activity Type</div>
@@ -587,7 +593,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                         }
                                                         onChange={() => setAdditionalSchedule(!additionalSchedule)}
                                                         className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                                        label={'YES'}
+                                                        label={additionalSchedule ? 'YES' : 'NO'}
                                                     />
                                                 </div>
                                                 <InputGroup value={additionalClinicSchedule} onChange={(e) => setAdditionalClinicSchedule(e.target.value)} className={`${style.marginLeft20} ${style.threeFieldWidth}`} />
@@ -627,7 +633,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
                                             <div className={style.twoCol}>
                                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                                    <EditableText value={totalContractedService} placeholder="" type='number' onChange={(e)=> setTotalContractedService(e.slice(0, limit))} className={style.editableSessionTextStyle} />
+                                                    <EditableText value={totalContractedService} placeholder="" type='number' onChange={(e)=> setTotalContractedService(e.slice(0, limit5))} className={style.editableSessionTextStyle} />
                                                     <div className={style.textElement}>120 Specified</div>
                                                 </div>
                                                 <select
@@ -688,6 +694,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     className={`${style.fullWidth} ${style.marginRight20} `}>
                                                     <option value="All On Call Service Duty" >
                                                         All On Call Service Duty
+                                                    </option>
+                                                    <option value="In-Patient Call Days" >
+                                                        In-Patient Call Days
+                                                    </option>
+                                                    <option value="Ambulatory Call Duty Days" >
+                                                        Ambulatory Call Duty Days
+                                                    </option>
+                                                    <option value="Emergency Department On-call" >
+                                                        Emergency Department On-call
                                                     </option>
                                                 </select>
                                             </div>
