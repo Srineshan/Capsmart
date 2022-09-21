@@ -25,6 +25,7 @@ import ApexLineChart from './chart-data/lineChart';
 
 import style from './index.module.scss';
 import ApexBoxChart from './chart-data/boxChart';
+import ReportsTable from '../../ReportsTable';
 
 const WatermarkWrapper = styled.div`
   text-align: center;
@@ -251,7 +252,6 @@ const ReportTypeOverview = () => {
     }
   }
 
-  console.log(stackedSeries, stackedCategories)
     const getUsersData = async() => {
         const {data: user} = await GET('user-management-service/user');
         if(user){
@@ -307,6 +307,142 @@ const ReportTypeOverview = () => {
 
     const getShowExpandedView = (value) => {
         setShowExpandedView(value);
+    }
+
+    let activityPerformed = [];
+    let startDateTime = [];
+    let endDateTime = [];
+    let contractProvider = [];
+    let reasonNotDone = [];
+
+    const getActivitiesServicesValues = (value) => {
+         activityPerformed = [];
+         startDateTime = [];
+         endDateTime = [];
+         contractProvider = [];
+         reasonNotDone = [];
+         reportLog?.filter(data=>data?.activityStatus === value)?.map(data=> 
+        {
+            activityPerformed.push(data?.activityPerformed?.activity);
+            startDateTime.push(`${data?.activityTimeFrame?.stateDate}, ${data?.activityTimeFrame?.startTime}`)
+            endDateTime.push(`${data?.activityTimeFrame?.endDate}, ${data?.activityTimeFrame?.endTme}`)
+            user?.filter(user=>user?.id === data?.user?.id)?.map(data=>
+            {
+                contractProvider.push(data?.name?.firstName)
+            });
+            reasonNotDone.push(data?.activityNotes?.notes);
+        })
+
+        return value === "DONE" ? [
+            activityPerformed,
+            startDateTime,
+            endDateTime,
+            contractProvider, 
+             ''
+        ] : value === "TODO" ? [
+            activityPerformed,
+            startDateTime,
+            contractProvider, 
+             ''
+        ] : [
+            activityPerformed,
+            startDateTime,
+            contractProvider, 
+             '',
+            reasonNotDone
+        ];
+    }
+    
+    let contractManagementContractName = [];
+    let contractManagementContractId = [];
+    let contractManagementExpirationDate = [];
+    let contractManagementContractingEntity = [];
+    let contractManagementPointOfContact = [];
+    let contractManagementPointOfContactNumber = [];
+    let contractManagementEmail = [];
+    let contractManagementServiceProvider = [];
+
+    const getContractManagementUpcomingValues = (value) => {
+        contractManagementContractName = [];
+        contractManagementContractId = [];
+        contractManagementExpirationDate = [];
+        contractManagementContractingEntity = [];
+        contractManagementPointOfContact = [];
+        contractManagementPointOfContactNumber = [];
+        contractManagementEmail = [];
+        contractManagementServiceProvider = [];
+
+        let mapValue = value === "INDIVIDUAL" ? individualContract : multipleContract;
+
+        mapValue?.map(data=> 
+        {
+            contractManagementContractName.push(data?.contractName?.contractName);
+            contractManagementContractId.push(data?.contractDetail?.contractId?.id)
+            contractManagementExpirationDate.push(format(new Date(data?.contractDetail?.contractTerm?.endDate), 'MM-dd-yyyy'))
+            contractManagementContractingEntity.push(data?.contractorBusinessEntity !== null ? data?.contractorBusinessEntity?.businessEntity?.name : '-');
+            contractManagementPointOfContact.push(`${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} ${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}`);
+            contractManagementPointOfContactNumber.push(user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.communication?.mobileNumber));
+            contractManagementEmail.push(user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.email?.officialEmail));
+        })
+
+        return [
+            contractManagementContractName,
+            contractManagementContractId,
+            contractManagementExpirationDate,
+            contractManagementContractingEntity, 
+            contractManagementPointOfContact,
+            contractManagementPointOfContactNumber,
+            contractManagementEmail
+        ];
+    }
+
+    let contractCompliaceContractName = [];
+    let contractCompliaceContractId = [];
+    let contractCompliaceContractManager = [];
+    let contractCompliaceExpirationDate = [];
+    let contractCompliaceContractingEntity = [];
+    let contractCompliacePointOfContact = [];
+    let contractCompliacePointOfContactNumber = [];
+    let contractCompliaceEmail = [];
+
+
+    const getContractComplianceValues = (value) => {
+        contractCompliaceContractName = [];
+        contractCompliaceContractId = [];
+        contractCompliaceContractManager = [];
+        contractCompliaceExpirationDate = [];
+        contractCompliaceContractingEntity = [];
+        contractCompliacePointOfContact = [];
+        contractCompliacePointOfContactNumber = [];
+        contractCompliaceEmail = [];
+
+        let mapValue = value === "documentNotUploadedContracts" ? nonCompliantContract?.documentNotUploadedContracts : 
+        value === "expiredContracts" ? nonCompliantContract?.expiredContracts :
+        value === "renewalContracts" ? nonCompliantContract?.renewalContracts :
+        nonCompliantContract?.notExpiredContracts;
+
+        mapValue?.map(data=> 
+        {
+            contractCompliaceContractName.push(data?.contractName?.contractName);
+            contractCompliaceContractId.push(data?.contractDetail?.contractId?.id)
+            contractCompliaceContractManager.push(`${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} ${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}`)
+            contractCompliaceExpirationDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'))
+            contractCompliaceContractingEntity.push(data?.contractorBusinessEntity !== null ? data?.contractorBusinessEntity?.businessEntity?.name : '-');
+            contractCompliacePointOfContact.push(`${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} ${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}`);
+            contractCompliacePointOfContactNumber.push(user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.communication?.mobileNumber));
+            contractCompliaceEmail.push(user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.email?.officialEmail));
+        })
+
+        return [
+            contractCompliaceContractName,
+            contractCompliaceContractId,
+            contractCompliaceContractManager,
+            contractCompliaceExpirationDate,
+            contractCompliaceContractingEntity,
+            contractCompliacePointOfContact,
+            contractCompliacePointOfContactNumber,
+            contractCompliaceEmail
+        ];
     }
 
     return(
@@ -479,69 +615,27 @@ const ReportTypeOverview = () => {
                                         <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
                                     </div>
                                     <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                    <div className={style.marginTop20}>
-                                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Completed Activity / Service Log</div>
-                                        <div className={`${style.grid5} ${style.marginTop20}`}>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Activity/ Services</div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Scheduled Date/ Time</div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Completion Date/ Time</div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Provider</div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Site</div>
-                                        </div>
-                                        {
-                                          reportLog?.filter(data=>data?.activityStatus === "DONE")?.map(data=>(
-                                            <div className={`${style.grid5} ${style.marginTop20}`}>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.activityPerformed?.activity}</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.activityTimeFrame?.stateDate}, {data?.activityTimeFrame?.startTime}</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.activityTimeFrame?.endDate}, {data?.activityTimeFrame?.endTme}</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(user=>user?.id === data?.user?.id)?.map(data=>data?.name?.firstName)[0]}</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>-</div>
-                                            </div>
-                                          ))
-                                        }
-                                    </div>
-                                    <div className={style.marginTop40}>
-                                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>To Do Activity/ Services</div>
-                                        <div className={`${style.grid5} ${style.marginTop20}`}>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Activity/ Services</div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Scheduled Date/ Time</div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Provider</div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Site</div>
-                                            <div></div>
-                                        </div>
-                                        {
-                                          reportLog?.filter(data=>data?.activityStatus === "TODO")?.map(data=>(
-                                            <div className={`${style.grid5} ${style.marginTop20}`}>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.activityPerformed?.activity}</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.activityTimeFrame?.stateDate}, {data?.activityTimeFrame?.startTime}</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(user=>user?.id === data?.user?.id)?.map(data=>data?.name?.firstName)[0]}</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>-</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}></div>
-                                            </div>
-                                          ))
-                                        }
-                                    </div>
-                                    <div className={style.marginTop40}>
-                                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Not Done Activity / Service Log</div>
-                                        <div className={`${style.grid5} ${style.marginTop20}`}>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Activity/ Services</div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Scheduled Date/ Time</div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Provider</div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Site</div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Reason Not Done</div>
-                                        </div>
-                                        {
-                                          reportLog?.filter(data=>data?.activityStatus === "NOTDONE")?.map(data=>(
-                                            <div className={`${style.grid5} ${style.marginTop20}`}>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.activityPerformed?.activity}</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.activityTimeFrame?.stateDate}, {data?.activityTimeFrame?.startTime}</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(user=>user?.id === data?.user?.id)?.map(data=>data?.name?.firstName)[0]}</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>-</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.activityNotes?.notes}</div>
-                                            </div>
-                                          ))
-                                        }
-                                    </div>
+                                    <ReportsTable 
+                                        tableType={'Completed Activity / Service Log'}
+                                        tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Completion Date/ Time', 'Contracted Provider', 'Site']}
+                                        tableValue={reportLog?.filter(data=>data?.activityStatus === "DONE")}
+                                        activitiesServicesValues = {getActivitiesServicesValues('DONE')}
+                                        styleName={style.grid5}
+                                    />
+                                    <ReportsTable 
+                                        tableType={'To Do Activity/ Services'}
+                                        tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site']}
+                                        tableValue={reportLog?.filter(data=>data?.activityStatus === "TODO")}
+                                        activitiesServicesValues = {getActivitiesServicesValues('TODO')}
+                                        styleName={style.grid5}
+                                    />
+                                    <ReportsTable 
+                                        tableType={'Not Done Activity / Service Log'}
+                                        tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site', 'Reason Not Done']}
+                                        tableValue={reportLog?.filter(data=>data?.activityStatus === "NOTDONE")}
+                                        activitiesServicesValues = {getActivitiesServicesValues('NOTDONE')}
+                                        styleName={style.grid5}
+                                    />
                                 </>
                                 ) : (reportType === "scheduledActivity" || reportType === "scheduledActivityByContract") ? (
                                     <>
@@ -661,58 +755,22 @@ const ReportTypeOverview = () => {
                                 ) : (reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
                                     <>
                                         {individualContract?.length !== 0 && (
-                                            <div className={style.marginTop40}>
-                                                <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Individual Service Provider Contract Renewal</div>
-                                                <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`}>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Name</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract ID</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Expiration Date</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracting Entity</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Point of Contact</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Point of Contact Number</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Email Address</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}></div>
-                                                </div>
-                                                {individualContract?.map((data, index) => (
-                                                    <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`} key={index}>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractName?.contractName}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractDetail?.contractId?.id}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{format(new Date(data?.contractDetail?.contractTerm?.endDate), 'MM-dd-yyyy')}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractorBusinessEntity !== null ? data?.contractorBusinessEntity?.businessEntity?.name : '-'}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} {user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.communication?.mobileNumber)}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.email?.officialEmail)}</div>
-                                                        <div></div>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                            <ReportsTable 
+                                                tableType={'Individual Service Provider Contract Renewal'}
+                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address']}
+                                                tableValue={individualContract}
+                                                activitiesServicesValues = {getContractManagementUpcomingValues('INDIVIDUAL')}
+                                                styleName={style.individualServiceReportGrid}
+                                            />
                                         )}
                                         {multipleContract?.length !== 0 && (
-                                            <div className={style.marginTop40}>
-                                                <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Multiple Service Provider Contract Renewal</div>
-                                                <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`}>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Name</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract ID</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Expiration Date</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracting Entity</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Point of Contact</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Point of Contact Number</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Email Address</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Providers</div>
-                                                </div>
-                                                {multipleContract?.map((data, index) => (
-                                                    <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`} key={index}>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractName?.contractName}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractDetail?.contractId?.id}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{format(new Date(data?.contractDetail?.contractTerm?.endDate), 'MM-dd-yyyy')}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractorBusinessEntity !== null ? data?.contractorBusinessEntity?.businessEntity?.name : '-'}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} {user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.communication?.mobileNumber)}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.email?.officialEmail)}</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>6</div>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                            <ReportsTable 
+                                                tableType={'Multiple Service Provider Contract Renewal'}
+                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
+                                                tableValue={multipleContract}
+                                                activitiesServicesValues = {getContractManagementUpcomingValues('MULTIPLE')}
+                                                styleName={style.individualServiceReportGrid}
+                                            />
                                         )}
                                     </>
                                 ) : reportType === "complianceStatus" ? (
@@ -794,112 +852,40 @@ const ReportTypeOverview = () => {
                                             {isNonCompliantReportTileClicked ? (
                                                 <>
                                                 {nonCompliantContract?.documentNotUploadedContracts?.length !== 0 && (
-                                                    <div className={style.marginTop40}>
-                                                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Contracts With No {selectedPodTypeFromTile} Proof Of Documentation</div>
-                                                        <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`}>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Name</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract ID</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Manager</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Effective Date</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracting Entity</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Point of Contact</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Phone Number</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Email Address</div>
-                                                        </div>
-                                                        {nonCompliantContract?.documentNotUploadedContracts?.map((data, index) => (
-                                                            <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`} key={index}>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractName?.contractName}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractDetail?.contractId?.id}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} {user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy')}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractorBusinessEntity !== null ? data?.contractorBusinessEntity?.businessEntity?.name : '-'}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} {user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.communication?.mobileNumber)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.email?.officialEmail)}</div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
+                                                    <ReportsTable 
+                                                        tableType={`Contracts With No ${selectedPodTypeFromTile} Proof Of Documentation`}
+                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                        tableValue={nonCompliantContract?.documentNotUploadedContracts}
+                                                        activitiesServicesValues = {getContractComplianceValues('documentNotUploadedContracts')}
+                                                        styleName={style.individualServiceReportGrid}
+                                                    />
                                                 )}
                                                 {nonCompliantContract?.expiredContracts?.length !== 0 && (
-                                                <div className={style.marginTop40}>
-                                                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Contracts With Expired {selectedPodTypeFromTile}</div>
-                                                        <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`}>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Name</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract ID</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Manager</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Liability Insurance Exploration</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracting Entity</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Point of Contact</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Phone Number</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Email Address</div>
-                                                        </div>
-                                                        {nonCompliantContract?.expiredContracts?.map((data, index) => (
-                                                            <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`} key={index}>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractName?.contractName}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractDetail?.contractId?.id}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} {user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy')}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractorBusinessEntity !== null ? data?.contractorBusinessEntity?.businessEntity?.name : '-'}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} {user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.communication?.mobileNumber)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.email?.officialEmail)}</div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
+                                                    <ReportsTable 
+                                                        tableType={`Contracts With Expired ${selectedPodTypeFromTile}`}
+                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                        tableValue={nonCompliantContract?.expiredContracts}
+                                                        activitiesServicesValues = {getContractComplianceValues('expiredContracts')}
+                                                        styleName={style.individualServiceReportGrid}
+                                                    />
                                                 )}
                                                 {nonCompliantContract?.renewalContracts?.length !== 0 && (
-                                                <div className={style.marginTop40}>
-                                                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Contracts With Renewals in next 30 days {selectedPodTypeFromTile}</div>
-                                                        <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`}>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Name</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract ID</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Manager</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Effective Date</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracting Entity</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Point of Contact</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Phone Number</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Email Address</div>
-                                                        </div>
-                                                        {nonCompliantContract?.renewalContracts?.map((data, index) => (
-                                                            <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`} key={index}>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractName?.contractName}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractDetail?.contractId?.id}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} {user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy')}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractorBusinessEntity !== null ? data?.contractorBusinessEntity?.businessEntity?.name : '-'}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} {user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.communication?.mobileNumber)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.email?.officialEmail)}</div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
+                                                    <ReportsTable 
+                                                        tableType={`Contracts With Renewals in next 30 days ${selectedPodTypeFromTile}`}
+                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                        tableValue={nonCompliantContract?.renewalContracts}
+                                                        activitiesServicesValues = {getContractComplianceValues('renewalContracts')}
+                                                        styleName={style.individualServiceReportGrid}
+                                                    />
                                                 )}
                                                 {nonCompliantContract?.notExpiredContracts?.length !== 0 && (
-                                                <div className={style.marginTop40}>
-                                                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Contracts With Not Expired {selectedPodTypeFromTile}</div>
-                                                        <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`}>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Name</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract ID</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Manager</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Effective Date</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracting Entity</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Point of Contact</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Phone Number</div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Email Address</div>
-                                                        </div>
-                                                        {nonCompliantContract?.notExpiredContracts?.map((data, index) => (
-                                                            <div className={`${style.individualServiceReportGrid} ${style.marginTop20}`} key={index}>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractName?.contractName}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractDetail?.contractId?.id}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} {user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy')}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{data?.contractorBusinessEntity !== null ? data?.contractorBusinessEntity?.businessEntity?.name : '-'}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} {user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.communication?.mobileNumber)}</div>
-                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.email?.officialEmail)}</div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
+                                                    <ReportsTable 
+                                                        tableType={`Contracts With Not Expired ${selectedPodTypeFromTile}`}
+                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                        tableValue={nonCompliantContract?.notExpiredContracts}
+                                                        activitiesServicesValues = {getContractComplianceValues('notExpiredContracts')}
+                                                        styleName={style.individualServiceReportGrid}
+                                                    />
                                                 )}
                                                 </>
                                             ) : (

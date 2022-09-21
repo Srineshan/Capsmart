@@ -8,7 +8,6 @@ const ApexStackedBarChart = ({stackedSeries, stackedCategories}) => {
         setSeries(stackedSeries);
         setCategories(stackedCategories);
     }, [stackedSeries, stackedCategories])
-    console.log(series, categories)
     const chartData = {
         series: series,
         type: 'bar',
