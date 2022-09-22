@@ -176,7 +176,8 @@ const AppSubscription = ({getActiveStep}) => {
         "canPrimarySiteToUseApp":entityData?.canPrimarySiteToUseApp,
         "accountManager":entityData?.accountManager,
         "appUserRoles":entityData?.appUserRoles,
-
+        "logo":entityData?.logo,
+        "logoThumbnail":entityData?.logoThumbnail,
         "subscriptionPlan": {
           "planName": plan?.planName || 'BASIC',
           "allowableRegisteredUsers": {

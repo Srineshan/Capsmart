@@ -245,7 +245,9 @@ const EntitySetup = () => {
           "billingDetails": entityData?.billingDetails,
           "contractDetails":entityData?.contractDetails,
           "accountManager":entityData?.accountManager,
-          "appUserRoles":entityData?.appUserRoles
+          "appUserRoles":entityData?.appUserRoles,
+          "logo":entityData?.logo,
+          "logoThumbnail":entityData?.logoThumbnail,
         }
         if(id !== 'new'){
           await PUT('entity-service/entity',updatedValue)

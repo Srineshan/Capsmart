@@ -141,6 +141,8 @@ const SiteInformation = ({getActiveStep}) => {
       "subdomain":entityData?.subdomain,
       "canPrimarySiteToUseApp": entityData?.canPrimarySiteToUseApp,
       "multiSiteEntity": entityData?.multiSiteEntity,
+      "logo":entityData?.logo,
+      "logoThumbnail":entityData?.logoThumbnail,
     }
     await PUT('entity-service/entity',updatedValue)
     .then(response=>{
