@@ -1,15 +1,16 @@
 import React from 'react';
 import { Icon, Intent } from '@blueprintjs/core';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {TenantID} from './../dataSaver';
 import WelcomeImg from './../../images/welcomeNewAccountImg.png';
 import style from './index.module.scss';
 
 const Welcome = () => {
+  const navigate = useNavigate();
 
     return(
         <div className={style.welcomeBackground}>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={()=>navigate('/user')}/>
             <div className={style.welcomeContentMargin}>
                 <div className={style.welcomeHeading}>
                 WELCOME TO TIMESMARTAI

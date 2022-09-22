@@ -6,6 +6,7 @@ import Bell from './../../images/bell.png';
 import style from './index.module.scss';
 import { Checkbox } from '@material-ui/core';
 import SideBar from '../../Components/Sidebar';
+import SearchBar from './../../Components/SearchBar';
 import Navbar from '../../Components/Navbar';
 
 const TerminatedCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
@@ -76,10 +77,7 @@ const TerminatedCustomers = ({getSelectedCustomer, getAddContract, entityList}) 
                                         <p className={`${style.blue} ${style.activeContractsWidth}`}>LIST OFON-HOLD/ TERMINATED CUSTOMER</p>
                                     </div>
                                     <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                        <div className={style.searchBarStyle}>
-                                            <p>Search here</p>
-                                            <p className={style.marginRight}>&#128269;</p>
-                                        </div>
+                                        <SearchBar />
                                         <img src={Envelope} alt="Envelope" className={style.smallIcons} />
                                         <img src={Bell} alt="Bell" className={style.smallIcons} />
                                         <img src={Filter} alt="Filter" className={style.filterIcon} />

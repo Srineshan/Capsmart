@@ -16,6 +16,7 @@ import AddContractUser from './addContractUser';
 import MenuItem from '@mui/material/MenuItem';
 import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import SuffixList from './../../Components/SuffixList';
 
 import style from './index.module.scss';
 
@@ -558,49 +559,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Suffix*</div>
                       <div className={style.grid3}>
-                          <select
-                              name="class"
-                              id="Class"
-                              value={contractorNameSuffix}
-                              onChange={(e) => setContractorNameSuffix(e.target.value)}
-                              className={style.fullWidth}>
-                                  <option value="0" >
-                                  Select Suffix
-                                  </option>
-                                  <option value="MD">
-                                  MD
-                                  </option>
-                                  <option value="DO">
-                                  DO
-                                  </option>
-                                  <option value="MS">
-                                  MS
-                                  </option>
-                                  <option value="BD">
-                                  BD
-                                  </option>
-                                  <option value="RN">
-                                  RN
-                                  </option>
-                                  <option value="PA">
-                                  PA
-                                  </option>
-                                  <option value="CPA">
-                                  CPA
-                                  </option>
-                                  <option value="PHD">
-                                  PHD
-                                  </option>
-                                  <option value="CISCO">
-                                  CISCO
-                                  </option>
-                                  <option value="CEO">
-                                  CEO
-                                  </option>
-                                  <option value="CFO">
-                                  CFO
-                                  </option>
-                          </select>
+                          <SuffixList value={contractorNameSuffix} onChangeFunc={(value)=>setContractorNameSuffix(value)} className={[style.fullWidth]}/>
                       </div>
                   </div>
 

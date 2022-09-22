@@ -11,6 +11,7 @@ import AddTutorial from './addTutorialDialog';
 import VideoSequencePlayerDialog from './videoSequencePlayer';
 import NewFAQPost from './newFAQPost';
 import RequestFAQPost from './requestFaqPost';
+import SearchBar from './../../Components/SearchBar';
 
 const FAQ = ({getSelectedHelp}) => {
     const [selectedRow, setSelectedRow] = useState('');
@@ -112,7 +113,7 @@ const FAQ = ({getSelectedHelp}) => {
                             <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
                         </div>
                     </div>
-                    
+
                 </div>
                 <div className={style.bigCardGrid}>
                     <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
@@ -123,10 +124,7 @@ const FAQ = ({getSelectedHelp}) => {
                         <div className={style.spaceBetween}>
                             <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
                             <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
-                                    <p>Search here</p>
-                                    <p className={style.marginRight}>&#128269;</p>
-                                </div>
+                                <SearchBar />
                                 {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
                                 <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
                                 <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />
@@ -164,11 +162,11 @@ const FAQ = ({getSelectedHelp}) => {
                             {isSelected && selectedRow === '1' && (
                                 <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`}>
                                     <p className={`${style.answerTextStyle} ${style.padding15}`}>
-                                    Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a 
-                                    varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper. 
+                                    Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
+                                    varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
                                     Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
                                     sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
-                                    ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris 
+                                    ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
                                     malesuada dui sed dui sagittis consectetur.
                                     </p>
                                     <div className={`${style.tableGridFAQ} ${style.fullWidth}`}>
@@ -180,7 +178,7 @@ const FAQ = ({getSelectedHelp}) => {
                                             Lorem Ipsum
                                             </p>
                                         </div>
-                                        <p className={style.smallGreyText}>3 days ago</p>  
+                                        <p className={style.smallGreyText}>3 days ago</p>
                                     </div>
                                     <br />
                                     <div className={`${style.faqAnswerGrid} ${style.fullWidth} ${style.padding15} ${style.reduceTop10}`}>
@@ -201,11 +199,11 @@ const FAQ = ({getSelectedHelp}) => {
                             {isSelected && selectedRow === '2' && (
                                 <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`}>
                                     <p className={`${style.answerTextStyle} ${style.padding15}`}>
-                                    Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a 
-                                    varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper. 
+                                    Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
+                                    varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
                                     Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
                                     sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
-                                    ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris 
+                                    ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
                                     malesuada dui sed dui sagittis consectetur.
                                     </p>
                                     <div className={`${style.tableGridFAQ} ${style.fullWidth}`}>
@@ -217,7 +215,7 @@ const FAQ = ({getSelectedHelp}) => {
                                             Lorem Ipsum
                                             </p>
                                         </div>
-                                        <p className={style.smallGreyText}>3 days ago</p>  
+                                        <p className={style.smallGreyText}>3 days ago</p>
                                     </div>
                                     <br />
                                     <div className={`${style.faqAnswerGrid} ${style.fullWidth} ${style.padding15} ${style.reduceTop10}`}>
@@ -256,7 +254,7 @@ const FAQ = ({getSelectedHelp}) => {
                                             <div className={style.videoSequenceBorder}></div>
                                             <div className={`${style.suggestionDetailsGrid} ${style.fullWidth} ${style.marginTop20}`}>
                                                 <p></p>
-                                                <p className={style.tableDataFontStyle}><strong>FAQ SUGGESTION</strong></p> 
+                                                <p className={style.tableDataFontStyle}><strong>FAQ SUGGESTION</strong></p>
                                                 <p className={style.tableDataFontStyle}>Lorem ipsum dolor sit amet, consectetur Lorem ipsum dolor sit amet, consectetur...</p>
                                                 <div className={style.displayInRow}>
                                                     <button className={style.suggestionWhiteButton}>IGNORE</button>
@@ -341,7 +339,7 @@ const FAQ = ({getSelectedHelp}) => {
                                 <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div className={style.bigCardGrid}>
                         <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
@@ -391,11 +389,11 @@ const FAQ = ({getSelectedHelp}) => {
                                 {isSelected && selectedRow === '1' && (
                                     <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`}>
                                         <p className={`${style.answerTextStyle} ${style.padding15}`}>
-                                        Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a 
-                                        varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper. 
+                                        Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
+                                        varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
                                         Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
                                         sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
-                                        ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris 
+                                        ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
                                         malesuada dui sed dui sagittis consectetur.
                                         </p>
                                         <div className={`${style.tableGridFAQ} ${style.fullWidth}`}>
@@ -407,7 +405,7 @@ const FAQ = ({getSelectedHelp}) => {
                                                 Lorem Ipsum
                                                 </p>
                                             </div>
-                                            <p className={style.smallGreyText}>3 days ago</p>  
+                                            <p className={style.smallGreyText}>3 days ago</p>
                                         </div>
                                         <br />
                                         <div className={`${style.faqAnswerGrid} ${style.fullWidth} ${style.padding15} ${style.reduceTop10}`}>
@@ -428,11 +426,11 @@ const FAQ = ({getSelectedHelp}) => {
                                 {isSelected && selectedRow === '2' && (
                                     <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`}>
                                         <p className={`${style.answerTextStyle} ${style.padding15}`}>
-                                        Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a 
-                                        varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper. 
+                                        Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
+                                        varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
                                         Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
                                         sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
-                                        ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris 
+                                        ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
                                         malesuada dui sed dui sagittis consectetur.
                                         </p>
                                         <div className={`${style.tableGridFAQ} ${style.fullWidth}`}>
@@ -444,7 +442,7 @@ const FAQ = ({getSelectedHelp}) => {
                                                 Lorem Ipsum
                                                 </p>
                                             </div>
-                                            <p className={style.smallGreyText}>3 days ago</p>  
+                                            <p className={style.smallGreyText}>3 days ago</p>
                                         </div>
                                         <br />
                                         <div className={`${style.faqAnswerGrid} ${style.fullWidth} ${style.padding15} ${style.reduceTop10}`}>

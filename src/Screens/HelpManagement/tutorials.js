@@ -11,6 +11,7 @@ import ThumbDownAltOutlinedIcon from '@material-ui/icons/ThumbDownAltOutlined';
 import style from './index.module.scss';
 import AddTutorial from './addTutorialDialog';
 import VideoSequencePlayerDialog from './videoSequencePlayer';
+import SearchBar from './../../Components/SearchBar';
 
 const Tutorials = ({getSelectedHelp}) => {
     const [selectedRow, setSelectedRow] = useState('');
@@ -107,7 +108,7 @@ const Tutorials = ({getSelectedHelp}) => {
                                 <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div className={style.bigCardGrid}>
                         <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
@@ -118,10 +119,7 @@ const Tutorials = ({getSelectedHelp}) => {
                             <div className={style.spaceBetween}>
                                 <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                    <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
-                                        <p>Search here</p>
-                                        <p className={style.marginRight}>&#128269;</p>
-                                    </div>
+                                    <SearchBar />
                                     {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
                                     <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
                                     <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />
@@ -394,7 +392,7 @@ const Tutorials = ({getSelectedHelp}) => {
                                 <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div className={style.bigCardGrid}>
                         <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
@@ -405,10 +403,7 @@ const Tutorials = ({getSelectedHelp}) => {
                             <div className={style.spaceBetween}>
                                 <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                    <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
-                                        <p>Search here</p>
-                                        <p className={style.marginRight}>&#128269;</p>
-                                    </div>
+                                    <SearchBar />
                                     {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
                                     <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
                                     <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />

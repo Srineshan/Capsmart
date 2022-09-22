@@ -11,6 +11,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import PageFooterIcon from './../../images/pageFooterIcon.png';
 import ThreeDot from './../../images/threeDot.png';
 import ContractTiles from './contractTiles';
+import SearchBar from './../../Components/SearchBar';
 
 import style from './index.module.scss';
 import UserCard from './userCard';
@@ -89,10 +90,7 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract, expiredContra
                     <div className={style.spaceBetween}>
                         <div className={`${style.displayInRow} ${style.marginTop20}`}>
                             <p className={`${style.blue} ${style.activeContractsWidth}`}>EXPIRED / TERMINATED</p>
-                            <div className={style.searchBarStyle}>
-                                <p>Search here</p>
-                                <p className={style.marginRight}>&#128269;</p>
-                            </div>
+                            <SearchBar />
                             <img src={File} alt="File" className={style.smallIcons} />
                             <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />
@@ -168,7 +166,7 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract, expiredContra
                     </div>
                 </div>
             </div>
-            <div className={style.spaceBetween}>                        
+            <div className={style.spaceBetween}>
                 <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
                 <p className={style.poweredBy}>© TimeSmart.AI</p>
             </div>

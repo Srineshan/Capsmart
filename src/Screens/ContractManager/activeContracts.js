@@ -22,6 +22,7 @@ import ContractExtension from './../../images/contractExtension.png';
 import ProgressBar from "@ramonak/react-progress-bar";
 import ContractExtensionDialog from './contractExtensionDialog';
 import ContractTiles from './contractTiles';
+import SearchBar from './../../Components/SearchBar';
 import {format} from 'date-fns';
 
 import style from './index.module.scss';
@@ -120,10 +121,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                     <div className={style.spaceBetween}>
                         <div className={`${style.displayInRow} ${style.marginTop20}`}>
                             <p className={`${style.blue} ${style.activeContractsWidth}`}>ACTIVE CONTRACTS</p>
-                            <div className={style.searchBarStyle}>
-                                <p>Search here</p>
-                                <p className={style.marginRight}>&#128269;</p>
-                            </div>
+                            <SearchBar />
                             <img src={File} alt="File" className={style.smallIcons} />
                             <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />

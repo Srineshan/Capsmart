@@ -16,6 +16,7 @@ import ThreeDot from './../../images/threeDot.png';
 import ContractTiles from './contractTiles';
 import {PUT} from './../dataSaver';
 import {SuccessToaster,ErrorToaster} from './../../utils/toaster';
+import SearchBar from './../../Components/SearchBar';
 
 import style from './index.module.scss';
 import UserCard from './userCard';
@@ -117,10 +118,7 @@ const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivation
                     <div className={style.spaceBetween}>
                         <div className={`${style.displayInRow} ${style.marginTop20}`}>
                             <p className={`${style.blue} ${style.activeContractsWidth}`}>DRAFT CONTRACTS</p>
-                            <div className={style.searchBarStyle}>
-                                <p>Search here</p>
-                                <p className={style.marginRight}>&#128269;</p>
-                            </div>
+                            <SearchBar />
                             <img src={File} alt="File" className={style.smallIcons} />
                             <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />
