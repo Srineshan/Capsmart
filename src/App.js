@@ -13,7 +13,7 @@ import AppSubscription from './Screens/SuperAdminDashboard/appSubscription';
 import SetupComplete from './Screens/SuperAdminDashboard/setupComplete';
 import OTPPage from './Screens/SuperAdminDashboard/otpPage';
 import WelcomeToDashboard from './Screens/SuperAdminDashboard/welcomeToDashboard';
-import './App.css'
+import './App.css';
 import history from './routes/history';
 import EntryPage from './Screens';
 import Users from './Screens/UserManagement';
@@ -43,7 +43,7 @@ import Thankyou from './Screens/SuperAdminDashboard/thankyou';
 import ReportType from './Screens/Reports/reportType';
 import ReportTypeOverview from './Screens/Reports/reportTypeOverview';
 import TenetHealthLogo from './images/Tenet_Health_logo.png';
-import Sanmateo from './images/sanmateo.jpg'
+import Sanmateo from './images/sanmateo.jpg';
 
 const App = ({props}) => {
   const [accessToken,setAccessToken] = useState(Auth());

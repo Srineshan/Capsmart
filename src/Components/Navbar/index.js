@@ -40,6 +40,8 @@ const Navbar = () => {
       setLogo(data?.logo?.file?.fileURL);
     }
 
+    console.log('logo',logo);
+
     function useMenuHide(ref) {
         useEffect(() => {
           function handleClickOutside(event) {

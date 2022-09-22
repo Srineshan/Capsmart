@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Checkbox, Icon } from '@blueprintjs/core';
-import UserLogo from './../../images/userLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import ChevronRight from './../../images/chevronRight.png';
@@ -21,7 +21,7 @@ const Tasks = () => {
                     <div className={style.cardStyle}>
                         <div className={`${style.spaceBetween} ${style.alignCenter}`}>
                             <div className={style.displayInRow}>
-                                <img src={UserLogo} className={style.userLogo} />
+                                <img src={DoctorAnime} className={style.userLogo} />
                                 <div className={`${style.marginLeft10} ${style.marginTop}`}>
                                     <div className={style.userNameStyle}>
                                         Hi, {user?.userName}
