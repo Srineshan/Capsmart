@@ -26,6 +26,7 @@ import {format} from 'date-fns';
 
 import style from './index.module.scss';
 import UserCard from './userCard';
+import ContractTilesNew from './tileDesign2';
 
 const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, activeContractsLength, draftContractsLength, upcomingContractsLength, expiredContractsLength}) => {
     const [showOptions, setShowOptions] = useState(false);
@@ -66,7 +67,8 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
         <div className={style.margin20}>
             <div className={`${style.bigCardGrid}`}>
                 <UserCard />
-                <ContractTiles getSelectedContract={getSelectedContract} selectedContract={selectedContract}
+                {/* <ContractTilesNew */}
+                <ContractTilesNew getSelectedContract={getSelectedContract} selectedContract={selectedContract}
                 activeContractsLength={activeContractsLength}
                 draftContractsLength={draftContractsLength}
                 upcomingContractsLength={upcomingContractsLength}

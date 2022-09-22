@@ -174,7 +174,7 @@ body{
 .headingCountForContracts{
     color: #52575D;
     font-size: 50px;
-    margin-top: -20px;
+    // margin-top: -20px;
     font-weight: bold;
     @include breakpoint(md) {
         font-size: 40px;
@@ -1193,6 +1193,14 @@ select {
     margin-top: -10px;
 }
 
+.reduceTop35{
+    margin-top: -35px;
+}
+
+.reduceTop20{
+    margin-top: -20px;
+}
+
 .reduceTop{
     margin-top: -5px;
 }
@@ -1875,3 +1883,39 @@ select {
   overflow-x: auto;
   white-space: nowrap;
 }
+
+.countDesign{
+    border-radius: 8px;
+    height: 20px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+}
+
+.orangeCountStyle{
+   color: #ffa500;
+   background-color: #ffedcc;
+}
+
+.redCountStyle{
+    color: #FF6562;
+    background-color: #ffcdcc;
+ }
+
+ .selectedOrangeCountStyle{
+    background-color: #ffa500;
+    color: white;
+ }
+ 
+ .selectedRedCountStyle{
+    background-color: #FF6562;
+    color: white;
+  }
+
+ .verticalAlignCenter{
+    display: flex;
+    align-items: center;
+    height: 100%;
+ }
