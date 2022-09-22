@@ -11,7 +11,6 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useParams } from 'react-router-dom';
 import UploadImg from './../../images/uploadImg.png';
-import EntityStepper from './entityStepper';
 import {Auth} from './../../utils/auth';
 import {saveEntity,GET,PUT,POST,role,TenantID,isSuperAdminAccess} from './../dataSaver';
 import style from './index.module.scss';
@@ -112,11 +111,13 @@ const EntitySetup = () => {
     };
 
     const onSelect = (selectedItem) => {
-      setItem(selectedItem);
-      let temp = selectDepartments;
-      temp.push(selectedItem);
-      setSelectDepartments(temp);
-      setIsUpdated(true);
+      if(!selectDepartments?.map(data=>data?.id)?.includes(selectedItem?.id)){
+        setItem(selectedItem);
+        let temp = selectDepartments;
+        temp.push(selectedItem);
+        setSelectDepartments(temp);
+        setIsUpdated(true);
+      }
     }
 
       const handleTagsRemove = (tags, index) => {
@@ -367,7 +368,7 @@ const EntitySetup = () => {
       <>
         {activeStep === "entitySetup" ? (
         <div className={style.entitySetupBackground}>
-          <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
+          <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={()=>navigate('/user')}/>
           <div className={style.stepperMargin}>
               <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                   <div onClick={() => getActiveStep('entitySetup')}>

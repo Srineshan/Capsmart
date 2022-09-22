@@ -8,6 +8,7 @@ import Filter from './../../images/filter.png';
 import GreenPage from './../../images/greenPage.png';
 import Tooltip from '@mui/material/Tooltip';
 import AddReleaseNotes from './addReleaseNotes';
+import SearchBar from './../../Components/SearchBar';
 import style from './index.module.scss';
 
 const ReleaseNotes = ({getSelectedHelp}) => {
@@ -105,7 +106,7 @@ const ReleaseNotes = ({getSelectedHelp}) => {
                                 <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div className={style.bigCardGrid}>
                         <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
@@ -116,10 +117,7 @@ const ReleaseNotes = ({getSelectedHelp}) => {
                             <div className={style.spaceBetween}>
                                 <p className={`${style.activeContractsWidth}`} onClick={()=> setReleaseNote2(!releaseNote2)}>FEB 16, 2022 16:45 EST</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                    <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
-                                        <p>Search here</p>
-                                        <p className={style.marginRight}>&#128269;</p>
-                                    </div>
+                                    <SearchBar />
                                     {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
                                     <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
                                     <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />
@@ -430,7 +428,7 @@ const ReleaseNotes = ({getSelectedHelp}) => {
                                                             <Switch checked={true}  size="small" />
                                                         }
                                                         className={`${style.switchFontStyle}`}
-                                                        label={'YES'}                        
+                                                        label={'YES'}
                                                     />
                                                 </div>
                                             </div>
@@ -546,7 +544,7 @@ const ReleaseNotes = ({getSelectedHelp}) => {
                                 <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div className={style.bigCardGrid}>
                         <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
@@ -557,10 +555,7 @@ const ReleaseNotes = ({getSelectedHelp}) => {
                             <div className={style.spaceBetween}>
                                 <p className={`${style.activeContractsWidth}`} onClick={()=> setReleaseNote2(!releaseNote2)}>FEB 16, 2022 16:45 EST</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                    <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
-                                        <p>Search here</p>
-                                        <p className={style.marginRight}>&#128269;</p>
-                                    </div>
+                                    <SearchBar />
                                     {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
                                     <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
                                     <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />
@@ -589,9 +584,9 @@ const ReleaseNotes = ({getSelectedHelp}) => {
                                             Lorem Ipsum
                                             </p>
                                         </div>
-                                        <p className={style.tableDataFontStyle}>Lorem ipsum dolor sit amet Lorem ipsum dolor 
-                                        sit amet,Lorem sit amet,Lorem ipsum dolor sit amet,Lorem ipsum dolor sit amet,, dolor 
-                                        sit amet,Lorem ipsum dolor sit amet,Lorem ipsum dolor sit ipsum dolor sit amet,Lorem ipsum 
+                                        <p className={style.tableDataFontStyle}>Lorem ipsum dolor sit amet Lorem ipsum dolor
+                                        sit amet,Lorem sit amet,Lorem ipsum dolor sit amet,Lorem ipsum dolor sit amet,, dolor
+                                        sit amet,Lorem ipsum dolor sit amet,Lorem ipsum dolor sit ipsum dolor sit amet,Lorem ipsum
                                         dolor sit amet,</p>
                                         <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
                                         <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
@@ -606,9 +601,9 @@ const ReleaseNotes = ({getSelectedHelp}) => {
                                             Lorem Ipsum
                                             </p>
                                         </div>
-                                        <p className={style.tableDataFontStyle}>Lorem ipsum dolor sit amet Lorem ipsum dolor 
-                                        sit amet,Lorem sit amet,Lorem ipsum dolor sit amet,Lorem ipsum dolor sit amet,, dolor 
-                                        sit amet,Lorem ipsum dolor sit amet,Lorem ipsum dolor sit ipsum dolor sit amet,Lorem ipsum 
+                                        <p className={style.tableDataFontStyle}>Lorem ipsum dolor sit amet Lorem ipsum dolor
+                                        sit amet,Lorem sit amet,Lorem ipsum dolor sit amet,Lorem ipsum dolor sit amet,, dolor
+                                        sit amet,Lorem ipsum dolor sit amet,Lorem ipsum dolor sit ipsum dolor sit amet,Lorem ipsum
                                         dolor sit amet,</p>
                                         <p className={style.tableDataFontStyle}>07/19/2019 22:45 EST</p>
                                         <p className={style.tableDataFontStyle}>Sanjaya KAI</p>
@@ -853,7 +848,7 @@ const ReleaseNotes = ({getSelectedHelp}) => {
                                                             <Switch checked={true}  size="small" />
                                                         }
                                                         className={`${style.switchFontStyle}`}
-                                                        label={'YES'}                        
+                                                        label={'YES'}
                                                     />
                                                 </div>
                                             </div>
