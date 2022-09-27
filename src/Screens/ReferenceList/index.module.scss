@@ -1374,6 +1374,20 @@
     border-radius: 10px;
 }
 
+.boardCertificationSideRows2 {
+    background: #a097f5  0% 0% no-repeat padding-box;
+    font-weight: normal;
+    height: 50px;
+    width: 92.5%;
+    border-radius: 6px;
+    margin-top: 1%;
+    margin-left: 2%;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 7% 84% 5%;
+}
+
+
 .boardCertificationSideRows1 {
     background: #a097f5  0% 0% no-repeat padding-box;
     font-weight: normal;
@@ -1476,7 +1490,7 @@
 
 .TextStyle4 {
     text-align: left;
-    font: normal normal normal 14px/20px Proxima Nova;
+    font: normal normal normal 14px/28px Proxima Nova;
     letter-spacing: 0px;
     color: #050505;
     margin-top: 5px;
@@ -1726,6 +1740,24 @@
     padding: 10px;
 }
 
+.customersAdminInnerRowsStyle3 {
+    font-weight: normal;
+    min-height: 50px;
+    height: 50px;
+    width: 87%;
+    border: 0.4000000059604645px solid #887ee7af;
+    border-radius: 6px;
+    opacity: 0.75;
+    border-radius: 6px;
+    margin-top: 3px;
+    margin-left: 8%;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 10% 50% 40%;
+    padding: 10px;
+}
+
+
 
 .holidayInnerRowsStyle1 {
     font-weight: normal;
@@ -1767,6 +1799,21 @@
     font-weight: normal;
     height: 50px;
     width: 87%;
+    border-radius: 6px;
+    margin-top: 1%;
+    margin-left: 5%;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 7% 85% 8%;
+}
+
+.customersAdminSideRows2 {
+    background: #CECAF5 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #c3bff3;
+    opacity: 0.88;
+    font-weight: normal;
+    height: 50px;
+    width: 90%;
     border-radius: 6px;
     margin-top: 1%;
     margin-left: 5%;
@@ -1964,4 +2011,4 @@
       border-radius: 10px;
     }
   }
-.customersAdminInnerRowsStyle1 {}
+.TextStyle4 {}

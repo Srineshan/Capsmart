@@ -46,6 +46,7 @@ import ContractServiceProviderBySite from './Screens/ReferenceList/contractServi
 import ContractServiceProviderForMultiSite from './Screens/ReferenceList/contractServiceProviderMultiSite';
 import FunctionalTitleForCustomer from './Screens/ReferenceList/functionalTitleForCustomer';
 import FunctionalTitleMultiSitesForCustomer from './Screens/ReferenceList/functionalTitleMultiSitesForCustomer';
+import TerminationReasonForCustomer from './Screens/ReferenceList/contractTerminationReasonForCustomer';
 
 import SuperAdminDashboard from './Screens/ReferenceList/superAdminDashboard';
 import ClientAdminDashboard from './Screens/ReferenceList/customerAdminDashboard';
@@ -123,6 +124,7 @@ const App = ({props}) => {
           <Route  path="/referenceList/contractServiceProviderMultiSite" element={<ContractServiceProviderForMultiSite />} />
           <Route  path="/referenceList/functionalTitleForCustomer" element={<FunctionalTitleForCustomer />} />
           <Route  path="/referenceList/functionalTitleMultiSitesForCustomer" element={<FunctionalTitleMultiSitesForCustomer />} />
+          <Route  path="/referenceList/contractTerminationReasonForCustomer" element={<TerminationReasonForCustomer />} />
           
           <Route  path="/thankyou" element={<Thankyou />} />
           </Routes>

@@ -75,13 +75,14 @@ const ClientAdminDashboard = () => {
                                             </div>
                                         </div>
                                         </Link>
-                                        <div className={style.dashboardCardStyle}>
+                                       <Link to='/referenceList/contractTerminationReasonForCustomer'className={style.linkStyle}> <div className={style.dashboardCardStyle}>
                                             <h5 className={`${style.headingForReferenceList}`}>CONTRACT TERMINATION PREASONS BY ENTITY TYPE</h5>
                                             <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                 <span className={style.dashboardCardColorOption1}>STANDARD LIST IN USE</span>
                                                 <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
                                             </div>
                                         </div>
+                                        </Link>
                                         <div className={style.dashboardCardStyle}>
                                             <h5 className={`${style.headingForReferenceList}`}>PROOF OF DOCUMENTATION BY ENTITY TYPE</h5>
                                             <div className={`${style.optionsStyle} ${style.displayInCol}`}>
