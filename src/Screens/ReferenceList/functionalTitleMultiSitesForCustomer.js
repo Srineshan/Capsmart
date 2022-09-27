@@ -1,4 +1,4 @@
-import React, { Fragment,useState } from "react";
+import React, { Fragment, useState } from "react";
 import ReferenceListNavbar from "../../Components/ReferenceListNavbar";
 import SideBar from "../../Components/Sidebar";
 import style from './index.module.scss';
@@ -17,7 +17,9 @@ const FunctionalTitleMultiSitesForCustomer = () => {
     const [isSelected, setIsSelected] = useState(false);
     return (
         <Fragment>
+
             <ReferenceListNavbar />
+
             <div className={style.margin20}>
                 <div className={style.bigCardGrid}>
                     <SideBar />
@@ -30,7 +32,7 @@ const FunctionalTitleMultiSitesForCustomer = () => {
                                 UPDATED ON FEB 16, 2022 16:45 EST
                             </div>
                             <div className={style.crossStyle}>
-                            <Link to="/Screens/ReferenceList/customerAdminDashboard" className={style.linkStyle}> <img src={CrossPink} alt="OpenFolder" className={`${style.colorFileStyle2} ${style.marginLeft5}`} /> </Link>
+                                <Link to="/Screens/ReferenceList/customerAdminDashboard" className={style.linkStyle}> <img src={CrossPink} alt="OpenFolder" className={`${style.colorFileStyle2} ${style.marginLeft5}`} /> </Link>
                             </div>
                         </div>
                         <div className={style.marginTop35}>
@@ -54,23 +56,23 @@ const FunctionalTitleMultiSitesForCustomer = () => {
                                                     <p className={`${style.TextStyle2} ${style.marginLeft5}`}>Physician / Doctor</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                    <Checkbox checked/>
+                                                    <Checkbox checked />
                                                     <p className={`${style.TextStyle4} ${style.marginLeft5}`}>Anesthesiology</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground3} ${style.displayInRow}`}>
-                                                    <Checkbox checked/>
+                                                    <Checkbox checked />
                                                     <p className={`${style.TextStyle4} ${style.marginLeft5}`}>Cardiologist</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                    <Checkbox checked/>
+                                                    <Checkbox checked />
                                                     <p className={`${style.TextStyle4} ${style.marginLeft5}`}>Chief Medical Information Officer</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground3} ${style.displayInRow}`}>
-                                                    <Checkbox checked/>
+                                                    <Checkbox checked />
                                                     <p className={`${style.TextStyle4} ${style.marginLeft5}`}>Chief Medical Officer</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                    <Checkbox checked/>
+                                                    <Checkbox checked />
                                                     <p className={`${style.TextStyle4} ${style.marginLeft5}`}>Chief of Staff</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}>
