@@ -1,0 +1,58 @@
+{
+    "Titlebar": [
+        {
+            "id": 1,
+            "name": "HEALTHCARE",
+            "SkillSet": [
+                {
+                    "Name": "Java",
+                    "Hot": true
+                },
+                {
+                    "Name": "Java",
+                    "Hot": true
+                },
+                {
+                    "Name": "Java",
+                    "Hot": true
+                }
+               
+               
+            ]
+        },
+        {
+            "id": 2,
+            "name": "FINANCE",
+            "SkillSet": [
+                {
+                    "Name": "Java",
+                    "Hot": true
+                },
+                {
+                    "Name": "C#",
+                    "Hot": false
+                }
+              
+            ]
+        },
+        {
+            "id": 3,
+            "name": "GOVERNMENT",
+            "SkillSet": [
+                {
+                    "Name": "Java",
+                    "Hot": true
+                },
+                {
+                    "Name": "C#",
+                    "Hot": false
+                },
+                {
+                    "Name": "Python",
+                    "Hot": false
+                }
+               
+            ]
+        }
+    ]
+}
