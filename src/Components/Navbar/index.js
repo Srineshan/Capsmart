@@ -107,10 +107,10 @@ const Navbar = () => {
                   // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
                 }
                 <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
-                {/* <div className={style.menuStyle}>
-                    <p>HOME-LOG ACTIVITY</p>
-                </div>
                 <div className={style.menuStyle}>
+                    <p>HOME</p>
+                </div>
+                {/* <div className={style.menuStyle}>
                     <p>TIMESHEETS</p>
                 </div> */}
                 {isContractManager && (

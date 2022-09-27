@@ -96,6 +96,8 @@ const Contracts = () => {
       setMethod(value);
     }
 
+    console.log(extensionDialog)
+
     useEffect(()=>{
         setDraftContracts(contracts?.filter(data => data?.contractStatus === "DRAFT" && data?.status !== "ACTIVATE")?.map(data => data));
         setActiveContracts(contracts?.filter(data => data?.contractStatus === "ACTIVE" || data?.status === "ACTIVATE")?.map(data => data));

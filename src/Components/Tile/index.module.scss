@@ -10,8 +10,21 @@
     padding: 15px;
 }
 
+.reduceTop20{
+    margin-top: -20px;
+}
+
+.reduceTop10{
+    margin-top: -10px;
+}
+
+.reduceTop5{
+    margin-top: -5px;
+}
+
 .selectedContractBackground{
-    background-color: #D8D5FD;
+    background-color: #e8e7fe;
+    border: 1px solid #d1cefd;
 }
 
 .headingForContracts{
@@ -30,6 +43,11 @@
 .spaceBetween{
     display: flex;
     justify-content: space-between;
+}
+
+.grid2{
+    display: grid;
+    grid-template-columns: 30% 70%;
 }
 
 .displayInCol{
@@ -52,12 +70,9 @@
 
 .headingCountForContracts{
     color: #52575D;
-    font-size: 50px;
-    margin-top: -20px;
+    font-size: 30px;
     font-weight: bold;
-    @include breakpoint(md) {
-        font-size: 40px;
-    }
+    text-align: left;
 }
 
 .green{
@@ -87,3 +102,39 @@
         }
     }
 }
+
+.countDesign{
+    border-radius: 8px;
+    height: 20px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+}
+
+.orangeCountStyle{
+   color: #ffa500;
+   background-color: #ffedcc;
+}
+
+.redCountStyle{
+    color: #FF6562;
+    background-color: #ffcdcc;
+ }
+
+ .selectedOrangeCountStyle{
+    background-color: #ffa500;
+    color: white;
+ }
+ 
+ .selectedRedCountStyle{
+    background-color: #FF6562;
+    color: white;
+  }
+
+ .verticalAlignCenter{
+    display: flex;
+    align-items: center;
+    height: 100%;
+ }
