@@ -178,11 +178,13 @@ const SiteInformation = ({getActiveStep}) => {
   }
 
     const onSelect = (selectedItem) => {
-      setItem(selectedItem);
-      let temp = selectedDepartment;
-      temp.push(selectedItem);
-      setSelectedDepartment(temp);
-      setSelectDepartment('');
+      if(!selectedDepartment?.map(data=>data?.id)?.includes(selectedItem?.id)){
+        setItem(selectedItem);
+        let temp = selectedDepartment;
+        temp.push(selectedItem);
+        setSelectedDepartment(temp);
+        setSelectDepartment('');
+      }
     }
 
     const handleTagsAdd = values => {
@@ -237,7 +239,7 @@ const SiteInformation = ({getActiveStep}) => {
 
     return(
         <div className={style.entitySetupBackground}>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={()=>navigate('/user')}/>
             <div className={style.stepperMargin}>
                 <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>

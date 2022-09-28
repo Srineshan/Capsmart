@@ -8,6 +8,7 @@ import Filter from './../../images/filter.png';
 import Tooltip from '@mui/material/Tooltip';
 import style from './index.module.scss';
 import AddTicket from './addTicket';
+import SearchBar from './../../Components/SearchBar';
 import AddFeedbackTicket from './addFeedackTicket';
 
 const Tickets = ({getSelectedHelp}) => {
@@ -111,7 +112,7 @@ const Tickets = ({getSelectedHelp}) => {
                                 <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div className={style.bigCardGrid}>
                         <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
@@ -122,10 +123,7 @@ const Tickets = ({getSelectedHelp}) => {
                             <div className={style.spaceBetween}>
                                 <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                    <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
-                                        <p>Search here</p>
-                                        <p className={style.marginRight}>&#128269;</p>
-                                    </div>
+                                    <SearchBar />
                                     {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
                                     <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
                                     <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />
@@ -219,7 +217,7 @@ const Tickets = ({getSelectedHelp}) => {
                                     <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                         <Tooltip title="New" arrow>
                                             <div className={`${style.blueDotStyle}`}></div>
-                                        </Tooltip>                               
+                                        </Tooltip>
                                         <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
                                             Tckt006
                                         </p>
@@ -445,7 +443,7 @@ const Tickets = ({getSelectedHelp}) => {
                                 <p className={`${style.headingCountForContracts} ${style.marginRight20}`}>2</p>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div className={style.bigCardGrid}>
                         <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
@@ -456,10 +454,7 @@ const Tickets = ({getSelectedHelp}) => {
                             <div className={style.spaceBetween}>
                                 <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                    <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
-                                        <p>Search here</p>
-                                        <p className={style.marginRight}>&#128269;</p>
-                                    </div>
+                                    <SearchBar />
                                     {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
                                     <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
                                     <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />
@@ -552,7 +547,7 @@ const Tickets = ({getSelectedHelp}) => {
                                     <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                         <Tooltip title="New" arrow>
                                             <div className={`${style.blueDotStyle}`}></div>
-                                        </Tooltip>                               
+                                        </Tooltip>
                                         <p className={`${style.tableDataFontStyle} ${style.displayInRow}`}>
                                             Tckt006
                                         </p>
@@ -835,7 +830,7 @@ const Tickets = ({getSelectedHelp}) => {
                                                         <Switch checked={true}  size="small" />
                                                     }
                                                     className={`${style.switchFontStyle}`}
-                                                    label={'YES'}                        
+                                                    label={'YES'}
                                                 />
                                             </div>
                                         </div>

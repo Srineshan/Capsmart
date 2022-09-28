@@ -16,6 +16,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import style from './index.module.scss';
 import { Checkbox, CircularProgress } from '@material-ui/core';
 import SideBar from '../../Components/Sidebar';
+import SearchBar from './../../Components/SearchBar';
 import Navbar from '../../Components/Navbar';
 
 const ActiveCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
@@ -88,10 +89,7 @@ const ActiveCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
                                         <p className={`${style.blue} ${style.activeContractsWidth}`}>LIST OF ACTIVE CUSTOMERS</p>
                                     </div>
                                     <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                        <div className={style.searchBarStyle}>
-                                            <p>Search here</p>
-                                            <p className={style.marginRight}>&#128269;</p>
-                                        </div>
+                                        <SearchBar />
                                         <img src={Envelope} alt="Envelope" className={style.smallIcons} />
                                         <img src={Bell} alt="Bell" className={style.smallIcons} />
                                         <img src={Filter} alt="Filter" className={style.filterIcon} />

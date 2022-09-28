@@ -11,6 +11,7 @@ import AddTutorial from './addTutorialDialog';
 import VideoSequencePlayerDialog from './videoSequencePlayer';
 import NewFAQPost from './newFAQPost';
 import RequestFAQPost from './requestFaqPost';
+import SearchBar from './../../Components/SearchBar';
 
 const FAQ = ({getSelectedHelp}) => {
     const [selectedRow, setSelectedRow] = useState('');
@@ -123,10 +124,7 @@ const FAQ = ({getSelectedHelp}) => {
                         <div className={style.spaceBetween}>
                             <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
                             <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
-                                    <p>Search here</p>
-                                    <p className={style.marginRight}>&#128269;</p>
-                                </div>
+                                <SearchBar />
                                 {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
                                 <img src={CancelUser} alt="CancelUser" className={style.smallIcons} onClick={()=> getEditUserDialog(true)} />
                                 <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />

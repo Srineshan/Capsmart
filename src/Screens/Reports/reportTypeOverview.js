@@ -25,7 +25,7 @@ import ApexLineChart from './chart-data/lineChart';
 
 import style from './index.module.scss';
 import ApexBoxChart from './chart-data/boxChart';
-import ReportsTable from '../../ReportsTable';
+import ReportsTable from '../../Components/ReportsTable';
 
 const WatermarkWrapper = styled.div`
   text-align: center;

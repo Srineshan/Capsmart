@@ -30,7 +30,7 @@ import Papa from 'papaparse';
 import axios from 'axios';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SaveInProgress from './saveInProgressAlert';
-import {Suffix} from './../../utils/dropDownValues';
+import SuffixList from './../../Components/SuffixList';
 
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
@@ -203,10 +203,12 @@ const SiteUsers = ({getActiveStep}) => {
 
     console.log('items',selectedSites,entitySite);
       const onSelect = (selectedItem) => {
-        setItem(selectedItem)
-        let temp = selectedSites;
-        temp.push(selectedItem);
-        setSelectedSites(temp);
+        if(!selectedSites?.map(data=>data?.id)?.includes(selectedItem?.id)){
+          setItem(selectedItem)
+          let temp = selectedSites;
+          temp.push(selectedItem);
+          setSelectedSites(temp);
+        }
       }
 
 
@@ -359,9 +361,15 @@ const SiteUsers = ({getActiveStep}) => {
     setShowSaveInProgress(value);
   }
 
+  const onSuffixChange = (value) => {
+    setUserData({...userData, suffix:value});
+  }
+
+  console.log('suffix',userData?.suffix);
+
     return(
         <div className={style.entitySetupBackground}>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={()=>navigate('/user')}/>
             <div className={style.stepperMargin}>
                 <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>
@@ -464,56 +472,11 @@ const SiteUsers = ({getActiveStep}) => {
                                     <div className={`${style.displayInRow}`}>
                                         <InputGroup placeholder="First Name" className={`${style.fourFieldWidth}`} value={userData.firstName} onChange={(e)=>handleUserData('firstName',e.target.value)}/>
                                         <InputGroup placeholder="LAST NAME" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={userData.lastName} onChange={(e)=>handleUserData('lastName',e.target.value)}/>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            value={userData.suffix}
-                                            className={`${style.fourFieldWidth} ${style.marginLeft20}`}
-                                            onChange={(e)=>handleUserData('suffix',e.target.value)}>
-                                                <option value="0" >
-                                                Select Suffix
-                                                </option>
-                                                {
-                                                  suffixList?.map(data=>(
-                                                    <option value={data?.suffix} >
-                                                    {data.suffix}
-                                                    </option>
-                                                  ))
-                                                }
-                                        </select>
+                                        <SuffixList value={userData?.suffix} onChangeFunc={onSuffixChange} className={[style.fourFieldWidth, style.marginLeft20]}/>
                                         <p className={`${style.fourFieldWidth}`}></p>
                                     </div>
                                 </div>
-                                {
-                                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                  //     <div className={style.extentionLableStyle}>Functional Title *</div>
-                                  //     <select
-                                  //         name="class"
-                                  //         id="Class"
-                                  //         className={style.fullWidth}
-                                  //         value={userData.title}
-                                  //         onChange={(e)=>handleUserData('title',e.target.value)}>
-                                  //             <option value="Select" >
-                                  //             Select
-                                  //             </option>
-                                  //             <option value="Anesthesiologist" >
-                                  //             Anesthesiologist
-                                  //             </option>
-                                  //             <option value="Cardiologist" >
-                                  //             Cardiologist
-                                  //             </option>
-                                  //             <option value="Chief Medical Information" >
-                                  //             Chief Medical Information
-                                  //             </option>
-                                  //             <option value="Chief Medical Officer" >
-                                  //             Chief Medical Officer
-                                  //             </option>
-                                  //             <option value="Chief of Staff" >
-                                  //             Chief of Staff
-                                  //             </option>
-                                  //     </select>
-                                  // </div>
-                                }
+
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Email Address*</div>
                                     <InputGroup placeholder="Email" className={`${style.twoFieldWidth}`} value={userData.email} onChange={(e)=>handleUserData('email',e.target.value)}/>
@@ -652,7 +615,7 @@ const SiteUsers = ({getActiveStep}) => {
                           user?.map(data=>(
                             <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                 <p className={style.tableDataFontStyle}>{data?.name?.firstName}{' '}{data?.name?.lastName}</p>
-                                <p className={style.tableDataFontStyle}>{data?.name?.suffix}</p>
+                                <p className={style.tableDataFontStyle}>{suffixList?.filter(suffix=>suffix?.id === data?.name?.suffix)?.map(data=>data?.suffix)[0]}</p>
                                 <p className={style.tableDataFontStyle}>{data?.title?.title}</p>
                                 <p className={style.tableDataFontStyle}>{data?.sites?.sites?.length || 0}</p>
                                 <p className={style.tableDataFontStyle}>{data?.roles?.map(data=>data?.roleName).includes('Entity Sys Admin') ?'YES':'NO'}</p>

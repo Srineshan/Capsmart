@@ -5,6 +5,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
 import {GET, PUT, POST, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import SuffixList from './../../Components/SuffixList';
 
 import style from './index.module.scss';
 
@@ -411,48 +412,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Suffix*</div>
                     <div className={style.grid3}>
-                        <select
-                            name="class"
-                            id="Class"
-                            className={style.fullWidth}
-                            onChange={(e)=>handleUserData('suffix',e.target.value)}>
-                                <option value="0" >
-                                Select Suffix
-                                </option>
-                                <option value="MD">
-                                MD
-                                </option>
-                                <option value="DO">
-                                DO
-                                </option>
-                                <option value="MS">
-                                MS
-                                </option>
-                                <option value="BD">
-                                BD
-                                </option>
-                                <option value="RN">
-                                RN
-                                </option>
-                                <option value="PA">
-                                PA
-                                </option>
-                                <option value="CPA">
-                                CPA
-                                </option>
-                                <option value="PHD">
-                                PHD
-                                </option>
-                                <option value="CISCO">
-                                CISCO
-                                </option>
-                                <option value="CEO">
-                                CEO
-                                </option>
-                                <option value="CFO">
-                                CFO
-                                </option>
-                        </select>
+                        <SuffixList value={userDetails?.suffix} onChangeFunc={(value)=>handleUserData('suffix',value)} className={[style.fullWidth]}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
