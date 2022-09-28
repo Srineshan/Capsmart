@@ -4,7 +4,7 @@
     height: 105px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
-    border-radius: 16px;
+    border-radius: 10px;
     opacity: 1;
     cursor: pointer;
     padding: 15px;
@@ -91,9 +91,14 @@
     color: #FEC106;
 }
 
+.purple{
+    color: #7165E3;
+}
+
 .optionsStyle{
     margin: -3px 0px 0 0px;
     text-align: left;
+    float: right !important;
     font: normal normal bold 12px/15px Montserrat;
     color: #52575D;
     span{
@@ -123,8 +128,18 @@
     background-color: #ffcdcc;
  }
 
+ .greenCountStyle{
+    color: #14B15A;
+    background-color: #d1fae3;
+ }
+
  .selectedOrangeCountStyle{
     background-color: #ffa500;
+    color: white;
+ }
+
+ .selectedGreenCountStyle{
+    background-color: #14B15A;
     color: white;
  }
  

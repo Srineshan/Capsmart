@@ -107,9 +107,11 @@ const Navbar = () => {
                   // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
                 }
                 <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
-                <div className={style.menuStyle}>
-                    <p>HOME</p>
-                </div>
+                <Link to={'/entitySitePortal/dataUpload'} className={style.noFontStyle}>
+                    <div className={style.menuStyle}>
+                        <p>HOME</p>
+                    </div>
+                </Link>
                 {/* <div className={style.menuStyle}>
                     <p>TIMESHEETS</p>
                 </div> */}
