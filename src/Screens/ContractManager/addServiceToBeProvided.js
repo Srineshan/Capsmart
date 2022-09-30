@@ -13,12 +13,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const [activityType, setActivityType] = useState('OutPatient Surgery Clinic Session');
     const [activityContractedFor, setActivityContractedFor] = useState('');
     const [isDesignatedSpecificContractor, setIsDesignatedSpecificContractor] = useState(true);
-    const [addOnService, setAddOnService] = useState('Clinic Session');
-    const [outpatientClinicalSessionRate, setOutpatientClinicalSessionRate] = useState(0);
-    const [outpatientClinicalSessionDuration, setOutpatientClinicalSessionDuration] = useState(0);
+    const [addOnService, setAddOnService] = useState('');
+    const [sessionRate, setSessionRate] = useState(0);
+    const [sessionDuration, setSessionDuration] = useState(0);
     const [fractureClinicalSessionRate, setFractureClinicalSessionRate] = useState(0);
     const [fractureClinicalSessionDuration, setFractureClinicalSessionDuration] = useState(0);
-    const [clinicalSessionExtension, setClinicalSessionExtension] = useState(0);
+    const [sessionExtension, setSessionExtension] = useState(0);
     const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
     const [workingPeriodTo, setWorkingPeriodTo] = useState('');
     const [contractedServiceProvider, setContractedServiceProvider] = useState('');
@@ -70,8 +70,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
     }, [selectContractInfo, users])
 
-    console.log(selectedUser, users?.[0]?.id)
-
     const getContractedServices = async() => {
         const {data: contractedServices} = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
         setContractedServices(contractedServices?.contractedServices)
@@ -119,6 +117,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             {'additionalCompensationTitle':additionalCompensationTitle}),
                             ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Department Oversight Role & Responsibility" &&
                             {'additionalCompensationPerMonth': additionalCompensationPerMonth}),
+                            // ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Administrative / Miscellaneous Services" &&
+                            // {'regularClinicSchedule': regularClinicSchedule}),
+                            // ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Administrative / Miscellaneous Services" &&
+                            // {'regularClinicScheduleFrequency': regularClinicScheduleFrequency}),
+                            // ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Administrative / Miscellaneous Services" &&
+                            // {'allActivities': allActivities}),
                         }
                     },
                     "minimum": {
@@ -230,9 +234,83 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             else {
                 ErrorToaster('Unexpected Error');
             }
+        } else if(activityOrServiceType === "Add-On Services Allowed Upon Request Approval" ){
+            const data = {
+                    "activityType": {
+                        "activityType": activityOrServiceType
+                    },
+                    "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
+                    "performingActivity": {
+                        "activity": activityContractedFor
+                    },
+                    "activityResponse": {
+                        "dataMap": {
+                            ...( activityContractedFor?.includes('Extension') &&
+                            {extensionLabel: sessionExtension }),
+                            ...( activityContractedFor?.includes('Extension') &&
+                            {workingPeriodFrom: workingPeriodFrom}),
+                            ...( activityContractedFor?.includes('Extension') &&
+                            {workingPeriodTo: workingPeriodTo}),
+                            ...( !activityContractedFor?.includes('Extension') &&
+                            {rateLabel: sessionRate}),
+                            ...( !activityContractedFor?.includes('Extension') &&
+                            {durationLabel: sessionDuration}),
+                        }
+                    },
+                    "minimum": {
+                        "value": parseInt(min)
+                    },
+                    "maximum": {
+                        "value": parseInt(max)
+                    },
+                    "frequency": regularClinicScheduleFrequency,
+                    "withNurse": {
+                        "value": parseInt(withNurse)
+                    },
+                    "withoutNurse": {
+                        "value": parseInt(withoutNurse)
+                    },
+                    "schedule": {
+                        "value": parseInt(additionalClinicSchedule),
+                        "frequency": frequency,
+                        "scheduleRequired": additionalSchedule
+                    },
+                    "duration": {
+                        "hours": parseInt(duration)
+                    },
+                    "payableAmount": {
+                        "value": parseInt(payment)
+                    },
+                    "totalSessions": {
+                        "value": parseInt(totalContractedService),
+                        "frequency": totalContractedServiceFrequency
+                    },
+                    "workingPeriod": {
+                        "from": workingPeriodFrom,
+                        "to": workingPeriodTo
+                    },
+                    "noTargetApplicable": noTargetApplicable,
+                    "designateSpecificContractor": isDesignatedSpecificContractor
+            }
+
+            let services = contractedServices || [];
+            services.push(data);
+            let formattedData = {
+                contractedServices: services
+            }
+
+            const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
+            if(response){
+                SuccessToaster('Contracted Service Updated Successfully');
+            }
+            else {
+                ErrorToaster('Unexpected Error');
+            }
         }
         getContractedServices()
     }
+
+    console.log(contractedServices)
 
     const reset = () => {
         setMin(0);
@@ -803,10 +881,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                         <select
                                             name="class"
                                             id="Class"
-                                            onChange={(e) => setAddOnService(e.target.value)}
-                                            value={addOnService}
+                                            onChange={(e) => setActivityContractedFor(e.target.value)}
+                                            value={activityContractedFor}
                                             className={`${style.fullWidth} ${style.marginRight20} `}>
-                                            <option value="Clinic Session" >
+                                            {/* <option value="Clinic Session" >
                                                 Clinic Session
                                             </option>
                                             <option value="Surgical care activities" >
@@ -814,11 +892,78 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             </option>
                                             <option value="On Call Duty Services/activities" >
                                                 On Call Duty Services/activities
+                                            </option> */}
+                                            <option value="" >
+                                                Select Addon Service
                                             </option>
+                                            {contractedServices?.map((data, index) => 
+                                            data?.activityType?.activityType !== "Add-On Services Allowed Upon Request Approval" &&
+                                            (
+                                                <option value={`${data?.activityType?.activityType} - ${data?.performingActivity?.activity}`} key={index}>
+                                                    {`${data?.activityType?.activityType} - ${data?.performingActivity?.activity}`}
+                                                </option>  
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
-                                {addOnService === 'On Call Duty Services/activities' ?
+                                {activityContractedFor !== '' && activityContractedFor?.includes('Extension') ? (
+                                    <>
+                                    <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
+                                        <div className={` ${style.addManagerGrid}`}>
+                                            <div className={style.extentionLableStyle}>{activityContractedFor} Hourly Rate*</div>
+                                            <div className={style.displayInRow}>
+                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                                    <div className={style.textElementWithoutBackground}>$</div>
+                                                    <EditableText value={sessionExtension} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
+                                                        onChange={(e) => setSessionExtension(e.slice(0, limit))} />
+                                                </div>
+                                                <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                        <div className={style.extentionLableStyle}>Allowable Working Day Hours For {activityContractedFor}*</div>
+                                        <div className={style.displayInRow}>
+                                            <InputGroup
+                                                value={workingPeriodFrom}
+                                                placeholder="HH:MM"
+                                                onChange={(e)=> setWorkingPeriodFrom(e.target.value) }
+                                                className={style.threeFieldWidth}
+                                            />
+                                            <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
+                                            <InputGroup
+                                                value={workingPeriodTo}
+                                                placeholder="HH:MM"
+                                                onChange={(e)=> setWorkingPeriodTo(e.target.value) }
+                                                className={style.threeFieldWidth}
+                                            />
+                                        </div>
+                                    </div>
+                                    </>
+                                ) : activityContractedFor !== '' && (
+                                    <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
+                                        <div className={` ${style.addManagerGrid} `}>
+                                            <div className={style.extentionLableStyle}>{activityContractedFor} Rate*</div>
+                                            <div className={style.displayInRow}>
+                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                                    <div className={style.textElementWithoutBackground}>$</div>
+                                                    <EditableText value={sessionRate} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
+                                                        onChange={(e) => setSessionRate(e.slice(0, limit))} />
+                                                </div>
+                                                <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional {activityContractedFor}</p>
+                                            </div>
+                                        </div>
+                                        <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
+                                            <div className={style.extentionLableStyle}>{activityContractedFor} Duration*</div>
+                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                                <EditableText value={sessionDuration} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
+                                                    onChange={(e) => setSessionDuration(e.slice(0, limit))} />
+                                                <div className={style.textElementWithoutBackground}>Hour</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {/* {addOnService === 'On Call Duty Services/activities' ?
                                     <div>
                                         <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
                                             <div className={`${style.addManagerGrid} `}>
@@ -1012,8 +1157,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                         <div className={style.displayInRow}>
                                                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                                 <div className={style.textElementWithoutBackground}>$</div>
-                                                                <EditableText value={outpatientClinicalSessionRate} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
-                                                                    onChange={(e) => setOutpatientClinicalSessionRate(e.slice(0, limit))} />
+                                                                <EditableText value={sessionRate} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
+                                                                    onChange={(e) => setSessionRate(e.slice(0, limit))} />
                                                             </div>
                                                             <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional Clinic Session</p>
                                                         </div>
@@ -1021,8 +1166,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
                                                         <div className={style.extentionLableStyle}>Clinic Session Duration*</div>
                                                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <EditableText value={outpatientClinicalSessionDuration} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
-                                                                onChange={(e) => setOutpatientClinicalSessionDuration(e.slice(0, limit))} />
+                                                            <EditableText value={sessionDuration} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
+                                                                onChange={(e) => setDuration(e.slice(0, limit))} />
                                                             <div className={style.textElementWithoutBackground}>Hour</div>
                                                         </div>
                                                     </div>
@@ -1056,8 +1201,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                         <div className={style.displayInRow}>
                                                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                                                 <div className={style.textElementWithoutBackground}>$</div>
-                                                                <EditableText value={clinicalSessionExtension} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
-                                                                    onChange={(e) => setClinicalSessionExtension(e.slice(0, limit))} />
+                                                                <EditableText value={sessionExtension} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
+                                                                    onChange={(e) => setSessionExtension(e.slice(0, limit))} />
                                                             </div>
                                                             <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
                                                         </div>
@@ -1082,7 +1227,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     </div>
                                                 </div>
                                             </div> : ''
-                                }
+                                } */}
 
 
                             </div>

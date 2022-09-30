@@ -27,6 +27,10 @@ const ApexPieChart = ({pieData}) => {
             },
             legend: {
                 show: true,
+                onItemClick: {
+                  toggleDataSeries: false
+                },
+                position: 'bottom',
             },
             labels: pieData?.map(data=>data?.key),
             responsive: [
@@ -50,7 +54,7 @@ const ApexPieChart = ({pieData}) => {
         series: pieData?.map(data=>data?.value)
     }
     return(
-        <Chart {...chartData} type="pie" height={250}  />
+        <Chart {...chartData} type="pie" height={300}  />
     )
 }
 

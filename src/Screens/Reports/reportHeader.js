@@ -11,6 +11,7 @@ const ReportHeader = () => {
     let userDetails = cookie.get('user');
     const userDetail = jwt(userDetails);
     const [logo,setLogo] = useState({logo:'',title:''});
+    const [currentTime] = useState(format(new Date(), 'MMM d yyyy, H:mm'));
 
     useEffect(()=>{
       getLogo();
@@ -35,9 +36,9 @@ const ReportHeader = () => {
                     <div className={style.entityNameHeaderStyle}>{logo.title}</div>
                 </div>
                 <div>
-                    <div className={style.reportRunByTextStyle}>Report run by : </div>
+                    <div className={style.reportRunByTextStyle}>Report Run By : </div>
                     <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{userDetail?.userName} at</div>
-                    <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{format(new Date(), 'MMM d yyyy, H:mm')}</div>
+                    <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{currentTime}</div>
                 </div>
             </div>
             <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
