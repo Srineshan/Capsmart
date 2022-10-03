@@ -25,7 +25,7 @@ const Navbar = () => {
     const [showReportsMenu, setShowReportsMenu] = useState(false);
     const [isContractManager, setIsContractManager] = useState(false);
     const [isEntityLevelAdmin, setIsEntityLevelAdmin] = useState(false);
-    const [logo,setLogo] = useState(null);
+    const [logo,setLogo] = useState(sessionStorage?.getItem('logo'));
 
     const menuRef = useRef(null);
     const toolsMenuRef = useRef(null);
@@ -34,13 +34,6 @@ const Navbar = () => {
     useMenuHide(menuRef);
     useToolsMenuHide(toolsMenuRef);
     useReportsMenuHide(reportsMenuRef);
-
-    const getLogo = async() => {
-      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
-      setLogo(data?.logo?.file?.fileURL);
-    }
-
-    console.log('logo',logo);
 
     function useMenuHide(ref) {
         useEffect(() => {
@@ -95,7 +88,6 @@ const Navbar = () => {
         var cookie = new Cookies();
         var accessToken = cookie.get('user');
         let roles = jwt(accessToken)?.roles?.split(',');
-        getLogo();
         setIsContractManager(roles.includes('Contract Manager') ? true : false);
         setIsEntityLevelAdmin((roles.includes('Super Sys Admin') || roles.includes('Entity Sys Admin') || roles.includes('Entity Sys User') || roles.includes('Distributor Admin')) ? true : false);
     }, [])

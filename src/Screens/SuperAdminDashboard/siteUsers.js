@@ -70,9 +70,8 @@ const SiteUsers = ({getActiveStep}) => {
     const [entityData, setEntityData] = useState();
     const [showSaveInProgress,setShowSaveInProgress] = useState(false);
     const [unassignedKeys,setUnassignedKeys] = useState([]);
-    const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:'',isAdmin:false,title:'',email:'',phone:''});
+    const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:{suffix:'',id:''},isAdmin:false,title:{title:'',id:''},email:'',phone:''});
     const role = '';
-    const [suffixList,setSuffixList] = useState([]);
 
     const columns = [
       {
@@ -124,18 +123,7 @@ const SiteUsers = ({getActiveStep}) => {
       getSiteData();
       getRolesData();
       getContracts();
-      getSuffix();
     },[])
-
-     const getSuffix  = async() => {
-      await GET('entity-service/nameSuffix')
-      .then(response=>{
-        setSuffixList(response?.data);
-      })
-      .catch(error=>{
-        console.log('error',error);
-      })
-    }
 
     const getEntityData = async() => {
       const {data: data} = await GET(`entity-service/entity/${id}`);
@@ -143,7 +131,7 @@ const SiteUsers = ({getActiveStep}) => {
     }
 
     const getContracts = async() => {
-      await axios(`https://rest.timesmart.live/contract-managment-service/contracts`,{
+      await axios(`https://rest.timesmart.io/contract-managment-service/contracts`,{
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -158,7 +146,7 @@ const SiteUsers = ({getActiveStep}) => {
     }
 
     const getUserData = async() => {
-      await axios(`https://rest.timesmart.live/user-management-service/user`,{
+      await axios(`https://rest.timesmart.io/user-management-service/user`,{
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -172,6 +160,8 @@ const SiteUsers = ({getActiveStep}) => {
         console.log('error',error)
       })
     }
+
+    console.log('user',user);
 
     const getSiteData = async() =>{
       const {data: data} = await GET(`entity-service/entity/${id}`);
@@ -204,7 +194,7 @@ const SiteUsers = ({getActiveStep}) => {
     console.log('items',selectedSites,entitySite);
       const onSelect = (selectedItem) => {
         if(!selectedSites?.map(data=>data?.id)?.includes(selectedItem?.id)){
-          setItem(selectedItem)
+          setItem(selectedItem);
           let temp = selectedSites;
           temp.push(selectedItem);
           setSelectedSites(temp);
@@ -278,7 +268,7 @@ const SiteUsers = ({getActiveStep}) => {
     if(userData?.lastName === ''){
       keys.push('Last Name');
     }
-    if(userData?.suffix === ''){
+    if(userData?.suffix?.suffix === ''){
       keys.push('Suffix');
     }
     if(userData?.phone === ''){
@@ -315,9 +305,6 @@ const SiteUsers = ({getActiveStep}) => {
             }
           }
         ] : [],
-        "title": {
-          "title": userData.title
-        },
         "email": {
           "officialEmail": userData.email
         },
@@ -351,7 +338,7 @@ const SiteUsers = ({getActiveStep}) => {
   }
 
   const resetValues = () => {
-    setUserData({firstName:'',lastName:'',suffix:'',isAdmin:false,title:'',email:'',phone:''});
+    setUserData({firstName:'',lastName:'',suffix:{suffix:'',id:''},isAdmin:false,title:{title:'',id:''},email:'',phone:''});
     setSelectedRoles([]);
     setSelectedSites([]);
     setContractId('');
@@ -361,8 +348,8 @@ const SiteUsers = ({getActiveStep}) => {
     setShowSaveInProgress(value);
   }
 
-  const onSuffixChange = (value) => {
-    setUserData({...userData, suffix:value});
+  const onSuffixChange = (id,value) => {
+    setUserData({...userData, suffix:{id:id,suffix:value}});
   }
 
   console.log('suffix',userData?.suffix);
@@ -472,7 +459,7 @@ const SiteUsers = ({getActiveStep}) => {
                                     <div className={`${style.displayInRow}`}>
                                         <InputGroup placeholder="First Name" className={`${style.fourFieldWidth}`} value={userData.firstName} onChange={(e)=>handleUserData('firstName',e.target.value)}/>
                                         <InputGroup placeholder="LAST NAME" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={userData.lastName} onChange={(e)=>handleUserData('lastName',e.target.value)}/>
-                                        <SuffixList value={userData?.suffix} onChangeFunc={onSuffixChange} className={[style.fourFieldWidth, style.marginLeft20]}/>
+                                        <SuffixList value={userData?.suffix?.id} onChangeFunc={onSuffixChange} className={[style.fourFieldWidth, style.marginLeft20]}/>
                                         <p className={`${style.fourFieldWidth}`}></p>
                                     </div>
                                 </div>
@@ -532,26 +519,6 @@ const SiteUsers = ({getActiveStep}) => {
                                   //         />
                                   // </div>
                                 }
-
-                                {
-                                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                  //     <div className={style.extentionLableStyle}>Other App Role*</div>
-                                  //     <div>
-                                  //             <DatalistInput items={roleItems} placeholder="Select Roles" onSelect={onSelectRoles} className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                  //             <TagInput
-                                  //                 placeholder="Enter tags/keywords relative to the post"
-                                  //                 values={selectedRoles?.map(data=>data?.roleName)}
-                                  //                 className={`${style.marginTop20} ${style.tagInputStyle}`}
-                                  //                 onRemove={handleTagsRemoveRoles}
-                                  //                 separator={/[\s,]/}
-                                  //                 addOnBlur={true}
-                                  //                 addOnPaste={true}
-                                  //             />
-                                  //
-                                  //     </div>
-                                  // </div>
-                                }
-
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Other App Role*</div>
                                     <FormControl className={style.fullWidth}>
@@ -615,7 +582,7 @@ const SiteUsers = ({getActiveStep}) => {
                           user?.map(data=>(
                             <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                 <p className={style.tableDataFontStyle}>{data?.name?.firstName}{' '}{data?.name?.lastName}</p>
-                                <p className={style.tableDataFontStyle}>{suffixList?.filter(suffix=>suffix?.id === data?.name?.suffix)?.map(data=>data?.suffix)[0]}</p>
+                                <p className={style.tableDataFontStyle}>{data?.name?.suffix?.suffix}</p>
                                 <p className={style.tableDataFontStyle}>{data?.title?.title}</p>
                                 <p className={style.tableDataFontStyle}>{data?.sites?.sites?.length || 0}</p>
                                 <p className={style.tableDataFontStyle}>{data?.roles?.map(data=>data?.roleName).includes('Entity Sys Admin') ?'YES':'NO'}</p>

@@ -169,7 +169,7 @@ const AppSubscription = ({getActiveStep}) => {
         "entityName": entityData?.entityName,
         "entityType": entityData?.entityType,
         "entityDisplayId": entityData?.entityDisplayId,
-        "customerType": entityData?.customerType,
+        "industryId": entityData?.industryId,
         "sites": entityData?.sites,
         "subdomain":entityData?.subdomain,
         "multiSiteEntity":entityData?.multiSiteEntity,
