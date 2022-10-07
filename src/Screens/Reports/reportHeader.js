@@ -10,7 +10,18 @@ const ReportHeader = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const userDetail = jwt(userDetails);
+
     const [logo,setLogo] = useState({logo:sessionStorage?.getItem('logo'),title:sessionStorage.getItem('title')});
+    const [currentTime] = useState(format(new Date(), 'MMM d yyyy, H:mm'));
+
+    useEffect(()=>{
+      getLogo();
+    })
+
+    const getLogo = async() => {
+      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
+      setLogo({logo:data?.logo?.file?.fileURL, title:data?.entityName?.entityName});
+    }
 
     return(
         <div>
@@ -26,9 +37,9 @@ const ReportHeader = () => {
                     <div className={style.entityNameHeaderStyle}>{logo.title}</div>
                 </div>
                 <div>
-                    <div className={style.reportRunByTextStyle}>Report run by : </div>
+                    <div className={style.reportRunByTextStyle}>Report Run By : </div>
                     <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{userDetail?.userName} at</div>
-                    <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{format(new Date(), 'MMM d yyyy, H:mm')}</div>
+                    <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{currentTime}</div>
                 </div>
             </div>
             <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
