@@ -331,7 +331,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         () =>
           user.map((option) => ({
             id: option?.id,
-            value: `${option.name.firstName} ${option.name.lastName} ${option.name.suffix}`,
+            value: `${option.name.firstName} ${option.name.lastName} ${option?.name?.suffix?.suffix || ''}`,
             ...option,
           })),
         [user],

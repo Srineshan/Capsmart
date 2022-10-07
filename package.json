@@ -18,6 +18,7 @@
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^13.5.0",
     "apexcharts": "^3.35.3",
+    "awesome-react-calculator": "^1.1.0",
     "axios": "^0.27.2",
     "d3": "^7.6.1",
     "date-fns": "^2.29.1",

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, Classes, Icon, Intent, InputGroup, EditableText, RadioGroup, Radio, Checkbox, Tag } from '@blueprintjs/core';
+import { Dialog, Classes, Icon, Intent, InputGroup, EditableText, RadioGroup, Radio, Checkbox, Tag, TextArea } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {PUT, GET} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import Calculator from './../../Components/Calculator';
 
 import style from './index.module.scss';
 import SendEmailUserList from './mailUser';
@@ -45,9 +46,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const [contractedServices, setContractedServices] = useState([]);
     const [users,setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState([]);
+    const [helpTool, setHelpTool] = useState({calculator:false,textArea:false});
     const [selectedUsers, setSelectedUsers] = useState([]);
     const limit = 3;
     const limit5 = 5;
+
+    let rightHelpArea = helpTool?.calculator || helpTool?.textArea;
 
     const getSendEmailNotification = (value) => {
         setSendEmailNotification(value)
@@ -98,7 +102,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             return;
         }
 
-        console.log('entered')
         if(activityOrServiceType === "Medical / Surgical Care Contracted Services" ){
             const data = {
 
@@ -309,13 +312,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     return (
         <div>
-            <Dialog isOpen={getAddServiceDialog} onClose={() => getAddServiceDialog(false)} className={`${style.addProofDialog} ${style.addManagerDialogBackground}`}>
+            <Dialog isOpen={getAddServiceDialog} onClose={() => getAddServiceDialog(false)} className={rightHelpArea ? `${style.addServiceDialog} ${style.addManagerDialogBackground}` : `${style.addProofDialog} ${style.addManagerDialogBackground}`}>
                 <div className={`${Classes.DIALOG_BODY} `}>
                     <div className={style.spaceBetween}>
                         <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
-                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getAddServiceDialog(false)} />
+                        <div>
+                          <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, textArea:!helpTool?.textArea})} />
+                          <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, calculator:!helpTool?.calculator})} />
+                          <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getAddServiceDialog(false)} />
+                        </div>
                     </div>
                     <div className={style.extensionBorder}></div>
+                    <div className={rightHelpArea ? style.addServiceGrid : ''}>
                     <div className={style.proofBorder}>
                         <div className={`${style.addManagerGrid}`}>
                             <div className={style.extentionLableStyle}>Activity /Service Type*</div>
@@ -1218,6 +1226,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                     )}
                                 </div> : ''
                         }
+                    </div>
+                    {rightHelpArea && <div className={style.marginTop}>{helpTool?.calculator && <Calculator />}{helpTool?.textArea &&<TextArea placeholder="Paste your text here..." rows="12" className={`${style.marginTop20} ${style.referenceTextArea}`}/>}</div>}
                     </div>
                 </div>
                 <div>
