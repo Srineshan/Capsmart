@@ -5,6 +5,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import {PUT, GET} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Calculator from './../../Components/Calculator';
+import ReactStickyNotes from '@react-latest-ui/react-sticky-notes';
 
 import style from './index.module.scss';
 import SendEmailUserList from './mailUser';
@@ -621,6 +622,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             </div>
                         </div> */}
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                          <div className={style.extentionLableStyle}>Display service label</div>
+                                          <InputGroup className={` ${style.fullWidth}`} />
+                                        </div>
+                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                          <div className={style.extentionLableStyle}>Alternative service facility/ location</div>
+                                          <InputGroup className={` ${style.fullWidth}`} />
+                                        </div>
+                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>Regular {activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Schedule*</div>
                                             <div className={style.displayInRow}>
                                                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
@@ -651,6 +660,26 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                         </div>
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>{activityType === "Surgery Session" ? 'Surgery Case' : 'Clinic Patient'} Target*</div>
+                                            <div className={`${style.displayInRow} `}>
+                                                {activityType !== "Surgery Session" ? (
+                                                    <div className={`${style.displayInRow} ${style.fullWidth}`}>
+                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.twoFieldWidth} `}>
+                                                            <div className={style.textElementWithNurse}>WITH NURSE</div>
+                                                            <EditableText value={withNurse} placeholder="" type='number' onChange={(e) => setWithNurse(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
+                                                        </div>
+                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.twoFieldWidth}`}>
+                                                            <div className={style.textElementWithNurse}>WITHOUT NURSE</div>
+                                                            <EditableText value={withoutNurse} placeholder="" type='number' onChange={(e) => setWithoutNurse(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <InputGroup value="1" className={`${style.marginLeft20} ${style.threeFieldWidth}`} />
+                                                )}
+                                                <Checkbox checked={noTargetApplicable} onChange={(e) => setNoTargetApplicable(e.target.checked)} label="No Target Applicable" className={`${style.marginLeft20}`} />
+                                            </div>
+                                        </div>
+                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                            <div className={style.extentionLableStyle}>{activityType === "Surgery Session" ? 'Surgery Scheduled patient' : 'Clinic Patient'} Target*</div>
                                             <div className={`${style.displayInRow} `}>
                                                 {activityType !== "Surgery Session" ? (
                                                     <div className={`${style.displayInRow} ${style.fullWidth}`}>
@@ -707,6 +736,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                 <EditableText value={duration} placeholder="" type='number' onChange={(e) => setDuration(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
                                                 <div className={style.textElementWithoutBackground}>Hours</div>
                                             </div>
+                                        </div>
+                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                            <div className={style.extentionLableStyle}>Billable service</div>
+                                                  <FormControlLabel
+                                                      control={
+                                                          <Switch className={` ${style.textAlignLeft}`} />
+                                                      }
+                                                      className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                                      label='NO'
+                                                  />
                                         </div>
                                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                             <div className={style.extentionLableStyle}>{activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Session Payment Amount*</div>
@@ -891,7 +930,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             id="Class"
                                             onChange={(e) => setActivityContractedFor(e.target.value)}
                                             value={activityContractedFor}
-                                            className={`${style.fullWidth} ${style.marginRight20} `}>
+                                            className={`${style.fullWidth} ${style.marginRight20}`}>
                                             {/* <option value="Clinic Session" >
                                                 Clinic Session
                                             </option>
@@ -904,12 +943,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             <option value="" >
                                                 Select Addon Service
                                             </option>
-                                            {contractedServices?.map((data, index) => 
+                                            {contractedServices?.map((data, index) =>
                                             data?.activityType?.activityType !== "Add-On Services Allowed Upon Request Approval" &&
                                             (
                                                 <option value={`${data?.activityType?.activityType} - ${data?.performingActivity?.activity}`} key={index}>
                                                     {`${data?.activityType?.activityType} - ${data?.performingActivity?.activity}`}
-                                                </option>  
+                                                </option>
                                             ))}
                                         </select>
                                     </div>
@@ -1372,7 +1411,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                 </div> : ''
                         }
                     </div>
-                    {rightHelpArea && <div className={style.marginTop}>{helpTool?.calculator && <Calculator />}{helpTool?.textArea &&<TextArea placeholder="Paste your text here..." rows="12" className={`${style.marginTop20} ${style.referenceTextArea}`}/>}</div>}
+                    {rightHelpArea && (
+                      <div className={style.marginTop}>
+                        {helpTool?.calculator && <Calculator />}
+                        {helpTool?.textArea &&<ReactStickyNotes />}
+                      </div>
+                    )}
                     </div>
                 </div>
                 <div>
