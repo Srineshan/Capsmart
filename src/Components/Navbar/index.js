@@ -1,14 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
-import logo from './../../images/metropolitan-hospital-logo.png';
-import TenetLogo from './../../images/Tenet_Health_logo.png';
-import SanmateoLogo from './../../images/sanmateo.jpg';
-import NotificationsIcon from './../../images/notificationsIcon.png';
-import PrintIcon from './../../images/printIcon.png';
-import RedBackground from './../../images/redBackground.png';
-import TenetHealthLogo from './../../images/Tenet_Health_logo.png';
-import NotificationCount from './../../images/notificationCount.png';
-import File from './../../images/file.png';
+import { ScreenCapture } from 'react-screen-capture';
 import {Link} from 'react-router-dom';
 import {TenantID,GET} from './../../Screens/dataSaver';
 import LogoutIcon from './../../images/logoutIcon.png';
@@ -21,6 +13,7 @@ import style from './index.module.scss';
 const Navbar = () => {
     const navigate = useNavigate()
     const [showMenu, setShowMenu] = useState(false);
+    const [screenCapture, setScreenCapture] = useState('');
     const [showToolsMenu, setShowToolsMenu] = useState(false);
     const [showReportsMenu, setShowReportsMenu] = useState(false);
     const [isContractManager, setIsContractManager] = useState(false);
@@ -82,6 +75,13 @@ const Navbar = () => {
         }, [ref]);
     }
 
+    const handleScreenCapture = (screenCapture) => {
+        setScreenCapture(screenCapture);
+        sessionStorage.setItem('screenCapture', screenCapture);
+        sessionStorage.setItem('selectedOption', 'OPEN FEEDBACK TICKETS');
+        window.location.href = '/app/entitySitePortal';
+    };
+
     const logout = () => {
       const cookies = new Cookies();
       cookies.remove('user');
@@ -98,6 +98,7 @@ const Navbar = () => {
         setIsEntityLevelAdmin((roles.includes('Super Sys Admin') || roles.includes('Entity Sys Admin') || roles.includes('Entity Sys User') || roles.includes('Distributor Admin')) ? true : false);
     }, [])
 
+    console.log(screenCapture);
 
     return(
         <div className={style.navbarStyle}>
@@ -107,7 +108,7 @@ const Navbar = () => {
                   // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
                 }
                 <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
-                <Link to={'/entitySitePortal/dataUpload'} className={style.noFontStyle}>
+                <Link to={'/entitySitePortal'} className={style.noFontStyle}>
                     <div className={style.menuStyle}>
                         <p>HOME</p>
                     </div>
@@ -173,19 +174,23 @@ const Navbar = () => {
                         )}
                     </div>
                 )}
-                <div>
-                    <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} onClick={() => setShowMenu(true)}>
-                        <p>HELP</p>
-                    </div>
-                    {showMenu && (
-                        <div className={style.optionsCardStyle} ref={menuRef}>
-                            <Link to={'/help'} className={style.noFontStyle}>
-                                <div className={style.options}>OPEN FEEDBACK TICKET</div>
-                            </Link>
-                            <div className={style.options}>SUPPORT PORTAL</div>
+                <ScreenCapture onEndCapture={handleScreenCapture}>
+                {({ onStartCapture }) => (
+                    <div>
+                        <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} onClick={() => setShowMenu(true)}>
+                            <p>HELP</p>
                         </div>
+                        {showMenu && (
+                            <div className={style.optionsCardStyle} ref={menuRef}>
+                                <Link to={'/help'} className={style.noFontStyle}>
+                                    <div className={style.options}>OPEN FEEDBACK TICKET</div>
+                                </Link>
+                                <div className={style.options} onClick={onStartCapture}>SUPPORT PORTAL</div>
+                            </div>
+                        )}
+                    </div>
                     )}
-                </div>
+                </ScreenCapture>
             </div>
             <div className={style.displayInRow}>
                 {/* {!window.location.pathname.includes('reportTypeOverview') && (

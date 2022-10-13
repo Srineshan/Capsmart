@@ -15,6 +15,13 @@ import style from './index.module.scss';
 const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, activeContractsLength, draftContractsLength, upcomingContractsLength, expiredContractsLength}) => {
     const tableHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "CONTRACTORS", "EFFECTIVE DATE", "POD STATUS", "MANAGER", "LAST UPDATED", "ACTION"];
 
+    const onClickFunction = (data) => {
+        getNewContract(true); 
+        getContractType(data?.contractType); 
+        getSelectedContractType('New Contract'); 
+        getContractIdFromActive(data?.id);
+    }
+
     let dot = [];
     let contractType = [];
     let contractId = [];
@@ -54,14 +61,14 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
 
         return [
             {"type": "dot", "value": dot},
-            {"type": "text", "value": contractType},
-            {"type": "text", "value": contractId},
-            {"type": "text", "value": name},
-            {"type": "text", "value": contractors},
-            {"type": "text", "value": effectiveDate},
-            {"type": "fileWithCount", "value": podStatus},
-            {"type": "text", "value": manager},
-            {"type": "text", "value": lastUpdated},
+            {"type": "text", "value": contractType, "onClickFunction": onClickFunction},
+            {"type": "text", "value": contractId, "onClickFunction": onClickFunction},
+            {"type": "text", "value": name, "onClickFunction": onClickFunction},
+            {"type": "text", "value": contractors, "onClickFunction": onClickFunction},
+            {"type": "text", "value": effectiveDate, "onClickFunction": onClickFunction},
+            {"type": "imgWithCount", "value": podStatus, "img": GreenPage},
+            {"type": "text", "value": manager, "onClickFunction": onClickFunction},
+            {"type": "text", "value": lastUpdated, "onClickFunction": onClickFunction},
             {"type": "action", "value": action},
         ];
     }

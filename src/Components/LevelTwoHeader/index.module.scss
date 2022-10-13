@@ -1,0 +1,94 @@
+
+.spaceBetween{
+    display: flex;
+    justify-content: space-between;
+}
+
+.displayInRow{
+    display: flex;
+    flex-direction: row;
+}
+
+.userNameStyle{
+    text-align: left;
+    font: normal normal 600 15px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.alignCenter{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.marginTop10{
+    margin-top: 10px;
+}
+
+.marginTop20{
+    margin-top: 22px;
+}
+
+.loginStatus{
+    text-align: left;
+    font: normal normal normal 11px/15px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    max-width: 200px;
+    opacity: 1;
+    margin-top: 5px;
+}
+
+.marginLeft10{
+    margin-left: 10px;
+}
+
+.marginLeft20{
+    margin-left: 20px;
+}
+
+.crossStyle{
+    height: 18px;
+    width: 18px;
+}
+
+.cursorPointer{
+    cursor: pointer;
+}
+
+.reduceMarginTop{
+    margin-top: -20px !important;
+}
+
+.customTimeFrameCard{
+    position: absolute;
+    top: 150px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 11px #52575D4D;
+    border-radius: 5px;
+    width: 180px;
+    padding: 10px;
+}
+
+.customTimeFrameHeading{
+    text-align: left;
+    font: normal normal 600 13px/18px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+    text-transform: uppercase;
+}
+
+.dividerStyle{
+    height: 1px;
+    background-color: #e6e5e5;
+    width: 100%;
+}
+
+.customRangeHelpStyle{
+    text-align: left;
+    font: normal normal medium 14px/16px Montserrat;
+    letter-spacing: 0px;
+    color: #C5C5C6;
+}
