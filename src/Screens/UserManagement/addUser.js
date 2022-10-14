@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, Tag} from '@blueprintjs/core';
 import {POST, TenantID, GET} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import FunctionalTitleList from './../../Components/FunctionalTitleList';
 import style from './index.module.scss';
 
 const AddUser = ({getAddUserDialog}) => {
 
-    const [addUser, setAddUser] = useState({firstName: "", lastName: "", email: "", roles: [{id: "", roleName: ""}], title: ""});
+    const [addUser, setAddUser] = useState({firstName: "", lastName: "", email: "", roles: [{id: "", roleName: ""}], title: {title:"",id:""}});
     const [customerType, setCustomerType] = useState('HEALTHCARE');
     const [roles, setRoles] = useState([])
     const [department, setDepartment] = useState([])
@@ -33,7 +34,6 @@ const AddUser = ({getAddUserDialog}) => {
         if (!selectedDepartments.map(data => data?.id).includes(tempSelectedDepartments?.id)) {
           setSelectedDepartments([...selectedDepartments, tempSelectedDepartments]);
         }
-        console.log(selectedDepartments, tempSelectedDepartments)
       }
     }
 
@@ -44,7 +44,6 @@ const AddUser = ({getAddUserDialog}) => {
         if (!selectedSites.map(data => data?.id).includes(tempSelectedSites?.id)) {
           setSelectedSites([...selectedSites, tempSelectedSites]);
         }
-        console.log(selectedSites, tempSelectedSites)
       }
     }
 
@@ -87,6 +86,10 @@ const AddUser = ({getAddUserDialog}) => {
       );
     });
 
+    const handleTitle = (id, value) => {
+      setAddUser({...addUser, title:{id:id,title:value}});
+    }
+
     const submitUserDetails = async () => {
 
       if(!addUser?.email.includes('@') || !addUser?.email.includes('.')) {
@@ -102,12 +105,10 @@ const AddUser = ({getAddUserDialog}) => {
         "name": {
           "firstName": addUser?.firstName,
           "lastName": addUser?.lastName,
-          "suffix": ""
+          "suffix": {}
         },
         "userType": "ADMIN",
-        "title": {
-          "title": addUser?.title
-        },
+        "title":addUser?.title,
         "email": {
           "officialEmail": addUser?.email
         },
@@ -155,8 +156,6 @@ const AddUser = ({getAddUserDialog}) => {
       getDepartments();
       getSites();
   },[])
-
-  console.log('sites',sites,roles,department);
 
     return(
         <Dialog isOpen={getAddUserDialog} onClose={() => getAddUserDialog(false)} className={`${style.addManagerDialogBackground} ${style.addProofDialog}`}>
@@ -249,10 +248,10 @@ const AddUser = ({getAddUserDialog}) => {
               </div>
             </div>
             {
-              // <div className={`${style.addManagerGrid}`}>
-              //   <div className={style.extentionLableStyle}>Title*</div>
-              //   <InputGroup value={addUser?.title} onChange={(e) => setAddUser({...addUser, title: e.target.value})} />
-              // </div>
+              <div className={`${style.addManagerGrid}`}>
+                  <div className={style.extentionLableStyle}>Title*</div>
+                  <FunctionalTitleList value={addUser?.title?.id} onChangeFunc={(id,value)=>handleTitle(id,value)} className={[style.fullWidth]} providerId=""/>
+              </div>
             }
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Role*</div>

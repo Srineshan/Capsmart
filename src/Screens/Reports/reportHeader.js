@@ -10,16 +10,7 @@ const ReportHeader = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const userDetail = jwt(userDetails);
-    const [logo,setLogo] = useState({logo:'',title:''});
-
-    useEffect(()=>{
-      getLogo();
-    })
-
-    const getLogo = async() => {
-      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
-      setLogo({logo:data?.logo?.file?.fileURL, title:data?.entityName?.entityName});
-    }
+    const [logo,setLogo] = useState({logo:sessionStorage?.getItem('logo'),title:sessionStorage.getItem('title')});
 
     return(
         <div>

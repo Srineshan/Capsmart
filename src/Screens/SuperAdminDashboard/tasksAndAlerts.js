@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, Fragment } from 'react';
 import { Checkbox } from '@blueprintjs/core';
 import Navbar from './../../Components/Navbar';
-import UserLogo from './../../images/userLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import {Link} from 'react-router-dom';
 import PrintIcon from './../../images/printIcon.png';
@@ -34,7 +34,7 @@ const TasksAndAlerts = () => {
                 <div className={`${style.grid5}`}>
                     <div className={style.cardStyle}>
                         <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                            <img src={UserLogo} className={style.userLogo} />
+                            <img src={DoctorAnime} className={style.userLogo} />
                             <div className={style.marginLeft20}>
                                 <div className={style.userNameStyle}>
                                 {user?.userName}
