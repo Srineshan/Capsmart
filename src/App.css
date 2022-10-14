@@ -1,12 +1,17 @@
 @import url('https://fonts.googleapis.com/css?family=Josefin+Sans');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat');
+@import url('https://fonts.googleapis.com/css2?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Proxima+Nova');
 
 body {
-	font-family: 'Montserrat';
+	font-family: 'Montserrat, Roboto, Proxima Nova';
+	scrollbar-width: none !important;
   }
 
 .App {
   text-align: center;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .App-logo {
@@ -118,4 +123,13 @@ select {
 ::-webkit-scrollbar {
     width: 0 !important;
     height: 0 !important;
+	display: none !important;
+  }
+
+  .toast-container {
+	z-index: 9999;
+  }
+  
+  .bp3-toast-container{
+	z-index: 999999;
   }

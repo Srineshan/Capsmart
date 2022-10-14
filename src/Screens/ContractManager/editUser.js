@@ -37,7 +37,7 @@ const EditUser = ({getEditUserDialog}) => {
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
               <div className={style.extentionLableStyle}>Email Address*</div>
-              <InputGroup value="Text" />
+              <InputGroup placeholder="email@gmail.com" />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

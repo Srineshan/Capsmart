@@ -1,0 +1,20 @@
+@import '../../styles/mixins.scss';
+
+.searchBarStyle{
+    background: #E3E5F1 0% 0% no-repeat padding-box;
+    border: 1px solid #A7A7A7;
+    height: 35px;
+    width: 34vw;
+    border-radius: 22px;
+    opacity: 0.3;
+    display: flex;
+    justify-content: space-between;
+    p{
+        margin-top: 8px;
+        margin-left: 10px;
+    }
+}
+
+.marginRight{
+    margin-right: 10px;
+}

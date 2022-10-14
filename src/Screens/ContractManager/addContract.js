@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { Icon, Intent } from "@blueprintjs/core";
 import Doctor from './../../images/doctor.png';
 import DoctorTeam from './../../images/doctorTeam.png';
 import HighlightedDoctor from './../../images/highlightedDoctor.png';
 import style from './index.module.scss';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
-const AddContract = ({getAddContract, getNewContract}) => {
-    const [selectedContract, setSelectedContract] = useState('Select...');
+const AddContract = ({getAddContract, getNewContract, getContractType, getSelectedContractType, getMethod}) => {
+    const [selectedContract, setSelectedContract] = useState('0');
     const [selectedContractOnClick, setSelectedContractOnClick] = useState(false);
+    const [contractType, setContractType] = useState('');
+
+
+    const handleNext = () => {
+      if(selectedContract === '0' || contractType === ''){
+        ErrorToaster('Select a contract type to add');
+      }
+      else{
+        getMethod('POST')
+        getNewContract(true);
+        getAddContract(false);
+        getContractType(contractType);
+        getSelectedContractType(selectedContract);
+      }
+    }
+
+    console.log('type',contractType,selectedContract);
+
     return(
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
             <div className={style.spaceBetween}>
@@ -16,12 +35,7 @@ const AddContract = ({getAddContract, getNewContract}) => {
             </div>
             <div className={style.welcomeBorder}></div>
             <div className={style.welcomeMessage}>
-            Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus quam 
-            nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus dapibus 
-            semper mattis. aenean ut massa vitae tortor consequat tristique. etiam eget 
-            condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut felis. 
-            pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur 
-            adipiscing elit. sed finibus quam nec tellus dictum.
+            This wizard will guide you step by step for adding a new contract for your entity or site. Follow the prompts and make the necessary selection in order to proceed to the next steps.
             </div>
             <div className={style.contractOptions}>
                 <div className={style.displayInRow}>
@@ -29,57 +43,59 @@ const AddContract = ({getAddContract, getNewContract}) => {
                         <select
                         name="class"
                         id="Class"
-                        value={selectedContract || 'Select...'}
+                        value={selectedContract || '0'}
                         onChange={(e) => setSelectedContract(e.target.value)}
-                        className={`${style.textFieldWidth} ${style.marginLeft20}`}>
+                        className={`${style.addContractTextFieldWidth} ${style.marginLeft20}`}>
                             <option value="0" >
                              Select...
                             </option>
-                            <option value="New Contract with No Prior Contract(s) with Entity" >
+                            <option value="New Contract" >
                             New Contract with No Prior Contract(s) with Entity
                             </option>
-                            <option value="Contracted Services Continuation Renewal Contract">
+                            <option value="Renewal Contract">
                             Contracted Services Continuation Renewal Contract
                             </option>
                         </select>
                 </div>
-                <div className={style.displayInRow}>
-                    <div className={`${style.contractCards} ${selectedContractOnClick && style.selectedContractCard}`} onClick={() => setSelectedContractOnClick(true)}>
+                <div className={`${style.displayInRow} ${style.marginLeft20}`}>
+                    <div className={`${style.contractCards} ${contractType === "INDIVIDUAL" && style.selectedContractCard}`} onClick={() => {setSelectedContractOnClick(true);setContractType('INDIVIDUAL')}}>
                         <div className={style.alignCenter}>
                             <div>
-                                <img src={selectedContractOnClick ? HighlightedDoctor : Doctor} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract with No Prior Contract(s) with Entity' ? '' : style.reducedOpacity}`} />
-                                <div className={`${style.contractCardData} ${selectedContract === 'New Contract with No Prior Contract(s) with Entity' ? style.activeContractText : ''}`}>
+                                <img src={selectedContractOnClick ? HighlightedDoctor : Doctor} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract' ? '' : style.reducedOpacity}`} />
+                                <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
                                 Individual Contractor Contract
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className={style.contractCards}>
+                    <div className={`${style.contractCards} ${contractType === "MULTIPLE" && style.selectedContractCard}`} onClick={() => setContractType('MULTIPLE')}>
                         <div className={style.alignCenter}>
                             <div>
-                                <img src={DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract with No Prior Contract(s) with Entity' ? '' : style.reducedOpacity}`} />
-                                <div className={`${style.contractCardData} ${selectedContract === 'New Contract with No Prior Contract(s) with Entity' ? style.activeContractText : ''}`}>
+                                <img src={DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract' ? '' : style.reducedOpacity}`} />
+                                <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
                                 Multiple Contractor Contract
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {selectedContractOnClick && (
-                    <div className={style.descriptionBoxStyle}>
-                        <p className={style.descriptionStyle}>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-                            tempor incididunt ut labore,
-                            <span className={`${style.blueColor} ${style.marginLeft20}`}> 
-                            quis nostrud xercitation ullamco laboris nisi 
-                            ut aliquip ex ea commodo consequat
-                            </span>
-                        </p>  
-                    </div>
-                )}
+
+                {
+                //   selectedContractOnClick && (
+                //     <div className={style.descriptionBoxStyle}>
+                //         <p className={style.descriptionStyle}>
+                //             After selecting one of the options above and clicking Next, you will be guided through
+                //             <span className={`${style.blueColor} ${style.marginLeft20}`}>
+                //             the Contracts Manager wizard to help upload contracts and assign the appropriate
+                //             metadata.
+                //             </span>
+                //         </p>
+                //     </div>
+                // )
+              }
             </div>
-            <div className={style.nextButtonPosition}>
-                <button className={style.nextButton} onClick={() => {getNewContract(true);getAddContract(false)}}>NEXT</button>
+            <div className={`${style.nextButtonPosition} ${style.marginTop20}`}>
+                <button className={(selectedContract !== '0' && contractType !== '') ? style.nextButton : style.nextButtonDisabled} disabled={(selectedContract === '0' || contractType === '') ? true : false} onClick={() => {handleNext()}}>NEXT</button>
             </div>
         </div>
     )

@@ -1,8 +1,11 @@
 @import '../../styles/mixins.scss';
 
+$headingBlue: #003685;
+$shiningBlue: #0067ff;
+
 body{
     background: #F8FCFF 0% 0% no-repeat padding-box;
-    -ms-overflow-style: none !important; 
+    -ms-overflow-style: none !important;
     scrollbar-width: none !important;
     ::-webkit-scrollbar {
         display: none !important;
@@ -66,6 +69,12 @@ body{
     grid-gap: 20px;
 }
 
+.grid4{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
 .bigCardGrid{
     display: grid;
     grid-template-columns: 1fr 4fr;
@@ -81,7 +90,7 @@ body{
     width: 53px;
     height: 53px;
     border-radius: 50%;
-
+    object-fit: contain;
 }
 
 .alignCenter{
@@ -104,9 +113,9 @@ body{
 
 .loginStatus{
     text-align: left;
-    font: italic normal normal 11px/15px Roboto;
+    font: italic normal normal 10px/15px Roboto;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
     margin-top: 5px;
     max-width: 100px;
     opacity: 1;
@@ -114,6 +123,10 @@ body{
 
 .marginLeft20{
     margin-left: 10px;
+}
+
+.marginLeft30{
+    margin-left: 30px;
 }
 
 .marginLeft50{
@@ -137,8 +150,8 @@ body{
 }
 
 .chevronRightStyle{
-    width: 30px;
-    height: 30px;
+    width: 18px;
+    height: 18px;
     background: #EBF2F7 0% 0% no-repeat padding-box;
     opacity: 1;
     border-radius: 50%;
@@ -160,8 +173,8 @@ body{
 
 .headingCountForContracts{
     color: #52575D;
-    font-size: 50px;
-    margin-top: -20px;
+    font-size: 40px;
+    // margin-top: -20px;
     font-weight: bold;
     @include breakpoint(md) {
         font-size: 40px;
@@ -198,6 +211,10 @@ body{
     color: #FEC106;
 }
 
+.orange{
+    color: orange;
+}
+
 .red{
     color: #FF6562;
 }
@@ -209,7 +226,7 @@ body{
 .next30Style{
     text-align: left;
     font: normal normal normal 10px/18px Roboto;
-    color: #B3B8BD;
+    color: #52575D;
     opacity: 1;
     margin-bottom: -5px ;
     margin-top: -10px ;
@@ -248,7 +265,7 @@ body{
 .viewStyle{
     font: normal normal normal 10px/15px Montserrat;
     letter-spacing: -0.3px;
-    color: #B3B8BD;
+    color: #52575D;
     opacity: 1;
 }
 
@@ -301,7 +318,6 @@ body{
     height: 15px;
     width: 15px;
     margin-right: 5px;
-    margin-top: 10px;
 }
 
 .colorIconsStyle{
@@ -344,7 +360,7 @@ body{
 
 .tableHeader{
     background: #BEB9F2 0% 0% no-repeat padding-box;
-    height: 50px;
+    min-height: 50px;
     width: 96%;
     margin-left: 2%;
     border-radius: 6px;
@@ -371,7 +387,8 @@ body{
     border-radius: 6px;
     text-align: left;
     display: grid;
-    grid-template-columns: 10% 30% 25% 25% 10%;
+    grid-template-columns: 10% 28% 24% 24% 10%;
+    grid-gap: 10px;
 }
 
 .documentProofInputWidth{
@@ -384,7 +401,7 @@ body{
 
 .tableData{
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    height: 50px;
+    min-height: 50px;
     width: 96%;
     margin-left: 2%;
     border-radius: 6px;
@@ -393,9 +410,26 @@ body{
     margin-top: 5px;
 }
 
+.activeContractGrid{
+    display: grid;
+    grid-template-columns: 5% 10% 10% 10% 10% 10% 7% 10% 10% 5%;
+    grid-gap: 10px;
+}
+
+.draftContractGrid{
+    display: grid;
+    grid-template-columns: 8% 10% 10% 10% 10% 10% 10% 12% 10%;
+    grid-gap: 10px;
+}
+
+.expiredContractGrid{
+    display: grid;
+    grid-template-columns: 10% 12% 10% 12% 12% 12% 10% 12%;
+    grid-gap: 10px;
+}
+
 .documentDataProof{
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    height: 50px;
     width: 96%;
     margin-left: 2%;
     border-radius: 6px;
@@ -404,11 +438,11 @@ body{
     margin-top: 5px;
     display: grid;
     grid-template-columns: 10% 25% 20% 20% 20% 5%;
+    word-break: break-word !important;
 }
 
 .serviceSpecificationTableData{
     background: #F5F5F8 0% 0% no-repeat padding-box;
-    height: 50px;
     width: 96%;
     margin-left: 2%;
     border-radius: 6px;
@@ -416,16 +450,14 @@ body{
     align-items: center;
     margin-top: 5px;
     display: grid;
-    grid-template-columns: 10% 30% 25% 25% 10%;
+    grid-template-columns: 10% 28% 24% 24% 10%;
+    grid-gap: 10px;
 }
 
 .checkBoxHeader{
-    background: #E9E9F0 0% 0% no-repeat padding-box;
-    border: 1px solid #E9E9F0;
     opacity: 1;
     height: 25px;
     width: 10%;
-    margin: 0 0px 0 20px;
 }
 
 .checkBoxData{
@@ -443,9 +475,7 @@ body{
     color: #52575D;
     text-transform: uppercase;
     opacity: 1;
-    margin-right: 20px;
     text-align: left;
-    width: 10%;
     margin-top: 10px;
 }
 
@@ -476,10 +506,7 @@ body{
     letter-spacing: 0px;
     color: #52575D;
     text-transform: uppercase;
-    opacity: 1;
-    margin-right: 20px;
-    text-align: center;
-    width: 10%;
+    text-align: left;
     margin-top: 10px;
 }
 
@@ -539,13 +566,13 @@ body{
 }
 
 .width10{
-    width: 10%;
+    width: 7%;
 }
 
 .accountActivityStyle{
     font: normal normal normal 15px/22px Montserrat;
     letter-spacing: 0.66px;
-    color: #B3B8BD;
+    color: #52575D;
     opacity: 0.38;
     margin-left: 20px;
     margin-top: 7px;
@@ -589,10 +616,6 @@ body{
     background: #D8D7EE 0% 0% no-repeat padding-box;
     opacity: 0.99;
     width: 40px;
-    position: absolute;
-    right: 50;
-    margin-top: -160px;
-    margin-left: 70%;
 }
 
 .poweredBy{
@@ -605,7 +628,7 @@ body{
 }
 
 .leftChevronColor{
-    color: #B3B8BD;
+    color: #52575D;
 }
 
 .marginRight{
@@ -660,6 +683,15 @@ body{
     width: 100px;
     border: none;
     border-radius: 6px;
+    cursor: not-allowed;
+}
+
+.disabledUploadButton{
+    color:rgba(143, 153, 168, 0.5) !important;
+    background-color: #f1f2f3;
+    border: none;
+    border-radius: 6px;
+    cursor: not-allowed !important;
 }
 
 .addMoreButton{
@@ -714,7 +746,7 @@ body{
 }
 
 .fullWidth{
-    width: 100%;
+    width: 100% !important;
 }
 
 .contractId{
@@ -732,12 +764,11 @@ body{
 }
 
 .welcomeMessage{
-    background: #BEB9F2 0% 0% no-repeat padding-box;
-    opacity: 0.4;
+    background: #ebe9fb 0% 0% no-repeat padding-box;
     text-align: left;
     font: normal normal 300 13px/15px Montserrat;
     letter-spacing: 0.9px;
-    color: #6F7479;
+    color: #52575D;
     padding: 20px;
 }
 
@@ -783,19 +814,19 @@ body{
     text-align: left;
     font: normal normal normal 13px/17px Montserrat;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
     text-transform: capitalize;
     opacity: 1;
     margin-top: 5px;
 }
 
 .toStyle{
-    color: #B3B8BD;
+    color: #52575D;
     margin: 5px 20px 0 20px;
 }
 
 .greyText{
-    color: #B3B8BD;
+    color: #52575D;
 }
 
 .extentionBoxStyle{
@@ -833,15 +864,29 @@ body{
     border: 1px solid #7165E3;
     border-radius: 8px;
     opacity: 1;
-    height: calc(100vh - 160px);
-    overflow: scroll;
+    // height: calc(100vh - 160px);
+    // overflow: scroll;
     width: 100%;
     margin-left: -10px;
     padding: 20px;
 }
 
 .textAlignLeft{
-    text-align: left;
+    text-align: left !important;
+}
+
+.floatLeft{
+    float: left !important;
+}
+
+.flexLeft{
+    display: flex;
+    justify-content: left;
+}
+
+.switchFontStyle{
+    font: normal normal normal 15px/20px Montserrat;
+    color: #52575D;
 }
 
 .dialogPaddingBottom{
@@ -854,6 +899,14 @@ body{
     cursor: pointer;
 }
 
+.newContractCrossStyle{
+    color: linear-gradient(#7165E3, #FF6562) !important;
+    cursor: pointer;
+    margin-top: -10px;
+    margin-right: -20px;
+    margin-left: 20px;
+}
+
 .trashStyle{
     color: linear-gradient(#7165E3, #FF6562) !important;
     cursor: pointer;
@@ -861,6 +914,10 @@ body{
 
 .textFieldWidth{
     width: 350px;
+}
+
+.addContractTextFieldWidth{
+    width: 400px;
 }
 
 select {
@@ -942,7 +999,7 @@ select {
     text-align: center;
     font: normal normal 600 12px/14px Montserrat;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
     opacity: 1;
     width: 150px;
   }
@@ -974,6 +1031,17 @@ select {
     cursor: pointer;
   }
 
+  .nextButtonDisabled{
+    border-radius: 12px;
+    opacity: 1;
+    background-color: #cccccc;
+    color: #666666;
+    border: none;
+    height: 40px;
+    width: 180px;
+    cursor: not-allowed;
+  }
+
   .nextButtonPosition{
       display: flex;
       float: right;
@@ -1002,6 +1070,13 @@ select {
       width: 60% !important;
       border-radius: 20px;
   }
+
+  .toolbarDialogStyle{
+    height: 100vh;
+    width: 100% !important;
+    border-radius: 8px !important;
+    margin-top: 0;
+}
 
     .addManagerDialogStyle{
         height: 50%;
@@ -1071,6 +1146,12 @@ select {
     border-radius: 10px;
   }
 
+  @media screen and (max-width: 1350px) {
+    .newContractButtonStyle, .newContractOutlinedButton{
+        width: 140px;
+    }
+  }
+
   .floatRight{
       float: right;
   }
@@ -1112,13 +1193,21 @@ select {
     margin-top: -10px;
 }
 
+.reduceTop35{
+    margin-top: -35px;
+}
+
+.reduceTop20{
+    margin-top: -20px;
+}
+
 .reduceTop{
     margin-top: -5px;
 }
 
 .toStyle{
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
 }
 
 .weekSelectStyle{
@@ -1143,12 +1232,13 @@ select {
     background: #EBF2F7 0% 0% no-repeat padding-box;
     border-radius: 10px;
     opacity: 1;
-    height: 80px;
+    min-height: 80px;
     min-width: 100%;
+    cursor: pointer;
 }
 
 .completedEntityCardStyle{
-    background-color: #BEB9F2;
+    background-color: #d7d4f7;
     color: black;
     font-weight: 600 !important;
     display: grid;
@@ -1206,7 +1296,7 @@ select {
     font: normal normal normal 15px/30px Montserrat;
     letter-spacing: 0px;
     opacity: 1;
-    color: #B3B8BD;
+    color: #52575D;
 }
 
 .deleteDescriptionStyle{
@@ -1214,7 +1304,7 @@ select {
     font: normal normal normal 13px/23px Montserrat;
     letter-spacing: 0px;
     opacity: 1;
-    color: #B3B8BD;
+    color: #52575D;
     line-height: 20px;
 }
 
@@ -1222,7 +1312,7 @@ select {
     border: 1px solid #B3B8BD;
     border-radius: 8px;
     opacity: 1;
-    width: 80%;
+    width: 110%;
     margin-top: 40px;
     padding: 20px;
     background-color: white;
@@ -1234,9 +1324,8 @@ select {
     border-radius: 6px;
     opacity: 1;
     padding: 20px;
-    width: 62%;
-    margin-left: 38%;
-    margin-top: -60px;
+    width: 100%;
+    display: block;
 }
 
 .blueColor{
@@ -1249,8 +1338,8 @@ select {
 }
 
 .selectFieldSwitchWidth{
-    min-width: 240px;
-    max-width: 240px;
+    min-width: 210px;
+    max-width: 210px;
 }
 
 .fieldWidth2InARow{
@@ -1334,6 +1423,16 @@ select {
     border-radius: 4px !important;
   }
 
+  .serviceProvidedEditableTextStyle{
+    height: 35px;
+    display: flex;
+    align-items: center;
+    padding-left:10px;
+    padding-top: 8px;
+    width: 50px;
+    border-radius: 4px !important;
+  }
+
   .editableTextThresholdStyle{
     height: 35px;
     display: flex;
@@ -1341,17 +1440,15 @@ select {
     text-align: left;
     padding-left:15px;
     padding-top: 8px;
-    width: 50px;
+    width: 60px;
     border-radius: 4px !important;
   }
 
   .editableTextSpecifiedStyle{
     height: 35px;
-    display: flex;
-    align-items: center;
+    padding-left:20px;
+    padding-top: 8px;
     text-align: left;
-    padding-left:15px;
-    margin-top: 8px;
     width: 65px;
     border-radius: 4px !important;
   }
@@ -1362,9 +1459,13 @@ select {
     align-items: center;
     text-align: left;
     padding-top: 8px;
-    padding-left:20px;
+    padding-left:10px;
     width: 50px;
     border-radius: 4px !important;
+  }
+
+  .editableTextStyle4DaysWidth{
+    width: 55px !important;
   }
 
   .textElementWithoutBackgroundDays{
@@ -1391,8 +1492,8 @@ select {
     height: 35px;
     display: flex;
     align-items: center;
-    padding: 8px 30px;
-    width: 75px;
+    padding: 8px 15px;
+    width: 75px !important;
     border-radius: 4px !important;
   }
 
@@ -1480,11 +1581,23 @@ select {
 
 .renewalBoxStyle{
     background-color: #EBECED;
-    color: #B3B8BD;
+    color: #52575D;
     text-align: left;
     border: 1px solid #B3B8BD;
     border-radius: 10px;
     height: 100px;
+    font: normal normal normal 13px/15px Montserrat;
+    margin-top: 10px;
+    padding: 15px;
+}
+
+.departmentLevelBoxStyle{
+    background-color: #EBECED;
+    color: #52575D;
+    text-align: left;
+    border: 1px solid #B3B8BD;
+    border-radius: 10px;
+    // height: 140px;
     font: normal normal normal 13px/15px Montserrat;
     margin-top: 10px;
     padding: 15px;
@@ -1492,22 +1605,21 @@ select {
 
 .siteLevelBoxStyle{
     background-color: #EBECED;
-    color: #B3B8BD;
+    color: #52575D;
     text-align: left;
     border: 1px solid #B3B8BD;
     border-radius: 10px;
-    height: 60px;
+    // height: 100px;
     font: normal normal normal 13px/15px Montserrat;
     margin-top: 10px;
     padding: 15px;
 }
 
 .renewalRemainderBoxStyle{
-    color: #B3B8BD;
+    color: #52575D;
     text-align: left;
     border: 1px solid #B3B8BD;
     border-radius: 10px;
-    height: 100px;
     font: normal normal normal 13px/15px Montserrat;
     margin-top: 10px;
     padding: 15px;
@@ -1529,7 +1641,7 @@ select {
     border-radius: 4px;
     padding: 7px 0 0 25px;
     color: black;
-    width: 80%;
+    width: 50%;
 }
 
 .renewalBoxGrid{
@@ -1635,6 +1747,7 @@ select {
 ::-webkit-scrollbar {
     width: 0 !important;
     height: 0 !important;
+    display: none !important;
   }
 
   .contractedBorderStyle{
@@ -1650,3 +1763,159 @@ select {
       width: 80px;
       object-fit: contain;
   }
+
+  .timesheetButtonStyle{
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    border: 1px solid #7165E3;
+    border-radius: 6px 6px 0px 0px;
+    width: 180px;
+    height: 40px;
+  }
+
+  .selectedTimesheetButton{
+    background: #D7D4F7 0% 0% no-repeat padding-box;
+  }
+
+  .timeSheetBoxStyle{
+    border: 1px solid #7165E3;
+    border-radius: 0px 6px 0px 0px;
+    opacity: 1;
+    height: calc(100vh - 160px);
+    overflow: scroll;
+    width: 100%;
+    margin-left: -10px;
+    padding: 20px;
+}
+
+.workflowBoxStyle{
+    border: 1px solid #E9E9F0;
+    border-radius: 0px 6px 0px 0px;
+    opacity: 1;
+    height: calc(100vh - 160px);
+    overflow-x: hidden;
+    width: 105%;
+    margin-left: -10px;
+    padding: 10px;
+}
+
+.workFlowButtonStyle{
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    border: 1px solid #7165E3;
+    border-radius: 6px 6px 0px 0px;
+    width: 130px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+  }
+
+  .flowChartBoxStyle{
+    border: 1px solid #F3F3F3;
+    opacity: 1;
+    height: 200vh;
+    width: 100%;
+    background-color: #F3F3F3;
+   }
+
+  .selectedWorkFlowButton{
+    background: #D7D4F7 0% 0% no-repeat padding-box;
+  }
+
+  .shapeBackground{
+    background: black 0% 0% no-repeat padding-box;
+    border: 1px solid #7165E3;
+    height: 50px;
+    width: 60px;
+    margin: 20px;
+  }
+
+  .disabledView{
+      opacity: 0.5;
+  }
+
+  .tagStyle {
+    margin: 0 5px 10px 0 !important;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  .customFileUpload {
+    cursor: pointer;
+    width:70px;
+    height: 50px;
+    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 1.25;
+    background-color: #f1f2f3;
+    color: #7165E3;
+    border: none;
+    position: relative;
+    top: 7px;
+  }
+
+  .selectMultipleCheckbox{
+    height: auto;
+    min-height: 1em !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .addButtonPosition{
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .alternativeBackgroundColor{
+    background-color: #ebe9fb !important;
+}
+
+.dateInputStyle{
+    height: 40px !important;
+    padding: 0px;
+}
+
+.horizontalScroll{
+  width: 30em;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.countDesign{
+    border-radius: 8px;
+    height: 20px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+}
+
+.orangeCountStyle{
+   color: #ffa500;
+   background-color: #ffedcc;
+}
+
+.redCountStyle{
+    color: #FF6562;
+    background-color: #ffcdcc;
+ }
+
+ .selectedOrangeCountStyle{
+    background-color: #ffa500;
+    color: white;
+ }
+ 
+ .selectedRedCountStyle{
+    background-color: #FF6562;
+    color: white;
+  }
+
+ .verticalAlignCenter{
+    display: flex;
+    align-items: center;
+    height: 100%;
+ }

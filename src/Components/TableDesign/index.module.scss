@@ -1,0 +1,168 @@
+
+
+.tableHeader{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    min-height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+}
+
+.marginTop10{
+    margin-top: 10px !important;
+}
+
+.marginTop40{
+    margin-top: 40px !important;
+}
+
+.marginLeft30{
+    margin-left: 30px;
+}
+
+.tableHeaderFontStyle{
+    font: normal normal bold 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+    text-align: left;
+}
+
+.tableData{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    min-height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    margin-top: 5px;
+}
+
+.alternativeBackgroundColor{
+    background-color: #ebe9fb !important;
+}
+
+.displayInRow{
+    display: flex;
+    flex-direction: row;
+}
+
+.green{
+    color: #00C07F;
+}
+
+.yellow{
+    color: #FEC106;
+}
+
+.greenDotStyle{
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: #00C07F;
+    margin-top: 8px;
+}
+
+.yellowDotStyle{
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: #FEC106;
+    margin-top: 8px;
+}
+
+.tableDataFontStyle{
+    font: normal normal normal 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.cursorPointer{
+    cursor: pointer;
+}
+
+.colorFileStyle{
+    height: 15px !important;
+    width: 15px !important;
+    margin-right: 5px;
+    object-fit: contain;
+}
+
+.dotStyle{
+    height: 20px;
+    width: 80px;
+    object-fit: contain;
+}
+
+.displayInCol{
+    display: flex;
+    flex-direction: column;
+}
+
+.actionCard{
+    background: #D8D7EE 0% 0% no-repeat padding-box;
+    opacity: 0.99;
+    width: 40px;
+}
+
+.actionsIcon{
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+}
+
+.spaceBetween{
+    display: flex;
+    justify-content: space-between;
+}
+
+.paginationStyle{
+    font: normal normal 600 12px/15px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 1;
+    margin-top: 10px;
+}
+
+.marginLeft20{
+    margin-left: 10px;
+}
+
+.leftChevronColor{
+    color: #52575D;
+}
+
+.roundChevron{
+    width: 15px;
+    height: 15px;
+    margin-left: 10px;
+    margin-right: 20px;
+    margin-top: 11px;
+}
+
+.verticalAlignCenter{
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.actionsCard{
+    background: #857AEF 0% 0% no-repeat padding-box;
+    // border: 0.4000000059604645px solid #6F6B6B;
+    border-radius: 4px;
+}
+
+.specificActionCard{
+    height: 35px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    color: #F5F9FD;
+}
+
+.specificActionCard:hover{
+    background: #F5F9FC 0% 0% no-repeat padding-box;
+    color: #7165E3;
+}

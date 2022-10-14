@@ -1,20 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, Tag} from '@blueprintjs/core';
+import {POST, TenantID, GET} from './../dataSaver';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import FunctionalTitleList from './../../Components/FunctionalTitleList';
 import style from './index.module.scss';
 
 const AddUser = ({getAddUserDialog}) => {
 
-    const [addUser, setAddUser] = useState({firstName: "", lastName: "", email: "", roles: [{id: "", roleName: ""}]});
-    console.log(addUser)
-    const roles =["Role 1", "Role 2", "Role 3"];
+    const [addUser, setAddUser] = useState({firstName: "", lastName: "", email: "", roles: [{id: "", roleName: ""}], title: {title:"",id:""}});
+    const [customerType, setCustomerType] = useState('HEALTHCARE');
+    const [roles, setRoles] = useState([])
+    const [department, setDepartment] = useState([])
+    const [sites, setSites] = useState([])
+
     const [selectedRoles, setSelectedRoles] = useState([])
+    const [selectedDepartments, setSelectedDepartments] = useState([])
+    const [selectedSites, setSelectedSites] = useState([])
 
     const handleRoles = (value) => {
       if (value !== '0') {
-        const selectedValue = roles.filter(data => data === value).map(data => data)[0];
- 
-        if (!selectedRoles.map(data => data).includes(value)) {
+        const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
+
+        if (!selectedRoles.map(data => data?.roleName).includes(value)) {
           setSelectedRoles([...selectedRoles, selectedValue]);
+        }
+      }
+    }
+
+    const handleDepartments = (value) => {
+      if (value !== '0') {
+        const tempSelectedDepartments = department.filter(data => data?.departmentName?.name === value).map(data => data)[0];
+
+        if (!selectedDepartments.map(data => data?.id).includes(tempSelectedDepartments?.id)) {
+          setSelectedDepartments([...selectedDepartments, tempSelectedDepartments]);
+        }
+      }
+    }
+
+    const handleSites = (value) => {
+      if (value !== '0') {
+        const tempSelectedSites = sites.filter(data => data?.siteName?.siteName === value).map(data => data)[0];
+
+        if (!selectedSites.map(data => data?.id).includes(tempSelectedSites?.id)) {
+          setSelectedSites([...selectedSites, tempSelectedSites]);
         }
       }
     }
@@ -23,115 +51,111 @@ const AddUser = ({getAddUserDialog}) => {
     .filter(data => roles.map(role => role).includes(data))
     .map((tag, index) => {
       const onRemove = () => {
-        setSelectedRoles(selectedRoles.filter((t) => t !== tag));
+        setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName));
       };
       return (
         <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
-          {tag}
+          {tag?.roleName}
         </Tag>
       );
     });
 
+    const departmentsTags = selectedDepartments
+    .filter(data => department.map(dept => dept).includes(data))
+    .map((tag, index) => {
+      const onRemoveDepartment = () => {
+        setSelectedDepartments(selectedDepartments.filter((t) => t?.departmentName?.name !== tag?.departmentName?.name));
+      };
+      return (
+        <Tag key={index} onRemove={onRemoveDepartment} large={true} className={style.tagStyle}>
+          {tag?.departmentName?.name}
+        </Tag>
+      );
+    });
+
+    const sitesTags = selectedSites
+    .filter(data => sites.map(dept => dept).includes(data))
+    .map((tag, index) => {
+      const onRemoveSite = () => {
+        setSelectedSites(selectedSites.filter((t) => t?.siteName?.siteName !== tag?.siteName?.siteName));
+      };
+      return (
+        <Tag key={index} onRemove={onRemoveSite} large={true} className={style.tagStyle}>
+          {tag?.siteName?.siteName}
+        </Tag>
+      );
+    });
+
+    const handleTitle = (id, value) => {
+      setAddUser({...addUser, title:{id:id,title:value}});
+    }
+
     const submitUserDetails = async () => {
 
-      let roleValue = [];
-
-      roles?.map(data=>{
-        roleValue.push(  {
-        "id": "string",
-        "roleName": data,
-        "roleDescription": "string",
-        "tenant": {
-          "tenantId": "string"
-        }
-      })
-      })
-
+      if(!addUser?.email.includes('@') || !addUser?.email.includes('.')) {
+        ErrorToaster('Enter a valid mail-id');
+        return;
+      }
+      if(addUser?.firstName === '' && addUser?.email === '' && selectedRoles?.length ===0 && selectedSites?.length === 0)
+      {
+        ErrorToaster('All Fields are Mandatory');
+        return;
+      }
       const user = {
         "name": {
           "firstName": addUser?.firstName,
           "lastName": addUser?.lastName,
-          "suffix": "string"
+          "suffix": {}
         },
         "userType": "ADMIN",
-        "contractType": {
-          "contractType": "string"
-        },
-        "contractID": {
-          "contractID": "string"
-        },
-        "title": {
-          "title": "string"
-        },
+        "title":addUser?.title,
         "email": {
           "officialEmail": addUser?.email
         },
         "password": {
           "password": "string"
         },
-        "communication": {
-          "personalEmail": "string",
-          "mobileNumber": "string",
-          "landlineNumber": "string"
-        },
-        "roles": roleValue,
-        "address": {
-          "city": "string",
-          "state": "string",
-          "zipcode": "string"
-        },
+        "roles": selectedRoles,
+
         "tenant": {
-          "tenantId": "string"
+          "tenantId": TenantID
         },
         "sites": {
-          "sites": [
-            "string"
-          ]
+          "sites": selectedSites
         },
-        "licenceDetails": {
-          "medicalLicense": "string",
-          "licenseExpiryDate": "2022-05-29",
-          "deaNumber": "string",
-          "deaExpiryDate": "2022-05-29",
-          "boardCertification": [
-            "string"
-          ]
-        },
-        "userProxy": {
-          "myProxy": {
-            "proxyIdList": [
-              {
-                "id": "string",
-                "name": "string"
-              }
-            ]
-          },
-          "proxyFor": {
-            "proxyIdList": [
-              {
-                "id": "string",
-                "name": "string"
-              }
-            ]
-          }
-        },
-        "blocked": true
-      };
+        "blocked": false
+      }
 
-      const userDetails = {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json',
-                    'X-tenantID' : '6242845f95690b3822cb96a5'},
-          body: JSON.stringify(user)
-      };
-      fetch('http://ec2-44-202-85-195.compute-1.amazonaws.com:8000/user-management-service/user/register', userDetails)
-          .then(response => response.json())
-          .then(data => {
-            console.log(data)
-            return true;
-          }
-        )
+    await POST('user-management-service/user/register', JSON.stringify(user))
+      .then(response=>{
+        SuccessToaster('User Added Successfully');
+      })
+      .catch(error=>{
+        ErrorToaster('Unexpected Error');
+      })
+      getAddUserDialog(false)
     }
+
+    const getRoles = async() => {
+      const {data: roles} = await GET('user-management-service/roles');
+      setRoles(roles);
+    };
+
+    const getDepartments = async() => {
+      const {data: department} = await GET('entity-service/department');
+      setDepartment(department);
+    };
+
+    const getSites = async() => {
+      const {data: sites} = await GET('entity-service/sites');
+      setSites(sites);
+    };
+
+    useEffect(()=>{
+      getRoles();
+      getDepartments();
+      getSites();
+  },[])
 
     return(
         <Dialog isOpen={getAddUserDialog} onClose={() => getAddUserDialog(false)} className={`${style.addManagerDialogBackground} ${style.addProofDialog}`}>
@@ -148,10 +172,17 @@ const AddUser = ({getAddUserDialog}) => {
                     <select
                         name="class"
                         id="Class"
+                        value={customerType}
+                        onChange={(e) => setCustomerType(e.target.value)}
                         className={`${style.fullWidth} ${style.marginLeft20} `}>
-
-                            <option value="Select Customer Type" >
-                              Select Customer Type
+                            <option value="HEALTHCARE" >
+                            HEALTHCARE
+                            </option>
+                            <option value="FINANCE" disabled>
+                            FINANCE
+                            </option>
+                            <option value="GOVERNMENT" disabled >
+                            GOVERNMENT
                             </option>
                     </select>
                   </div>
@@ -170,26 +201,58 @@ const AddUser = ({getAddUserDialog}) => {
               <InputGroup value={addUser?.email} onChange={(e) => setAddUser({...addUser, email: e.target.value})} />
             </div>
 
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Department*</div>
                 <div className={`${style.reduce10Left} ${style.marginRight}`}>
                     <select
                         name="class"
                         id="Class"
+                        onChange={(e) => handleDepartments(e.target.value)}
                         className={`${style.fullWidth} ${style.marginLeft20} `}>
 
                             <option value="Select Department" >
                               Select Department
                             </option>
+                            {department?.map((data, index) => (
+                              <option key={`${data}-${index}`} value={data?.departmentName?.name} >
+                                {data?.departmentName?.name}
+                              </option>
+                            ))}
                     </select>
+                    <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                      {departmentsTags}
+                    </div>
                   </div>
-            </div>
+            </div> */}
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <div className={style.extentionLableStyle}>Title*</div>
-              <InputGroup value="Title" />
+              <div className={style.extentionLableStyle}>Sites*</div>
+              <div className={`${style.reduce10Left} ${style.marginRight}`}>
+                <select
+                    name="class"
+                    id="Class"
+                    onChange={(e) => handleSites(e.target.value)}
+                    className={`${style.fullWidth} ${style.marginLeft20} `}>
+                        <option value="0" >
+                          Select Sites
+                        </option>
+                        {sites?.map((data, index) => (
+                          <option key={`${data}-${index}`} value={data?.siteName?.siteName} >
+                            {data?.siteName?.siteName}
+                          </option>
+                        ))}
+                </select>
+                <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                  {sitesTags}
+                </div>
+              </div>
             </div>
-
+            {
+              <div className={`${style.addManagerGrid}`}>
+                  <div className={style.extentionLableStyle}>Title*</div>
+                  <FunctionalTitleList value={addUser?.title?.id} onChangeFunc={(id,value)=>handleTitle(id,value)} className={[style.fullWidth]} providerId=""/>
+              </div>
+            }
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Role*</div>
                 <div className={`${style.reduce10Left} ${style.marginRight}`}>
@@ -201,15 +264,11 @@ const AddUser = ({getAddUserDialog}) => {
                             <option value="0" >
                               Select Role-multi select
                             </option>
-                            <option value="Role 1" >
-                              Role 1
-                            </option>
-                            <option value="Role 2" >
-                              Role 2
-                            </option>
-                            <option value="Role 3" >
-                              Role 3
-                            </option>
+                            {roles?.map((data, index) => (
+                              <option key={`${data}-${index}`} value={data?.roleName} >
+                                {data?.roleName}
+                              </option>
+                            ))}
                     </select>
                     <div className={`${style.marginTop20} ${style.marginLeft20}`}>
                       {rolesTags}
@@ -218,7 +277,7 @@ const AddUser = ({getAddUserDialog}) => {
             </div>
         </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={`${style.buttonStyle} ${style.marginLeft20}`}  >ADD</button>
+                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => submitUserDetails()} >ADD</button>
             </div>
         </div>
         </Dialog>

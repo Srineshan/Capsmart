@@ -20,6 +20,16 @@
     width: 184px;
     height: 81px;
     opacity: 1;
+    margin-right: 80px;
+}
+
+.sanmateoLogo{
+    top: 0px;
+    left: 42px;
+    width: 220px;
+    height: 80px;
+    object-fit: contain;
+    margin-right: 80px;
 }
 
 .menuStyle{
@@ -41,7 +51,7 @@
 .activeMenuColor{
     color: #7165E3;
     border-bottom:2px solid #7165E3;
-    padding-bottom:2px;
+    padding-bottom:15px;
     font: normal normal 600 15px/25px Montserrat;
     margin-top: 27px;
 }
@@ -78,4 +88,28 @@
 .spaceBetween{
     display: flex;
     justify-content: space-between;
+}
+
+.optionsCardStyle{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 11px #52575D;
+    border-radius: 4px 4px 0px 0px;
+    width: 200px;
+    position: absolute;
+}
+
+.options{
+    padding: 10px;
+    font-size: 12px;
+    text-align: left;
+}
+
+.options:hover{
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    color: #7064DE;
+}
+
+.noFontStyle{
+    text-decoration: none !important;
+    color: black;
 }

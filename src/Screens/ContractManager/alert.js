@@ -1,14 +1,8 @@
 import React,{useState} from 'react';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import style from './index.module.scss';
-import AddProofOfDocumentation from './addProofOfDocumentation';
 
-const Alert = ({getShowAlertDialog, isMultipleContract}) => {
-  const [showProofDialog,setShowProofDialog] = useState(false);
-
-  const getShowProofDialog = (value) => {
-    setShowProofDialog(value);
-  }
+const Alert = ({getShowAlertDialog, isMultipleContract, contractId}) => {
 
     return(
       <>
@@ -28,15 +22,10 @@ const Alert = ({getShowAlertDialog, isMultipleContract}) => {
             </span>
             </p>
             <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={()=>setShowProofDialog(true)}>OK</button>
+                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`}>OK</button>
             </div>
           </div>
         </Dialog>
-
-        {
-          showProofDialog &&
-          <AddProofOfDocumentation getShowProofDialog={getShowProofDialog} isMultipleContract={isMultipleContract} />
-        }
       </>
     )
 }
