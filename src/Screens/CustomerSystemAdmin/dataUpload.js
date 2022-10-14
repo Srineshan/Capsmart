@@ -3,6 +3,7 @@ import { GET } from './../dataSaver';
 import Tile from '../../Components/Tile';
 import Table from '../../Components/TableDesign';
 import LevelTwoHeader from '../../Components/LevelTwoHeader';
+import {format, startOfWeek, endOfWeek} from 'date-fns';
 
 import style from './index.module.scss';
 
@@ -11,24 +12,24 @@ const DataUpload = ({getSelectedOption}) => {
     const [selectedContract, setSelectedContract] = useState('FILE PROCESSED');
     const [activitiesFileMetaSummary, setActivitiesFileMetaSummary] = useState({});
     const [viewActiveFiles, setViewActiveFiles] = useState(true);
+    const [from, setFrom] = useState(startOfWeek(new Date()));
+    const [to, setTo] = useState(endOfWeek(new Date()));
 
     useEffect(() => {
         getActivitiesFileMeta();
         getActivitiesFileMetaSummary();
-    }, [])
+    }, [from, to])
 
     const getActivitiesFileMeta = async () => {
-        const { data: activitiesFileMeta } = await GET('data-manager-service/activitiesFileMeta');
+        const { data: activitiesFileMeta } = await GET(`data-manager-service/activitiesFileMeta?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
         setActivitiesFileMeta(activitiesFileMeta)
-        console.log(activitiesFileMeta)
     };
 
     const getActivitiesFileMetaSummary = async () => {
-        const { data: summary } = await GET('data-manager-service/activitiesFileMeta/summary');
+        const { data: summary } = await GET(`data-manager-service/activitiesFileMeta/summary?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
         setActivitiesFileMetaSummary(summary)
-        console.log(summary)
     };
-    console.log(activitiesFileMetaSummary)
+
     const getSelectedContract = (value) => {
         setSelectedContract(value)
     }
@@ -43,6 +44,14 @@ const DataUpload = ({getSelectedOption}) => {
 
     const onCloseLevel2 = () => {
         getSelectedOption('');
+    }
+
+    const getFrom = (value) => {
+        setFrom(value);
+    }
+
+    const getTo = (value) => {
+        setTo(value);
     }
 
     const tableHeaderValues = ["", "FILE ID", "FILE NAME", "SOURCE", "PROCESSING STATUS", "FAILURE REASON", "RECORD PROCESSED", "RECORD FAILED", "PROCESSIG DATE & TIME", "ACTION"];
@@ -103,7 +112,7 @@ const DataUpload = ({getSelectedOption}) => {
 
     return (
         <div>
-            <LevelTwoHeader heading={'DATA UPLOAD MANAGER'} updatedTime={'UPDATED ON FEB 16, 2022 16:45 EST'} onCloseLevel2={onCloseLevel2} />
+            <LevelTwoHeader heading={'DATA UPLOAD MANAGER'} updatedTime={'UPDATED ON FEB 16, 2022 16:45 EST'} onCloseLevel2={onCloseLevel2} needDateFilter={true} getFrom={getFrom} getTo={getTo} />
             <div className={`${style.grid4} ${style.marginTop20}`}>
                 <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="FILE PROCESSED" bigNumber={activitiesFileMetaSummary?.fileProcessed?.total} smallNum1={activitiesFileMetaSummary?.fileProcessed?.success} smallNum2={activitiesFileMetaSummary?.fileProcessed?.failure} smallText1="SUCCESSFUL" smallText2="FAIL" currentTile="FILE PROCESSED" topText='' />
                 <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="RECORD PROCESSED" bigNumber={activitiesFileMetaSummary?.recordProcessed?.total} smallNum1={activitiesFileMetaSummary?.recordProcessed?.inProgress} smallNum2={activitiesFileMetaSummary?.recordProcessed?.complete} smallText1="IN PROGRESS" smallText2="COMPLETE" currentTile="RECORD PROCESSED" topText='' />

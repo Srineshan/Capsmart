@@ -8,26 +8,42 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TextField from '@mui/material/TextField';
-import {format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths} from 'date-fns';
+import {format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, subDays} from 'date-fns';
 
 import style from './index.module.scss';
 
-const LevelTwoHeader = ({heading, updatedTime, onCloseLevel2}) => {
+const LevelTwoHeader = ({heading, updatedTime, onCloseLevel2, needDateFilter, getFrom, getTo}) => {
     const [timeFrame, setTimeFrame] = useState('This Week');
     const [showCustomRangeSelection, setShowCustomRangeSelection] = useState(true);
     const [from, setFrom] = useState(startOfWeek(new Date()));
     const [to, setTo] = useState(endOfWeek(new Date()));
  
     useEffect(()=> {
-        let differenceMonthsCount = (timeFrame === 'Last 60 days' ? 2 : timeFrame === 'Last 90 days' ? 3 : 0)
-        if(timeFrame === 'This Week'){
-            setFrom(startOfWeek(new Date()));
-            setTo(endOfWeek(new Date()));
-        } else if(timeFrame === 'Last 60 days' || timeFrame === 'Last 90 days'){
-            setFrom(subMonths(new Date(), differenceMonthsCount));
-            setTo(new Date());
-        } else {
-            return;
+        if(needDateFilter){
+            let differenceMonthsCount = (timeFrame === 'Last 60 days' ? 2 : timeFrame === 'Last 90 days' ? 3 : 0)
+            if(timeFrame === 'This Week'){
+                setFrom(startOfWeek(new Date()));
+                setTo(endOfWeek(new Date()));
+                getFrom(startOfWeek(new Date()));
+                getTo(endOfWeek(new Date()));
+            } else if(timeFrame === 'Last Week'){
+                setFrom(subDays(startOfWeek(new Date()), 7));
+                setTo(subDays(startOfWeek(new Date()), 1));
+                getFrom(subDays(startOfWeek(new Date()), 7));
+                getTo(subDays(startOfWeek(new Date()), 1));
+            } else if(timeFrame === 'Last Month'){
+                setFrom(new Date(new Date().getFullYear(), new Date().getMonth() -1, 1));
+                setTo(subDays(startOfMonth(new Date()), 1));
+                getFrom(new Date(new Date().getFullYear(), new Date().getMonth() -1, 1));
+                getTo(subDays(startOfMonth(new Date()), 1));
+            } else if(timeFrame === 'Last 60 days' || timeFrame === 'Last 90 days'){
+                setFrom(subMonths(new Date(), differenceMonthsCount));
+                setTo(new Date());
+                getFrom(subMonths(new Date(), differenceMonthsCount));
+                getTo(new Date());
+            } else {
+                return;
+            }
         }
     }, [timeFrame])
 
@@ -37,6 +53,8 @@ const LevelTwoHeader = ({heading, updatedTime, onCloseLevel2}) => {
             setShowCustomRangeSelection(true)
         }
     };
+
+    console.log(new Date(new Date().getFullYear(), new Date().getMonth() -1, 1))
     return(
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <div className={`${style.displayInRow}`}>
@@ -48,73 +66,77 @@ const LevelTwoHeader = ({heading, updatedTime, onCloseLevel2}) => {
                 </div>
             </div>
             <div className={`${style.displayInRow}`}>
-                <div className={style.marginRight}>
-                    {`${format(new Date(from), 'MM-dd-yyyy')} to ${format(new Date(to), 'MM-dd-yyyy')}`}
-                </div>
-                <FormControl sx={{ minWidth: 180, fontSize: 20 }} className={`${style.reduceMarginTop} ${style.marginLeft20}`} size="small">
-                    <Select
-                        labelId="demo-select-small"
-                        id="demo-select-small"
-                        value={timeFrame}
-                        onChange={handleChange}
-                    >
-                        <MenuItem value={'This Week'}>This Week</MenuItem>
-                        <MenuItem value={'Last Week'}>Last Week</MenuItem>
-                        <MenuItem value={'Last Month'}>Last Month</MenuItem>
-                        <MenuItem value={'Last 60 days'}>Last 60 days</MenuItem>
-                        <MenuItem value={'Last 90 days'}>Last 90 days</MenuItem>
-                        <MenuItem value={'Custom Period'}>Custom Period</MenuItem>
-                    </Select>
-                </FormControl>
-                {(timeFrame === "Custom Period" && showCustomRangeSelection) && (
-                    <div className={style.customTimeFrameCard}>
-                        <div className={style.spaceBetween}>
-                            <div className={style.customTimeFrameHeading}>
-                            CUSTOM PERIOD
+                {needDateFilter && (
+                    <>
+                        <div className={style.marginRight}>
+                            {`${format(new Date(from), 'MM-dd-yyyy')} to ${format(new Date(to), 'MM-dd-yyyy')}`}
+                        </div>
+                        <FormControl sx={{ minWidth: 180, fontSize: 20 }} className={`${style.reduceMarginTop} ${style.marginLeft20}`} size="small">
+                            <Select
+                                labelId="demo-select-small"
+                                id="demo-select-small"
+                                value={timeFrame}
+                                onChange={handleChange}
+                            >
+                                <MenuItem value={'This Week'}>This Week</MenuItem>
+                                <MenuItem value={'Last Week'}>Last Week</MenuItem>
+                                <MenuItem value={'Last Month'}>Last Month</MenuItem>
+                                <MenuItem value={'Last 60 days'}>Last 60 days</MenuItem>
+                                <MenuItem value={'Last 90 days'}>Last 90 days</MenuItem>
+                                <MenuItem value={'Custom Period'}>Custom Period</MenuItem>
+                            </Select>
+                        </FormControl>
+                        {(timeFrame === "Custom Period" && showCustomRangeSelection) && (
+                            <div className={style.customTimeFrameCard}>
+                                <div className={style.spaceBetween}>
+                                    <div className={style.customTimeFrameHeading}>
+                                    CUSTOM PERIOD
+                                    </div>
+                                    <CloseIcon fontSize="small" onClick={()=> setShowCustomRangeSelection(false)} className={style.cursorPointer} />
+                                </div>
+                                <div className={`${style.dividerStyle} ${style.marginTop10}`}></div>
+                                <div className={style.marginTop10}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                        InputProps={{
+                                            style: {
+                                                fontSize: 14,
+                                                height: 30,
+                                            }
+                                        }}
+                                        value={from}
+                                        onChange={(e) => {setFrom(e);getFrom(e)}}
+                                        renderInput={(params) => <TextField {...params} inputProps={{
+                                        ...params.inputProps,
+                                        placeholder: "From"
+                                        }}/>}
+                                    />
+                                    </LocalizationProvider>
+                                </div>
+                                <div className={style.marginTop10}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                        InputProps={{
+                                            style: {
+                                                fontSize: 14,
+                                                height: 30,
+                                            }
+                                        }}
+                                        value={to}
+                                        onChange={(e) => {setTo(e);getTo(e)}}
+                                        renderInput={(params) => <TextField {...params} inputProps={{
+                                        ...params.inputProps,
+                                        placeholder: "To"
+                                        }}/>}
+                                    />
+                                    </LocalizationProvider>
+                                </div>
+                                <div className={style.customRangeHelpStyle}>
+                                Period of interest should not exceed 365 days
+                                </div>
                             </div>
-                            <CloseIcon fontSize="small" onClick={()=> setShowCustomRangeSelection(false)} className={style.cursorPointer} />
-                        </div>
-                        <div className={`${style.dividerStyle} ${style.marginTop10}`}></div>
-                        <div className={style.marginTop10}>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                                InputProps={{
-                                    style: {
-                                        fontSize: 14,
-                                        height: 30,
-                                    }
-                                }}
-                                value={from}
-                                onChange={(e) => setFrom(e)}
-                                renderInput={(params) => <TextField {...params} inputProps={{
-                                ...params.inputProps,
-                                placeholder: "From"
-                                }}/>}
-                            />
-                            </LocalizationProvider>
-                        </div>
-                        <div className={style.marginTop10}>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                                InputProps={{
-                                    style: {
-                                        fontSize: 14,
-                                        height: 30,
-                                    }
-                                }}
-                                value={to}
-                                onChange={(e) => setTo(e)}
-                                renderInput={(params) => <TextField {...params} inputProps={{
-                                ...params.inputProps,
-                                placeholder: "To"
-                                }}/>}
-                            />
-                            </LocalizationProvider>
-                        </div>
-                        <div className={style.customRangeHelpStyle}>
-                        Period of interest should not exceed 365 days
-                        </div>
-                    </div>
+                        )}
+                    </>
                 )}
                 <img src={CrossPink} alt="cross" className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => onCloseLevel2()}  />
             </div>

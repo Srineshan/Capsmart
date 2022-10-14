@@ -5,7 +5,7 @@ import Table from '../../Components/TableDesign';
 import LevelTwoHeader from '../../Components/LevelTwoHeader';
 import MessageIcon from '@mui/icons-material/Message';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import {format} from 'date-fns';
+import {format, startOfWeek, endOfWeek} from 'date-fns';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import FeedbackTicketResolution from '../../Components/FeedbackTicketResolution';
@@ -21,6 +21,9 @@ const FeedbackTicket = ({getSelectedOption}) => {
     const [allMessages, setAllMessages] = useState();
     const [currentUser, setCurrentUser] = useState({});
     const [showFeedbackTicketResolution, setShowFeedbackTicketResolution] = useState(false);
+    const [from, setFrom] = useState(startOfWeek(new Date()));
+    const [to, setTo] = useState(endOfWeek(new Date()));
+
     var cookie = new Cookie();
     let authValue = cookie.get('user');
     const loggedUser = jwt(authValue);
@@ -33,15 +36,13 @@ const FeedbackTicket = ({getSelectedOption}) => {
     : messagesTableHeaderValues;
     let screenCaptureImg = sessionStorage.getItem('screenCapture');
 
-    console.log(screenCaptureImg)
-
     useEffect(() => {
         setShowFeedbackTicketResolution(screenCaptureImg ? true : false);
     }, [screenCaptureImg]);
 
     useEffect(() => {
         getTicket();
-    }, [showFeedbackTicketResolution])
+    }, [showFeedbackTicketResolution, from, to])
 
     useEffect(() => {
         setCurrentUser(users?.filter(data => data?.id === loggedUser?.id)?.map(data => data));
@@ -57,7 +58,7 @@ const FeedbackTicket = ({getSelectedOption}) => {
 
 
     const getTicket = async () => {
-        const { data: ticket } = await GET('feedback-management-service/ticket');
+        const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
         setTicket(ticket)
     };
 
@@ -99,6 +100,14 @@ const FeedbackTicket = ({getSelectedOption}) => {
 
     const onCloseLevel2 = () => {
         getSelectedOption('');
+    }
+
+    const getFrom = (value) => {
+        setFrom(value);
+    }
+
+    const getTo = (value) => {
+        setTo(value);
     }
 
     const getShowFeedbackTicketResolution = (value) => {
@@ -219,7 +228,7 @@ const FeedbackTicket = ({getSelectedOption}) => {
 
     return (
         <div>
-            <LevelTwoHeader heading={'FEEDBACK TICKET MANAGER'} updatedTime={''} onCloseLevel2={onCloseLevel2} />
+            <LevelTwoHeader heading={'FEEDBACK TICKET MANAGER'} updatedTime={''} onCloseLevel2={onCloseLevel2} needDateFilter={true} getFrom={getFrom} getTo={getTo} />
             <div className={`${style.grid4} ${style.marginTop20}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="OPEN TICKETS" bigNumber={ticket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="OPEN TICKETS" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="NEW TICKETS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="NEW TICKETS" topText='' />

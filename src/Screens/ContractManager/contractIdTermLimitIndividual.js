@@ -499,6 +499,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     }
 
 
+    console.log('file Data',fullyExecutedContractData, fullyExecutedContract);
+
+
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
