@@ -116,8 +116,4 @@ const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivation
     )
 }
 
-<<<<<<< HEAD
 export default Draft;
-=======
-export default Draft;
->>>>>>> b3f0a82b8137ce2b8862b66e3f59a9f119f4eb43
