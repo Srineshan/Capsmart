@@ -2,11 +2,53 @@ import React, { useState } from 'react';
 import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button } from '@blueprintjs/core';
 import ArrowDown from './../../images/arrowDown.png';
 import style from './index.module.scss';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { POST, GET } from './../dataSaver'
+import { useEffect } from 'react';
 
 const AddCompanyHoliday = ({ getAddCompanyHolidayDialog }) => {
-   
+    const [eventT, setEventT] = useState("")
+    const [eventN, setEventN] = useState("")
+    const [eventD, setEventD] = useState("")
+    const [stateN, setStateN] = useState("")
+    const [country, setCountry] = useState("")
+    const [industry, setindustry] = useState("")
+    const [industryTypes, setIndustryTypes] = useState([])
+    const [entityTypes, setEntityTypes] = useState([])
+
+    const getAllIndustries = async () => {
+        const { data: data } = await GET(`/industryMaster`);
+        setIndustryTypes(data);
+        console.log("data", data)
+    }
+
+
+    const SubmitHoliday = async () => {
+        let Input = {
+            "eventType": eventT,
+            "stateName": stateN,
+            "eventName": eventN,
+            "eventDate": eventD,
+            "country": "string",
+            "industry": industryTypes
+        }
+
+        await POST('/holidayMaster', JSON.stringify(Input))
+            .then(response => {
+                SuccessToaster('User Added Successfully');
+            })
+            .catch(error => {
+                ErrorToaster(error);
+            })
+        getAddCompanyHolidayDialog(false)
+    }
+
+    useEffect(() => {
+        getAllIndustries()
+    }, [])
+
     const arrowDown = () => {
-        return(
+        return (
             <img src={ArrowDown} className={`${style.colorFileStyle3} ${style.marginRight}`} />
         )
     }
@@ -22,13 +64,13 @@ const AddCompanyHoliday = ({ getAddCompanyHolidayDialog }) => {
                     <div className={`${style.editHealthCareGrid2}`}>
                         <div className={style.entityLableStyle}>Event Type*</div>
                         <div className={style.displayInRow}>
-                            <InputGroup value="State" className={style.halfWidth} rightElement={arrowDown()} />
+                            <InputGroup value={eventT} className={style.halfWidth} rightElement={arrowDown()} onChange={obj => setEventT(obj.target.value)} />
                         </div>
                     </div>
                     <div className={`${style.editHealthCareGrid2} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>State Name*</div>
                         <div className={style.displayInRow}>
-                            <InputGroup value="State" className={style.halfWidth} />
+                            <InputGroup value={stateN} className={style.halfWidth} onChange={obj => setStateN(obj.target.value)} />
                         </div>
                     </div>
                     <div className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}></div>
@@ -39,13 +81,13 @@ const AddCompanyHoliday = ({ getAddCompanyHolidayDialog }) => {
                         <div className={`${style.editHealthCareGrid2}`}>
                             <div className={style.entityLableStyle}>Holiday Event Name*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value="Religious Holiday" className={style.fullWidth} />
+                                <InputGroup value={eventN} className={style.fullWidth} onChange={obj => setEventN(obj.target.value)} />
                             </div>
                         </div>
                         <div className={`${style.AddCompanyHolidayGrid1} ${style.marginTop20}`}>
                             <div className={style.entityLableStyle}>Event date*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value="Mm-dd-yyyy" className={style.fullWidth} />
+                                <InputGroup value={eventD} className={style.fullWidth} onChange={obj => setEventD(obj.target.value)} />
                             </div>
                             <p className={`${style.entityLableStyle2}`}>auto: Display day of the week</p>
                         </div>
@@ -54,7 +96,7 @@ const AddCompanyHoliday = ({ getAddCompanyHolidayDialog }) => {
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
                         <button className={style.outlinedButton}>CANCEL</button>
-                        <button onClick={() => getAddCompanyHolidayDialog(false)} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE</button>
+                        <button onClick={() => SubmitHoliday()} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE</button>
                     </div>
                 </div>
             </div>

@@ -13,6 +13,7 @@ import IndustriesEntityFolder from './../../images/industriesEntityFolder.png';
 import AddNewEntity from './../../images/addEntity.png';
 import AddRefresh from './../../images/refreshEntity.png';
 import Titlebar from '../../Components/titlemenu';
+import {GET} from './../dataSaver';
 
 const IndustriesWithEntityTypes = () => {
 
@@ -25,6 +26,10 @@ const IndustriesWithEntityTypes = () => {
 
     const getAddHcEntityDialog = (value) => {
         setShowAddHcEntityDialog(value);
+    }
+
+    const getIndustriData = () =>{
+
     }
 
     return (

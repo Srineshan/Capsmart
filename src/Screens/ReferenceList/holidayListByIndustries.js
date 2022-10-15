@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
 import SideBar from './../../Components/Sidebar';
 import { Icon, Intent } from "@blueprintjs/core";
@@ -17,14 +17,32 @@ import EditHcFolder from './../../images/editHcFolder.png';
 import DeleteHcFolder from './../../images/deleteHcFolder.png';
 import DeleteHcRow from './../../images/deleteHcRow.png';
 import EditHcRow from './../../images/editHcRow.png';
+import {GET} from './../dataSaver'
 
 const BoardCertification = () => {
     const [showAddCompanyHolidayDialog, setShowAddCompanyHolidayDialog] = useState(false);
+    const [industryTypes,setIndustryTypes] = useState([])
 
     const getAddCompanyHolidayDialog = (value) => {
         setShowAddCompanyHolidayDialog(value);
     }
 
+    const getHolidayData = async() => {
+        const {data : data} = await GET (`/industryMaster`);
+        console.log(data)
+        data.forEach(async(industry) => {
+            const {data : holidayData} = await GET (`/holidayMaster?industryId=${industry.id}&country=string`);
+            setIndustryTypes((prev=>[...prev, { industry, holidayData }]));
+           console.log(industryTypes)
+        });
+       
+  }
+
+
+    useEffect(()=>{
+        getHolidayData()
+    },[])
+    
     return (
         <Fragment>
             <ReferenceListNavbar />

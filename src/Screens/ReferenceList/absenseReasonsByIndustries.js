@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
 import SideBar from './../../Components/Sidebar';
 import { Icon, Intent } from "@blueprintjs/core";
@@ -15,6 +15,7 @@ import EditBlue from './../../images/editBlue.png';
 import AddAbsenseReasonsForHealthcare from './addAbsenseReasonsForHealthcare';
 import Titlebar from '../../Components/titlemenu';
 import { Link } from 'react-router-dom';
+import {GET} from './../dataSaver';
 
 const AbsenseReasonsByIndustries = () => {
     const [showAddAbsenseReasonsDialog, setAddAbsenseReasonsDialog] = useState(false);
@@ -23,6 +24,7 @@ const AbsenseReasonsByIndustries = () => {
     const getAddAbsenseReasonsDialog = (value) => {
         setAddAbsenseReasonsDialog(value);
     }
+
 
 
 
