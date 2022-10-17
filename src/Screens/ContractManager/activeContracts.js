@@ -16,9 +16,9 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
     const tableHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "CONTRACTORS", "EFFECTIVE DATE", "POD STATUS", "MANAGER", "LAST UPDATED", "ACTION"];
 
     const onClickFunction = (data) => {
-        getNewContract(true); 
-        getContractType(data?.contractType); 
-        getSelectedContractType('New Contract'); 
+        getNewContract(true);
+        getContractType(data?.contractType);
+        getSelectedContractType('New Contract');
         getContractIdFromActive(data?.id);
     }
 
@@ -45,7 +45,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
          lastUpdated = [];
          action = [];
 
-         activeContracts?.map(data=> 
+         activeContracts?.map(data=>
         {
             dot.push('green');
             contractType.push(data?.contractType);
@@ -80,7 +80,9 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
     const handleAddContract = () => {
         getAddContract(true);
     }
+
     console.log(getExtensionDialog)
+
     return(
         <div className={style.margin20}>
             <div className={`${style.bigCardGrid}`}>
@@ -105,7 +107,7 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                         <button className={style.contractButton} onClick={() => {handleAddContract()}} >ADD CONTRACT</button>
                     </div>
                     <Table
-                        tableHeaderValues={tableHeaderValues} 
+                        tableHeaderValues={tableHeaderValues}
                         tableDataValues={getActiveContractsValues()}
                         tableData={activeContracts}
                         getNewContract={getNewContract}

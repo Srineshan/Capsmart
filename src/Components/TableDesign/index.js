@@ -140,7 +140,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                 </div>
                                             </Popover>
                                         </div>
-                                    </div>                              
+                                    </div>
                                     ) : tableData?.type === "imgWithCount" ? (
                                     <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
                                         <img src={tableData?.img} alt="warning" className={style.colorFileStyle} />
@@ -185,7 +185,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                    <div>
                         <div className={style.noDataTextStyle}>Bad news!</div>
                         <p className={style.noDataTextStyle}>no records found so far...</p>
-                   </div> 
+                   </div>
                 )}
             </div>
             <div className={style.spaceBetween}>
