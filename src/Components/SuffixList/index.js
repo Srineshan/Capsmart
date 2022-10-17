@@ -4,13 +4,18 @@ import SelectField from './../SelectField';
 
 const SuffixList = ({onChangeFunc, value, className}) => {
   const [suffixList, setSuffixList] = useState([]);
+  const industryId = "62ec0da4b188025da38b9d5e";
 
   useEffect(()=>{
     getSuffix();
   },[])
 
+  const onSelectHandle = (id) => {
+    onChangeFunc(id,suffixList?.filter(data=>data?.id === id)?.map(data=>data?.suffix)[0]);
+  }
+
   const getSuffix  = async() => {
-   await GET('entity-service/nameSuffix')
+   await GET(`entity-service/nameSuffix?industryId=${industryId}`)
    .then(response=>{
      setSuffixList(response?.data);
    })
@@ -20,7 +25,7 @@ const SuffixList = ({onChangeFunc, value, className}) => {
  }
 
   return(
-    <SelectField className={className} value={value} selectLabel="Select Suffix" valueList={suffixList?.map(data=>data?.id)} dataList={suffixList} displayList={suffixList?.map(data=>data?.suffix)} onChangeFunc={onChangeFunc}/>
+    <SelectField className={className} value={value} selectLabel="Select Suffix" valueList={suffixList?.map(data=>data?.id)} dataList={suffixList} displayList={suffixList?.map(data=>data?.suffix)} onChangeFunc={onSelectHandle}/>
   )
 }
 

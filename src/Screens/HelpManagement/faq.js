@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Icon, Intent, Dialog, Classes, InputGroup, TextArea, Checkbox } from "@blueprintjs/core";
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import UserLogo from './../../images/userLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import Filter from './../../images/filter.png';
 import Tooltip from '@mui/material/Tooltip';
@@ -78,7 +78,7 @@ const FAQ = ({getSelectedHelp}) => {
                             <div className={`${style.userNameStyle} `}>
                                 JOHN
                             </div>
-                            <img src={UserLogo} className={style.userLogo} />
+                            <img src={DoctorAnime} className={style.userLogo} />
                         </div>
                     </div>
                     <div className={`${style.cardStyle}`} onClick={() => getSelectedHelp('TICKETS')}>
@@ -173,7 +173,7 @@ const FAQ = ({getSelectedHelp}) => {
                                         <p></p>
                                         <p></p>
                                         <div className={style.displayInRow}>
-                                            <img src={UserLogo} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
+                                            <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
                                             <p className={`${style.tableDataFontStyle} ${style.reduceTop} ${style.marginLeft20}`}>
                                             Lorem Ipsum
                                             </p>
@@ -210,7 +210,7 @@ const FAQ = ({getSelectedHelp}) => {
                                         <p></p>
                                         <p></p>
                                         <div className={style.displayInRow}>
-                                            <img src={UserLogo} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
+                                            <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
                                             <p className={`${style.tableDataFontStyle} ${style.reduceTop} ${style.marginLeft20}`}>
                                             Lorem Ipsum
                                             </p>
@@ -304,7 +304,7 @@ const FAQ = ({getSelectedHelp}) => {
                                 <div className={`${style.userNameStyle} `}>
                                     JOHN
                                 </div>
-                                <img src={UserLogo} className={style.userLogo} />
+                                <img src={DoctorAnime} className={style.userLogo} />
                             </div>
                         </div>
                         <div className={`${style.cardStyle}`} onClick={() => getSelectedHelp('TICKETS')}>
@@ -400,7 +400,7 @@ const FAQ = ({getSelectedHelp}) => {
                                             <p></p>
                                             <p></p>
                                             <div className={style.displayInRow}>
-                                                <img src={UserLogo} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
+                                                <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
                                                 <p className={`${style.tableDataFontStyle} ${style.reduceTop} ${style.marginLeft20}`}>
                                                 Lorem Ipsum
                                                 </p>
@@ -437,7 +437,7 @@ const FAQ = ({getSelectedHelp}) => {
                                             <p></p>
                                             <p></p>
                                             <div className={style.displayInRow}>
-                                                <img src={UserLogo} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
+                                                <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
                                                 <p className={`${style.tableDataFontStyle} ${style.reduceTop} ${style.marginLeft20}`}>
                                                 Lorem Ipsum
                                                 </p>

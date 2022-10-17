@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import UserLogo from './../../images/userLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
 import Filter from './../../images/filter.png';
@@ -112,7 +112,7 @@ const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, get
                          <div className={`${style.userNameStyle} `}>
                             {user?.userName}
                         </div>
-                        <img src={UserLogo} className={style.userLogo} />
+                        <img src={DoctorAnime} className={style.userLogo} />
                     </div>
                 </div>
                 <div className={`${style.cardStyle}`} onClick={() => getSelectedContract('active contracts')}>

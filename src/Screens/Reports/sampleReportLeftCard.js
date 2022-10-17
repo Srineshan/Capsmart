@@ -14,7 +14,7 @@ import TextField from '@mui/material/TextField';
 // import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import Box from '@mui/material/Box';
 import SaveReport from './saveReport';
-import UserLogo from './../../images/userLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import { useParams } from 'react-router-dom';
 
@@ -84,17 +84,17 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                       'Medical license Certificate',
                       'Drug Enforcement Administration (DEA) License',
                       'Controlled Substance DEA Registration Certificate'];
-    
+
     useEffect(() => {
         getSites();
         getContracts();
         getUsersData();
-    }, []) 
+    }, [])
 
     useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalTimeFrame, selectedSites, selectedDepartments, contractContinuationPolicy, selectedContracts,
-    podType, contractStatus, reportingTimePeriod, selectedContractedServiceProvider, 
+    podType, contractStatus, reportingTimePeriod, selectedContractedServiceProvider,
     selectedContractedServiceProviderToSend])
 
     const handleChange = (event) => {
@@ -172,7 +172,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
             <div className={style.cardStyle}>
                 <div className={`${style.spaceBetween} ${style.alignCenter}`}>
                     <div className={style.displayInRow}>
-                        <img src={UserLogo} className={style.userLogo} />
+                        <img src={DoctorAnime} className={style.userLogo} />
                         <div className={`${style.marginLeft10} ${style.marginTop}`}>
                             <div className={style.userNameStyle}>
                                 Hi, {userDetail?.userName}

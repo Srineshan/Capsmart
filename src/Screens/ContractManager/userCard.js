@@ -1,5 +1,5 @@
 import React from 'react';
-import DefaultUserLogo from './../../images/defaultUserLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
@@ -14,7 +14,7 @@ const UserCard = () => {
         <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
             <div className={`${style.displayInRow} ${style.alignCenter}`}>
                 <label for="file-upload">
-                    <img src={DefaultUserLogo} className={`${style.userLogo} ${style.cursorPointer}`} />
+                    <img src={DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
                 </label>
                 <input id="file-upload" type="file"/>
                 <div className={style.marginLeft20}>

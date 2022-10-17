@@ -169,14 +169,15 @@ const AppSubscription = ({getActiveStep}) => {
         "entityName": entityData?.entityName,
         "entityType": entityData?.entityType,
         "entityDisplayId": entityData?.entityDisplayId,
-        "customerType": entityData?.customerType,
+        "industryId": entityData?.industryId,
         "sites": entityData?.sites,
         "subdomain":entityData?.subdomain,
         "multiSiteEntity":entityData?.multiSiteEntity,
         "canPrimarySiteToUseApp":entityData?.canPrimarySiteToUseApp,
         "accountManager":entityData?.accountManager,
         "appUserRoles":entityData?.appUserRoles,
-
+        "logo":entityData?.logo,
+        "logoThumbnail":entityData?.logoThumbnail,
         "subscriptionPlan": {
           "planName": plan?.planName || 'BASIC',
           "allowableRegisteredUsers": {

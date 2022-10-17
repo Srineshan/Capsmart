@@ -13,7 +13,7 @@ import AppSubscription from './Screens/SuperAdminDashboard/appSubscription';
 import SetupComplete from './Screens/SuperAdminDashboard/setupComplete';
 import OTPPage from './Screens/SuperAdminDashboard/otpPage';
 import WelcomeToDashboard from './Screens/SuperAdminDashboard/welcomeToDashboard';
-import './App.css'
+import './App.css';
 import history from './routes/history';
 import EntryPage from './Screens';
 import Users from './Screens/UserManagement';
@@ -77,6 +77,12 @@ const App = ({props}) => {
     const {data: data} = await GET(`entity-service/entity/${TenantID}`);
     setLogo(data?.logoThumbnail?.file?.fileURL);
     setTitle(data?.entityName?.entityName);
+    sessionStorage.setItem('entityTypeId',data?.entityType?.id);
+    sessionStorage.setItem('entityTypeValue',data?.entityType?.type);
+    sessionStorage.setItem('industry',data?.customerType);
+    sessionStorage.setItem('logo',data?.logo?.file?.fileURL);
+    sessionStorage.setItem('thumbnail',data?.logoThumbnail?.file?.fileURL);
+    sessionStorage.setItem('title',data?.entityName?.entityName);
   }
 
 
