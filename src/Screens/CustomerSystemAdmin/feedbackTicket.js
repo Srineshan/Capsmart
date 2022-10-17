@@ -199,7 +199,7 @@ const FeedbackTicket = ({getSelectedOption}) => {
             subject.push(data?.subject);
             openDateOrTime.push(format(new Date(data?.createdDateTime), 'MM-dd-yyyy HH:mm'));
             impact.push(<WarningAmberIcon style={{color: data?.impact === "HIGH" ? '#FF6562' : '#88D5A6'}} />);
-            appInUse.push('-');
+            appInUse.push('TIMESMART.AI');
             submittedBy.push(`${data?.createdBy?.name?.firstName} ${data?.createdBy?.name?.lastName}`);
             messages.push('2');
             lastUpdated.push(format(new Date(data?.modifiedDateTime), 'MM-dd-yyyy'));

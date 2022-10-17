@@ -343,167 +343,171 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                     </div>
                     <div className={style.spaceBetweenColumn}>
                         <div>
-                            <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
-                                <div className={style.displayInRow}>
-                                    <p className={style.collapseHeaderText}>Ticket Status</p>
-                                    <div className={`${ticketStatus !== 'In-Progress' ? style.greenDotFeedbackStyle : style.orageDotFeedbackStyle} ${style.marginLeft20}`}></div>
-                                </div>
-                                <div className={style.displayInRow}>
-                                    <p className={style.feedbackFontStyle}>Updated On 01-06-2022 23:34</p>
-                                    <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
-                                </div>
-                            </div>
-                            <div className={style.collapseBody}>
-                                <div className={`${style.extentionGrid}`}>
-                                    <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Assign To</div>
-                                    <div className={style.displayInRow}>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            value={assignToId}
-                                            onChange={(e)=> {setAssignToId(e.target.value);handleAssignTo(e.target.value)}}
-                                            className={`${style.fieldWidth2InARow} ${style.transparentBackground}`}>
-                                                <option value="" >
-                                                    Select Assignee
-                                                </option>
-                                                {users?.map((data, index) => (
-                                                    <option value={data?.id} >
-                                                        {`${data?.name?.firstName} ${data?.name?.lastName}`}
-                                                    </option>
-                                                ))}
-                                        </select>
-                                    </div>
-                                </div>
-                                {ticketStatus !== 'In-Progress' && (
-                                    <>
-                                        <div className={`${style.extentionGrid} ${style.marginTop10}`}>
-                                            <div></div>
-                                            <div>sanjaya@timesmart.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span> 987 8767646</div>
-                                        </div>
-                                        <div className={`${style.extentionGrid} ${style.marginTop10}`}>
-                                            <div className={`${style.extentionLableStyle}`}>Contractor</div>
-                                            <div>
-                                                <div>Philipp Stevens</div>
-                                                <div>pstev_msp@metropoli.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span>  987 8767646</div>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
-                                    <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Status</div>
-                                    <div className={style.displayInRow}>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            value={ticketStatus}
-                                            onChange={(e) => setTicketStatus(e.target.value)}
-                                            className={`${style.fieldWidth2InARow} ${style.transparentBackground}`}>
-                                            <option value="NEW" >
-                                                New
-                                            </option>
-                                            <option value="INPROGRESS" >
-                                                In-Progress
-                                            </option>
-                                            <option value="ESCALATE" >
-                                                Escalate
-                                            </option>
-                                            <option value="RESOLVED" >
-                                                Resolved
-                                            </option>
-                                            <option value="CLOSED" >
-                                                Closed
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                {ticketStatus === 'INPROGRESS' && (
-                                    <>
-                                        <div className={`${style.extentionGrid} ${style.marginTop10}`}>
-                                            <div></div>
-                                            <div>sanjaya@timesmart.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span> 987 8767646</div>
-                                        </div>
-                                        <div className={`${style.extentionGrid} ${style.marginTop10}`}>
-                                            <div className={`${style.extentionLableStyle}`}>Contractor</div>
-                                            <div>
-                                                <div>Philipp Stevens</div>
-                                                <div>pstev_msp@metropoli.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span>  987 8767646</div>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                                {ticketStatus === 'RESOLVED' && (
-                                    <div className={`${style.extentionGrid} ${style.marginTop10}`}>
-                                        <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Status Resolve Note*</div>
-                                        <TextArea placeholder='add status change note...' rows="4" className={style.statusResolvedTextarea} />
-                                    </div>
-                                )}
-                                {ticketStatus !== 'INPROGRESS' && (
-                                    <div className={`${style.twoCol} ${style.marginTop10}`}>
-                                        <div className={`${style.extentionGrid}`}>
-                                            <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Jira Ticket</div>
-                                            <div className={style.displayInRow}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Switch checked={true} size="small" />
-                                                    }
-                                                    className={`${style.switchFontStyle}`}
-                                                    label={'YES'}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className={`${style.extentionGrid}`}>
-                                            <div className={`${style.extentionLableStyle} ${style.marginTop20}`}>Jira Id</div>
-                                            <div className={style.displayInRow}>
-                                                <div className={`${style.feedbackFontStyle} ${style.marginTop15}`}>JTKT00023</div>
-                                                <div className={`${style.orageDotFeedbackStyle} ${style.marginLeft20} ${style.marginTop20}`}></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                                <div className={`${style.resolutionProgressCard} ${style.spaceBetween} ${style.verticalAligCenter} ${style.marginTop20}`}>
-                                    <div className={`${style.resolutionProgressTextStyle} ${style.marginLeft20}`}>Track Resolution Progress</div>
-
-                                </div>
-                            </div>
                             {isEdit && (
                                 <>
                                     <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
-                                        {ticketStatus !== 'INPROGRESS' ? (
+                                        <div className={style.displayInRow}>
+                                            <p className={style.collapseHeaderText}>Ticket Status</p>
+                                            <div className={`${ticketStatus !== 'In-Progress' ? style.greenDotFeedbackStyle : style.orageDotFeedbackStyle} ${style.marginLeft20}`}></div>
+                                        </div>
+                                        <div className={style.displayInRow}>
+                                            <p className={style.feedbackFontStyle}>Updated On 01-06-2022 23:34</p>
+                                            <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                                        </div>
+                                    </div>
+                                    <div className={style.collapseBody}>
+                                        <div className={`${style.extentionGrid}`}>
+                                            <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Assign To</div>
+                                            <div className={style.displayInRow}>
+                                                <select
+                                                    name="class"
+                                                    id="Class"
+                                                    value={assignToId}
+                                                    onChange={(e)=> {setAssignToId(e.target.value);handleAssignTo(e.target.value)}}
+                                                    className={`${style.fieldWidth2InARow} ${style.transparentBackground}`}>
+                                                        <option value="" >
+                                                            Select Assignee
+                                                        </option>
+                                                        {users?.map((data, index) => (
+                                                            <option value={data?.id} >
+                                                                {`${data?.name?.firstName} ${data?.name?.lastName}`}
+                                                            </option>
+                                                        ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        {ticketStatus !== 'In-Progress' && (
                                             <>
-                                                <p className={style.collapseHeaderText}>Comments</p>
-                                                <div className={style.reduceTop10}>
-                                                    <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                                                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
+                                                    <div></div>
+                                                    <div>sanjaya@timesmart.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span> 987 8767646</div>
                                                 </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <p className={style.collapseHeaderText}>Resolution Comments</p>
-                                                <div className={style.displayInRow}>
-                                                    <p className={style.collapseHeaderText}>1 Unread</p>
-                                                    <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                                                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
+                                                    <div className={`${style.extentionLableStyle}`}>Contractor</div>
+                                                    <div>
+                                                        <div>Philipp Stevens</div>
+                                                        <div>pstev_msp@metropoli.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span>  987 8767646</div>
+                                                    </div>
                                                 </div>
                                             </>
                                         )}
-                                    </div>
-                                    <div className={style.collapseBody}>
-                                        {allComments?.map((data, index) => (
-                                            <div>
-                                                {(index === 0 || allComments[index - 1]?.commentedBy?.id !== data?.commentedBy?.id) && (
-                                                    <div className={style.displayInRow}>
-                                                        <img src={UserLogo} alt="logo" className={style.userLogo} />
-                                                        <div className={style.marginLeft20}>
-                                                            <div className={`${style.displayInRow} ${style.marginTop10}`}>{data?.commentedBy?.name?.firstName} {data?.commentedBy?.name?.lastName}<span className={`${style.blue} ${style.marginLeft20}`}> MD</span> <span className={`${style.greyText} ${style.marginLeft20}`}>3 days ago</span> </div>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                                <div className={`${style.marginTop10} ${style.marginLeft55}`}>{data?.comment}</div>
+                                        <div className={`${style.extentionGrid} ${style.marginTop10}`}>
+                                            <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Status</div>
+                                            <div className={style.displayInRow}>
+                                                <select
+                                                    name="class"
+                                                    id="Class"
+                                                    value={ticketStatus}
+                                                    onChange={(e) => setTicketStatus(e.target.value)}
+                                                    className={`${style.fieldWidth2InARow} ${style.transparentBackground}`}>
+                                                    <option value="NEW" >
+                                                        New
+                                                    </option>
+                                                    <option value="INPROGRESS" >
+                                                        In-Progress
+                                                    </option>
+                                                    <option value="ESCALATE" >
+                                                        Escalate
+                                                    </option>
+                                                    <option value="RESOLVED" >
+                                                        Resolved
+                                                    </option>
+                                                    <option value="CLOSED" >
+                                                        Closed
+                                                    </option>
+                                                </select>
                                             </div>
-                                        ))}
-                                        <TextArea placeholder='reply here...' value={comment} onChange={(e)=> setComment(e.target.value)} rows={4} className={`${style.fullWidth} ${style.marginTop10}`} />
-                                        <div className={`${style.alignRight} ${style.marginTop10}`}>
-                                            <button className={style.sendButton} onClick={()=> handleComment()}>{ticketStatus !== 'In-Progress' ? 'SEND' : 'REPLY'}</button>
+                                        </div>
+                                        {ticketStatus === 'INPROGRESS' && (
+                                            <>
+                                                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
+                                                    <div></div>
+                                                    <div>sanjaya@timesmart.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span> 987 8767646</div>
+                                                </div>
+                                                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
+                                                    <div className={`${style.extentionLableStyle}`}>Contractor</div>
+                                                    <div>
+                                                        <div>Philipp Stevens</div>
+                                                        <div>pstev_msp@metropoli.ai  <span className={`${style.marginLeft20} ${style.marginRight}`}> | </span>  987 8767646</div>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+                                        {ticketStatus === 'RESOLVED' && (
+                                            <div className={`${style.extentionGrid} ${style.marginTop10}`}>
+                                                <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Status Resolve Note*</div>
+                                                <TextArea placeholder='add status change note...' rows="4" className={style.statusResolvedTextarea} />
+                                            </div>
+                                        )}
+                                        {ticketStatus !== 'INPROGRESS' && (
+                                            <div className={`${style.twoCol} ${style.marginTop10}`}>
+                                                <div className={`${style.extentionGrid}`}>
+                                                    <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Jira Ticket</div>
+                                                    <div className={style.displayInRow}>
+                                                        <FormControlLabel
+                                                            control={
+                                                                <Switch checked={true} size="small" />
+                                                            }
+                                                            className={`${style.switchFontStyle}`}
+                                                            label={'YES'}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className={`${style.extentionGrid}`}>
+                                                    <div className={`${style.extentionLableStyle} ${style.marginTop20}`}>Jira Id</div>
+                                                    <div className={style.displayInRow}>
+                                                        <div className={`${style.feedbackFontStyle} ${style.marginTop15}`}>JTKT00023</div>
+                                                        <div className={`${style.orageDotFeedbackStyle} ${style.marginLeft20} ${style.marginTop20}`}></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className={`${style.resolutionProgressCard} ${style.spaceBetween} ${style.verticalAligCenter} ${style.marginTop20}`}>
+                                            <div className={`${style.resolutionProgressTextStyle} ${style.marginLeft20}`}>Track Resolution Progress</div>
+
                                         </div>
                                     </div>
+                                    {isEdit && (
+                                        <>
+                                            <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
+                                                {ticketStatus !== 'INPROGRESS' ? (
+                                                    <>
+                                                        <p className={style.collapseHeaderText}>Comments</p>
+                                                        <div className={style.reduceTop10}>
+                                                            <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <p className={style.collapseHeaderText}>Resolution Comments</p>
+                                                        <div className={style.displayInRow}>
+                                                            <p className={style.collapseHeaderText}>1 Unread</p>
+                                                            <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                            <div className={style.collapseBody}>
+                                                {allComments?.map((data, index) => (
+                                                    <div>
+                                                        {(index === 0 || allComments[index - 1]?.commentedBy?.id !== data?.commentedBy?.id) && (
+                                                            <div className={style.displayInRow}>
+                                                                <img src={UserLogo} alt="logo" className={style.userLogo} />
+                                                                <div className={style.marginLeft20}>
+                                                                    <div className={`${style.displayInRow} ${style.marginTop10}`}>{data?.commentedBy?.name?.firstName} {data?.commentedBy?.name?.lastName}<span className={`${style.blue} ${style.marginLeft20}`}> MD</span> <span className={`${style.greyText} ${style.marginLeft20}`}>3 days ago</span> </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        <div className={`${style.marginTop10} ${style.marginLeft55}`}>{data?.comment}</div>
+                                                    </div>
+                                                ))}
+                                                <TextArea placeholder='reply here...' value={comment} onChange={(e)=> setComment(e.target.value)} rows={4} className={`${style.fullWidth} ${style.marginTop10}`} />
+                                                <div className={`${style.alignRight} ${style.marginTop10}`}>
+                                                    <button className={style.sendButton} onClick={()=> handleComment()}>{ticketStatus !== 'In-Progress' ? 'SEND' : 'REPLY'}</button>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
                                 </>
                             )}
                         </div>
