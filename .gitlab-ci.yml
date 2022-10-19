@@ -14,4 +14,4 @@ deploy-job:
     - ssh-keyscan 18.205.5.49 >> ~/.ssh/known_hosts
   script:
     - scp -i ci/react.pem upload.zip ubuntu@18.205.5.49:/home/ubuntu/
-    - ssh -i ci/react.pem ubuntu@18.205.5.49 "unzip upload.zip && pm2 start yarn --interpreter bash --name admin-tsai-dev -- start"
+    - ssh -i ci/react.pem ubuntu@18.205.5.49 "unzip -o upload.zip && pm2 start yarn --interpreter bash --name admin-tsai-dev -- start"
