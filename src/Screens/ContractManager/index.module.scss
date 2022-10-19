@@ -1908,7 +1908,7 @@ select {
     background-color: #ffa500;
     color: white;
  }
- 
+
  .selectedRedCountStyle{
     background-color: #FF6562;
     color: white;
@@ -1919,3 +1919,21 @@ select {
     align-items: center;
     height: 100%;
  }
+
+.purpleTitle{
+  font: normal 15px/13px Montserrat;
+  color: #7165E3;
+  font-size: 15px;
+  text-align: left;
+  min-width:100vw;
+}
+
+.marginTop50{
+  margin-top:50px;
+}
+
+.daysSelectorGrid{
+  display: grid;
+  grid-template-columns: 60px 40px;
+  grid-gap: 10px;
+}

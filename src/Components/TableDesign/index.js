@@ -3,10 +3,10 @@ import Popover from '@mui/material/Popover';
 import ChevronRight from './../../images/chevronRight.png';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Tooltip from '@mui/material/Tooltip';
-
+import Pagination from './../Pagination';
 import style from './index.module.scss';
 
-const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions }) => {
+const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -77,7 +77,6 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
         handleClose();
     }
 
-    console.log(actions)
     return (
         <div>
             <div>
@@ -171,7 +170,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                             >
                                                 <div className={style.actionsCard} ref={menuRef}>
                                                     {actions?.map((actionsData, actionsIndex) => (
-                                                        <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => {handleActions(actionsData?.onClick, actionsData?.requiredValue, data?.id, data?.ticketId?.id)}} key={actionsIndex}>{actionsData?.data}</div>
+                                                        <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => {actionsData?.onClick(data)}} key={actionsIndex}>{actionsData?.data}</div>
                                                     ))}
                                                 </div>
                                             </Popover>
@@ -188,13 +187,17 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                    </div>
                 )}
             </div>
-            <div className={style.spaceBetween}>
-                <p></p>
-                <div className={style.displayInRow}>
-                    <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                    <img src={ChevronRight} className={style.roundChevron} />
-                </div>
-            </div>
+            <Pagination selectPage={getSelectedPage} totalCount={tableData?.length}/>
+            {
+              // <div className={style.spaceBetween}>
+              //     <p></p>
+              //     <div className={style.displayInRow}>
+              //         <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+              //         <img src={ChevronRight} className={style.roundChevron} />
+              //     </div>
+              // </div>
+            }
+
         </div>
     )
 }

@@ -35,6 +35,8 @@ const Contracts = () => {
     const [contractId, setContractId] = useState('');
     const [method,setMethod] = useState('');
     const [users, setUsers] = useState([]);
+    const [searchKey, setSearchKey] = useState('');
+    const [page, setPage] = useState(1);
 
     useEffect(()=>{
       getContracts();
@@ -91,8 +93,12 @@ const Contracts = () => {
       setSelectedContractType(value);
     }
 
+    const getSearchKey = (value) => {
+      setSearchKey(value);
+    }
+
     const getContracts = async() => {
-       const {data: contracts} = await GET(`contract-managment-service/contracts?searchText=&tab=${selectedContract}`);
+       const {data: contracts} = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page-1}&searchText${searchKey}=&tab=${selectedContract}`);
        setContracts(contracts);
     };
 
@@ -107,11 +113,15 @@ const Contracts = () => {
       setMethod(value);
     }
 
+    const getSelectedPage = (value) => {
+      setPage(value);
+    }
+
     return(
         addContract ? (
             <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType} getMethod={getMethod}/>
         ) : newContractFromClone ? (
-            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType} contractIdFromActive={contractId} getContractIdFromActive={getContractIdFromActive} method={method}/>
+            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType} contractIdFromActive={contractId} getContractIdFromActive={getContractIdFromActive} method={method} contracts={contracts}/>
         ) : (
             <Fragment>
                 <Navbar />
@@ -131,13 +141,15 @@ const Contracts = () => {
                     getContracts={getContracts}
                     selectedContract={selectedContract}
                     users={users}
+                    getSearchKey={getSearchKey}
+                    getSelectedPage={getSelectedPage}
                      />
 
                 {extensionDialog && (
-                    <ContractExtension getExtensionDialog={getExtensionDialog} />
+                    <ContractExtension getExtensionDialog={getExtensionDialog} contractId={contractId} contracts={contracts}/>
                 )}
                 {terminationDialog && (
-                    <ContractTermination getTerminationDialog={getTerminationDialog} />
+                    <ContractTermination getTerminationDialog={getTerminationDialog} contractId={contractId} contracts={contracts} getContracts={getContracts}/>
                 )}
                 {cloneDialog && (
                     <CloneAlert getCloneDialog={getCloneDialog} getNewContract={getNewContract} />

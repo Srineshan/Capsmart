@@ -6,7 +6,8 @@ import GreenPage from './../../images/greenPage.png';
 import ContractTiles from './contractTiles';
 import SearchBar from './../../Components/SearchBar';
 import {GET, PUT, POST} from './../dataSaver';
-import {SuccessToaster,ErrorToaster} from './../../utils/toaster';
+import {SuccessToaster, ErrorToaster} from './../../utils/toaster';
+import {currentUser} from './../../utils/auth';
 import {format} from 'date-fns';
 import UserCard from './userCard';
 import Table from '../../Components/TableDesign';
@@ -14,19 +15,59 @@ import LeftStatsCard from '../../Components/LeftStatsCard';
 
 import style from './index.module.scss';
 
-const ContractList = ({getDeleteDraftDialog,contracts, getSelectedContract,getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users}) => {
+const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelectedContract,getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage}) => {
     const activeHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "CONTRACTORS", "EFFECTIVE DATE", "POD STATUS", "MANAGER", "LAST UPDATED", "ACTION"];
     const draftHeaderValues =  ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "MANAGER", "LAST UPDATED", "LAST UPDATED BY", "ACTION"];
     const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "MANAGER", "LAST UPDATE", "ACTION"];
     const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "EXPIRATION DATE", "MANAGER", "LAST UPDATE"];
+    const currentUserData = currentUser();
     const [metadata, setMetadata] = useState();
-
-    const activateContracts = async(id) => {
+    console.log(currentUser());
+    const activateContracts = async(data) => {
       let status = 'ACTIVE';
-      await PUT(`contract-managment-service/contracts/${id}/contractStatus/${status}`)
-      .then(response=>{SuccessToaster('Contract Activated Successfully');getContracts();})
+      let activationData = {
+        "contractActivation": {
+          "activationNotes" : {
+            "notes":""
+          },
+          "activatedBy": {
+            "id":currentUserData?.id,
+            "name" : {
+              "firstName" : currentUserData?.firstName,
+              "lastName" : currentUserData?.lastName
+            },
+            "email": {
+              "officialEmail" : currentUserData?.email
+            }
+          }
+        }
+      }
+      await PUT(`contract-managment-service/contracts/${data?.id}/contractStatus/${status}`,activationData)
+      .then(response=>{SuccessToaster('Contract Activated Successfully');
+      getContracts();
+      getContractsMetadata();})
       .catch(error=>{ErrorToaster('Contract Activation Failed');})
     };
+
+    const contractExtension = (data) => {
+      getExtensionDialog(true);
+      getContractIdFromActive(data?.id);
+    }
+
+    const contractTermination = (data) => {
+      getTerminationDialog(true);
+      getContractIdFromActive(data?.id);
+    }
+
+    const contractClone = (data) => {
+      getCloneDialog(true);
+      getContractIdFromActive(data?.id);
+    }
+
+    const deleteDraft = (data) => {
+      getDeleteDraftDialog(true);
+      getContractIdFromActive(data?.id);
+    }
 
     useEffect(()=>{
       getContractsMetadata();
@@ -129,11 +170,11 @@ const ContractList = ({getDeleteDraftDialog,contracts, getSelectedContract,getCo
         ];
     }
 
-    const activeActionsData = [{'data': 'Contract Extension', 'onClick': getExtensionDialog, 'requiredValue': 'boolean'},
-        {'data': 'Contract Termination', 'onClick': getTerminationDialog, 'requiredValue': 'boolean'},
-        {'data': 'Clone Contract', 'onClick': getCloneDialog, 'requiredValue': 'boolean'}]
+    const activeActionsData = [{'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
+        {'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean'},
+        {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'}]
 
-    const draftActionsData = [{'data': 'Delete Contract', 'onClick': getDeleteDraftDialog, 'requiredValue': 'boolean'},
+    const draftActionsData = [{'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
         {'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id'}]
 
 
@@ -164,7 +205,7 @@ const ContractList = ({getDeleteDraftDialog,contracts, getSelectedContract,getCo
                     <div className={style.spaceBetween}>
                         <div className={`${style.displayInRow} ${style.marginTop20}`}>
                             <p className={`${style.blue} ${style.activeContractsWidth}`}>ACTIVE CONTRACTS</p>
-                            <SearchBar />
+                            <SearchBar getSearchKey={getSearchKey}/>
                             <img src={File} alt="File" className={style.smallIcons} />
                             <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />
@@ -181,6 +222,7 @@ const ContractList = ({getDeleteDraftDialog,contracts, getSelectedContract,getCo
                         getContractIdFromActive={getContractIdFromActive}
                         gridStyle={gridStyle}
                         actions={actions}
+                        getSelectedPage={getSelectedPage}
                     />
                 </div>
             </div>

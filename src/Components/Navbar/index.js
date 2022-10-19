@@ -6,6 +6,7 @@ import {TenantID,GET} from './../../Screens/dataSaver';
 import LogoutIcon from './../../images/logoutIcon.png';
 import Cookies from 'universal-cookie';
 import {isSuperAdminAccess} from '../../Screens/dataSaver';
+import {ErrorToaster} from './../../utils/toaster';
 import jwt from 'jwt-decode';
 
 import style from './index.module.scss';
@@ -79,9 +80,22 @@ const Navbar = () => {
 
     const logout = () => {
       const cookies = new Cookies();
-      cookies.remove('user');
-      cookies.remove('entityId');
-      window.location.href = '/';
+      let token = cookies.get('user');
+      let entityId = cookies.get('entityId');
+      const requestOptions = {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json',
+                    'X-tenantID' : entityId,
+                    'Authorization' : `Bearer ${token}`,
+                  },
+     };
+     fetch('https://rest.timesmart.io/user-management-service/auth/logout', requestOptions)
+         .then(response => {
+           cookies.remove('user');
+           cookies.remove('entityId');
+           window.location.href = '/';
+         })
+         .catch(data => ErrorToaster('Unexpected Error Occured'));
     }
 
     useEffect(() => {

@@ -90,13 +90,11 @@ const EntitySystemAdmin = ({getActiveStep}) => {
         "name": {
           "firstName": userData?.firstName,
           "lastName": userData?.lastName,
-          "suffix": ""
+          "suffix": {}
         },
         "userType": "ADMIN",
         "contract": [],
-        "title": {
-          "title": userData?.title,
-        },
+        "title": {},
         "email": {
           "officialEmail": userData?.email,
         },
@@ -121,7 +119,7 @@ const EntitySystemAdmin = ({getActiveStep}) => {
         "sites": {
           "sites": []
         },
-        "serviceProviderType": "",
+        "serviceProviderType": {},
         "activated": true,
         "siteLevelResponsible": true,
         "departmentLevelResponsible": true,

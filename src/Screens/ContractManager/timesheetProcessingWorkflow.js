@@ -6,6 +6,7 @@ import ToolBar from './toolbar';
 import {POST, GET, PUT} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ReviewerApproverField from './reviewerApproverField';
+import Requests from './requestsWorkflow';
 
 import style from './index.module.scss';
 
@@ -28,9 +29,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
     const [workFlowList,setWorkFlowList] = useState([]);
     const [selectedTimeSheet,setSelectedTimeSheet] = useState({id:'',reviewer:'',approver:''})
 
-    useEffect(()=>{
-      getApproverReviewerFields();
-    },[reviewerApproverCount])
+    // useEffect(()=>{
+    //   getApproverReviewerFields();
+    // },[reviewerApproverCount])
 
     useEffect(()=>{
         setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
@@ -190,23 +191,23 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
         setTimesheetProcessingWorkflow(workFlowDetails?.workFlowDetails || []);
     };
 
-    const getApproverReviewerFields = () => {
-      let fields = [];
-      let tabValue = activeTab === 'Absence Request' ? absenceRequestFields : addOnRequestFields;
-      for(let i=0;i<reviewerApproverCount;i++){
-        fields[i] = (
-          <>
-            <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value)=>{console.log('value',value);setSelectedTimeSheet({...selectedTimeSheet, reviewer:value})}} selectLabel="Select Reviewer"/>
-            <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value)=>{console.log('value',value);setSelectedTimeSheet({...selectedTimeSheet, approver:value})}} selectLabel="Select Approver"/>
-          </>
-        )
-      }
-      if(activeTab === 'Absence Request'){
-        setAbsenceRequestFields(fields);
-      }else{
-        setAddOnRequestFields(fields);
-      }
-    }
+    // const getApproverReviewerFields = () => {
+    //   let fields = [];
+    //   let tabValue = activeTab === 'Absence Request' ? absenceRequestFields : addOnRequestFields;
+    //   for(let i=0;i<reviewerApproverCount;i++){
+    //     fields[i] = (
+    //       <>
+    //         <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value)=>{console.log('value',value);setSelectedTimeSheet({...selectedTimeSheet, reviewer:value})}} selectLabel="Select Reviewer"/>
+    //         <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value)=>{console.log('value',value);setSelectedTimeSheet({...selectedTimeSheet, approver:value})}} selectLabel="Select Approver"/>
+    //       </>
+    //     )
+    //   }
+    //   if(activeTab === 'requests'){
+    //     setAbsenceRequestFields(fields);
+    //   }else{
+    //     setAddOnRequestFields(fields);
+    //   }
+    // }
 
     const resetApproverReviewer = () => {
       setSelectedTimeSheet({...selectedTimeSheet,id:'', reviewer:0, approver:0})
@@ -221,11 +222,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
                 <button className={`${style.timesheetButtonStyle} ${activeTab === data && style.selectedTimesheetButton}`} onClick={() => setActiveTab(data)}>{data}</button>
               ))
             }
-                <button className={`${style.timesheetButtonStyle} ${activeTab === "Absence Request" && style.selectedTimesheetButton}`} onClick={() => setActiveTab('Absence Request')}>Absence Request</button>
-                <button className={`${style.timesheetButtonStyle} ${activeTab === "Add On Request" && style.selectedTimesheetButton}`} onClick={() => setActiveTab('Add On Request')}>Add On Request</button>
+                <button className={`${style.timesheetButtonStyle} ${activeTab === "requests" && style.selectedTimesheetButton}`} onClick={() => setActiveTab('requests')}>Requests</button>
             </div>
             <div className={`${style.timeSheetBoxStyle}`}>
-            {activeTab !== 'Absence Request' && activeTab !== 'Add On Request' ?
+            {activeTab !== 'requests' ?
                 <div>
                   <div className={`${style.extentionGrid}`}>
                       <div className={style.extentionLableStyle}>Select Timesheet To Define Process*</div>
@@ -238,13 +238,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
                   <ReviewerApproverField data={users?.filter(data=>data?.roles?.map(role=>role?.roleName).includes('Approver') && data?.id !== selectedTimeSheet?.reviewer)?.map(data=>data)} label="Timesheet Approver*" onValueChange={(value)=>{console.log('value',value);setSelectedTimeSheet({...selectedTimeSheet, approver:value})}} selectLabel="Select Approver" value={selectedTimeSheet?.approver || '0'}/>
               </div>
               :<div>
-              <div className={`${style.extentionGrid}`}>
-                  <div className={style.extentionLableStyle}>Number of Approver/Reviewer*</div>
-                  <div className={style.displayInRow}>
-                      <InputGroup className={style.twoFieldWidth} placeholder="Approver/Reviewer Level" value={reviewerApproverCount} onChange={(e)=>setReviewerApproverCount(e.target.value)}/>
-                  </div>
-              </div>
-              {absenceRequestFields}
+                  <Requests users={users}/>
               </div>
             }
             </div>

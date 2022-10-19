@@ -7,8 +7,8 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
-const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractInfo, contractId}) => {
-
+const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractInfo, contractId, contractName}) => {
+    const [isUserUpdated, setIsUserUpdated] = useState(false);
     const [sameAsContractor, setSameAsContractor] = useState(false);
     const [contractorNPIN, setContractorNPIN] = useState({
         notApplicable: false,
@@ -26,7 +26,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
         name: {
             firstName: "",
             lastName: "",
-            suffix: ""
+            suffix: {}
           },
           email: {
             officialEmail: ""
@@ -46,14 +46,34 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
     });
     const [appRoleRequired, setAppRoleRequired] = useState(true);
     const [contractorBusinessEntity, setContractorBusinessEntity] = useState({});
+    const [userId, setUserId] = useState('0');
+
+    useEffect(()=>{
+      getUserData();
+    },[])
+
+    const getUserData = async() => {
+      if(contractId !== '' && contractId !== undefined){
+        const {data: userData} = await GET(`user-management-service/user?contractID=${contractId}`);
+        let entityManager = userData?.filter(data=>data?.roles?.map(role=>role?.id)?.includes('6344d59a45ca246bd12dd77b'))?.map(data=>data)
+        console.log('userData Entity',userData);
+        if(entityManager?.length !== 0){
+          setUserId(entityManager?.id);
+        }
+      }
+    }
 
     const handleContinue = async() => {
+      if(!sameAsContractor && businessEntityUser?.email?.officialEmail === ''){
+        ErrorToaster('Enter a valid Email-ID');
+        return;
+      }
         const data = {
             contractorNPIN: contractorNPIN,
             contractorEntityTaxId: contractorEntityTaxId,
             businessEntity: businessEntity,
             businessEntityUser: businessEntityUser,
-            roles: selectedRoles,
+            roles: roles?.filter(data=>data?.id === '6344d59a45ca246bd12dd77b')?.map(data=>data),
             mailingAddress: mailingAddress,
             contractorContact: sameAsContractor,
             appRoleRequired: appRoleRequired
@@ -66,7 +86,63 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                 ErrorToaster('Unexpected Error');
             }
 
-          console.log(data)
+        if(!sameAsContractor){
+          const userData = {
+            ...(userId !== '0' && {'id': userId}),
+            "name": {
+              "firstName": businessEntityUser?.name?.firstName,
+              "lastName": businessEntityUser?.name?.lastName,
+              "suffix": {}
+            },
+            "contracts": {
+              "id": contractId,
+              "contractName": {
+                "contractName": contractName
+              },
+              "roles":roles?.filter(data=>data?.id === '6344d59a45ca246bd12dd77b')?.map(data=>data),
+              "sites":{
+                "sites":[]
+              },
+              "siteLevelResponsible":true,
+              "departmentLevelResponsible":true,
+            },
+            "email": {
+              "officialEmail": businessEntityUser?.email?.officialEmail
+            },
+            "password": {
+              "password": "admin123"
+            },
+            "communication": {
+              "personalEmail": businessEntityUser?.email?.officialEmail,
+              "mobileNumber": businessEntityUser?.contactNumber?.number,
+              "landlineNumber": ""
+            },
+            "roles": roles?.filter(data=>data?.id === '6344d59a45ca246bd12dd77b')?.map(data=>data),
+            "tenant": {
+              "tenantId": TenantID
+            },
+        }
+
+      if(userId !== '0'){
+        await POST('user-management-service/user/register', JSON.stringify(userData))
+        .then(response=>{
+          SuccessToaster('Business Entity Manager Added Successfully');
+        })
+        .catch(error=>{
+            ErrorToaster('Unexpected Error');
+        })
+      }
+      else{
+        await PUT('user-management-service/user', JSON.stringify(data))
+        .then(response=>{
+          SuccessToaster('Business Entity Manager Updated Successfully');
+        })
+        .catch(error=>{
+            ErrorToaster('Unexpected Error');
+        });
+      }
+        }
+
     }
 
     const handleRoles = (value) => {
@@ -169,57 +245,45 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                             <div className={style.extentionLableStyle}>Contractor Business Contact*</div>
                             <div className={style.twoCol}>
                                 <InputGroup className={style.fullWidth} value={businessEntityUser?.name?.firstName}  placeholder="Enter First Name"
-                                onChange={(e) => setBusinessEntityUser({...businessEntityUser, name: {firstName: e.target.value, lastName: businessEntityUser?.name?.lastName, suffix: ''}})} />
+                                onChange={(e) =>
+                                  {
+                                  setBusinessEntityUser({...businessEntityUser, name: {firstName: e.target.value, lastName: businessEntityUser?.name?.lastName, suffix: ''}});
+                                  setIsUserUpdated(true);
+                                }} />
                                 <InputGroup className={style.fullWidth} value={businessEntityUser?.name?.lastName}  placeholder="Enter Last Name"
-                                onChange={(e) => setBusinessEntityUser({...businessEntityUser, name: {lastName: e.target.value, firstName: businessEntityUser?.name?.firstName, suffix: ''}})} />
+                                onChange={(e) =>
+                                  {
+                                    setBusinessEntityUser({...businessEntityUser, name: {lastName: e.target.value, firstName: businessEntityUser?.name?.firstName, suffix: ''}});
+                                    setIsUserUpdated(true);
+                                  }} />
                             </div>
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Business Contact Email Address*</div>
                             <InputGroup className={style.fullWidth}  value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
-                                onChange={(e) => setBusinessEntityUser({...businessEntityUser, email: {officialEmail: e.target.value}})}
+                                onChange={(e) =>
+                                  {
+                                    setBusinessEntityUser({...businessEntityUser, email: {officialEmail: e.target.value}});
+                                    setIsUserUpdated(true);
+                                  }}
                             />
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Cell Phone*</div>
                             <div className={style.twoCol}>
                                 <InputGroup className={style.fullWidth} value={businessEntityUser?.contactNumber?.number} placeholder="Enter Phone Number" type='number'
-                                onChange={(e) => setBusinessEntityUser({...businessEntityUser, contactNumber: {number: e.target.value, missing: businessEntityUser?.contactNumber?.missing}})}
+                                onChange={(e) =>
+                                  {
+                                    setBusinessEntityUser({...businessEntityUser, contactNumber: {number: e.target.value, missing: businessEntityUser?.contactNumber?.missing}});
+                                    setIsUserUpdated(true);
+                                  }}
                                 />
                                 <Checkbox label="Missing" checked={businessEntityUser?.contactNumber?.missing} className={`${style.marginTop10}`}
-                                onChange={(e) => setBusinessEntityUser({...businessEntityUser, contactNumber: {missing: e.target.checked, number: businessEntityUser?.contactNumber?.number}})}  />
-                            </div>
-                        </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Register Business Contact With App User Role*</div>
-                            <div>
-                                <div className={style.displayInRow}>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch checked={appRoleRequired} className={`${style.textAlignLeft}`}
-                                            onChange={() => setAppRoleRequired(!appRoleRequired)} />
-                                        }
-                                        className={`${style.switchFontStyle}`}
-                                        label={appRoleRequired ? 'YES' : 'NO'}
-                                    />
-                                    <select
-                                        name="class"
-                                        id="Class"
-                                        onChange={(e) => handleRoles(e.target.value)}
-                                        className={`${style.fullWidth} ${style.marginLeft20} `}>
-                                            <option value="0" >
-                                            Select Role-multi select
-                                            </option>
-                                            {roles?.map((data, index) => (
-                                            <option key={`${data}-${index}`} value={data?.roleName} >
-                                                {data?.roleName}
-                                            </option>
-                                            ))}
-                                    </select>
-                                </div>
-                                <div className={`${style.marginTop20} ${style.marginLeft20}`}>
-                                    {rolesTags}
-                                </div>
+                                onChange={(e) =>
+                                  {
+                                    setBusinessEntityUser({...businessEntityUser, contactNumber: {missing: e.target.checked, number: businessEntityUser?.contactNumber?.number}});
+                                    setIsUserUpdated(true);
+                                  }}  />
                             </div>
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
