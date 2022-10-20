@@ -14,7 +14,12 @@ import style from './index.module.scss';
 
 const FeedbackTicket = ({getSelectedOption}) => {
     const [selectedOption, setSelectedOption] = useState('OPEN TICKETS');
-    const [ticket, setTicket] = useState([]);
+    const [openTicket, setOpenTicket] = useState([]);
+    const [newTicket, setNewTicket] = useState([]);
+    const [resolvedTicket, setResolvedTicket] = useState([]);
+    const [exceptionErrors, setExceptionErrors] = useState([]);
+    const ticket = selectedOption === 'OPEN TICKETS' ? openTicket : selectedOption === 'NEW TICKETS' ? 
+                    newTicket : selectedOption === 'EXCEPTION ERRORS' ? exceptionErrors : resolvedTicket;
     const [ticketId, setTicketId] = useState('');
     const [isEdit, setIsEdit] = useState(false);
     const [users, setUsers] = useState([]);
@@ -31,7 +36,7 @@ const FeedbackTicket = ({getSelectedOption}) => {
     const exceptionTableHeaderValues = ["", "TICKET ID", "EXCEPTION CODE", "DESCRIPTION", "DATE/TIME", "CONTRACTOR NAME", "USER NAME", "LAST UPDATED", "ACTION"];
     const messagesTableHeaderValues = ["", "TYPE", "RELATED TO", "MESSAGE / COMMENT", "LAST RESPONDED", "DATE / TIME", "ACTION"];
 
-    const tableHeaderValues = (selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS")
+    const tableHeaderValues = (selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "NEW TICKETS")
     ? ticketsTableHeaderValues : selectedOption === "EXCEPTION ERRORS" ? exceptionTableHeaderValues 
     : messagesTableHeaderValues;
     let screenCaptureImg = sessionStorage.getItem('screenCapture');
@@ -59,7 +64,9 @@ const FeedbackTicket = ({getSelectedOption}) => {
 
     const getTicket = async () => {
         const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
-        setTicket(ticket)
+        setOpenTicket(ticket.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
+        setNewTicket(ticket.filter(data => data?.status === "NEW")?.map(data => data));
+        setResolvedTicket(ticket.filter(data => data?.status === "RESOLVED")?.map(data => data));
     };
 
     const getCommentMessages = async() => {
@@ -84,7 +91,6 @@ const FeedbackTicket = ({getSelectedOption}) => {
     }
 
     const messagesOnClickFunction = (data) => {
-        console.log(data)
         setTicketId(data?.ticketId?.id);
         setIsEdit(true);
         setShowFeedbackTicketResolution(true);
@@ -115,9 +121,14 @@ const FeedbackTicket = ({getSelectedOption}) => {
     }
 
     const getTicketId = (value) => {
-        console.log(value)
         setShowFeedbackTicketResolution(true);
-        setTicketId(value);
+        setTicketId(value?.ticketId?.id);
+        setIsEdit(true);
+    }
+
+    const getCommentView = (data) => {
+        setShowFeedbackTicketResolution(true);
+        setTicketId(data?.id);
         setIsEdit(true);
     }
 
@@ -199,7 +210,7 @@ const FeedbackTicket = ({getSelectedOption}) => {
             subject.push(data?.subject);
             openDateOrTime.push(format(new Date(data?.createdDateTime), 'MM-dd-yyyy HH:mm'));
             impact.push(<WarningAmberIcon style={{color: data?.impact === "HIGH" ? '#FF6562' : '#88D5A6'}} />);
-            appInUse.push('-');
+            appInUse.push('TIMESMART.AI');
             submittedBy.push(`${data?.createdBy?.name?.firstName} ${data?.createdBy?.name?.lastName}`);
             messages.push('2');
             lastUpdated.push(format(new Date(data?.modifiedDateTime), 'MM-dd-yyyy'));
@@ -221,39 +232,38 @@ const FeedbackTicket = ({getSelectedOption}) => {
         ];
     }
 
-    const actionsData = [{'data': 'Comment / Note', 'onClick': getDownloadDialog, 'requiredValue': 'boolean'},
-        {'data': 'Send Inquiry', 'onClick': getReprocessDialog, 'requiredValue': 'boolean'}]
+    const actionsData = [{'data': 'Comment / Note', 'onClick': getCommentView},
+        {'data': 'Send Inquiry', 'onClick': getReprocessDialog}]
 
-    const messagesActionsData = [{'data': 'Reply', 'onClick': getTicketId, 'requiredValue': 'getTicketId'}]
+    const messagesActionsData = [{'data': 'Reply', 'onClick': getTicketId}]
 
     return (
         <div>
             <LevelTwoHeader heading={'FEEDBACK TICKET MANAGER'} updatedTime={''} onCloseLevel2={onCloseLevel2} needDateFilter={true} getFrom={getFrom} getTo={getTo} />
             <div className={`${style.grid4} ${style.marginTop20}`}>
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="OPEN TICKETS" bigNumber={ticket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="OPEN TICKETS" topText='' />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="NEW TICKETS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="NEW TICKETS" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="OPEN TICKETS" bigNumber={openTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="OPEN TICKETS" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="NEW TICKETS" bigNumber={newTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="NEW TICKETS" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="EXCEPTION ERRORS" bigNumber={1} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="EXCEPTION ERRORS" topText='' />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="RESOLVED TICKETS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="RESOLVED TICKETS" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="RESOLVED TICKETS" bigNumber={resolvedTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="RESOLVED TICKETS" topText='' />
             </div>
             <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                 <div className={style.buttonGroupUsers}>
-                    <button className={selectedOption === "OPEN TICKETS" && style.activeButton} onClick={() => setSelectedOption('OPEN TICKETS')}>Open Tickets ( {ticket?.length} )</button>
+                    <button className={selectedOption === "OPEN TICKETS" && style.activeButton} onClick={() => setSelectedOption('OPEN TICKETS')}>Open Tickets ( {openTicket?.length} )</button>
                     <button className={selectedOption === "EXCEPTION ERRORS" && style.activeButton} onClick={() => setSelectedOption('EXCEPTION ERRORS')}>Exception Error ( 1 )</button>
                     <button className={selectedOption === "MESSAGES" && style.activeButton} onClick={() => setSelectedOption('MESSAGES')}>Messages ( {allMessages?.length} )</button>
-                    <button className={selectedOption === "RESOLVED TICKETS" && style.activeButton} onClick={() => setSelectedOption('RESOLVED TICKETS')}>Resolved Tickets ( 0 )</button>
+                    <button className={selectedOption === "RESOLVED TICKETS" && style.activeButton} onClick={() => setSelectedOption('RESOLVED TICKETS')}>Resolved Tickets ( {resolvedTicket?.length} )</button>
                 </div>
                 <Table
                     tableHeaderValues={tableHeaderValues} 
-                    tableDataValues={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS")
+                    tableDataValues={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "NEW TICKETS")
                     ? getTicketValues() : selectedOption === "EXCEPTION ERRORS" ? getTicketValues() 
                     : getMessagesValues()}
-                    tableData={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS")
-                    ? ticket : selectedOption === "EXCEPTION ERRORS" ? [] 
-                    : allMessages}
-                    gridStyle={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS")
+                    tableData={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "EXCEPTION ERRORS" || selectedOption === "NEW TICKETS")
+                    ? ticket : allMessages}
+                    gridStyle={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "NEW TICKETS")
                         ? style.ticketsGrid : selectedOption === "EXCEPTION ERRORS" ? style.exceptionGrid 
                         : style.messageGrid}
-                    actions={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS")
+                    actions={(selectedOption === 'OPEN TICKETS' || selectedOption === "RESOLVED TICKETS" || selectedOption === "NEW TICKETS")
                     ? actionsData : selectedOption === "EXCEPTION ERRORS" ? actionsData 
                     : messagesActionsData}
                 />

@@ -1,12 +1,13 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
-import { ScreenCapture } from 'react-screen-capture';
+// import { ScreenCapture } from 'react-screen-capture';
 import {Link} from 'react-router-dom';
 import {TenantID,GET} from './../../Screens/dataSaver';
 import LogoutIcon from './../../images/logoutIcon.png';
 import Cookies from 'universal-cookie';
 import {isSuperAdminAccess} from '../../Screens/dataSaver';
 import {ErrorToaster} from './../../utils/toaster';
+import html2canvas from 'html2canvas';
 import jwt from 'jwt-decode';
 
 import style from './index.module.scss';
@@ -71,12 +72,12 @@ const Navbar = () => {
         }, [ref]);
     }
 
-    const handleScreenCapture = (screenCapture) => {
-        setScreenCapture(screenCapture);
-        sessionStorage.setItem('screenCapture', screenCapture);
-        sessionStorage.setItem('selectedOption', 'OPEN FEEDBACK TICKETS');
-        window.location.href = '/app/entitySitePortal';
-    };
+    // const handleScreenCapture = (screenCapture) => {
+    //     setScreenCapture(screenCapture);
+    //     sessionStorage.setItem('screenCapture', screenCapture);
+    //     sessionStorage.setItem('selectedOption', 'OPEN FEEDBACK TICKETS');
+    //     window.location.href = '/app/entitySitePortal';
+    // };
 
     const logout = () => {
       const cookies = new Cookies();
@@ -106,7 +107,16 @@ const Navbar = () => {
         setIsEntityLevelAdmin((roles.includes('Super Sys Admin') || roles.includes('Entity Sys Admin') || roles.includes('Entity Sys User') || roles.includes('Distributor Admin')) ? true : false);
     }, [])
 
-    console.log(screenCapture);
+    const handleScreenshot = () => {
+        setShowToolsMenu(false);
+        html2canvas(document.body).then(canvas => {
+            var base64image = canvas.toDataURL("image/png");
+            setScreenCapture(base64image);
+            sessionStorage.setItem('screenCapture', base64image);
+            sessionStorage.setItem('selectedOption', 'OPEN FEEDBACK TICKETS');
+            window.location.href = '/app/entitySitePortal';
+        })
+    };
 
     return(
         <div className={style.navbarStyle}>
@@ -182,8 +192,8 @@ const Navbar = () => {
                         )}
                     </div>
                 )}
-                <ScreenCapture onEndCapture={handleScreenCapture}>
-                {({ onStartCapture }) => (
+                {/* <ScreenCapture onEndCapture={handleScreenCapture}>
+                {({ onStartCapture }) => ( */}
                     <div>
                         <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} onClick={() => setShowMenu(true)}>
                             <p>HELP</p>
@@ -193,12 +203,12 @@ const Navbar = () => {
                                 <Link to={'/help'} className={style.noFontStyle}>
                                     <div className={style.options}>OPEN FEEDBACK TICKET</div>
                                 </Link>
-                                <div className={style.options} onClick={onStartCapture}>SUPPORT PORTAL</div>
+                                <div className={style.options} onClick={handleScreenshot}>SUPPORT PORTAL</div>
                             </div>
                         )}
                     </div>
-                    )}
-                </ScreenCapture>
+                    {/* )}
+                </ScreenCapture> */}
             </div>
             <div className={style.displayInRow}>
                 {/* {!window.location.pathname.includes('reportTypeOverview') && (

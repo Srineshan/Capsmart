@@ -296,7 +296,7 @@ const SiteUsers = ({getActiveStep}) => {
           "lastName": userData.lastName,
           "suffix": userData.suffix,
         },
-        "userType": "ADMIN",
+        "userType": "REGISTERED_USER",
         "contracts": isAppUserContractor ? [
           {
             "id": contractId,

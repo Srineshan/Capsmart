@@ -97,6 +97,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
               "lastName": businessEntityUser?.name?.lastName,
               "suffix": {}
             },
+            "userType": "REGISTERED_USER",
             "contracts": [{
               "id": contractId,
               "contractName": {

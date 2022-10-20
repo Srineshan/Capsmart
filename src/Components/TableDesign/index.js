@@ -64,19 +64,6 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
         }, [ref]);
     }
 
-    const handleActions = (functionValue, requiredValue, id, ticketId) => {
-        if(requiredValue === 'boolean'){
-            functionValue(true);
-        } else if(requiredValue === 'id'){
-            functionValue(id)
-        } else if(requiredValue === 'getTicketId'){
-            functionValue(ticketId)
-        } else {
-            return
-        }
-        handleClose();
-    }
-
     return (
         <div>
             <div>
@@ -92,8 +79,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                 tableData?.type === "dot" ? (
                                     <div className={`${style.displayInRow} ${style.marginLeft30} ${style.verticalAlignCenter}`}>
                                         <Tooltip title={tableData?.tooltipValue?.[index]} arrow>
-                                            <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : ''}
-                                            ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : ''}`}></div>
+                                            <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : ''}`}></div>
                                         </Tooltip>
                                     </div>
                                 ) : tableData?.type === "text" ? (
@@ -170,7 +156,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                             >
                                                 <div className={style.actionsCard} ref={menuRef}>
                                                     {actions?.map((actionsData, actionsIndex) => (
-                                                        <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => {actionsData?.onClick(data)}} key={actionsIndex}>{actionsData?.data}</div>
+                                                        <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => {actionsData?.onClick(data);handleClose()}} key={actionsIndex}>{actionsData?.data}</div>
                                                     ))}
                                                 </div>
                                             </Popover>

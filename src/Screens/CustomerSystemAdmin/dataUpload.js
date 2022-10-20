@@ -34,11 +34,11 @@ const DataUpload = ({getSelectedOption}) => {
         setSelectedContract(value)
     }
 
-    const getDownloadDialog = () => {
+    const getDownloadDialog = (data) => {
 
     }
 
-    const getReprocessDialog = () => {
+    const getReprocessDialog = (data) => {
         
     }
 
@@ -107,8 +107,8 @@ const DataUpload = ({getSelectedOption}) => {
         ];
     }
 
-    const actionsData = [{'data': 'DOWNLOAD', 'onClick': getDownloadDialog, 'requiredValue': 'boolean'},
-        {'data': 'REPROCESS', 'onClick': getReprocessDialog, 'requiredValue': 'boolean'}]
+    const actionsData = [{'data': 'DOWNLOAD', 'onClick': getDownloadDialog},
+        {'data': 'REPROCESS', 'onClick': getReprocessDialog}]
 
     return (
         <div>
