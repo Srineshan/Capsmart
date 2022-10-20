@@ -107,7 +107,7 @@ const AddUser = ({getAddUserDialog}) => {
           "lastName": addUser?.lastName,
           "suffix": {}
         },
-        "userType": "ADMIN",
+        "userType": "REGISTERED_USER",
         "title":addUser?.title,
         "email": {
           "officialEmail": addUser?.email

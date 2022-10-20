@@ -323,7 +323,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 "lastName": contractorLastName,
                 "suffix": contractorNameSuffix
               },
-              "userType": "ADMIN",
+              "userType": "CONTRACTED_SERVICE_PROVIDER_USER",
               "contracts": getContractsData(),
               "title": {},
               "email": {

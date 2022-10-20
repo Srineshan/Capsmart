@@ -167,7 +167,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                 "lastName": userDetails?.lastName,
                 "suffix": userDetails?.suffix
               },
-              "userType": "ADMIN",
+              "userType": "CONTRACTED_SERVICE_PROVIDER_USER",
               "contracts": contractData,
               "title": {
                 "title": '',

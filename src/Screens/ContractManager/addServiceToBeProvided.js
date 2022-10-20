@@ -97,8 +97,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             ErrorToaster('Specific Activity Contracted For Is Mandatory');
             return;
         }
-
-        console.log('entered')
         if(activityOrServiceType === "Medical / Surgical Care Contracted Services" ){
             const data = {
 

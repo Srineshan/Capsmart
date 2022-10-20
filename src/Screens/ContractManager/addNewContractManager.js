@@ -37,7 +37,7 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
           "name": {
             "firstName": userData.firstName,
             "lastName": userData.lastName,
-            "suffix": ""
+            "suffix": {}
           },
           // "contractType": {
           //   "contractType": contractType

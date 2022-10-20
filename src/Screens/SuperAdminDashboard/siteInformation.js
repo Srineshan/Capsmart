@@ -165,15 +165,16 @@ const SiteInformation = ({getActiveStep}) => {
       getEntityData();
   }
 
-  const getDepartmentData = async() => {
-    const {data: department} = await GET('entity-service/department');
-    if(department){
-      setDepartmentValue(department)
-      setShowSiteTable(siteList?.filter(data=>data.primarySite !== true)?.map(data=>data)?.length !== 0 ? false:true);
-    }else{
-      console.log('error');
-    }
-  }
+  const getDepartmentData  = async() => {
+   await GET(`entity-service/department?siteTypeId=${site?.type?.id}`)
+   .then(response=>{
+     setDepartmentValue(response?.data)
+     setShowSiteTable(siteList?.filter(data=>data.primarySite !== true)?.map(data=>data)?.length !== 0 ? false:true);
+   })
+   .catch(error=>{
+     console.log('error',error);
+   })
+ }
 
   const getSaveInProgressAlert = (value) => {
     setShowSaveInProgress(value);
@@ -354,30 +355,9 @@ const SiteInformation = ({getActiveStep}) => {
                                             label={departmentSpecific ? 'YES' : "NO"}
                                         />
                                             {departmentSpecific &&
-                                              <DepartmentList value={item?.id} onChangeFunc={(selectedItem)=>onSelect(selectedItem)} className={[style.fullWidth, style.textAlignLeft]} entityTypeId={entityData?.entityType?.id}/>
-
-
-                                            //   (
-                                            //     <>
-                                            //         <DatalistInput items={items} placeholder="Enter Departments" onSelect={onSelect} value={selectDepartment} onChange={(e) => {setSelectDepartment(e.target.value); setSiteID('XX689- 64768')} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                            //         <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition} onClick={(e)=>handleTagsAdd(selectDepartment)}>+</span></div>
-                                            //     </>
-                                            // )
+                                              <DepartmentList value={item?.id} onChangeFunc={(selectedItem)=>onSelect(selectedItem)} className={[style.fullWidth, style.textAlignLeft]} entityTypeId={site?.type?.id}/>
                                           }
                                         </div>
-                                        {selectDepartment.length !== 0 && !departmentValue?.map(data=>data.departmentName?.name).includes(selectDepartment) &&(
-                                          <div className={`${style.reqDeptCard} ${style.marginTop}`}>
-                                              <div className={style.addBoxDescription}>
-                                              The Department you are trying to add is not on the list.
-                                              To add a new department enter the exact name below and click
-                                              on the "REQUEST & ADD" button.
-                                              </div>
-                                              <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                                  <InputGroup value={selectDepartment} className={style.threeFieldWidth} onChange={(e)=>setSelectDepartment(e.target.value)}/>
-                                                  <button className={`${style.reqButton} ${style.marginLeft20}`} onClick={() => {handleTagsAdd(selectDepartment)}}>REQUEST & ADD</button>
-                                              </div>
-                                          </div>
-                                      )}
                                         {departmentSpecific && (
                                             <TagInput
                                                 placeholder="Selected Department list"

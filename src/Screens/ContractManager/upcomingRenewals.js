@@ -66,11 +66,11 @@ const UpcomingRenewals = ({getSelectedContract, getAddContract, upcomingContract
                         <div className={`${style.tableHeader} ${style.draftContractGrid} ${style.marginTop40}`}>
                             <p className={style.marginLeft30} ></p>
                             <p className={`${style.tableHeaderFontStyle}`}>CONTRACT TYPE</p>
-                            <p className={style.tableHeaderFontStyle}> ID</p>
+                            <p className={style.tableHeaderFontStyle}>ID</p>
                             <p className={style.tableHeaderFontStyle}> NAME</p>
                             <p className={style.tableHeaderFontStyle}>EXPIRATION DATE</p>
                             <p className={style.tableHeaderFontStyle}>EXPIRING IN</p>
-                            <p className={style.tableHeaderFontStyle}> MANAGER</p>
+                            <p className={style.tableHeaderFontStyle}>MANAGER</p>
                             <p className={style.tableHeaderFontStyle}>LAST UPDATE</p>
                             <p className={style.tableHeaderFontStyle}>ACTION</p>
                         </div>
