@@ -58,16 +58,17 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
         let entityManager = userData?.filter(data=>data?.roles?.map(role=>role?.id)?.includes('6344d59a45ca246bd12dd77b'))?.map(data=>data)
         console.log('userData Entity',userData);
         if(entityManager?.length !== 0){
-          setUserId(entityManager?.id);
+          setUserId(entityManager?.[0]?.id);
         }
       }
     }
 
     const handleContinue = async() => {
-      if(!sameAsContractor && businessEntityUser?.email?.officialEmail === ''){
+      if(!sameAsContractor && (businessEntityUser?.email?.officialEmail === '' || businessEntityUser?.email?.officialEmail === undefined)){
         ErrorToaster('Enter a valid Email-ID');
         return;
       }
+      console.log('businessEntity',businessEntityUser);
         const data = {
             contractorNPIN: contractorNPIN,
             contractorEntityTaxId: contractorEntityTaxId,
@@ -86,6 +87,8 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                 ErrorToaster('Unexpected Error');
             }
 
+        console.log('userId', userId);
+
         if(!sameAsContractor){
           const userData = {
             ...(userId !== '0' && {'id': userId}),
@@ -94,7 +97,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
               "lastName": businessEntityUser?.name?.lastName,
               "suffix": {}
             },
-            "contracts": {
+            "contracts": [{
               "id": contractId,
               "contractName": {
                 "contractName": contractName
@@ -105,13 +108,13 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
               },
               "siteLevelResponsible":true,
               "departmentLevelResponsible":true,
-            },
+            }],
             "email": {
               "officialEmail": businessEntityUser?.email?.officialEmail
             },
-            "password": {
+            ...((userId === undefined || userId === '0') && "password": {
               "password": "admin123"
-            },
+            }),
             "communication": {
               "personalEmail": businessEntityUser?.email?.officialEmail,
               "mobileNumber": businessEntityUser?.contactNumber?.number,
@@ -123,7 +126,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
             },
         }
 
-      if(userId !== '0'){
+      if(userId === '0'){
         await POST('user-management-service/user/register', JSON.stringify(userData))
         .then(response=>{
           SuccessToaster('Business Entity Manager Added Successfully');
@@ -133,7 +136,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
         })
       }
       else{
-        await PUT('user-management-service/user', JSON.stringify(data))
+        await PUT('user-management-service/user', JSON.stringify(userData))
         .then(response=>{
           SuccessToaster('Business Entity Manager Updated Successfully');
         })
@@ -247,13 +250,13 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                                 <InputGroup className={style.fullWidth} value={businessEntityUser?.name?.firstName}  placeholder="Enter First Name"
                                 onChange={(e) =>
                                   {
-                                  setBusinessEntityUser({...businessEntityUser, name: {firstName: e.target.value, lastName: businessEntityUser?.name?.lastName, suffix: ''}});
+                                  setBusinessEntityUser({...businessEntityUser, name: {firstName: e.target.value, lastName: businessEntityUser?.name?.lastName, suffix: {}}});
                                   setIsUserUpdated(true);
                                 }} />
                                 <InputGroup className={style.fullWidth} value={businessEntityUser?.name?.lastName}  placeholder="Enter Last Name"
                                 onChange={(e) =>
                                   {
-                                    setBusinessEntityUser({...businessEntityUser, name: {lastName: e.target.value, firstName: businessEntityUser?.name?.firstName, suffix: ''}});
+                                    setBusinessEntityUser({...businessEntityUser, name: {lastName: e.target.value, firstName: businessEntityUser?.name?.firstName, suffix: {}}});
                                     setIsUserUpdated(true);
                                   }} />
                             </div>

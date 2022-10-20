@@ -18,7 +18,9 @@ const ContractExtension = ({getExtensionDialog, contractId, contracts}) => {
     const [users,setUsers] = useState([]);
     const [documentName, setDocumentName] = useState('');
     const currentContract = contracts?.filter(data=>data?.id === contractId)?.map(data=>data)[0];
+
     const handleFileUpload = (e) => {
+      setFile(e.target.files?.[0])
       console.log('file',e.target.files[0]?.name);
     }
     const expiringIn = differenceInDays(new Date(), new Date(currentContract?.contractDetail?.contractTerm?.endDate))
@@ -68,7 +70,7 @@ const ContractExtension = ({getExtensionDialog, contractId, contracts}) => {
             <label for="file-upload"  className={style.customFileUpload}>
                 Choose File
             </label>
-            <input id="file-upload" type="file" onChange={(e)=> handleFileUpload(e)}/>
+            <input id="file-upload" type="file" onChange={handleFileUpload}/>
           </div>
         )
     }

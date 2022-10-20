@@ -62,27 +62,27 @@ const EntitySetup = () => {
       }
       },[]);
 
-    useEffect(()=>{
-      if(entity.npin?.length === 10){
-        getNPIData();
-      }
-    },[entity.npin])
-
-    const getNPIData = () => {
-      fetch(`https://npiregistry.cms.hhs.gov/api/?number=${entity?.npin}&enumeration_type=NPI-2&version=2.1`,{
-          method: 'GET',
-          mode: 'cors',
-          headers:{"Access-Control-Allow-Origin" : "*",
-                   "Access-Control-Allow-Headers" : "X-Requested-With",
-                  }
-      })
-      .then(response=>{
-        console.log('response',response);
-      })
-      .catch(error=>{
-        console.log('error',error);
-      })
-    }
+    // useEffect(()=>{
+    //   if(entity.npin?.length === 10){
+    //     getNPIData();
+    //   }
+    // },[entity.npin])
+    //
+    // const getNPIData = () => {
+    //   fetch(`https://npiregistry.cms.hhs.gov/api/?number=${entity?.npin}&enumeration_type=NPI-2&version=2.1`,{
+    //       method: 'GET',
+    //       mode: 'cors',
+    //       headers:{"Access-Control-Allow-Origin" : "*",
+    //                "Access-Control-Allow-Headers" : "X-Requested-With",
+    //               }
+    //   })
+    //   .then(response=>{
+    //     console.log('response',response);
+    //   })
+    //   .catch(error=>{
+    //     console.log('error',error);
+    //   })
+    // }
 
     const getActiveStep = (value) => {
       setActiveStep(value)
@@ -104,14 +104,16 @@ const EntitySetup = () => {
       setThumbnail(data?.logoThumbnail?.file?.fileURL || null);
     }
 
-    const getDepartmentData = async() => {
-      const {data: department} = await GET('entity-service/department');
-      if(department){
-        setEntityDepartments(department)
-      }else{
-        console.log('error');
-      }
-    }
+
+    const getDepartmentData  = async() => {
+     await GET(`entity-service/department?siteTypeId=${entity?.type?.id}`)
+     .then(response=>{
+       setEntityDepartments(response?.data);
+     })
+     .catch(error=>{
+       console.log('error',error);
+     })
+   }
 
     const inputGroupElement = (value) => {
         return(
@@ -571,16 +573,6 @@ const EntitySetup = () => {
                                               (
                                                 <DepartmentList value={item?.id} onChangeFunc={(selectedItem)=>onSelect(selectedItem)} className={[style.fullWidth, style.textAlignLeft]} entityTypeId={entity?.type?.id}/>
                                               )
-
-                                            //   (
-                                            //     <>
-                                            //       <>
-                                            //           <DatalistInput items={items} placeholder="Select Departments" onSelect={onSelect} onChange={(e) => {handleDeptChange(e.target.value)} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                            //           <div className={`${style.addSymbolStyle} ${style.marginLeft20} ${style.cursor}`}><span className={style.plusSymbolPosition} onClick={()=>{handleTagsAdd(departmentValue);setDepartmentValue('');}}>+</span></div>
-                                            //       </>
-                                            //     </>
-                                            // )
-
                                           }
                                         </div>
                                         {departmentSpecific && (

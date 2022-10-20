@@ -45,7 +45,7 @@ const Contracts = () => {
 
     useEffect(()=>{
       getContracts();
-    },[selectedContract])
+    },[selectedContract,searchKey])
 
 
     const getSelectedContract = (value) => {
@@ -54,7 +54,6 @@ const Contracts = () => {
 
     const getContractIdFromActive = (value) => {
         setContractId(value);
-        console.log('id', value, contractId)
     }
 
     const getAddContract = (value) => {
@@ -98,7 +97,7 @@ const Contracts = () => {
     }
 
     const getContracts = async() => {
-       const {data: contracts} = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page-1}&searchText${searchKey}=&tab=${selectedContract}`);
+       const {data: contracts} = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page-1}&searchText=${searchKey}&tab=${selectedContract}`);
        setContracts(contracts);
     };
 
