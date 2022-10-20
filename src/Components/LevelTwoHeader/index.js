@@ -20,7 +20,7 @@ const LevelTwoHeader = ({heading, updatedTime, onCloseLevel2, needDateFilter, ge
  
     useEffect(()=> {
         if(needDateFilter){
-            let differenceMonthsCount = (timeFrame === 'Last 60 days' ? 2 : timeFrame === 'Last 90 days' ? 3 : 0)
+            let differenceDaysCount = (timeFrame === 'Last 60 days' ? 60 : timeFrame === 'Last 90 days' ? 90 : 0)
             if(timeFrame === 'This Week'){
                 setFrom(startOfWeek(new Date()));
                 setTo(endOfWeek(new Date()));
@@ -37,9 +37,9 @@ const LevelTwoHeader = ({heading, updatedTime, onCloseLevel2, needDateFilter, ge
                 getFrom(new Date(new Date().getFullYear(), new Date().getMonth() -1, 1));
                 getTo(subDays(startOfMonth(new Date()), 1));
             } else if(timeFrame === 'Last 60 days' || timeFrame === 'Last 90 days'){
-                setFrom(subMonths(new Date(), differenceMonthsCount));
+                setFrom(subDays(new Date(), differenceDaysCount));
                 setTo(new Date());
-                getFrom(subMonths(new Date(), differenceMonthsCount));
+                getFrom(subDays(new Date(), differenceDaysCount));
                 getTo(new Date());
             } else {
                 return;

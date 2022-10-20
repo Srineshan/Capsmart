@@ -13,6 +13,8 @@ import jwt from 'jwt-decode';
 import UserLogo from './../../images/userLogo.jpg';
 
 import style from './index.module.scss';
+import { getDaysAgo } from '../../utils/getDaysAgo';
+import FeedbackTicketResolutionLog from './feedbackTicketResolutionLog';
 
 const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, isEdit }) => {
 
@@ -31,6 +33,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const [ticketName, setTicketName] = useState('');
     const [fileName, setFileName] = useState(`${currentUser?.[0]?.id}${new Date().getTime().toString()}.png`);
     const [dateAndTime, setDateAndTime] = useState(format(new Date(), 'MM-dd-yyyy HH:mm'));
+    const [modifiedDateAndTime, setModifiedDateAndTime] = useState(format(new Date(), 'MM-dd-yyyy HH:mm'));
+    const [showFeedbackTicketResolutionLog, setShowFeedbackTicketResolutionLog] = useState(false);
     const [blobFormat, setBlobFormat] = useState();
     const [comment, setComment] = useState('');
     const [allComments, setAllComments] = useState();
@@ -39,6 +43,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     let authValue = cookie.get('user');
     const loggedUser = jwt(authValue);
     let screenCaptureImg = sessionStorage.getItem('screenCapture');
+    let customerName = sessionStorage.getItem('title');
 
     useEffect(() => {
         setScreenCapture(screenCaptureImg);
@@ -46,7 +51,9 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
 
     useEffect(() => {
         setCurrentUser(users?.filter(data => data?.id === loggedUser?.id)?.map(data => data))
-    }, [users]);
+    }, [authValue, users]);
+
+    console.log(currentUser);
 
     useEffect(() => {
         getImgBlob();
@@ -71,6 +78,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
         if(ticketDetails){
             setTicketName(ticketDetails?.ticketId);
             setDateAndTime(format(new Date(ticketDetails?.createdDateTime), 'MM-dd-yyyy HH:mm'));
+            setModifiedDateAndTime(format(new Date(ticketDetails?.modifiedDateTime), 'MM-dd-yyyy HH:mm'));
             setSubject(ticketDetails?.subject);
             setDescription(ticketDetails?.description);
             setType(ticketDetails?.type);
@@ -108,6 +116,10 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const getImgBlob = async() => {
         setBlobFormat(await fetch(screenCapture).then((res) => res.blob())); 
     };
+
+    const getShowFeedbackTicketResolutionLog = (value) => {
+        setShowFeedbackTicketResolutionLog(value);
+    }
 
     const handleAssignTo = (id) => {
         setAssignTo(users?.filter(data => data?.id === id)?.map(data => data))
@@ -217,9 +229,11 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const handleClose = () => {
         getShowFeedbackTicketResolution(false);
         sessionStorage.removeItem('screenCapture');
+        sessionStorage.removeItem('selectedOption');
     }
 
     return (
+        <>
         <Dialog isOpen={getShowFeedbackTicketResolution} onClose={() => handleClose()} className={`${style.addManagerDialogBackground} ${style.feedbackDialog}`}>
             <div className={`${Classes.DIALOG_BODY} `}>
                 <div className={style.spaceBetween}>
@@ -246,7 +260,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                             </div>
                             <div>
                                 <p className={style.extentionLableStyle}>Customer</p>
-                                <p className={style.feedbackFontStyle}>ACME corp</p>
+                                <p className={style.feedbackFontStyle}>{customerName}</p>
                             </div>
                             <div>
                                 <p className={style.extentionLableStyle}>Feedback SUBJECT</p>
@@ -308,7 +322,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                         </div>
                         <div className={style.dashedBorder}>
                             <div className={`${style.imageDisplayStyle} ${style.alignCenter}`}>
-                                {screenCapture === '' ? (
+                                {!screenCaptured ? (
                                     <div className={style.imageNameStyle}>IMAGE.PNG</div>
                                     ) : (
                                     <img src={screenCapture} alt='Screen shot' className={style.screenCaptureImgStyle} />
@@ -351,7 +365,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                             <div className={`${ticketStatus !== 'In-Progress' ? style.greenDotFeedbackStyle : style.orageDotFeedbackStyle} ${style.marginLeft20}`}></div>
                                         </div>
                                         <div className={style.displayInRow}>
-                                            <p className={style.feedbackFontStyle}>Updated On 01-06-2022 23:34</p>
+                                            <p className={style.feedbackFontStyle}>Updated On {modifiedDateAndTime}</p>
                                             <Icon icon="chevron-up" color='#7165E3' className={style.marginLeft20} />
                                         </div>
                                     </div>
@@ -376,7 +390,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                 </select>
                                             </div>
                                         </div>
-                                        {ticketStatus !== 'In-Progress' && (
+                                        {/* {ticketStatus !== 'In-Progress' && (
                                             <>
                                                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
                                                     <div></div>
@@ -390,7 +404,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                     </div>
                                                 </div>
                                             </>
-                                        )}
+                                        )} */}
                                         <div className={`${style.extentionGrid} ${style.marginTop10}`}>
                                             <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Status</div>
                                             <div className={style.displayInRow}>
@@ -418,7 +432,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                 </select>
                                             </div>
                                         </div>
-                                        {ticketStatus === 'INPROGRESS' && (
+                                        {/* {ticketStatus === 'INPROGRESS' && (
                                             <>
                                                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
                                                     <div></div>
@@ -461,8 +475,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                     </div>
                                                 </div>
                                             </div>
-                                        )}
-                                        <div className={`${style.resolutionProgressCard} ${style.spaceBetween} ${style.verticalAligCenter} ${style.marginTop20}`}>
+                                        )} */}
+                                        <div className={`${style.resolutionProgressCard} ${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop20}`} onClick={()=> setShowFeedbackTicketResolutionLog(true)}>
                                             <div className={`${style.resolutionProgressTextStyle} ${style.marginLeft20}`}>Track Resolution Progress</div>
 
                                         </div>
@@ -490,15 +504,21 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                             <div className={style.collapseBody}>
                                                 {allComments?.map((data, index) => (
                                                     <div>
-                                                        {(index === 0 || allComments[index - 1]?.commentedBy?.id !== data?.commentedBy?.id) && (
-                                                            <div className={style.displayInRow}>
-                                                                <img src={UserLogo} alt="logo" className={style.userLogo} />
-                                                                <div className={style.marginLeft20}>
-                                                                    <div className={`${style.displayInRow} ${style.marginTop10}`}>{data?.commentedBy?.name?.firstName} {data?.commentedBy?.name?.lastName}<span className={`${style.blue} ${style.marginLeft20}`}> MD</span> <span className={`${style.greyText} ${style.marginLeft20}`}>3 days ago</span> </div>
-                                                                </div>
+                                                        <div className={style.commentGrid}>
+                                                            <div>
+                                                                {(index === 0 || allComments[index - 1]?.commentedBy?.id !== data?.commentedBy?.id) && (
+                                                                    <img src={UserLogo} alt="logo" className={style.userLogo} />
+                                                                )}
                                                             </div>
-                                                        )}
-                                                        <div className={`${style.marginTop10} ${style.marginLeft55}`}>{data?.comment}</div>
+                                                            <div>
+                                                                {(index === 0 || allComments[index - 1]?.commentedBy?.id !== data?.commentedBy?.id) && (
+                                                                    <div className={style.marginLeft20}>
+                                                                        <div className={`${style.displayInRow} ${style.marginTop10} ${style.commentTextStyle}`}>{data?.commentedBy?.name?.firstName} {data?.commentedBy?.name?.lastName}<span className={`${style.blue} ${style.marginLeft20}`}> {data?.commentedBy?.name?.suffix?.suffix}</span> <span className={`${style.greyText} ${style.marginLeft20}`}>{getDaysAgo(new Date(data?.createdDateTime))}</span> </div>
+                                                                    </div>
+                                                                )}
+                                                                <div className={`${style.marginTop10} ${style.marginLeft20} ${style.commentTextStyle}`}>{data?.comment}</div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 ))}
                                                 <TextArea placeholder='reply here...' value={comment} onChange={(e)=> setComment(e.target.value)} rows={4} className={`${style.fullWidth} ${style.marginTop10}`} />
@@ -518,6 +538,10 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                 </div>
             </div>
         </Dialog>
+        {/* {showFeedbackTicketResolutionLog && (
+            <FeedbackTicketResolutionLog getShowFeedbackTicketResolutionLog={getShowFeedbackTicketResolutionLog} />
+        )} */}
+        </>
     )
 }
 

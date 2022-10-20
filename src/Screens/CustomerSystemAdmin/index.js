@@ -108,7 +108,7 @@ const Home = () => {
         ];
     }
 
-    const actionsData = [{'data': 'Unpin', 'onClick': togglePin, 'requiredValue': 'boolean'}]
+    const actionsData = [{'data': 'Unpin', 'onClick': togglePin}];
 
     return(
         <Fragment>

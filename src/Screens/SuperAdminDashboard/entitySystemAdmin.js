@@ -92,7 +92,7 @@ const EntitySystemAdmin = ({getActiveStep}) => {
           "lastName": userData?.lastName,
           "suffix": ""
         },
-        "userType": "ADMIN",
+        "userType": "REGISTERED_USER",
         "contract": [],
         "title": {
           "title": userData?.title,
