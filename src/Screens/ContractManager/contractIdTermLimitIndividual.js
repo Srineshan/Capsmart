@@ -19,7 +19,7 @@ import style from './index.module.scss';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
-const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields, fileData, contractIdFromActive, method}) => {
+const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields, fileData, contractIdFromActive, method}) => {
     const [selectContractManager, setSelectContractManager] = useState('');
     const [siteSpecific, setSiteSpecific] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
@@ -42,7 +42,6 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [contractPriorId,setContractPriorId] = useState({id:'',na:false});
     const [contractNA,setContractNA] = useState(false);
     const [user,setUsers] = useState([]);
-    const [contracts,setContracts] = useState();
     const [selectedItem,setSelectedItem] = useState();
     const [sites,setSites] = useState();
     const [selectedSites,setSelectedSites] = useState([]);
@@ -70,7 +69,6 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       getSites();
       getEntityData();
       getUserData();
-      getContracts();
       if(method !== 'POST'){
         getContractDetail();
       }
@@ -108,7 +106,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         setDepartmentSpecific(contractDetail?.departmentSpecificContract);
         setSiteSpecific(contractDetail?.siteSpecificContract);
         setFullyExecutedContract(contractDetail?.fullyExecutedContract);
-        setSelectContractManager(contractDetail?.contractManager?.userID);
+        setSelectContractManager(user?.filter(data=>data?.id === contractDetail?.contractManager?.userID)?.map(data=>data)[0]);
         setContractPriorId({id:contractDetail?.priorContract?.id,na:contractDetail?.priorContract?.notApplicable});
         setContractTermPeriodFrom(contractDetail?.contractTerm?.startDate !== null ? new Date(contractDetail?.contractTerm?.startDate) : null);
         setContractTermPeriodTo(contractDetail?.contractTerm?.endDate  !== null ? new Date(contractDetail?.contractTerm?.endDate) : null );
@@ -149,16 +147,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     }
 
     const getUserData = async() => {
-      const {data: user} = await GET('user-management-service/user');
+      const {data: user} = await GET('user-management-service/user/role?role=Contract Manager');
       if(user){
         setUsers(user);
-      }
-    }
-
-    const getContracts = async() => {
-      const {data:contracts} = await GET('contract-managment-service/contracts');
-      if(contracts){
-        setContracts(contracts);
       }
     }
 
@@ -235,7 +226,14 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
             "notApplicable": contractPriorId?.na,
           },
           "contractManager": {
-            "userID": selectContractManager,
+            "userID": selectContractManager?.id,
+            "name": {
+            "firstName": selectContractManager?.name?.firstName,
+            "lastName": selectContractManager?.name?.lastName
+            },
+            "email": {
+              "officialEmail": selectContractManager?.email?.officialEmail
+            }
           },
           "contractFiles": contractFiles,
           "site": {
@@ -295,11 +293,10 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     }
 
     const onSelect = (selectedItem) => {
-      setSelectContractManager(selectedItem.id);
+      setSelectContractManager(selectedItem);
     }
 
     const onSelectSite = (selectedItem) => {
-      console.log('selectedItem',selectedItem);
       setItem(selectedItem);
       let temp = selectedSites;
       temp.push(selectedItem);
@@ -330,8 +327,8 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const items = useMemo(
         () =>
           user.map((option) => ({
-            id: option?.id,
-            value: `${option.name.firstName} ${option.name.lastName} ${option?.name?.suffix?.suffix || ''}`,
+            userId: option?.id,
+            value: `${option.name.firstName} ${option.name.lastName}`,
             ...option,
           })),
         [user],
@@ -400,9 +397,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const handlContractManagerOnChange = (e) => {
       setUserName(e.target.value);
       if(e.target.value !== ''){
-        setSelectContractManager(items?.filter(data=>data.name?.firstName === 'userName')?.map(data=>data.id));
+        setSelectContractManager(items?.filter(data=>data.name?.firstName === userName)?.map(data=>data));
       }else{
-        setSelectContractManager('');
+        setSelectContractManager();
       }
     }
 
@@ -498,7 +495,6 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       setDepartmentSpecific(!departmentSpecific);
     }
 
-
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -527,7 +523,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                     <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
                     <div className={style.displayInRow}>
                     <div>
-                        <DatalistInput items={items || []} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager)?.map(data=>data?.value)[0]}/>
+                        <DatalistInput items={items || []} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager?.id)?.map(data=>data?.value)[0]}/>
                         {(!items?.map(data=>data?.name?.firstName)?.includes(userName) && !userName === '') && (
                             <div className={style.addBoxDescription}>
                             The Contract Manager you are trying to add is not a registered

@@ -1920,22 +1920,40 @@ select {
     height: 100%;
  }
 
-.calculatorIconColor{
-  color: #707070;
+.purpleTitle{
+  font: normal 15px/13px Montserrat;
+  color: #7165E3;
+  font-size: 15px;
+  text-align: left;
+  min-width:100vw;
 }
 
-.addServiceDialog{
-  height:75%;
-  width:85% !important;
+.marginTop50{
+  margin-top:50px;
 }
 
-.addServiceGrid{
+.daysSelectorGrid{
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-gap: 20px;
+  grid-template-columns: 60px 40px;
+  grid-gap: 10px;
 }
 
-.referenceTextArea{
-  width:25rem;
-  white-space: pre;
-}
+.calculatorIconColor{
+    color: #707070;
+  }
+  
+  .addServiceDialog{
+    height:75%;
+    width:85% !important;
+  }
+  
+  .addServiceGrid{
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 20px;
+  }
+  
+  .referenceTextArea{
+    width:25rem;
+    white-space: pre;
+  }

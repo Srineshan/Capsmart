@@ -44,7 +44,7 @@ import ReportType from './Screens/Reports/reportType';
 import ReportTypeOverview from './Screens/Reports/reportTypeOverview';
 import TenetHealthLogo from './images/Tenet_Health_logo.png';
 import Sanmateo from './images/sanmateo.jpg'
-import DataUpload from './Screens/CustomerSystemAdmin/dataUpload';
+import Home from './Screens/CustomerSystemAdmin';
 
 const App = ({props}) => {
   const [accessToken,setAccessToken] = useState(Auth());
@@ -138,7 +138,7 @@ const App = ({props}) => {
           <Route  path="/referenceList/absenseReasonsByIndustries" element={<AbsenseReasonsByIndustries />} />
           <Route  path="/referenceList/suffixByIndustries" element={<SuffixByIndustries />} />
           <Route  path="/referenceList/contractedServiceProviderByIndustries" element={<ContractedServiceProvidedByIndustries />} />
-          <Route  path="/entitySitePortal/dataUpload" element={<DataUpload />} />
+          <Route  path="/entitySitePortal" element={<Home />} />
           <Route  path="/thankyou" element={<Thankyou />} />
           <Route path="/reportType" element={<ReportType />} />
           <Route path="/reportTypeOverview/:reportType" element={<ReportTypeOverview />} />
