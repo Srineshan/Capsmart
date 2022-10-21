@@ -1,16 +1,13 @@
 import React, {useState, useRef, useEffect} from 'react';
-import UserLogo from './../../images/userLogo.jpg';
 import ChevronRight from './../../images/chevronRight.png';
-import Envelope from './../../images/envelope.png';
 import Filter from './../../images/filter.png';
-import RedWarning from './../../images/redWarning.png';
-import Bell from './../../images/bell.png';
-import ProgressBar from "@ramonak/react-progress-bar";
-import PageFooterIcon from './../../images/pageFooterIcon.png';
-import ThreeDot from './../../images/threeDot.png';
+import PrintIcon from './../../images/printIcon.png';
+import File from './../../images/file.png';
 import ContractTiles from './contractTiles';
-
+import SearchBar from './../../Components/SearchBar';
 import style from './index.module.scss';
+import UserCard from './userCard';
+import LeftStatsCard from '../../Components/LeftStatsCard';
 
 const ExpiredOrTerminated = ({getSelectedContract, getAddContract, expiredContracts, selectedContract, activeContractsLength, draftContractsLength, upcomingContractsLength, expiredContractsLength}) => {
     const [showOptions, setShowOptions] = useState(false);
@@ -33,20 +30,7 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract, expiredContra
     return(
         <div className={style.margin20}>
             <div className={`${style.bigCardGrid}`}>
-                <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
-                    <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                        <img src={UserLogo} className={style.userLogo} />
-                        <div className={style.marginLeft20}>
-                            <div className={style.userNameStyle}>
-                                User
-                            </div>
-                            <div className={style.loginStatus}>
-                                last login DEC 4,21 11:48 am
-                            </div>
-                        </div>
-                        <img src={ChevronRight} className={style.chevronRightStyle}/>
-                    </div>
-                </div>
+                <UserCard />
                 <ContractTiles getSelectedContract={getSelectedContract} selectedContract={selectedContract}
                 activeContractsLength={activeContractsLength}
                 draftContractsLength={draftContractsLength}
@@ -54,57 +38,14 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract, expiredContra
                 expiredContractsLength={expiredContractsLength} />
             </div>
             <div className={style.bigCardGrid}>
-                <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
-                    <h5 className={style.statisticsHeading}>February 2022 Summary Statistics</h5>
-                    <div className={style.scrollStyle}>
-                        <div className={style.progressbarStyle}>
-                            <div className={style.spaceBetween}>
-                                <p className={style.statisticsProgress}><strong>13</strong> <span className={style.marginLeft20}>INDIVIDUAL</span></p>
-                                <p className={style.viewStyle}>View</p>
-                            </div>
-                            <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#00C07F' baseBgColor="#ccffee" className={style.progressMargin} />
-                        </div>
-                        <div className={style.progressbarStyle}>
-                            <div className={style.spaceBetween}>
-                                <p className={style.statisticsProgress}><strong>32</strong> <span className={style.marginLeft20}>MULTIPLE</span></p>
-                                <p className={style.viewStyle}>View</p>
-                            </div>
-                            <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#FEC106' baseBgColor="#fff2cc" className={style.progressMargin} />
-                        </div>
-                        <div className={style.progressbarStyle}>
-                            <div className={style.spaceBetween}>
-                                <p className={style.statisticsProgress}><strong>47</strong> <span className={style.marginLeft20}>UPCOMING RENEWAL</span></p>
-                                <p className={style.viewStyle}>View</p>
-                            </div>
-                            <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#FF6562' baseBgColor="#ffcdcc" className={style.progressMargin} />
-                        </div>
-                        <div className={style.progressbarStyle}>
-                            <div className={style.spaceBetween}>
-                                <p className={style.statisticsProgress}><strong>50</strong> <span className={style.marginLeft20}>AUTO RENEWED</span></p>
-                                <p className={style.viewStyle}>View</p>
-                            </div>
-                            <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#FF6562' baseBgColor="#ffcdcc" className={style.progressMargin} />
-                        </div>
-                        <div className={style.progressbarStyle}>
-                            <div className={style.spaceBetween}>
-                                <p className={style.statisticsProgress}><strong>50</strong> <span className={style.marginLeft20}>CONTRACT WITH EXPIRING DOC</span></p>
-                                <p className={style.viewStyle}>View</p>
-                            </div>
-                            <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#FF6562' baseBgColor="#ffcdcc" className={style.progressMargin} />
-                        </div>
-                    </div>
-                    <img src={PageFooterIcon} alt="footer" className={style.footerIconStyle} />
-                </div>
+                <LeftStatsCard />
                 <div className={style.bigCardStyle}>
                     <div className={style.spaceBetween}>
                         <div className={`${style.displayInRow} ${style.marginTop20}`}>
                             <p className={`${style.blue} ${style.activeContractsWidth}`}>EXPIRED / TERMINATED</p>
-                            <div className={style.searchBarStyle}>
-                                <p>Search here</p>
-                                <p className={style.marginRight}>&#128269;</p>
-                            </div>
-                            {/* <img src={Envelope} alt="Envelope" className={style.smallIcons} />
-                            <img src={Bell} alt="Bell" className={style.smallIcons} /> */}
+                            <SearchBar />
+                            <img src={File} alt="File" className={style.smallIcons} />
+                            <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />
                         </div>
                         <button className={style.contractButton} onClick={() => getAddContract(true)} >ADD CONTRACT</button>
@@ -178,7 +119,7 @@ const ExpiredOrTerminated = ({getSelectedContract, getAddContract, expiredContra
                     </div>
                 </div>
             </div>
-            <div className={style.spaceBetween}>                        
+            <div className={style.spaceBetween}>
                 <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
                 <p className={style.poweredBy}>© TimeSmart.AI</p>
             </div>

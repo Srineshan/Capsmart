@@ -15,7 +15,7 @@ const AddFunctionalTitles = ({ getAddFunctionalTitlesDialog }) => {
     const [industryTypes,setIndustryTypes] = useState([])
     const [entityTypes,setEntityTypes] = useState([])
     const [contarctedServiceProviderType , setContarctedServiceProviderType] = useState([])
-   
+
 
     const getAllIndustries = async() => {
         const {data : data} = await GET (`/industryMaster`);
@@ -55,7 +55,7 @@ const AddFunctionalTitles = ({ getAddFunctionalTitlesDialog }) => {
             .then(response => {
                 console.log(response)
                 SuccessToaster('User Added Successfully');
-                
+
             })
             .catch(error => {
                 ErrorToaster(error);
@@ -84,7 +84,7 @@ const AddFunctionalTitles = ({ getAddFunctionalTitlesDialog }) => {
                             <select value={currentindustryType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj =>{ setCurrentIndustryType(obj.target.value); getEntityData(obj.target.value)}} >
                                     {
                                         industryTypes.map(type=>(<option value={type.id}>{type.industry}</option>))
-                                    }        
+                                    }
                                 </select>
                         </div>
                     </div>
@@ -94,17 +94,17 @@ const AddFunctionalTitles = ({ getAddFunctionalTitlesDialog }) => {
                             <select value={currentEntityType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => {setCurrentEntityType(obj.target.value);getContractedServiceProviderData(obj.target.value) } }>
                             {
                                         entityTypes.map(type=>(<option value={type.id}>{type.type}</option>))
-                                    } 
+                                    }
                                 </select>
                         </div>
                     </div>
                     <div className={`${style.editHealthCareGrid2} ${style.marginTop20}`}>
-                        <div className={style.entityLableStyle}>Contracted Service Provide Type*</div> 
+                        <div className={style.entityLableStyle}>Contracted Service Provide Type*</div>
                         <div className={style.displayInRow}>
                             <select value={currentCSPType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => {setCurrentCSPType(obj.target.value); } }>
                             {
                                         contarctedServiceProviderType.map(type=>(<option value={type.id}>{type.contractedServiceProviderType}</option>))
-                                    } 
+                                    }
                                 </select>
                         </div>
                     </div>

@@ -35,14 +35,14 @@ const BoardCertification = () => {
             setIndustryTypes((prev=>[...prev, { industry, holidayData }]));
            console.log(industryTypes)
         });
-       
+
   }
 
 
     useEffect(()=>{
         getHolidayData()
     },[])
-    
+
     return (
         <Fragment>
             <ReferenceListNavbar />

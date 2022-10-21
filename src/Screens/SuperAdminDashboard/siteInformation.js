@@ -3,7 +3,7 @@ import { InputGroup, Icon, Intent, TagInput, Dialog, Classes, Spinner } from '@b
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
-import {Link, useParams} from 'react-router-dom';
+import {Link, useParams, useNavigate} from 'react-router-dom';
 import {GET,PUT,POST,TenantID,isSuperAdminAccess} from './../dataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step2.png';
@@ -15,11 +15,15 @@ import style from './index.module.scss';
 import {Auth} from './../../utils/auth';
 import 'react-datalist-input/dist/styles.css';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import SaveInProgress from './saveInProgressAlert';
+import EntityTypeList from './../../Components/EntityType';
+import DepartmentList from './../../Components/DepartmentList';
 
 // const VALUES = ['Department 1', "Department 2"];
 
 const SiteInformation = ({getActiveStep}) => {
     const {id} = useParams();
+    const navigate = useNavigate();
     const [tags, setTags] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
     const [siteList,setSiteList] = useState([]);
@@ -33,9 +37,12 @@ const SiteInformation = ({getActiveStep}) => {
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [loading,setLoading] = useState(false);
     const [address,setAddress] = useState({
-      city:'',state:'',zipcode:'',country:''
+      addressLine:'',city:'',state:'',zipcode:'',country:''
     })
-    const [site,setSite] = useState({name:'',type:'',canSetupDepartment:true,npin:''});
+    const [site,setSite] = useState({name:'',type:{id:'',type:''},canSetupDepartment:true,npin:''});
+    const [showSaveInProgress,setShowSaveInProgress] = useState(false);
+    const [unassignedKeys,setUnassignedKeys] = useState([]);
+    const Fields = {name:'Site Name', type:'Site Type', npin:'NPIN', addressLine:'Address Line', city:'City', state:'State', country:'Country', zipcode:'Zipcode'};
     let options = [];
     const accessToken = Auth();
     const role = '';
@@ -56,13 +63,40 @@ const SiteInformation = ({getActiveStep}) => {
       }
     }
 
-    const updateEntitySite = async(buttonText) => {
-      if(site.name === '' || site.type === '' || site.npin === '' || address.city === '' || address.state === '' || address.zipcode === '' || address.country === ''){
-        ErrorToaster('All Fields are mandatory');
+    const mandatoryFieldCheck = (buttonType) => {
+      if(site?.name === ''){
+        ErrorToaster('Site Name is Mandatory');
         return;
       }
+      if(site?.type?.type === ''){
+        ErrorToaster('Site Type is Mandatory');
+        return;
+      }
+      if(buttonType === 'Saveinprogress'){
+        saveInProgressCheck();
+      }else{
+        updateEntitySite(buttonType);
+      }
+    }
+
+    const saveInProgressCheck = () => {
+      var keys = Object.keys(site)?.filter(key=> site[key] === '' && key !== 'id')?.map(data=>Fields[data]);
+      var addressKeys = Object.keys(address)?.filter(key => address[key] === '')?.map(data=>Fields[data]);
+      keys.push(...addressKeys);
+      setUnassignedKeys(keys);
+      if(keys?.length !== 0){
+        setShowSaveInProgress(true);
+      }else{
+        updateEntitySite('Saveinprogress');
+      }
+    }
+
+    const saveInProgressFunction = () => {
+      updateEntitySite('Saveinprogress');
+    }
+
+    const updateEntitySite = async(buttonText) => {
       let temp = entityData?.sites;
-      console.log('temp',temp);
       temp.push({
         "siteName": {
           "siteName": site.name
@@ -74,7 +108,8 @@ const SiteInformation = ({getActiveStep}) => {
             "id": ""
         },
         "siteType": {
-          "type": site.type
+          "type": site?.type?.type,
+          "id": site?.type?.id,
         },
         "npin": {
           "id": site.npin
@@ -84,7 +119,7 @@ const SiteInformation = ({getActiveStep}) => {
           "departments":departmentSpecific?selectedDepartment:departmentValue,
         },
         "address": {
-          "addressLine": "",
+          "addressLine": address.addressLine,
           "city": address.city,
           "state": address.state,
           "zipcode": address.zipcode,
@@ -92,14 +127,13 @@ const SiteInformation = ({getActiveStep}) => {
         },
         "primarySite": false
       });
-      console.log('temp down',temp);
       const updatedValue =
       {
       "id": entityData.id,
       "entityName": entityData?.entityName,
       "entityType": entityData?.entityType,
       "entityDisplayId": entityData?.entityDisplayId,
-      "customerType": "HEALTHCARE",
+      "industryId": entityData?.industryId,
       "sites": temp,
       "subscriptionPlan": entityData.subscriptionPlan,
       "billingDetails": entityData.billingDetails,
@@ -109,6 +143,8 @@ const SiteInformation = ({getActiveStep}) => {
       "subdomain":entityData?.subdomain,
       "canPrimarySiteToUseApp": entityData?.canPrimarySiteToUseApp,
       "multiSiteEntity": entityData?.multiSiteEntity,
+      "logo":entityData?.logo,
+      "logoThumbnail":entityData?.logoThumbnail,
     }
     await PUT('entity-service/entity',updatedValue)
     .then(response=>{
@@ -120,32 +156,38 @@ const SiteInformation = ({getActiveStep}) => {
       getActiveStep('siteUsers');
       resetSiteValues();
     }else if(buttonText === 'Saveinprogress'){
-      setShowSiteTable(true);
       resetSiteValues();
+      navigate('/user');
     }else{
-      getEntityData();
       resetSiteValues();
       setShowSiteTable(false);
     }
+      getEntityData();
   }
 
-  const getDepartmentData = async() => {
-    const {data: department} = await GET('entity-service/department');
-    if(department){
-      setDepartmentValue(department)
-      setShowSiteTable(siteList?.filter(data=>data.primarySite !== true)?.map(data=>data)?.length !== 0 ? false:true);
-    }else{
-      console.log('error');
-    }
-  }
+  const getDepartmentData  = async() => {
+   await GET(`entity-service/department?siteTypeId=${site?.type?.id}`)
+   .then(response=>{
+     setDepartmentValue(response?.data)
+     setShowSiteTable(siteList?.filter(data=>data.primarySite !== true)?.map(data=>data)?.length !== 0 ? false:true);
+   })
+   .catch(error=>{
+     console.log('error',error);
+   })
+ }
 
+  const getSaveInProgressAlert = (value) => {
+    setShowSaveInProgress(value);
+  }
 
     const onSelect = (selectedItem) => {
-      setItem(selectedItem);
-      let temp = selectedDepartment;
-      temp.push(selectedItem);
-      setSelectedDepartment(temp);
-      setSelectDepartment('');
+      if(!selectedDepartment?.map(data=>data?.id)?.includes(selectedItem?.id)){
+        setItem(selectedItem);
+        let temp = selectedDepartment;
+        temp.push(selectedItem);
+        setSelectedDepartment(temp);
+        setSelectDepartment('');
+      }
     }
 
     const handleTagsAdd = values => {
@@ -193,14 +235,19 @@ const SiteInformation = ({getActiveStep}) => {
       setAddress({
         city:'',state:'',zipcode:'',country:''
       });
-      setSite({name:'',type:'',canSetupDepartment:true,npin:''});
+      setSite({name:'',type:{},canSetupDepartment:true,npin:''});
       setSelectedDepartment([]);
     }
 
+    const onSiteTypeChange = (id, value) => {
+      setSite({...site, 'type':{type:value,id:id}});
+    }
+
+    console.log('site type', site?.type);
 
     return(
         <div className={style.entitySetupBackground}>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={()=>navigate('/user')}/>
             <div className={style.stepperMargin}>
                 <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>
@@ -281,28 +328,19 @@ const SiteInformation = ({getActiveStep}) => {
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Site Type*</div>
                                     <div className={`${style.leftAlign} `}>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            className={style.fullWidth}
-                                            value={site.type}
-                                            onChange={(e)=>handleSite('type',e.target.value)}>
-                                                <option value="" >
-                                                Select Site Type
-                                                </option>
-                                                <option value="Hospital/Nursing home etc" >
-                                                Hospital/Nursing home etc
-                                                </option>
-                                        </select>
+                                        <EntityTypeList value={site?.type?.id} onChangeFunc={(id, value)=>onSiteTypeChange(id,value)} className={[style.fullWidth]}/>
                                     </div>
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Address*</div>
-                                    <div className={`${style.displayInRow}`}>
-                                        <InputGroup value={address.zipcode} placeholder="zipcode" className={`${style.fourFieldWidth}`} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
+                                    <div>
+                                    <InputGroup placeholder="Enter Address Line" value={address.addressLine} className={`${style.fullWidth}`} onChange={(e)=>handleAddress('addressLine',e.target.value)}/>
+                                      <div className={`${style.marginTop20} ${style.displayInRow}`}>
+                                        <InputGroup value={address.city} placeholder="city" className={`${style.fourFieldWidth}`} onChange={(e)=>handleAddress('city',e.target.value)}/>
                                         <InputGroup value={address.state} placeholder="state" className={`${style.fourFieldWidth} ${style.marginLeft20}`} onChange={(e)=>handleAddress('state',e.target.value)}/>
                                         <InputGroup value={address.country} placeholder="country" className={`${style.fourFieldWidth} ${style.marginLeft20}`} onChange={(e)=>handleAddress('country',e.target.value)}/>
-                                        <InputGroup value={address.city} placeholder="city" className={`${style.fourFieldWidth} ${style.marginLeft20}`} onChange={(e)=>handleAddress('city',e.target.value)}/>
+                                        <InputGroup value={address.zipcode} placeholder="zipcode" className={`${style.fourFieldWidth}`} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
+                                      </div>
                                     </div>
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -316,29 +354,13 @@ const SiteInformation = ({getActiveStep}) => {
                                             className={style.switchFontStyle}
                                             label={departmentSpecific ? 'YES' : "NO"}
                                         />
-                                            {departmentSpecific && (
-                                                <>
-                                                    <DatalistInput items={items} placeholder="Enter Departments" onSelect={onSelect} value={selectDepartment} onChange={(e) => {setSelectDepartment(e.target.value); setSiteID('XX689- 64768')} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition} onClick={(e)=>handleTagsAdd(selectDepartment)}>+</span></div>
-                                                </>
-                                            )}
+                                            {departmentSpecific &&
+                                              <DepartmentList value={item?.id} onChangeFunc={(selectedItem)=>onSelect(selectedItem)} className={[style.fullWidth, style.textAlignLeft]} entityTypeId={site?.type?.id}/>
+                                          }
                                         </div>
-                                        {selectDepartment.length !== 0 && !departmentValue?.map(data=>data.departmentName?.name).includes(selectDepartment) &&(
-                                          <div className={`${style.reqDeptCard} ${style.marginTop}`}>
-                                              <div className={style.addBoxDescription}>
-                                              The Department you are trying to add is not on the list.
-                                              To add a new department enter the exact name below and click
-                                              on the "REQUEST & ADD" button.
-                                              </div>
-                                              <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                                  <InputGroup value={selectDepartment} className={style.threeFieldWidth} onChange={(e)=>setSelectDepartment(e.target.value)}/>
-                                                  <button className={`${style.reqButton} ${style.marginLeft20}`} onClick={() => {handleTagsAdd(selectDepartment)}}>REQUEST & ADD</button>
-                                              </div>
-                                          </div>
-                                      )}
                                         {departmentSpecific && (
                                             <TagInput
-                                                placeholder="Enter tags/keywords relative to the post"
+                                                placeholder="Selected Department list"
                                                 values={selectedDepartment?.map(data=>data?.departmentName?.name)}
                                                 className={`${style.marginTop20} ${style.tagInputStyle}`}
                                                 onAdd={handleTagsAdd}
@@ -356,11 +378,9 @@ const SiteInformation = ({getActiveStep}) => {
                                     <button className={style.outlinedButton}>BULK UPLOAD</button>
                                 </div>
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                    <button className={style.outlinedButton} onClick={()=>{updateEntitySite('Saveinprogress');}}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{updateEntitySite('Addmore');}}>SAVE & ADD MORE</button>
-                                    {/* <Link to={'/siteUsers'}> */}
-                                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {updateEntitySite('Continue');}}>CONTINUE</button>
-                                    {/* </Link> */}
+                                    <button className={style.outlinedButton} onClick={()=>{mandatoryFieldCheck('Saveinprogress');}}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>{mandatoryFieldCheck('Addmore');}}>SAVE & ADD MORE</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {mandatoryFieldCheck('Continue');}}>CONTINUE</button>
                                 </div>
                             </div>
                         </div>
@@ -401,7 +421,9 @@ const SiteInformation = ({getActiveStep}) => {
                         </div>
                     </div>
                     <div className={` ${style.floatRight} ${style.marginTop20} ${style.marginRightForPositionButton}`}>
-                        <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
+                    {
+                      // <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
+                    }
                         <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setAlertDialog(true)}>CONTINUE</button>
                     </div>
                 </div>
@@ -417,13 +439,12 @@ const SiteInformation = ({getActiveStep}) => {
                     <div>
                         <div className={`${style.positionCenter} ${style.marginTop20}`}>
                             <button className={`${style.cloneOutlinedButton} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => setAlertDialog(false)}>NO</button>
-                            {/* <Link to={'/siteUsers'}> */}
-                                <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => getActiveStep(isSuperAdminAccess ? 'entitySystemAdmin' : 'siteUsers')}>YES</button>
-                            {/* </Link> */}
+                            <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => getActiveStep(isSuperAdminAccess ? 'entitySystemAdmin' : 'siteUsers')}>YES</button>
                         </div>
                     </div>
                 </div>
             </Dialog>
+            <SaveInProgress alert={showSaveInProgress} getSaveInProgressAlert={getSaveInProgressAlert} fieldData={unassignedKeys?.join(', ')} saveInProgressFunction={saveInProgressFunction}/>
         </div>
     )
 }

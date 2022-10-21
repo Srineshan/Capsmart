@@ -15,14 +15,14 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
     const [industryTypes,setIndustryTypes] = useState([])
     const [entityTypes,setEntityTypes] = useState([])
     const [editTermination , setEditTermination] = useState([])
-    
+
       let data = []
 
       const getAllIndustries = async() => {
           const {data : data} = await GET (`/industryMaster`);
           setIndustryTypes(data);
     }
-  
+
 
     const getEntityData = async(industryId) =>{
         console.log("ok",data)
@@ -38,10 +38,10 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
             setPrimaryReason()
             setSecondaryReason()
             setCurrentEntityType()
-           
+
         }
     },[])
- 
+
     const SubmitTerminationReason = async () => {
         const TerminationInput = {
             "id":currentEntityType,
@@ -87,7 +87,7 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
                             <select value={currentindustryType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj =>{ setCurrentIndustryType(obj.target.value); getEntityData(obj.target.value)}} >
                                     {
                                         industryTypes.map(type=>(<option value={type.id}>{type.industry}</option>))
-                                    }        
+                                    }
                                 </select>
                         </div>
                     </div>
@@ -97,7 +97,7 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
                             <select value={currentEntityType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => {setCurrentEntityType(obj.target.value); } }>
                             {
                                         entityTypes.map(type=>(<option value={type.id}>{type.type}</option>))
-                                    } 
+                                    }
                                 </select>
                         </div>
                     </div>

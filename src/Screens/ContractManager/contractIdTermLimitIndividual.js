@@ -8,7 +8,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import DatalistInput from 'react-datalist-input';
-import {GET,PUT,POST,role,tenantID} from './../dataSaver';
+import {GET,PUT,POST,role,TenantID} from './../dataSaver';
 import AddNewContractManager from './addNewContractManager';
 import {Auth} from './../../utils/auth'
 import {format} from 'date-fns';
@@ -19,7 +19,7 @@ import style from './index.module.scss';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
-const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields, fileData, contractIdFromActive, method}) => {
+const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields, fileData, contractIdFromActive, method}) => {
     const [selectContractManager, setSelectContractManager] = useState('');
     const [siteSpecific, setSiteSpecific] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
@@ -42,7 +42,6 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [contractPriorId,setContractPriorId] = useState({id:'',na:false});
     const [contractNA,setContractNA] = useState(false);
     const [user,setUsers] = useState([]);
-    const [contracts,setContracts] = useState();
     const [selectedItem,setSelectedItem] = useState();
     const [sites,setSites] = useState();
     const [selectedSites,setSelectedSites] = useState([]);
@@ -58,11 +57,18 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const [departmentsName,setDepartmentsName] = useState([]);
     const [selectedDepartmentId,setSelectedDepartmentId] = useState([]);
     const [createdContractId,setCreatedContractId] = useState(contractIdFromActive);
+    const [isMultiSiteEntity,setIsMultiSiteEntity] = useState(false);
+
+    // useEffect(()=>{
+    //   if(!siteSpecific){
+    //     selectedSites([]);
+    //   }
+    // },[siteSpecific,departmentSpecific])
 
     useEffect(() => {
-      getUserData();
-      getContracts();
       getSites();
+      getEntityData();
+      getUserData();
       if(method !== 'POST'){
         getContractDetail();
       }
@@ -84,6 +90,12 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       setFileFields(fullyExecutedContractData);
     },[fullyExecutedContractData])
 
+    const getEntityData = async() => {
+      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
+      console.log('entityData',data);
+      setIsMultiSiteEntity(data?.multiSiteEntity);
+    }
+
     const getContractDetail = async() => {
       const {data: contractData} = await GET(`contract-managment-service/contracts/${createdContractId}/contractDetail`);
       if(contractData){
@@ -94,11 +106,11 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
         setDepartmentSpecific(contractDetail?.departmentSpecificContract);
         setSiteSpecific(contractDetail?.siteSpecificContract);
         setFullyExecutedContract(contractDetail?.fullyExecutedContract);
-        setSelectContractManager(contractDetail?.contractManager?.userID);
+        setSelectContractManager(user?.filter(data=>data?.id === contractDetail?.contractManager?.userID)?.map(data=>data)[0]);
         setContractPriorId({id:contractDetail?.priorContract?.id,na:contractDetail?.priorContract?.notApplicable});
-        setContractTermPeriodFrom(new Date(contractDetail?.contractTerm?.startDate) !== undefined ? new Date(contractDetail?.contractTerm?.startDate) : new Date());
-        setContractTermPeriodTo(new Date(contractDetail?.contractTerm?.endDate)  !== undefined ? new Date(contractDetail?.contractTerm?.endDate) : new Date() );
-        setContractEffectiveDate(new Date(contractDetail?.contractTerm?.effectiveDate)  !== undefined ? new Date(contractDetail?.contractTerm?.effectiveDate) : new Date());
+        setContractTermPeriodFrom(contractDetail?.contractTerm?.startDate !== null ? new Date(contractDetail?.contractTerm?.startDate) : null);
+        setContractTermPeriodTo(contractDetail?.contractTerm?.endDate  !== null ? new Date(contractDetail?.contractTerm?.endDate) : null );
+        setContractEffectiveDate(contractDetail?.contractTerm?.effectiveDate  !== null ? new Date(contractDetail?.contractTerm?.effectiveDate) : null);
         setSelectedContractContinuationPolicy(contractDetail?.continuationPolicy?.contractPolicyType);
         let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
         setAutoRenewal({renewalTerm:continuation?.autoRenewalTerm?.term.toString(),allowableRenewalTerm:continuation?.allowableAutoRenewalTerm?.term.toString(),calendar:continuation?.autoRenewalCalender})
@@ -135,16 +147,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     }
 
     const getUserData = async() => {
-      const {data: user} = await GET('user-management-service/user');
+      const {data: user} = await GET('user-management-service/user/role?role=Contract Manager');
       if(user){
         setUsers(user);
-      }
-    }
-
-    const getContracts = async() => {
-      const {data:contracts} = await GET('contract-managment-service/contracts');
-      if(contracts){
-        setContracts(contracts);
       }
     }
 
@@ -221,16 +226,23 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
             "notApplicable": contractPriorId?.na,
           },
           "contractManager": {
-            "userID": selectContractManager,
+            "userID": selectContractManager?.id,
+            "name": {
+            "firstName": selectContractManager?.name?.firstName,
+            "lastName": selectContractManager?.name?.lastName
+            },
+            "email": {
+              "officialEmail": selectContractManager?.email?.officialEmail
+            }
           },
           "contractFiles": contractFiles,
           "site": {
             "sites": getSiteData(),
           },
           "contractTerm": {
-            "startDate": format(contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
-            "endDate": format(contractTermPeriodTo, 'yyyy-MM-dd').toString(),
-            "effectiveDate": contractEffectiveDate === null ?  format(contractTermPeriodFrom, 'yyyy-MM-dd').toString() : format(contractEffectiveDate, 'yyyy-MM-dd').toString(),
+            "startDate": contractTermPeriodFrom === null ? null : format(contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
+            "endDate": contractTermPeriodTo === null ? null : format(contractTermPeriodTo, 'yyyy-MM-dd').toString(),
+            "effectiveDate": contractEffectiveDate === null ?  null : format(contractEffectiveDate, 'yyyy-MM-dd').toString(),
           },
           "continuationPolicy": {
             "contractPolicyType": selectedContractContinuationPolicy,
@@ -260,6 +272,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
        formData.append('contractDetail', new Blob([JSON.stringify(data)], {
             type: "application/json"
         }));
+        console.log('file Data',file);
        formData.append('contractFiles',file);
        if(method === 'POST'){
          await POST('contract-managment-service/contracts/contractDetail',formData)
@@ -280,7 +293,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     }
 
     const onSelect = (selectedItem) => {
-      setSelectContractManager(selectedItem.id);
+      setSelectContractManager(selectedItem);
     }
 
     const onSelectSite = (selectedItem) => {
@@ -314,8 +327,8 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const items = useMemo(
         () =>
           user.map((option) => ({
-            id: option?.id,
-            value: `${option.name.firstName} ${option.name.lastName} ${option.name.suffix}`,
+            userId: option?.id,
+            value: `${option.name.firstName} ${option.name.lastName}`,
             ...option,
           })),
         [user],
@@ -372,7 +385,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                 <EditableText className={style.inputRenewalRemainderStyle} defaultValue={renewalReminder?.[i]?.days} placeholder="" onChange={(e)=>handleReminder(e,i)} key={`days${i}${renewalReminder?.[i]?.days}`}/>
                 <div className={`${style.marginTop10} ${style.marginLeft20}`}>Days</div>
               </div>
-              <Icon icon="cross" className={style.marginTop10} color="black" onClick={()=>removeReminder(i)}/>
+              {renewalReminder?.length !== 1 && (
+                <Icon icon="cross" className={style.marginTop10} color="black" onClick={()=>removeReminder(i)}/>
+              )}
           </div>
         )
       }
@@ -382,9 +397,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const handlContractManagerOnChange = (e) => {
       setUserName(e.target.value);
       if(e.target.value !== ''){
-        setSelectContractManager(items?.filter(data=>data.name?.firstName === 'userName')?.map(data=>data.id));
+        setSelectContractManager(items?.filter(data=>data.name?.firstName === userName)?.map(data=>data));
       }else{
-        setSelectContractManager('');
+        setSelectContractManager();
       }
     }
 
@@ -476,6 +491,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
       }
     }
 
+    const handleDepartmentSpecific = () => {
+      setDepartmentSpecific(!departmentSpecific);
+    }
 
     return(
         <div className={style.cloneBlockStyle}>
@@ -505,15 +523,15 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                     <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
                     <div className={style.displayInRow}>
                     <div>
-                        <DatalistInput items={items || []} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager)?.map(data=>data?.value)[0]}/>
-                        {!items?.map(data=>data.name?.firstName)?.includes(userName) && !userName === '' &&(
+                        <DatalistInput items={items || []} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager?.id)?.map(data=>data?.value)[0]}/>
+                        {(!items?.map(data=>data?.name?.firstName)?.includes(userName) && !userName === '') && (
                             <div className={style.addBoxDescription}>
                             The Contract Manager you are trying to add is not a registered
-                            user. to add a new contract manager click on the "ADD" button.
+                            user. To add a new contract manager click on the "ADD" button.
                             </div>
                         )}
                     </div>
-                    <button className={`${style.disabledButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} onClick={() =>setAddNewManagerDialog(true)}>ADD</button>
+                    <button className={`${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledButton}`} onClick={() =>setAddNewManagerDialog(true)}>ADD</button>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -528,18 +546,18 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                 label={fullyExecutedContract ? 'YES' : "NO"}
                             />
                             {fullyExecutedContract && (
-                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={()=>{addNewDocumentField()}}>ADD</button>
+                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={()=>{addNewDocumentField()}}>UPLOAD</button>
                             )}
                         </div>
                         {fullyExecutedContract && (
                           <div>
-                              <div className={style.reduce10Left}>
+                              <div>
                                   <select
                                       name="class"
                                       id="Class"
                                       value={fileFieldData?.type || 'Select...'}
                                       onChange={(e) => handleFileChange(e,'type')}
-                                      className={`${style.fullWidth} ${style.marginLeft20} `}>
+                                      className={`${style.fullWidth}`}>
                                         <option value="Select...">
                                           Select...
                                         </option>
@@ -548,6 +566,12 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                           </option>
                                           <option value="Executed Agreement">
                                           Executed Agreement
+                                          </option>
+                                          <option value="Contract Amendment">
+                                          Contract Amendment
+                                          </option>
+                                          <option value="Exhibit">
+                                          Exhibit
                                           </option>
                                           <option value="Appendix Addendum">
                                           Appendix Addendum
@@ -611,7 +635,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                         <div className={style.displayInRow}>
                             <FormControlLabel
                                 control={
-                                    <Switch checked={departmentSpecific && siteSpecific} className={` ${style.textAlignLeft}`} onChange={()=>{if(siteSpecific){setDepartmentSpecific(!departmentSpecific)}}}  />
+                                    <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={()=>{handleDepartmentSpecific()}}  />
                                 }
                                 className={`${style.switchFontStyle}`}
                                 label={departmentSpecific ? 'YES' : "NO"}
@@ -627,7 +651,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                           Select Site...
                                         </option>
                                         {
-                                          selectedSites?.map(data=>(
+                                        selectedSites?.map(data=>(
                                             <option value={data?.id}>
                                               {data?.siteName?.siteName}
                                             </option>
@@ -800,7 +824,10 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                                   height: 30,
                               }
                           }}
-                            renderInput={(params) => <TextField  {...params} />}
+                            renderInput={(params) => <TextField {...params} inputProps={{
+                              ...params.inputProps,
+                              placeholder: "Start Date"
+                            }}/>}
                           />
                         </LocalizationProvider>
                     <p className={style.toStyle}>To</p>
@@ -825,7 +852,10 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                               }
                             }}
                             minDate={contractTermPeriodFrom}
-                            renderInput={(params) => <TextField  {...params} />}
+                            renderInput={(params) => <TextField  {...params} inputProps={{
+                              ...params.inputProps,
+                              placeholder: "End Date"
+                            }} />}
                           />
                         </LocalizationProvider>
                     </div>
@@ -854,7 +884,10 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                             }
                           }}
                           minDate={contractTermPeriodFrom}
-                          renderInput={(params) => <TextField  {...params} />}
+                          renderInput={(params) => <TextField  {...params} inputProps={{
+                            ...params.inputProps,
+                            placeholder: "Effective Date"
+                          }} />}
                         />
                       </LocalizationProvider>
                     </div>
@@ -862,13 +895,13 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Continuation Policy*</div>
                     <div>
-                        <div className={style.reduce10Left}>
+                        <div>
                             <select
                                 name="class"
                                 id="Class"
                                 value={selectedContractContinuationPolicy || 'Select...'}
                                 onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
-                                className={`${style.fullWidth} ${style.marginLeft20} `}>
+                                className={`${style.fullWidth}`}>
                                     <option value="0" >
                                     Choose Your Contract Continuation Policy
                                     </option>
@@ -917,7 +950,9 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
                             <div className={`${style.renewalRemainderBoxStyle}`}>
                               {reminderFields}
                               <div className={`${style.renewalBoxGrid}`}>
+                                {renewalReminder?.length <= 2 && (
                                   <button className={`${style.addMoreButton} ${style.selectedColor} ${style.cursorPointer}`} onClick={addReminder}>ADD MORE</button>
+                                )}
                               </div>
                             </div>
                         )}

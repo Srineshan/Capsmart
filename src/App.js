@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import { BrowserRouter as Router , Routes , Route} from 'react-router-dom';
+import { BrowserRouter , Routes , Route} from 'react-router-dom';
 import ActiveContracts from './Screens/ContractManager';
 import Welcome from './Screens/SuperAdminDashboard/welcome';
 import Login from './Screens/SuperAdminDashboard/login';
 import SetPassword from './Screens/SuperAdminDashboard/setPassword';
+import SetPasswordWithoutEmail from './Screens/SuperAdminDashboard/setPasswordWithoutEmail';
 import EntitySetup from './Screens/SuperAdminDashboard/entitySetup';
 import EntitySystemAdmin from './Screens/SuperAdminDashboard/entitySystemAdmin';
 import SiteInformation from './Screens/SuperAdminDashboard/siteInformation';
@@ -12,7 +13,7 @@ import AppSubscription from './Screens/SuperAdminDashboard/appSubscription';
 import SetupComplete from './Screens/SuperAdminDashboard/setupComplete';
 import OTPPage from './Screens/SuperAdminDashboard/otpPage';
 import WelcomeToDashboard from './Screens/SuperAdminDashboard/welcomeToDashboard';
-import './App.css'
+import './App.css';
 import history from './routes/history';
 import EntryPage from './Screens';
 import Users from './Screens/UserManagement';
@@ -47,32 +48,71 @@ import ContractServiceProviderForMultiSite from './Screens/ReferenceList/contrac
 import FunctionalTitleForCustomer from './Screens/ReferenceList/functionalTitleForCustomer';
 import FunctionalTitleMultiSitesForCustomer from './Screens/ReferenceList/functionalTitleMultiSitesForCustomer';
 import TerminationReasonForCustomer from './Screens/ReferenceList/contractTerminationReasonForCustomer';
-
 import SuperAdminDashboard from './Screens/ReferenceList/superAdminDashboard';
 import ClientAdminDashboard from './Screens/ReferenceList/customerAdminDashboard';
-import {Auth} from './utils/auth'
 import Thankyou from './Screens/SuperAdminDashboard/thankyou';
+import {Auth,GetEntityDetails} from './utils/auth';
+import {TenantID, GET} from './Screens/dataSaver';
+import Thankyou from './Screens/SuperAdminDashboard/thankyou';
+import ReportType from './Screens/Reports/reportType';
+import ReportTypeOverview from './Screens/Reports/reportTypeOverview';
+import TenetHealthLogo from './images/Tenet_Health_logo.png';
+import Sanmateo from './images/sanmateo.jpg'
+import Home from './Screens/CustomerSystemAdmin';
 
 const App = ({props}) => {
   const [accessToken,setAccessToken] = useState(Auth());
+  const [tenantId,setTenantId] = useState(GetEntityDetails());
+  const [logo,setLogo] = useState(null);
+  const [title,setTitle] = useState('');
 
-  useEffect(()=>{
+  useEffect(() => {
     if(accessToken === false){
       let cookie = new Cookie();
       let authValue = cookie.get('user');
       setAccessToken(authValue);
     }
-    if(accessToken === false && (window.location.pathname !== '/app' && !window.location.pathname.includes('/setPassword'))){
+    if(accessToken === false && (window.location.pathname !== '/app' && !window.location.pathname.includes('/app/setPassword'))){
       window.location.pathname = '/app';
     }
   },[window.location.pathname])
-  if(accessToken === false && (window.location.pathname !=='/app' && !window.location.pathname.includes('/setPassword'))){
+
+  useEffect(()=>{
+    changeFavicon();
+  },[logo,title])
+
+  useEffect(()=>{
+    changeFavicon()
+    getLogo();
+  },[])
+
+
+  const getLogo = async() => {
+    const {data: data} = await GET(`entity-service/entity/${TenantID}`);
+    setLogo(data?.logoThumbnail?.file?.fileURL);
+    setTitle(data?.entityName?.entityName);
+    sessionStorage.setItem('entityTypeId',data?.entityType?.id);
+    sessionStorage.setItem('entityTypeValue',data?.entityType?.type);
+    sessionStorage.setItem('industry',data?.customerType);
+    sessionStorage.setItem('logo',data?.logo?.file?.fileURL);
+    sessionStorage.setItem('thumbnail',data?.logoThumbnail?.file?.fileURL);
+    sessionStorage.setItem('title',data?.entityName?.entityName);
+  }
+
+
+  const changeFavicon = () => {
+    const favicon = document.getElementById('favicon');
+    favicon.href = logo;
+    document.title = title;
+  }
+
+  if(accessToken === false && (window.location.pathname !=='/app' && !window.location.pathname.includes('/app/setPassword'))){
     window.location.pathname = '/app';
     history.push('/app');
   }
 
   return (
-    <Router basename="/app">
+    <BrowserRouter basename="/app">
       <div className="App">
         {
           accessToken !== false ?
@@ -83,6 +123,7 @@ const App = ({props}) => {
           <Route  path="/user" element={<Users />}/>
           <Route  path="/pages" element={<EntryPage />}/>
           <Route  path="/setPassword/:userId" element={<SetPassword />}/>
+          <Route  path="/setPassword" element={<SetPasswordWithoutEmail />}/>
           <Route  path="/welcome" element={<Welcome />}/>
           <Route  path="/entitySetup/:id" element={<EntitySetup />}/>
           <Route  path="/entitySystemAdmin" element={<EntitySystemAdmin />}/>
@@ -93,7 +134,7 @@ const App = ({props}) => {
           <Route  path="/otpPage" element={<OTPPage />}/>
           <Route  path="/welcomeToDashboard" element={<WelcomeToDashboard />}/>
           <Route  path="/tasks" element={<ReportsHome />}/>
-          <Route  path="/reports" element={<TimeSheetReportsBase />}/>
+          <Route  path="/reports/:reportType" element={<TimeSheetReportsBase />}/>
           <Route  path="/chart" element={<ChartPage />}/>
           <Route  path="/help" element={<HelpHome />}/>
           <Route  path="/tasksAndAlerts" element={<TasksAndAlerts />}/>
@@ -113,7 +154,6 @@ const App = ({props}) => {
           <Route  path="/referenceList/contractedServiceProviderByIndustries" element={<ContractedServiceProvidedByIndustries />} />
           <Route  path="/referenceList/proofOfDocumentByEntity" element={<ProofOfDocumentationByEntity />} />
           <Route  path="/referenceList/contractDoumentTypeForUpload" element={<ContractDocumentTypeForUpload />} />
-
           <Route  path="/referenceList/holidayScheduleForCustomers" element={<HolidayScheduleForCustomers />} />
           <Route  path="/referenceList/departmentsForCustomers" element={<DepartmentsForCustomers />} />
           <Route  path="/referenceList/departmentsForCustomerMultiSite" element={<DepartmentsForCustomersMultiSite />} />
@@ -125,8 +165,15 @@ const App = ({props}) => {
           <Route  path="/referenceList/functionalTitleForCustomer" element={<FunctionalTitleForCustomer />} />
           <Route  path="/referenceList/functionalTitleMultiSitesForCustomer" element={<FunctionalTitleMultiSitesForCustomer />} />
           <Route  path="/referenceList/contractTerminationReasonForCustomer" element={<TerminationReasonForCustomer />} />
-          
+          <Route  path="/referenceList/holidayScheduleForCustomers" element={<HolidayScheduleForCustomers />} />
+          <Route  path="/referenceList/departmentsForCustomers" element={<DepartmentsForCustomers />} />
+          <Route  path="/referenceList/absenseReasonsByIndustries" element={<AbsenseReasonsByIndustries />} />
+          <Route  path="/referenceList/suffixByIndustries" element={<SuffixByIndustries />} />
+          <Route  path="/referenceList/contractedServiceProviderByIndustries" element={<ContractedServiceProvidedByIndustries />} />
+          <Route  path="/entitySitePortal" element={<Home />} />
           <Route  path="/thankyou" element={<Thankyou />} />
+          <Route path="/reportType" element={<ReportType />} />
+          <Route path="/reportTypeOverview/:reportType" element={<ReportTypeOverview />} />
           </Routes>
         ):(
           <Routes>
@@ -135,9 +182,8 @@ const App = ({props}) => {
         )
       }
       </div>
-    </Router>
+    </BrowserRouter>
   );
 }
 
 export default App;
-

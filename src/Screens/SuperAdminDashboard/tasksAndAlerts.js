@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect, Fragment } from 'react';
 import { Checkbox } from '@blueprintjs/core';
 import Navbar from './../../Components/Navbar';
-import UserLogo from './../../images/userLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import {Link} from 'react-router-dom';
 import PrintIcon from './../../images/printIcon.png';
 import Filter from './../../images/filter.png';
 import Bell from './../../images/bell.png';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 import Terminate from './../../images/terminate.png';
 import Clone from './../../images/clone.png';
 import RedPage from './../../images/redPage.png';
@@ -17,11 +19,14 @@ import PageFooterIcon from './../../images/pageFooterIcon.png';
 import RedWarning from './../../images/redWarning.png';
 import ContractExtension from './../../images/contractExtension.png';
 import ProgressBar from "@ramonak/react-progress-bar";
+import SearchBar from './../../Components/SearchBar';
 import style from './index.module.scss';
 
 const TasksAndAlerts = () => {
     const [viewToDo, setViewToDo] = useState(true);
-
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const user = jwt(userDetails);
     return(
         <Fragment>
             <Navbar />
@@ -29,13 +34,13 @@ const TasksAndAlerts = () => {
                 <div className={`${style.grid5}`}>
                     <div className={style.cardStyle}>
                         <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                            <img src={UserLogo} className={style.userLogo} />
+                            <img src={DoctorAnime} className={style.userLogo} />
                             <div className={style.marginLeft20}>
                                 <div className={style.userNameStyle}>
-                                    User
+                                {user?.userName}
                                 </div>
                                 <div className={style.loginStatus}>
-                                    last login DEC 4,21 11:48 am
+                                    last login SEP 7,21 11:48 am
                                 </div>
                             </div>
                             <img src={ChevronRight} className={style.chevronRightStyle}/>
@@ -100,7 +105,7 @@ const TasksAndAlerts = () => {
                 </div>
                 <div className={style.bigCardGrid}>
                     <div className={`${style.bigCardStyleEntryPage} ${style.bigCalendarLeftCardWidth}`}>
-                        <h5 className={style.statisticsHeading}>February 2022 Summary Statistics</h5>
+                        <h5 className={style.statisticsHeading}>September 2022 Summary Statistics</h5>
                         <div className={style.scrollStyle}>
                             <h5 className={`${style.textAlignLeft} ${style.sideBarHeadingStyle}`}>To Do Status</h5>
                             <div className={style.progressbarStyle}>
@@ -153,10 +158,7 @@ const TasksAndAlerts = () => {
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                             <p className={`${style.marginLeft30} ${style.activeContractsWidth}`}>{`{{Today Date}}`}</p>
                             <div className={`${style.displayInRow}`}>
-                                <div className={style.searchBarStyle}>
-                                    <p>Search here</p>
-                                    <p className={style.marginRight}>&#128269;</p>
-                                </div>
+                                <SearchBar />
                                 <img src={Bell} alt="Bell" className={style.smallIcons} />
                                 <img src={Filter} alt="Filter" className={style.filterIcon} />
                             </div>

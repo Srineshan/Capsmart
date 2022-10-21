@@ -21,11 +21,11 @@ import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
 import {Auth} from './../../utils/auth'
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import SaveInProgress from './saveInProgressAlert';
 
 
 const AppSubscription = ({getActiveStep}) => {
     const {id} = useParams();
-    // const id = TenantID;
     const navigate = useNavigate();
     const [entityData,setEntityData] = useState();
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
@@ -33,7 +33,6 @@ const AppSubscription = ({getActiveStep}) => {
     const [selectedContract, setSelectedContract] = useState('Select...');
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
     const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('AUTORENEWAL');
-    const [item, setItem] = useState();
     const [isSetupComplete,setIsCompleteSetup] = useState(false);
     const [isUpdated, setIsUpdated] = useState(false);
     const [plan,setPlan] = useState({planName: 'BASIC',allowableRegisteredUsers: 0,fees: "", subscriptionStatus: "ACTIVE", billingFrequency: "MONTHLY",discount: 0,
@@ -58,6 +57,10 @@ const AppSubscription = ({getActiveStep}) => {
       endDate: null
     })
     const [contractFiles,setContractFiles] = useState([{type:'',name:'',desc:'',file:null,path:''}])
+    const Fields = {planName:'Subscription Plan', allowableRegisteredUsers:'Allowable Registered Users', fees:'Monthly Subscription Fees', billingFrequency:'Billing Frequency', discount:'Discount', poaNumber:'POA Number', firstName:'First Name', lastName:'Last Name', email:'Email', phone:'Cell Phone', contractName:'Contract / Agreement Name', contractID:'Contract ID', startDate: 'Contract Start Date', endDate:'Contract End Date', date:'Contract Effective Date', contractContinuationPolicy:'Contract Continuation Policy'};
+    const [showSaveInProgress,setShowSaveInProgress] = useState(false);
+    const [unassignedKeys,setUnassignedKeys] = useState([]);
+
 
     const role = '';
     const accessToken = Auth();
@@ -76,22 +79,18 @@ const AppSubscription = ({getActiveStep}) => {
       setBillingData({firstName:data?.billingDetails?.contactname?.firstName,lastName:data?.billingDetails?.contactname?.lastName,email:data?.billingDetails?.email?.emailId,phone:data?.billingDetails?.contactNumber?.contactNumber.toString()});
       setPlan({planName: subscription?.planName,allowableRegisteredUsers: subscription?.allowableRegisteredUsers?.allowableRegisteredUsers,fees: subscription?.subscriptionFees?.fees, subscriptionStatus: subscription?.subscriptionStatus, billingFrequency: subscription?.billingFrequency,discount: subscription?.discount?.discount || '0',
          poaNumber: subscription?.poaNumber?.poaNumber});
-      setContract({
-            contractName: contractData?.contractName,
-            contractID: contractData?.contractID,
-            missing:false,
-            startDate: contractData?.contractTermPeriod?.startDate !== undefined? new Date(contractData?.contractTermPeriod?.startDate) : undefined,
-            endDate: contractData?.contractTermPeriod?.endDate !== undefined ? new Date(contractData?.contractTermPeriod?.endDate) : undefined,
-            date: contractData?.plannedGoLive?.date !== undefined ? new Date(contractData?.plannedGoLive?.date) : undefined,
-            contractContinuationPolicy: contractData?.contractContinuationPolicy,
-        })
+      if(contractData !== null){
+        setContract({
+              contractName: contractData?.contractName,
+              contractID: contractData?.contractID,
+              missing:false,
+              startDate: contractData?.contractTermPeriod?.startDate !== null? new Date(contractData?.contractTermPeriod?.startDate) : null,
+              endDate: contractData?.contractTermPeriod?.endDate !== null ? new Date(contractData?.contractTermPeriod?.endDate) : null,
+              date: contractData?.plannedGoLive?.date !== null ? new Date(contractData?.plannedGoLive?.date) : null,
+              contractContinuationPolicy: contractData?.contractContinuationPolicy,
+          })
+      }
     }
-
-    const onSelect = useCallback((selectedItem) => {
-      setItem(selectedItem);
-      setSelectDepartment('');
-      setItem(true);
-    }, []);
 
     const leftElement = () => {
         return(
@@ -117,13 +116,52 @@ const AppSubscription = ({getActiveStep}) => {
         )
     }
 
-    const updateBilling = async(type) => {
-      if(billingData?.email === '' && !billingData?.email.includes('@') && !billingData?.email.includes('.')){
-        ErrorToaster('Enter a valid E-mail');
+    const mandatoryFieldCheck = (buttonType) => {
+      if(billingData?.email === ''){
+        ErrorToaster('Email is Mandatory');
         return;
       }
+      if(!billingData?.email?.includes('@') || !billingData?.email?.includes('.')){
+        ErrorToaster('Enter Valid Email-Id');
+        return;
+      }
+      if(buttonType === 'saveInProgress'){
+        saveInProgressCheck();
+      }else{
+        updateBilling(buttonType);
+      }
+    }
+
+    const saveInProgressCheck = () => {
+      if(isSuperAdminAccess){
+        var keys = Object.keys(plan)?.filter(key=> plan[key] === '' || plan[key] === 0 || plan[key] === undefined || plan[key] === null)?.map(data=>Fields[data]);
+        var billingKeys = Object.keys(billingData)?.filter(key => billingData[key] === '' || billingData[key] === 0 || billingData[key] === undefined || billingData[key] === null)?.map(data=>Fields[data]);
+        keys.push(...billingKeys);
+        var contractKeys = Object.keys(contract)?.filter(key => contract[key] === '' || contract[key] === 0 || contract[key] === undefined || contract[key] === null)?.map(data=>Fields[data]);
+        keys.push(...contractKeys);
+      }else{
+        var keys = [];
+        if(plan['poaNumber'] === '' || plan['poaNumber'] === undefined || plan['poaNumber'] === null){
+          keys.push('POA Number');
+        }
+        var billingKeys = Object.keys(billingData)?.filter(key => billingData[key] === '' || billingData[key] === 0 || billingData[key] === undefined || billingData[key] === null)?.map(data=>Fields[data]);
+        keys.push(...billingKeys);
+      }
+      setUnassignedKeys(keys);
+      if(keys?.length !== 0){
+        setShowSaveInProgress(true);
+      }else{
+        updateBilling('saveInProgress');
+      }
+    }
+
+    const saveInProgressFunction = () => {
+      updateBilling('saveInProgress');
+    }
+
+    const updateBilling = async(type) => {
       let fileData = [];
-     contractFiles?.map(data=>{
+        contractFiles?.map(data=>{
         fileData.push({"name":data?.name,"description":data?.desc,"contractDocType":data?.type,"contractDocPath":data?.path})
       })
       let data = {
@@ -131,14 +169,15 @@ const AppSubscription = ({getActiveStep}) => {
         "entityName": entityData?.entityName,
         "entityType": entityData?.entityType,
         "entityDisplayId": entityData?.entityDisplayId,
-        "customerType": entityData?.customerType,
+        "industryId": entityData?.industryId,
         "sites": entityData?.sites,
         "subdomain":entityData?.subdomain,
         "multiSiteEntity":entityData?.multiSiteEntity,
         "canPrimarySiteToUseApp":entityData?.canPrimarySiteToUseApp,
         "accountManager":entityData?.accountManager,
         "appUserRoles":entityData?.appUserRoles,
-
+        "logo":entityData?.logo,
+        "logoThumbnail":entityData?.logoThumbnail,
         "subscriptionPlan": {
           "planName": plan?.planName || 'BASIC',
           "allowableRegisteredUsers": {
@@ -153,7 +192,7 @@ const AppSubscription = ({getActiveStep}) => {
             "discount": parseInt(plan?.discount)
           },
           "poaNumber": {
-            "poaNumber": contract?.poaNumber,
+            "poaNumber": plan?.poaNumber,
           }
         },
         "billingDetails": {
@@ -183,16 +222,17 @@ const AppSubscription = ({getActiveStep}) => {
         "fullyExecutedContractOnFile": fullyExecutedContract,
       }
     }
-      if(isUpdated){
-        await PUT('entity-service/entity',data)
-          .then(response=>{
-          SuccessToaster('Entity Billing Updated Successfully');
-          }).catch(error=>{
-            ErrorToaster('Unexpected Error Updating Entity Billing');
-          });
-        }
+      await PUT('entity-service/entity',data)
+        .then(response=>{
+        SuccessToaster('Entity Billing Updated Successfully');
+        }).catch(error=>{
+          ErrorToaster('Unexpected Error Updating Entity Billing');
+        });
+
       if(type === 'Continue'){
         setIsCompleteSetup(true);
+      }else{
+        navigate('/user');
       }
     }
 
@@ -226,10 +266,16 @@ const AppSubscription = ({getActiveStep}) => {
       setIsCompleteSetup(value);
     }
 
+    const getSaveInProgressAlert = (value) => {
+      setShowSaveInProgress(value);
+    }
+
+    console.log('date',contract?.startDate);
+
     return(
       <>
         {isSetupComplete? <SetupComplete data={plan?.planName === 'TRIAL'? 'Trial':'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess? 'Created' : 'Updated'}/> : <div className={style.entitySetupBackground}>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={()=>navigate('/user')}/>
             <div className={style.stepperMargin}>
                 <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>
@@ -406,7 +452,7 @@ const AppSubscription = ({getActiveStep}) => {
                                         <div className={style.displayInRow}>
                                             <InputGroup className={style.fourFieldWidth} value={contract?.contractID} disabled={!isSuperAdminAccess} placeholder="Contract Id"
                                             onChange={(e) => handleContract('contractID', e.target.value)}  />
-                                            <Checkbox label="Missing"  checked={contract.missing} onChange={(e)=>handleContract('missing', e.target.checked)} className={`${style.marginTop} ${style.marginLeft20}`}/>
+                                            <Checkbox label="Missing"  checked={contract.missing} disabled={!isSuperAdminAccess} onChange={(e)=>handleContract('missing', e.target.checked)} className={`${style.marginTop} ${style.marginLeft20}`}/>
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -478,6 +524,7 @@ const AppSubscription = ({getActiveStep}) => {
                                                   height: 30,
                                               }
                                           }}
+                                          disabled={!isSuperAdminAccess}
                                             renderInput={(params) => <TextField  {...params} />}
                                           />
                                         </LocalizationProvider>
@@ -504,6 +551,7 @@ const AppSubscription = ({getActiveStep}) => {
                                                   height: 30,
                                               }
                                           }}
+                                          disabled={!isSuperAdminAccess}
                                             renderInput={(params) => <TextField  {...params} />}
                                           />
                                         </LocalizationProvider>
@@ -534,6 +582,7 @@ const AppSubscription = ({getActiveStep}) => {
                                                   height: 30,
                                               }
                                           }}
+                                          disabled={!isSuperAdminAccess}
                                             renderInput={(params) => <TextField  {...params} />}
                                           />
                                         </LocalizationProvider>
@@ -709,13 +758,14 @@ const AppSubscription = ({getActiveStep}) => {
                             )}
                         </div>
                         <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                            <button className={style.outlinedButton} onClick={()=>updateBilling('saveInProgress')}>SAVE IN-PROGRESS</button>
-                            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>updateBilling('Continue')}>CONTINUE</button>
+                            <button className={style.outlinedButton} onClick={()=>mandatoryFieldCheck('saveInProgress')}>SAVE IN-PROGRESS</button>
+                            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>mandatoryFieldCheck('Continue')}>CONTINUE</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>}
+        <SaveInProgress alert={showSaveInProgress} getSaveInProgressAlert={getSaveInProgressAlert} fieldData={unassignedKeys?.join(', ')} saveInProgressFunction={saveInProgressFunction}/>
       </>
     )
 }

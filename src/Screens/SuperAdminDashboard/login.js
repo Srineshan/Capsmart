@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {Link, RouteComponentProps, useNavigate} from 'react-router-dom';
-import {getEntityDetail} from './../dataSaver';
+import {Link, useNavigate} from 'react-router-dom';
+import {TenantID, GET} from './../dataSaver';
 import { InputGroup, Icon } from '@blueprintjs/core';
 import WelcomeImg from './../../images/welcomeImg.png';
-import Sanmateo from './../../images/sanmateo.jpg';
 import Cookie from 'universal-cookie';
 import axios from "axios";
 import style from './index.module.scss';
@@ -15,17 +14,17 @@ const Login = (props) => {
   const navigate = useNavigate();
   const [entityId,setEntityId] = useState('');
   const [viewPassword,setViewPassword] = useState(false);
-  const [accessToken,setAccessToken] = useState();
+  const [logo,setLogo] = useState({logo:'',title:''});
   var cookie = new Cookie();
 
   useEffect(()=>{
     getEntityId();
+    getLogo();
   },[])
 
   const getEntityId = async() => {
-    await axios(`https://rest.timesmart.live/entity-service/entityID`,{
-        method: 'GET',
-        headers : {'X-subdomain' : 'demo'},
+    await axios(`https://rest.timesmart.io/entity-service/entityID`,{
+        method: 'GET'
     }).then(response=>{
       cookie.set('entityId',response?.data?.id);
       setEntityId(response?.data?.id);
@@ -34,6 +33,10 @@ const Login = (props) => {
     })
   }
 
+  const getLogo = async() => {
+    const {data: data} = await GET(`entity-service/entity/${TenantID}`);
+    setLogo({logo:data?.logo?.file?.fileURL, title:data?.entityName?.entityName});
+  }
 
   const login = () => {
     const requestOptions = {
@@ -43,11 +46,10 @@ const Login = (props) => {
                 },
        body: JSON.stringify(user)
    };
-   fetch('https://rest.timesmart.live/user-management-service/auth/login', requestOptions)
+   fetch('https://rest.timesmart.io/user-management-service/auth/login', requestOptions)
        .then(response => response.json())
        .then(data => {
          cookie.set('user',data?.accessToken);
-         setAccessToken(data?.accessToken);
          let roles = jwt(data?.accessToken)?.roles?.split(',');
          let isAppUser = roles.includes('Approver') || roles.includes('Reviewer') || roles.includes('Activity Logger');
          let isContractManager = roles.includes('Contract Manager');
@@ -105,7 +107,7 @@ const Login = (props) => {
                   <div><span className={style.timeTextStyle}>Time</span><span className={style.smartTextStyle}>Smart.AI</span></div>
                 </div>
                 <div>
-                  <img src={Sanmateo} alt="logo" className={style.logoLoginStyle} />
+                  <img src={logo?.logo} alt="logo" className={style.logoLoginStyle} />
                 </div>
                 <div className={`${style.regHeading} ${style.blackText} ${style.marginTop50}`}>Your Registered Email (Username)</div>
                 <InputGroup type="email" large={true} placeholder="Enter your registered email here" className={style.marginTop10} value={user.email} onChange={(e)=>setUser({...user,email:e.target.value})}/>

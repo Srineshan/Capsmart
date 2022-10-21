@@ -238,4 +238,4 @@ const HolidayScheduleForCustomers = () => {
     )
 }
 
-export default HolidayScheduleForCustomers; 
+export default HolidayScheduleForCustomers;

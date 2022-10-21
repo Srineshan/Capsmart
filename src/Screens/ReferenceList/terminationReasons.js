@@ -24,7 +24,7 @@ const BoardCertification = () => {
   const [allData, setAllData] = useState([]);
   const [terminationData, setTerminationData] = useState([]);
   const [editTermination , setEditTermination] = useState("")
-    
+
   //const [currentEntityId, setCurrentEntityId] = useState("");
 
   const getAddTerminationReasonsDialog = (value) => {

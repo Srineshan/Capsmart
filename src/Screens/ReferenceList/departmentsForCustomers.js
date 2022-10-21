@@ -235,4 +235,4 @@ const DepartmentsForCustomers = () => {
     )
 }
 
-export default DepartmentsForCustomers; 
+export default DepartmentsForCustomers;

@@ -69,12 +69,7 @@ const AddAbsenseReasonsForHealthcare = ({ getAddAbsenseReasonsDialog, isEdit}) =
                 </div>
             </div>
         </Dialog>
-
-
-
     )
-
-    
 }
 
 export default AddAbsenseReasonsForHealthcare;

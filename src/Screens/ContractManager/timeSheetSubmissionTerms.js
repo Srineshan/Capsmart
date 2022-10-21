@@ -151,7 +151,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
           temp[i] = (
             <div key={`${i}temp${timeSheetCount + 1}`} className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20}`}>
                 <div className={`${style.extentionGrid}`}>
-                    <div className={style.extentionLableStyle}>{`Timesheets lable ${i+1} for processing`}</div>
+                    <div className={style.extentionLableStyle}>{`Timesheets label ${i+1} for processing`}</div>
                     <InputGroup className={style.fullWidth} value={timeSheetLabelData?.[i]?.label} onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)} />
                 </div>
                 {timeSheetCount > 1 && (

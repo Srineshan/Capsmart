@@ -53,7 +53,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
       setSpecialityBoardCertificateId('');
       setInsuranceCarrierName('');
       setInsuranceCertificateId('');
-      setStateOfLicensure(''); 
+      setStateOfLicensure('');
       setLicenseId('');
       setCertificateId('');
       setmembershipRenewalDate(null);
@@ -111,7 +111,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
               medicalStaffId: medicalStaffId,
             }
           },
-          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          expirationDate: {date: membershipRenewalDate !== null ? format(membershipRenewalDate, 'yyyy-MM-dd').toString() : null},
           file: {
           filePath: "",
           fileName: fileName
@@ -127,7 +127,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
               specialityBoardCertificateId: specialityBoardCertificateId,
             }
           },
-          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          expirationDate: {date: membershipRenewalDate !== null ? format(membershipRenewalDate, 'yyyy-MM-dd').toString(): null},
           file: {
           filePath: "",
           fileName: fileName
@@ -143,7 +143,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
               insuranceCertificateId: insuranceCertificateId,
             }
           },
-          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          expirationDate: {date:membershipRenewalDate !== null ?  format(membershipRenewalDate, 'yyyy-MM-dd').toString() : null},
           file: {
           filePath: "",
           fileName: fileName
@@ -158,7 +158,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
               licenseId: licenseId,
             }
           },
-          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          expirationDate: {date:membershipRenewalDate !== null ?  format(membershipRenewalDate, 'yyyy-MM-dd').toString() :  null},
           file: {
           filePath: "",
           fileName: fileName
@@ -172,7 +172,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
               certificateId: certificateId,
             }
           },
-          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          expirationDate: {date:membershipRenewalDate !== null ?  format(membershipRenewalDate, 'yyyy-MM-dd').toString(): null},
           file: {
           filePath: "",
           fileName: fileName
@@ -181,26 +181,26 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
         } : '';
 
       }else{
-        if(selectedPOD === 'Medical Staff Membership & Privileges' && contractorName === '' || selectedSite === {}){
-          ErrorToaster('Fill in mandatory fields');
-          return;
-        }
-        if(['Primary Speciality Board Certification','Secondary Specialty Board Certification']?.includes(selectedPOD) && contractorName === ''){
-          ErrorToaster('Fill in mandatory fields');
-          return;
-        }
-        if(['Liability Insurance Certificate', 'Workers Compensation Insurance Certificate', 'Tail Insurance Coverage Certificate']?.includes(selectedPOD) && selectedInsuranceCarrier === ''){
-          ErrorToaster('Fill in mandatory fields');
-          return;
-        }
-         if(['Medical license Certificate', 'Drug Enforcement Administration (DEA) License']?.includes(selectedPOD) && contractorName === '' || stateOfLicensure === ''){
-          ErrorToaster('Fill in mandatory fields');
-          return;
-        }
-        if(selectedPOD === 'Controlled Substance DEA Registration Certificate' && contractorName === ''){
-          ErrorToaster('Fill in mandatory Fields');
-          return;
-        }
+        // if(selectedPOD === 'Medical Staff Membership & Privileges' && contractorName === '' || selectedSite === {}){
+        //   ErrorToaster('Fill in mandatory fields');
+        //   return;
+        // }
+        // if(['Primary Speciality Board Certification','Secondary Specialty Board Certification']?.includes(selectedPOD) && contractorName === ''){
+        //   ErrorToaster('Fill in mandatory fields');
+        //   return;
+        // }
+        // if(['Liability Insurance Certificate', 'Workers Compensation Insurance Certificate', 'Tail Insurance Coverage Certificate']?.includes(selectedPOD) && selectedInsuranceCarrier === ''){
+        //   ErrorToaster('Fill in mandatory fields');
+        //   return;
+        // }
+        //  if(['Medical license Certificate', 'Drug Enforcement Administration (DEA) License']?.includes(selectedPOD) && contractorName === '' || stateOfLicensure === ''){
+        //   ErrorToaster('Fill in mandatory fields');
+        //   return;
+        // }
+        // if(selectedPOD === 'Controlled Substance DEA Registration Certificate' && contractorName === ''){
+        //   ErrorToaster('Fill in mandatory Fields');
+        //   return;
+        // }
          data = selectedPOD === 'Medical Staff Membership & Privileges' ?
         {
           podType: {type: selectedPOD},
@@ -211,7 +211,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
               medicalStaffId: medicalStaffId,
             }
           },
-          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          expirationDate: {date:membershipRenewalDate !== null ?  format(membershipRenewalDate, 'yyyy-MM-dd').toString() : null},
           file: {
           filePath: "",
           fileName: fileName
@@ -227,7 +227,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
               specialityBoardCertificateId: specialityBoardCertificateId,
             }
           },
-          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          expirationDate: {date:membershipRenewalDate !== null ?  format(membershipRenewalDate, 'yyyy-MM-dd').toString() : null},
           file: {
           filePath: "",
           fileName: fileName
@@ -243,7 +243,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
               insuranceCertificateId: insuranceCertificateId,
             }
           },
-          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          expirationDate: {date:membershipRenewalDate !== null ?  format(membershipRenewalDate, 'yyyy-MM-dd').toString() : null},
           file: {
           filePath: "",
           fileName: fileName
@@ -259,7 +259,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
               licenseId: licenseId,
             }
           },
-          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          expirationDate: {date: membershipRenewalDate !== null ? format(membershipRenewalDate, 'yyyy-MM-dd').toString() : null},
           file: {
           filePath: "",
           fileName: fileName
@@ -274,7 +274,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
               certificateId: certificateId,
             }
           },
-          expirationDate: {date: format(membershipRenewalDate, 'yyyy-MM-dd').toString()},
+          expirationDate: {date:membershipRenewalDate !== null ?  format(membershipRenewalDate, 'yyyy-MM-dd').toString() : null},
           file: {
           filePath: "",
           fileName: fileName
@@ -298,9 +298,10 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
         }));
         if(data?.certificateCopyAvailable){
           formData.append('documentProofFiles',fileData);
-        }else{
-          let file = undefined;
-          formData.append('documentProofFiles',file);
+        }
+        else{
+          let file = [];
+          formData.append('documentProofFiles',null);
         }
        await POST(`contract-managment-service/contracts/${contractId}/DocumentationProof`, formData)
        .then(response=>{
@@ -620,7 +621,10 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
                               width: '50%'
                           }
                       }}
-                        renderInput={(params) => <TextField  {...params} />}
+                        renderInput={(params) => <TextField  {...params} inputProps={{
+                          ...params.inputProps,
+                          placeholder: "Expiration Date"
+                        }} />}
                       />
                     </LocalizationProvider>
                 </div>
@@ -628,7 +632,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
             <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Certificate Copy Available</div>
-                  <div className={`${style.displayInRow} `}>
+                  <div className={`${style.displayInRow}`}>
                     <FormControlLabel
                         control={
                           <Switch checked={certificateCopyAvbl} className={`${style.textAlignLeft}`} onChange={() => setCertificateCopyAvbl(!certificateCopyAvbl)}  />

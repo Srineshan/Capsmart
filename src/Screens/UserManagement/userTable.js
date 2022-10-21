@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import UserLogo from './../../images/userLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
 import Filter from './../../images/filter.png';
@@ -12,14 +12,19 @@ import LockReset from './../../images/lockReset.png';
 import UploadUser from './../../images/uploadUser.png';
 import ContractExtension from './../../images/contractExtension.png';
 import ProgressBar from "@ramonak/react-progress-bar";
-import AddUser from './addUser'
+import AddUser from './addUser';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 import {GET, TenantID, PUT} from './../dataSaver';
+import {format} from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import {Auth} from './../../utils/auth';
 import EditUser from './editUser';
 import MailTemplate from './mailTemplate';
 import style from './index.module.scss';
 import SendEmail from './sendEmail';
+import SearchBar from './../../Components/SearchBar';
+
 import SendEmailUserList from './sendMailUserList';
 
 const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog}) => {
@@ -35,6 +40,9 @@ const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, get
     const [registeredUsers, setRegisteredUsers] = useState([]);
     const [blockedUsers, setBlockedUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState();
+    let cookie = new Cookie();
+    let userDetail = cookie.get('user');
+    const user = jwt(userDetail);
 
     useEffect(()=>{
       getUser();
@@ -102,9 +110,9 @@ const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, get
                 <div className={style.cardStyle}>
                     <div className={`${style.displayInCol} ${style.alignCenter}`}>
                          <div className={`${style.userNameStyle} `}>
-                            JOHN
+                            {user?.userName}
                         </div>
-                        <img src={UserLogo} className={style.userLogo} />
+                        <img src={DoctorAnime} className={style.userLogo} />
                     </div>
                 </div>
                 <div className={`${style.cardStyle}`} onClick={() => getSelectedContract('active contracts')}>
@@ -147,12 +155,9 @@ const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, get
                 </div>
                 <div className={style.bigCardStyle}>
                     <div className={style.spaceBetween}>
-                        <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
+                        <p className={`${style.activeContractsWidth} ${style.uppercase}`}>{format(new Date(), 'MMM d, yyyy HH:mm')} EST</p>
                         <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                            <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
-                                <p>Search here</p>
-                                <p className={style.marginRight}>&#128269;</p>
-                            </div>
+                            <SearchBar />
                             <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
                             <img src={CancelUser} alt="CancelUser" className={style.smallIcons} />
                             <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />

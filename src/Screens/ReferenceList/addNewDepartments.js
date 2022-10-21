@@ -36,7 +36,7 @@ const AddNewDepartments = ({getAddDeptEntityDialog}) => {
                         <div className={style.displayInRow}>
                             <InputGroup value="Cardiothoracic Surgery" className={style.fullWidth} />
                         </div>
-                    </div>            
+                    </div>
                 </div>
                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                     <div>

@@ -1,0 +1,124 @@
+
+.bigCardGrid{
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    grid-gap: 20px;
+    margin-top: 20px;
+}
+
+.margin20{
+    margin: 20px;
+}
+
+.grid4{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.displayInRow{
+    display: flex;
+    flex-direction: row;
+}
+
+.marginLeft10{
+    margin-left: 10px;
+}
+
+.marginTop20{
+    margin-top: 22px;
+}
+
+.activeContractGrid{
+    display: grid;
+    grid-template-columns: 5% 10% 10% 10% 10% 10% 7% 10% 10% 5%;
+    grid-gap: 10px;
+}
+
+.ticketsGrid{
+    display: grid;
+    grid-template-columns: 5% 8% 10% 10% 10% 5% 10% 10% 8% 10% 5%;
+    grid-gap: 10px;
+}
+
+.exceptionGrid{
+    display: grid;
+    grid-template-columns: 5% 10% 12% 15% 10% 12% 10% 12% 5%;
+    grid-gap: 10px;
+}
+
+.messageGrid{
+    display: grid;
+    grid-template-columns: 5% 15% 15% 20% 15% 15% 5%;
+    grid-gap: 10px;
+}
+
+.alertsGrid{
+    display: grid;
+    grid-template-columns: 5% 5% 25% 25% 25% 5%;
+    grid-gap: 10px;
+}
+
+.toDoGrid{
+    display: grid;
+    grid-template-columns: 5% 9% 9% 20% 10% 10% 8% 10% 8% 10%;
+    grid-gap: 10px;
+}
+
+.registeredUsersGrid{
+    display: grid;
+    grid-template-columns: 5% 15% 15% 8% 10% 15% 8% 10% 5%;
+    grid-gap: 10px;
+}
+
+.bigCardStyle{
+    height: calc(100vh - 325px);
+    overflow: scroll;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 6px;
+    opacity: 1;
+    padding: 5px;
+}
+
+.bigCardStyleWithoutHeading{
+    height: calc(100vh - 265px);
+    overflow: scroll;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 6px;
+    opacity: 1;
+    padding: 5px;
+}
+
+.buttonGroupUsers{
+    float: left;
+    margin: 20px 20px 20px 28px;
+    button{
+        height: 40px;
+        margin-right: 10px;
+        background: #F5F5F8 0% 0% no-repeat padding-box;
+        border: 0.4000000059604645px solid #B3B8BD;
+        font-weight: 600;
+        border-radius: 6px;
+        min-width: 180px;
+    }
+}
+
+.activeButton{
+    background: #7165E3 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid #7165E3;
+    border-radius: 6px;
+    opacity: 0.75;
+    color: white;
+    font-weight: 600;
+}
+
+.red{
+    color: #ED6F68;
+}
+
+.spaceBetween{
+    display: flex;
+    justify-content: space-between;
+}

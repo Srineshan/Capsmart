@@ -42,7 +42,7 @@ const EntitySystemAdmin = ({getActiveStep}) => {
   }
 
   const getUserData = async() => {
-    await axios(`https://rest.timesmart.live/user-management-service/user`,{
+    await axios(`https://rest.timesmart.io/user-management-service/user`,{
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -90,13 +90,11 @@ const EntitySystemAdmin = ({getActiveStep}) => {
         "name": {
           "firstName": userData?.firstName,
           "lastName": userData?.lastName,
-          "suffix": ""
+          "suffix": {}
         },
-        "userType": "ADMIN",
+        "userType": "REGISTERED_USER",
         "contract": [],
-        "title": {
-          "title": userData?.title,
-        },
+        "title": {},
         "email": {
           "officialEmail": userData?.email,
         },
@@ -121,7 +119,7 @@ const EntitySystemAdmin = ({getActiveStep}) => {
         "sites": {
           "sites": []
         },
-        "serviceProviderType": "",
+        "serviceProviderType": {},
         "activated": true,
         "siteLevelResponsible": true,
         "departmentLevelResponsible": true,
@@ -156,7 +154,7 @@ const EntitySystemAdmin = ({getActiveStep}) => {
 
     return(
         <div className={style.entitySetupBackground}>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={()=>navigate('/user')}/>
             <div className={style.stepperMargin}>
                 <div className={style.stepperGrid}>
                     <div onClick={() => getActiveStep('entitySetup')}>

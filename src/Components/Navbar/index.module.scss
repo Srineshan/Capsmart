@@ -20,6 +20,7 @@
     width: 184px;
     height: 81px;
     opacity: 1;
+    margin-right: 80px;
 }
 
 .sanmateoLogo{
@@ -28,6 +29,7 @@
     width: 220px;
     height: 80px;
     object-fit: contain;
+    margin-right: 80px;
 }
 
 .menuStyle{
@@ -99,6 +101,7 @@
 .options{
     padding: 10px;
     font-size: 12px;
+    text-align: left;
 }
 
 .options:hover{
@@ -110,6 +113,3 @@
     text-decoration: none !important;
     color: black;
 }
-
-
-

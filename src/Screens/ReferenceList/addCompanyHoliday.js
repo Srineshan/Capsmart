@@ -70,7 +70,7 @@ const AddCompanyHoliday = ({ getAddCompanyHolidayDialog }) => {
                     <div className={`${style.editHealthCareGrid2} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>State Name*</div>
                         <div className={style.displayInRow}>
-                            <InputGroup value={stateN} className={style.halfWidth} onChange={obj => setStateN(obj.target.value)} />
+                            <InputGroup value="State" className={style.halfWidth} />
                         </div>
                     </div>
                     <div className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}></div>
@@ -81,13 +81,13 @@ const AddCompanyHoliday = ({ getAddCompanyHolidayDialog }) => {
                         <div className={`${style.editHealthCareGrid2}`}>
                             <div className={style.entityLableStyle}>Holiday Event Name*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value={eventN} className={style.fullWidth} onChange={obj => setEventN(obj.target.value)} />
+                                <InputGroup value="Religious Holiday" className={style.fullWidth} />
                             </div>
                         </div>
                         <div className={`${style.AddCompanyHolidayGrid1} ${style.marginTop20}`}>
                             <div className={style.entityLableStyle}>Event date*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value={eventD} className={style.fullWidth} onChange={obj => setEventD(obj.target.value)} />
+                                <InputGroup value="Mm-dd-yyyy" className={style.fullWidth} />
                             </div>
                             <p className={`${style.entityLableStyle2}`}>auto: Display day of the week</p>
                         </div>
@@ -96,7 +96,7 @@ const AddCompanyHoliday = ({ getAddCompanyHolidayDialog }) => {
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
                         <button className={style.outlinedButton}>CANCEL</button>
-                        <button onClick={() => SubmitHoliday()} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE</button>
+                        <button onClick={() => getAddCompanyHolidayDialog(false)} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE</button>
                     </div>
                 </div>
             </div>

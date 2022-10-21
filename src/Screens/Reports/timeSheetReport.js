@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
-import UserLogo from './../../images/userLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import Reject from './../../images/reject-report.png';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 import Request from './../../images/request-report.png';
 import TemplateIcon from './../../images/templateIcon.png';
 import style from './index.module.scss';
+import { Link, useParams } from 'react-router-dom';
 
 const TimeSheetReports = ({getShowSampleReport}) => {
     const [tabName, setTabName] = useState('Standard Templates');
+    const {reportType} = useParams();
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const user = jwt(userDetails);
     return(
         <div className={style.margin20}>
             <div className={style.bigCardGrid}>
@@ -15,13 +22,13 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                     <div className={style.cardStyle}>
                         <div className={`${style.spaceBetween} ${style.alignCenter}`}>
                             <div className={style.displayInRow}>
-                                <img src={UserLogo} className={style.userLogo} />
+                                <img src={DoctorAnime} className={style.userLogo} />
                                 <div className={`${style.marginLeft10} ${style.marginTop}`}>
                                     <div className={style.userNameStyle}>
-                                        Hi, Ronald Jones, MD
+                                        Hi, {user?.userName}
                                     </div>
                                     <div className={style.loginStatus}>
-                                        last login DEC 4,21 11:48 am
+                                        last login SEP 7,21 11:48 am
                                     </div>
                                 </div>
                             </div>
@@ -31,7 +38,18 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                 </div>
                 <div className={style.bigCardStyle}>
                     <div className={style.paginationCol}>
-                        <div className={` ${style.titleStyle} ${style.margin20}`}>{tabName === "Standard Templates" ? 'Services / Activities Log Reports' : "Timesheet Management Reports"}</div>
+                        <div className={` ${style.titleStyle} ${style.margin20}`}>
+                        {reportType === 'servicesOrActivities' ? 'Services / Activities Log Reports'
+                        : reportType === 'timesheets' ? 'Timesheets'
+                        : reportType === 'reviewsAndApprovals' ? 'Reviews & Approval'
+                        : reportType === 'taskManagement' ? 'Task Management'
+                        : reportType === 'payments' ? 'Payments'
+                        : reportType === 'contractManagement' ? 'Contract Management'
+                        : reportType === 'contractCompliance' ? 'Contract Compliance'
+                        : reportType === 'contractPerformance' ? 'Contract Performance'
+                        : reportType === 'systemAdministration' ? 'System Administration'
+                        : ""}
+                        </div>
                         <div className={`${style.spaceBetween} ${style.margin20}`}>
                             <div className={style.displayInRow}>
                                 <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
@@ -93,32 +111,120 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                 <p className={style.headingStyle}>Owner</p> */}
                                 <p className={style.headingStyle}>Last Updated</p>
                             </div>
-                            <div className={style.scrollStyle}>
-                                <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                    <div className={style.tableDataReportsFontStyle}>1</div>
-                                    <div className={style.tableDataReportsFontStyle}>Contracted Services/ activities performed summary statistics</div>
-                                    <div className={style.tableDataReportsFontStyle}>Contracted Services/ activities performed summary statistics</div>
-                                    <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
-                                    <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                    <div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`} onClick={() => getShowSampleReport(true)}>Run</div>
+                            {reportType === 'servicesOrActivities' ? (
+                                <div className={style.scrollStyle}>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>1</div>
+                                        <Link to="/reportTypeOverview/activitiesOrServices" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Activities/ Services Log Status Summary</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Activities/ Services Log Status Summary</div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
+                                        <Link to="/reportTypeOverview/activitiesOrServices" className={style.linkStyle}><div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div></Link>
+                                    </div>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>2</div>
+                                        <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022, 18:09 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
+                                        <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div></Link>
+                                    </div>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>3</div>
+                                        <Link to="/reportTypeOverview/scheduledActivity" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forcasted to actual</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forcasted to actual</div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 15 2022, 03:40 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 15 2022</div>
+                                        <Link to="/reportTypeOverview/scheduledActivity" className={style.linkStyle}><div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`} >Run</div></Link>
+                                    </div>
                                 </div>
-                                <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                    <div className={style.tableDataReportsFontStyle}>2</div>
-                                    <div className={style.tableDataReportsFontStyle}>Services/ Activities Completion status summary</div>
-                                    <div className={style.tableDataReportsFontStyle}>Services/ Activities Completion status summary</div>
-                                    <div className={style.tableDataReportsFontStyle}>Feb 11 2022, 18:09 </div>
-                                    <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
-                                    <div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`} onClick={() => getShowSampleReport(true)}>Run</div>
+                            ) : reportType === 'contractManagement' ? (
+                                <div className={style.scrollStyle}>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>1</div>
+                                        <Link to="/reportTypeOverview/upcomingContractRenewals" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
+                                        <Link to="/reportTypeOverview/upcomingContractRenewals" className={style.linkStyle}><div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div></Link>
+                                    </div>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>2</div>
+                                        <Link to="/reportTypeOverview/oneTimeContract" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
+                                        <Link to="/reportTypeOverview/oneTimeContract" className={style.linkStyle}><div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`} >Run</div></Link>
+                                    </div>
                                 </div>
-                                <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                    <div className={style.tableDataReportsFontStyle}>3</div>
-                                    <div className={style.tableDataReportsFontStyle}>Add-on services/ activity request summary</div>
-                                    <div className={style.tableDataReportsFontStyle}>Add-on services/ activity request summary</div>
-                                    <div className={style.tableDataReportsFontStyle}>Feb 15 2022, 03:40 </div>
-                                    <div className={style.tableDataReportsFontStyle}>Feb 15 2022</div>
-                                    <div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`} onClick={() => getShowSampleReport(true)}>Run</div>
+                            ) : reportType === 'contractCompliance' ? (
+                                <div className={style.scrollStyle}>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>1</div>
+                                        <Link to="/reportTypeOverview/complianceStatus" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Contract Based Proof of Documentation Compliance Status Summary</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Contract Based Proof of Documentation Compliance Status Summary</div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
+                                        <Link to="/reportTypeOverview/complianceStatus" className={style.linkStyle}><div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`} >Run</div></Link>
+                                    </div>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>2</div>
+                                        <Link to="/reportTypeOverview/nonCompliant" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement</div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022, 18:09 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
+                                        <Link to="/reportTypeOverview/nonCompliant" className={style.linkStyle}><div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`} >Run</div></Link>
+                                    </div>
                                 </div>
-                            </div>
+                            ) : reportType === 'contractPerformance' ? (
+                                <div className={style.scrollStyle}>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>1</div>
+                                        {/* <Link to="/reportTypeOverview/complianceStatus" className={style.linkStyle}> */}
+                                            <div className={style.tableDataReportsFontStyle}>Paid Consulting Hours & Billing Productivity Index by Contractor</div>
+                                        {/* </Link> */}
+                                        <div className={style.tableDataReportsFontStyle}>Paid Consulting Hours & Billing Productivity Index by Contractor</div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
+                                        <div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`} onClick={() => getShowSampleReport(true)}>Run</div>
+                                    </div>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>2</div>
+                                        <Link to="/reportTypeOverview/scheduledActivityByContract" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forecasted to actual by contract</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forecasted to actual by contract</div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20  </div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
+                                        <Link to="/reportTypeOverview/scheduledActivityByContract" className={style.linkStyle}><div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div></Link>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className={style.scrollStyle}>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>1</div>
+                                        <Link to="/reportTypeOverview/activitiesOrServices" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Activities/ Services Log Status Summary</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Activities/ Services Log Status Summary</div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
+                                        <Link to="/reportTypeOverview/activitiesOrServices" className={style.linkStyle}><div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div></Link>
+                                    </div>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>2</div>
+                                        <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022, 18:09 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
+                                        <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`} >Run</div></Link>
+                                    </div>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>3</div>
+                                        <Link to="/reportTypeOverview/scheduledActivity" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forcasted to actual</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forcasted to actual</div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 15 2022, 03:40 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 15 2022</div>
+                                        <Link to="/reportTypeOverview/scheduledActivity" className={style.linkStyle}><div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div></Link>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ) : tabName === "My Reports" ? (
                         <div className={`${style.marginLeft20} ${style.marginTop20}`}>

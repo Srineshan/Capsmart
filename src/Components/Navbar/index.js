@@ -12,6 +12,10 @@ import {Link} from 'react-router-dom';
 import LogoutIcon from './../../images/logoutIcon.png';
 import Cookies from 'universal-cookie';
 import {isSuperAdminAccess} from '../../Screens/dataSaver';
+import {TenantID,GET} from './../../Screens/dataSaver';
+import LogoutIcon from './../../images/logoutIcon.png';
+import {ErrorToaster} from './../../utils/toaster';
+import html2canvas from 'html2canvas';
 import jwt from 'jwt-decode';
 
 import style from './index.module.scss';
@@ -19,10 +23,12 @@ import style from './index.module.scss';
 const Navbar = () => {
     const navigate = useNavigate()
     const [showMenu, setShowMenu] = useState(false);
+    const [screenCapture, setScreenCapture] = useState('');
     const [showToolsMenu, setShowToolsMenu] = useState(false);
     const [showReportsMenu, setShowReportsMenu] = useState(false);
     const [isContractManager, setIsContractManager] = useState(false);
     const [isEntityLevelAdmin, setIsEntityLevelAdmin] = useState(false);
+    const [logo,setLogo] = useState(sessionStorage?.getItem('logo'));
 
     const menuRef = useRef(null);
     const toolsMenuRef = useRef(null);
@@ -74,11 +80,31 @@ const Navbar = () => {
         }, [ref]);
     }
 
+    // const handleScreenCapture = (screenCapture) => {
+    //     setScreenCapture(screenCapture);
+    //     sessionStorage.setItem('screenCapture', screenCapture);
+    //     sessionStorage.setItem('selectedOption', 'OPEN FEEDBACK TICKETS');
+    //     window.location.href = '/app/entitySitePortal';
+    // };
+
     const logout = () => {
       const cookies = new Cookies();
-      cookies.remove('user');
-      cookies.remove('entityId');
-      navigate('/');
+      let token = cookies.get('user');
+      let entityId = cookies.get('entityId');
+      const requestOptions = {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json',
+                    'X-tenantID' : entityId,
+                    'Authorization' : `Bearer ${token}`,
+                  },
+     };
+     fetch('https://rest.timesmart.io/user-management-service/auth/logout', requestOptions)
+         .then(response => {
+           cookies.remove('user');
+           cookies.remove('entityId');
+           window.location.href = '/';
+         })
+         .catch(data => ErrorToaster('Unexpected Error Occured'));
     }
 
     useEffect(() => {
@@ -89,6 +115,16 @@ const Navbar = () => {
         setIsEntityLevelAdmin((roles.includes('Super Sys Admin') || roles.includes('Entity Sys Admin') || roles.includes('Entity Sys User') || roles.includes('Distributor Admin')) ? true : false);
     }, [])
 
+    const handleScreenshot = () => {
+        setShowToolsMenu(false);
+        html2canvas(document.body).then(canvas => {
+            var base64image = canvas.toDataURL("image/png");
+            setScreenCapture(base64image);
+            sessionStorage.setItem('screenCapture', base64image);
+            sessionStorage.setItem('selectedOption', 'OPEN FEEDBACK TICKETS');
+            window.location.href = '/app/entitySitePortal';
+        })
+    };
 
     return(
         <div className={style.navbarStyle}>
@@ -116,17 +152,33 @@ const Navbar = () => {
                         <p>REPORT</p>
                         {showReportsMenu && (
                             <div className={style.optionsCardStyle} ref={menuRef}>
-                                <Link to={'/reports'} className={style.noFontStyle}>
+                                <Link to={'/reports/servicesOrActivities'} className={style.noFontStyle}>
                                     <div className={style.options}>Services/ Activities Logs</div>
                                 </Link>
-                                <div className={style.options}>Timesheets</div>
-                                <div className={style.options}>Reviews & Approvals</div>
-                                <div className={style.options}>Task Management</div>
-                                <div className={style.options}>Payments</div>
-                                <div className={style.options}>Contract Management</div>
-                                <div className={style.options}>Contract Compliance</div>
-                                <div className={style.options}>Contract Performance</div>
-                                <div className={style.options}>System Administration</div>
+                                <Link to={'/reports/timesheets'} className={style.noFontStyle}>
+                                    <div className={style.options}>Timesheets</div>
+                                </Link>
+                                <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
+                                    <div className={style.options}>Reviews & Approvals</div>
+                                </Link>
+                                <Link to={'/reports/taskManagement'} className={style.noFontStyle}>
+                                    <div className={style.options}>Task Management</div>
+                                </Link>
+                                <Link to={'/reports/payments'} className={style.noFontStyle}>
+                                    <div className={style.options}>Payments</div>
+                                </Link>
+                                <Link to={'/reports/contractManagement'} className={style.noFontStyle}>
+                                    <div className={style.options}>Contract Management</div>
+                                </Link>
+                                <Link to={'/reports/contractCompliance'} className={style.noFontStyle}>
+                                    <div className={style.options}>Contract Compliance</div>
+                                </Link>
+                                <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
+                                    <div className={style.options}>Contract Performance</div>
+                                </Link>
+                                <Link to={'/reports/systemAdministration'} className={style.noFontStyle}>
+                                    <div className={style.options}>System Administration</div>
+                                </Link>
                             </div>
                         )}
                     </div>
@@ -146,23 +198,31 @@ const Navbar = () => {
                         )}
                     </div>
                 )}
-                <div>
-                    <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} onClick={() => setShowMenu(true)}>
-                        <p>HELP</p>
-                    </div>
-                    {showMenu && (
-                        <div className={style.optionsCardStyle} ref={menuRef}>
-                            <Link to={'/help'} className={style.noFontStyle}>
-                                <div className={style.options}>OPEN FEEDBACK TICKET</div>
-                            </Link>
-                            <div className={style.options}>SUPPORT PORTAL</div>
+                {/* <ScreenCapture onEndCapture={handleScreenCapture}>
+                {({ onStartCapture }) => ( */}
+                    <div>
+                        <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} onClick={() => setShowMenu(true)}>
+                            <p>HELP</p>
                         </div>
-                    )}
-                </div>
+                        {showMenu && (
+                            <div className={style.optionsCardStyle} ref={menuRef}>
+                                <Link to={'/help'} className={style.noFontStyle}>
+                                    <div className={style.options}>OPEN FEEDBACK TICKET</div>
+                                </Link>
+                                <div className={style.options} onClick={handleScreenshot}>SUPPORT PORTAL</div>
+                            </div>
+                        )}
+                    </div>
+                    {/* )}
+                </ScreenCapture> */}
             </div>
             <div className={style.displayInRow}>
-                <img src={File} alt="print" className={style.icons} />
-                <img src={PrintIcon} alt="print" className={style.icons} />
+                {/* {!window.location.pathname.includes('reportTypeOverview') && (
+                    <>
+                        <img src={File} alt="print" className={style.icons} />
+                        <img src={PrintIcon} alt="print" className={style.icons} />
+                    </>
+                )} */}
                 {/* <img src={NotificationsIcon} alt="print" className={style.icons} />
                 <img src={RedBackground} alt="print" className={style.notificationIcon} />
                 <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}

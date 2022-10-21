@@ -10,7 +10,7 @@ const AddContractedServiceForHealthcare = ({ getAddContractedServiceDialog}) => 
             <img src={ArrowDown} className={`${style.colorFileStyle3} ${style.marginRight}`} />
         )
     }
-    
+
     return (
         <Dialog isOpen={getAddContractedServiceDialog} onClose={() => getAddContractedServiceDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>

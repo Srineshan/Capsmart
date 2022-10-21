@@ -8,9 +8,10 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
     const [users,setUsers] = useState([]);
     const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
     const [userProviderData, setUserProviderData] = useState({});
+
     useEffect(()=>{
       getUserData();
-    },[getNewServiceProviderDialog])
+    },[editServiceProviderDialog])
 
     const getUserData = async() => {
       if(contractId !== ''){
@@ -29,7 +30,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
         <div className={style.cloneBlockStyle}>
             <div className={style.tableHeight}>
                 <div className={style.spaceBetween}>
-                    <div className={`${style.extentionLableStyle} ${style.marginTop20} ${style.marginLeft20}`}>Contracted Service Providers:<strogn className={`${style.blackText} ${style.bold} ${style.marginLeft20}`}>{users?.length || 0}</strogn></div>
+                    <div className={`${style.extentionLableStyle} ${style.marginTop20} ${style.marginLeft20}`}>Contracted Service Providers:<strong className={`${style.blackText} ${style.bold} ${style.marginLeft20}`}>{users?.length || 0}</strong></div>
                     <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} `}
                     onClick={() => getNewServiceProviderDialog(true)} >ADD CONTRACTED PROVIDER</button>
                 </div>
@@ -46,7 +47,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
                     <div className={`${style.tableData} ${style.displayInRow}`} onClick={() => {setUserProviderData(data);setEditServiceProviderDialog(true)}}>
                         <div className={`${style.multipleDataTextWidth}`}></div>
                         <p className={style.multipleDataTextWidth}>{`${data?.name?.firstName} ${data?.name?.lastName} - ${data?.name?.suffix}`}</p>
-                        <p className={style.multipleDataTextWidth}>{data?.serviceProviderType} </p>
+                        <p className={style.multipleDataTextWidth}>{data?.serviceProviderType?.type} </p>
                         <p className={style.multipleDataTextWidth}>Chief Medical Officer</p>
                         <p className={style.multipleDataTextWidth}>-</p>
                     </div>

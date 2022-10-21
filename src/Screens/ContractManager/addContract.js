@@ -13,9 +13,8 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
 
 
     const handleNext = () => {
-      if(selectedContract === '0'){
+      if(selectedContract === '0' || contractType === ''){
         ErrorToaster('Select a contract type to add');
-
       }
       else{
         getMethod('POST')
@@ -36,9 +35,7 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
             </div>
             <div className={style.welcomeBorder}></div>
             <div className={style.welcomeMessage}>
-            Welcome to the TimeSmart.AI Contract Manager Wizard.  Please select the appropriate
-             option from the drop down menu below, and whether this is an Individual Contractor
-              Agreement or Multiple Contractor Agreement.
+            This wizard will guide you step by step for adding a new contract for your entity or site. Follow the prompts and make the necessary selection in order to proceed to the next steps.
             </div>
             <div className={style.contractOptions}>
                 <div className={style.displayInRow}>
@@ -82,20 +79,23 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
                         </div>
                     </div>
                 </div>
-                {selectedContractOnClick && (
-                    <div className={style.descriptionBoxStyle}>
-                        <p className={style.descriptionStyle}>
-                            After selecting one of the options above and clicking Next, you will be guided through
-                            <span className={`${style.blueColor} ${style.marginLeft20}`}>
-                            the Contracts Manager wizard to help upload contracts and assign the appropriate
-                            metadata.
-                            </span>
-                        </p>
-                    </div>
-                )}
+
+                {
+                //   selectedContractOnClick && (
+                //     <div className={style.descriptionBoxStyle}>
+                //         <p className={style.descriptionStyle}>
+                //             After selecting one of the options above and clicking Next, you will be guided through
+                //             <span className={`${style.blueColor} ${style.marginLeft20}`}>
+                //             the Contracts Manager wizard to help upload contracts and assign the appropriate
+                //             metadata.
+                //             </span>
+                //         </p>
+                //     </div>
+                // )
+              }
             </div>
             <div className={`${style.nextButtonPosition} ${style.marginTop20}`}>
-                <button className={style.nextButton} onClick={() => {handleNext()}}>NEXT</button>
+                <button className={(selectedContract !== '0' && contractType !== '') ? style.nextButton : style.nextButtonDisabled} disabled={(selectedContract === '0' || contractType === '') ? true : false} onClick={() => {handleNext()}}>NEXT</button>
             </div>
         </div>
     )

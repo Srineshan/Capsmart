@@ -94,7 +94,7 @@ body{
     text-align: center;
     font: normal normal normal 15px/20px Montserrat;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
     width: 70%;
     margin-left: 15%;
     margin-top: 30px;
@@ -130,14 +130,14 @@ body{
     text-align: center;
     font: normal normal normal 15px/20px Montserrat;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
 }
 
 .otpTextStyle{
     text-align: center;
     font: normal normal normal 12px/16px Montserrat;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
 }
 
 .otpHeading{
@@ -571,8 +571,16 @@ body{
     text-align: left;
     font: normal normal normal 13px/17px Montserrat;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
     text-transform: capitalize;
+    opacity: 1;
+    margin-top: 5px;
+}
+
+.subdomainElementStyle{
+    text-align: left;
+    letter-spacing: 0px;
+    color: #B3B8BD;
     opacity: 1;
     margin-top: 5px;
 }
@@ -646,7 +654,7 @@ body{
 .logoThumbnailUpload{
     height: 50px;
     width: 50px;
-    object-fit: cover;
+    object-fit: contain;
     margin-left: 60px;
     margin-top: 20px;
 }
@@ -655,7 +663,7 @@ body{
     text-align: left;
     font: normal normal normal 15px/17px Montserrat;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
     width: 150px;
     margin-top: 30px;
     margin-left: 15px;
@@ -1137,7 +1145,7 @@ body{
 }
 
 .toStyle{
-    color: #B3B8BD;
+    color: #52575D;
     margin: 5px 20px 0 20px;
 }
 
@@ -1147,7 +1155,7 @@ body{
 
 .renewalBoxStyle{
     background-color: #F8FCFF;
-    color: #B3B8BD;
+    color: #52575D;
     text-align: left;
     border: 1px solid #B3B8BD;
     border-radius: 10px;
@@ -1197,7 +1205,7 @@ body{
 }
 
 .renewalRemainderBoxStyle{
-    color: #B3B8BD;
+    color: #52575D;
     text-align: left;
     border: 1px solid #B3B8BD;
     border-radius: 10px;
@@ -1224,6 +1232,7 @@ body{
 ::-webkit-scrollbar {
     width: 0 !important;
     height: 0 !important;
+    display: none !important;
   }
 
   .grid5{
@@ -1341,7 +1350,7 @@ body{
     text-align: left;
     font: italic normal normal 11px/15px Roboto;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
     margin-top: 5px;
     max-width: 100px;
     opacity: 1;
@@ -1463,7 +1472,7 @@ body{
 .next30Style{
     text-align: left;
     font: normal normal normal 10px/18px Roboto;
-    color: #B3B8BD;
+    color: #52575D;
     opacity: 1;
     margin-bottom: -5px ;
     margin-top: -10px ;
@@ -1502,7 +1511,7 @@ body{
 .viewStyle{
     font: normal normal normal 10px/15px Montserrat;
     letter-spacing: -0.3px;
-    color: #B3B8BD;
+    color: #52575D;
     opacity: 1;
 }
 
@@ -1808,7 +1817,7 @@ body{
 .accountActivityStyle{
     font: normal normal normal 15px/22px Montserrat;
     letter-spacing: 0.66px;
-    color: #B3B8BD;
+    color: #52575D;
     opacity: 0.38;
     margin-left: 20px;
     margin-top: 7px;
@@ -1860,7 +1869,7 @@ body{
 }
 
 .leftChevronColor{
-    color: #B3B8BD;
+    color: #52575D;
 }
 
 .dotStyle{
@@ -1950,7 +1959,7 @@ body{
     text-align: left;
     font: normal normal normal 11px/15px Montserrat;
     letter-spacing: 0px;
-    color: #B3B8BD;
+    color: #52575D;
     max-width: 200px;
     height: 40px;
     margin-top: 0px;

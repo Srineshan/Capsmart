@@ -1,9 +1,18 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { InputGroup, Icon, Intent, TagInput, Dialog, Classes } from '@blueprintjs/core';
+import {
+  FormControl,
+  InputLabel,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Checkbox,
+  Select,
+  FormControlLabel
+} from "@material-ui/core";
 import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
-import {Link, useParams} from 'react-router-dom';
+import {Link, useParams, useNavigate} from 'react-router-dom';
 import {GET, TenantID, POST, isSuperAdminAccess} from './../dataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step23.png';
@@ -20,6 +29,8 @@ import { CSVLink } from "react-csv";
 import Papa from 'papaparse';
 import axios from 'axios';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import SaveInProgress from './saveInProgressAlert';
+import SuffixList from './../../Components/SuffixList';
 
 import style from './index.module.scss';
 import 'react-datalist-input/dist/styles.css';
@@ -37,6 +48,7 @@ const dropzoneStyle = {
 
 const SiteUsers = ({getActiveStep}) => {
     const {id} = useParams();
+    const navigate = useNavigate();
     const [isAppUserContractor,setIsAppUserContractor] = useState(true);
     const [tags, setTags] = useState(VALUES);
     const [entityRoles,setEntityRoles] = useState([]);
@@ -56,7 +68,9 @@ const SiteUsers = ({getActiveStep}) => {
     const [contracts,setContracts] = useState([]);
     const [contractId,setContractId] = useState('');
     const [entityData, setEntityData] = useState();
-    const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:'',isAdmin:false,title:'',email:'',phone:''});
+    const [showSaveInProgress,setShowSaveInProgress] = useState(false);
+    const [unassignedKeys,setUnassignedKeys] = useState([]);
+    const [userData,setUserData] = useState({firstName:'',lastName:'',suffix:{suffix:'',id:''},isAdmin:false,title:{title:'',id:''},email:'',phone:''});
     const role = '';
 
     const columns = [
@@ -117,7 +131,7 @@ const SiteUsers = ({getActiveStep}) => {
     }
 
     const getContracts = async() => {
-      await axios(`https://rest.timesmart.live/contract-managment-service/contracts`,{
+      await axios(`https://rest.timesmart.io/contract-managment-service/contracts`,{
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -132,7 +146,7 @@ const SiteUsers = ({getActiveStep}) => {
     }
 
     const getUserData = async() => {
-      await axios(`https://rest.timesmart.live/user-management-service/user`,{
+      await axios(`https://rest.timesmart.io/user-management-service/user`,{
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -146,6 +160,8 @@ const SiteUsers = ({getActiveStep}) => {
         console.log('error',error)
       })
     }
+
+    console.log('user',user);
 
     const getSiteData = async() =>{
       const {data: data} = await GET(`entity-service/entity/${id}`);
@@ -177,10 +193,12 @@ const SiteUsers = ({getActiveStep}) => {
 
     console.log('items',selectedSites,entitySite);
       const onSelect = (selectedItem) => {
-        setItem(selectedItem)
-        let temp = selectedSites;
-        temp.push(selectedItem);
-        setSelectedSites(temp);
+        if(!selectedSites?.map(data=>data?.id)?.includes(selectedItem?.id)){
+          setItem(selectedItem);
+          let temp = selectedSites;
+          temp.push(selectedItem);
+          setSelectedSites(temp);
+        }
       }
 
 
@@ -198,13 +216,9 @@ const SiteUsers = ({getActiveStep}) => {
         [entityRoles],
       );
 
-      const onSelectRoles = (selectedItem) => {
-        setItem(selectedItem)
-        let temp = selectedRoles;
-        temp.push(selectedItem);
-        setSelectedRoles(temp);
-      }
-
+    const handleRoleChange = (value) => {
+      setSelectedRoles(value);
+    }
 
     const handleTagsRemoveRoles = (tags, index) => {
       setSelectedRoles(selectedRoles?.filter((data,indexValue)=>indexValue!==index)?.map(data=>data));
@@ -226,15 +240,63 @@ const SiteUsers = ({getActiveStep}) => {
     });
   };
 
-  const addUser = async() => {
-    if(userData.firstName !== '' && userData.email !== '' && userData.phone !== '' && userData.email.includes('@') && userData.email.includes('.')){
-      let data = {
+  const mandatoryFieldCheck = (buttonType) => {
+    if(userData?.firstName === ''){
+      ErrorToaster('First Name is Mandatory');
+      return;
+    }
+    if(userData.email === ''){
+      ErrorToaster('Email is Mandatory');
+      return;
+    }
+    if(!userData.email.includes('@') || !userData.email.includes('.')){
+      ErrorToaster('Enter Valid Email-Id');
+      return;
+    }
+    if(buttonType === 'SaveInProgress'){
+      saveInProgressCheck();
+    }else if(buttonType === 'AddMore'){
+      addUser('AddMore');
+    }else{
+      addUser('Continue');
+      getActiveStep('appSubscription');
+    }
+  }
+
+  const saveInProgressCheck = () => {
+    var keys = [];
+    if(userData?.lastName === ''){
+      keys.push('Last Name');
+    }
+    if(userData?.suffix?.suffix === ''){
+      keys.push('Suffix');
+    }
+    if(userData?.phone === ''){
+      keys.push("Cell Phone");
+    }if(selectedRoles?.length === 0){
+      keys.push('Other App Role')
+    }
+    setUnassignedKeys(keys);
+    if(keys?.length !== 0){
+      setShowSaveInProgress(true);
+    }else{
+      addUser('SaveInProgress');
+    }
+  }
+
+  const saveInProgressFunction = () => {
+    addUser('SaveInProgress');
+  }
+
+
+  const addUser = async(buttonType) => {
+        let data = {
         "name": {
           "firstName": userData.firstName,
           "lastName": userData.lastName,
           "suffix": userData.suffix,
         },
-        "userType": "ADMIN",
+        "userType": "REGISTERED_USER",
         "contracts": isAppUserContractor ? [
           {
             "id": contractId,
@@ -243,9 +305,6 @@ const SiteUsers = ({getActiveStep}) => {
             }
           }
         ] : [],
-        "title": {
-          "title": userData.title
-        },
         "email": {
           "officialEmail": userData.email
         },
@@ -273,20 +332,31 @@ const SiteUsers = ({getActiveStep}) => {
     }).catch(error=>{
       ErrorToaster('Unexpected Error Creating User');
     });
+    if(buttonType === 'SaveInProgress'){
+      navigate('/user');
     }
-
   }
 
   const resetValues = () => {
-    setUserData({firstName:'',lastName:'',suffix:'',isAdmin:false,title:'',email:'',phone:''});
+    setUserData({firstName:'',lastName:'',suffix:{suffix:'',id:''},isAdmin:false,title:{title:'',id:''},email:'',phone:''});
     setSelectedRoles([]);
     setSelectedSites([]);
     setContractId('');
   }
 
+  const getSaveInProgressAlert = (value) => {
+    setShowSaveInProgress(value);
+  }
+
+  const onSuffixChange = (id,value) => {
+    setUserData({...userData, suffix:{id:id,suffix:value}});
+  }
+
+  console.log('suffix',userData?.suffix);
+
     return(
         <div className={style.entitySetupBackground}>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={()=>navigate('/user')}/>
             <div className={style.stepperMargin}>
                 <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>
@@ -389,40 +459,11 @@ const SiteUsers = ({getActiveStep}) => {
                                     <div className={`${style.displayInRow}`}>
                                         <InputGroup placeholder="First Name" className={`${style.fourFieldWidth}`} value={userData.firstName} onChange={(e)=>handleUserData('firstName',e.target.value)}/>
                                         <InputGroup placeholder="LAST NAME" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={userData.lastName} onChange={(e)=>handleUserData('lastName',e.target.value)}/>
-                                        <InputGroup placeholder="Suffix" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={userData.suffix} onChange={(e)=>handleUserData('suffix',e.target.value)}/>
+                                        <SuffixList value={userData?.suffix?.id} onChangeFunc={onSuffixChange} className={[style.fourFieldWidth, style.marginLeft20]}/>
                                         <p className={`${style.fourFieldWidth}`}></p>
                                     </div>
                                 </div>
-                                {
-                                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                  //     <div className={style.extentionLableStyle}>Functional Title *</div>
-                                  //     <select
-                                  //         name="class"
-                                  //         id="Class"
-                                  //         className={style.fullWidth}
-                                  //         value={userData.title}
-                                  //         onChange={(e)=>handleUserData('title',e.target.value)}>
-                                  //             <option value="Select" >
-                                  //             Select
-                                  //             </option>
-                                  //             <option value="Anesthesiologist" >
-                                  //             Anesthesiologist
-                                  //             </option>
-                                  //             <option value="Cardiologist" >
-                                  //             Cardiologist
-                                  //             </option>
-                                  //             <option value="Chief Medical Information" >
-                                  //             Chief Medical Information
-                                  //             </option>
-                                  //             <option value="Chief Medical Officer" >
-                                  //             Chief Medical Officer
-                                  //             </option>
-                                  //             <option value="Chief of Staff" >
-                                  //             Chief of Staff
-                                  //             </option>
-                                  //     </select>
-                                  // </div>
-                                }
+
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Email Address*</div>
                                     <InputGroup placeholder="Email" className={`${style.twoFieldWidth}`} value={userData.email} onChange={(e)=>handleUserData('email',e.target.value)}/>
@@ -480,29 +521,39 @@ const SiteUsers = ({getActiveStep}) => {
                                 }
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Other App Role*</div>
-                                    <div>
-                                            <DatalistInput items={roleItems} placeholder="Select Roles" onSelect={onSelectRoles} className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                            <TagInput
-                                                placeholder="Enter tags/keywords relative to the post"
-                                                values={selectedRoles?.map(data=>data?.roleName)}
-                                                className={`${style.marginTop20} ${style.tagInputStyle}`}
-                                                onRemove={handleTagsRemoveRoles}
-                                                separator={/[\s,]/}
-                                                addOnBlur={true}
-                                                addOnPaste={true}
-                                            />
-
-                                    </div>
+                                    <FormControl className={style.fullWidth}>
+                                    {
+                                      <InputLabel id="mutiple-select-label">Roles Multi Select</InputLabel>
+                                    }
+                                      <Select
+                                        labelId="mutiple-select-label"
+                                        multiple
+                                        value={selectedRoles}
+                                        onChange={(e)=>handleRoleChange(e.target.value)}
+                                        renderValue={selectedRoles=>selectedRoles.map(data=>data?.roleName)?.join(', ')}
+                                      >
+                                        {entityRoles.map((option) => (
+                                          <MenuItem key={option} value={option}>
+                                            <ListItemIcon>
+                                              <Checkbox checked={selectedRoles?.map(data=>data?.id)?.includes(option?.id)} style={{color:'#7165E3'}}/>
+                                            </ListItemIcon>
+                                            <ListItemText primary={option?.roleName} />
+                                          </MenuItem>
+                                        ))}
+                                      </Select>
+                                    </FormControl>
                                 </div>
+
+
                             </div>
                             <div className={style.spaceBetween}>
                                 <div className={`${style.marginTop20} ${style.buttonPositionLeft}`}>
                                     <button className={style.outlinedButton}>BULK UPLOAD</button>
                                 </div>
                                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                    <button className={style.outlinedButton} onClick={()=>addUser()}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>addUser()}>SAVE & ADD MORE</button>
-                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {addUser();getActiveStep('appSubscription')}}>CONTINUE</button>
+                                    <button className={style.outlinedButton} onClick={()=>mandatoryFieldCheck('SaveInProgress')}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=>mandatoryFieldCheck('AddMore')}>SAVE & ADD MORE</button>
+                                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {mandatoryFieldCheck('Continue')}}>CONTINUE</button>
                                 </div>
                             </div>
                         </div>
@@ -531,12 +582,12 @@ const SiteUsers = ({getActiveStep}) => {
                           user?.map(data=>(
                             <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
                                 <p className={style.tableDataFontStyle}>{data?.name?.firstName}{' '}{data?.name?.lastName}</p>
-                                <p className={style.tableDataFontStyle}>{data?.name?.suffix}</p>
+                                <p className={style.tableDataFontStyle}>{data?.name?.suffix?.suffix}</p>
                                 <p className={style.tableDataFontStyle}>{data?.title?.title}</p>
                                 <p className={style.tableDataFontStyle}>{data?.sites?.sites?.length || 0}</p>
-                                <p className={style.tableDataFontStyle}>{data?.userType === "ADMIN"?'YES':'NO'}</p>
+                                <p className={style.tableDataFontStyle}>{data?.roles?.map(data=>data?.roleName).includes('Entity Sys Admin') ?'YES':'NO'}</p>
                                 <p className={style.tableDataFontStyle}>{data?.roles?.[0]?.roleName || ''}</p>
-                                <p className={style.tableDataFontStyle}>Upload</p>
+                                <p className={style.tableDataFontStyle}>Manual</p>
                             </div>
                           ))
                         }
@@ -643,6 +694,7 @@ const SiteUsers = ({getActiveStep}) => {
                     </div>
                 </div>
             </Dialog>
+            <SaveInProgress alert={showSaveInProgress} getSaveInProgressAlert={getSaveInProgressAlert} fieldData={unassignedKeys?.join(', ')} saveInProgressFunction={saveInProgressFunction}/>
         </div>
     )
 }

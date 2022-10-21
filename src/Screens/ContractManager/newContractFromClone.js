@@ -22,7 +22,7 @@ import TimesheetProcessingWorkflow from './timesheetProcessingWorkflow';
 
 import style from './index.module.scss';
 
-const NewContractFromClone = ({getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method}) => {
+const NewContractFromClone = ({contracts, getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method}) => {
     const [selectContractInfo, setSelectContractInfo] = useState(contractType);
     const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] = useState(false);
     const [newServiceProviderDialog, setNewServiceProviderDialog] = useState(false);
@@ -167,7 +167,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     <InputGroup
                         value={selectContractInfo}
                         className={`${style.contractWidth} ${style.marginLeft20} ${style.reduceTop10} ${style.marginBottom}`} />
-                    <Icon icon="cross" size={25} intent={Intent.DANGER} className={style.newContractCrossStyle} onClick={() => getNewContract(false)}  />
+                    <Icon icon="cross" size={25} intent={Intent.DANGER} className={style.newContractCrossStyle} onClick={() => {getNewContract(false);getContractIdFromActive('');}}  />
                 </div>
             </div>
             <div className={style.welcomeBorder}></div>
@@ -232,7 +232,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${currentPage === "Timesheet Processing Workflow" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Timesheet Processing Workflow')}>
-                        Timesheet Processing Workflow ( Under Developement )
+                        Timesheet Processing Workflow ( Under Development )
                     </div>
                 </div>
                 {currentPage === "Timesheet Processing Workflow" ? (
@@ -268,14 +268,17 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     getViewPage4={getViewPage4}
                     getCurrentPage={getCurrentPage}
                     selectContractInfo={selectContractInfo}
-                    contractId = {contractId}/>
+                    contractId = {contractId}
+                    contractName={contractName}
+                    />
                 )
                 : selectContractInfo === "INDIVIDUAL" && currentPage === "Contracted Services Provider(s)"  ? (
                     <ContractedServicesProviderIndividual
                     getViewPage3={getViewPage3}
                     getCurrentPage={getCurrentPage}
                     contractType = {contractType}
-                    contractId = {contractId}/>
+                    contractId = {contractId}
+                    contracts={contracts}/>
                 ) : (currentPage === "Contract ID & Term Limit") ? (
                     <ContractIdTermLimitIndividual
                     getViewPage1={getViewPage1}
@@ -302,7 +305,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
 
                 ) : ''}
                 <div className={style.cloneBlockStyle}>
-                    <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Indentification Information</p>
+                    <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Identification Information</p>
                     <div className={style.welcomeBorder}></div>
                     <p className={style.descriptionStyle}>
                     {currentPage}
