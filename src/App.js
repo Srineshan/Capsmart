@@ -53,7 +53,6 @@ import ClientAdminDashboard from './Screens/ReferenceList/customerAdminDashboard
 import Thankyou from './Screens/SuperAdminDashboard/thankyou';
 import {Auth,GetEntityDetails} from './utils/auth';
 import {TenantID, GET} from './Screens/dataSaver';
-import Thankyou from './Screens/SuperAdminDashboard/thankyou';
 import ReportType from './Screens/Reports/reportType';
 import ReportTypeOverview from './Screens/Reports/reportTypeOverview';
 import TenetHealthLogo from './images/Tenet_Health_logo.png';

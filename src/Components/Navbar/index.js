@@ -13,7 +13,6 @@ import LogoutIcon from './../../images/logoutIcon.png';
 import Cookies from 'universal-cookie';
 import {isSuperAdminAccess} from '../../Screens/dataSaver';
 import {TenantID,GET} from './../../Screens/dataSaver';
-import LogoutIcon from './../../images/logoutIcon.png';
 import {ErrorToaster} from './../../utils/toaster';
 import html2canvas from 'html2canvas';
 import jwt from 'jwt-decode';
@@ -133,13 +132,13 @@ const Navbar = () => {
                 {
                   // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
                 }
-                <img src={SanmateoLogo} alt="Hospital Logo" className={style.sanmateoLogo} />
-                {/* <div className={style.menuStyle}>
-                    <p>HOME-LOG ACTIVITY</p>
-                </div>
-                <div className={style.menuStyle}>
-                    <p>TIMESHEETS</p>
-                </div> */}
+                <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
+                <Link to={'/entitySitePortal'} className={style.noFontStyle}>
+                    <div className={style.menuStyle}>
+                        <p>HOME</p>
+                    </div>
+                </Link>
+
                 {isContractManager && (
                     <Link to={'/contracts'} className={style.noFontStyle}>
                         <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>

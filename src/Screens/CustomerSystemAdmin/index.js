@@ -4,14 +4,16 @@ import SideBar from '../../Components/Sidebar';
 import Navbar from '../../Components/Navbar';
 import Tile from '../../Components/Tile';
 import Table from '../../Components/TableDesign';
-
+import {useNavigate} from 'react-router-dom';
 import style from './index.module.scss';
 import SearchBar from '../../Components/SearchBar';
 import RegisteredUsers from './registeredUsers';
 import DataUpload from './dataUpload';
 import FeedbackTicket from './feedbackTicket';
+import ReferenceList from './../ReferenceList';
 
 const Home = () => {
+    const navigate = useNavigate();
     const [alertsData, setAlertsData] = useState([]);
     const [viewAlerts, setViewAlerts] = useState(true);
     const [selectedOption, setSelectedOption] = useState('');
@@ -47,7 +49,7 @@ const Home = () => {
          alertDateAndTime = [];
          action = [];
 
-         alertsData?.map(data=> 
+         alertsData?.map(data=>
         {
             pin.push('pin');
             alert.push(data?.fileId);
@@ -88,7 +90,7 @@ const Home = () => {
          lastUpdated = [];
          lastUpdatedBy = [];
 
-         alertsData?.map(data=> 
+         alertsData?.map(data=>
         {
             pin.push('pin');
             alert.push(data?.fileId);
@@ -115,14 +117,16 @@ const Home = () => {
             <Navbar />
             <div className={`${style.bigCardGrid} ${style.margin20}`}>
                 <SideBar />
-                {selectedOption === 'REGISTERED USERS' ? ( 
+                {selectedOption === 'REGISTERED USERS' ? (
                     <RegisteredUsers getSelectedOption={getSelectedOption} />
-                ) : selectedOption === 'OPEN FEEDBACK TICKETS' ? ( 
+                ) : selectedOption === 'OPEN FEEDBACK TICKETS' ? (
                     <FeedbackTicket getSelectedOption={getSelectedOption} />
-                ) : selectedOption === 'DATA UPLOADS' ? ( 
+                ) : selectedOption === 'DATA UPLOADS' ? (
                     <DataUpload getSelectedOption={getSelectedOption} />
-                ) : (
-                <div>  
+                ) : selectedOption === 'REFERENCE LISTS' ?
+                  navigate('/referenceList')
+                  :(
+                <div>
                     <div className={`${style.grid4}`}>
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="REGISTERED USERS" bigNumber={221} bigText="APP USERS" smallNum1={20} smallNum2={4} smallText1="ON HOLD" smallText2="BLOCKED" currentTile="REGISTERED USERS" topText='' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="OPEN FEEDBACK TICKETS" bigNumber={6} bigText="TOTAL TICKETS" smallNum1={1} smallNum2={2} smallText1="PAST DUE" smallText2="HIGH IMPACT" currentTile="OPEN FEEDBACK TICKETS" topText='' />
@@ -138,7 +142,7 @@ const Home = () => {
                             {/* <SearchBar /> */}
                         {/* </div> */}
                         <Table
-                            tableHeaderValues={viewAlerts ? tableHeaderValues : toDoTableHeaderValues} 
+                            tableHeaderValues={viewAlerts ? tableHeaderValues : toDoTableHeaderValues}
                             tableDataValues={viewAlerts ? getActiveFilesValues() : getToDoValues()}
                             tableData={viewAlerts ? alertsData : alertsData}
                             gridStyle={viewAlerts ? style.alertsGrid : style.toDoGrid}
