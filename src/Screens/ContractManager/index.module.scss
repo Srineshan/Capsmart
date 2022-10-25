@@ -1388,6 +1388,18 @@ select {
     width: 60%;
   }
 
+  .greenBase{
+    font: normal normal medium 20px/27px Montserrat;
+    background-color: #75f0ac;
+    color: #52575D;
+  }
+
+  .redBase{
+    font: normal normal medium 20px/27px Montserrat;
+    background-color: #fc9c9c;
+    color: #52575D;
+  }
+
   .textElementWithNurse{
     background-color: #f1f2f3;
     color: #AFB2B6;
@@ -1429,7 +1441,7 @@ select {
     align-items: center;
     padding-left:10px;
     padding-top: 8px;
-    width: 50px;
+    width: 40%;
     border-radius: 4px !important;
   }
 
@@ -1493,7 +1505,7 @@ select {
     display: flex;
     align-items: center;
     padding: 8px 15px;
-    width: 75px !important;
+    width: 40% !important;
     border-radius: 4px !important;
   }
 
@@ -1526,7 +1538,7 @@ select {
 }
 
 .threeFieldWidth{
-    width: 33.3%;
+    width: 33.3% !important;
 }
 
 .fourFieldWidth{
@@ -1578,6 +1590,11 @@ select {
   height:75%;
   width:55% !important;
 }
+
+.manageServiceDialog{
+    height:75%;
+    width:70% !important;
+  }
 
 .renewalBoxStyle{
     background-color: #EBECED;
@@ -1663,6 +1680,11 @@ select {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 20px;
+}
+
+.withNurseGrid{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .grid2{
@@ -1920,26 +1942,6 @@ select {
     height: 100%;
  }
 
-.calculatorIconColor{
-  color: #707070;
-}
-
-.addServiceDialog{
-  height:75%;
-  width:85% !important;
-}
-
-.addServiceGrid{
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-gap: 20px;
-}
-
-.referenceTextArea{
-  width:25rem;
-  white-space: pre;
-}
-
 .purpleTitle{
   font: normal 15px/13px Montserrat;
   color: #7165E3;
@@ -1974,4 +1976,37 @@ select {
   border-radius: 2px;
   opacity: 1;
   padding: 10px;
+}
+
+.calculatorIconColor{
+    color: #707070;
+  }
+
+  .addServiceDialog{
+    height:75%;
+    width:85% !important;
+  }
+
+  .addServiceGrid{
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 20px;
+  }
+
+  .referenceTextArea{
+    width:25rem;
+    white-space: pre;
+  }
+
+  .addGrid{
+    display: grid;
+    grid-template-columns: 1fr 35px;
+    grid-gap: 10px;
+  }
+
+.addStyle{
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 6px #00000029;
+    border-radius: 8px;
+    height: 33px;
 }
