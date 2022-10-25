@@ -175,7 +175,8 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
         {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'}]
 
     const draftActionsData = [{'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
-        {'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id'}]
+        {'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id'},
+        {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}]
 
 
     const handleAddContract = () => {

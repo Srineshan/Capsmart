@@ -6,55 +6,45 @@ import ToolBar from './toolbar';
 import {POST, GET, PUT} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ReviewerApproverField from './reviewerApproverField';
-import Requests from './requestsWorkflow';
 
 import style from './index.module.scss';
 
-const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContractInfo, contractId }) => {
-    const [applyWorkflowToAll, setApplyWorkflowToAll] = useState(true);
-    const [viewWorkflowDialog, setViewWorkflowDialog] = useState(false);
-    const [workflowName, setWorkflowName] = useState('');
-    const [workflowDescription, setWorkflowDescription] = useState('');
-    const [activeTab, setActiveTab] = useState('Timesheet name 1');
+const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContractInfo, contractId, contractName }) => {
+    const [addOn, setAddOn] = useState({id:'', reviewer:'', approver:''});
+    const [absence, setAbsence] = useState({id:'', reviewer:'', approver:''});
+    const [timesheet, setTimesheet] = useState({id:'', reviewer:'', approver:''});
+    const [workFlowList,setWorkFlowList] = useState([]);
+    // const [applyWorkflowToAll, setApplyWorkflowToAll] = useState(true);
+    // const [viewWorkflowDialog, setViewWorkflowDialog] = useState(false);
+    // const [workflowName, setWorkflowName] = useState('');
+    // const [workflowDescription, setWorkflowDescription] = useState('');
+    const [activeTab, setActiveTab] = useState('');
     const [selectTimesheetToDefineProcess, setSelectTimesheetToDefineProcess] = useState('');
     const [customWorkFlow, setCustomWorkFlow] = useState(false);
     const [workflowTemplateToUse, setWorkflowTemplateToUse] = useState('');
     const [timesheetProcessingWorkflow, setTimesheetProcessingWorkflow] = useState([]);
-    const [reviewerApproverCount,setReviewerApproverCount] = useState();
-    const [absenceRequestFields,setAbsenceRequestFields] = useState([]);
-    const [addOnRequestFields, setAddOnRequestFields] = useState([]);
     const [timeSheetTabs, setTimeSheetTabs] = useState([]);
     const [timesheetWorkFlow, setTimeSheetWorkFlow] = useState([]);
     const [users,setUsers] = useState([]);
-    const [workFlowList,setWorkFlowList] = useState([]);
-    const [selectedTimeSheet,setSelectedTimeSheet] = useState({id:'',reviewer:'',approver:''})
-
-    // useEffect(()=>{
-    //   getApproverReviewerFields();
-    // },[reviewerApproverCount])
+    const [selectedTimeSheet,setSelectedTimeSheet] = useState({id:'',reviewer:'',approver:''});
 
     useEffect(()=>{
         setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
         setWorkflowTemplateToUse(timesheetProcessingWorkflow[0]?.workFlowTemplate?.name?.name);
-        setWorkflowDescription(timesheetProcessingWorkflow[0]?.workFlowDescription?.value);
-        setWorkflowName(timesheetProcessingWorkflow[0]?.workFlow?.workFlowName?.name);
+        // setWorkflowDescription(timesheetProcessingWorkflow[0]?.workFlowDescription?.value);
+        // setWorkflowName(timesheetProcessingWorkflow[0]?.workFlow?.workFlowName?.name);
         setCustomWorkFlow(timesheetProcessingWorkflow[0]?.customWorkFlow);
         setWorkFlowList(timesheetProcessingWorkflow?.map(data=>data?.workFlow?.id));
     },[timesheetProcessingWorkflow]);
 
     useEffect(()=>{
-      console.log('active tab changes');
-      if(timesheetWorkFlow?.filter(data=>workFlowList?.map(workflow=>workflow).includes(data?.id) && data?.name?.name === activeTab)?.map(data=>data)?.length !== 0){
-        timesheetWorkFlow?.filter(data=>workFlowList?.map(data=>data).includes(data?.id) && data?.name?.name === activeTab)?.map(data=>{
-          let workFlowValues = Object.values(data?.workFlowMap?.workflow);
-          console.log('inside objects test',workFlowValues);
-          let reveiwer = workFlowValues?.[0]?.workFlowUser?.id;
-          let approver = workFlowValues?.[1]?.workFlowUser?.id;
-          setSelectedTimeSheet({...selectedTimeSheet,id:data?.id, reviewer:reveiwer, approver:approver});
-        })
+      if(activeTab === 'requests'){
+        getAddOnRequestWorkFlow();
+        getAbsenceRequestWorkFlow();
       }else{
-        resetApproverReviewer();
-      }
+        setTimesheet({id:'',approver:'',reviewer:''});
+        getTimeSheetSubmissionTerms();
+    }
     },[activeTab])
 
     useEffect(()=>{
@@ -64,17 +54,49 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
       getTimeSheetWorkFlow();
     },[])
 
+   useEffect(()=>{
+     getAddOnRequestWorkFlow();
+     getAbsenceRequestWorkFlow();
+   }, [timesheetWorkFlow])
+
+    const refresh = () => {
+      getTimeSheetWorkFlow();
+    }
+
+    const getUserData = async() => {
+      const {data:userList} = await GET(`contract-managment-service/contracts/workFlowUser`)
+      if(userList){
+        setUsers(userList);
+        console.log('userData',userList);
+      }
+    }
+
     const getTimeSheetWorkFlow = async() => {
       const {data:timesheetWorkFlow} = await GET('timesheet-management-service/workflow');
       if(timesheetWorkFlow){
         setTimeSheetWorkFlow(timesheetWorkFlow);
       }
     }
-    console.log('data',timesheetWorkFlow);
-    const getUserData = async() => {
-      const {data: user} = await GET('user-management-service/user');
-      if(user){
-        setUsers(user);
+
+    const getAddOnRequestWorkFlow = async() => {
+      const {data:addOnWorkflow} = await GET(`contract-managment-service/contracts/${contractId}/addOnRequestWorkFlow`);
+      if(addOnWorkflow){
+        let workflowData = timesheetWorkFlow?.filter(data=>data?.id === addOnWorkflow?.workFlow?.id)?.map(data=>data?.workFlowMap?.workflow)[0];
+        let workFlowValues = Object.values(workflowData);
+        let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
+        let approver = workFlowValues?.[1]?.workFlowUser?.id;
+        setAddOn({...addOn, id:addOnWorkflow?.workFlow?.id, reviewer: reviewer, approver: approver});
+      }
+    }
+
+    const getAbsenceRequestWorkFlow = async() => {
+      const {data:absenceWorkFlow} = await GET(`contract-managment-service/contracts/${contractId}/absenceRequestWorkFlow`);
+      if(absenceWorkFlow){
+        let workflowData = timesheetWorkFlow?.filter(data=>data?.id === absenceWorkFlow?.workFlow?.id)?.map(data=>data?.workFlowMap?.workflow)[0];
+        let workFlowValues = Object.values(workflowData);
+        let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
+        let approver = workFlowValues?.[1]?.workFlowUser?.id;
+        setAbsence({...absence, id:absenceWorkFlow?.workFlow?.id, reviewer: reviewer, approver: approver});
       }
     }
 
@@ -84,17 +106,75 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
       setActiveTab(timesheetSubmissionTerms?.timesheetActivitiesPeriods?.map(data=>data.timesheetLabel?.label)?.[0] || '')
     }
 
+    const updateTimeSheetWorkflow = async(data, workFlowName, type) => {
+      let id = type === 'AddOn' ? addOn?.id : type === 'Absence' ? absence?.id : timesheet?.id;
+      if(id === ''){
+        await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
+         .then(response=>{
+           console.log('response', response, response?.data, type);
+           if(type === 'AddOn' || type === 'Absence'){
+             console.log('inside If', type);
+             updateWorkflow(response?.data, workFlowName, type);
+           }else{
+             handleContinue(response?.data)
+           }
+           SuccessToaster('Workflow Updated Successfully');
+         })
+         .catch(error=>{
+           ErrorToaster('Unexpected Error');
+         })
+      }
+      else{
+          await PUT(`timesheet-management-service/workflow/${id}`, data)
+           .then(response=>{
+            SuccessToaster('Workflow Updated Successfully');
+           })
+           .catch(error=>{
+             ErrorToaster('Unexpected Error');
+           })
+     }
+     refresh();
+    }
 
-    const handleTimeSheetWorkFlow = async() => {
+    const updateWorkflow = async(workflowId, workFlowName, type) => {
+      let data = {
+        "workFlow": {
+          "id": workflowId,
+          "workFlowName": {
+            "name": workFlowName,
+          }
+        }
+      }
+      if(type === 'AddOn'){
+        await PUT(`contract-managment-service/contracts/${contractId}/addOnRequestWorkFlow`, data)
+         .then(response=>{
+          SuccessToaster('AddOn Request Workflow Updated Successfully');
+         })
+         .catch(error=>{
+           ErrorToaster('Unexpected Error');
+         })
+       }else{
+         await PUT(`contract-managment-service/contracts/${contractId}/absenceRequestWorkFlow`, data)
+          .then(response=>{
+           SuccessToaster('Absence Request Workflow Updated Successfully');
+          })
+          .catch(error=>{
+            ErrorToaster('Unexpected Error');
+          })
+      }
+    }
+
+
+    const handleTimeSheetWorkFlow = (name, reviewer, approver) => {
       let data =   {
           "name": {
-            "name": activeTab
+            "name": name
           },
           "workFlowMap": {
             "workflow": {
               "1": {
                 "workFlowUser": {
-                  "id": selectedTimeSheet?.reviewer
+                  "id": reviewer
                 },
                 "workFlowStatus": {
                   "status": "REVIEWER"
@@ -102,7 +182,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
               },
               "2": {
                 "workFlowUser": {
-                  "id": selectedTimeSheet?.approver
+                  "id": approver
                 },
                 "workFlowStatus": {
                   "status": "APPROVER"
@@ -111,28 +191,19 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
             }
           }
         }
-      console.log('data',data);
-      if(selectedTimeSheet?.id === ''){
-        await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
-         .then(response=>{
-           console.log('response',response,response?.data);
-           handleContinue(response?.data);
-            SuccessToaster('Timesheet Processing Workflow Updated Successfully');
-         })
-         .catch(error=>{
-           ErrorToaster('Unexpected Error');
-         })
+      return data;
+    }
+
+    const submit = async() => {
+      if(activeTab === 'requests'){
+        let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`,addOn.reviewer, addOn.approver);
+        let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver);
+        await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
+        await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
       }else{
-        await PUT(`timesheet-management-service/workflow/${selectedTimeSheet?.id}`, data)
-         .then(response=>{
-          SuccessToaster('Timesheet Processing Workflow Updated Successfully');
-         })
-         .catch(error=>{
-           ErrorToaster('Unexpected Error');
-         })
+        let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver );
+        updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
       }
-      getTimeSheetWorkFlow();
-      getTimeSheetSubmissionTerms();
     }
 
     const handleContinue = async (workflowId) => {
@@ -187,31 +258,16 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
     }
 
     const getTimeSheetSubmissionTerms = async() => {
-        const {data: workFlowDetails} = await GET(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`);
-        setTimesheetProcessingWorkflow(workFlowDetails?.workFlowDetails || []);
+        const {data: timesheetFlow} = await GET(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`);
+        let id = timesheetFlow?.workFlowDetails?.filter(data=>data?.workFlow?.workFlowName?.name === activeTab)?.map(data=>data?.workFlow?.id)[0];
+        if(timesheetFlow){
+          let workflowData = timesheetWorkFlow?.filter(data=>data?.id === id)?.map(data=>data?.workFlowMap?.workflow)[0];
+          let workFlowValues = Object.values(workflowData);
+          let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
+          let approver = workFlowValues?.[1]?.workFlowUser?.id;
+          setTimesheet({...timesheet, id:id, reviewer: reviewer, approver: approver});
+        }
     };
-
-    // const getApproverReviewerFields = () => {
-    //   let fields = [];
-    //   let tabValue = activeTab === 'Absence Request' ? absenceRequestFields : addOnRequestFields;
-    //   for(let i=0;i<reviewerApproverCount;i++){
-    //     fields[i] = (
-    //       <>
-    //         <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value)=>{console.log('value',value);setSelectedTimeSheet({...selectedTimeSheet, reviewer:value})}} selectLabel="Select Reviewer"/>
-    //         <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value)=>{console.log('value',value);setSelectedTimeSheet({...selectedTimeSheet, approver:value})}} selectLabel="Select Approver"/>
-    //       </>
-    //     )
-    //   }
-    //   if(activeTab === 'requests'){
-    //     setAbsenceRequestFields(fields);
-    //   }else{
-    //     setAddOnRequestFields(fields);
-    //   }
-    // }
-
-    const resetApproverReviewer = () => {
-      setSelectedTimeSheet({...selectedTimeSheet,id:'', reviewer:0, approver:0})
-    }
 
 
     return (
@@ -234,11 +290,58 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
                               value={activeTab} onChange={(e) => setSelectTimesheetToDefineProcess(e.target.value)} />
                       </div>
                   </div>
-                  <ReviewerApproverField data={users?.filter(data=>data?.roles?.map(role=>role?.roleName).includes('Reviewer') && data?.id !== selectedTimeSheet?.approver)?.map(data=>data)} label="Timesheet Reviewer*" onValueChange={(value)=>{console.log('value',value);setSelectedTimeSheet({...selectedTimeSheet, reviewer:value})}} selectLabel="Select Reviewer" value={selectedTimeSheet?.reviewer || '0'}/>
-                  <ReviewerApproverField data={users?.filter(data=>data?.roles?.map(role=>role?.roleName).includes('Approver') && data?.id !== selectedTimeSheet?.reviewer)?.map(data=>data)} label="Timesheet Approver*" onValueChange={(value)=>{console.log('value',value);setSelectedTimeSheet({...selectedTimeSheet, approver:value})}} selectLabel="Select Approver" value={selectedTimeSheet?.approver || '0'}/>
+                  <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value)=>{setTimesheet({...timesheet, reviewer:value})}} selectLabel="Select Reviewer" value={timesheet?.reviewer || '0'}/>
+                  <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value)=>{setTimesheet({...timesheet, approver:value})}} selectLabel="Select Approver" value={timesheet?.approver || '0'}/>
               </div>
               :<div>
-                  <Requests users={users}/>
+              <div>
+                <div className={style.purpleTitle}>
+                  ADD-ON ACTIVITY / SERVICE REQUESTS
+                </div>
+                <ReviewerApproverField data={users} label="Designate Request Reviewer*" selectLabel="Select Reviewer" onValueChange={(value)=>{setAddOn({...addOn, reviewer:value})}} value={addOn?.reviewer}/>
+                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAddOn({...addOn, approver:value})}} value={addOn?.approver}/>
+              </div>
+              <div className={style.marginTop50}>
+                <div className={style.purpleTitle}>
+                  PLANNED ABSENCE REQUESTS
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Planned Absence Notification Days Limit*</div>
+                <div className={style.daysSelectorGrid}>
+                <select
+                    name="class"
+                    id="Class"
+                    className={`${style.fullWidth} `}>
+                    <option value="14" >
+                        14
+                    </option>
+                </select>
+                <div className={`${style.twoFieldWidth} ${style.verticalAlignCenter}`}>Days</div>
+                </div>
+                </div>
+                <ReviewerApproverField data={users} label="Designate Request Reviewer*" selectLabel="Select Reviewer" onValueChange={(value)=>{setAbsence({...absence, reviewer:value})}} value={absence?.reviewer}/>
+                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAbsence({...absence, approver:value})}} value={absence?.approver}/>
+              </div>
+              <div className={style.marginTop50}>
+                <div className={style.purpleTitle}>
+                  UNPLANNED ABSENCE NOTIFICATION
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed*</div>
+                <div className={style.daysSelectorGrid}>
+                <select
+                    name="class"
+                    id="Class"
+                    className={`${style.fullWidth} `}>
+                    <option value="7" >
+                        7
+                    </option>
+                </select>
+                <div className={`${style.twoFieldWidth} ${style.verticalAlignCenter}`}>Days</div>
+                </div>
+                </div>
+                <ReviewerApproverField data={users} label="Indicate Supervisor To Notify*" selectLabel="Select Supervisor" />
+              </div>
               </div>
             }
             </div>
@@ -356,34 +459,35 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
                 <div>
                     <button className={style.newContractOutlinedButton}
                     onClick={() =>{
-                        handleTimeSheetWorkFlow();
-                        // handleContinue()
+                      submit();
                     }
                     }
                     >SAVE IN-PROGRESS</button>
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
                     onClick={() => {
-                      handleTimeSheetWorkFlow();
-                      // handleContinue();
+                      submit();
                       getViewPage8(true);
                        getCurrentPage('Timesheet Processing Workflow') }}
                        >CONTINUE</button>
                 </div>
             </div>
-            <Dialog isOpen={viewWorkflowDialog} onClose={() => setViewWorkflowDialog(false)} className={`${style.toolbarDialogStyle} ${style.dialogPaddingBottom}`}>
-                <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
-                    <div className={style.spaceBetween}>
-                        <div className={style.reduceTop10}>
-                            <p className={style.extensionStyle}>View / Creat Workflow</p>
-                            <p>Note: To Draw Arrow or Line, click on its element and draw on the screen.</p>
-                        </div>
-                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setViewWorkflowDialog(false)} />
-                    </div>
-                    <div className={`${style.flowChartBoxStyle}`}>
-                        <ToolBar />
-                    </div>
-                </div>
-            </Dialog>
+            {
+              // <Dialog isOpen={viewWorkflowDialog} onClose={() => setViewWorkflowDialog(false)} className={`${style.toolbarDialogStyle} ${style.dialogPaddingBottom}`}>
+              //     <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
+              //         <div className={style.spaceBetween}>
+              //             <div className={style.reduceTop10}>
+              //                 <p className={style.extensionStyle}>View / Creat Workflow</p>
+              //                 <p>Note: To Draw Arrow or Line, click on its element and draw on the screen.</p>
+              //             </div>
+              //             <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setViewWorkflowDialog(false)} />
+              //         </div>
+              //         <div className={`${style.flowChartBoxStyle}`}>
+              //             <ToolBar />
+              //         </div>
+              //     </div>
+              // </Dialog>
+            }
+
         </div>
     )
 }

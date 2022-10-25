@@ -316,6 +316,19 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
   }
 
     const handleSave = async() => {
+      let roles = userProviderData?.roles;
+      selectedRoles?.map(data=>{
+        if(!roles?.map(role=>role?.id).includes(data?.id)){
+          roles.push(data);
+        }
+      });
+      let sites = userProviderData?.sites?.sites || [];
+      let selectedSite = getSiteData();
+      selectedSite?.map(data=>{
+        if(!sites?.map(site=>site?.id).includes(data?.id)){
+          sites.push(data);
+        }
+      });
         const data = {
             ...(isUserPresent && {'id': userProviderData?.id}),
             "name": {
@@ -338,7 +351,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 "landlineNumber": "string",
                 "mobileNumberNotApplicable": true
               },
-              "roles": userProviderData?.roles,
+              "roles": roles,
               "address": {
                 "city": city,
                 "state": state,
@@ -347,35 +360,10 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
               "tenant": {
                 "tenantId": TenantID
               },
-              "sites":  userProviderData?.sites,
+              "sites": {
+                "sites" : sites
+              },
               "serviceProviderType": serviceProviderType,
-              "licenceDetails": {
-                "medicalLicense": "",
-                "licenseExpiryDate": "",
-                "deaNumber": "",
-                "deaExpiryDate": "",
-                "boardCertification": [
-                  "string"
-                ]
-              },
-              "userProxy": {
-                "myProxy": {
-                  "proxyIdList": [
-                    {
-                      "id": "",
-                      "name": ""
-                    }
-                  ]
-                },
-                "proxyFor": {
-                  "proxyIdList": [
-                    {
-                      "id": "",
-                      "name": ""
-                    }
-                  ]
-                }
-              },
               "activated": true,
               "blocked": true,
               "npin": {
@@ -403,6 +391,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
             });
           }
     }
+
+    console.log('selected Site', getSiteData());
 
     const handleRoles = (value) => {
         if (value !== '0') {
