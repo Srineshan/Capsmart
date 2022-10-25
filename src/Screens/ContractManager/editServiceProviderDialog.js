@@ -284,8 +284,19 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
         data.departmentLevelResponsible = departmentLevel;
         data.siteLevelResponsible = siteLevel;
       });
-
-
+      let roles = userDetails?.roles;
+      selectedRoles?.map(data=>{
+        if(!roles?.map(role=>role?.id).includes(data?.id)){
+          roles.push(data);
+        }
+      });
+      let sites = userDetails?.sites?.sites || [];
+      let selectedSite = getSiteData();
+      selectedSite?.map(data=>{
+        if(!sites?.map(site=>site?.id).includes(data?.id)){
+          sites.push(data);
+        }
+      });
         const data = {
             "id": userProviderData?.id,
             "name": {
@@ -293,7 +304,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                 "lastName": userDetails?.lastName,
                 "suffix": userDetails?.suffix
               },
-              "userType": "ADMIN",
+              "userType": "CONTRACTED_SERVICE_PROVIDER_USER",
               "contracts":contractData,
               "title": {
                 "title": ""
@@ -307,7 +318,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                 "landlineNumber": "",
                 "mobileNumberNotApplicable": true
               },
-              "roles": selectedRoles,
+              "roles": roles,
               "address": {
                 "city": address?.city,
                 "state": address?.state,
@@ -316,7 +327,9 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
               "tenant": {
                 "tenantId": TenantID
               },
-              "sites": userProviderData?.sites,
+              "sites": {
+                "sites" : sites
+              },
               "serviceProviderType": providerType,
               "licenceDetails": {
                 "medicalLicense": "string",

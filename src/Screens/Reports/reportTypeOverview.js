@@ -119,6 +119,8 @@ const ReportTypeOverview = () => {
         }
     }, [dataToUseInReport, selectedPodTypeFromTile])
 
+    console.log(dataToUseInReport)
+
     useEffect(()=> {
         setIndividualContract(contractRenewalReport?.filter(data => data?.contractType === "INDIVIDUAL")?.map(data => data));
         setMultipleContract(contractRenewalReport?.filter(data => data?.contractType === "MULTIPLE")?.map(data => data));
@@ -130,14 +132,14 @@ const ReportTypeOverview = () => {
     }, [oneTimeContract]);
 
     useEffect(()=> {
-        if(reportType === 'nonCompliant') {
+        if(reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
             getNonCompliantContractReport();
         }
     }, [isNonCompliantReportTileClicked]);
 
     const getAcvityAndServices = async() => {
-    const {data:chartData} = await GET('timesheet-management-service/report/activityServiceReport?startDate=2022-06-07&endDate=2022-09-07');
-    const {data:reportLogData} = await GET('timesheet-management-service/report/activityServiceLog?startDate=2022-06-07&endDate=2022-09-07');
+    const {data:chartData} = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
+    const {data:reportLogData} = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
     setReportLog(reportLogData);
     if(chartData){
       let temp = [];
@@ -198,8 +200,8 @@ const ReportTypeOverview = () => {
 
 
     const getAcvityAndServicesWithParameter = async() => {
-        const {data:chartData} = await GET(`timesheet-management-service/report/activityServiceReport?startDate=2022-06-07&endDate=2022-09-07&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-        const {data:reportLogData} = await GET('timesheet-management-service/report/activityServiceLog?startDate=2022-06-07&endDate=2022-09-07');
+        const {data:chartData} = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+        const {data:reportLogData} = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
         setReportLog(reportLogData);
         if(chartData){
         let temp = [];
@@ -292,7 +294,7 @@ const ReportTypeOverview = () => {
     }
 
     const getNonCompliantContractReportTile = async() => {
-        const {data: nonCompliantContract} = await GET(`contract-managment-service/reports/documentProofReport`);
+        const {data: nonCompliantContract} = await GET(`contract-managment-service/reports/documentProofReport?contractNames=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
         if(nonCompliantContract){
             setNonCompliantContractTile(nonCompliantContract);
         }
@@ -495,7 +497,7 @@ const ReportTypeOverview = () => {
                                         </div>
                                         <div>
                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Departments</div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>All Departments</div>
+                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
                                         </div>
                                         {reportType === "upcomingContractRenewals" && (
                                             <div>
@@ -519,7 +521,7 @@ const ReportTypeOverview = () => {
                                         </div>
                                         <div>
                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Departments</div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>All Departments</div>
+                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
                                         </div>
                                         <div>
                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracts </div>
@@ -538,7 +540,7 @@ const ReportTypeOverview = () => {
                                         </div>
                                         <div>
                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Departments</div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>All Departments</div>
+                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
                                         </div>
                                         <div>
                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracts </div>

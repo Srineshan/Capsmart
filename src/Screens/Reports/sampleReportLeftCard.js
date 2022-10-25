@@ -2,17 +2,15 @@ import React, {useEffect, useState} from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import Select from '@mui/material/Select';
 import {GET} from './../dataSaver';
-import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-// import { LocalizationProvider } from '@mui/x-date-pickers-pro';
-// import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
-// import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-import Box from '@mui/material/Box';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import {format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear} from 'date-fns';
 import SaveReport from './saveReport';
 import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
@@ -35,23 +33,26 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
     const {reportType} = useParams();
     const [activityType, setActivityType] = useState('Outpatient Clinic Service');
     const [activityPerformed, setActivityPerformed] = useState('Half Day Clinic Session');
-    const [renewalTimeFrame, setRenewalTimeFrame] = useState(30);
+    const [renewalreportingTimePeriod, setRenewalreportingTimePeriod] = useState(30);
     const [contractContinuationPolicy, setContractContinuationPolicy] = useState('');
     const [contractStatus, setContractStatus] = useState('ACTIVE');
     const [podType, setPodType] = useState('Medical Staff Membership & Privileges');
-    const [reportingTimePeriod, setReportingTimePeriod] = useState('');
+    const [reportingTimePeriod, setReportingTimePeriod] = useState('Current Week');
     const [selectedSites, setSelectedSites] = useState([]);
     const [selectedSitesToSend, setSelectedSitesToSend] = useState([]);
     const [selectedContractsToSend, setSelectedContractsToSend] = useState([]);
     const [selectedDepartments, setSelectedDepartments] = useState([]);
     const [selectedDepartmentsToSend, setSelectedDepartmentsToSend] = useState([]);
     const [sites, setSites] = useState([]);
+    const [departments, setDepartments] = useState([]);
     const [contracts, setContracts] = useState([]);
     const [selectedContracts, setSelectedContracts] = useState([]);
     const [selectedContractedServiceProvider, setSelectedContractedServiceProvider] = useState([]);
     const [selectedContractedServiceProviderToSend, setSelectedContractedServiceProviderToSend] = useState([]);
     const [user,setUsers] = useState([]);
-    const [dateRange, setDateRange] = useState([null, null]);
+    const [showCustomRangeSelection, setShowCustomRangeSelection] = useState(false);
+    const [from, setFrom] = useState(startOfWeek(new Date()));
+    const [to, setTo] = useState(endOfWeek(new Date()));
 
 
     let cookie = new Cookie();
@@ -59,7 +60,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
     const userDetail = jwt(userDetails);
 
     let dataToUseInReport = {
-        renewalTimeFrame: renewalTimeFrame,
+        renewalreportingTimePeriod: renewalreportingTimePeriod,
         selectedSites: selectedSites,
         selectedSitesToSend: selectedSitesToSend,
         selectedDepartments: selectedDepartments,
@@ -71,6 +72,8 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
         selectedContractsToSend: selectedContractsToSend,
         podType: podType,
         reportingTimePeriod: reportingTimePeriod,
+        from: format(new Date(from), 'yyyy-MM-dd'),
+        to: format(new Date(to), 'yyyy-MM-dd'),
         selectedContractedServiceProvider: selectedContractedServiceProvider,
         selectedContractedServiceProviderToSend: selectedContractedServiceProviderToSend,
     };
@@ -93,9 +96,55 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
 
     useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
-    }, [renewalTimeFrame, selectedSites, selectedDepartments, contractContinuationPolicy, selectedContracts,
+    }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, contractContinuationPolicy, selectedContracts,
     podType, contractStatus, reportingTimePeriod, selectedContractedServiceProvider,
-    selectedContractedServiceProviderToSend])
+    selectedContractedServiceProviderToSend, from, to]);
+
+    useEffect(() => {
+        let tempDept = [];
+        setDepartments([]);
+        selectedSitesToSend?.map(siteData => {
+            siteData?.departmentList?.departments?.map(data => {
+                tempDept.push(data);
+            })
+        });
+        let uniqueDepartments = tempDept.filter((ele, ind) => ind === tempDept.findIndex(elem => elem.id === ele.id && elem.id === ele.id));
+        setDepartments(uniqueDepartments);
+    }, [selectedSitesToSend]);
+
+    useEffect(()=> {
+        if(reportType === "activitiesOrServices"){
+            const quarter = Math.floor((new Date().getMonth() / 3));
+            const lastyear = new Date(new Date().getFullYear() - 1, 0, 1);
+            if(reportingTimePeriod === 'Current Week'){
+                setFrom(startOfWeek(new Date()));
+                setTo(endOfWeek(new Date()));
+            } else if(reportingTimePeriod === 'Last Week'){
+                setFrom(subDays(startOfWeek(new Date()), 7));
+                setTo(subDays(startOfWeek(new Date()), 1));
+            } else if(reportingTimePeriod === 'Current Month'){
+                setFrom(startOfMonth(new Date()));
+                setTo(endOfMonth(new Date()));
+            } else if(reportingTimePeriod === 'Last Month'){
+                setFrom(new Date(new Date().getFullYear(), new Date().getMonth() -1, 1));
+                setTo(subDays(startOfMonth(new Date()), 1));
+            } else if(reportingTimePeriod === 'Current Qtr'){
+                setFrom(startOfQuarter(new Date()));
+                setTo(endOfQuarter(new Date()));
+            }  else if(reportingTimePeriod === 'Last Qtr'){
+                setFrom(new Date(new Date().getFullYear(), quarter * 3 - 3, 1));
+                setTo(subDays(startOfQuarter(new Date()), 1));
+            } else if(reportingTimePeriod === 'Current Year'){
+                setFrom(startOfYear(new Date()));
+                setTo(endOfYear(new Date()));
+            }  else if(reportingTimePeriod === 'Last Year'){
+                setFrom(new Date(new Date(lastyear.getFullYear(), 0, 1)));
+                setTo(subDays(startOfYear(new Date()), 1));
+            }  else {
+                return;
+            }
+        }
+    }, [reportingTimePeriod])
 
     const handleChange = (event) => {
         setActivityType(event.target.value);
@@ -132,14 +181,29 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
         const {
           target: { value },
         } = event;
-
+        
         setSelectedSites(
           typeof value === 'string' ? value.split(',') : value
         );
         setSelectedSitesToSend(
             typeof value === 'string' ? sites?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : sites?.filter(data => value?.includes(data?.id))?.map(data => data),
+        );
+    };
+
+    const handleChangeDepartments = (event) => {
+        const {
+          target: { value },
+        } = event;
+
+        setSelectedDepartments(
+          typeof value === 'string' ? value.split(',') : value
+        );
+        setSelectedDepartmentsToSend(
+            typeof value === 'string' ? departments?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : departments?.filter(data => value?.includes(data?.id))?.map(data => data),
           );
     };
+
+    console.log(from, to)
 
     const handleChangeContracts = (event) => {
         const {
@@ -194,8 +258,8 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                         <Select
                         labelId="demo-simple-select-standard-label1"
                         id="demo-simple-select-standard1"
-                        value={renewalTimeFrame}
-                        onChange={(e) => setRenewalTimeFrame(e.target.value)}
+                        value={renewalreportingTimePeriod}
+                        onChange={(e) => setRenewalreportingTimePeriod(e.target.value)}
                         label="Renewal Time Frame"
                         >
                             <MenuItem value={30}>Renewal within Next 30 days</MenuItem>
@@ -229,16 +293,16 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                         labelId="demo-multiple-name-label3"
                         id="demo-multiple-name3"
                         multiple
-                        value={selectedSites}
-                        onChange={handleChangeSites}
+                        value={selectedDepartments}
+                        onChange={handleChangeDepartments}
                         MenuProps={MenuProps}
                         >
-                        {sites.map((data) => (
+                        {departments.map((data) => (
                             <MenuItem
                             key={data?.id}
                             value={data?.id}
                             >
-                            {data?.siteName?.siteName}
+                            {data?.departmentName?.name}
                             </MenuItem>
                         ))}
                         </Select>
@@ -284,27 +348,46 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                                 <MenuItem value={'Custom'}>Custom</MenuItem>
                             </Select>
                         </FormControl>
-                        {/* {reportingTimePeriod === "Custom" && (
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <div>
-                              <Typography sx={{ mt: 2, mb: 1 }}>1 calendar </Typography>
-                              <DateRangePicker
-                                calendars={1}
-                                value={dateRange}
-                                onChange={(newValue) => {
-                                  setDateRange(newValue);
-                                }}
-                                renderInput={(startProps, endProps) => (
-                                  <React.Fragment>
-                                    <TextField {...startProps} />
-                                    <Box sx={{ mx: 2 }}> to </Box>
-                                    <TextField {...endProps} />
-                                  </React.Fragment>
-                                )}
-                              />
-                            </div>
-                          </LocalizationProvider>
-                        )} */}
+                        {reportingTimePeriod === "Custom" && (
+                            <>
+                                <div className={style.marginTop10}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                        InputProps={{
+                                            style: {
+                                                fontSize: 14,
+                                                height: 30,
+                                            }
+                                        }}
+                                        value={from}
+                                        onChange={(e) => setFrom(e)}
+                                        renderInput={(params) => <TextField {...params} inputProps={{
+                                        ...params.inputProps,
+                                        placeholder: "From"
+                                        }}/>}
+                                    />
+                                    </LocalizationProvider>
+                                </div>
+                                <div className={style.marginTop10}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                        InputProps={{
+                                            style: {
+                                                fontSize: 14,
+                                                height: 30,
+                                            }
+                                        }}
+                                        value={to}
+                                        onChange={(e) => setTo(e)}
+                                        renderInput={(params) => <TextField {...params} inputProps={{
+                                        ...params.inputProps,
+                                        placeholder: "To"
+                                        }}/>}
+                                    />
+                                    </LocalizationProvider>
+                                </div>
+                            </>
+                        )}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px'  }}>
                             <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
                             <Select
@@ -331,16 +414,16 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                             labelId="demo-multiple-name-label2"
                             id="demo-multiple-name2"
                             multiple
-                            value={selectedSites}
-                            onChange={handleChangeSites}
+                            value={selectedDepartments}
+                            onChange={handleChangeDepartments}
                             MenuProps={MenuProps}
                             >
-                            {sites.map((data) => (
+                            {departments.map((data) => (
                                 <MenuItem
                                 key={data?.id}
                                 value={data?.id}
                                 >
-                                {data?.siteName?.siteName}
+                                {data?.departmentName?.name}
                                 </MenuItem>
                             ))}
                             </Select>
@@ -414,16 +497,16 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                             labelId="demo-multiple-name-label2"
                             id="demo-multiple-name2"
                             multiple
-                            value={selectedSites}
-                            onChange={handleChangeSites}
+                            value={selectedDepartments}
+                            onChange={handleChangeDepartments}
                             MenuProps={MenuProps}
                             >
-                            {sites.map((data) => (
+                            {departments.map((data) => (
                                 <MenuItem
                                 key={data?.id}
                                 value={data?.id}
                                 >
-                                {data?.siteName?.siteName}
+                                {data?.departmentName?.name}
                                 </MenuItem>
                             ))}
                             </Select>
