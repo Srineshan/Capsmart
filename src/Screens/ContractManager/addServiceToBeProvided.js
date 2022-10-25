@@ -20,6 +20,8 @@ import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDe
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import ClinicBlocksFields from './clinicBlocksField';
+import OnCallCoverageFields from './onCallCoverageFields';
+import SupplementalFields from './supplementalFields';
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo }) => {
     const [sendEmailNotification, setSendEmailNotification] = useState(false);
@@ -522,7 +524,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                 </div>
                             </div>
                         </div>
-                        <ClinicBlocksFields />
+                        <SupplementalFields />
 
                         {(activityOrServiceType === "Medical / Surgical Care Contracted Services" && activityContractedFor === 'Administrative / Miscellaneous Services') ?
                             <div>

@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
+import { InputGroup, EditableText } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Typography from '@mui/material/Typography'; 
+import Checkbox from '@mui/material/Checkbox';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
 import style from './index.module.scss';
 
-const ClinicBlocksFields = () => {
+const OnCallCoverageFields = () => {
 
     const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
     const [workingPeriodTo, setWorkingPeriodTo] = useState('');
@@ -23,7 +26,30 @@ const ClinicBlocksFields = () => {
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Regular Clinic Schedule*</div>
+                <div className={style.extentionLableStyle}>On Call Coverage For *</div>
+                <div className={style.spaceBetween}>
+                    <FormGroup className={`${style.marginLeft10} ${style.threeFieldWidth}`}>
+                        <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">Inpatient</Typography>} />
+                    </FormGroup>
+                    <FormGroup className={`${style.marginLeft10} ${style.threeFieldWidth}`}>
+                        <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">Ambulatory</Typography>} />
+                    </FormGroup>
+                    <FormGroup className={`${style.marginLeft10} ${style.threeFieldWidth}`}>
+                        <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">ED</Typography>} />
+                    </FormGroup>
+                    <FormGroup className={`${style.marginLeft10} ${style.threeFieldWidth}`}>
+                        <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">L & D</Typography>} />
+                    </FormGroup>
+                </div>
+            </div>
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Service Days*</div>
+                <ServiceDays />
+            </div>
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Number of On Call Duty Days*</div>
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
@@ -43,36 +69,6 @@ const ClinicBlocksFields = () => {
                         <MenuItem value={'MONTH'}>Per Month</MenuItem>
                         <MenuItem value={'YEAR'}>Per Year</MenuItem>
                     </Select>
-                </div>
-            </div>
-
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Patients Seen Target*</div>
-                <div className={style.withNurseGrid}>
-                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <div className={style.textElement}>WITH NURSE</div>
-                        <EditableText placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                    </div>
-                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <div className={style.textElement}>WITHOUT NURSE</div>
-                        <EditableText placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                    </div>
-                    <Checkbox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} />
-                </div>
-            </div>
-
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Scheduled Patient Target*</div>
-                <div className={`${style.withNurseGrid} ${style.fullWidth}`}>
-                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <div className={style.textElement}>WITH NURSE</div>
-                        <EditableText placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                    </div>
-                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <div className={style.textElement}>WITHOUT NURSE</div>
-                        <EditableText placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                    </div>
-                    <Checkbox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} />
                 </div>
             </div>
 
@@ -130,7 +126,7 @@ const ClinicBlocksFields = () => {
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Clinic Session Duration</div>
+                <div className={style.extentionLableStyle}>On Call Duty Duration</div>
                 <div className={`${style.threeFieldWidth}`}>
                     <TextField
                         size="small"
@@ -142,18 +138,18 @@ const ClinicBlocksFields = () => {
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Clinic Session payment Amount*</div>
+                <div className={style.extentionLableStyle}>On Call Payment Amount*</div>
                 <div className={`${style.displayInRow}`}>
                     <div className={`${style.threeFieldWidth}`}>
                         <TextField
                             size="small"
                             InputProps={{
-                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                             }}
                         />
                     </div>
                     <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ 300 per Hour (Pro Rata)</p>
+                        <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ 50 per Hour (Pro Rata)</p>
                     </div>
                 </div>
             </div>
@@ -172,12 +168,7 @@ const ClinicBlocksFields = () => {
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Service Days*</div>
-                <ServiceDays />
-            </div>
-
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Clinic*</div>
+                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Duty Days*</div>
                 <div className={style.displayInRow}>
                     <InputGroup
                         value={workingPeriodFrom}
@@ -198,4 +189,4 @@ const ClinicBlocksFields = () => {
     )
 }
 
-export default ClinicBlocksFields;
+export default OnCallCoverageFields;
