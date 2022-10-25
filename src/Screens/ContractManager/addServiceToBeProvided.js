@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, EditableText, RadioGroup, Radio, Checkbox, Tag, TextArea } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
+import AddIcon from '@mui/icons-material/Add';
+import DatalistInput from 'react-datalist-input';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import Select from '@mui/material/Select';
 import {PUT, GET} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Calculator from './../../Components/Calculator';
@@ -9,6 +16,10 @@ import ReactStickyNotes from '@react-latest-ui/react-sticky-notes';
 
 import style from './index.module.scss';
 import SendEmailUserList from './mailUser';
+import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
+import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
+import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
+import ClinicBlocksFields from './clinicBlocksField';
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo }) => {
     const [sendEmailNotification, setSendEmailNotification] = useState(false);
@@ -390,7 +401,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     return (
         <div>
-            <Dialog isOpen={getAddServiceDialog} onClose={() => getAddServiceDialog(false)} className={rightHelpArea ? `${style.addServiceDialog} ${style.addManagerDialogBackground}` : `${style.addProofDialog} ${style.addManagerDialogBackground}`}>
+            <Dialog isOpen={getAddServiceDialog} onClose={() => getAddServiceDialog(false)} className={rightHelpArea ? `${style.addServiceDialog} ${style.addManagerDialogBackground}` : `${style.manageServiceDialog} ${style.addManagerDialogBackground}`}>
                 <div className={`${Classes.DIALOG_BODY} `}>
                     <div className={style.spaceBetween}>
                         <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
@@ -403,25 +414,25 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     <div className={style.extensionBorder}></div>
                     <div className={rightHelpArea ? style.addServiceGrid : ''}>
                     <div className={style.proofBorder}>
-                        <div className={`${style.addManagerGrid}`}>
-                            <div className={style.extentionLableStyle}>Activity /Service Type*</div>
+                        <div className={`${style.addManagerGrid} `}>
+                            <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
+                            <SiteDepartmentField />
+                        </div>
+                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                            <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
                             <div>
-                                <select
-                                    name="class"
-                                    id="Class"
+                                <Select
+                                    displayEmpty
                                     value={activityOrServiceType}
                                     onChange={(e) => {setActivityOrServiceType(e.target.value);reset();setActivityContractedFor('')}}
-                                    className={`${style.fullWidth} ${style.marginRight20}`}>
-                                    <option value="Medical / Surgical Care Contracted Services" >
-                                        Medical / Surgical Care Contracted Services
-                                    </option>
-                                    <option value="Supplemental Clinical Services" >
-                                        Supplemental Clinical Services
-                                    </option>
-                                    <option value="Add-On Services Allowed Upon Request Approval" >
-                                        Add-On Services Allowed Upon Request Approval
-                                    </option>
-                                </select>
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    className={`${style.fullWidth}`}
+                                >
+                                    <MenuItem value="">Select Activity /Service Type</MenuItem>
+                                    <MenuItem value={'Medical / Surgical Care Contracted Services'}>Medical / Surgical Care Contracted Services</MenuItem>
+                                    <MenuItem value={'Supplemental Clinical Services'}>Supplemental Clinical Services</MenuItem>
+                                    <MenuItem value={'Add-On Services Allowed Upon Request Approval'}>Add-On Services Allowed Upon Request Approval</MenuItem>
+                                </Select>
                             </div>
                         </div>
                         {selectContractInfo !== "INDIVIDUAL" && (
@@ -433,70 +444,85 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             control={
                                                 <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor)} />
                                             }
-                                            className={`${style.switchFontStyle} ${style.flexLeft} ${style.marginTop10} `}
+                                            className={`${style.switchFontStyle} ${style.flexLeft} `}
                                             label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
                                         />
-                                        {isDesignatedSpecificContractor && <select
-                                            name="class"
-                                            id="Class"
-                                            onChange={(e) => handleUsers(e.target.value)}
-                                            className={`${style.fullWidth} ${style.marginLeft20} `}>
-                                            <option value="0" >
-                                                Select Contracted Services Provided
-                                            </option>
-                                            {users?.map((data, index) => (
-                                                <option value={data?.id} key={index}>
-                                                    {data?.name?.firstName} {data?.name?.lastName}
-                                                </option>
-                                            ))}
-                                        </select>}
+
+                                        {isDesignatedSpecificContractor && (
+                                            <Select
+                                                displayEmpty
+                                                onChange={(e) => handleUsers(e.target.value)}
+                                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                className={`${style.fullWidth}`}
+                                            >
+                                                <MenuItem value="">Select Contracted Services Provided</MenuItem>
+                                                {users?.map((data, index) => (
+                                                    <MenuItem value={data?.id} key={index}> {data?.name?.firstName} {data?.name?.lastName}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        )}
                                     </div>
-                                    <div className={`${style.marginTop20} ${style.marginLeft20}`}>
-                                        {usersTags}
-                                    </div>
+                                    {usersTags?.length !== 0 && (
+                                        <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                                            {usersTags}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
-                        {activityOrServiceType === "Medical / Surgical Care Contracted Services" && (
+                        <div>
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Specific Activity Contracted For*</div>
+                                <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
                                 <div>
-                                    <select
-                                        name="class"
-                                        id="Class"
-                                        value={activityContractedFor}
-                                        onChange={(e) => {setActivityContractedFor(e.target.value !== "0" ? e.target.value : '');reset()}}
-                                        className={`${style.fullWidth} ${style.marginRight20} `}>
-                                        <option value="0">
-                                            Select Specific Activity Contracted For
-                                        </option>
-                                        <option value="Clinic Session Blocks"
-                                         disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('Clinic Session Blocks')}
-                                         >
-                                            Clinic Session Blocks
-                                        </option>
-                                        <option value="Surgery Block"
-                                         disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('Surgery Block')}
-                                         >
-                                            Surgery Block
-                                        </option>
-                                        <option value="On Call Coverage Duty Days"
-                                        disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('On Call Coverage Duty Days')}
-                                        >
-                                            On Call Coverage Duty Days
-                                        </option>
-                                        <option value="Department Oversight Role & Responsibility"
-                                        disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('Department Oversight Role & Responsibility')}>
-                                            Department Oversight Role & Responsibility
-                                        </option>
-                                        <option value="Administrative / Miscellaneous Services"
-                                        disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('Administrative / Miscellaneous Services')}>
-                                            Administrative / Miscellaneous Services
-                                        </option>
-                                    </select>
+                                    <div className={style.addGrid}>
+                                        <FormControl sx={{ minWidth: 120 }} size="small">
+                                            <Select
+                                                labelId="demo-select-small"
+                                                id="demo-select-small"
+                                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                displayEmpty
+                                            >
+                                                <MenuItem value="">
+                                                <em>Select Site</em>
+                                                </MenuItem>
+                                                <MenuItem value={10}>Site 1</MenuItem>
+                                                <MenuItem value={20}>Site 2</MenuItem>
+                                                <MenuItem value={30}>Site 3</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                        <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                            <AddIcon sx={{ fontSize: 25, color: 'white' }} />
+                                        </div>
+                                    </div>
+                                    <MultiSelectDisplay values={['Fracture Clinic', 'Orthopaedic clinic']} />
                                 </div>
                             </div>
-                        )}
+                        </div>
+
+                        <div>
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
+                                <div>
+                                    <div className={`${style.displayInRow} `}>
+                                        <FormControlLabel
+                                            control={
+                                                <Switch className={`${style.textAlignLeft}`} />
+                                            }
+                                            className={`${style.switchFontStyle} ${style.flexLeft} `}
+                                            label={'YES'}
+                                        />
+                                        <div className={`${style.addGrid} ${style.fullWidth}`}> 
+                                            <DatalistInput items={[]} onSelect={() => {}} className={style.fullWidth} />
+                                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                <AddIcon sx={{ fontSize: 25, color: 'white' }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <MultiSelectDisplay values={['Location 1']} />
+                                </div>
+                            </div>
+                        </div>
+                        <ClinicBlocksFields />
 
                         {(activityOrServiceType === "Medical / Surgical Care Contracted Services" && activityContractedFor === 'Administrative / Miscellaneous Services') ?
                             <div>
