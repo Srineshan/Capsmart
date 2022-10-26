@@ -2010,3 +2010,57 @@ select {
     border-radius: 8px;
     height: 33px;
 }
+
+.addonBoxStyle{
+    border: 0.800000011920929px solid #E5E6E7;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.addAddonServiceButton{
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 6px #00000029;
+    border-radius: 6px;
+    font: normal normal medium 20px/27px Montserrat;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 6px 20px;
+}
+
+.addAddonGrid{
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    grid-gap: 10px;
+}
+
+.addonAddBox{
+    border: 1px solid #7165E3;
+    box-shadow: 0px 1px 6px #7165E3;
+    border-radius: 8px;
+    padding: 20px 10px;
+}
+
+.additionalDetails{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 1px 4px #0000001F;
+    border: 1px solid #E9E9F0;
+    border-radius: 4px;
+    height: 45px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 50px 1fr;
+}
+
+.additionalDetailsSelected{
+    background: #DBD8FA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 1px 4px #0000001F;
+    border: 0.30000001192092896px solid #7165E3;
+}
+
+.additionalDetailsTextStyle{
+    font: normal normal medium 18px/24px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+}

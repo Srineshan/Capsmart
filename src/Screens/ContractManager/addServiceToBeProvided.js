@@ -22,6 +22,7 @@ import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import ClinicBlocksFields from './clinicBlocksField';
 import OnCallCoverageFields from './onCallCoverageFields';
 import SupplementalFields from './supplementalFields';
+import AddonClinicFields from './addonClinicFields';
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo }) => {
     const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Clinical Services','Add-On Clinical Services','Administrative / Miscellaneous Services'];
@@ -543,7 +544,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                 </div>
                             </div>
                         </div>
-                        <ClinicBlocksFields />
+                        <AddonClinicFields />
 
                         {(activityOrServiceType === "Medical / Surgical Care Contracted Services" && activityContractedFor === 'Administrative / Miscellaneous Services') ?
                             <div>
