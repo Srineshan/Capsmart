@@ -2064,3 +2064,23 @@ select {
     color: #52575D;
     text-transform: capitalize;
 }
+
+.chipStyle{
+    border-radius: 23px;
+    padding: 5px 10px;
+}
+
+.greenChip{
+    background:  #a3f5c8 0% 0% no-repeat padding-box;
+    color: #14B15A;
+}
+
+.blueChip{
+    background: #DBD8FA 0% 0% no-repeat padding-box;
+    color: #7165E3;
+}
+
+.redChip{
+    background: #f6baa2 0% 0% no-repeat padding-box;
+    color: #FF6F3B;
+}
