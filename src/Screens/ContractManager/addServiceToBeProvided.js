@@ -26,6 +26,11 @@ import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo }) => {
+    const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Clinical Services','Add-On Clinical Services','Administrative / Miscellaneous Services'];
+    const [serviceType, setServiceType] = useState('Clinic Blocks');
+    const [siteList, setSiteList] = useState([]);
+    const [siteData, setSiteData] = useState([]);
+    //old useStates
     const [sendEmailNotification, setSendEmailNotification] = useState(false);
     const [activityType, setActivityType] = useState('OutPatient Surgery Clinic Session');
     const [activityContractedFor, setActivityContractedFor] = useState('');
@@ -69,6 +74,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     let rightHelpArea = helpTool?.calculator || helpTool?.textArea;
 
+    const getSelectedSites = (value) => {
+      setSiteData(value);
+    }
+
     const getSendEmailNotification = (value) => {
         setSendEmailNotification(value)
     }
@@ -81,6 +90,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     useEffect(()=> {
         getContractedServices();
         getUserData();
+        getSites();
     }, [])
 
     useEffect(()=> {
@@ -100,6 +110,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         if(userData){
           setUsers(userData);
         }
+    }
+
+    const getSites = async () => {
+      const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
+      let contractDetail = contractData?.contractDetail;
+      let sites = contractDetail?.site?.sites;
+      if(sites && siteList?.length === 0){
+        setSiteList(sites);
+      }
     }
 
     const handleDutyDays = (value) => {
@@ -420,22 +439,22 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     <div className={style.proofBorder}>
                         <div className={`${style.addManagerGrid} `}>
                             <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
-                            <SiteDepartmentField />
+                            <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites}/>
                         </div>
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
                             <div>
                                 <Select
                                     displayEmpty
-                                    value={activityOrServiceType}
-                                    onChange={(e) => {setActivityOrServiceType(e.target.value);reset();setActivityContractedFor('')}}
+                                    value={serviceType}
+                                    onChange={(e) => {setServiceType(e.target.value)}}
                                     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                     className={`${style.fullWidth}`}
                                 >
-                                    <MenuItem value="">Select Activity /Service Type</MenuItem>
-                                    <MenuItem value={'Medical / Surgical Care Contracted Services'}>Medical / Surgical Care Contracted Services</MenuItem>
-                                    <MenuItem value={'Supplemental Clinical Services'}>Supplemental Clinical Services</MenuItem>
-                                    <MenuItem value={'Add-On Services Allowed Upon Request Approval'}>Add-On Services Allowed Upon Request Approval</MenuItem>
+                                <MenuItem value="">Select Activity /Service Type</MenuItem>
+                                {serviceTypeList?.map(data=>(
+                                  <MenuItem value={data}>{data}</MenuItem>
+                                ))}
                                 </Select>
                             </div>
                         </div>
@@ -515,7 +534,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             className={`${style.switchFontStyle} ${style.flexLeft} `}
                                             label={'YES'}
                                         />
-                                        <div className={`${style.addGrid} ${style.fullWidth}`}> 
+                                        <div className={`${style.addGrid} ${style.fullWidth}`}>
                                             <DatalistInput items={[]} onSelect={() => {}} className={style.fullWidth} />
                                             <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                                                 <AddIcon sx={{ fontSize: 25, color: 'white' }} />
