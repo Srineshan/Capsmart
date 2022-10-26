@@ -8,7 +8,6 @@ import axios from "axios";
 import style from './index.module.scss';
 import jwt from 'jwt-decode';
 
-
 const Login = (props) => {
   const [user,setUser] = useState({email:'',password:''});
   const navigate = useNavigate();

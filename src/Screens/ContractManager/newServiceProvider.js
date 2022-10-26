@@ -161,6 +161,20 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
           "siteLevelResponsible":siteLevel,
         });
 
+        let roles = userDetails?.roles;
+        selectedRoles?.map(data=>{
+          if(!roles?.map(role=>role?.id).includes(data?.id)){
+            roles.push(data);
+          }
+        });
+        let sites = userDetails?.sites?.sites || [];
+        let selectedSite = getSiteData();
+        selectedSite?.map(data=>{
+          if(!sites?.map(site=>site?.id).includes(data?.id)){
+            sites.push(data);
+          }
+        });
+
         const data = {
             "name": {
                 "firstName": userDetails?.firstName,
@@ -185,7 +199,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                 "landlineNumber": "string",
                 "mobileNumberNotApplicable": true
               },
-              "roles": selectedRoles,
+              "roles": roles,
               "address": {
                 "city": address?.city,
                 "state": address?.state,
@@ -195,7 +209,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                 "tenantId": TenantID
               },
               "sites": {
-                "sites": [],
+                "sites": sites,
               },
               "serviceProviderType": providerType,
               "activated": false,

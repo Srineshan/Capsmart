@@ -167,10 +167,10 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                         </div>
                     </>
                 )) : (
-                   <div>
-                        <div className={style.noDataTextStyle}>Bad news!</div>
-                        <p className={style.noDataTextStyle}>no records found so far...</p>
-                   </div>
+                    <div>
+                         <div className={style.noDataTextStyle}>Bad news!</div>
+                         <p className={style.noDataTextStyle}>no records found so far...</p>
+                    </div>
                 )}
             </div>
             <Pagination selectPage={getSelectedPage} totalCount={tableData?.length}/>
