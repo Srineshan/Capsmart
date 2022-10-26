@@ -498,21 +498,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                 <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
                                 <div>
                                     <div className={style.addGrid}>
-                                        <FormControl sx={{ minWidth: 120 }} size="small">
-                                            <Select
-                                                labelId="demo-select-small"
-                                                id="demo-select-small"
-                                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                                displayEmpty
-                                            >
-                                                <MenuItem value="">
-                                                <em>Select Site</em>
-                                                </MenuItem>
-                                                <MenuItem value={10}>Site 1</MenuItem>
-                                                <MenuItem value={20}>Site 2</MenuItem>
-                                                <MenuItem value={30}>Site 3</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <DatalistInput items={[]} onSelect={() => {}} className={style.fullWidth} />
                                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                                             <AddIcon sx={{ fontSize: 25, color: 'white' }} />
                                         </div>
