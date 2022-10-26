@@ -37,6 +37,7 @@ const Contracts = () => {
     const [users, setUsers] = useState([]);
     const [searchKey, setSearchKey] = useState('');
     const [page, setPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
 
     useEffect(()=>{
       getContracts();
@@ -45,11 +46,12 @@ const Contracts = () => {
 
     useEffect(()=>{
       getContracts();
-    },[selectedContract,searchKey])
+    },[selectedContract, searchKey, page])
 
 
     const getSelectedContract = (value) => {
         setSelectedContract(value);
+        setPage(1);
     }
 
     const getContractIdFromActive = (value) => {
@@ -98,7 +100,8 @@ const Contracts = () => {
 
     const getContracts = async() => {
        const {data: contracts} = await GET(`contract-managment-service/contracts?limit=${10}&offset=${page-1}&searchText=${searchKey}&tab=${selectedContract}`);
-       setContracts(contracts);
+       setContracts(contracts?.contractList);
+       setTotalCount(contracts?.numberOfElements);
     };
 
     const getUserData = async () => {
@@ -142,6 +145,8 @@ const Contracts = () => {
                     users={users}
                     getSearchKey={getSearchKey}
                     getSelectedPage={getSelectedPage}
+                    totalCount={totalCount}
+                    page={page}
                      />
 
                 {extensionDialog && (
