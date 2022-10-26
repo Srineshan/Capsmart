@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
+import Popover from '@mui/material/Popover';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
 import style from './index.module.scss';
@@ -17,9 +18,19 @@ const AdministrativeFields = () => {
 
     const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
     const [workingPeriodTo, setWorkingPeriodTo] = useState('');
-    const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
-    const [totalContractedService, setTotalContractedService] = useState(0);
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
 
     const limit5 = 5;
 
@@ -54,17 +65,22 @@ const AdministrativeFields = () => {
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Allowable Administrative Duties & Function To Perform</div>
                 <div>
-                    <div className={style.displayInRow}>
+                    <div className={`${style.displayInRow} ${style.marginBottom10}`}>
                         <FormGroup className={`${style.marginLeft10}`}>
-                            <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">During Normal Working Hours</Typography>} />
+                            <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">Periodic Productivity Data Review (Monthly)</Typography>} />
                         </FormGroup>
-                        <div className={style.redChip}>Monthly</div>
-                        <div className={style.blueChip}>Billable</div>
-                        <div className={style.greenChip}>POD</div>
+                        <div className={`${style.chipStyle} ${style.redChip}`}>Monthly</div>
+                        <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>
+                        <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>
                     </div>
-                    <FormGroup className={`${style.marginLeft10}`}>
-                        <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">After Working Hours</Typography>} />
-                    </FormGroup>
+                    <div className={`${style.displayInRow} ${style.marginBottom10}`}>
+                        <FormGroup className={`${style.marginLeft10}`}>
+                            <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">Credentials Committee Meeting</Typography>} />
+                        </FormGroup>
+                        <div className={`${style.chipStyle} ${style.redChip}`}>Monthly</div>
+                        <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>
+                        <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>
+                    </div>
                 </div>
             </div>
 
@@ -89,7 +105,7 @@ const AdministrativeFields = () => {
 
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Proof Of Completion / Documentation Required</div>
-                    <div className={style.twoCol}>
+                    <div className={style.displayInRow}>
                         <div className={`${style.threeFieldWidth} `}>
                             <FormControlLabel
                                 control={
@@ -99,12 +115,12 @@ const AdministrativeFields = () => {
                                 label={'YES'}
                             />
                         </div>
-                        <div>
+                        <div className={style.threeFieldWidth}>
                             <div className={style.extentionLableStyle}>Contracted Schedule*</div>
                             <Select
                                 displayEmpty
                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                className={`${style.fullWidth} ${style.marginLeft20}`}
+                                className={`${style.fullWidth}`}
                             >
                                 <MenuItem value="">Select Frequecy</MenuItem>
                                 <MenuItem value={'WEEK'}>Per Week</MenuItem>
@@ -128,10 +144,55 @@ const AdministrativeFields = () => {
                 <div className={style.extentionLableStyle}>Allowable Administrative Duties & Function To Perform</div>
                 <div className={`${style.addGrid} ${style.fullWidth}`}>
                     <InputGroup className={style.fullWidth} />
-                    <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                        <AddIcon sx={{ fontSize: 25, color: 'white' }} />
+                    <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`} >
+                        <AddIcon sx={{ fontSize: 25, color: 'white' }}  aria-describedby={id} onClick={(e) => handleClick(e)}/>
                     </div>
                 </div>
+                {/* <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    >
+                    <div className={style.administrativePopoverStyle}>
+                        <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter}`}>
+                            <FormGroup>
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">All Activities</Typography>} />
+                            </FormGroup>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter} ${style.selectedAdministrativeCardStyle}`}>
+                            <FormGroup>
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#7165E3">Administrative & Business Reports Creation</Typography>} />
+                            </FormGroup>
+                            <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>
+                            <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter}`}>
+                            <FormGroup>
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">Administrative & Business Records Maintenance</Typography>} />
+                            </FormGroup>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter}`}>
+                            <FormGroup>
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">Credentials Committee Meeting</Typography>} />
+                            </FormGroup>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter} ${style.selectedAdministrativeCardStyle}`}>
+                            <FormGroup>
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#7165E3">Corrective Action Plan Participation</Typography>} />
+                            </FormGroup>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter}`}>
+                            <FormGroup>
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">Contractor Clinic / OR Schedule Maintenance (Weekly)</Typography>} />
+                            </FormGroup>
+                        </div>
+                    </div>
+                </Popover> */}
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

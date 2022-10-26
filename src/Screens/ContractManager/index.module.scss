@@ -39,6 +39,10 @@ body{
     margin-top: 10px !important;
 }
 
+.marginBottom10{
+    margin-bottom: 10px !important;
+}
+
 .marginTop15{
     margin-top: 15px !important;
 }
@@ -2068,6 +2072,8 @@ select {
 .chipStyle{
     border-radius: 23px;
     padding: 5px 10px;
+    margin-right: 10px;
+    max-height: 30px;
 }
 
 .greenChip{
@@ -2083,4 +2089,18 @@ select {
 .redChip{
     background: #f6baa2 0% 0% no-repeat padding-box;
     color: #FF6F3B;
+}
+
+.administrativePopoverStyle{
+    margin: 20px;
+}
+
+.administrativeCardStyle{
+    height: 40px;
+}
+
+.selectedAdministrativeCardStyle{
+    background-color: #ebe9fb;
+    margin: 0 -20px;
+    padding: 0 20px;
 }
