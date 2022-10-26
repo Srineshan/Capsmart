@@ -27,9 +27,14 @@ import AdministrativeFields from './administrativeFields';
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo }) => {
     const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Clinical Services','Add-On Clinical Services','Administrative / Miscellaneous Services'];
+    const siteTypeId = sessionStorage.getItem('entityTypeId');
     const [serviceType, setServiceType] = useState('Clinic Blocks');
     const [siteList, setSiteList] = useState([]);
     const [siteData, setSiteData] = useState([]);
+    const [activity, setActivity] = useState([]);
+    const [activity, setSelectedActivity] = useState([]);
+    const [locationList, setLocationList] = useState([]);
+    const [selectedLocation, setSelectedLocation] = useState([]);
     //old useStates
     const [sendEmailNotification, setSendEmailNotification] = useState(false);
     const [activityType, setActivityType] = useState('OutPatient Surgery Clinic Session');
@@ -78,6 +83,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setSiteData(value);
     }
 
+    console.log('selectedSites', siteData);
+
     const getSendEmailNotification = (value) => {
         setSendEmailNotification(value)
     }
@@ -99,6 +106,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             setContractedServiceProvider(users[0]?.id);
         }
     }, [selectContractInfo, users])
+
+    const getActivityList = async() => {
+      const {data: activityList} = await GET(`contract-managmenet-service/contracts/siteType/${siteTypeId}/activity`);
+      setActivity(activityList);
+    }
+
+    const getLocations = async() => {
+      const {data: location} = await GET(`contract-managment-service/contracts/site/${siteData?.map(data=>data?.id)[0]}/location`);
+      setLocationList(location);
+    }
 
     const getContractedServices = async() => {
         const {data: contractedServices} = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
@@ -545,7 +562,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                 </div>
                             </div>
                         </div>
-                        <AdministrativeFields />
+
+                        {serviceType === 'Clinic Blocks' || serviceType === 'Surgery Session'
+                        ? <ClinicBlocksFields />
+                        : serviceType === 'On Call Coverage Duty Days'
+                        ? <OnCallCoverageFields/>
+                        : serviceType === 'Supplemental Clinical Services'
+                        ? <SupplementalFields />
+                        : serviceType === 'Add-On Clinical Services'
+                        ? <AddonClinicFields />
+                        : <AdministrativeFields />}
 
                         {(activityOrServiceType === "Medical / Surgical Care Contracted Services" && activityContractedFor === 'Administrative / Miscellaneous Services') ?
                             <div>
