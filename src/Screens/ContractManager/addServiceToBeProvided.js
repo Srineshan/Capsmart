@@ -22,6 +22,7 @@ import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import ClinicBlocksFields from './clinicBlocksField';
 import OnCallCoverageFields from './onCallCoverageFields';
 import SupplementalFields from './supplementalFields';
+import AddonClinicFields from './addonClinicFields';
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo }) => {
     const [sendEmailNotification, setSendEmailNotification] = useState(false);
@@ -524,7 +525,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                 </div>
                             </div>
                         </div>
-                        <SupplementalFields />
+                        <AddonClinicFields />
 
                         {(activityOrServiceType === "Medical / Surgical Care Contracted Services" && activityContractedFor === 'Administrative / Miscellaneous Services') ?
                             <div>
