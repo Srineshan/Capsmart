@@ -80,6 +80,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
 
     useEffect(()=>{
       getContractDetail();
+      getContractId(createdContractId);
     },[createdContractId])
 
     useEffect(()=>{
@@ -211,7 +212,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
 
 
       let data = {
-        ...( method !== 'POST' && {'id':createdContractId}),
+        ...(createdContractId !== '' && method !== 'POST' && {'id':createdContractId}),
         "contractName": {
           "contractName": contractName
         },
@@ -274,7 +275,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
         }));
         console.log('file Data',file);
        formData.append('contractFiles',file);
-       if(method === 'POST'){
+       if(method === 'POST' && contractIdFromActive === ''){
          await POST('contract-managment-service/contracts/contractDetail',formData)
          .then(response=>{getContractId(response?.data);
          SuccessToaster('Contract Created Successfully');
@@ -282,7 +283,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
          ErrorToaster('Unexpected Error Creating Contract');
        })
      }else{
-       await PUT(`contract-managment-service/contracts/${createdContractId}/contractDetail`,formData)
+       await PUT(`contract-managment-service/contracts/${contractIdFromActive}/contractDetail`,formData)
        .then(response=>{
        SuccessToaster('Contract Updated Successfully');
      }).catch(error=>{

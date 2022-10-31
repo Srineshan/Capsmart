@@ -15,14 +15,13 @@ import LeftStatsCard from '../../Components/LeftStatsCard';
 
 import style from './index.module.scss';
 
-const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelectedContract,getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage}) => {
+const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelectedContract,getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page}) => {
     const activeHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "CONTRACTORS", "EFFECTIVE DATE", "POD STATUS", "MANAGER", "LAST UPDATED", "ACTION"];
     const draftHeaderValues =  ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "MANAGER", "LAST UPDATED", "LAST UPDATED BY", "ACTION"];
     const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "MANAGER", "LAST UPDATE", "ACTION"];
     const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "EXPIRATION DATE", "MANAGER", "LAST UPDATE"];
     const currentUserData = currentUser();
     const [metadata, setMetadata] = useState();
-    console.log(currentUser());
     const activateContracts = async(data) => {
       let status = 'ACTIVE';
       let activationData = {
@@ -175,7 +174,8 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
         {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'}]
 
     const draftActionsData = [{'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
-        {'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id'}]
+        {'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id'},
+        {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}]
 
 
     const handleAddContract = () => {
@@ -223,6 +223,8 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
                         gridStyle={gridStyle}
                         actions={actions}
                         getSelectedPage={getSelectedPage}
+                        totalCount={totalCount}
+                        page={page}
                     />
                 </div>
             </div>

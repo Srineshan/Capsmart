@@ -7,10 +7,22 @@ const DeleteDraftContract = ({getDeleteDraftDialog}) => {
         <Dialog isOpen={getDeleteDraftDialog} onClose={() => getDeleteDraftDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
           <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
             <div className={style.spaceBetween}>
-                <p className={style.extensionStyle}>Delete Draft Contract</p>
+                <p className={`${style.popUpHeading}`}>Are You Sure You Want To Delete This Draft Contract?</p>
                 <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getDeleteDraftDialog(false)}  />
             </div>
             <div className={style.extensionBorder}></div>
+            <div className={`${style.popUpHeaderBlock} ${style.marginTop}`}>
+              <div>
+                <p className={style.extentionLableStyle}>New Contract with No Prior Contract(s) with Entity</p>
+                <p className={style.extentionLableStyle}>PAMF CONTRACT (0043245)</p>
+                <p className={style.extentionLableStyle}>MULTIPLE CONTRACTORS (23)</p>
+              </div>
+              <div>
+                <p className={style.extentionLableStyle}>Ranjith T (Contract Manager)</p>
+                <p className={style.extentionLableStyle}>SITE NAME ONLY IF MULTISITE</p>
+                <p className={style.extentionLableStyle}>LAST UPDATED ON 09-23-2022</p>
+              </div>
+            </div>
             <div className={style.spaceBetween}>
                 <p className={style.extensionOptionsStyle}>PAMF CONTRACT (0043245)</p>
                 <p className={style.extensionOptionsStyle}>MULTIPLE CONTRACTORS (34)</p>

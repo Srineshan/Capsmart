@@ -6,7 +6,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Pagination from './../Pagination';
 import style from './index.module.scss';
 
-const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage }) => {
+const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -167,13 +167,13 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                         </div>
                     </>
                 )) : (
-                   <div>
-                        <div className={style.noDataTextStyle}>Bad news!</div>
-                        <p className={style.noDataTextStyle}>no records found so far...</p>
-                   </div>
+                    <div>
+                         <div className={style.noDataTextStyle}>Bad news!</div>
+                         <p className={style.noDataTextStyle}>no records found so far...</p>
+                    </div>
                 )}
             </div>
-            <Pagination selectPage={getSelectedPage} totalCount={tableData?.length}/>
+            <Pagination selectPage={getSelectedPage} totalCount={totalCount||tableData?.length} selectedPage={page||1}/>
             {
               // <div className={style.spaceBetween}>
               //     <p></p>

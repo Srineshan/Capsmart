@@ -1937,3 +1937,21 @@ select {
   grid-template-columns: 60px 40px;
   grid-gap: 10px;
 }
+
+.popUpHeading{
+  font: bold 18px/15px Montserrat;
+  color: #7165E3;
+}
+
+.popUpHeaderBlock{
+  display:grid;
+  width:100%;
+  height:auto;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 50px;
+  background-color: #DBD8FA;
+  border: 3px solid #EBF2F7;
+  border-radius: 2px;
+  opacity: 1;
+  padding: 10px;
+}

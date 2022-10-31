@@ -241,6 +241,7 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                     getCurrentPage={getCurrentPage}
                     selectContractInfo={selectContractInfo}
                     contractId = {contractId}
+                    contractName={contractName}
                      />
                 ) : currentPage === "Timesheet Submission Terms"  ? (
                     <TimeSheetSubmissionTerms
