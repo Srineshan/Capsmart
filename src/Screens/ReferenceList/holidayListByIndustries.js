@@ -2,8 +2,9 @@ import React, { Fragment, useEffect, useState } from 'react';
 import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
 import SideBar from './../../Components/Sidebar';
 import { Icon, Intent } from "@blueprintjs/core";
-import style from './index.module.scss';
 import AddCompanyHoliday from './addCompanyHoliday';
+import {format} from 'date-fns';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import AddNewEntity from './../../images/addEntity.png';
 import AddRefresh from './../../images/refreshEntity.png';
 import OpenFolder from './../../images/openFolder.png';
@@ -13,35 +14,71 @@ import IndustriesEntityFolder from './../../images/industriesEntityFolder.png';
 import SemiTransparentFolder from './../../images/semiTransparentFolder.png';
 import TransparentFolder from './../../images/transparentFolder.png';
 import ArrowDown from './../../images/arrowDown.png';
-import EditHcFolder from './../../images/editHcFolder.png';
-import DeleteHcFolder from './../../images/deleteHcFolder.png';
 import DeleteHcRow from './../../images/deleteHcRow.png';
 import EditHcRow from './../../images/editHcRow.png';
-import {GET} from './../dataSaver'
+import {GET, DELETE} from './../dataSaver'
+import DeleteConfirmation from '../../Components/DeleteConfirmation';
+
+import style from './index.module.scss';
 
 const BoardCertification = () => {
     const [showAddCompanyHolidayDialog, setShowAddCompanyHolidayDialog] = useState(false);
-    const [industryTypes,setIndustryTypes] = useState([])
+    const [industryTypes,setIndustryTypes] = useState([]);
+    const [selectedIndustry, setSelectedIndustry] = useState({});
+    const [holidayData, setHolidayData] = useState([]);
+    const [country, setCountry] = useState("USA");
+    const [isEdit, setIsEdit] = useState(false);
+    const [selectedHoliday, setSelectedHoliday] = useState({});
+    const [holidayId, setHolidayId] = useState('');
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
     const getAddCompanyHolidayDialog = (value) => {
         setShowAddCompanyHolidayDialog(value);
     }
 
+    const getIndustryData = async() => {
+        const {data : data} = await GET (`entity-service/industryMaster`);
+        setSelectedIndustry(data?.filter(data => data?.industry === 'HEALTHCARE')?.map(data => data));
+    }
+
     const getHolidayData = async() => {
-        const {data : data} = await GET (`/industryMaster`);
-        console.log(data)
-        data.forEach(async(industry) => {
-            const {data : holidayData} = await GET (`/holidayMaster?industryId=${industry.id}&country=string`);
-            setIndustryTypes((prev=>[...prev, { industry, holidayData }]));
-           console.log(industryTypes)
-        });
+        const {data : holidayData} = await GET (`entity-service/holidayMaster?industryId=${selectedIndustry[0].id}&country=${country}`);
+        setHolidayData(holidayData?.filter(data => data?.country === 'USA')?.map(data => data));
+    };
 
-  }
+    const handleDelete = () => {
+        setShowDeleteConfirmation(true);
+    }
 
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    }
+
+    const getDeleteConfirmation = (value) => {
+        if(value){
+            deleteHoliday(holidayId);
+        }
+    }
+
+    const deleteHoliday = async(id) => {
+        await DELETE(`entity-service/holidayMaster/${id}`)
+        .then(response=>{
+        SuccessToaster('Holiday Deleted Successfully');
+        })
+        .catch(error => {
+            ErrorToaster(error);
+        })
+        getHolidayData();
+    }
 
     useEffect(()=>{
         getHolidayData()
+    },[selectedIndustry, showAddCompanyHolidayDialog])
+
+    useEffect(()=>{
+        getIndustryData()
     },[])
+
 
     return (
         <Fragment>
@@ -101,78 +138,20 @@ const BoardCertification = () => {
                                             </div>
                                             <div className={style.holidayFolderHeader}>
                                                 <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                <p className={style.tableHeaderIndustriesFontStyle}>Country Name 2021</p>
+                                                <p className={style.tableHeaderIndustriesFontStyle}>USA 2022</p>
                                             </div>
-                                            <div className={`${style.holidayScheduleTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>New Year’s Day</p>
-                                                <p className={style.tableDataFontStyle}>January 1, 2021</p>
-                                                <p className={style.tableDataFontStyle}>Friday</p>
-                                                <p className={style.tableDataFontStyle}>Federal</p>
-                                                <p></p>
-                                                <img src={EditHcRow} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={`${style.holidayScheduleTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Martin Luther King Jr. Day</p>
-                                                <p className={style.tableDataFontStyle}>January 18, 2021</p>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Federal</p>
-                                                <p></p>
-                                                <img src={EditHcRow} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={`${style.holidayScheduleTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Valentine’s Day</p>
-                                                <p className={style.tableDataFontStyle}>February 14, 2021</p>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Federal</p>
-                                                <p></p>
-                                                <img src={EditHcRow} className={style.colorFileStyle} />
-                                                <img src={DeleteHcFolder} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={`${style.holidayScheduleTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Washington’s Birthday</p>
-                                                <p className={style.tableDataFontStyle}>February 15, 2021</p>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Federal</p>
-                                                <p></p>
-                                                <img src={EditHcRow} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={`${style.holidayScheduleTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Tax Day</p>
-                                                <p className={style.tableDataFontStyle}>April 15, 2021</p>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>State</p>
-                                                <p className={style.tableDataFontStyle}>Louisiana</p>
-                                                <img src={EditHcRow} className={style.colorFileStyle} />
-                                                <img src={DeleteHcFolder} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={`${style.holidayScheduleTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Mothers Day</p>
-                                                <p className={style.tableDataFontStyle}>April 21, 2021</p>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Federal</p>
-                                                <p></p>
-                                                <img src={EditHcRow} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={`${style.holidayScheduleTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Independence Day</p>
-                                                <p className={style.tableDataFontStyle}>July 4, 2021</p>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Federal</p>
-                                                <p></p>
-                                                <img src={EditHcRow} className={style.colorFileStyle} />
-                                                <img src={DeleteHcFolder} className={style.colorFileStyle} />
-                                            </div>
+                                            {holidayData?.map((data, index) => (
+                                                <div className={`${style.holidayScheduleTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`} key={index}>
+                                                    <p></p>
+                                                    <p className={style.tableDataFontStyle}>{data?.eventName}</p>
+                                                    <p className={style.tableDataFontStyle}>{format(new Date(data?.eventDate), 'MMMM d, yyyy')}</p>
+                                                    <p className={style.tableDataFontStyle}>{format(new Date(data?.eventDate), 'EEEE')}</p>
+                                                    <p className={style.tableDataFontStyle}>{data?.eventType}</p>
+                                                    <p className={style.tableDataFontStyle}>{data?.stateName}</p>
+                                                    <img src={EditHcRow} className={style.colorFileStyle} onClick={() => {setIsEdit(true);setSelectedHoliday(data);setShowAddCompanyHolidayDialog(true)}} />
+                                                    <img src={DeleteHcRow} className={style.colorFileStyle} onClick={() => {handleDelete();setHolidayId(data?.id)}} />
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
@@ -185,7 +164,8 @@ const BoardCertification = () => {
                     <p className={style.poweredBy}>© TimeSmart.AI</p>
                 </div>
             </div>
-            {showAddCompanyHolidayDialog && <AddCompanyHoliday getAddCompanyHolidayDialog={getAddCompanyHolidayDialog} />}
+            {showAddCompanyHolidayDialog && <AddCompanyHoliday getAddCompanyHolidayDialog={getAddCompanyHolidayDialog} selectedIndustry={selectedIndustry} isEdit={isEdit} selectedHoliday={selectedHoliday} />}
+            {showDeleteConfirmation && <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation} getDeleteConfirmation={getDeleteConfirmation} confirmationText="Do you want to delete this hoiday?" />}
         </Fragment>
 
     )

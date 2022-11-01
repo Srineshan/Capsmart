@@ -1585,7 +1585,7 @@
     display: grid;
     align-items: center;
     margin-top: 4px;
-    grid-template-columns: 3%  20% 30% 5% 38% 10% 5%;
+    grid-template-columns: 20% 30% 20% 20% 5% 5%;
 }
 
 .holidayScheduleTableData2 {
@@ -1613,7 +1613,6 @@
     letter-spacing: 0px;
     color: #B3B8BD;
     opacity: 1;
-    margin-top: 10px;
 }
 
 .holidayScheduleHeadertextStyle1 {
@@ -1989,26 +1988,6 @@
 
 }
 
-//ScrollBar
-
-.scrollbar{
-    overflow: auto;
+.transparentBackground{
+    background-color: transparent !important;
 }
-
-.scrollbar{
-    &::-webkit-scrollbar {
-      border-radius: 10px;
-      height: 10px;
-      width: 8px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: #999;
-      border-radius: 10px;
-    }
-
-    &::-webkit-scrollbar-track {
-      border-radius: 10px;
-    }
-  }
-.TextStyle4 {}

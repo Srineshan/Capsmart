@@ -1,8 +1,7 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
 import SideBar from './../../Components/Sidebar';
 import { Checkbox, Icon, Intent } from "@blueprintjs/core";
-import style from './index.module.scss';
 import AddNewEntity from './../../images/addEntity.png';
 import SelectArrow from './../../images/selectArrow.png';
 import OpenFolderBlue from './../../images/openFolderBlue.png';
@@ -12,14 +11,135 @@ import DeleteHcRow from './../../images/deleteHcRow.png';
 import EditHcRow from './../../images/editHcRow.png';
 import CrossPink from './../../images/crossPink.png';
 import AddCompanyHolidayForCustomer from './addCompanyHolidayForCustomer';
+import {GET, DELETE, POST, TenantID} from './../dataSaver';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { Link } from 'react-router-dom';
+import {format} from 'date-fns';
+import DeleteConfirmation from '../../Components/DeleteConfirmation';
+
+import style from './index.module.scss';
 
 const HolidayScheduleForCustomers = () => {
     const [isSelected, setIsSelected] = useState(false);
     const [showAddCompanyDialog, setShowAddCompanyDialog] = useState(false);
+    const [holidayData, setHolidayData] = useState([]);
+    const [holidayCustomerData, setHolidayCustomerData] = useState([]);
+    const [selectedIndustry, setSelectedIndustry] = useState({});
+    const [country, setCountry] = useState("USA");
+    const [isOpenLeftFolder, setIsOpenLeftFolder] = useState(false);
+    const [leftFolderOpenIndex, setLeftFolderOpenIndex] = useState(0);
+    const [uniqueYears, setUniqueYears] = useState([]);
+    const [customerUniqueYears, setCustomerUniqueYears] = useState([]);
+    const [selectedHolidays, setSelectedHolidays] = useState([]);
+    const [isEdit, setIsEdit] = useState(false);
+    const [selectedHoliday, setSelectedHoliday] = useState({});
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [holidayId, setHolidayId] = useState('');
 
     const getAddCompanyHolidayDialog = (value) => {
         setShowAddCompanyDialog(value);
+    }
+
+    const getIndustryData = async() => {
+        const {data : data} = await GET (`entity-service/industryMaster`);
+        setSelectedIndustry(data?.filter(data => data?.industry === 'HEALTHCARE')?.map(data => data));
+    }
+
+    const getHolidayMasterData = async() => {
+        const {data : holidayData} = await GET (`entity-service/holidayMaster?industryId=${selectedIndustry[0].id}&country=${country}`);
+        setHolidayData(holidayData?.filter(data => data?.country === 'USA')?.map(data => data));
+    };
+
+    const getHolidayData = async() => {
+        const {data : holidayData} = await GET (`entity-service/holiday`);
+        setHolidayCustomerData(holidayData?.filter(data => data?.country === 'USA')?.map(data => data));
+    };
+
+    const handleDelete = (id) => {
+        setHolidayId(id);
+        setShowDeleteConfirmation(true);
+    }
+
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    }
+
+    const getDeleteConfirmation = (value) => {
+        if(value){
+            deleteHoliday(holidayId);
+        }
+    }
+
+    const deleteHoliday = async(id) => {
+        await DELETE(`entity-service/holiday/${id}`)
+        .then(response=>{
+        SuccessToaster('Holiday Deleted Successfully');
+        })
+        .catch(error => {
+            ErrorToaster(error);
+        })
+        getHolidayData();
+    }
+
+    useEffect(()=>{
+        getHolidayMasterData()
+    },[selectedIndustry])
+
+    useEffect(()=>{
+        getIndustryData();
+    },[]);
+
+    useEffect(()=>{
+        getHolidayData();
+    },[showAddCompanyDialog])
+
+    useEffect(()=>{
+        let allYears = [];
+        holidayData?.map(data => 
+            allYears?.push(format(new Date(data?.eventDate), 'yyyy'))
+        );
+        setUniqueYears(Array.from(new Set(allYears.map((item) => item))));
+    },[holidayData])
+
+    useEffect(()=>{
+        let allYears = [];
+        holidayCustomerData?.map(data => 
+            allYears?.push(format(new Date(data?.eventDate), 'yyyy'))
+        );
+        setCustomerUniqueYears(Array.from(new Set(allYears.map((item) => item))));
+    },[holidayCustomerData])
+
+    const handleSelectHolidays = (e, innerData) => {
+        if(e.target.checked){
+            setSelectedHolidays([...selectedHolidays, innerData])
+        } else {
+            setSelectedHolidays(selectedHolidays?.filter(data => data?.eventName !== innerData?.eventName)?.map(data => data));
+        }
+    }
+
+    const handleSave = async () => {
+        let data = [];
+        selectedHolidays?.map(holidayData => 
+            data?.push({
+                "eventType": holidayData?.eventType,
+                "stateName": holidayData?.stateName,
+                "eventName": holidayData?.eventName,
+                "eventDate": holidayData?.eventDate,
+                "country": holidayData?.country,
+                "entityId": {
+                    "id": TenantID
+                }
+            })
+        )
+        console.log(data)
+        await POST('entity-service/holiday', JSON.stringify(data))
+        .then(response => {
+            SuccessToaster('Event Added Successfully');
+            getHolidayData();
+        })
+        .catch(error => {
+            ErrorToaster(error);
+        })
     }
 
     return (
@@ -51,69 +171,28 @@ const HolidayScheduleForCustomers = () => {
                                                     <p className={`${style.holidayScheduleHeadertextStyle1} ${style.marginLeft20}`}>STANDARD LIST IN USE- DEFAULT</p>
                                                 </div>
                                                 <div className={style.customersAdminCardStyle1}>
-                                                    <div className={`${style.boardCertificationSideRows} ${style.displayInRow}`}>
-                                                        <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                        <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft10} ${style.marginTop10}`}>2021</p>
-                                                        <img src={OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} `} />
-                                                    </div>
-                                                    {isSelected ? ""
-                                                        :
-                                                        <div className={`${style.boardCertificationSideRows} ${style.displayInRow}`}>
-                                                            <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                            <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft10} ${style.marginTop10}`}>2022</p>
-                                                            <img src={CloseFolderBlue} alt="CloseFolder" className={`${style.colorFileStyle2} `} />
-                                                        </div>
-                                                    }
-                                                    <div className={`${style.holidayInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}  ${style.customersAdminBackground2} `}>
-                                                        {isSelected ? <Checkbox />
-                                                            :
-                                                            <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginBottom}`} />
-                                                        }
-                                                        <div className={style.spaceBetween}>
-                                                            <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft10}`}>New Year’s Day</p>
-                                                            <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}>January 1, 2021</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className={`${style.holidayInnerRowsStyle1} ${style.customersAdminBackground3} ${style.displayInRow}`}>
-                                                        <Checkbox />
-                                                        <div className={style.spaceBetween}>
-                                                            <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}>Martin Luther King Jr. Day</p>
-                                                            <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}>January 18, 2021</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className={`${style.holidayInnerRowsStyle1} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                        <Checkbox />
-                                                        <div className={style.spaceBetween}>
-                                                            <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}>Valentine’s Day</p>
-                                                            {isSelected ?
-                                                                <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}>January 18, 2021</p>
-                                                                : ""
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                    <div className={`${style.holidayInnerRowsStyle1} ${style.customersAdminBackground3} ${style.displayInRow}`}>
-                                                        <Checkbox />
-                                                        <div className={style.spaceBetween}>
-                                                            <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}>Washington’s Birthday</p>
-                                                            {isSelected ?
-                                                                <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}>January 18, 2021</p>
-                                                                : ""
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                    <div className={`${style.holidayInnerRowsStyle1} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                        <Checkbox />
-                                                        <div className={style.spaceBetween}>
-                                                            <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}>Independence Day</p>
-                                                            {isSelected ?
-                                                                <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}>January 18, 2021</p>
-                                                                : ""
-                                                            }
-                                                        </div>
-                                                    </div>
+                                                    {uniqueYears?.map((data, index) => (
+                                                        <>
+                                                            <div className={`${style.boardCertificationSideRows} ${style.displayInRow}`}>
+                                                                <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} />
+                                                                <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft10} ${style.marginTop10}`}>{data}</p>
+                                                                <img src={(isOpenLeftFolder && leftFolderOpenIndex === index) ? CloseFolderBlue : OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} `} onClick={() => {setIsOpenLeftFolder(!isOpenLeftFolder); setLeftFolderOpenIndex(index)}} />
+                                                            </div>
+                                                            {(isOpenLeftFolder && leftFolderOpenIndex === index) && holidayData?.map((innerData, index) => (
+                                                                format(new Date(innerData?.eventDate), 'yyyy') === data &&
+                                                                <div className={`${style.holidayInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}  ${style.customersAdminBackground2} `} key={index}>
+                                                                    <Checkbox checked={selectedHolidays?.some(data => data?.eventName === innerData?.eventName)} onChange={(e) => handleSelectHolidays(e, innerData)} />
+                                                                    <div className={style.spaceBetween}>
+                                                                        <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft10}`}>{innerData?.eventName}</p>
+                                                                        <p className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}>{format(new Date(innerData?.eventDate), 'MMMM d, yyyy')}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </>
+                                                    ))}
                                                 </div>
                                             </div>
-                                            <div className={style.customersAdminCardStyle2} onClick={() => setIsSelected(true)}>
+                                            <div className={style.customersAdminCardStyle2} onClick={() => handleSave()}>
                                                 <p className={`${style.holidayScheduleHeadertextStyle1} ${style.colorWhite} ${style.marginTop3}`}>Select</p>
                                                 <img src={SelectArrow} className={`${style.colorFileStyle4}`} />
                                             </div>
@@ -127,83 +206,33 @@ const HolidayScheduleForCustomers = () => {
                                                     </div>
                                                 }
                                                 <div>
-                                                    {isSelected ?
+                                                    {holidayCustomerData?.length !== 0 ?
                                                         <div>
                                                             <div className={style.holidayRightCardStyle}>
                                                                 <div className={style.tableHeaderTwoColumnsfrontRear}>
                                                                     <p className={style.tableHeaderIndustriesFontStyle2}>HOLIDAY SCHEDULE BY HEALTHCARE</p>
                                                                 </div>
-                                                                <div className={`${style.holidayFolderHeader} ${style.marginTop2}`}>
-                                                                    <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft10}`} />
-                                                                    <p className={`${style.tableHeaderIndustriesFontStyle3}  ${style.marginLeft20}`}> 2021</p>
-                                                                    <p></p>
-                                                                    <img src={AddNewEntity} className={`${style.colorFileStyle}`} onClick={() => getAddCompanyHolidayDialog(true)} />
-                                                                </div>
-                                                                <div className={`${style.holidayScheduleTableData1} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>January 18 </p>
-                                                                    <p className={style.tableDataFontStyle}>Martin Luther King Jr. Day</p>
-
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>Federal</p>
-                                                                    <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                                </div>
-                                                                <div className={`${style.holidayScheduleTableData1} ${style.customersAdminBackground3} ${style.displayInRow}`}>
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>February 14</p>
-                                                                    <p className={style.tableDataFontStyle}> Valentine’s Day</p>
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>Federal</p>
-                                                                    <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                                </div>
-                                                                <div className={`${style.holidayScheduleTableData1} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>August 15</p>
-                                                                    <p className={style.tableDataFontStyle}>Independence Day</p>
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>Federal</p>
-                                                                    <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                                </div>
-                                                                <div className={`${style.holidayFolderHeader} ${style.marginTop3}  ${style.marginBottom5}`}>
-                                                                    <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft10}`} />
-                                                                    <p className={`${style.tableHeaderIndustriesFontStyle3}  ${style.marginLeft20}`}> 2022</p>
-                                                                    <p></p>
-                                                                    <img src={AddNewEntity} className={`${style.colorFileStyle}`} onClick={() => getAddCompanyHolidayDialog(true)} />
-                                                                </div>
-                                                                <div className={`${style.holidayScheduleTableData1} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>January 18 </p>
-                                                                    <p className={style.tableDataFontStyle}>Martin Luther King Jr. Day</p>
-
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>Federal</p>
-                                                                    <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                                </div>
-                                                                <div className={`${style.holidayScheduleTableData1} ${style.customersAdminBackground3} ${style.displayInRow}`}>
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>February 14</p>
-                                                                    <p className={style.tableDataFontStyle}> Valentine’s Day</p>
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>Federal</p>
-                                                                    <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                                </div>
-                                                                <div className={`${style.holidayScheduleTableData2} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>April 15</p>
-                                                                    <p className={style.tableDataFontStyle}>Tax Day</p>
-
-                                                                    <p className={style.tableDataFontStyle}>State</p>
-                                                                    <p className={style.tableDataFontStyle}>Louisiana</p>
-                                                                    <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                                </div>
-                                                                <div className={`${style.holidayScheduleTableData1} ${style.customersAdminBackground3} ${style.displayInRow} ${style.marginBottom50}`}>
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>September 22</p>
-                                                                    <p className={style.tableDataFontStyle}> Office Anniversary</p>
-                                                                    <p></p>
-                                                                    <p className={style.tableDataFontStyle}>Federal</p>
-                                                                    <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                                </div>
+                                                                {customerUniqueYears?.map((data, index) => (
+                                                                    <>
+                                                                        <div className={`${style.holidayFolderHeader} ${style.marginTop2}`}>
+                                                                            <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft10}`} />
+                                                                            <p className={`${style.tableHeaderIndustriesFontStyle3}  ${style.marginLeft20}`}> {data}</p>
+                                                                            <p></p>
+                                                                            <img src={AddNewEntity} className={`${style.colorFileStyle}`} onClick={() => getAddCompanyHolidayDialog(true)} />
+                                                                        </div>
+                                                                        {holidayCustomerData?.map((innerData) => (
+                                                                        format(new Date(innerData?.eventDate), 'yyyy') === data &&
+                                                                            <div className={`${style.holidayScheduleTableData1} ${style.customersAdminBackground2} ${style.displayInRow}`}>
+                                                                                <p className={style.tableDataFontStyle}>{format(new Date(innerData?.eventDate), 'MMMM d')} </p>
+                                                                                <p className={style.tableDataFontStyle}>{innerData?.eventName}</p>
+                                                                                <p className={style.tableDataFontStyle}>{innerData?.stateName}</p>
+                                                                                <p className={style.tableDataFontStyle}>{innerData?.eventType}</p>
+                                                                                <img src={EditHcRow} className={style.colorFileStyle} onClick={() => {setIsEdit(true);setSelectedHoliday(innerData);setShowAddCompanyDialog(true)}} />
+                                                                                <img src={DeleteHcRow} className={style.colorFileStyle} onClick={() => {handleDelete(innerData?.id)}} />
+                                                                            </div>
+                                                                        ))}
+                                                                    </>
+                                                                ))}
                                                             </div>
                                                         </div>
                                                         :
@@ -232,7 +261,8 @@ const HolidayScheduleForCustomers = () => {
                 </div>
             </div>
 
-            {showAddCompanyDialog && <AddCompanyHolidayForCustomer getAddCompanyHolidayDialog={getAddCompanyHolidayDialog} />}
+            {showAddCompanyDialog && <AddCompanyHolidayForCustomer getAddCompanyHolidayDialog={getAddCompanyHolidayDialog} isEdit={isEdit} selectedHoliday={selectedHoliday} />}
+            {showDeleteConfirmation && <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation} getDeleteConfirmation={getDeleteConfirmation} confirmationText="Do you want to delete this hoiday?" />}
         </Fragment>
 
     )
