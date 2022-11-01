@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
+import Navbar from '../../Components/Navbar';
 import SideBar from './../../Components/Sidebar';
 import { Checkbox, Icon, Intent } from "@blueprintjs/core";
 import AddNewEntity from './../../images/addEntity.png';
@@ -145,7 +145,7 @@ const HolidayScheduleForCustomers = () => {
     return (
         <Fragment>
             <div>
-                <ReferenceListNavbar />
+                <Navbar />
                 <div className={style.margin20}>
                     <div className={style.bigCardGrid}>
                         <SideBar />

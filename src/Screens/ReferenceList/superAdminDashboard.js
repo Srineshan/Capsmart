@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
+import Navbar from '../../Components/Navbar';
 import SideBar from './../../Components/Sidebar';
 import style from './index.module.scss';
 import { Icon, Intent } from "@blueprintjs/core";
@@ -15,7 +15,7 @@ const SuperAdminDashboard = () => {
 
     return (
         <Fragment>
-            <ReferenceListNavbar />
+            <Navbar />
             <div className={style.margin20}>
                 <div className={style.bigCardGrid}>
                     <SideBar />

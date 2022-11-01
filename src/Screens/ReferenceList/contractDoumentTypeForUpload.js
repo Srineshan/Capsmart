@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { Link } from 'react-router-dom';
-import ReferenceListNavbar from "../../Components/ReferenceListNavbar";
+import Navbar from '../../Components/Navbar';
 import SideBar from "../../Components/Sidebar";
 import { Icon, Intent } from "@blueprintjs/core";
 import style from './index.module.scss';
@@ -24,7 +24,7 @@ const ContractDocumentTypeForUpload = () => {
     }
     return (
         <Fragment>
-            <ReferenceListNavbar />
+            <Navbar />
             <div className={style.margin20}>
                 <div className={style.bigCardGrid}>
                     <SideBar />

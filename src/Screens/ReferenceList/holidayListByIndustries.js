@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
+import Navbar from '../../Components/Navbar';
 import SideBar from './../../Components/Sidebar';
 import { Icon, Intent } from "@blueprintjs/core";
 import AddCompanyHoliday from './addCompanyHoliday';
@@ -82,7 +82,7 @@ const BoardCertification = () => {
 
     return (
         <Fragment>
-            <ReferenceListNavbar />
+            <Navbar />
             <div className={style.margin20}>
                 <div className={style.bigCardGrid}>
                     <SideBar />

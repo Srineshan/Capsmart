@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
+import Navbar from '../../Components/Navbar';
 import SideBar from './../../Components/Sidebar';
 import { Checkbox, Icon, Intent } from "@blueprintjs/core";
 import style from './index.module.scss';
@@ -32,7 +32,7 @@ const DepartmentsForCustomersMultiSite = () => {
                     <AddDepartmentAreaForBannerHealthcare />
                     :
                     <div>
-                        <ReferenceListNavbar />
+                        <Navbar />
                         <div className={style.margin20}>
                             <div className={style.bigCardGrid}>
                                 <SideBar />
