@@ -16,6 +16,42 @@ import style from './index.module.scss';
 
 const AdministrativeFields = () => {
 
+  const [metadata,setMetadata] = useState({
+    min:'0',
+    max:'0',
+    frequency:'WEEK',
+    withNurse:'0',
+    withoutNurse:'0',
+    noTargetApplicable:true,
+    targetWithNurse:'0',
+    targetWithoutNurse:'0',
+    targetNoTargetApplicable:true,
+    additionalScheduleValue:'0',
+    additionalScheduleFrequency:'WEEK',
+    additionalScheduleRequired:true,
+    billableService:true,
+    rateType:'HOURLY',
+    sessionDuration:'0',
+    sessionAmount:'0',
+    totalSession:'0',
+    totalSessionFrequency:'YEAR',
+    workingTimeFrom:'',
+    workingTimeTo:'',
+    serviceDays:{
+      tuesday: false,
+      wednesday: false,
+      thursday: false,
+      friday: false,
+      saturday: false,
+      sunday: false,
+      weekDays: false,
+      weekEnds: false,
+      monday: false
+    },
+    weekdaysCount:'0',
+    weekendsCount:'0',
+  })
+
     const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
     const [workingPeriodTo, setWorkingPeriodTo] = useState('');
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
@@ -33,6 +69,10 @@ const AdministrativeFields = () => {
     const id = open ? 'simple-popover' : undefined;
 
     const limit5 = 5;
+
+    const getServiceDaysMetadata = (daysCount, serviceDays) => {
+      setMetadata({...metadata, serviceDays:serviceDays, weekdaysCount:daysCount?.weekdays, weekendsCount:daysCount?.weekends})
+    }
 
     return (
         <div>
@@ -209,7 +249,7 @@ const AdministrativeFields = () => {
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Service Days*</div>
-                <ServiceDays />
+                <ServiceDays  setMetaData={getServiceDaysMetadata}/>
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

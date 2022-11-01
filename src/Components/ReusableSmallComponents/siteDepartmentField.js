@@ -10,13 +10,17 @@ import {ErrorToaster} from './../../utils/toaster';
 
 import style from './index.module.scss';
 
-const SiteDepartmentField = ({sites, getSelectedSites}) => {
+const SiteDepartmentField = ({sites, getSelectedSites, selectedSites}) => {
     const [departmentsSelected, setDepartmentsSelected] = useState([]);
     const [selectedSite, setSelectedSite] = useState(undefined);
     const [siteData, setSiteData] = useState([]);
     const [departmentList, setDepartmentList] = useState(sites?.filter(site=>selectedSite === site?.id)?.map(data=>
        data?.departmentList?.departments
      )[0]);
+
+    useEffect(()=>{
+      setSiteData(selectedSites);
+    },[])
 
     useEffect(()=>{
       getSelectedSites(siteData);

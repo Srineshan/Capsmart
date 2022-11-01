@@ -8,7 +8,7 @@ import DatalistInput from 'react-datalist-input';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import Typography from '@mui/material/Typography'; 
+import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
@@ -18,21 +18,60 @@ import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
 import style from './index.module.scss';
 
-const AddonClinicFields = () => {
-
+const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation, locationToAdd}) => {
+    const [addOnServiceName, setAddOnServiceName] = useState('');
     const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
     const [workingPeriodTo, setWorkingPeriodTo] = useState('');
     const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
     const [totalContractedService, setTotalContractedService] = useState(0);
+    const [selectedActivities, setSelectedActivities] = useState([]);
+    const [metadata, setMetadata] = useState([{
+      allowUponRequest:false,
+      location:[],
+      activities:[],
+      sessionAmount:'0',
+      allowableAddOnWorkingHours:'',
+    }]);
+
+    let serviceList = [];
+    services?.filter(data=>['Clinic Blocks','Surgery Session']?.includes(data?.activityType?.activityType))?.map(data=>{
+      let activityName = data?.activityType?.activityType;
+      let activities = data?.activities?.map(data=>data?.activity);
+      let result = `${activityName} (${activities?.map(data=>data)?.join(', ')})`
+      serviceList.push(result);
+    });
+
+    const addSelectedActivities = (activity, isPresent, index) => {
+      if(isPresent){
+        let tempMetadata = metadata;
+        tempMetadata[index] = {
+          allowUponRequest:false,
+          location:[],
+          activities:[{activity:activity}],
+          sessionAmount:'0',
+          allowableAddOnWorkingHours:'',
+        }
+        let temp = selectedActivities;
+        temp.push(activity);
+        setSelectedActivities(temp);
+      }else{
+        setMetadata(metadata?.filter(data=>data?.activities?.[0]?.activity !== activity)?.map(data=>data));
+        setSelectedActivities(selectedActivities?.filter(data=>data !== activity)?.map(data=>data));
+      }
+    }
+
+    console.log('selectedActivity', selectedActivities);
 
     const limit5 = 5;
 
     return (
         <div>
+        {
+          serviceList?.map((data,index)=>(
             <div className={style.marginTop20}>
                 <FormGroup>
-                    <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2">Clinic Block ( Fracture Clinic, Orthopaedic Clinic )</Typography>} />
+                    <FormControlLabel control={<Checkbox onChange={(e)=>addSelectedActivities(data,e.target.checked,index)}/>}  label={<Typography variant="body2">{data}</Typography>} />
                 </FormGroup>
                 <div className={`${style.addonBoxStyle}`}>
                     <div className={`${style.addManagerGrid}`}>
@@ -56,7 +95,7 @@ const AddonClinicFields = () => {
                                     className={`${style.switchFontStyle} ${style.flexLeft} `}
                                     label={'YES'}
                                 />
-                                <div className={`${style.addGrid} ${style.fullWidth}`}> 
+                                <div className={`${style.addGrid} ${style.fullWidth}`}>
                                     <DatalistInput items={[]} onSelect={() => {}} className={style.fullWidth} />
                                     <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                                         <AddIcon sx={{ fontSize: 25, color: 'white' }} />
@@ -68,6 +107,9 @@ const AddonClinicFields = () => {
                     </div>
                 </div>
             </div>
+          ))
+        }
+
 
             <div className={style.marginTop20}>
                 <FormGroup>
@@ -95,7 +137,7 @@ const AddonClinicFields = () => {
                                     className={`${style.switchFontStyle} ${style.flexLeft} `}
                                     label={'YES'}
                                 />
-                                <div className={`${style.addGrid} ${style.fullWidth}`}> 
+                                <div className={`${style.addGrid} ${style.fullWidth}`}>
                                     <DatalistInput items={[]} onSelect={() => {}} className={style.fullWidth} />
                                     <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                                         <AddIcon sx={{ fontSize: 25, color: 'white' }} />
@@ -134,7 +176,7 @@ const AddonClinicFields = () => {
                                     className={`${style.switchFontStyle} ${style.flexLeft} `}
                                     label={'YES'}
                                 />
-                                <div className={`${style.addGrid} ${style.fullWidth}`}> 
+                                <div className={`${style.addGrid} ${style.fullWidth}`}>
                                     <DatalistInput items={[]} onSelect={() => {}} className={style.fullWidth} />
                                     <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                                         <AddIcon sx={{ fontSize: 25, color: 'white' }} />
@@ -190,7 +232,7 @@ const AddonClinicFields = () => {
                                     className={`${style.switchFontStyle} ${style.flexLeft} `}
                                     label={'YES'}
                                 />
-                                <div className={`${style.addGrid} ${style.fullWidth}`}> 
+                                <div className={`${style.addGrid} ${style.fullWidth}`}>
                                     <DatalistInput items={[]} onSelect={() => {}} className={style.fullWidth} />
                                     <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                                         <AddIcon sx={{ fontSize: 25, color: 'white' }} />
@@ -201,7 +243,7 @@ const AddonClinicFields = () => {
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Allowable Add-On Working Hours*</div>
+                        <div className={style.extentionLableStyle}>Additional Details*</div>
                         <div>
                             <FormGroup className={`${style.marginLeft10}`}>
                                 <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">Require patient data</Typography>} />
@@ -218,14 +260,14 @@ const AddonClinicFields = () => {
             </div>
 
             <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
-                <InputGroup className={style.fullWidth} placeholder="Enter Add- On Service" />
+                <InputGroup className={style.fullWidth} placeholder="Enter Add-On Service" value={addOnServiceName} onChange={(e)=>setAddOnServiceName(e.target.value)}/>
                 <div className={`${style.addAddonServiceButton} ${style.alignCenter}`}>ADD ADD-ON SERVICES</div>
             </div>
 
             <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                 <div className={`${style.addManagerGrid}`}>
                     <div className={style.extentionLableStyle}>Add-On Service Name*</div>
-                    <InputGroup placeholder='Add-On Service Name' className={style.fullWidth} />
+                    <InputGroup value={addOnServiceName} className={style.fullWidth} />
                 </div>
 
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -268,7 +310,7 @@ const AddonClinicFields = () => {
                                 className={`${style.switchFontStyle} ${style.flexLeft} `}
                                 label={'YES'}
                             />
-                            <div className={`${style.addGrid} ${style.fullWidth}`}> 
+                            <div className={`${style.addGrid} ${style.fullWidth}`}>
                                 <DatalistInput items={[]} onSelect={() => {}} className={style.fullWidth} />
                                 <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                                     <AddIcon sx={{ fontSize: 25, color: 'white' }} />

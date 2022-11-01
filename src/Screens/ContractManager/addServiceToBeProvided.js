@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup, EditableText, RadioGroup, Radio, Checkbox, Tag, TextArea } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import AddIcon from '@mui/icons-material/Add';
@@ -9,7 +9,7 @@ import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
-import {PUT, GET} from './../dataSaver';
+import {PUT, GET, TenantID, POST} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Calculator from './../../Components/Calculator';
 import ReactStickyNotes from '@react-latest-ui/react-sticky-notes';
@@ -24,19 +24,25 @@ import OnCallCoverageFields from './onCallCoverageFields';
 import SupplementalFields from './supplementalFields';
 import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
+import SurgerySessionFields from './surgerySessionFields';
 
-const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo }) => {
+const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog }) => {
+    console.log('selectedservice', selectedService);
     const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Clinical Services','Add-On Clinical Services','Administrative / Miscellaneous Services'];
     const siteTypeId = sessionStorage.getItem('entityTypeId');
     const [serviceType, setServiceType] = useState('Clinic Blocks');
     const [siteList, setSiteList] = useState([]);
     const [siteData, setSiteData] = useState([]);
     const [activity, setActivity] = useState([]);
-    const [activity, setSelectedActivity] = useState([]);
+    const [newActivity, setNewActivity] = useState('');
+    const [selectedActivity, setSelectedActivity] = useState([]);
+    const [item, setItem] = useState();
     const [locationList, setLocationList] = useState([]);
+    const [newLocation,setNewLocation] = useState('');
+    const [showLocation, setShowLocation] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState([]);
+    const [metadata, setMetadata] = useState();
     //old useStates
-    const [sendEmailNotification, setSendEmailNotification] = useState(false);
     const [activityType, setActivityType] = useState('OutPatient Surgery Clinic Session');
     const [activityContractedFor, setActivityContractedFor] = useState('');
     const [isDesignatedSpecificContractor, setIsDesignatedSpecificContractor] = useState(true);
@@ -77,27 +83,55 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const limit = 3;
     const limit5 = 5;
 
+    useEffect(()=>{
+      if(editService){
+        getSelectedSites(selectedService?.sites);
+        getNewLocation(selectedService?.locations);
+        setServiceType(selectedService?.activityType?.activityType);
+        let temp = [];
+        selectedService?.activities?.map(data=>{
+          temp.push({activity:data})
+        });
+        setSelectedActivity(temp);
+        setShowLocation(selectedService?.locations?.length !== 0 ? true : false);
+        setSelectedLocation(selectedService?.locations?.map(data=>data));
+      }
+    },[selectedService])
+
     let rightHelpArea = helpTool?.calculator || helpTool?.textArea;
 
     const getSelectedSites = (value) => {
       setSiteData(value);
     }
 
-    console.log('selectedSites', siteData);
-
-    const getSendEmailNotification = (value) => {
-        setSendEmailNotification(value)
+    const getNewLocation = (value) => {
+      setNewLocation(value);
     }
+
     const leftElementButton = (text) => {
         return (
             <button className={`${style.minMaxLeftElement}`} >{text}</button>
         )
     }
 
+    const removeFriendlyName = (index) => {
+      setSelectedActivity(selectedActivity?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data));
+    }
+
+    const removeLocation = (index) => {
+      setSelectedLocation(selectedLocation?.filter((data, indexValue)=> index !== indexValue)?.map(data=>data));
+    }
+
+    useEffect(()=>{
+      getLocations();
+    }, [siteData])
+
     useEffect(()=> {
         getContractedServices();
         getUserData();
         getSites();
+        getActivityList();
+        getLocations();
     }, [])
 
     useEffect(()=> {
@@ -107,8 +141,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
     }, [selectContractInfo, users])
 
+    const getMetaData = (value) => {
+      setMetadata(value);
+    }
+
     const getActivityList = async() => {
-      const {data: activityList} = await GET(`contract-managmenet-service/contracts/siteType/${siteTypeId}/activity`);
+      const {data: activityList} = await GET(`contract-managment-service/contracts/siteType/${siteTypeId}/activity`);
       setActivity(activityList);
     }
 
@@ -129,6 +167,44 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
     }
 
+    const activityToAdd = async() => {
+      let data = {
+          "activity": {
+            "activity": newActivity
+          },
+          "siteTypeId": siteTypeId,
+          "tenant": {
+            "id": TenantID
+          }
+        }
+      await POST(`contract-managment-service/contracts/siteType/${siteTypeId}/activity`, data)
+      .then(response=>{
+        getActivityList();
+      })
+      .catch(error=>{
+        console.log('Error');
+      })
+    }
+
+    const locationToAdd = async() => {
+      let siteId = siteData?.map(data=>data?.id)[0];
+      console.log('id',siteId);
+      let data = {
+          "location": newLocation,
+          "siteId": siteId,
+          "tenant": {
+            "id": TenantID
+          }
+        }
+      await POST(`contract-managment-service/contracts/site/${siteId}/location`, data)
+      .then(response=>{
+        getLocations();
+      })
+      .catch(error=>{
+        console.log('Error');
+      })
+    }
+
     const getSites = async () => {
       const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
       let contractDetail = contractData?.contractDetail;
@@ -146,76 +222,116 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
     }
 
-    const handleSave = async() => {
-        if(activityContractedFor === ''){
-            ErrorToaster('Specific Activity Contracted For Is Mandatory');
-            return;
-        }
-        if(activityOrServiceType === "Medical / Surgical Care Contracted Services" ){
-            const data = {
+    // let performingActivity = selectedActivity?.map(data=>data?.activity?.activity)?.join('-');
 
-                    "activityType": {
-                        "activityType": activityOrServiceType
-                    },
-                    "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
-                    "performingActivity": {
-                        "activity": activityContractedFor
-                    },
-                    "activityResponse": {
-                        "dataMap": {
-                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "On Call Coverage Duty Days" &&
-                            {'dutyDays':dutyDays}),
-                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "On Call Coverage Duty Days" &&
-                            {'coverageCallDutyType': coverageCallDutyType}),
-                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Department Oversight Role & Responsibility" &&
-                            {'additionalCompensationTitle':additionalCompensationTitle}),
-                            ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Department Oversight Role & Responsibility" &&
-                            {'additionalCompensationPerMonth': additionalCompensationPerMonth}),
-                            // ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Administrative / Miscellaneous Services" &&
-                            // {'regularClinicSchedule': regularClinicSchedule}),
-                            // ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Administrative / Miscellaneous Services" &&
-                            // {'regularClinicScheduleFrequency': regularClinicScheduleFrequency}),
-                            // ...( activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === "Administrative / Miscellaneous Services" &&
-                            // {'allActivities': allActivities}),
-                        }
-                    },
+    const handleSave = async() => {
+        let performingActivity = '';
+        let activities = [];
+        if(serviceType !== 'Supplemental Clinical Services'){
+          performingActivity = selectedActivity?.map(data=>data?.activity?.activity)?.join('-')
+          selectedActivity?.map(data=>{
+            activities?.push({"activity":data?.activity?.activity})
+          })
+        }else{
+          performingActivity = metadata?.supplementServiceName?.map(data=>data)?.join('-') || '';
+          metadata?.supplementServiceName?.map(data=>(
+            activities.push({"activity":data})
+          ));
+        }
+
+            const data = {
+                  "sites": siteData,
+                  "activityType": {
+                    "activityType": serviceType
+                  },
+                  "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
+                  "performingActivity": {
+                    "activity": performingActivity
+                  },
+                  "activities": activities,
+                  ...(serviceType === 'Supplemental Clinical Services' && {"hoursBorrowed": {
+                      "activityType": {
+                        "activityType": metadata?.dedicatedHoursActivityType || ''
+                      },
+                      "performingActivity": {
+                        "activity": metadata?.dedicatedHoursPerformingActivity || ''
+                      }
+                    }}),
+                  "locations": selectedLocation,
+                  "contractedSchedule": {
                     "minimum": {
-                        "value": parseInt(min)
+                      "value": parseInt(metadata?.min || '0')
                     },
                     "maximum": {
-                        "value": parseInt(max)
+                      "value": parseInt(metadata?.max || '0')
                     },
-                    "frequency": regularClinicScheduleFrequency,
+                    "frequency": metadata?.frequency
+                  },
+                  "patientsSeenTarget": {
                     "withNurse": {
-                        "value": parseInt(withNurse)
+                      "value": parseInt(metadata?.withNurse || '0')
                     },
                     "withoutNurse": {
-                        "value": parseInt(withoutNurse)
+                      "value": parseInt(metadata?.withoutNurse || "0")
                     },
-                    "schedule": {
-                        "value": parseInt(additionalClinicSchedule),
-                        "frequency": frequency,
-                        "scheduleRequired": additionalSchedule
+                    "noTargetApplicable": metadata?.noTargetApplicable
+                  },
+                  "scheduledPatientsTarget": {
+                    "withNurse": {
+                      "value": parseInt(metadata?.targetWithNurse || '0')
                     },
-                    "duration": {
-                        "hours": parseInt(duration)
+                    "withoutNurse": {
+                      "value": parseInt(metadata?.targetWithoutNurse || '0')
                     },
-                    "payableAmount": {
-                        "value": parseInt(payment)
-                    },
-                    "totalSessions": {
-                        "value": parseInt(totalContractedService),
-                        "frequency": totalContractedServiceFrequency
-                    },
-                    "workingPeriod": {
-                        "from": workingPeriodFrom,
-                        "to": workingPeriodTo
-                    },
-                    "noTargetApplicable": noTargetApplicable,
-                    "designateSpecificContractor": isDesignatedSpecificContractor
+                    "noTargetApplicable": true
+                  },
+                  "additionalSchedule": {
+                    "value": parseInt(metadata?.additionalScheduleValue),
+                    "frequency": metadata?.additionalScheduleFrequency,
+                    "scheduleRequired": metadata?.additionalScheduleRequired
+                  },
+                  "rateType": metadata?.rateType,
+                  "activityResponse": {
+                    "dataMap": {
+                      ...(serviceType === 'On Call Coverage Duty Days' && {
+                        'onCallCoverageFor' : metadata?.onCallCoverageFor,
+                      }
+                    ),
+                    }
+                  },
+                  "duration": {
+                    "hours": parseInt(metadata?.sessionDuration)
+                  },
+                  "payableAmount": {
+                    "value": parseInt(metadata?.sessionAmount)
+                  },
+                  "totalSessions": {
+                    "value": parseInt(metadata?.totalSession),
+                    "frequency": metadata?.totalSessionFrequency
+                  },
+                  "serviceDays": metadata?.serviceDays,
+                  "workingPeriod": {
+                    "from": metadata?.workingTimeFrom,
+                    "to": metadata?.workingTimeTo
+                  },
+                  "workingHours": {
+                    "normalWorkingHours": true,
+                    "afterWorkingHours": true
+                  },
+                  "activityApprovalWFRequired": true,
+                  "designateSpecificContractor": isDesignatedSpecificContractor,
+                  "locationSpecified": showLocation,
+                  "dedicatedHoursSpecified": serviceType === 'Supplemental Clinical Services' ? metadata?.dedicatedHoursSpecified : false,
+                  "billableService": metadata?.billableService
                 }
             let services = contractedServices || [];
-            services.push(data);
+            if(editService){
+              let temp = services?.filter(data=>data?.activityType?.activityType !== serviceType || data?.performingActivity?.activity !== performingActivity)?.map(data=>data);
+              temp.push(data);
+              services = temp;
+            }else{
+              services.push(data);
+            }
             let formattedData = {
                 contractedServices: services
             }
@@ -223,148 +339,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
             if(response){
                 SuccessToaster('Contracted Service Updated Successfully');
+                getContractedServices();
             }
             else {
                 ErrorToaster('Unexpected Error');
             }
-        } else if(activityOrServiceType === "Supplemental Clinical Services" ){
-            const data = {
-                    "activityType": {
-                        "activityType": activityOrServiceType
-                    },
-                    "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
-                    "performingActivity": {
-                        "activity": activityContractedFor
-                    },
-                    "activityResponse": {
-                        "dataMap": {}
-                    },
-                    "minimum": {
-                        "value": parseInt(min)
-                    },
-                    "maximum": {
-                        "value": parseInt(max)
-                    },
-                    "frequency": regularClinicScheduleFrequency,
-                    "withNurse": {
-                        "value": parseInt(withNurse)
-                    },
-                    "withoutNurse": {
-                        "value": parseInt(withoutNurse)
-                    },
-                    "schedule": {
-                        "value": parseInt(additionalClinicSchedule),
-                        "frequency": frequency,
-                        "scheduleRequired": additionalSchedule
-                    },
-                    "duration": {
-                        "hours": parseInt(duration)
-                    },
-                    "payableAmount": {
-                        "value": parseInt(payment)
-                    },
-                    "totalSessions": {
-                        "value": parseInt(totalContractedService),
-                        "frequency": totalContractedServiceFrequency
-                    },
-                    "workingPeriod": {
-                        "from": workingPeriodFrom,
-                        "to": workingPeriodTo
-                    },
-                    "noTargetApplicable": noTargetApplicable,
-                    "designateSpecificContractor": isDesignatedSpecificContractor
-            }
-
-            let services = contractedServices || [];
-            services.push(data);
-            let formattedData = {
-                contractedServices: services
-            }
-
-            const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
-            if(response){
-                SuccessToaster('Contracted Service Updated Successfully');
-            }
-            else {
-                ErrorToaster('Unexpected Error');
-            }
-        } else if(activityOrServiceType === "Add-On Services Allowed Upon Request Approval" ){
-            const data = {
-                    "activityType": {
-                        "activityType": activityOrServiceType
-                    },
-                    "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
-                    "performingActivity": {
-                        "activity": activityContractedFor
-                    },
-                    "activityResponse": {
-                        "dataMap": {
-                            ...( activityContractedFor?.includes('Extension') &&
-                            {extensionLabel: sessionExtension }),
-                            ...( activityContractedFor?.includes('Extension') &&
-                            {workingPeriodFrom: workingPeriodFrom}),
-                            ...( activityContractedFor?.includes('Extension') &&
-                            {workingPeriodTo: workingPeriodTo}),
-                            ...( !activityContractedFor?.includes('Extension') &&
-                            {rateLabel: sessionRate}),
-                            ...( !activityContractedFor?.includes('Extension') &&
-                            {durationLabel: sessionDuration}),
-                        }
-                    },
-                    "minimum": {
-                        "value": parseInt(min)
-                    },
-                    "maximum": {
-                        "value": parseInt(max)
-                    },
-                    "frequency": regularClinicScheduleFrequency,
-                    "withNurse": {
-                        "value": parseInt(withNurse)
-                    },
-                    "withoutNurse": {
-                        "value": parseInt(withoutNurse)
-                    },
-                    "schedule": {
-                        "value": parseInt(additionalClinicSchedule),
-                        "frequency": frequency,
-                        "scheduleRequired": additionalSchedule
-                    },
-                    "duration": {
-                        "hours": parseInt(duration)
-                    },
-                    "payableAmount": {
-                        "value": parseInt(payment)
-                    },
-                    "totalSessions": {
-                        "value": parseInt(totalContractedService),
-                        "frequency": totalContractedServiceFrequency
-                    },
-                    "workingPeriod": {
-                        "from": workingPeriodFrom,
-                        "to": workingPeriodTo
-                    },
-                    "noTargetApplicable": noTargetApplicable,
-                    "designateSpecificContractor": isDesignatedSpecificContractor
-            }
-
-            let services = contractedServices || [];
-            services.push(data);
-            let formattedData = {
-                contractedServices: services
-            }
-
-            const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
-            if(response){
-                SuccessToaster('Contracted Service Updated Successfully');
-            }
-            else {
-                ErrorToaster('Unexpected Error');
-            }
-        }
-        getContractedServices()
+        // getContractedServices()
     }
 
-    console.log(contractedServices)
+    console.log('type', activityType);
 
     const reset = () => {
         setMin(0);
@@ -427,28 +410,58 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         )
     }
 
-    useEffect(() => {
-        if (activityContractedFor === "Add-On Services Allowed Upon Request Approval"
-            || activityContractedFor === "Department Oversight Role & Responsibility"
-            || activityContractedFor === "Administrative / Miscellaneous Services") {
-            getAddOn(true);
-        } else {
-            getAddOn(false);
-        }
-    }, [activityContractedFor]);
+    const activityItems = useMemo(
+      () =>
+        activity?.map((data) => ({
+          id: data.id,
+          value: data?.activity?.activity,
+          ...data,
+        })),
+      [activity],
+    );
 
-    console.log(selectedUsers, selectedUser)
+    const locationItems = useMemo(
+      () =>
+        locationList?.map((data) => ({
+          // id: data.id,
+          value: data?.location,
+          location: data?.location
+        })),
+      [locationList],
+    )
+
+    const onActivitySelect = (selectedItem) => {
+      setItem(selectedItem);
+      if(!selectedActivity?.map(data=>data?.id)?.includes(selectedItem?.id)){
+        delete selectedItem["value"];
+        let temp = selectedActivity;
+        temp.push(selectedItem);
+        setSelectedActivity(temp);
+      }
+    }
+
+    const onLocationSelect = (selectedItem) => {
+      setItem(selectedItem);
+      if(!selectedLocation?.map(data=>data)?.includes(selectedItem)){
+        delete selectedItem["value"];
+        let temp = selectedLocation;
+        temp.push(selectedItem);
+        setSelectedLocation(temp);
+      }
+    }
+
+    console.log('selectedActivity', selectedActivity);
 
     return (
         <div>
-            <Dialog isOpen={getAddServiceDialog} onClose={() => getAddServiceDialog(false)} className={rightHelpArea ? `${style.addServiceDialog} ${style.addManagerDialogBackground}` : `${style.manageServiceDialog} ${style.addManagerDialogBackground}`}>
+            <Dialog isOpen={getAddServiceDialog} onClose={() => {getAddServiceDialog(false);getEditServiceDialog(false);}} className={rightHelpArea ? `${style.addServiceDialog} ${style.addManagerDialogBackground}` : `${style.manageServiceDialog} ${style.addManagerDialogBackground}`}>
                 <div className={`${Classes.DIALOG_BODY} `}>
                     <div className={style.spaceBetween}>
                         <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
                         <div>
                           <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, textArea:!helpTool?.textArea})} />
                           <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, calculator:!helpTool?.calculator})} />
-                          <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getAddServiceDialog(false)} />
+                          <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => {getAddServiceDialog(false);getEditServiceDialog(false);}} />
                         </div>
                     </div>
                     <div className={style.extensionBorder}></div>
@@ -456,7 +469,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     <div className={style.proofBorder}>
                         <div className={`${style.addManagerGrid} `}>
                             <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
-                            <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites}/>
+                            <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData}/>
                         </div>
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
@@ -515,17 +528,20 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                 <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
                                 <div>
                                     <div className={style.addGrid}>
-                                        <DatalistInput items={[]} onSelect={() => {}} className={style.fullWidth} />
+                                        <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e)=>setNewActivity(e.target.value)}/>
                                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                            <AddIcon sx={{ fontSize: 25, color: 'white' }} />
+                                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
                                         </div>
                                     </div>
-                                    <MultiSelectDisplay values={['Fracture Clinic', 'Orthopaedic clinic']} />
+                                    {
+                                      selectedActivity?.length !== 0 &&
+                                      <MultiSelectDisplay values={selectedActivity?.map(data=>data?.activity?.activity)} removeItem={removeFriendlyName}/>
+                                    }
                                 </div>
                             </div>
                         </div>
 
-                        <div>
+                        {serviceType !== 'Add-On Clinical Services' && <div>
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                                 <div>
@@ -534,962 +550,51 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             control={
                                                 <Switch className={`${style.textAlignLeft}`} />
                                             }
+                                            checked={showLocation}
+                                            onChange={()=>setShowLocation(!showLocation)}
                                             className={`${style.switchFontStyle} ${style.flexLeft} `}
-                                            label={'YES'}
+                                            label={showLocation ? 'YES' : 'NO'}
                                         />
-                                        <div className={`${style.addGrid} ${style.fullWidth}`}>
-                                            <DatalistInput items={[]} onSelect={() => {}} className={style.fullWidth} />
-                                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                                <AddIcon sx={{ fontSize: 25, color: 'white' }} />
-                                            </div>
-                                        </div>
+                                        {showLocation &&
+                                          <div className={`${style.addGrid} ${style.fullWidth}`}>
+                                              <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e)=>setNewLocation(e.target.value)}/>
+                                              <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                  <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd}/>
+                                              </div>
+                                          </div>
+                                        }
+
                                     </div>
-                                    <MultiSelectDisplay values={['Location 1']} />
+                                    {
+                                      showLocation && selectedLocation?.length !== 0 &&
+                                       <MultiSelectDisplay values={selectedLocation?.map(data=>data?.location)} removeItem={removeLocation}/>
+                                    }
                                 </div>
                             </div>
-                        </div>
+                        </div>}
 
-                        {serviceType === 'Clinic Blocks' || serviceType === 'Surgery Session'
-                        ? <ClinicBlocksFields />
+                        {serviceType === 'Clinic Blocks'
+                        ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService}/>
+                        : serviceType === 'Surgery Session'
+                        ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService}/>
                         : serviceType === 'On Call Coverage Duty Days'
-                        ? <OnCallCoverageFields/>
+                        ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService}/>
                         : serviceType === 'Supplemental Clinical Services'
-                        ? <SupplementalFields />
+                        ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService}/>
                         : serviceType === 'Add-On Clinical Services'
-                        ? <AddonClinicFields />
+                        ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService}/>
                         : <AdministrativeFields />}
-
-                        {(activityOrServiceType === "Medical / Surgical Care Contracted Services" && activityContractedFor === 'Administrative / Miscellaneous Services') ?
-                            <div>
-                                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                    <div className={style.extentionLableStyle}>Regular {activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Schedule*</div>
-                                    <div className={style.displayInRow}>
-                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                            <EditableText value={regularClinicSchedule} placeholder="" type="number" onChange={(e) => setRegularClinicSchedule(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                            <div className={style.textElementWithoutBackground}>Hours</div>
-                                        </div>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            value={regularClinicScheduleFrequency}
-                                            onChange={(e) => setRegularClinicScheduleFrequency(e.target.value)}
-                                            className={` ${style.threeFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
-                                            <option value="WEEK" >
-                                                Per Week
-                                            </option>
-                                            <option value="MONTH" >
-                                                Per Month
-                                            </option>
-                                            <option value="YEAR" >
-                                                Per Year
-                                            </option>
-                                        </select>
-                                        <Checkbox checked={allActivities} onChange={(e) => setAllActivities(e.target.checked)} label="All Activities" className={`${style.marginLeft20} ${style.marginTop10}`} />
-                                    </div>
-                                </div>
-                                <div className={style.marginTop20}>
-                                    <div className={style.twoCol}>
-                                        <Checkbox checked={false} label="Periodic Productivity Data Review (Monthly)" />
-                                        <Checkbox checked={false} label="PA & Non-Physician Staff Supervision" />
-                                    </div>
-                                    <div className={style.twoCol}>
-                                        <Checkbox checked={false} label="Administrative & Business Reports Creation" />
-                                        <Checkbox checked={false} label="Peer Review Meetings" />
-                                    </div>
-                                    <div className={style.twoCol}>
-                                        <Checkbox checked={false} label="Administrative & Business Records Maintenance" />
-                                        <Checkbox checked={false} label="Performance of Time Studies" />
-                                    </div>
-                                    <div className={style.twoCol}>
-                                        <Checkbox checked={false} label="Credentials Committee Meeting" />
-                                        <Checkbox checked={false} label="Performance Improvement Project Meeting" />
-                                    </div>
-                                    <div className={style.twoCol}>
-                                        <Checkbox checked={false} label="Corrective Action Plan Participation" />
-                                        <Checkbox checked={false} label="Performance Metric Review" />
-                                    </div>
-                                    <div className={style.twoCol}>
-                                        <Checkbox checked={false} label="Contractor Clinic ? OR Schedule Maintenance (weekly)" />
-                                        <Checkbox checked={false} label="Quality Assurance Meeting" />
-                                    </div>
-                                    <div className={style.twoCol}>
-                                        <Checkbox checked={false} label="Contractor On Call Schedule Maintenance (Weekly)" />
-                                        <Checkbox checked={false} label="Review of Services Provided by PA & Non-Physician Staff" />
-                                    </div>
-                                    <div className={style.twoCol}>
-                                        <Checkbox checked={false} label="Clinic Performance Review" />
-                                        <Checkbox checked={false} label="Service Billing & Coding" />
-                                    </div>
-                                    <div className={style.twoCol}>
-                                        <Checkbox checked={false} label="Contract Performance Review Meeting" />
-                                        <Checkbox checked={false} label="Training & Education Activity" />
-                                    </div>
-                                    <div className={style.twoCol}>
-                                        <Checkbox checked={false} label="Medical Records Maintenance" />
-                                        <Checkbox checked={false} label="Utilization Review Meeting" />
-                                    </div>
-                                </div>
-                            </div>
-                            : (activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor === 'Department Oversight Role & Responsibility') ?
-                                <div>
-                                    <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                        <div className={`${style.addManagerGrid}`}>
-                                            <div className={style.extentionLableStyle}>Title*</div>
-                                            <select
-                                                name="class"
-                                                id="Class"
-                                                value={additionalCompensationTitle}
-                                                onChange={(e) => setAdditionalCompensationTitle(e.target.value)}
-                                                className={`${style.fullWidth} ${style.marginRight20} `}>
-                                                <option value="Title(fetched from earlier Scenario)" >
-                                                    Title(fetched from earlier Scenario)
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div className={` ${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>Additional Compensation*</div>
-                                            <div className={style.displayInRow}>
-                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                    <div className={style.textElementWithoutBackground}>$</div>
-                                                    <EditableText value={additionalCompensationPerMonth} placeholder="" type="number" onChange={(e) => setAdditionalCompensationPerMonth(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                </div>
-                                                <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Month</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                : (activityOrServiceType === "Medical / Surgical Care Contracted Services" && ( activityContractedFor === "Clinic Session Blocks" || activityContractedFor === "Surgery Block")) ? (
-                                    <div>
-                                        {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Specify Activity Type</div>
-                            <div>
-                                <select
-                                    name="class"
-                                    id="Class"
-                                    value={activityType}
-                                    onChange={(e) => setActivityType(e.target.value)}
-                                    className={`${style.fullWidth} ${style.marginRight20} `}>
-                                        <option value="OutPatient Surgery Clinic Session" >
-                                        OutPatient Surgery Clinic Session
-                                        </option>
-                                        <option value="Fracture Clinic Session" >
-                                        Fracture Clinic Session
-                                        </option>
-                                        <option value="Surgery Session" >
-                                        Surgery Session
-                                        </option>
-                                </select>
-                            </div>
-                        </div> */}
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                          <div className={style.extentionLableStyle}>Display service label</div>
-                                          <InputGroup className={` ${style.fullWidth}`} />
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                          <div className={style.extentionLableStyle}>Alternative service facility/ location</div>
-                                          <InputGroup className={` ${style.fullWidth}`} />
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>Regular {activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Schedule*</div>
-                                            <div className={style.displayInRow}>
-                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                    <div className={style.textElement}>MIN</div>
-                                                    <EditableText value={min} placeholder="" type='number' onChange={(e) => setMin(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                </div>
-                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                    <div className={style.textElement}>MAX</div>
-                                                    <EditableText value={max} placeholder="" type='number' onChange={(e) => setMax(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                </div>
-                                                <select
-                                                    name="class"
-                                                    id="Class"
-                                                    value={regularClinicScheduleFrequency}
-                                                    onChange={(e) => setRegularClinicScheduleFrequency(e.target.value)}
-                                                    className={` ${style.threeFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
-                                                    <option value="WEEK" >
-                                                        Per Week
-                                                    </option>
-                                                    <option value="MONTH" >
-                                                        Per Month
-                                                    </option>
-                                                    <option value="YEAR" >
-                                                        Per Year
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>{activityType === "Surgery Session" ? 'Surgery Case' : 'Clinic Patient'} Target*</div>
-                                            <div className={`${style.displayInRow} `}>
-                                                {activityType !== "Surgery Session" ? (
-                                                    <div className={`${style.displayInRow} ${style.fullWidth}`}>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.twoFieldWidth} `}>
-                                                            <div className={style.textElementWithNurse}>WITH NURSE</div>
-                                                            <EditableText value={withNurse} placeholder="" type='number' onChange={(e) => setWithNurse(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                        </div>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.twoFieldWidth}`}>
-                                                            <div className={style.textElementWithNurse}>WITHOUT NURSE</div>
-                                                            <EditableText value={withoutNurse} placeholder="" type='number' onChange={(e) => setWithoutNurse(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <InputGroup value="1" className={`${style.marginLeft20} ${style.threeFieldWidth}`} />
-                                                )}
-                                                <Checkbox checked={noTargetApplicable} onChange={(e) => setNoTargetApplicable(e.target.checked)} label="No Target Applicable" className={`${style.marginLeft20}`} />
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>{activityType === "Surgery Session" ? 'Surgery Scheduled patient' : 'Clinic Patient'} Target*</div>
-                                            <div className={`${style.displayInRow} `}>
-                                                {activityType !== "Surgery Session" ? (
-                                                    <div className={`${style.displayInRow} ${style.fullWidth}`}>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.twoFieldWidth} `}>
-                                                            <div className={style.textElementWithNurse}>WITH NURSE</div>
-                                                            <EditableText value={withNurse} placeholder="" type='number' onChange={(e) => setWithNurse(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                        </div>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.twoFieldWidth}`}>
-                                                            <div className={style.textElementWithNurse}>WITHOUT NURSE</div>
-                                                            <EditableText value={withoutNurse} placeholder="" type='number' onChange={(e) => setWithoutNurse(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <InputGroup value="1" className={`${style.marginLeft20} ${style.threeFieldWidth}`} />
-                                                )}
-                                                <Checkbox checked={noTargetApplicable} onChange={(e) => setNoTargetApplicable(e.target.checked)} label="No Target Applicable" className={`${style.marginLeft20}`} />
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>Additional {activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Schedule*</div>
-                                            <div className={style.displayInRow}>
-                                                <div className={`${style.threeFieldWidth}`} >
-                                                    <FormControlLabel
-                                                        control={
-                                                            <Switch checked={additionalSchedule} className={` ${style.textAlignLeft}`} />
-                                                        }
-                                                        onChange={() => setAdditionalSchedule(!additionalSchedule)}
-                                                        className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                                        label={additionalSchedule ? 'YES' : 'NO'}
-                                                    />
-                                                </div>
-                                                <InputGroup value={additionalClinicSchedule} onChange={(e) => setAdditionalClinicSchedule(e.target.value)} className={`${style.marginLeft20} ${style.threeFieldWidth}`} />
-                                                <select
-                                                    name="class"
-                                                    id="Class"
-                                                    value={frequency}
-                                                    onChange={(e) => setFrequency(e.target.value)}
-                                                    className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
-                                                    <option value="WEEK" >
-                                                        Every Other Week
-                                                    </option>
-                                                    <option value="MONTH" >
-                                                        Every Other Month
-                                                    </option>
-                                                    <option value="YEAR" >
-                                                        Every Other Year
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>{activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Session Duration</div>
-                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                <EditableText value={duration} placeholder="" type='number' onChange={(e) => setDuration(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                <div className={style.textElementWithoutBackground}>Hours</div>
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>Billable service</div>
-                                                  <FormControlLabel
-                                                      control={
-                                                          <Switch className={` ${style.textAlignLeft}`} />
-                                                      }
-                                                      className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                                      label='NO'
-                                                  />
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>{activityType === "Surgery Session" ? 'Surgery' : 'Clinic'} Session Payment Amount*</div>
-                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                <div className={style.textElementWithoutBackground}>$</div>
-                                                <EditableText value={payment} placeholder="" type='number' onChange={(e) => setPayment(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
-                                            <div className={style.twoCol}>
-                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                                    <EditableText value={totalContractedService} placeholder="" type='number' onChange={(e)=> setTotalContractedService(e.slice(0, limit5))} className={style.editableSessionTextStyle} />
-                                                    <div className={style.textElement}>120 Specified</div>
-                                                </div>
-                                                <select
-                                                    name="class"
-                                                    id="Class"
-                                                    value={totalContractedServiceFrequency}
-                                                    onChange={(e)=> setTotalContractedServiceFrequency(e.target.value)}
-                                                    className={`${style.fullWidth} ${style.reduceTop} `}>
-                                                    <option value="WEEK" >
-                                                        Per Contract Week
-                                                    </option>
-                                                    <option value="MONTH" >
-                                                        Per Contract Month
-                                                    </option>
-                                                    <option value="YEAR" >
-                                                        Per Contract Year
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>Allowable Working Day Hours For {activityType === "Surgery Session" ? 'Surgery' : 'Clinic'}*</div>
-                                            <div className={style.displayInRow}>
-                                                <InputGroup
-                                                    value={workingPeriodFrom}
-                                                    placeholder="HH:MM"
-                                                    onChange={(e)=> setWorkingPeriodFrom(e.target.value) }
-                                                    className={style.threeFieldWidth}
-                                                />
-                                                <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                                                <InputGroup
-                                                    value={workingPeriodTo}
-                                                    placeholder="HH:MM"
-                                                    onChange={(e)=> setWorkingPeriodTo(e.target.value) }
-                                                    className={style.threeFieldWidth}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (activityOrServiceType === "Medical / Surgical Care Contracted Services" &&  activityContractedFor !== "") && (
-                                    <div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>On Call Service Duty Days*</div>
-                                            <div className={`${style.displayInRow} ${style.marginTop} `}>
-                                                <Checkbox checked={dutyDays.includes('Weekdays')} onChange={(e) => handleDutyDays('Weekdays')} label="Weekdays" />
-                                                <Checkbox checked={dutyDays.includes('Weekends')} onChange={(e) => handleDutyDays('Weekends')} label="Weekends" className={`${style.marginLeft20}`} />
-                                                <Checkbox checked={dutyDays.includes('Holidays')} onChange={(e) => handleDutyDays('Holidays')} label="Holidays" className={`${style.marginLeft20}`} />
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>Coverage Call Duty Type*</div>
-                                            <div>
-                                                <select
-                                                    name="class"
-                                                    id="Class"
-                                                    value={coverageCallDutyType}
-                                                    onChange={(e) => setCoverageCallDutyType(e.target.value)}
-                                                    className={`${style.fullWidth} ${style.marginRight20} `}>
-                                                    <option value="All On Call Service Duty" >
-                                                        All On Call Service Duty
-                                                    </option>
-                                                    <option value="In-Patient Call Days" >
-                                                        In-Patient Call Days
-                                                    </option>
-                                                    <option value="Ambulatory Call Duty Days" >
-                                                        Ambulatory Call Duty Days
-                                                    </option>
-                                                    <option value="Emergency Department On-call" >
-                                                        Emergency Department On-call
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>Number of On Call Duty Days*</div>
-                                            <div className={style.displayInRow}>
-                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                    <div className={style.textElement}>MIN</div>
-                                                    <EditableText value={min} placeholder="" type='number' onChange={(e) => setMin(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                </div>
-                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                    <div className={style.textElement}>MAX</div>
-                                                    <EditableText value={max} placeholder="" type='number' onChange={(e) => setMax(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                </div>
-                                                <select
-                                                    name="class"
-                                                    id="Class"
-                                                    value={frequency}
-                                                    onChange={(e) => setFrequency(e.target.value)}
-                                                    className={` ${style.threeFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
-                                                    <option value="WEEK" >
-                                                        Per Week
-                                                    </option>
-                                                    <option value="MONTH" >
-                                                        Per Month
-                                                    </option>
-                                                    <option value="YEAR" >
-                                                        Per Year
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>On Call Duty Duration</div>
-                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                <EditableText value={duration} placeholder="" type='number' onChange={(e) => setDuration(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                <div className={style.textElementWithoutBackground}>Hours</div>
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>On Call Start</div>
-                                            <div className={style.displayInRow}>
-                                                <InputGroup
-                                                    value={workingPeriodFrom}
-                                                    placeholder="HH:MM"
-                                                    onChange={(e)=> setWorkingPeriodFrom(e.target.value) }
-                                                    className={style.threeFieldWidth}
-                                                />
-                                                <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                                                <InputGroup
-                                                    value={workingPeriodTo}
-                                                    placeholder="HH:MM"
-                                                    onChange={(e)=> setWorkingPeriodTo(e.target.value) }
-                                                    className={style.threeFieldWidth}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>On Call Coverage Session Unit Value*</div>
-                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                <div className={style.textElementWithoutBackground}>$</div>
-                                                <EditableText value={payment} placeholder="" type='number' onChange={(e) => setPayment(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                            </div>
-                                        </div>
-                                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
-                                            <div className={style.twoCol}>
-                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                                    <EditableText value={totalContractedService} placeholder="" type='number' onChange={(e)=> setTotalContractedService(e.slice(0, limit))} className={style.editableSessionTextStyle} />
-                                                    <div className={style.textElement}>120 Specified</div>
-                                                </div>
-                                                <select
-                                                    name="class"
-                                                    id="Class"
-                                                    value={totalContractedServiceFrequency}
-                                                    onChange={(e)=> setTotalContractedServiceFrequency(e.target.value)}
-                                                    className={`${style.fullWidth} ${style.marginTop}`}>
-                                                    <option value="WEEK" >
-                                                        Per Contract Week
-                                                    </option>
-                                                    <option value="MONTH" >
-                                                        Per Contract Month
-                                                    </option>
-                                                    <option value="YEAR" >
-                                                        Per Contract Year
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                        {activityOrServiceType === 'Add-On Services Allowed Upon Request Approval' ?
-                            <div>
-                                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                    <div className={style.extentionLableStyle}>Specify Addon Service*</div>
-                                    <div>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            onChange={(e) => setActivityContractedFor(e.target.value)}
-                                            value={activityContractedFor}
-                                            className={`${style.fullWidth} ${style.marginRight20}`}>
-                                            {/* <option value="Clinic Session" >
-                                                Clinic Session
-                                            </option>
-                                            <option value="Surgical care activities" >
-                                                Surgical care activities
-                                            </option>
-                                            <option value="On Call Duty Services/activities" >
-                                                On Call Duty Services/activities
-                                            </option> */}
-                                            <option value="" >
-                                                Select Addon Service
-                                            </option>
-                                            {contractedServices?.map((data, index) =>
-                                            data?.activityType?.activityType !== "Add-On Services Allowed Upon Request Approval" &&
-                                            (
-                                                <option value={`${data?.activityType?.activityType} - ${data?.performingActivity?.activity}`} key={index}>
-                                                    {`${data?.activityType?.activityType} - ${data?.performingActivity?.activity}`}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                                {activityContractedFor !== '' && activityContractedFor?.includes('Extension') ? (
-                                    <>
-                                    <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                        <div className={` ${style.addManagerGrid}`}>
-                                            <div className={style.extentionLableStyle}>{activityContractedFor} Hourly Rate*</div>
-                                            <div className={style.displayInRow}>
-                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                    <div className={style.textElementWithoutBackground}>$</div>
-                                                    <EditableText value={sessionExtension} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
-                                                        onChange={(e) => setSessionExtension(e.slice(0, limit))} />
-                                                </div>
-                                                <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                        <div className={style.extentionLableStyle}>Allowable Working Day Hours For {activityContractedFor}*</div>
-                                        <div className={style.displayInRow}>
-                                            <InputGroup
-                                                value={workingPeriodFrom}
-                                                placeholder="HH:MM"
-                                                onChange={(e)=> setWorkingPeriodFrom(e.target.value) }
-                                                className={style.threeFieldWidth}
-                                            />
-                                            <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                                            <InputGroup
-                                                value={workingPeriodTo}
-                                                placeholder="HH:MM"
-                                                onChange={(e)=> setWorkingPeriodTo(e.target.value) }
-                                                className={style.threeFieldWidth}
-                                            />
-                                        </div>
-                                    </div>
-                                    </>
-                                ) : activityContractedFor !== '' && (
-                                    <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                        <div className={` ${style.addManagerGrid} `}>
-                                            <div className={style.extentionLableStyle}>{activityContractedFor} Rate*</div>
-                                            <div className={style.displayInRow}>
-                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                    <div className={style.textElementWithoutBackground}>$</div>
-                                                    <EditableText value={sessionRate} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
-                                                        onChange={(e) => setSessionRate(e.slice(0, limit))} />
-                                                </div>
-                                                <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional {activityContractedFor}</p>
-                                            </div>
-                                        </div>
-                                        <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
-                                            <div className={style.extentionLableStyle}>{activityContractedFor} Duration*</div>
-                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                <EditableText value={sessionDuration} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
-                                                    onChange={(e) => setSessionDuration(e.slice(0, limit))} />
-                                                <div className={style.textElementWithoutBackground}>Hour</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                                {/* {addOnService === 'On Call Duty Services/activities' ?
-                                    <div>
-                                        <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                            <div className={`${style.addManagerGrid} `}>
-                                                <div className={style.extentionLableStyle}>After Hours Applicable Period*</div>
-                                                <div className={style.displayInRow}>
-                                                    <InputGroup value="17:01" className={style.threeFieldWidth} />
-                                                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                                                    <InputGroup value="07:29" className={style.threeFieldWidth} />
-                                                </div>
-                                            </div>
-                                            <p className={`${style.blue} ${style.marginTop20} ${style.alignCenter}`}> For Case Not Able To Be Done During Regular Hours (Nights, Weekends And Holidays).</p>
-                                        </div>
-                                        <Checkbox checked={true} label="On Call Duty/Emergency call Day" className={style.marginTop30} />
-                                        <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                            <div className={` ${style.addManagerGrid}`}>
-                                                <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>On-Call Coverage Rate*</div>
-                                                <div className={style.displayInRow}>
-                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                        <div className={style.textElementWithoutBackground}>$</div>
-                                                        <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                    </div>
-                                                    <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Excess Coverage Day</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <Checkbox checked={true} label="Emergency Call Consult" className={style.marginTop30} />
-                                        <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                            <div className={` ${style.addManagerGrid} `}>
-                                                <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Consult Day Rate*</div>
-                                                <div className={style.displayInRow}>
-                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                        <div className={style.textElementWithoutBackground}>$</div>
-                                                        <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                    </div>
-                                                    <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Surgery Assist Session</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <Checkbox checked={true} label="Inpatient Call Consult" className={style.marginTop30} />
-                                        <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                            <div className={` ${style.addManagerGrid}`}>
-                                                <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Consult Day Rate*</div>
-                                                <div className={style.displayInRow}>
-                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                        <div className={style.textElementWithoutBackground}>$</div>
-                                                        <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                    </div>
-                                                    <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Surgery Assist Session</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <Checkbox checked={true} label="Trauma Service/Call on demand" className={style.marginTop30} />
-                                        <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                            <div className={` ${style.addManagerGrid}`}>
-                                                <div className={`${style.extentionLableStyle} ${style.marginTop10}`}>Trauma Service Hourly Rate*</div>
-                                                <div className={style.displayInRow}>
-                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                        <div className={style.textElementWithoutBackground}>$</div>
-                                                        <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                    </div>
-                                                    <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    :
-                                    addOnService === 'Surgical care activities' ?
-                                        <div>
-                                            <Checkbox checked={true} label="Surgery Session" className={style.marginTop20} />
-                                            <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                                <div className={` ${style.addManagerGrid}`}>
-                                                    <div className={style.extentionLableStyle}>Surgery Session Rate*</div>
-                                                    <div className={style.displayInRow}>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                        </div>
-                                                        <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional Surgery Session</p>
-                                                    </div>
-                                                </div>
-                                                <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
-                                                    <div className={style.extentionLableStyle}>Surgery Session Duration*</div>
-                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                        <EditableText value="4" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                        <div className={style.textElementWithoutBackground}>Hour</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Checkbox checked={true} label="Surgery Session Extension" className={style.marginTop30} />
-                                            <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                                <div className={` ${style.addManagerGrid}`}>
-                                                    <div className={style.extentionLableStyle}>Surgery Extension Hourly Rate*</div>
-                                                    <div className={style.displayInRow}>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                        </div>
-                                                        <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Checkbox checked={true} label="Surgery Assist Session" className={style.marginTop30} />
-                                            <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                                <div className={` ${style.addManagerGrid}`}>
-                                                    <div className={style.extentionLableStyle}>Surgery Session Rate*</div>
-                                                    <div className={style.displayInRow}>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                        </div>
-                                                        <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional Surgery Session</p>
-                                                    </div>
-                                                </div>
-                                                <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
-                                                    <div className={style.extentionLableStyle}>Surgery Assist Session Duration*</div>
-                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                        <EditableText value="4" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                        <div className={style.textElementWithoutBackground}>Hour</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Checkbox checked={true} label="Surgery Assist Session Extension" className={style.marginTop30} />
-                                            <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                                <div className={` ${style.addManagerGrid}`}>
-                                                    <div className={style.extentionLableStyle}>Surgery Assist Session Hourly Rate*</div>
-                                                    <div className={style.displayInRow}>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                        </div>
-                                                        <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Checkbox checked={true} label="Inpatient Post-Operative Care Services" className={style.marginTop30} />
-                                            <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                                <div className={` ${style.addManagerGrid}`}>
-                                                    <div className={style.extentionLableStyle}>Inpatient Post-Operative Care Services Hourly Rate**</div>
-                                                    <div className={style.displayInRow}>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                        </div>
-                                                        <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Checkbox checked={true} label="Elective Surgery Case" className={style.marginTop30} />
-                                            <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                                <div className={` ${style.addManagerGrid}`}>
-                                                    <div className={style.extentionLableStyle}>Elective Surgery Hourly Rate*</div>
-                                                    <div className={style.displayInRow}>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                        </div>
-                                                        <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Checkbox checked={true} label="Emergency / After hours Surgery Case" className={style.marginTop30} />
-                                            <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                                <div className={` ${style.addManagerGrid} `}>
-                                                    <div className={style.extentionLableStyle}>Emergency Surgery Case Hourly Rate*</div>
-                                                    <div className={style.displayInRow}>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <div className={style.textElementWithoutBackground}>$</div>
-                                                            <EditableText value="230.00" placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} />
-                                                        </div>
-                                                        <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
-                                                    </div>
-                                                </div>
-                                                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                                    <div className={style.extentionLableStyle}>After Hours Period*</div>
-                                                    <div className={style.displayInRow}>
-                                                        <InputGroup value="17:01" className={style.threeFieldWidth} />
-                                                        <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                                                        <InputGroup value="07:29" className={style.threeFieldWidth} />
-                                                    </div>
-                                                </div>
-                                                <p className={`${style.blue} ${style.alignCenter} ${style.marginTop20}`}> For Case Not Able To Be Done During Regular Hours (Nights, Weekends And Holidays).</p>
-                                            </div>
-                                        </div>
-
-                                        : addOnService === 'Clinic Session' ?
-                                            <div>
-                                                <Checkbox checked={true} label="Outpatient Clinic Session Block" className={style.marginTop20} />
-                                                <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                                    <div className={` ${style.addManagerGrid} `}>
-                                                        <div className={style.extentionLableStyle}>Outpatient Clinic Session Rate*</div>
-                                                        <div className={style.displayInRow}>
-                                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                                <div className={style.textElementWithoutBackground}>$</div>
-                                                                <EditableText value={sessionRate} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
-                                                                    onChange={(e) => setSessionRate(e.slice(0, limit))} />
-                                                            </div>
-                                                            <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional Clinic Session</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
-                                                        <div className={style.extentionLableStyle}>Clinic Session Duration*</div>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <EditableText value={sessionDuration} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
-                                                                onChange={(e) => setDuration(e.slice(0, limit))} />
-                                                            <div className={style.textElementWithoutBackground}>Hour</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <Checkbox checked={true} label="Fracture Clinic Session" className={style.marginTop30} />
-                                                <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                                    <div className={` ${style.addManagerGrid}`}>
-                                                        <div className={style.extentionLableStyle}>Fracture Session Rate*</div>
-                                                        <div className={style.displayInRow}>
-                                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                                <div className={style.textElementWithoutBackground}>$</div>
-                                                                <EditableText value={payment} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
-                                                                    onChange={(e) => setPayment(e.slice(0, limit))} />
-                                                            </div>
-                                                            <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Additional Fracture Clinic Session</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className={`  ${style.addManagerGrid} ${style.marginTop20}`}>
-                                                        <div className={style.extentionLableStyle}>Fracture Session Duration*</div>
-                                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                            <EditableText value={fractureClinicalSessionDuration} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
-                                                                onChange={(e) => setFractureClinicalSessionDuration(e.slice(0, limit))} />
-                                                            <div className={style.textElementWithoutBackground}>Hour</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <Checkbox checked={true} label="Clinic Session Extension" className={style.marginTop30} />
-                                                <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
-                                                    <div className={` ${style.addManagerGrid}`}>
-                                                        <div className={style.extentionLableStyle}>Clinic Extension Hourly Rate*</div>
-                                                        <div className={style.displayInRow}>
-                                                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                                <div className={style.textElementWithoutBackground}>$</div>
-                                                                <EditableText value={sessionExtension} placeholder="" type='number' className={style.serviceProvidedEditableTextStyle}
-                                                                    onChange={(e) => setSessionExtension(e.slice(0, limit))} />
-                                                            </div>
-                                                            <p className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.marginTop10}`}>Per Hour</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                                    <div className={style.extentionLableStyle}>Allowable Working Day Hours For Clinic Sessions*</div>
-                                                    <div className={style.displayInRow}>
-                                                        <InputGroup
-                                                            value={workingPeriodFrom}
-                                                            placeholder="HH:MM"
-                                                            onChange={(e)=> setWorkingPeriodFrom(e.target.value) }
-                                                            className={style.threeFieldWidth}
-                                                        />
-                                                        <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                                                        <InputGroup
-                                                            value={workingPeriodTo}
-                                                            placeholder="HH:MM"
-                                                            onChange={(e)=> setWorkingPeriodTo(e.target.value) }
-                                                            className={style.threeFieldWidth}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div> : ''
-                                } */}
-
-
-                            </div>
-                            : activityOrServiceType === 'Supplemental Clinical Services' ?
-                                <div>
-                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                        <div className={style.extentionLableStyle}>Applicable Supplemental Clinical Services*</div>
-                                        <div>
-                                            {/* <Checkbox checked={false} label="Outpatient Clinic Session Block" />
-                                            <Checkbox checked={false} label="Clinic Session Extensio" />
-                                            <Checkbox checked={false} label="Fracture Clinic Session" />
-                                            <Checkbox checked={false} label="Fracture Clinic Extension" />
-                                            <Checkbox checked={false} label="Additional Clinical Services Required" />
-                                            <Checkbox checked={false} label="Additional Surgical Services Required" /> */}
-                                            <select
-                                                name="class"
-                                                id="Class"
-                                                value={activityContractedFor}
-                                                onChange={(e) => setActivityContractedFor(e.target.value)}
-                                                className={`${style.fullWidth} ${style.marginRight20}`}>
-                                                <option value="0" >
-                                                    Choose Applicable Supplemental Clinical Services
-                                                </option>
-                                                <option value="Outpatient Clinic Session Block"
-                                                 disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('Outpatient Clinic Session Block')}>
-                                                Outpatient Clinic Session Block
-                                                </option>
-                                                <option value="Clinic Session Extension"
-                                                disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('Clinic Session Extension')} >
-                                                Clinic Session Extension
-                                                </option>
-                                                <option value="Fracture Clinic Session"
-                                                disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('Fracture Clinic Session')} >
-                                                Fracture Clinic Session
-                                                </option>
-                                                <option value="Fracture Clinic Extension"
-                                                disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('Fracture Clinic Extension')} >
-                                                Fracture Clinic Extension
-                                                </option>
-                                                <option value="Additional Clinical Services Required"
-                                                disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('Additional Clinical Services Required')} >
-                                                Additional Clinical Services Required
-                                                </option>
-                                                <option value="Additional Surgical Services Required"
-                                                disabled={contractedServices?.map(data=>data.performingActivity?.activity).includes('Additional Surgical Services Required')} >
-                                                Additional Surgical Services Required
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    {activityContractedFor !== '' && (
-                                        <>
-                                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                                <div className={style.extentionLableStyle}>Contracted Number of Supplemental Hours*</div>
-                                                <div className={style.displayInRow}>
-                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                        <div className={style.textElement}>MIN</div>
-                                                        <EditableText value={min} placeholder="" type='number' onChange={(e) => setMin(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                    </div>
-                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                        <div className={style.textElement}>MAX</div>
-                                                        <EditableText value={max} placeholder="" type='number' onChange={(e) => setMax(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                    </div>
-                                                    <select
-                                                        name="class"
-                                                        id="Class"
-                                                        value={frequency}
-                                                        onChange={(e) => setFrequency(e.target.value)}
-                                                        className={` ${style.threeFieldWidth} ${style.marginLeft20}`}>
-                                                        <option value="WEEK" >
-                                                            Per Week
-                                                        </option>
-                                                        <option value="MONTH" >
-                                                            Per Month
-                                                        </option>
-                                                        <option value="YEAR" >
-                                                            Per Year
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                                <div className={style.extentionLableStyle}>Supplemental Clinical Service Hour Value*</div>
-                                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                                    <div className={style.textElementWithoutBackground}>$</div>
-                                                    <EditableText value={payment} placeholder="" type='number' onChange={(e) => setPayment(e.slice(0, limit))} className={style.serviceProvidedEditableTextStyle} />
-                                                </div>
-                                            </div>
-                                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                                <div className={style.extentionLableStyle}>Total Contracted Suplemental Service Sessions*</div>
-                                                <div className={style.twoCol}>
-                                                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                                        <EditableText value={totalContractedService} placeholder="" type='number' onChange={(e)=> setTotalContractedService(e.slice(0, limit))} className={style.editableSessionTextStyle} />
-                                                        <div className={style.textElement}>120 Specified</div>
-                                                    </div>
-                                                    <select
-                                                        name="class"
-                                                        id="Class"
-                                                        value={totalContractedServiceFrequency}
-                                                        onChange={(e)=> setTotalContractedServiceFrequency(e.target.value)}
-                                                        className={`${style.fullWidth} ${style.reduceTop} `}>
-                                                        <option value="WEEK" >
-                                                            Per Contract Week
-                                                        </option>
-                                                        <option value="MONTH" >
-                                                            Per Contract Month
-                                                        </option>
-                                                        <option value="YEAR" >
-                                                            Per Contract Year
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Supplemental Services*</div>
-                                                <div className={style.displayInRow}>
-                                                    <InputGroup
-                                                        value={workingPeriodFrom}
-                                                        placeholder="HH:MM"
-                                                        onChange={(e)=> setWorkingPeriodFrom(e.target.value) }
-                                                        className={style.threeFieldWidth}
-                                                    />
-                                                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                                                    <InputGroup
-                                                        value={workingPeriodTo}
-                                                        placeholder="HH:MM"
-                                                        onChange={(e)=> setWorkingPeriodTo(e.target.value) }
-                                                        className={style.threeFieldWidth}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
-                                </div> : ''
-                        }
                     </div>
-                    {rightHelpArea && (
-                      <div className={style.marginTop}>
-                        {helpTool?.calculator && <Calculator />}
-                        {helpTool?.textArea &&<ReactStickyNotes />}
-                      </div>
-                    )}
-                    </div>
+                  </div>
                 </div>
                 <div>
                     <div className={`${style.floatRight}`}>
-                        {/* <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => setSendEmailNotification(true)}>ADD MORE</button> */}
                         <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave();resetAll()}}>ADD MORE</button>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave();resetAll();getAddServiceDialog(false)}}>SAVE & EXIT</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave();resetAll();getAddServiceDialog(false);}}>SAVE & EXIT</button>
                     </div>
                 </div>
             </Dialog>
-            {sendEmailNotification && (
-                <SendEmailUserList getSendEmailNotification={getSendEmailNotification} />
-            )}
+
         </div>
     )
 }
