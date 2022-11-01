@@ -97,11 +97,11 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
-                        <EditableText type='number' value={metadata?.min} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('min',e)}/>
+                        <EditableText type='number' placeholder='' value={metadata?.min} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('min',e)}/>
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MAX</div>
-                        <EditableText value={metadata?.max} type='number' className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('max',e)}/>
+                        <EditableText value={metadata?.max} placeholder='' type='number' className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('max',e)}/>
                     </div>
                     <Select
                         displayEmpty
@@ -120,9 +120,9 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Surgery Cases Target*</div>
-                <div className={`${style.fullWidth}`}>
+                <div className={`${style.displayInRow}`}>
                     <InputGroup  value={metadata?.withNurse} className={` ${style.threeFieldWidth}`} onChange={(e)=>{setpatientTarget(e.target.value)}}/>
-                    <Checkbox label="No Target Applicable" value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth}`} onChange={(e)=>handleValueChange('noTargetApplicable', e.target.checked)}/>
+                    <Checkbox label="No Target Applicable" value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth} `} onChange={(e)=>handleValueChange('noTargetApplicable', e.target.checked)}/>
                 </div>
             </div>
 
@@ -222,7 +222,8 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <EditableText value={metadata?.totalSession} type='number'
+                        <EditableText placeholder='' value={metadata?.totalSession} type='number'
+                        className={style.editableSessionTextStyle}
                         onChange={(e)=>{
                           let value = e.slice(0, e.slice());
                           handleValueChange('totalSession', value);}}/>
