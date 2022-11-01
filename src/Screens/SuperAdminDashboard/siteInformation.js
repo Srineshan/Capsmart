@@ -16,7 +16,8 @@ import {Auth} from './../../utils/auth';
 import 'react-datalist-input/dist/styles.css';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SaveInProgress from './saveInProgressAlert';
-
+import EntityTypeList from './../../Components/EntityType';
+import DepartmentList from './../../Components/DepartmentList';
 
 // const VALUES = ['Department 1', "Department 2"];
 
@@ -38,7 +39,7 @@ const SiteInformation = ({getActiveStep}) => {
     const [address,setAddress] = useState({
       addressLine:'',city:'',state:'',zipcode:'',country:''
     })
-    const [site,setSite] = useState({name:'',type:'',canSetupDepartment:true,npin:''});
+    const [site,setSite] = useState({name:'',type:{id:'',type:''},canSetupDepartment:true,npin:''});
     const [showSaveInProgress,setShowSaveInProgress] = useState(false);
     const [unassignedKeys,setUnassignedKeys] = useState([]);
     const Fields = {name:'Site Name', type:'Site Type', npin:'NPIN', addressLine:'Address Line', city:'City', state:'State', country:'Country', zipcode:'Zipcode'};
@@ -63,11 +64,11 @@ const SiteInformation = ({getActiveStep}) => {
     }
 
     const mandatoryFieldCheck = (buttonType) => {
-      if(site.name === ''){
+      if(site?.name === ''){
         ErrorToaster('Site Name is Mandatory');
         return;
       }
-      if(site.type === ''){
+      if(site?.type?.type === ''){
         ErrorToaster('Site Type is Mandatory');
         return;
       }
@@ -107,7 +108,8 @@ const SiteInformation = ({getActiveStep}) => {
             "id": ""
         },
         "siteType": {
-          "type": site.type
+          "type": site?.type?.type,
+          "id": site?.type?.id,
         },
         "npin": {
           "id": site.npin
@@ -131,7 +133,7 @@ const SiteInformation = ({getActiveStep}) => {
       "entityName": entityData?.entityName,
       "entityType": entityData?.entityType,
       "entityDisplayId": entityData?.entityDisplayId,
-      "customerType": "HEALTHCARE",
+      "industryId": entityData?.industryId,
       "sites": temp,
       "subscriptionPlan": entityData.subscriptionPlan,
       "billingDetails": entityData.billingDetails,
@@ -141,6 +143,8 @@ const SiteInformation = ({getActiveStep}) => {
       "subdomain":entityData?.subdomain,
       "canPrimarySiteToUseApp": entityData?.canPrimarySiteToUseApp,
       "multiSiteEntity": entityData?.multiSiteEntity,
+      "logo":entityData?.logo,
+      "logoThumbnail":entityData?.logoThumbnail,
     }
     await PUT('entity-service/entity',updatedValue)
     .then(response=>{
@@ -161,26 +165,29 @@ const SiteInformation = ({getActiveStep}) => {
       getEntityData();
   }
 
-  const getDepartmentData = async() => {
-    const {data: department} = await GET('entity-service/department');
-    if(department){
-      setDepartmentValue(department)
-      setShowSiteTable(siteList?.filter(data=>data.primarySite !== true)?.map(data=>data)?.length !== 0 ? false:true);
-    }else{
-      console.log('error');
-    }
-  }
+  const getDepartmentData  = async() => {
+   await GET(`entity-service/department?siteTypeId=${site?.type?.id}`)
+   .then(response=>{
+     setDepartmentValue(response?.data)
+     setShowSiteTable(siteList?.filter(data=>data.primarySite !== true)?.map(data=>data)?.length !== 0 ? false:true);
+   })
+   .catch(error=>{
+     console.log('error',error);
+   })
+ }
 
   const getSaveInProgressAlert = (value) => {
     setShowSaveInProgress(value);
   }
 
     const onSelect = (selectedItem) => {
-      setItem(selectedItem);
-      let temp = selectedDepartment;
-      temp.push(selectedItem);
-      setSelectedDepartment(temp);
-      setSelectDepartment('');
+      if(!selectedDepartment?.map(data=>data?.id)?.includes(selectedItem?.id)){
+        setItem(selectedItem);
+        let temp = selectedDepartment;
+        temp.push(selectedItem);
+        setSelectedDepartment(temp);
+        setSelectDepartment('');
+      }
     }
 
     const handleTagsAdd = values => {
@@ -228,14 +235,19 @@ const SiteInformation = ({getActiveStep}) => {
       setAddress({
         city:'',state:'',zipcode:'',country:''
       });
-      setSite({name:'',type:'',canSetupDepartment:true,npin:''});
+      setSite({name:'',type:{},canSetupDepartment:true,npin:''});
       setSelectedDepartment([]);
     }
 
+    const onSiteTypeChange = (id, value) => {
+      setSite({...site, 'type':{type:value,id:id}});
+    }
+
+    console.log('site type', site?.type);
 
     return(
         <div className={style.entitySetupBackground}>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={()=>navigate('/user')}/>
             <div className={style.stepperMargin}>
                 <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>
@@ -316,19 +328,7 @@ const SiteInformation = ({getActiveStep}) => {
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Site Type*</div>
                                     <div className={`${style.leftAlign} `}>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            className={style.fullWidth}
-                                            value={site.type}
-                                            onChange={(e)=>handleSite('type',e.target.value)}>
-                                                <option value="" >
-                                                Select Site Type
-                                                </option>
-                                                <option value="Hospital/Nursing home etc" >
-                                                Hospital/Nursing home etc
-                                                </option>
-                                        </select>
+                                        <EntityTypeList value={site?.type?.id} onChangeFunc={(id, value)=>onSiteTypeChange(id,value)} className={[style.fullWidth]}/>
                                     </div>
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -354,26 +354,10 @@ const SiteInformation = ({getActiveStep}) => {
                                             className={style.switchFontStyle}
                                             label={departmentSpecific ? 'YES' : "NO"}
                                         />
-                                            {departmentSpecific && (
-                                                <>
-                                                    <DatalistInput items={items} placeholder="Enter Departments" onSelect={onSelect} value={selectDepartment} onChange={(e) => {setSelectDepartment(e.target.value); setSiteID('XX689- 64768')} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                                    <div className={`${style.addSymbolStyle} ${style.marginLeft20}`}><span className={style.plusSymbolPosition} onClick={(e)=>handleTagsAdd(selectDepartment)}>+</span></div>
-                                                </>
-                                            )}
+                                            {departmentSpecific &&
+                                              <DepartmentList value={item?.id} onChangeFunc={(selectedItem)=>onSelect(selectedItem)} className={[style.fullWidth, style.textAlignLeft]} entityTypeId={site?.type?.id}/>
+                                          }
                                         </div>
-                                        {selectDepartment.length !== 0 && !departmentValue?.map(data=>data.departmentName?.name).includes(selectDepartment) &&(
-                                          <div className={`${style.reqDeptCard} ${style.marginTop}`}>
-                                              <div className={style.addBoxDescription}>
-                                              The Department you are trying to add is not on the list.
-                                              To add a new department enter the exact name below and click
-                                              on the "REQUEST & ADD" button.
-                                              </div>
-                                              <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                                  <InputGroup value={selectDepartment} className={style.threeFieldWidth} onChange={(e)=>setSelectDepartment(e.target.value)}/>
-                                                  <button className={`${style.reqButton} ${style.marginLeft20}`} onClick={() => {handleTagsAdd(selectDepartment)}}>REQUEST & ADD</button>
-                                              </div>
-                                          </div>
-                                      )}
                                         {departmentSpecific && (
                                             <TagInput
                                                 placeholder="Selected Department list"

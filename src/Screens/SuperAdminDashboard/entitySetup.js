@@ -11,7 +11,6 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useParams } from 'react-router-dom';
 import UploadImg from './../../images/uploadImg.png';
-import EntityStepper from './entityStepper';
 import {Auth} from './../../utils/auth';
 import {saveEntity,GET,PUT,POST,role,TenantID,isSuperAdminAccess} from './../dataSaver';
 import style from './index.module.scss';
@@ -22,6 +21,9 @@ import axios from "axios";
 import AppSubscription from './appSubscription';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import EntitySystemAdmin from './entitySystemAdmin';
+import IndustryList from './../../Components/IndustryList';
+import EntityTypeList from './../../Components/EntityType';
+import DepartmentList from './../../Components/DepartmentList';
 import SaveInProgress from './saveInProgressAlert';
 
 const EntitySetup = () => {
@@ -45,7 +47,7 @@ const EntitySetup = () => {
     const [showSaveInProgress,setShowSaveInProgress] = useState(false);
     const [logo,setLogo] = useState(null);
     const [thumbnail,setThumbnail] = useState(null);
-    const [entity,setEntity] = useState({id:'',customerType:"HEALTHCARE",npin:'',name:'',type:'',subdomain:'',multiSiteEntity:false,primarySiteToUseApp:false,canSetupDepartment:false});
+    const [entity,setEntity] = useState({id:'',customerType:'',npin:'',name:'',type:{type:'',id:''},subdomain:'',multiSiteEntity:false,primarySiteToUseApp:false,canSetupDepartment:false});
     const [address,setAddress] = useState({addressLine:'',city:'',state:'',country:'',zipcode:''});
     const [isUpdated,setIsUpdated] = useState(false);
     const [unassignedKeys,setUnassignedKeys] = useState([]);
@@ -60,6 +62,28 @@ const EntitySetup = () => {
       }
       },[]);
 
+    // useEffect(()=>{
+    //   if(entity.npin?.length === 10){
+    //     getNPIData();
+    //   }
+    // },[entity.npin])
+    //
+    // const getNPIData = () => {
+    //   fetch(`https://npiregistry.cms.hhs.gov/api/?number=${entity?.npin}&enumeration_type=NPI-2&version=2.1`,{
+    //       method: 'GET',
+    //       mode: 'cors',
+    //       headers:{"Access-Control-Allow-Origin" : "*",
+    //                "Access-Control-Allow-Headers" : "X-Requested-With",
+    //               }
+    //   })
+    //   .then(response=>{
+    //     console.log('response',response);
+    //   })
+    //   .catch(error=>{
+    //     console.log('error',error);
+    //   })
+    // }
+
     const getActiveStep = (value) => {
       setActiveStep(value)
     }
@@ -72,7 +96,7 @@ const EntitySetup = () => {
       const {data: data} = await GET(`entity-service/entity/${id}`);
       setEntityData(data);
       let siteData = data?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
-      setEntity({id:'',customerType:"HEALTHCARE",name:data?.entityName?.entityName,type:data?.entityType?.type,subdomain:data?.subdomain,multiSiteEntity:data?.multiSiteEntity,primarySiteToUseApp:data.canPrimarySiteToUseApp,npin:siteData?.npin?.id});
+      setEntity({id:'',customerType:data?.industryId?.id,name:data?.entityName?.entityName,type:{type:data?.entityType?.type, id:data?.entityType?.id},subdomain:data?.subdomain,multiSiteEntity:data?.multiSiteEntity,primarySiteToUseApp:data.canPrimarySiteToUseApp,npin:siteData?.npin?.id});
       setAddress({city:siteData?.address?.city,state:siteData?.address?.state,zipcode:siteData?.address?.zipcode,addressLine:siteData?.address?.addressLine,country:siteData?.address?.country});
       setSelectDepartments(siteData?.departmentList?.departments);
       setDepartmentSpecific(siteData?.canSetupDepartment);
@@ -80,14 +104,16 @@ const EntitySetup = () => {
       setThumbnail(data?.logoThumbnail?.file?.fileURL || null);
     }
 
-    const getDepartmentData = async() => {
-      const {data: department} = await GET('entity-service/department');
-      if(department){
-        setEntityDepartments(department)
-      }else{
-        console.log('error');
-      }
-    }
+
+    const getDepartmentData  = async() => {
+     await GET(`entity-service/department?siteTypeId=${entity?.type?.id}`)
+     .then(response=>{
+       setEntityDepartments(response?.data);
+     })
+     .catch(error=>{
+       console.log('error',error);
+     })
+   }
 
     const inputGroupElement = (value) => {
         return(
@@ -112,11 +138,13 @@ const EntitySetup = () => {
     };
 
     const onSelect = (selectedItem) => {
-      setItem(selectedItem);
-      let temp = selectDepartments;
-      temp.push(selectedItem);
-      setSelectDepartments(temp);
-      setIsUpdated(true);
+      if(!selectDepartments?.map(data=>data?.id)?.includes(selectedItem?.id)){
+        setItem(selectedItem);
+        let temp = selectDepartments;
+        temp.push(selectedItem);
+        setSelectDepartments(temp);
+        setIsUpdated(true);
+      }
     }
 
       const handleTagsRemove = (tags, index) => {
@@ -152,7 +180,7 @@ const EntitySetup = () => {
         ErrorToaster('Entity Name is Mandatory');
         return;
       }
-      if(entity?.type === ''){
+      if(entity?.type?.type === ''){
         ErrorToaster('Entity Type is Mandatory');
         return;
       }
@@ -169,7 +197,7 @@ const EntitySetup = () => {
     }
 
     const saveInProgressCheck = () => {
-      var keys = Object.keys(entity)?.filter(key=> entity[key] === '' && key !== 'id')?.map(data=>Fields[data]);
+      var keys = Object.keys(entity)?.filter(key=> entity[key] === '' && key !== 'id' || entity[key] === null)?.map(data=>Fields[data]);
       var addressKeys = Object.keys(address)?.filter(key => address[key] === '')?.map(data=>Fields[data]);
       if(logo === null){
         keys.push('Logo');
@@ -207,7 +235,8 @@ const EntitySetup = () => {
             "id": primarySiteValue?.siteDisplayId?.id,
         },
         "siteType": {
-          "type": entity?.type,
+          "type": entity?.type?.type,
+          "id":entity?.type?.id,
         },
         "npin": {
           "id": entity?.npin
@@ -233,11 +262,14 @@ const EntitySetup = () => {
             "entityName": entity?.name,
           },
           "entityType": {
-            "type": entity?.type,
+            "id": entity?.type?.id,
+            "type": entity?.type?.type,
           },
           "multiSiteEntity":entity?.multiSiteEntity,
           "entityDisplayId": entityData?.entityDisplayId,
-          "customerType": entity?.customerType,
+          "industryId":{
+            "id":entity?.customerType,
+          },
           "subdomain":entity?.subdomain,
           "canPrimarySiteToUseApp":entity?.primarySiteToUseApp,
           "sites": filteredValue,
@@ -245,7 +277,9 @@ const EntitySetup = () => {
           "billingDetails": entityData?.billingDetails,
           "contractDetails":entityData?.contractDetails,
           "accountManager":entityData?.accountManager,
-          "appUserRoles":entityData?.appUserRoles
+          "appUserRoles":entityData?.appUserRoles,
+          "logo":entityData?.logo,
+          "logoThumbnail":entityData?.logoThumbnail,
         }
         if(id !== 'new'){
           await PUT('entity-service/entity',updatedValue)
@@ -272,6 +306,12 @@ const EntitySetup = () => {
         setIsUpdated(false);
       }
       setUnassignedKeys([]);
+      sessionStorage.setItem('logo',entityData?.logo?.file?.fileURL);
+      sessionStorage.setItem('thumbnail',entityData?.logoThumbnail?.file?.fileURL);
+      sessionStorage.setItem('entityTypeId',entity?.typeId);
+      sessionStorage.setItem('entityTypeValue',entity?.type);
+      sessionStorage.setItem('industry',entity?.customerType);
+      sessionStorage.setItem('title',entity?.name);
     if(type === 'Continue'){
       setActiveStep(entity.multiSiteEntity === true ?"siteInformation":isSuperAdminAccess?"entitySystemAdmin":"siteUsers");
     }else {
@@ -360,14 +400,20 @@ const EntitySetup = () => {
            ErrorToaster('Unexpected Error Occured');
          })
       }
-
     }
 
+    const handleEntityTypeChange = (id,value) => {
+      let type = {id:id,type:value};
+      setEntity({...entity, type:type});
+      setIsUpdated(true);
+    }
+
+    console.log('entity type',entity?.type);
     return(
       <>
         {activeStep === "entitySetup" ? (
         <div className={style.entitySetupBackground}>
-          <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
+          <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={()=>navigate('/user')}/>
           <div className={style.stepperMargin}>
               <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                   <div onClick={() => getActiveStep('entitySetup')}>
@@ -456,15 +502,7 @@ const EntitySetup = () => {
                               <div className={`${style.extentionGrid} ${style.marginTop30}`}>
                                   <div className={style.extentionLableStyle}>Customer Type*</div>
                                   <div className={`${style.leftAlign} `}>
-                                      <select
-                                          name="class"
-                                          id="Class"
-                                          value={entityData?.type}
-                                          className={style.twoFieldWidth}>
-                                              <option value="HEALTHCARE" >
-                                              Healthcare
-                                              </option>
-                                      </select>
+                                    <IndustryList value={entity?.customerType} onChangeFunc={(value)=>handleEntity('customerType',value)} className={[style.twoFieldWidth]}/>
                                   </div>
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -478,28 +516,7 @@ const EntitySetup = () => {
                               <div className={`${style.extentionGrid} ${style.marginTop30}`}>
                                   <div className={style.extentionLableStyle}>Entity Type*</div>
                                   <div className={`${style.leftAlign} `}>
-                                      <select
-                                          name="class"
-                                          id="Class"
-                                          value={entity?.type}
-                                          onChange={(e)=>handleEntity('type',e.target.value)}
-                                          className={style.twoFieldWidth}>
-                                          <option value="" >
-                                            Select Entity Type
-                                          </option>
-                                              <option value="Doctor Office" >
-                                                Doctor Office
-                                              </option>
-                                              <option value="Nursing Home" >
-                                                Nursing Home
-                                              </option>
-                                              <option value="Hospital" >
-                                                Hospital
-                                              </option>
-                                              <option value="Integrated Delivery Network" >
-                                                Integrated Delivery Network
-                                              </option>
-                                      </select>
+                                      <EntityTypeList value={entity?.type?.id} onChangeFunc={(id, value)=>handleEntityTypeChange(id,value)} className={[style.twoFieldWidth]}/>
                                   </div>
                               </div>
                               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -552,14 +569,11 @@ const EntitySetup = () => {
                                                 className={style.switchFontStyle}
                                                 label={departmentSpecific ? 'YES' : "NO"}
                                             />
-                                            {departmentSpecific && (
-                                                <>
-                                                  <>
-                                                      <DatalistInput items={items} placeholder="Select Departments" onSelect={onSelect} onChange={(e) => {handleDeptChange(e.target.value)} } className={`${style.fullWidth} ${style.marginLeft20} ${style.textAlignLeft}`} />
-                                                      <div className={`${style.addSymbolStyle} ${style.marginLeft20} ${style.cursor}`}><span className={style.plusSymbolPosition} onClick={()=>{handleTagsAdd(departmentValue);setDepartmentValue('');}}>+</span></div>
-                                                  </>
-                                                </>
-                                            )}
+                                            {departmentSpecific &&
+                                              (
+                                                <DepartmentList value={item?.id} onChangeFunc={(selectedItem)=>onSelect(selectedItem)} className={[style.fullWidth, style.textAlignLeft]} entityTypeId={entity?.type?.id}/>
+                                              )
+                                          }
                                         </div>
                                         {departmentSpecific && (
                                           <TagInput

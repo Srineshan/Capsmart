@@ -13,7 +13,7 @@ import AppSubscription from './Screens/SuperAdminDashboard/appSubscription';
 import SetupComplete from './Screens/SuperAdminDashboard/setupComplete';
 import OTPPage from './Screens/SuperAdminDashboard/otpPage';
 import WelcomeToDashboard from './Screens/SuperAdminDashboard/welcomeToDashboard';
-import './App.css'
+import './App.css';
 import history from './routes/history';
 import EntryPage from './Screens';
 import Users from './Screens/UserManagement';
@@ -44,6 +44,7 @@ import ReportType from './Screens/Reports/reportType';
 import ReportTypeOverview from './Screens/Reports/reportTypeOverview';
 import TenetHealthLogo from './images/Tenet_Health_logo.png';
 import Sanmateo from './images/sanmateo.jpg'
+import Home from './Screens/CustomerSystemAdmin';
 
 const App = ({props}) => {
   const [accessToken,setAccessToken] = useState(Auth());
@@ -76,6 +77,12 @@ const App = ({props}) => {
     const {data: data} = await GET(`entity-service/entity/${TenantID}`);
     setLogo(data?.logoThumbnail?.file?.fileURL);
     setTitle(data?.entityName?.entityName);
+    sessionStorage.setItem('entityTypeId',data?.entityType?.id);
+    sessionStorage.setItem('entityTypeValue',data?.entityType?.type);
+    sessionStorage.setItem('industry',data?.customerType);
+    sessionStorage.setItem('logo',data?.logo?.file?.fileURL);
+    sessionStorage.setItem('thumbnail',data?.logoThumbnail?.file?.fileURL);
+    sessionStorage.setItem('title',data?.entityName?.entityName);
   }
 
 
@@ -131,6 +138,7 @@ const App = ({props}) => {
           <Route  path="/referenceList/absenseReasonsByIndustries" element={<AbsenseReasonsByIndustries />} />
           <Route  path="/referenceList/suffixByIndustries" element={<SuffixByIndustries />} />
           <Route  path="/referenceList/contractedServiceProviderByIndustries" element={<ContractedServiceProvidedByIndustries />} />
+          <Route  path="/entitySitePortal" element={<Home />} />
           <Route  path="/thankyou" element={<Thankyou />} />
           <Route path="/reportType" element={<ReportType />} />
           <Route path="/reportTypeOverview/:reportType" element={<ReportTypeOverview />} />

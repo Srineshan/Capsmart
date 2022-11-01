@@ -198,19 +198,19 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                             <option value="0" >
                                 Select Service Log Period...
                             </option>
-                            <option value="End of the month" >
+                            <option value="ENDOFMONTH" >
                                 End of the month
                             </option>
-                            <option value="End of Every Week" >
+                            <option value="ENDOFEVERYWEEK" >
                                 End of Every Week
                             </option>
-                            <option value="Every 2 Weeks" >
+                            <option value="EVERY2WEEKS" >
                                 Every 2 Weeks
                             </option>
-                            <option value="Every 4 Weeks" >
+                            <option value="EVERY4WEEKS" >
                                 Every 4 Weeks
                             </option>
-                            <option value="On Day of Service" >
+                            <option value="ONDAYOFSERVICE" >
                                 On Day of Service
                             </option>
                         </select>

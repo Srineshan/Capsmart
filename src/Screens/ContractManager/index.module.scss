@@ -39,6 +39,10 @@ body{
     margin-top: 10px !important;
 }
 
+.marginBottom10{
+    margin-bottom: 10px !important;
+}
+
 .marginTop15{
     margin-top: 15px !important;
 }
@@ -173,8 +177,8 @@ body{
 
 .headingCountForContracts{
     color: #52575D;
-    font-size: 50px;
-    margin-top: -20px;
+    font-size: 40px;
+    // margin-top: -20px;
     font-weight: bold;
     @include breakpoint(md) {
         font-size: 40px;
@@ -1193,6 +1197,14 @@ select {
     margin-top: -10px;
 }
 
+.reduceTop35{
+    margin-top: -35px;
+}
+
+.reduceTop20{
+    margin-top: -20px;
+}
+
 .reduceTop{
     margin-top: -5px;
 }
@@ -1380,6 +1392,18 @@ select {
     width: 60%;
   }
 
+  .greenBase{
+    font: normal normal medium 20px/27px Montserrat;
+    background-color: #75f0ac;
+    color: #52575D;
+  }
+
+  .redBase{
+    font: normal normal medium 20px/27px Montserrat;
+    background-color: #fc9c9c;
+    color: #52575D;
+  }
+
   .textElementWithNurse{
     background-color: #f1f2f3;
     color: #AFB2B6;
@@ -1421,7 +1445,7 @@ select {
     align-items: center;
     padding-left:10px;
     padding-top: 8px;
-    width: 50px;
+    width: 40%;
     border-radius: 4px !important;
   }
 
@@ -1485,7 +1509,7 @@ select {
     display: flex;
     align-items: center;
     padding: 8px 15px;
-    width: 75px !important;
+    width: 40% !important;
     border-radius: 4px !important;
   }
 
@@ -1518,7 +1542,7 @@ select {
 }
 
 .threeFieldWidth{
-    width: 33.3%;
+    width: 33.3% !important;
 }
 
 .fourFieldWidth{
@@ -1570,6 +1594,11 @@ select {
   height:75%;
   width:55% !important;
 }
+
+.manageServiceDialog{
+    height:75%;
+    width:70% !important;
+  }
 
 .renewalBoxStyle{
     background-color: #EBECED;
@@ -1655,6 +1684,11 @@ select {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 20px;
+}
+
+.withNurseGrid{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .grid2{
@@ -1874,4 +1908,199 @@ select {
   width: 30em;
   overflow-x: auto;
   white-space: nowrap;
+}
+
+.countDesign{
+    border-radius: 8px;
+    height: 20px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+}
+
+.orangeCountStyle{
+   color: #ffa500;
+   background-color: #ffedcc;
+}
+
+.redCountStyle{
+    color: #FF6562;
+    background-color: #ffcdcc;
+ }
+
+ .selectedOrangeCountStyle{
+    background-color: #ffa500;
+    color: white;
+ }
+
+ .selectedRedCountStyle{
+    background-color: #FF6562;
+    color: white;
+  }
+
+ .verticalAlignCenter{
+    display: flex;
+    align-items: center;
+    height: 100%;
+ }
+
+.purpleTitle{
+  font: normal 15px/13px Montserrat;
+  color: #7165E3;
+  font-size: 15px;
+  text-align: left;
+  min-width:100vw;
+}
+
+.marginTop50{
+  margin-top:50px;
+}
+
+.daysSelectorGrid{
+  display: grid;
+  grid-template-columns: 60px 40px;
+  grid-gap: 10px;
+}
+
+.popUpHeading{
+  font: bold 18px/15px Montserrat;
+  color: #7165E3;
+}
+
+.popUpHeaderBlock{
+  display:grid;
+  width:100%;
+  height:auto;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 50px;
+  background-color: #DBD8FA;
+  border: 3px solid #EBF2F7;
+  border-radius: 2px;
+  opacity: 1;
+  padding: 10px;
+}
+
+.calculatorIconColor{
+    color: #707070;
+  }
+
+  .addServiceDialog{
+    height:75%;
+    width:85% !important;
+  }
+
+  .addServiceGrid{
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 20px;
+  }
+
+  .referenceTextArea{
+    width:25rem;
+    white-space: pre;
+  }
+
+  .addGrid{
+    display: grid;
+    grid-template-columns: 1fr 35px;
+    grid-gap: 10px;
+  }
+
+.addStyle{
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 6px #00000029;
+    border-radius: 8px;
+    height: 33px;
+}
+
+.addonBoxStyle{
+    border: 0.800000011920929px solid #E5E6E7;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.addAddonServiceButton{
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 6px #00000029;
+    border-radius: 6px;
+    font: normal normal medium 20px/27px Montserrat;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 6px 20px;
+}
+
+.addAddonGrid{
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    grid-gap: 10px;
+}
+
+.addonAddBox{
+    border: 1px solid #7165E3;
+    box-shadow: 0px 1px 6px #7165E3;
+    border-radius: 8px;
+    padding: 20px 10px;
+}
+
+.additionalDetails{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 1px 4px #0000001F;
+    border: 1px solid #E9E9F0;
+    border-radius: 4px;
+    height: 45px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 50px 1fr;
+}
+
+.additionalDetailsSelected{
+    background: #DBD8FA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 1px 4px #0000001F;
+    border: 0.30000001192092896px solid #7165E3;
+}
+
+.additionalDetailsTextStyle{
+    font: normal normal medium 18px/24px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+}
+
+.chipStyle{
+    border-radius: 23px;
+    padding: 5px 10px;
+    margin-right: 10px;
+    max-height: 30px;
+}
+
+.greenChip{
+    background:  #a3f5c8 0% 0% no-repeat padding-box;
+    color: #14B15A;
+}
+
+.blueChip{
+    background: #DBD8FA 0% 0% no-repeat padding-box;
+    color: #7165E3;
+}
+
+.redChip{
+    background: #f6baa2 0% 0% no-repeat padding-box;
+    color: #FF6F3B;
+}
+
+.administrativePopoverStyle{
+    margin: 20px;
+}
+
+.administrativeCardStyle{
+    height: 40px;
+}
+
+.selectedAdministrativeCardStyle{
+    background-color: #ebe9fb;
+    margin: 0 -20px;
+    padding: 0 20px;
 }

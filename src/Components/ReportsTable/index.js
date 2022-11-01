@@ -5,7 +5,7 @@ import style from './index.module.scss';
 const ReportsTable = ({tableType, tableHeader, tableValue, activitiesServicesValues, styleName}) => {
     console.log(tableValue, activitiesServicesValues)
     return(
-        <div className={style.marginTop20}>
+        <div className={style.marginTop40}>
             <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{tableType}</div>
             <div className={`${styleName ? `${styleName}` : ''} ${style.marginTop20}`}>
                 {tableHeader?.map((data, index) => (

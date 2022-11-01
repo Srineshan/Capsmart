@@ -3,6 +3,7 @@ import { Dialog, Classes, Icon, Intent, InputGroup, Checkbox } from '@blueprintj
 import style from './index.module.scss';
 import {GET,PUT,POST,role,TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { FormatPhoneNumber } from './../../utils/formatting';
 
 const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserData, contractId}) => {
     const [selectedRole, setSelectedRole] = useState('Contract Manager');
@@ -37,7 +38,7 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
           "name": {
             "firstName": userData.firstName,
             "lastName": userData.lastName,
-            "suffix": ""
+            "suffix": {}
           },
           // "contractType": {
           //   "contractType": contractType
@@ -75,33 +76,10 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
     }
   }
 
-  const formatPhoneNumber = (value) => {
-    if (!value) return value;
 
-    const phoneNumber = value.replace(/[^\d]/g, "");
-    const phoneNumberLength = phoneNumber.length;
-
-    if (phoneNumberLength < 4) return phoneNumber;
-
-    if (phoneNumberLength < 7) {
-      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
-    }
-
-    if (phoneNumberLength === 10) {
-      return '+1' + `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(
-        3,
-        6
-      )}-${phoneNumber.slice(6, 10)}`;
-    }
-
-    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(
-      3,
-      6
-    )}-${phoneNumber.slice(6, 10)}`;
-  }
 
   const handleInput = (e) => {
-    const formattedPhoneNumber = formatPhoneNumber(e.target.value);
+    const formattedPhoneNumber = FormatPhoneNumber(e.target.value);
     // setInputValue(formattedPhoneNumber);
     setUserData({...userData, phone:formattedPhoneNumber})
   };

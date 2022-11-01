@@ -22,7 +22,7 @@ import TimesheetProcessingWorkflow from './timesheetProcessingWorkflow';
 
 import style from './index.module.scss';
 
-const NewContractFromClone = ({getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method}) => {
+const NewContractFromClone = ({contracts, getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method}) => {
     const [selectContractInfo, setSelectContractInfo] = useState(contractType);
     const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] = useState(false);
     const [newServiceProviderDialog, setNewServiceProviderDialog] = useState(false);
@@ -167,7 +167,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     <InputGroup
                         value={selectContractInfo}
                         className={`${style.contractWidth} ${style.marginLeft20} ${style.reduceTop10} ${style.marginBottom}`} />
-                    <Icon icon="cross" size={25} intent={Intent.DANGER} className={style.newContractCrossStyle} onClick={() => getNewContract(false)}  />
+                    <Icon icon="cross" size={25} intent={Intent.DANGER} className={style.newContractCrossStyle} onClick={() => {getNewContract(false);getContractIdFromActive('');}}  />
                 </div>
             </div>
             <div className={style.welcomeBorder}></div>
@@ -241,6 +241,7 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     getCurrentPage={getCurrentPage}
                     selectContractInfo={selectContractInfo}
                     contractId = {contractId}
+                    contractName={contractName}
                      />
                 ) : currentPage === "Timesheet Submission Terms"  ? (
                     <TimeSheetSubmissionTerms
@@ -268,14 +269,17 @@ const NewContractFromClone = ({getNewContract, contractType, selectedContract, s
                     getViewPage4={getViewPage4}
                     getCurrentPage={getCurrentPage}
                     selectContractInfo={selectContractInfo}
-                    contractId = {contractId}/>
+                    contractId = {contractId}
+                    contractName={contractName}
+                    />
                 )
                 : selectContractInfo === "INDIVIDUAL" && currentPage === "Contracted Services Provider(s)"  ? (
                     <ContractedServicesProviderIndividual
                     getViewPage3={getViewPage3}
                     getCurrentPage={getCurrentPage}
                     contractType = {contractType}
-                    contractId = {contractId}/>
+                    contractId = {contractId}
+                    contracts={contracts}/>
                 ) : (currentPage === "Contract ID & Term Limit") ? (
                     <ContractIdTermLimitIndividual
                     getViewPage1={getViewPage1}

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, Fragment } from 'react';
 import { Checkbox } from '@blueprintjs/core';
 import Navbar from './../../Components/Navbar';
-import UserLogo from './../../images/userLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import {Link} from 'react-router-dom';
 import PrintIcon from './../../images/printIcon.png';
@@ -19,6 +19,7 @@ import PageFooterIcon from './../../images/pageFooterIcon.png';
 import RedWarning from './../../images/redWarning.png';
 import ContractExtension from './../../images/contractExtension.png';
 import ProgressBar from "@ramonak/react-progress-bar";
+import SearchBar from './../../Components/SearchBar';
 import style from './index.module.scss';
 
 const TasksAndAlerts = () => {
@@ -33,7 +34,7 @@ const TasksAndAlerts = () => {
                 <div className={`${style.grid5}`}>
                     <div className={style.cardStyle}>
                         <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                            <img src={UserLogo} className={style.userLogo} />
+                            <img src={DoctorAnime} className={style.userLogo} />
                             <div className={style.marginLeft20}>
                                 <div className={style.userNameStyle}>
                                 {user?.userName}
@@ -157,10 +158,7 @@ const TasksAndAlerts = () => {
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                             <p className={`${style.marginLeft30} ${style.activeContractsWidth}`}>{`{{Today Date}}`}</p>
                             <div className={`${style.displayInRow}`}>
-                                <div className={style.searchBarStyle}>
-                                    <p>Search here</p>
-                                    <p className={style.marginRight}>&#128269;</p>
-                                </div>
+                                <SearchBar />
                                 <img src={Bell} alt="Bell" className={style.smallIcons} />
                                 <img src={Filter} alt="Filter" className={style.filterIcon} />
                             </div>

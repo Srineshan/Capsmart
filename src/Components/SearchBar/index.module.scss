@@ -1,0 +1,42 @@
+@import '../../styles/mixins.scss';
+
+// .searchBarStyle{
+//     // background: #E3E5F1 0% 0% no-repeat padding-box;
+//     border: 1px solid #A7A7A7;
+//     height: 35px;
+//     width: 34vw;
+//     border-radius: 22px;
+//     // opacity: 0.3;
+//     display: flex;
+//     justify-content: space-between;
+//     p{
+//         margin-top: 8px;
+//         margin-left: 10px;
+//     }
+// }
+
+// .searchInput{
+//   // background: #E3E5F1 0% 0% no-repeat padding-box;
+//   border-radius: 22px;
+//   padding:1px 2px 2px 7px;
+//   width:100vw;
+//   // opacity:0.3;
+// }
+
+// .editableTextSearch{
+//   border:0;
+// }
+//
+// editableTextSearch:focus{
+//   outline: none;
+// }
+
+.marginRight{
+    margin-right: 10px;
+}
+
+
+.searchBarStyle{
+    width: 34vw;
+    border-radius: 22px !important;
+}

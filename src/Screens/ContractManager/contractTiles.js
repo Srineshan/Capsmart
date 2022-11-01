@@ -1,52 +1,14 @@
 import React from 'react';
+import Tile from './../../Components/Tile';
 import style from './index.module.scss';
 
-const ContractTiles = ({getSelectedContract, selectedContract, activeContractsLength, draftContractsLength, upcomingContractsLength, expiredContractsLength}) => {
-
+const ContractTiles = ({metadata, getSelectedContract, selectedContract, activeContractsLength, draftContractsLength, upcomingContractsLength, expiredContractsLength}) => {
     return(
         <div className={style.grid4}>
-            <div className={`${style.cardStyle} ${selectedContract === "active contract" && style.selectedContractBackground}`} onClick={() => getSelectedContract('active contract')}>
-                <h5 className={`${style.headingForContracts}`}>ACTIVE CONTRACTS</h5>
-                <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                    <p className={`${style.headingCountForContracts} ${style.green}`}>{activeContractsLength}</p>
-                    <div className={`${style.optionsStyle} ${style.displayInCol}`}>
-                        <span><span className={style.orange}>0</span> AUTO RENEWED</span>
-                        <span><span className={style.red}>0</span> EXPIRING IN 30 DAYS</span>
-                    </div>
-                </div>
-            </div>
-            <div className={`${style.cardStyle} ${selectedContract === "draft" && style.selectedContractBackground}`} onClick={() => getSelectedContract('draft')}>
-                <h5 className={`${style.headingForContracts}`}>DRAFT</h5>
-                <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                    <p className={`${style.headingCountForContracts} ${style.yellow}`}>{draftContractsLength}</p>
-                    <div className={`${style.optionsStyle} ${style.displayInCol}`}>
-                        <span><span className={style.orange}>0</span> ACTIVATION IN-PROGRESS</span>
-                        <span><span className={style.red}>0</span> ACTIVATION PAST DUE</span>
-                    </div>
-                </div>
-            </div>
-            <div className={`${style.cardStyle} ${selectedContract === "upcoming renewals" && style.selectedContractBackground}`} onClick={() => getSelectedContract('upcoming renewals')}>
-                <p className={style.next30Style}>NEXT 30 DAYS</p>
-                <h5 className={style.headingForContracts}>UPCOMING RENEWALS</h5>
-                <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                    <p className={`${style.headingCountForContracts} ${style.yellow}`}>{upcomingContractsLength}</p>
-                    <div className={`${style.optionsStyle} ${style.displayInCol}`}>
-                        <span><span className={style.orange}>0 </span> EXTENSION REQUIRED</span>
-                        <span><span className={style.red}>0 </span> NEW CONTRACT REQUIRED</span>
-                    </div>
-                </div>
-            </div>
-            <div className={`${style.cardStyle} ${selectedContract === "expired or terminated" && style.selectedContractBackground}`} onClick={() => getSelectedContract('expired or terminated')}>
-                <p className={style.next30Style}>LAST 30 DAYS</p>
-                <h5 className={`${style.headingForContracts}`}>EXPIRED / TERMINATED</h5>
-                <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                    <p className={`${style.headingCountForContracts} ${style.red}`}>{expiredContractsLength}</p>
-                    <div className={`${style.optionsStyle} ${style.displayInCol}`}>
-                        <span><span className={style.red}>0 </span> EXPIRED</span>
-                        <span><span className={style.red}>0 </span> TERMINATED</span>
-                    </div>
-                </div>
-            </div>
+          <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="ACTIVE CONTRACTS" bigNumber={metadata?.activeContract?.activeContractCount} smallNum1='0' smallNum2={metadata?.activeContract?.expiredIn30DaysCount} smallText1="AUTO RENEWED" smallText2="EXPIRING IN 30 DAYS" currentTile="activecontracts" topText=''/>
+          <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="DRAFT" bigNumber={metadata?.draft?.draftCount} smallNum1='0' smallNum2="0" smallText1="ACTIVATION IN-PROGRESS" smallText2="ACTIVATION PAST DUE" currentTile="draft" topText=''/>
+          <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="UPCOMING RENEWALS" bigNumber='0' smallNum1='0' smallNum2="0" smallText1="EXTENSION REQUIRED" smallText2="NEW CONTRACT REQUIRED" currentTile="upcomingrenewals" topText='NEXT 30 DAYS'/>
+          <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="EXPIRED / TERMINATED" bigNumber={metadata?.expiredOrTerminatedContract?.expiredOrTerminatedContractCount} smallNum1='0' smallNum2="0" smallText1="EXPIRED" smallText2="TERMINATED" currentTile="expired/terminated" topText='LAST 30 DAYS'/>
         </div>
     )
 }

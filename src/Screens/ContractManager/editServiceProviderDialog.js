@@ -4,6 +4,9 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {GET, PUT, POST, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import SuffixList from './../../Components/SuffixList';
+import ProviderTypeList from './../../Components/ProviderTypeList';
+import FunctionalTitleList from './../../Components/FunctionalTitleList';
 
 import style from './index.module.scss';
 
@@ -14,8 +17,8 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
     const [roles,setRoles] = useState([]);
     const [selectedRoles, setSelectedRoles] = useState(userProviderData?.roles);
     const [npin,setNpin] = useState({npin:'',missing:false,na:false});
-    const [userDetails,setUserDetails] = useState({firstName:'',middleName:'',lastName:'',suffix:'',email:'',phone:''});
-    const [providerType,setProviderType] = useState('');
+    const [userDetails,setUserDetails] = useState({firstName:'',middleName:'',lastName:'',suffix:{suffix:'',id:''},email:'',phone:''});
+    const [providerType,setProviderType] = useState({contractedServiceProviderType:'',id:''});
     const [address,setAddress] = useState({city:'',state:'',zipcode:''});
     const [contractName, setContractName] = useState('');
     const [siteLevel,setSiteLevel] = useState(false);
@@ -23,15 +26,13 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
     const [siteList,setSiteList] = useState([]);
     const [sites,setSites] = useState([]);
     const [selectedSitesDept,setSelectedSitesDepartment] = useState([]);
-    const [siteLevelTitle, setSiteLevelTitle] = useState('');
+    const [siteLevelTitle, setSiteLevelTitle] = useState({id:'',title:''});
     const [departmentLevelDepartment, setDepartmentLevelDepartment] = useState('');
-    const [departmentLevelTitle, setDepartmentLevelTitle] = useState('');
+    const [departmentLevelTitle, setDepartmentLevelTitle] = useState({id:'',title:''});
     const [siteLevelSite, setSiteLevelSite] = useState({id:'',name:''});
     const [departmentLevelSite, setDepartmentLevelSite] = useState({id:'',name:''});
     const [siteTitleValues, setSiteTitleValues] = useState([]);
     const [departmentTitleValues, setDepartmentTitleValues] = useState([]);
-
-    const titleList = ['Anesthesiologist', 'Cardiologist', 'Chief Medical Information Officer', 'Chief Medical Officer', 'Chief of Staff'];
 
     useEffect(()=>{
       getRolesData();
@@ -51,7 +52,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
         setNpin({npin:userProviderData?.npin?.npin, missing:userProviderData?.npin?.missing, notApplicable:userProviderData?.npin?.notApplicable});
         setSelectedRoles(userProviderData?.roles || []);
         setUserDetails({...userDetails, firstName:userProviderData?.name?.firstName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || ''});
-        setProviderType(userProviderData?.serviceProviderType || '');
+        setProviderType(userProviderData?.serviceProviderType || {});
         setAddress({city:userProviderData?.address?.city || '',state:userProviderData?.address?.state || '',zipcode:userProviderData?.address?.zipcode || ''});
         let contractData = userProviderData?.contracts?.filter(data=>data?.id === contractId)?.map(data=>data)[0];
         setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : [] );
@@ -66,7 +67,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
       siteList?.map(data=>{
         let dept = [];
         data?.departmentList?.departments?.map(deptData=>{
-          dept.push({id:deptData?.id,name:deptData?.departmentName?.name,title:deptData?.departmentResponsibility?.title || ''});
+          dept.push({id:deptData?.id,name:deptData?.departmentName?.name,title:deptData?.departmentResponsibility?.title || '',title_id:deptData?.departmentResponsibility?.id});
           if(deptData?.departmentResponsibility?.title !== '' && deptData?.departmentResponsibility?.title !== undefined){
             let valueString = `${data?.siteName?.siteName} - ${deptData?.departmentName?.name} - ${deptData?.departmentResponsibility?.title}`
             if(!deptValue.includes(valueString)){
@@ -74,7 +75,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
             }
           }
           })
-        temp.push({id:data?.id,name:data?.siteName?.siteName,title:data?.siteResponsibility?.title || '',department:dept});
+        temp.push({id:data?.id,name:data?.siteName?.siteName,title:data?.siteResponsibility?.title || '',title_id:data?.siteResponsibility?.id, department:dept});
         if(data?.siteResponsibility?.title !== '' && data?.siteResponsibility?.title !== undefined){
           let valueString = `${data?.siteName?.siteName} - ${data?.siteResponsibility?.title}`;
           if(!siteValue.includes(valueString)){
@@ -150,31 +151,33 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
     }
 
     const handleSiteLevelValues = () => {
-      if(siteLevelSite?.name === '' ||  siteLevelTitle === ''){
+      if(siteLevelSite?.name === '' ||  siteLevelTitle?.title === ''){
         ErrorToaster('Selecting all the fields is mandatory');
         return;
       }
-      setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} - ${siteLevelTitle}`]);
+      setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} - ${siteLevelTitle?.title}`]);
       let temp = sites;
       temp?.filter(data=>data?.id === siteLevelSite?.id)?.map(data=>{
-        data.title = siteLevelTitle;
+        data.title = siteLevelTitle?.title;
+        data.title_id = siteLevelTitle?.id;
       })
       setSites(temp);
       setSiteLevelSite({id:'',name:''});
-      setSiteLevelTitle('');
+      setSiteLevelTitle({});
     }
 
     const handleDepartmentLevelValues = () => {
-      if(departmentLevelSite?.name === '' || departmentLevelDepartment?.name === '' || departmentLevelTitle === ''){
+      if(departmentLevelSite?.name === '' || departmentLevelDepartment?.name === '' || departmentLevelTitle?.title === ''){
         ErrorToaster('Selecting all the fields is mandatory');
         return;
       }
-      let valueString = `${departmentLevelSite?.name} - ${departmentLevelDepartment?.name} - ${departmentLevelTitle}`
+      let valueString = `${departmentLevelSite?.name} - ${departmentLevelDepartment?.name} - ${departmentLevelTitle?.title}`
       setDepartmentTitleValues([...departmentTitleValues, valueString]);
       let temp = sites;
       let siteDepartment = sites?.filter(data=>data?.id === departmentLevelSite?.id)?.map(data=>data?.department)[0];
       siteDepartment?.filter(dept=>dept?.id === departmentLevelDepartment?.id)?.map(dept=>{
-        dept.title = departmentLevelTitle;
+        dept.title = departmentLevelTitle?.title;
+        dept.title_id = departmentLevelTitle?.id;
       })
       temp?.filter(data=>data?.id === departmentLevelSite?.id)?.map(data=>{
         data.department = siteDepartment;
@@ -182,7 +185,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
       setSites(temp);
       setDepartmentLevelSite({id:'',name:''});
       setDepartmentLevelDepartment({id:'',name:''});
-      setDepartmentLevelTitle('');
+      setDepartmentLevelTitle({});
     }
 
     const handleSelectedDepartmentSite = (id) => {
@@ -198,6 +201,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
       let siteDepartment = sites?.filter(data=>data?.name === site)?.map(data=>data?.department)[0];
       siteDepartment?.filter(data=>data?.name === dept && data?.title === title)?.map(data=>{
         data.title = '';
+        data.title_id = '';
       });
       temp?.filter(data=>data?.name === site && data?.title)?.map(data=>{
         data.department = siteDepartment;
@@ -213,6 +217,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
       let temp = sites;
       temp?.filter(data=>data?.name === site && data?.title === title)?.map(data=>{
         data.title = '';
+        data.title_id = '';
       })
       setSites(temp);
       setSiteTitleValues(siteTitleValues?.filter((data,indexVal)=>index!== indexVal)?.map(data=>data));
@@ -230,6 +235,9 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
       }
     }
 
+    const handleSuffixChange = (id,value) => {
+      setUserDetails({...userDetails, suffix:{id:id,value:value}});
+    }
 
     const getSiteData  = () => {
       let siteData = [];
@@ -276,8 +284,19 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
         data.departmentLevelResponsible = departmentLevel;
         data.siteLevelResponsible = siteLevel;
       });
-
-
+      let roles = userDetails?.roles;
+      selectedRoles?.map(data=>{
+        if(!roles?.map(role=>role?.id).includes(data?.id)){
+          roles.push(data);
+        }
+      });
+      let sites = userDetails?.sites?.sites || [];
+      let selectedSite = getSiteData();
+      selectedSite?.map(data=>{
+        if(!sites?.map(site=>site?.id).includes(data?.id)){
+          sites.push(data);
+        }
+      });
         const data = {
             "id": userProviderData?.id,
             "name": {
@@ -285,7 +304,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                 "lastName": userDetails?.lastName,
                 "suffix": userDetails?.suffix
               },
-              "userType": "ADMIN",
+              "userType": "CONTRACTED_SERVICE_PROVIDER_USER",
               "contracts":contractData,
               "title": {
                 "title": ""
@@ -299,7 +318,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                 "landlineNumber": "",
                 "mobileNumberNotApplicable": true
               },
-              "roles": selectedRoles,
+              "roles": roles,
               "address": {
                 "city": address?.city,
                 "state": address?.state,
@@ -308,7 +327,9 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
               "tenant": {
                 "tenantId": TenantID
               },
-              "sites": userProviderData?.sites,
+              "sites": {
+                "sites" : sites
+              },
               "serviceProviderType": providerType,
               "licenceDetails": {
                 "medicalLicense": "string",
@@ -355,6 +376,8 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
           })
     }
 
+    console.log('suffix',userDetails?.suffix);
+
 
     return(
         <Dialog isOpen={getEditServiceDialog} onClose={() => getEditServiceDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
@@ -384,75 +407,13 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Suffix*</div>
                     <div className={style.grid3}>
-                        <select
-                            name="class"
-                            id="Class"
-                            className={style.fullWidth}
-                            onChange={(e)=>handleUserData('suffix',e.target.value)}>
-                                <option value="0" >
-                                Select Suffix
-                                </option>
-                                <option value="MD">
-                                MD
-                                </option>
-                                <option value="DO">
-                                DO
-                                </option>
-                                <option value="MS">
-                                MS
-                                </option>
-                                <option value="BD">
-                                BD
-                                </option>
-                                <option value="RN">
-                                RN
-                                </option>
-                                <option value="PA">
-                                PA
-                                </option>
-                                <option value="CPA">
-                                CPA
-                                </option>
-                                <option value="PHD">
-                                PHD
-                                </option>
-                                <option value="CISCO">
-                                CISCO
-                                </option>
-                                <option value="CEO">
-                                CEO
-                                </option>
-                                <option value="CFO">
-                                CFO
-                                </option>
-                        </select>
+                        <SuffixList value={userDetails?.suffix?.id} onChangeFunc={(id,value)=>handleSuffixChange(id,value)} className={[style.fullWidth]}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Service Provider Type*</div>
                     <div className={style.grid3}>
-                        <select
-                            name="class"
-                            id="Class"
-                            value={providerType}
-                            className={style.fullWidth}
-                            onChange={(e)=>setProviderType(e.target.value)}>
-                                <option value="0" >
-                                Select provider Type
-                                </option>
-                                <option value="Physician" >
-                                Physician
-                                </option>
-                                <option value="Nurse" >
-                                Nurse
-                                </option>
-                                <option value="Admin Staff" >
-                                Admin Staff
-                                </option>
-                                <option value="Other" >
-                                Other
-                                </option>
-                        </select>
+                        <ProviderTypeList value={providerType?.id} onChangeFunc={(id,value)=>setProviderType({id:id,contractedServiceProviderType:value})} className={[style.fullWidth]}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -528,21 +489,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                                 {/* )} */}
                                 <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                                     <div className={style.marginTop}>Title*</div>
-                                    <select
-                                        name="class"
-                                        id="Class"
-                                        value={siteLevelTitle}
-                                        onChange={(e) => setSiteLevelTitle(e.target.value)}
-                                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                            <option value="Select Title" >
-                                            Select Title
-                                            </option>
-                                            {titleList?.map((data, index) => (
-                                              <option key={index} value={data}>
-                                                {data}
-                                              </option>
-                                            ))}
-                                    </select>
+                                    <FunctionalTitleList value={siteLevelTitle?.id} onChangeFunc={(id,value)=>setSiteLevelTitle({id:id,title:value})} className={[style.marginLeft20,style.weekSelectStyle]} providerId={providerType?.id}/>
                                 </div>
                                 <div className={`${style.addButtonPosition} ${style.marginTop20}`}>
                                   <Button variant="outlined" onClick={() => handleSiteLevelValues()}>Add</Button>
@@ -616,21 +563,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                                     </div>
                                     <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                                         <div className={style.marginTop}>Title*</div>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            value={departmentLevelTitle}
-                                            onChange={(e) => setDepartmentLevelTitle(e.target.value)}
-                                            className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                <option value="Select Title" >
-                                                Select Title
-                                                </option>
-                                                {titleList?.map((data, index) => (
-                                                  <option key={index} value={data}>
-                                                    {data}
-                                                  </option>
-                                                ))}
-                                        </select>
+                                        <FunctionalTitleList value={departmentLevelTitle?.id} onChangeFunc={(id,value)=>setDepartmentLevelTitle({id:id,title:value})} className={[style.marginLeft20,style.weekSelectStyle]} providerId={providerType?.id}/>
                                     </div>
                                     <div className={`${style.addButtonPosition} ${style.marginTop20}`}>
                                       <Button variant="outlined" onClick={() => handleDepartmentLevelValues()}>Add</Button>

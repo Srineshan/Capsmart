@@ -21,6 +21,21 @@ export const GetEntityDetails = () => {
   }
 }
 
+export const currentUser = () => {
+  let cookie = new Cookie();
+  let accessToken = cookie.get('user');
+  let decoded = jwt(accessToken);
+  let user = {};
+  if(accessToken){
+    user.id = decoded?.id;
+    user.firstName = decoded?.userName?.split(' ')[0];
+    user.lastName = decoded?.userName?.split(' ')[1];
+    user.email = decoded?.sub;
+  }
+  return user;
+}
+
+
 export const GetRoles = () => {
   let cookie = new Cookie();
   let token = cookie.get('user');

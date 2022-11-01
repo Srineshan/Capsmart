@@ -8,7 +8,6 @@ import axios from "axios";
 import style from './index.module.scss';
 import jwt from 'jwt-decode';
 
-
 const Login = (props) => {
   const [user,setUser] = useState({email:'',password:''});
   const navigate = useNavigate();
@@ -24,8 +23,7 @@ const Login = (props) => {
 
   const getEntityId = async() => {
     await axios(`https://rest.timesmart.io/entity-service/entityID`,{
-        method: 'GET',
-        headers: {'X-subdomain' : 'demoidn'},
+        method: 'GET'
     }).then(response=>{
       cookie.set('entityId',response?.data?.id);
       setEntityId(response?.data?.id);

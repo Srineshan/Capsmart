@@ -1,5 +1,5 @@
 import React from 'react';
-import UserLogo from './../../images/userLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import PageFooterIcon from './../../images/pageFooterIcon.png';
 
@@ -18,7 +18,7 @@ const SideBar = () => {
                         <div className={`${style.userNameStyle} `}>
                         JOHN
                     </div>
-                    <img src={UserLogo} className={style.userLogo} />
+                    <img src={DoctorAnime} className={style.userLogo} />
                 </div>
             </div>
             <div className={`${style.bigCardStyle} ${style.marginTop20}`}>

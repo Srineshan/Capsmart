@@ -169,14 +169,15 @@ const AppSubscription = ({getActiveStep}) => {
         "entityName": entityData?.entityName,
         "entityType": entityData?.entityType,
         "entityDisplayId": entityData?.entityDisplayId,
-        "customerType": entityData?.customerType,
+        "industryId": entityData?.industryId,
         "sites": entityData?.sites,
         "subdomain":entityData?.subdomain,
         "multiSiteEntity":entityData?.multiSiteEntity,
         "canPrimarySiteToUseApp":entityData?.canPrimarySiteToUseApp,
         "accountManager":entityData?.accountManager,
         "appUserRoles":entityData?.appUserRoles,
-
+        "logo":entityData?.logo,
+        "logoThumbnail":entityData?.logoThumbnail,
         "subscriptionPlan": {
           "planName": plan?.planName || 'BASIC',
           "allowableRegisteredUsers": {
@@ -274,7 +275,7 @@ const AppSubscription = ({getActiveStep}) => {
     return(
       <>
         {isSetupComplete? <SetupComplete data={plan?.planName === 'TRIAL'? 'Trial':'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess? 'Created' : 'Updated'}/> : <div className={style.entitySetupBackground}>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={()=>navigate('/user')}/>
             <div className={style.stepperMargin}>
                 <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                     <div onClick={() => getActiveStep('entitySetup')}>

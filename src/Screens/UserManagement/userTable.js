@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import UserLogo from './../../images/userLogo.jpg';
+import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
 import Filter from './../../images/filter.png';
@@ -23,6 +23,8 @@ import EditUser from './editUser';
 import MailTemplate from './mailTemplate';
 import style from './index.module.scss';
 import SendEmail from './sendEmail';
+import SearchBar from './../../Components/SearchBar';
+
 import SendEmailUserList from './sendMailUserList';
 
 const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog}) => {
@@ -110,7 +112,7 @@ const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, get
                          <div className={`${style.userNameStyle} `}>
                             {user?.userName}
                         </div>
-                        <img src={UserLogo} className={style.userLogo} />
+                        <img src={DoctorAnime} className={style.userLogo} />
                     </div>
                 </div>
                 <div className={`${style.cardStyle}`} onClick={() => getSelectedContract('active contracts')}>
@@ -155,10 +157,7 @@ const UserTable = ({getSelectedContract, getAddContract, getExtensionDialog, get
                     <div className={style.spaceBetween}>
                         <p className={`${style.activeContractsWidth} ${style.uppercase}`}>{format(new Date(), 'MMM d, yyyy HH:mm')} EST</p>
                         <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                            <div className={`${style.searchBarStyle} ${style.spaceBetween}`}>
-                                <p>Search here</p>
-                                <p className={style.marginRight}>&#128269;</p>
-                            </div>
+                            <SearchBar />
                             <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
                             <img src={CancelUser} alt="CancelUser" className={style.smallIcons} />
                             <img src={BlockUser} alt="BlockUser" className={style.smallIcons} onClick={() => getSendEmailDialog(true)} />

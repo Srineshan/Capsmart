@@ -12,10 +12,12 @@ import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
-import AddContractUser from './addContractUser';
 import MenuItem from '@mui/material/MenuItem';
 import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import SuffixList from './../../Components/SuffixList';
+import ProviderTypeList from './../../Components/ProviderTypeList';
+import FunctionalTitleList from './../../Components/FunctionalTitleList';
 
 import style from './index.module.scss';
 
@@ -40,19 +42,17 @@ const ITEM_PADDING_TOP = 8;
     },
   };
 
-  const VALUES = ['Site 1', "Site 2"];
 const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId, contractType}) => {
     const testContractId = contractId;
     const [user,setUsers] = useState([]);
     const [userName, setUserName] = useState('');
     const [selectContractManager, setSelectContractManager] = useState('');
-    const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
     const [siteLevel, setSiteLevel] = useState(false);
     const [departmentLevel, setDepartmentLevel] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
     const theme = useTheme();
     const [personName, setPersonName] = useState([]);
-    const [serviceProviderType, setServiceProviderType] = useState('');
+    const [serviceProviderType, setServiceProviderType] = useState({contractedServiceProviderType:'',id:''});
     const [npin, setNpin] = useState('');
     const [npinMissing, setNpinMissing] = useState(false);
     const [contractName,setContractName] = useState('');
@@ -60,15 +60,15 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     const [contractorFirstName, setContractorFirstName] = useState('');
     const [contractorMiddleName, setContractorMiddleName] = useState('');
     const [contractorLastName, setContractorLastName] = useState('');
-    const [contractorNameSuffix, setContractorNameSuffix] = useState('');
+    const [contractorNameSuffix, setContractorNameSuffix] = useState({id:'',suffix:''});
     const [contractorEmail, setContractorEmail] = useState('');
     const [contractorPhone, setContractorPhone] = useState(0);
     const [city, setCity] = useState('');
     const [state, setState] = useState('');
     const [zipCode, setZipCode] = useState('');
-    const [siteLevelTitle, setSiteLevelTitle] = useState('');
+    const [siteLevelTitle, setSiteLevelTitle] = useState({title:'',id:''});
     const [departmentLevelDepartment, setDepartmentLevelDepartment] = useState('');
-    const [departmentLevelTitle, setDepartmentLevelTitle] = useState('');
+    const [departmentLevelTitle, setDepartmentLevelTitle] = useState({title:'',id:''});
     const [siteLevelSite, setSiteLevelSite] = useState({id:'',name:''});
     const [departmentLevelSite, setDepartmentLevelSite] = useState({id:'',name:''});
     const [roles, setRoles] = useState([])
@@ -90,8 +90,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
         getUsersData();
         getContractName();
     },[])
-
-
 
     useEffect(()=>{
       let depts = sites?.filter(data=>data?.id === departmentLevelSite?.id)?.map(data=>data.department)[0];
@@ -120,6 +118,9 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
         setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : [] );
         setSiteLevel(contractData?.siteLevelResponsible);
         setDepartmentLevel(contractData?.departmentLevelResponsible);
+      }else{
+        console.log('inside else');
+        getSites();
       }
     }, [contractId, userProviderData, isUserPresent])
 
@@ -134,7 +135,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
       siteList?.map(data=>{
         let dept = [];
         data?.departmentList?.departments?.map(deptData=>{
-          dept.push({id:deptData?.id,name:deptData?.departmentName?.name,title:deptData?.departmentResponsibility?.title || ''});
+          dept.push({id:deptData?.id,name:deptData?.departmentName?.name,title:deptData?.departmentResponsibility?.title || '', title_id:deptData?.departmentResponsibility?.id || ''});
           if(deptData?.departmentResponsibility?.title !== '' && deptData?.departmentResponsibility?.title !== undefined){
             let valueString = `${data?.siteName?.siteName} - ${deptData?.departmentName?.name} - ${deptData?.departmentResponsibility?.title}`
             if(!deptValue.includes(valueString)){
@@ -142,7 +143,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
             }
           }
           })
-        temp.push({id:data?.id,name:data?.siteName?.siteName,title:data?.siteResponsibility?.title || '',department:dept});
+        temp.push({id:data?.id,name:data?.siteName?.siteName,title:data?.siteResponsibility?.title || '',title_id:data?.siteResponsibility?.id, department:dept});
         if(data?.siteResponsibility?.title !== '' && data?.siteResponsibility?.title !== undefined){
           let valueString = `${data?.siteName?.siteName} - ${data?.siteResponsibility?.title}`;
           if(!siteValue.includes(valueString)){
@@ -169,10 +170,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
           if(userData?.length !== 0){
             setUserProviderData(userData[0]);
             setIsUserPresent(true);
-            if(userData?.contracts?.filter(data=>data?.id === contractId && data?.sites !== null)?.map(data=>data)?.length !== 0)
-            {
-              getSites();
-            }
           }
           setUsers(userData);
         }
@@ -196,38 +193,38 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
       }
     }
 
-    const titleList = ['Anesthesiologist', 'Cardiologist', 'Chief Medical Information Officer', 'Chief Medical Officer', 'Chief of Staff'];
-
     const getTagProps = (_v, index) => ({
       minimal: true,
   });
 
   const handleSiteLevelValues = () => {
-    if(siteLevelSite?.name === '' ||  siteLevelTitle === ''){
+    if(siteLevelSite?.name === '' ||  siteLevelTitle.title === ''){
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} - ${siteLevelTitle}`]);
+    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} - ${siteLevelTitle?.title}`]);
     let temp = sites;
     temp?.filter(data=>data?.id === siteLevelSite?.id)?.map(data=>{
-      data.title = siteLevelTitle;
+      data.title = siteLevelTitle?.title;
+      data.title_id = siteLevelTitle?.id;
     })
     setSites(temp);
     setSiteLevelSite({id:'',name:''});
-    setSiteLevelTitle('');
+    setSiteLevelTitle({id:'',title:''});
   }
 
   const handleDepartmentLevelValues = () => {
-    if(departmentLevelSite?.name === '' || departmentLevelDepartment?.name === '' || departmentLevelTitle === ''){
+    if(departmentLevelSite?.name === '' || departmentLevelDepartment?.name === '' || departmentLevelTitle?.title === ''){
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    let valueString = `${departmentLevelSite?.name} - ${departmentLevelDepartment?.name} - ${departmentLevelTitle}`
+    let valueString = `${departmentLevelSite?.name} - ${departmentLevelDepartment?.name} - ${departmentLevelTitle?.title}`
     setDepartmentTitleValues([...departmentTitleValues, valueString]);
     let temp = sites;
     let siteDepartment = sites?.filter(data=>data?.id === departmentLevelSite?.id)?.map(data=>data?.department)[0];
     siteDepartment?.filter(dept=>dept?.id === departmentLevelDepartment?.id)?.map(dept=>{
-      dept.title = departmentLevelTitle;
+      dept.title = departmentLevelTitle?.title;
+      dept.title_id = departmentLevelTitle?.id;
     })
     temp?.filter(data=>data?.id === departmentLevelSite?.id)?.map(data=>{
       data.department = siteDepartment;
@@ -235,7 +232,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     setSites(temp);
     setDepartmentLevelSite({id:'',name:''});
     setDepartmentLevelDepartment({id:'',name:''});
-    setDepartmentLevelTitle('');
+    setDepartmentLevelTitle({id:'',title:''});
   }
 
   const handleSelectedDepartmentSite = (id) => {
@@ -256,7 +253,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
               "id": ""
             },
             "departmentResponsibility": {
-              "title": dept?.title
+              "title": dept?.title,
+              "id": dept?.title_id
             }
         })
       })
@@ -269,7 +267,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
         "departments": deptData
       },
       "siteResponsibility": {
-        "title": data?.title
+        "title": data?.title,
+        "id":data?.title_id
       }
     })
     })
@@ -313,6 +312,19 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
   }
 
     const handleSave = async() => {
+      let roles = userProviderData?.roles || [];
+      selectedRoles?.map(data=>{
+        if(!roles?.map(role=>role?.id).includes(data?.id)){
+          roles.push(data);
+        }
+      });
+      let sites = userProviderData?.sites?.sites || [];
+      let selectedSite = getSiteData();
+      selectedSite?.map(data=>{
+        if(!sites?.map(site=>site?.id).includes(data?.id)){
+          sites.push(data);
+        }
+      });
         const data = {
             ...(isUserPresent && {'id': userProviderData?.id}),
             "name": {
@@ -320,11 +332,9 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 "lastName": contractorLastName,
                 "suffix": contractorNameSuffix
               },
-              "userType": "ADMIN",
+              "userType": "CONTRACTED_SERVICE_PROVIDER_USER",
               "contracts": getContractsData(),
-              "title": {
-                "title": ""
-              },
+              "title": {},
               "email": {
                 "officialEmail": contractorEmail
               },
@@ -337,7 +347,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 "landlineNumber": "string",
                 "mobileNumberNotApplicable": true
               },
-              "roles": userProviderData?.roles,
+              "roles": roles,
               "address": {
                 "city": city,
                 "state": state,
@@ -346,35 +356,10 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
               "tenant": {
                 "tenantId": TenantID
               },
-              "sites":  userProviderData?.sites,
+              "sites": {
+                "sites" : sites
+              },
               "serviceProviderType": serviceProviderType,
-              "licenceDetails": {
-                "medicalLicense": "",
-                "licenseExpiryDate": "",
-                "deaNumber": "",
-                "deaExpiryDate": "",
-                "boardCertification": [
-                  "string"
-                ]
-              },
-              "userProxy": {
-                "myProxy": {
-                  "proxyIdList": [
-                    {
-                      "id": "",
-                      "name": ""
-                    }
-                  ]
-                },
-                "proxyFor": {
-                  "proxyIdList": [
-                    {
-                      "id": "",
-                      "name": ""
-                    }
-                  ]
-                }
-              },
               "activated": true,
               "blocked": true,
               "npin": {
@@ -445,6 +430,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
       let siteDepartment = sites?.filter(data=>data?.name === site)?.map(data=>data?.department)[0];
       siteDepartment?.filter(data=>data?.name === dept && data?.title === title)?.map(data=>{
         data.title = '';
+        data.title_id = '';
       });
       temp?.filter(data=>data?.name === site && data?.title)?.map(data=>{
         data.department = siteDepartment;
@@ -460,6 +446,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
       let temp = sites;
       temp?.filter(data=>data?.name === site && data?.title === title)?.map(data=>{
         data.title = '';
+        data.title_id = '';
       })
       setSites(temp);
       setSiteTitleValues(siteTitleValues?.filter((data,indexVal)=>index!== indexVal)?.map(data=>data));
@@ -491,10 +478,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
       setSelectContractManager(selectedItem.id);
     }
 
-    const getAddNewManagerDialog = (value) => {
-      setAddNewManagerDialog(value);
-  }
-
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -502,28 +485,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 <div className={`${style.extentionGrid}`}>
                 <div className={style.extentionLableStyle}>Service Provider Type*</div>
                     <div className={style.grid3}>
-                        <select
-                            name="class"
-                            id="Class"
-                            value={serviceProviderType}
-                            onChange={(e) => setServiceProviderType(e.target.value)}
-                            className={style.fullWidth}>
-                                <option value="0" >
-                                Select Provider Type
-                                </option>
-                                <option value="Physician" >
-                                Physician
-                                </option>
-                                <option value="Nurse" >
-                                Nurse
-                                </option>
-                                <option value="Admin Staff" >
-                                Admin Staff
-                                </option>
-                                <option value="Other" >
-                                Other
-                                </option>
-                        </select>
+                      <ProviderTypeList value={serviceProviderType?.id} onChangeFunc={(id,value)=>setServiceProviderType({id:id,contractedServiceProviderType:value})} className={[style.fullWidth]}/>
                     </div>
                   </div>
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -558,49 +520,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Suffix*</div>
                       <div className={style.grid3}>
-                          <select
-                              name="class"
-                              id="Class"
-                              value={contractorNameSuffix}
-                              onChange={(e) => setContractorNameSuffix(e.target.value)}
-                              className={style.fullWidth}>
-                                  <option value="0" >
-                                  Select Suffix
-                                  </option>
-                                  <option value="MD">
-                                  MD
-                                  </option>
-                                  <option value="DO">
-                                  DO
-                                  </option>
-                                  <option value="MS">
-                                  MS
-                                  </option>
-                                  <option value="BD">
-                                  BD
-                                  </option>
-                                  <option value="RN">
-                                  RN
-                                  </option>
-                                  <option value="PA">
-                                  PA
-                                  </option>
-                                  <option value="CPA">
-                                  CPA
-                                  </option>
-                                  <option value="PHD">
-                                  PHD
-                                  </option>
-                                  <option value="CISCO">
-                                  CISCO
-                                  </option>
-                                  <option value="CEO">
-                                  CEO
-                                  </option>
-                                  <option value="CFO">
-                                  CFO
-                                  </option>
-                          </select>
+                          <SuffixList value={contractorNameSuffix?.id} onChangeFunc={(id,value)=>setContractorNameSuffix({...contractorNameSuffix, id:id,suffix:value})} className={[style.fullWidth]}/>
                       </div>
                   </div>
 
@@ -672,21 +592,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                                 {/* )} */}
                                 <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                                     <div className={style.marginTop}>Title*</div>
-                                    <select
-                                        name="class"
-                                        id="Class"
-                                        value={siteLevelTitle}
-                                        onChange={(e) => setSiteLevelTitle(e.target.value)}
-                                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                            <option value="Select Title" >
-                                            Select Title
-                                            </option>
-                                            {titleList?.map((data, index) => (
-                                              <option key={index} value={data}>
-                                                {data}
-                                              </option>
-                                            ))}
-                                    </select>
+                                    <FunctionalTitleList value={siteLevelTitle?.id} onChangeFunc={(id,value)=>setSiteLevelTitle({id:id,title:value})} className={[style.marginLeft20,style.weekSelectStyle]} providerId={serviceProviderType?.id}/>
                                 </div>
                                 <div className={`${style.addButtonPosition} ${style.marginTop20}`}>
                                   <Button variant="outlined" onClick={() => handleSiteLevelValues()}>Add</Button>
@@ -759,21 +665,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                                     </div>
                                     <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                                         <div className={style.marginTop}>Title*</div>
-                                        <select
-                                            name="class"
-                                            id="Class"
-                                            value={departmentLevelTitle}
-                                            onChange={(e) => setDepartmentLevelTitle(e.target.value)}
-                                            className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                <option value="Select Title" >
-                                                Select Title
-                                                </option>
-                                                {titleList?.map((data, index) => (
-                                                  <option key={index} value={data}>
-                                                    {data}
-                                                  </option>
-                                                ))}
-                                        </select>
+                                        <FunctionalTitleList value={departmentLevelTitle?.id} onChangeFunc={(id,value)=>setDepartmentLevelTitle({id:id,title:value})} className={[style.marginLeft20,style.weekSelectStyle]} providerId={serviceProviderType?.id}/>
                                     </div>
                                     <div className={`${style.addButtonPosition} ${style.marginTop20}`}>
                                       <Button variant="outlined" onClick={() => handleDepartmentLevelValues()}>Add</Button>
@@ -822,10 +714,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {getViewPage3(true);getCurrentPage('Contractor Business Entity')}}>CONTINUE</button>
               </div>
             </div>
-
-              {addNewManagerDialog && (
-                  <AddContractUser getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUsersData} contractId={contractId} contractName={contractName}/>
-              )}
 
         </div>
     )
