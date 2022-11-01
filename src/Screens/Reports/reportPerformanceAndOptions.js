@@ -48,18 +48,18 @@ const ReportPerformanceAndOptions = ({getShowExpandedView, showExpandedView}) =>
                         : reportType === "nonCompliant" ? 'List of Contracts that are non compliant with proof of documentation requirement' 
                         : 'Activities/ Services Log Status Summary'}
                     </div>
-                    <img src={Info} className={`${style.infoStyle} ${style.marginLeft20}`} />
-                    <div className={`${style.displayInRow} ${style.marginLeft20} ${style.reduceMarginTop}`}>
-                        <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
-                        <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
-                        <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
-                        <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
-                        <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
-                    </div>
                 </div>
                 <div className={` ${style.margin20}`}>
                     <div className={style.displayInRow}>
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`}>
+                        <img src={Info} className={`${style.infoStyle} ${style.marginTop5}`} />
+                        <div className={`${style.displayInRow} ${style.marginLeft20}`}>
+                            <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
+                            <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
+                            <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
+                            <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
+                            <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
+                        </div>
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}>
                             <CachedOutlinedIcon style={{color:"#52575D"}} onClick={() => setShowReportRefreshingDialog(true)} />
                         </div>
                         <div className={`${style.iconPadding} ${style.cursorPointer}`}>

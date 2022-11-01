@@ -232,7 +232,7 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${currentPage === "Timesheet Processing Workflow" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Timesheet Processing Workflow')}>
-                        Timesheet Processing Workflow ( Under Development )
+                        Timesheet Processing Workflow
                     </div>
                 </div>
                 {currentPage === "Timesheet Processing Workflow" ? (

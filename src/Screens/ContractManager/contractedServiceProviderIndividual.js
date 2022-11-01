@@ -42,7 +42,6 @@ const ITEM_PADDING_TOP = 8;
     },
   };
 
-  const VALUES = ['Site 1', "Site 2"];
 const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId, contractType}) => {
     const testContractId = contractId;
     const [user,setUsers] = useState([]);
@@ -119,6 +118,9 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
         setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : [] );
         setSiteLevel(contractData?.siteLevelResponsible);
         setDepartmentLevel(contractData?.departmentLevelResponsible);
+      }else{
+        console.log('inside else');
+        getSites();
       }
     }, [contractId, userProviderData, isUserPresent])
 
@@ -168,10 +170,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
           if(userData?.length !== 0){
             setUserProviderData(userData[0]);
             setIsUserPresent(true);
-            if(userData?.contracts?.filter(data=>data?.id === contractId && data?.sites !== null)?.map(data=>data)?.length !== 0)
-            {
-              getSites();
-            }
           }
           setUsers(userData);
         }
@@ -236,8 +234,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     setDepartmentLevelDepartment({id:'',name:''});
     setDepartmentLevelTitle({id:'',title:''});
   }
-
-  console.log('site',siteLevelTitle, departmentLevelTitle);
 
   const handleSelectedDepartmentSite = (id) => {
     setDepartmentLevelSite({id:id,name:sites?.filter(data => data?.id === id)?.map(data => data?.name)[0]});
@@ -316,7 +312,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
   }
 
     const handleSave = async() => {
-      let roles = userProviderData?.roles;
+      let roles = userProviderData?.roles || [];
       selectedRoles?.map(data=>{
         if(!roles?.map(role=>role?.id).includes(data?.id)){
           roles.push(data);
@@ -391,8 +387,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
             });
           }
     }
-
-    console.log('selected Site', getSiteData());
 
     const handleRoles = (value) => {
         if (value !== '0') {

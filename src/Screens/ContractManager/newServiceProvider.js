@@ -103,7 +103,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     const handleRoles = (value) => {
         if (value !== '0') {
           const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
-
           if (!selectedRoles.map(data => data?.roleName).includes(value)) {
             setSelectedRoles([...selectedRoles, selectedValue]);
           }

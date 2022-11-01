@@ -326,8 +326,8 @@ const ReportTypeOverview = () => {
          reportLog?.filter(data=>data?.activityStatus === value)?.map(data=> 
         {
             activityPerformed.push(data?.activityPerformed?.activity);
-            startDateTime.push(`${data?.activityTimeFrame?.stateDate}, ${data?.activityTimeFrame?.startTime}`)
-            endDateTime.push(`${data?.activityTimeFrame?.endDate}, ${data?.activityTimeFrame?.endTme}`)
+            startDateTime.push(`${format(new Date(data?.activityTimeFrame?.stateDate), 'MM-dd-yyyy')}, ${data?.activityTimeFrame?.startTime}`)
+            endDateTime.push(`${format(new Date(data?.activityTimeFrame?.endDate), 'MM-dd-yyyy')}, ${data?.activityTimeFrame?.endTme}`)
             user?.filter(user=>user?.id === data?.user?.id)?.map(data=>
             {
                 contractProvider.push(data?.name?.firstName)
@@ -624,6 +624,7 @@ const ReportTypeOverview = () => {
                                         activitiesServicesValues = {getActivitiesServicesValues('DONE')}
                                         styleName={style.grid5}
                                     />
+                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
                                     <ReportsTable 
                                         tableType={'To Do Activity/ Services'}
                                         tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site']}
@@ -631,6 +632,7 @@ const ReportTypeOverview = () => {
                                         activitiesServicesValues = {getActivitiesServicesValues('TODO')}
                                         styleName={style.grid5}
                                     />
+                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
                                     <ReportsTable 
                                         tableType={'Not Done Activity / Service Log'}
                                         tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site', 'Reason Not Done']}

@@ -16,7 +16,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [selectedService, setSelectedService] = useState({});
   const [users, setUsers] = useState([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [contractedServiceToBeRemoved, setContractedServiceToBeRemoved] = useState('');
+  const [contractedServiceToBeRemoved, setContractedServiceToBeRemoved] = useState();
   const [userLength, setUserLength] = useState(0);
   useEffect(() => {
     getContractedServices();
@@ -36,10 +36,12 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
 
   const getAddServiceDialog = (value) => {
     setAddService(value);
+    setSelectedService({});
   }
 
   const getEditServiceDialog = (value) => {
     setEditService(value);
+    setSelectedService({});
   }
 
   const getAddOn = (value) => {
@@ -60,12 +62,9 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     }
   }
 
-  console.log(users?.length)
-
   const handleDeleteService = async () => {
-    console.log(contractedServices?.filter(data => data?.performingActivity?.activity !== contractedServiceToBeRemoved)?.map(data => data));
     let formattedData = {
-      contractedServices: contractedServices?.filter(data => data?.performingActivity?.activity !== contractedServiceToBeRemoved)?.map(data => data)
+      contractedServices: contractedServices?.filter((data, index) => contractedServiceToBeRemoved !== index)?.map(data => data)
     }
 
     const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
@@ -76,10 +75,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       ErrorToaster('Unexpected Error');
     }
     setShowDeleteConfirmation(false);
-    setContractedServiceToBeRemoved('');
+    setContractedServiceToBeRemoved();
   }
-
-  console.log(contractedServices);
 
   return (
     <>
@@ -100,7 +97,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
                 <p className={`${style.documentProofDataTextWidth} ${style.cursorPointer}`} onClick={() => { getEditServiceDialog(true); setSelectedService(data) }}>{data?.activityType?.activityType}</p>
                 <p className={style.documentProofDataTextWidth}>{data?.performingActivity?.activity} </p>
                 <p className={style.documentProofDataTextWidth}>Demo data</p>
-                <Icon icon="trash" size={20} className={`${style.marginRight20} ${style.cursorPointer}`} color="#52575D" onClick={() => { setShowDeleteConfirmation(true); setContractedServiceToBeRemoved(data?.performingActivity?.activity) }} />
+                <Icon icon="trash" size={20} className={`${style.marginRight20} ${style.cursorPointer}`} color="#52575D" onClick={() => { setShowDeleteConfirmation(true); setContractedServiceToBeRemoved(index) }} />
               </div>
             ))}
             {/* <div className={`${style.serviceSpecificationTableData} ${style.displayInRow}`}>
@@ -126,12 +123,12 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
             </div>
           </div>
           {
-            addService &&
-            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} />
+            (addService || editService) &&
+            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog}/>
           }
           {
-            editService &&
-            <EditServiceProvided getEditServiceDialog={getEditServiceDialog} getAddOn={getAddOn} contractId={contractId} selectedService={selectedService} selectContractInfo={selectContractInfo} />
+            // editService &&
+            // <EditServiceProvided getEditServiceDialog={getEditServiceDialog} getAddOn={getAddOn} contractId={contractId} selectedService={selectedService} selectContractInfo={selectContractInfo} />
           }
           <Dialog isOpen={showDeleteConfirmation} onClose={() => setShowDeleteConfirmation(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
