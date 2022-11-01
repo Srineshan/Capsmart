@@ -158,7 +158,7 @@ const ContractIdTermLimitIndividual = ({getViewPage1, getViewPage2, getCurrentPa
     const getContracts = async() => {
       const {data:contracts} = await GET('contract-managment-service/contracts');
       if(contracts){
-        setContracts(contracts);
+        setContracts(contracts?.contractList);
       }
     }
 

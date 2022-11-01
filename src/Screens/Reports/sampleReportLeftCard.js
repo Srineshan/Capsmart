@@ -118,7 +118,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
 
     const getContracts = async() => {
         const {data: contracts} = await GET(`contract-managment-service/contracts`);
-        setContracts(contracts);
+        setContracts(contracts?.contractList);
     };
 
     const getUsersData = async() => {
