@@ -18,6 +18,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [contractedServiceToBeRemoved, setContractedServiceToBeRemoved] = useState();
   const [userLength, setUserLength] = useState(0);
+
   useEffect(() => {
     getContractedServices();
   }, [addService, editService, contractedServiceToBeRemoved])
@@ -37,6 +38,9 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const getAddServiceDialog = (value) => {
     setAddService(value);
     setSelectedService({});
+    if(value === false){
+      getContractedServices();
+    }
   }
 
   const getEditServiceDialog = (value) => {
@@ -52,7 +56,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
 
   const getContractedServices = async () => {
     const { data: contractedServices } = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
-    setContractedServices(contractedServices?.contractedServices)
+    setContractedServices(contractedServices?.contractedServices);
   }
 
   const getUserData = async () => {
@@ -96,7 +100,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
                 <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
                 <p className={`${style.documentProofDataTextWidth} ${style.cursorPointer}`} onClick={() => { getEditServiceDialog(true); setSelectedService(data) }}>{data?.activityType?.activityType}</p>
                 <p className={style.documentProofDataTextWidth}>{data?.performingActivity?.activity} </p>
-                <p className={style.documentProofDataTextWidth}>Demo data</p>
+                <p className={style.documentProofDataTextWidth}>{data?.users?.[0]?.name?.firstName}</p>
                 <Icon icon="trash" size={20} className={`${style.marginRight20} ${style.cursorPointer}`} color="#52575D" onClick={() => { setShowDeleteConfirmation(true); setContractedServiceToBeRemoved(index) }} />
               </div>
             ))}

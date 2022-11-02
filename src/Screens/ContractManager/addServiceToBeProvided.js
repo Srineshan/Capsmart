@@ -27,7 +27,6 @@ import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog }) => {
-    console.log('selectedservice', selectedService);
     const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Clinical Services','Add-On Clinical Services','Administrative / Miscellaneous Services'];
     const siteTypeId = sessionStorage.getItem('entityTypeId');
     const [serviceType, setServiceType] = useState('Clinic Blocks');
@@ -188,7 +187,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     const locationToAdd = async() => {
       let siteId = siteData?.map(data=>data?.id)[0];
-      console.log('id',siteId);
       let data = {
           "location": newLocation,
           "siteId": siteId,
@@ -221,8 +219,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             setDutyDays(dutyDays?.filter(data => data !== value)?.map(data => data))
         }
     }
-
-    // let performingActivity = selectedActivity?.map(data=>data?.activity?.activity)?.join('-');
 
     const handleSave = async() => {
         let performingActivity = '';
@@ -344,42 +340,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             else {
                 ErrorToaster('Unexpected Error');
             }
-        // getContractedServices()
     }
-
-    console.log('type', activityType);
 
     const reset = () => {
-        setMin(0);
-        setMax(0);
-        setWithNurse(0);
-        setWithoutNurse(0);
-        setAdditionalClinicSchedule(0);
-        setAdditionalSchedule(false);
-        setDuration(0);
-        setPayment(0);
-        setTotalContractedService(0);
-        setWorkingPeriodFrom('');
-        setWorkingPeriodTo('');
-    }
-
-    const resetAll = () => {
-        setMin(0);
-        setMax(0);
-        setWithNurse(0);
-        setWithoutNurse(0);
-        setAdditionalClinicSchedule(0);
-        setAdditionalSchedule(false);
-        setDuration(0);
-        setPayment(0);
-        setTotalContractedService(0);
-        setWorkingPeriodFrom('');
-        setWorkingPeriodTo('');
-        setActivityContractedFor('');
-        setContractedServiceProvider('');
-        if(selectContractInfo !== "INDIVIDUAL"){
-            setSelectedUsers([]);
-        }
+      setMetadata();
+      setSelectedLocation([]);
+      setSelectedActivity([]);
+      setSiteData();
     }
 
     const handleUsers = (value) => {
@@ -423,7 +390,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const locationItems = useMemo(
       () =>
         locationList?.map((data) => ({
-          // id: data.id,
           value: data?.location,
           location: data?.location
         })),
@@ -450,7 +416,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       }
     }
 
-    console.log('selectedActivity', selectedActivity);
 
     return (
         <div>
@@ -589,8 +554,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 </div>
                 <div>
                     <div className={`${style.floatRight}`}>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave();resetAll()}}>ADD MORE</button>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave();resetAll();getAddServiceDialog(false);}}>SAVE & EXIT</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave();reset()}}>ADD MORE</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave();reset();getAddServiceDialog(false);}}>SAVE & EXIT</button>
                     </div>
                 </div>
             </Dialog>
