@@ -129,11 +129,11 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
-                        <EditableText value={metadata?.min}  onChange={(e)=>handleValueChange('min',e)} type='number' className={style.serviceProvidedEditableTextStyle} />
+                        <EditableText value={metadata?.min}  placeholder='' onChange={(e)=>handleValueChange('min',e)} type='number' className={style.serviceProvidedEditableTextStyle} />
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MAX</div>
-                        <EditableText value={metadata?.max}  onChange={(e)=>handleValueChange('max',e)} type='number' className={style.serviceProvidedEditableTextStyle} />
+                        <EditableText value={metadata?.max}  placeholder='' onChange={(e)=>handleValueChange('max',e)} type='number' className={style.serviceProvidedEditableTextStyle} />
                     </div>
                     <Select
                         displayEmpty
