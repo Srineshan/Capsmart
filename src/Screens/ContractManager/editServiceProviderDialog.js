@@ -376,8 +376,6 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
           })
     }
 
-    console.log('suffix',userDetails?.suffix);
-
 
     return(
         <Dialog isOpen={getEditServiceDialog} onClose={() => getEditServiceDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>

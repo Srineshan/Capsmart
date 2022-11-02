@@ -1,12 +1,74 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button, RadioGroup, Radio } from '@blueprintjs/core';
 import ArrowDown from './../../images/arrowDown.png';
 import style from './index.module.scss';
 import AddHealthcareGroup from './../../images/addGroupBlue.png';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { POST,GET } from './../dataSaver'
 
-const AddTerminationReasons = ({ getAddTerminationReasonsDialog }) => {
+const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationReasonData}) => {
+    const [currentindustryType, setCurrentIndustryType] = useState("")
+    const [terminationBy, setTerminationBy] = useState("")
+    const [primaryReason, setPrimaryReason] = useState("")
+    const [secondaryReason, setSecondaryReason] = useState("")
+    const [currentEntityType, setCurrentEntityType] = useState("")
+    const [industryTypes,setIndustryTypes] = useState([])
+    const [entityTypes,setEntityTypes] = useState([])
+    const [editTermination , setEditTermination] = useState([])
+
+      let data = []
+
+      const getAllIndustries = async() => {
+          const {data : data} = await GET (`/industryMaster`);
+          setIndustryTypes(data);
+    }
+
+
+    const getEntityData = async(industryId) =>{
+        console.log("ok",data)
+        const {data : types} = await GET (`/entityTypeMaster?industryId=${industryId}`);
+        setEntityTypes(types)
+    }
+
+    useEffect(()=>{
+        getAllIndustries()
+        if(terminationReasonData!=null){
+            setCurrentIndustryType()
+            setTerminationBy()
+            setPrimaryReason()
+            setSecondaryReason()
+            setCurrentEntityType()
+
+        }
+    },[])
+
+    const SubmitTerminationReason = async () => {
+        const TerminationInput = {
+            "id":currentEntityType,
+            "terminationBy": terminationBy,
+            "primary_reason": primaryReason,
+            "secondary_reasons": [
+                secondaryReason
+            ],
+            "siteTypeId": {
+                "id": currentEntityType
+            }
+        }
+        await POST('/terminationReasonMaster', JSON.stringify(TerminationInput))
+            .then(response => {
+                SuccessToaster('User Added Successfully');
+            })
+            .catch(error => {
+                ErrorToaster(error);
+            })
+        getAddTerminationReasonsDialog(false)
+    }
+
+
+
+
     const arrowDown = () => {
-        return(
+        return (
             <img src={ArrowDown} className={`${style.colorFileStyle3} ${style.marginRight}`} />
         )
     }
@@ -22,26 +84,34 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog }) => {
                     <div className={`${style.extentionGrid}`}>
                         <div className={style.entityLableStyle}>Industry Type*</div>
                         <div className={style.displayInRow}>
-                            <InputGroup value="Healthcare" className={style.fullWidth} rightElement={arrowDown()} />
+                            <select value={currentindustryType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj =>{ setCurrentIndustryType(obj.target.value); getEntityData(obj.target.value)}} >
+                                    {
+                                        industryTypes.map(type=>(<option value={type.id}>{type.industry}</option>))
+                                    }
+                                </select>
                         </div>
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>Entity Type*</div>
                         <div className={style.displayInRow}>
-                            <InputGroup value="Hospital / Acute Care Facility (ACF)r" className={style.fullWidth} rightElement={arrowDown()} />
+                            <select value={currentEntityType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => {setCurrentEntityType(obj.target.value); } }>
+                            {
+                                        entityTypes.map(type=>(<option value={type.id}>{type.type}</option>))
+                                    }
+                                </select>
                         </div>
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>For Cause Terminating Party*</div>
                         <div className={style.displayInRow}>
-                            <InputGroup value="For Cause By Entity" className={style.fullWidth} rightElement={arrowDown()} />
+                            <InputGroup value={terminationBy} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => setTerminationBy(obj.target.value)} />
                         </div>
                     </div>
                     <div className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}></div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>Primary Termination Reason*</div>
                         <div className={style.displayInRow}>
-                            <InputGroup value="American Board of Anesthesiology" className={style.fullWidth} />
+                            <InputGroup value={primaryReason} className={style.fullWidth} onChange={obj => setPrimaryReason(obj.target.value)} />
                             <RadioGroup
                                 inline={true}
                                 className={` ${style.marginLeft20} ${style.marginTop}`}
@@ -55,7 +125,7 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog }) => {
                         <div className={`${style.editHealthCareGrid2}`}>
                             <div className={style.entityLableStyle}>Sub-Reason For Termination*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value="Anesthetist" className={style.fullWidth} />
+                                <InputGroup value={secondaryReason} className={style.fullWidth} onChange={obj => setSecondaryReason(obj.target.value)} />
                             </div>
                         </div>
                     </div>
@@ -68,7 +138,7 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog }) => {
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
                         <button className={style.outlinedButton}>SAVE & ADDMORE</button>
-                        <button onClick={() => getAddTerminationReasonsDialog(false)} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & CLOSE</button>
+                        <button onClick={() => SubmitTerminationReason()} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & CLOSE</button>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
+import Navbar from '../../Components/Navbar';
 import SideBar from './../../Components/Sidebar';
 import { Icon, Intent } from "@blueprintjs/core";
 import style from './index.module.scss';
@@ -15,6 +15,9 @@ import DeleteHcRow from './../../images/deleteHcRow.png';
 import EditBlue from './../../images/editBlue.png';
 import AddAbsenseReasonsForHealthcare from './addAbsenseReasonsForHealthcare';
 import AddContractedServiceForHealthcare from './addContractedServiceProvider';
+import Titlebar from '../../Components/titlemenu';
+import { Link } from 'react-router-dom';
+
 
 const ContractedServiceProvidedByIndustries = () => {
     const [showAddContractedServiceDialog, setAddContractedServiceDialog] = useState(false);
@@ -25,7 +28,7 @@ const ContractedServiceProvidedByIndustries = () => {
 
     return (
         <Fragment>
-            <ReferenceListNavbar />
+            <Navbar />
             <div className={style.margin20}>
                 <div className={style.bigCardGrid}>
                     <SideBar />
@@ -38,7 +41,7 @@ const ContractedServiceProvidedByIndustries = () => {
                                 UPDATED ON FEB 16, 2022 16:45 EST
                             </div>
                             <div className={style.crossStyle}>
-                                <Icon icon="cross" size={25} intent={Intent.DANGER} />
+                                <Link to={"/Screens/ReferenceList/superAdminDashboard"}> <Icon icon="cross" size={25} intent={Intent.DANGER} /></Link>
                             </div>
                         </div>
                         <div className={style.addAndRefreshCardStyle}>
@@ -49,7 +52,8 @@ const ContractedServiceProvidedByIndustries = () => {
                             <div className={style.centreCardStyle}>
                                 <div className={style.margin20}>
                                     <div className={style.departmentCardColumnsGrid}>
-                                    <div className={style.displayInCol}>
+                                        <Titlebar />
+                                        {/* <div className={style.displayInCol}>
                                             <div className={`${style.industriesCardStyle} ${style.selectedIndustriesBackground}`}>
                                                 <div className={style.spaceBetween}>
                                                     <p className={style.industriesCardTextStyle1}>HEALTHCARE</p>
@@ -68,7 +72,7 @@ const ContractedServiceProvidedByIndustries = () => {
                                                     <p className={style.industriesCardTextStyle1}>0</p>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div >
                                             <div className={style.contractedServiceHeader}>
                                                 <p></p>
@@ -78,8 +82,8 @@ const ContractedServiceProvidedByIndustries = () => {
                                             </div>
                                             <div className={style.terminationHeader}>
                                                 <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                <p className={style.tableHeaderIndustriesFontStyle}>PLANNED</p>
-                                                <img src={EditHcFolder} className={style.colorFileStyle} />
+                                                <p className={style.tableSubHeaderIndustriesFontStyle}>Hospital/Acute Care Facility (ACF)</p>
+                                                <img src={EditHcFolder} className={style.colorFileStyle} onClick={() => getAddContractedServiceDialog(true)} />
                                                 <img src={DeleteHcFolder} className={style.colorFileStyle} />
                                             </div>
                                             <div className={`${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
@@ -95,7 +99,8 @@ const ContractedServiceProvidedByIndustries = () => {
                                                 <p className={style.tableDataFontStyle}>03-29-2022</p>
                                                 <img src={EditBlue} className={style.colorFileStyle} />
                                                 <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div><div className={`${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
+                                            </div>
+                                            <div className={`${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
                                                 <p className={style.tableDataFontStyle}>Allied Health Professionals</p>
                                                 <p className={style.tableDataFontStyle}>03-29-2022</p>
                                                 <p className={style.tableDataFontStyle}>03-29-2022</p>
@@ -125,8 +130,8 @@ const ContractedServiceProvidedByIndustries = () => {
                                             </div>
                                             <div className={style.terminationHeader}>
                                                 <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                <p className={style.tableHeaderIndustriesFontStyle}>PLANNED</p>
-                                                <img src={EditHcFolder} className={style.colorFileStyle} />
+                                                <p className={style.tableSubHeaderIndustriesFontStyle}>Skilled Nursing Facility (SNF)</p>
+                                                <img src={EditHcFolder} className={style.colorFileStyle} onClick={() => getAddContractedServiceDialog(true)} />
                                                 <img src={DeleteHcFolder} className={style.colorFileStyle} />
                                             </div>
                                             <div className={`${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>

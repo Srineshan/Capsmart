@@ -1,11 +1,18 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
-// import { ScreenCapture } from 'react-screen-capture';
+import logo from './../../images/metropolitan-hospital-logo.png';
+import TenetLogo from './../../images/Tenet_Health_logo.png';
+import SanmateoLogo from './../../images/sanmateo.jpg';
+import NotificationsIcon from './../../images/notificationsIcon.png';
+import PrintIcon from './../../images/printIcon.png';
+import RedBackground from './../../images/redBackground.png';
+import NotificationCount from './../../images/notificationCount.png';
+import File from './../../images/file.png';
 import {Link} from 'react-router-dom';
-import {TenantID,GET} from './../../Screens/dataSaver';
 import LogoutIcon from './../../images/logoutIcon.png';
 import Cookies from 'universal-cookie';
 import {isSuperAdminAccess} from '../../Screens/dataSaver';
+import {TenantID,GET} from './../../Screens/dataSaver';
 import {ErrorToaster} from './../../utils/toaster';
 import html2canvas from 'html2canvas';
 import jwt from 'jwt-decode';
@@ -131,9 +138,7 @@ const Navbar = () => {
                         <p>HOME</p>
                     </div>
                 </Link>
-                {/* <div className={style.menuStyle}>
-                    <p>TIMESHEETS</p>
-                </div> */}
+
                 {isContractManager && (
                     <Link to={'/contracts'} className={style.noFontStyle}>
                         <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>

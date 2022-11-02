@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
+import Navbar from '../../Components/Navbar';
 import SideBar from './../../Components/Sidebar';
 import { Icon, Intent } from "@blueprintjs/core";
 import style from './index.module.scss';
@@ -13,6 +13,7 @@ import DeleteHcFolder from './../../images/deleteHcFolder.png';
 import DeleteHcRow from './../../images/deleteHcRow.png';
 import EditBlue from './../../images/editBlue.png';
 import AddAbsenseReasonsForHealthcare from './addAbsenseReasonsForHealthcare';
+import Titlebar from '../../Components/titlemenu';
 
 const SuffixByIndustries = () => {
     const [showAddAbsenseReasonsDialog, setAddAbsenseReasonsDialog] = useState(false);
@@ -24,7 +25,7 @@ const SuffixByIndustries = () => {
 
     return (
         <Fragment>
-            <ReferenceListNavbar />
+            <Navbar />
             <div className={style.margin20}>
                 <div className={style.bigCardGrid}>
                     <SideBar />
@@ -48,7 +49,8 @@ const SuffixByIndustries = () => {
                             <div className={style.centreCardStyle}>
                                 <div className={style.margin20}>
                                     <div className={style.departmentCardColumnsGrid}>
-                                    <div className={style.displayInCol}>
+                                        <Titlebar/>
+                                    {/* <div className={style.displayInCol}>
                                             <div className={`${style.industriesCardStyle} ${style.selectedIndustriesBackground}`}>
                                                 <div className={style.spaceBetween}>
                                                     <p className={style.industriesCardTextStyle1}>HEALTHCARE</p>
@@ -67,7 +69,7 @@ const SuffixByIndustries = () => {
                                                     <p className={style.industriesCardTextStyle1}>0</p>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div >
                                             <div className={style.tableHeaderIndustriesEntity}>
                                                 <p className={style.tableHeaderIndustriesFontStyle}>SUFFIX FOR HEALTHCARE</p>

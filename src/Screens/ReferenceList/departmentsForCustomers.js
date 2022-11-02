@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
+import Navbar from '../../Components/Navbar';
 import SideBar from './../../Components/Sidebar';
 import { Checkbox, Icon, Intent } from "@blueprintjs/core";
 import style from './index.module.scss';
@@ -10,6 +10,7 @@ import OpenFolderBlue from './../../images/openFolderBlue.png';
 import CloseFolderBlue from './../../images/closeFolderBlue.png';
 import AddRefresh from './../../images/refreshEntity.png';
 import BlackBorderFolder from './../../images/blackBorderFolder.png';
+import CrossPink from './../../images/crossPink.png';
 import BlueFolder from './../../images/blueFolder.png';
 import IndustriesEntityFolder from './../../images/industriesEntityFolder.png';
 import SemiTransparentFolder from './../../images/semiTransparentFolder.png';
@@ -17,13 +18,23 @@ import EditHcFolder from './../../images/editHcFolder.png';
 import DeleteHcFolder from './../../images/deleteHcFolder.png';
 import DeleteHcRow from './../../images/deleteHcRow.png';
 import EditHcRow from './../../images/editHcRow.png';
+import GreenPage from './../../images/greenPage.png';
+import { Link } from 'react-router-dom';
 
 const DepartmentsForCustomers = () => {
     const [isSelected, setIsSelected] = useState(false);
+    const [isClick, setIsClick] = useState(false);
+    const [isIconClick, setIsIconclick] = useState(false);
+    const [showIconDiv, setShowIconDiv] = useState(false);
+
+    const handleIconClick = () => {
+        setIsIconclick(true)
+        setShowIconDiv(true)
+    }
 
     return (
         <Fragment>
-            <ReferenceListNavbar />
+            <Navbar />
             <div className={style.margin20}>
                 <div className={style.bigCardGrid}>
                     <SideBar />
@@ -37,7 +48,7 @@ const DepartmentsForCustomers = () => {
                                 UPDATED ON FEB 16, 2022 16:45 EST
                             </div>
                             <div className={style.crossStyle}>
-                                <Icon icon="cross" size={25} intent={Intent.DANGER} />
+                                <img src={CrossPink} alt="OpenFolder" className={`${style.colorFileStyle2} ${style.marginLeft5}`} />
                             </div>
                         </div>
                         <div className={style.marginTop35}>
@@ -49,10 +60,10 @@ const DepartmentsForCustomers = () => {
                                                 <p className={`${style.holidayScheduleHeadertextStyle1} ${style.marginLeft20}`}>STANDARD LIST IN USE- DEFAULT</p>
                                             </div>
                                             <div className={style.customersAdminCardStyle1}>
-                                                <div className={`${style.boardCertificationSideRows} ${style.displayInRow}`}>
+                                                <div className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}>
                                                     <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                    <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft10}`}>METROPOLITAN HOSPITAL (ACUTE CARE FACILITY)</p>
-                                                    <img src={OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} ${style.marginLeft10}`} />
+                                                    <p className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}>METROPOLITAN HOSPITAL (ACUTE CARE FACILITY)</p>
+                                                    <img src={OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} ${style.marginLeft5}`} />
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}>
                                                     <Checkbox />
@@ -75,11 +86,7 @@ const DepartmentsForCustomers = () => {
                                                     <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft10}`}>Intensive Care Services</p>
                                                     <img src={OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2}`} />
                                                 </div>
-                                                <div className={`${style.customersAdminSideRows1} ${style.customersAdminBackground1} ${style.displayInRow} ${style.marginLeft50}`}>
-                                                    <img src={BlueFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                    <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft10}`}>Laboratory & Testing</p>
-                                                    <img src={CloseFolderBlue} alt="CloseFolder" className={`${style.colorFileStyle2}`} />
-                                                </div>
+
                                                 <div className={`${style.customersAdminInnerRowsStyleLightColor} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
                                                     <Checkbox checked className={`${style.marginLeft10} ${style.marginTop}`} />
                                                     <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft5}`}>Bacteriology</p>
@@ -109,61 +116,89 @@ const DepartmentsForCustomers = () => {
                                             <img src={SelectArrow} className={`${style.colorFileStyle4}`} />
                                         </div>
                                         <div>
+
                                             <div className={`${style.holidayScheduleHeader2}`}>
                                                 <p></p>
-                                                <p className={`${style.holidayScheduleHeadertextStyle1}`}>MY CUSTOM LIST TO USE</p>
+                                                <p className={`${style.holidayScheduleHeadertextStyle1}`}>{isSelected ? "MY CUSTOM LIST" : "MY CUSTOM LIST TO USE"} </p>
                                                 <img src={AddNewEntity} className={`${style.colorFileStyle} ${style.marginLeft150} `}></img>
                                             </div>
+
                                             <div className={style.customersAdminCardStyle3}>
                                                 {isSelected ?
                                                     <div>
-                                                        <div className={style.customerAdminEntityHeader}>
-                                                           <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft10}`} />
-                                                            <p className={style.tableHeaderIndustriesFontStyle}>METROPOLITAN HOSPITAL (ACUTE CARE FACILITY)</p>
-                                                        </div>
-                                                        <div className={style.customerAdminTableHeader2}>
-                                                            <p></p>
-                                                            <p className={style.customersAdminTableFontStyle}>Blood Bank</p>
-                                                            <img src={EditHcFolder} className={style.colorFileStyle} />
-                                                            <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                        </div>
-                                                        <div className={style.customerAdminTableHeader2}>
-                                                            <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft10}`} />
-                                                            <p className={`${style.customersAdminTableFontStyle} ${style.marginLeft20}`}>Laboratory & Testing</p>
-                                                            <img src={EditHcFolder} className={style.colorFileStyle} />
-                                                            <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                        </div>
-                                                        <div className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                                                            <p></p>
-                                                            <p className={style.tableDataFontStyle}>Bacteriologyy</p>
-                                                            <p></p>
-                                                            <p></p>
-                                                            <img src={EditHcRow} className={style.colorFileStyle} />
-                                                            <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                        </div>
-                                                        <div className={`${style.customerAdminTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                            <p></p>
-                                                            <p className={style.tableDataFontStyle}>Hematology</p>
-                                                            <p></p>
-                                                            <p></p>
-                                                            <img src={EditHcRow} className={style.colorFileStyle} />
-                                                            <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                        </div>
-                                                        <div className={style.customerAdminTableHeader2}>
-                                                            <p></p>
-                                                            <p className={style.customersAdminTableFontStyle}>Nursing</p>
-                                                            <img src={EditHcFolder} className={style.colorFileStyle} />
-                                                            <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                        </div>
-                                                        <div className={style.customerAdminTableHeader2}>
-                                                            <p></p>
-                                                            <p className={style.customersAdminTableFontStyle}>Other Department / Service Area</p>
-                                                            <img src={EditHcFolder} className={style.colorFileStyle} />
-                                                            <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                                        </div>
-                                                        <div className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                                                            <p></p>
-                                                            <p className={style.tableDataFontStyle}>Specify Other</p>
+                                                        <div>
+                                                            <div className={style.customerAdminEntityHeader}>
+                                                                <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft10}`} />
+                                                                <p className={style.tableHeaderIndustriesFontStyle}>METROPOLITAN HOSPITAL (ACUTE CARE FACILITY)</p>
+                                                            </div>
+                                                            <div className={style.customerAdminTableHeader2}>
+                                                                <p></p>
+                                                                <p className={style.customersAdminTableFontStyle}>Blood Bank</p>
+                                                                <img src={EditHcFolder} className={style.colorFileStyle} />
+                                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
+                                                            </div>
+                                                            <div className={style.customerAdminTableHeader2}>
+                                                                <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft10}`} />
+                                                                <p className={`${style.customersAdminTableFontStyle1} ${style.marginLeft20}`}>Laboratory & Testing</p>
+                                                                <img src={EditHcFolder} className={style.colorFileStyle} />
+                                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
+                                                            </div>
+                                                            <div className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
+                                                                <p></p>
+                                                                <p className={style.tableDataFontStyle}>Bacteriologyy</p>
+                                                                <p></p>
+                                                                <p></p>
+                                                                <img src={EditHcRow} className={style.colorFileStyle} />
+                                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
+                                                            </div>
+                                                            <div className={`${style.customerAdminTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
+                                                                <p></p>
+                                                                <p className={style.tableDataFontStyle}>Hematology</p>
+                                                                <p></p>
+                                                                <p></p>
+                                                                <img src={EditHcRow} className={style.colorFileStyle} />
+                                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
+                                                            </div>
+                                                            <div className={style.customerAdminTableHeader2}>
+                                                                <p></p>
+                                                                <p className={style.customersAdminTableFontStyle}>Nursing</p>
+                                                                <img src={EditHcFolder} className={style.colorFileStyle} />
+                                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
+                                                            </div>
+                                                            {isClick ?
+                                                                <div>
+                                                                    <div className={style.customerAdminTableHeader2}>
+                                                                        <p></p>
+                                                                        <p className={style.customersAdminTableFontStyle}>{isIconClick ? "Nursing Test" : "Other"}</p>
+                                                                        <img src={EditHcFolder} className={style.colorFileStyle} />
+                                                                        <img src={DeleteHcRow} className={style.colorFileStyle} />
+                                                                    </div>
+                                                                    {showIconDiv ? ""
+                                                                        :
+                                                                        <div className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
+                                                                            <p></p>
+                                                                            <p className={`${style.tableDataFontStyle} ${style.specifyOtherBox}`}>  Nursing Test </p>
+                                                                            <p></p>
+                                                                            <p></p>
+                                                                            <p></p>
+                                                                            <img src={GreenPage} className={`${style.colorFileStyle} ${style.marginRight20}`} onClick={handleIconClick} />
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                                :
+                                                                <div>
+                                                                    <div className={style.customerAdminTableHeader2}>
+                                                                        <p></p>
+                                                                        <p className={style.customersAdminTableFontStyle}>Other Department / Service Area</p>
+                                                                        <img src={EditHcFolder} className={style.colorFileStyle} />
+                                                                        <img src={DeleteHcRow} className={style.colorFileStyle} />
+                                                                    </div>
+                                                                    <div className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow} ${style.marginLeft35}`}>
+                                                                        <p></p>
+                                                                        <p className={`${style.tableDataFontStyle} ${style.specifyOtherBox}`} onClick={() => setIsClick(true)}> Specify Other</p>
+                                                                    </div>
+                                                                </div>
+                                                            }
                                                         </div>
                                                     </div>
                                                     :
@@ -176,6 +211,13 @@ const DepartmentsForCustomers = () => {
                                                 }
 
                                             </div>
+                                            {isSelected ?
+                                                <div className={`${style.floatRight}`}>
+                                                    <Link to={"/referenceList/departmentsForCustomerMultiSite"}><button className={`${style.buttonStyle2} ${style.marginLeft10}`} onClick={() => setIsSelected(false)}>SAVE</button></Link>
+                                                </div>
+                                                : ""
+                                            }
+
                                         </div>
                                     </div>
                                 </div>
@@ -188,9 +230,9 @@ const DepartmentsForCustomers = () => {
                     <p className={style.poweredBy}>© TimeSmart.AI</p>
                 </div>
             </div>
-        </Fragment>
+        </Fragment >
 
     )
 }
 
-export default DepartmentsForCustomers; 
+export default DepartmentsForCustomers;

@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
+import Navbar from '../../Components/Navbar';
 import SideBar from './../../Components/Sidebar';
 import { Icon, Intent } from "@blueprintjs/core";
 import style from './index.module.scss';
@@ -12,6 +12,8 @@ import EditHcRow from './../../images/editHcRow.png';
 import IndustriesEntityFolder from './../../images/industriesEntityFolder.png';
 import AddNewEntity from './../../images/addEntity.png';
 import AddRefresh from './../../images/refreshEntity.png';
+import Titlebar from '../../Components/titlemenu';
+import {GET} from './../dataSaver';
 
 const IndustriesWithEntityTypes = () => {
 
@@ -26,9 +28,13 @@ const IndustriesWithEntityTypes = () => {
         setShowAddHcEntityDialog(value);
     }
 
+    const getIndustriData = () =>{
+
+    }
+
     return (
         <Fragment>
-            <ReferenceListNavbar />
+            <Navbar />
             <div className={style.margin20}>
                 <div className={style.bigCardGrid}>
                     <SideBar />
@@ -40,19 +46,20 @@ const IndustriesWithEntityTypes = () => {
                             <div className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}>
                                 UPDATED ON FEB 16, 2022 16:45 EST
                             </div>
+
+
                             <div className={style.crossStyle}>
-                                <Icon icon="cross" size={25} intent={Intent.DANGER} />
+                                <img src={AddRefresh} className={`${style.colorFileStyle} ${style.marginLeft20}`} />
+                                <img src={AddNewEntity} onClick={() => getAddEntityDialog(true)} className={`${style.colorFileStyle} ${style.marginLeft20}`} />
+                                <Icon icon="cross" size={25} intent={Intent.DANGER} className={`${style.marginLeft20} ${style.marginBottom5} ${style.crossColor}`}/>
                             </div>
-                        </div>
-                        <div className={style.addAndRefreshCardStyle}>
-                            <img src={AddRefresh} className={`${style.colorFileStyle} ${style.marginLeft20}`} />
-                            <img src={AddNewEntity} onClick={() => getAddEntityDialog(true)} className={`${style.colorFileStyle} ${style.marginLeft20}`} />
                         </div>
                         <div className={style.marginTop35}>
                             <div className={style.centreCardStyle}>
                                 <div className={style.margin20}>
                                     <div className={style.centreCardColumnsGrid}>
-                                        <div className={style.displayInCol}>
+                                        <Titlebar />
+                                        {/* <div className={style.displayInCol}>
                                             <div className={`${style.industriesCardStyle} ${style.selectedIndustriesBackground}`}>
                                                 <div className={style.spaceBetween}>
                                                     <p className={style.industriesCardTextStyle1}>HEALTHCARE</p>
@@ -71,7 +78,7 @@ const IndustriesWithEntityTypes = () => {
                                                     <p className={style.industriesCardTextStyle1}>0</p>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className={style.industriesEntityCardStyle}>
                                             <div className={style.tableHeaderIndustriesEntity}>
                                                 <p className={style.tableHeaderIndustriesFontStyle}> ENTITY NAME</p>
