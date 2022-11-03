@@ -222,6 +222,7 @@ const EntitySetup = () => {
 
 
   const updateEntity = async(type) => {
+    let id = '';
     if(isUpdated){
       let filteredValue = entityData?.sites?.filter(data=>data.primarySite !== true)?.map(data=>data) || [];
       let primarySiteValue = entityData?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
@@ -287,6 +288,7 @@ const EntitySetup = () => {
           await PUT('entity-service/entity',updatedValue)
             .then(response=>{
             SuccessToaster('Entity Updated Successfully');
+            id = response?.data?.id;
             handleLogoUpload(response?.data?.id);
             handleThumbnailUplaod(response?.data?.id);
             }).catch(error=>{
@@ -296,6 +298,7 @@ const EntitySetup = () => {
         }else{
           await POST('entity-service/entity',updatedValue)
             .then(response=>{
+              id = response?.data?.id;
               handleLogoUpload(response?.data?.id);
               handleThumbnailUplaod(response?.data?.id);
             let newEntityId = response?.data?.id;
@@ -311,12 +314,14 @@ const EntitySetup = () => {
         setIsUpdated(false);
       }
       setUnassignedKeys([]);
-      sessionStorage.setItem('logo',entityData?.logo?.file?.fileURL);
-      sessionStorage.setItem('thumbnail',entityData?.logoThumbnail?.file?.fileURL);
-      sessionStorage.setItem('entityTypeId',entity?.typeId);
-      sessionStorage.setItem('entityTypeValue',entity?.type);
-      sessionStorage.setItem('industry',entity?.customerType);
-      sessionStorage.setItem('title',entity?.name);
+      if(id === TenantID){
+        sessionStorage.setItem('logo',entityData?.logo?.file?.fileURL);
+        sessionStorage.setItem('thumbnail',entityData?.logoThumbnail?.file?.fileURL);
+        sessionStorage.setItem('entityTypeId',entity?.typeId);
+        sessionStorage.setItem('entityTypeValue',entity?.type);
+        sessionStorage.setItem('industry',entity?.customerType);
+        sessionStorage.setItem('title',entity?.name);
+      }
     if(type === 'Continue'){
       setActiveStep(entity.multiSiteEntity === true ?"siteInformation":isSuperAdminAccess?"entitySystemAdmin":"siteUsers");
     }else {
