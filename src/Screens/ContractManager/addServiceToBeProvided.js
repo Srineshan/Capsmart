@@ -220,7 +220,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
     }
 
-    const handleSave = async() => {
+    const handleSave = async(buttonType) => {
         let performingActivity = '';
         let activities = [];
         if(serviceType !== 'Supplemental Clinical Services'){
@@ -335,11 +335,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
             if(response){
                 SuccessToaster('Contracted Service Updated Successfully');
-                getContractedServices();
             }
             else {
                 ErrorToaster('Unexpected Error');
             }
+          if(buttonType === 'SAVE AND EXIT'){
+            getAddServiceDialog(false);
+          }
     }
 
     const reset = () => {
@@ -554,8 +556,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 </div>
                 <div>
                     <div className={`${style.floatRight}`}>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave();reset()}}>ADD MORE</button>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave();reset();getAddServiceDialog(false);}}>SAVE & EXIT</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave('ADD MORE');reset()}}>ADD MORE</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave('SAVE AND EXIT');reset()}}>SAVE & EXIT</button>
                     </div>
                 </div>
             </Dialog>

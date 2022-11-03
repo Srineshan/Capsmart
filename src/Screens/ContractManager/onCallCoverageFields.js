@@ -88,14 +88,12 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
 
     const handleOnCallCoverageFor = (value,e) => {
       if(e.target.checked){
-        let temp = metadata?.onCallCoverageFor;
+        let temp = metadata?.onCallCoverageFor || [];
         temp.push(value)
         setMetadata({...metadata, onCallCoverageFor:temp});
-        console.log('temp',temp);
       }else{
-        let temp = metadata?.onCallCoverageFor?.filter(data=>data !== value)?.map(data=>data);
+        let temp = metadata?.onCallCoverageFor?.filter(data=>data !== value)?.map(data=>data) || [];
         setMetadata({...metadata, onCallCoverageFor:temp});
-        console.log('temp',temp);
       }
     }
 
