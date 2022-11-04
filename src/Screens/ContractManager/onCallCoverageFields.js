@@ -88,14 +88,12 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
 
     const handleOnCallCoverageFor = (value,e) => {
       if(e.target.checked){
-        let temp = metadata?.onCallCoverageFor;
+        let temp = metadata?.onCallCoverageFor || [];
         temp.push(value)
         setMetadata({...metadata, onCallCoverageFor:temp});
-        console.log('temp',temp);
       }else{
-        let temp = metadata?.onCallCoverageFor?.filter(data=>data !== value)?.map(data=>data);
+        let temp = metadata?.onCallCoverageFor?.filter(data=>data !== value)?.map(data=>data) || [];
         setMetadata({...metadata, onCallCoverageFor:temp});
-        console.log('temp',temp);
       }
     }
 
@@ -200,7 +198,7 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
                         SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                         className={`${style.threeFieldWidth}`}
                         value={metadata?.rateType}
-                        onChange={(e)=>handleValueChange('rateType',!metadata?.rateType)}
+                        onChange={(e)=>handleValueChange('rateType',e.target.value)}
                     >
                         <MenuItem value="">Select Frequecy</MenuItem>
                         <MenuItem value={'HOURLY'}>Hourly</MenuItem>
