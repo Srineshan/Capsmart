@@ -1,11 +1,15 @@
 import React, {useState, useEffect} from 'react';
-import Filter from './../../images/filter.png';
+import Download from './../../images/downloadLightColor.png';
 import PrintIcon from './../../images/printIcon.png';
-import File from './../../images/file.png';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import GreenPage from './../../images/greenPage.png';
 import ContractTiles from './contractTiles';
 import SearchBar from './../../Components/SearchBar';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import {GET, PUT, POST} from './../dataSaver';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import {SuccessToaster, ErrorToaster} from './../../utils/toaster';
 import {currentUser} from './../../utils/auth';
 import {format} from 'date-fns';
@@ -16,7 +20,7 @@ import LeftStatsCard from '../../Components/LeftStatsCard';
 import style from './index.module.scss';
 
 const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelectedContract,getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page}) => {
-    const activeHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "CONTRACTORS", "EFFECTIVE DATE", "POD STATUS", "MANAGER", "LAST UPDATED", "ACTION"];
+    const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID", "", "NAME", "CONTRACTORS", "EFFECTIVE DATE", "POD STATUS", "LAST UPDATED", "ACTION"];
     const draftHeaderValues =  ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "MANAGER", "LAST UPDATED", "LAST UPDATED BY", "ACTION"];
     const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "MANAGER", "LAST UPDATE", "ACTION"];
     const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "EXPIRATION DATE", "MANAGER", "LAST UPDATE"];
@@ -80,8 +84,12 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
     }
 
     let dot = [];
+    let notification = [];
     let contractType = [];
     let contractId = [];
+    let lock = [];
+    let lockHoverText = [];
+    let podHoverText = [];
     let name = [];
     let contractors = [];
     let effectiveDate = [];
@@ -94,39 +102,50 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
 
     const getActiveContractsValues = () => {
          dot = [];
+         notification = [];
          contractType = [];
          contractId = [];
+         lock = [];
+         lockHoverText = [];
+         podHoverText = [];
          name = [];
          contractors = [];
          effectiveDate = [];
          podStatus = [];
-         manager = [];
+        //  manager = [];
          lastUpdated = [];
          action = [];
 
          contracts?.map(data=>
         {
             dot.push('green');
+            notification.push(<WarningAmberIcon style={{color: '#FF6562'}} />);
             contractType.push(data?.contractType);
             contractId.push(data?.contractDetail?.contractId?.id);
+            lock.push(<LockOpenOutlinedIcon style={{color: '#14B15A'}} />)
+            lockHoverText.push('Contract available for other contract managers to access & work on');
+            podHoverText.push(['Medical Lic Cer { Contrname}', 'Medical Lic Cer { Contrname}'])
+            notification.push(<WarningAmberIcon style={{color: '#FF6562'}} />);
             name.push(data?.contractName?.contractName);
-            contractors.push("-");
+            contractors.push("2");
             effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
             podStatus.push({"value": "5", "src": GreenPage});
-            manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
+            // manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
             lastUpdated.push('08-01-2022')
             action.push(true)
         })
 
         return [
             {"type": "dot", "value": dot},
+            {"type": "icon", "icon": notification},
             {"type": "text", "value": contractType, "onClickFunction": onClickFunction},
             {"type": "text", "value": contractId, "onClickFunction": onClickFunction},
+            {"type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true},
             {"type": "text", "value": name, "onClickFunction": onClickFunction},
-            {"type": "text", "value": contractors, "onClickFunction": onClickFunction},
+            {"type": "iconWithCount", "value": contractors, "onClickFunction": onClickFunction, "icon": <GroupOutlinedIcon style={{fontSize: 20, color: '#857AEF'}} />},
             {"type": "text", "value": effectiveDate, "onClickFunction": onClickFunction},
-            {"type": "imgWithCount", "value": podStatus, "img": GreenPage},
-            {"type": "text", "value": manager, "onClickFunction": onClickFunction},
+            {"type": "imgWithCount", "value": podStatus, "img": GreenPage, "hoverText": podHoverText,'isShowHoverText': true},
+            // {"type": "text", "value": manager, "onClickFunction": onClickFunction},
             {"type": "text", "value": lastUpdated, "onClickFunction": onClickFunction},
             {"type": "action", "value": action},
         ];
@@ -202,16 +221,23 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
             <div className={style.bigCardGrid}>
                 <LeftStatsCard metadata={metadata}/>
                 <div className={style.bigCardStyle}>
-                    <div className={style.spaceBetween}>
-                        <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                            <p className={`${style.blue} ${style.activeContractsWidth}`}>ACTIVE CONTRACTS</p>
-                            <SearchBar getSearchKey={getSearchKey}/>
-                            <img src={File} alt="File" className={style.smallIcons} />
-                            <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
-                            <img src={Filter} alt="Filter" className={style.filterIcon} />
-                        </div>
-                        <button className={style.contractButton} onClick={() => {handleAddContract()}} >ADD CONTRACT</button>
+                  <div className={`${style.spaceBetween} ${style.marginLeftRight20}`}>
+                    <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                        <button className={style.myActiveContractsButton} >My Active Contracts ( 0 )</button>
+                        <button className={`${style.otherContractsButton} ${style.marginLeft20}`} >Other Contracts ( 150 )</button> 
                     </div>
+                    <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginLeft}`}>
+                        <div className={style.marginLeft}>
+                          <SearchBar getSearchKey={getSearchKey}/>
+                        </div>
+                        <img src={Download} alt="Download" className={style.smallIcons} />
+                        <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
+                        <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => {handleAddContract()}}>
+                            <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+                        </div>
+                    </div>
+                  </div>
+
                     <Table
                         tableHeaderValues={tableHeaderValues}
                         tableDataValues={tableDataValues}
@@ -226,6 +252,18 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
                         totalCount={totalCount}
                         page={page}
                     />
+                    {/* <div className={`${style.noContractsBox} ${style.alignCenter}`}>
+                      <div>
+                        <div className={style.noContractsFontStyle}>There are no contracts for you to manage.</div>
+                        <div className={`${style.displayInRow} ${style.justifyCenter} ${style.marginTop20}`}>
+                          <div className={style.noContractsSmallFontStyle}>To add a new contract click on </div>
+                          <div className={`${style.addSmallStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => {handleAddContract()}}>
+                            <AddCircleOutlineIcon sx={{ fontSize: 15, color: 'white' }} />
+                          </div>
+                        </div>
+                        <a><div className={`${style.linkStyle} ${style.marginTop10}`}>Click To View A Short Tutorial On How To Add A Contract</div></a>
+                      </div>
+                    </div> */}
                 </div>
             </div>
             <div className={style.spaceBetween}>
