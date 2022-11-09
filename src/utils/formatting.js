@@ -11,7 +11,7 @@ export const FormatPhoneNumber = (value) => {
     }
 
     if (phoneNumberLength === 10) {
-      return '+1' + `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(
         3,
         6
       )}-${phoneNumber.slice(6, 10)}`;

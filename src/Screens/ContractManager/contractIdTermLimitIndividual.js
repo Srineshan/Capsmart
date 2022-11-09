@@ -2,7 +2,8 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { TextArea, InputGroup, Icon, TagInput, Checkbox, FileInput, EditableText, Divider } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { DateInput } from "@blueprintjs/datetime";
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -10,6 +11,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import DatalistInput from 'react-datalist-input';
 import {GET,PUT,POST,role,TenantID} from './../dataSaver';
 import AddNewContractManager from './addNewContractManager';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import {Auth} from './../../utils/auth'
 import {format} from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
@@ -28,6 +31,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
     const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
     const [priorContractItem, setPriorContractItem] = useState();
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
+    const [contractAccessPrivilege, setContractAccessPrivilege] = useState(true);
     const [fullyExecutedContractData,setFullyExecutedContractData] = useState(fileData);
     const [fileFieldData,setFileFieldData] = useState({id:'',type:'',name:'',desc:'',fileName:'',file:null,filePath:''});
     const [files,setFiles] = useState([]);
@@ -536,6 +540,23 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Contract Access Privilege To Other Contract Manager</div>
+                    <div className={style.verticalAlignCenter}>
+                      <FormControlLabel
+                          control={
+                              <Switch checked={contractAccessPrivilege} className={`${style.floatLeft}`} onChange={() => {setContractAccessPrivilege(!contractAccessPrivilege)}}  />
+                          }
+                          className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
+                          label={contractAccessPrivilege ? 'YES' : "NO"}
+                      />
+                      {contractAccessPrivilege ? (
+                        <LockOpenOutlinedIcon className={style.lockStyle} style={{color: '#14B15A'}} />
+                      ) : (
+                        <LockOutlinedIcon className={style.lockStyle} style={{color: '#F94848'}} />
+                      )}
+                    </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Fully Executed Contract on File*</div>
                     <div>
                         <div className={`${style.spaceBetween}`}>
@@ -806,13 +827,6 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Term Period*</div>
                     <div className={style.displayInRow}>
-                        {/* <DateInput
-                            formatDate={date => date.toLocaleDateString()}
-                            parseDate={str => new Date(str)}
-                            placeholder={"MM-DD-YYYY"}
-                            value={contractTermPeriodFrom}
-                            onChange={(e)=> setContractTermPeriodFrom(e || new Date()) }
-                        /> */}
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <DatePicker
                             value={contractTermPeriodFrom}
@@ -832,14 +846,6 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                           />
                         </LocalizationProvider>
                     <p className={style.toStyle}>To</p>
-                        {/* <DateInput
-                            formatDate={date => date.toLocaleDateString()}
-                            parseDate={str => new Date(str)}
-                            placeholder={"MM-DD-YYYY"}
-                            value={contractTermPeriodTo}
-                            onChange={(e)=> setContractTermPeriodTo(e || new Date()) }
-                            minDate={contractTermPeriodFrom}
-                        /> */}
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <DatePicker
                             value={contractTermPeriodTo}
@@ -862,16 +868,20 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
+                    <div className={style.contractedTimeCommitment}>
+                      <InputGroup value='48' className={style.fullWidth} />
+                      <Select
+                          SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                          className={`${style.fullWidth}`}
+                      >
+                          <MenuItem value={'WEEK'}>Hours Per Week</MenuItem>
+                      </Select>
+                    </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contracted Services Effective Date*</div>
                     <div className={`${style.leftAlign} `}>
-                    {/* <DateInput
-                        formatDate={date => date.toLocaleDateString()}
-                        parseDate={str => new Date(str)}
-                        placeholder={"MM-DD-YYYY"}
-                        value={contractEffectiveDate}
-                        onChange={(e)=> setContractEffectiveDate(e || new Date()) }
-                        minDate={contractTermPeriodFrom}
-                    /> */}
                       <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
                           value={contractEffectiveDate}
@@ -887,7 +897,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                           minDate={contractTermPeriodFrom}
                           renderInput={(params) => <TextField  {...params} inputProps={{
                             ...params.inputProps,
-                            placeholder: "Effective Date"
+                            placeholder: "MM-DD-YYYY"
                           }} />}
                         />
                       </LocalizationProvider>

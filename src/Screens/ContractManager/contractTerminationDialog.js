@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button, RadioGroup, Radio, Switch } from '@blueprintjs/core';
-import { DateInput, IDateFormatProps } from "@blueprintjs/datetime";
+import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button, RadioGroup, Radio } from '@blueprintjs/core';
 import {format, differenceInDays} from 'date-fns';
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import InputAdornment from '@mui/material/InputAdornment';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import {currentUser} from './../../utils/auth';
 import {SuccessToaster, ErrorToaster} from './../../utils/toaster';
 import {GET, PUT} from './../dataSaver';
@@ -21,7 +25,8 @@ const ContractTermination = ({getTerminationDialog, contracts, contractId, getCo
     const expiringIn = differenceInDays(new Date(), new Date(currentContract?.contractDetail?.contractTerm?.endDate))
     const [users, setUsers] = useState([]);
     const [metadata, setMetadata] = useState();
-    const [replace,setReplace] = useState({replace:false, id:''})
+    const [replace,setReplace] = useState({replace:false, id:''});
+    const [writtenNoticeServed, setWrittenNoticeServed] = useState(false);
 
     useEffect(()=>{
       getUserData();
@@ -98,13 +103,25 @@ const ContractTermination = ({getTerminationDialog, contracts, contractId, getCo
                 <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getTerminationDialog(false)}  />
             </div>
             <div className={style.extensionBorder}></div>
-            <div className={style.spaceBetween}>
+            {/* <div className={style.spaceBetween}>
                 <p className={style.extensionOptionsStyle}>{currentContract?.contractName?.contractName}{` `}({currentContract?.contractDetail?.contractId?.id})</p>
                 <p className={style.extensionOptionsStyle}>{currentContract?.contractType === 'INDIVIDUAL' ? 'INDIVIDUAL CONTRACTOR' : `MULTIPLE CONTRACTOR (${users?.length || 0})`}</p>
                 <p className={style.extensionOptionsStyle}>{`EXPIRING IN ${expiringIn} DAYS`}</p>
+            </div> */}
+            <div className={`${style.dialogAdditionalDetailBoxStyle}`}>
+                <div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle}`}>New Contract with No Prior Contract(s) with Entity</div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>PAMF CONTRACT (0043245)</div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>MULTIPLE CONTRACTORS (23)</div>
+                </div>
+                <div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle}`}>{`Ranjith T { contract manager }`}</div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>SITE NAME ONLY IF MULTISITE</div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>EXPIRING IN 20 DAYS ( 10-23-2022 )</div>
+                </div>
             </div>
             <div className={style.extensionBorder}></div>
-            <div className={`${style.extentionBoxStyle}`}>
+            <div className={`${style.extentionBoxStyle} ${style.marginTop10}`}>
                 <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>Termination Trigger*</div>
                     <RadioGroup
@@ -129,40 +146,84 @@ const ContractTermination = ({getTerminationDialog, contracts, contractId, getCo
                 ) : (
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Termination Reason*</div>
-                    <div className={style.reduce10Left}>
-                        <select
-                            name="class"
-                            id="Class"
-                            value={reason || 'Select...'}
-                            onChange={(e) => setReason(e.target.value)}
-                            className={`${style.fullWidth} ${style.marginLeft20} `}>
-                                <option value="violation of contract terms" >
-                                violation of contract terms
-                                </option>
-                                <option value="Integrity screening match" >
-                                Integrity screening match
-                                </option>
-                                <option value="Other Termination Reason:: Allow Them To Add New Reason">
-                                Other Termination Reason:: Allow Them To Add New Reason
-                                </option>
-                        </select>
+                    <div>
+                      <Select
+                          displayEmpty
+                          value={reason || 'Select...'}
+                          onChange={(e) => setReason(e.target.value)}
+                          SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                          className={`${style.fullWidth}`}
+                      >
+                      <MenuItem value="violation of contract terms">violation of contract terms</MenuItem>
+                      <MenuItem value="Integrity screening match">Integrity screening match</MenuItem>
+                      <MenuItem value="Other Termination Reason:: Allow Them To Add New Reason">Other Termination Reason:: Allow Them To Add New Reason</MenuItem>
+                      </Select>
                     </div>
                 </div>
                 )}
-                {terminationTrigger !== "Contract Expiration" && (
-                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Termination Notes*</div>
-                        <div>
-                            <TextArea
-                                placeholder="Termination Notes"
-                                row={4}
-                                large={true}
-                                value={notes}
-                                className={style.fullWidth}
-                                onChange={(e)=>setNotes(e.target.value)}
-                            />
-                        </div>
+                {terminationTrigger === "CONTRACT_EXPIRATION" && (
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Termination Reason*</div>
+                    <div>
+                      <Select
+                          displayEmpty
+                          SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                          className={`${style.fullWidth}`}
+                      >
+                      <MenuItem value="One Time Contract Requiring Termination On Expiration">One Time Contract Requiring Termination On Expiration</MenuItem>
+                      </Select>
                     </div>
+                  </div>
+                )}
+                {terminationTrigger === "FOR_CAUSE_BY_ENTITY" && (
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Identify Specific Reasons</div>
+                    <div>
+                      <Select
+                          displayEmpty
+                          SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                          className={`${style.fullWidth}`}
+                      >
+                      <MenuItem value="Lorem ipsim">Lorem ipsim</MenuItem>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+                {terminationTrigger === 'FOR_CAUSE_BY_CONTRACTOR' && (
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Written Notice Served</div>
+                    <div className={style.displayInRow}>
+                      <div className={`${style.threeFieldWidth}`} >
+                          <FormControlLabel
+                              control={
+                                  <Switch checked={writtenNoticeServed} className={` ${style.textAlignLeft} `} onChange={(e)=> setWrittenNoticeServed(e.target.checked)} />
+                              }
+                              className={`${style.switchFontStyle} ${style.flexLeft}`}
+                              label={writtenNoticeServed ? 'Notice Served' : 'Not Required'}
+                          />
+                      </div>
+                      <div className={`${style.threeFieldWidth} ${!writtenNoticeServed && style.disabledOpacity}`}>
+                        <div className={style.helperText}>Notice Period</div>
+                        <TextField
+                            disabled={!writtenNoticeServed}
+                            size="small"
+                            InputProps={{
+                                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+                            }}
+                        />
+                      </div>
+                      <div className={`${style.threeFieldWidth} ${style.marginLeft20} ${!writtenNoticeServed && style.disabledOpacity}`}>
+                          <div className={style.helperText}>Cure Period</div>
+                          <TextField
+                              disabled={!writtenNoticeServed}
+                              size="small"
+                              InputProps={{
+                                  endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+                              }}
+                          />
+                      </div>
+                    </div>
+                  </div>
                 )}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Termination Date*</div>
@@ -192,15 +253,17 @@ const ContractTermination = ({getTerminationDialog, contracts, contractId, getCo
                     <div className={style.extentionLableStyle}>Termination By*</div>
                     <InputGroup className={style.terminationFieldWidth} readOnly value={currentUserData?.firstName}/>
                 </div>
-                {terminationTrigger === "Contract Expiration" && (
+                {terminationTrigger !== "Contract Expiration" && (
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Termination Notes*</div>
                         <div>
                             <TextArea
-                                growVertically={true}
+                                placeholder="Termination Notes"
+                                row={4}
                                 large={true}
-                                value="text area"
+                                value={notes}
                                 className={style.fullWidth}
+                                onChange={(e)=>setNotes(e.target.value)}
                             />
                         </div>
                     </div>

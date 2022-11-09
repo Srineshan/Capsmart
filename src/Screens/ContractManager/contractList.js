@@ -3,7 +3,10 @@ import Download from './../../images/downloadLightColor.png';
 import PrintIcon from './../../images/printIcon.png';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import DownloadIcon from '@mui/icons-material/Download';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
+import Popover from '@mui/material/Popover';
 import GreenPage from './../../images/greenPage.png';
 import ContractTiles from './contractTiles';
 import SearchBar from './../../Components/SearchBar';
@@ -24,6 +27,11 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
     const draftHeaderValues =  ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "MANAGER", "LAST UPDATED", "LAST UPDATED BY", "ACTION"];
     const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "MANAGER", "LAST UPDATE", "ACTION"];
     const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "EXPIRATION DATE", "MANAGER", "LAST UPDATE"];
+    const [isPrintClicked, setIsPrintClicked] = useState(false);
+    const [isDownloadClicked, setIsDownloadClicked] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
     const currentUserData = currentUser();
     const [metadata, setMetadata] = useState();
     const activateContracts = async(data) => {
@@ -71,6 +79,15 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
       getDeleteDraftDialog(true);
       getContractIdFromActive(data?.id);
     }
+
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setIsPrintClicked(false);
+    };
 
     useEffect(()=>{
       getContractsMetadata();
@@ -230,10 +247,31 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
                         <div className={style.marginLeft}>
                           <SearchBar getSearchKey={getSearchKey}/>
                         </div>
-                        <img src={Download} alt="Download" className={style.smallIcons} />
-                        <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
+                        <div className={`${isDownloadClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={()=> setIsDownloadClicked(true)}>
+                          <DownloadIcon sx={{ fontSize: isDownloadClicked ? 20 : 25, color: isDownloadClicked ? '#fff' : '#857AEF' }} />
+                        </div>
+                        <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={()=> setIsPrintClicked(true)}>
+                          <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                          <Popover
+                              id={id}
+                              open={open}
+                              anchorEl={anchorEl}
+                              onClose={handleClose}
+                              anchorOrigin={{
+                                  vertical: 'bottom',
+                                  horizontal: 'left',
+                              }}
+                          >
+                              <div className={style.actionsCard}>
+                                <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => {handleClose()}}>Contract Master List</div>
+                                <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => {handleClose()}}>One Time Contracts With Termination Date</div>
+                                <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => {handleClose()}}>Contracts With Written Continuation Policy</div>
+                                <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => {handleClose()}}>Contracts In Auto-Renewal Mode</div>
+                              </div>
+                          </Popover>
+                        </div>
                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => {handleAddContract()}}>
-                            <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+                          <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
                         </div>
                     </div>
                   </div>

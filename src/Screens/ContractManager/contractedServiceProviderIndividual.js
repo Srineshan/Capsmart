@@ -1,18 +1,15 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import { InputGroup, RadioGroup, Radio, Tag, TagInput } from '@blueprintjs/core';
-import DatalistInput from 'react-datalist-input';
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
-import Select from '@mui/material/Select';
-import Chip from '@mui/material/Chip';
-import Box from '@mui/material/Box';
+import { FormatPhoneNumber } from './../../utils/formatting';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
-import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
-import MenuItem from '@mui/material/MenuItem';
 import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SuffixList from './../../Components/SuffixList';
@@ -478,6 +475,11 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
       setSelectContractManager(selectedItem.id);
     }
 
+    const handleInput = (e) => {
+      const formattedPhoneNumber = FormatPhoneNumber(e.target.value);
+      setContractorPhone(formattedPhoneNumber);
+    };
+
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -496,10 +498,10 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                       value={npin}
                       onChange={(e) => setNpin(e.target.value)}/>
                       <FormGroup>
-                          <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => setNpinMissing(e.target.checked)} />} label="Missing" />
+                          <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => setNpinMissing(e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
                       </FormGroup>
                       <FormGroup>
-                          <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => setNpinNotApplicable(e.target.checked)} />} label="NA" />
+                          <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => setNpinNotApplicable(e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
                       </FormGroup>
                       </div>
                   </div>
@@ -530,14 +532,38 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                           <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
                           value={contractorEmail}
                           onChange={(e) => setContractorEmail(e.target.value)}/>
+                          <FormGroup className={style.marginLeft20}>
+                            <FormControlLabel control={<Checkbox value="Missing" />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} /> 
+                          </FormGroup>
+                          <FormGroup>
+                            <FormControlLabel control={<Checkbox value="NA" />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                          </FormGroup>
                       </div>
                   </div>
+
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Allow Use of Alternate/ Personal Email Address</div>
+                      <div className={style.displayInRow}>
+                          <InputGroup placeholder="Enter alterate email" className={`${style.entityFieldWidth}`}
+                          />
+                      </div>
+                  </div>
+
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Cell Phone*</div>
-                      <div className={style.grid2}>
-                      <InputGroup placeholder="Numeric" className={style.fullWidth}
-                      value={contractorPhone}
-                      onChange={(e) => setContractorPhone(e.target.value)}/>
+                      <div className={style.twoCol}>
+                        <TextField
+                            size="small"
+                            placeholder="Numeric" className={style.fullWidth}
+                            value={contractorPhone}
+                            onChange={(e) => handleInput(e)}
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>+1</InputAdornment>
+                            }}
+                        />
+                        <FormGroup>
+                            <FormControlLabel control={<Checkbox value="NA" />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                        </FormGroup>
                       </div>
                   </div>
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
