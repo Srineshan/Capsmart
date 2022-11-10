@@ -81,9 +81,8 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
           workingTimeFrom:serviceSelected?.workingPeriod?.from,
           workingTimeTo:serviceSelected?.workingPeriod?.to,
           serviceDays:serviceSelected?.serviceDays,
-        });
+          });
         }
-        console.log('meta', metadata);
 
 
     const limit5 = 5;
