@@ -273,7 +273,7 @@ const ReportTypeOverview = () => {
     }
 
     const getContractRenewalReportWithParameters = async() => {
-        const {data: contractRenewalReport} = await GET(`contract-managment-service/reports/contractRenewalReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&renewalDays=${dataToUseInReport?.renewalTimeFrame}&contractPolicyType=${dataToUseInReport?.contractContinuationPolicy}`);
+        const {data: contractRenewalReport} = await GET(`contract-managment-service/reports/contractRenewalReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}&contractPolicyType=${dataToUseInReport?.contractContinuationPolicy}`);
         if(contractRenewalReport){
             setContractRenewalReport(contractRenewalReport);
         }
@@ -287,7 +287,7 @@ const ReportTypeOverview = () => {
     }
 
     const getOneTimeContractWithParameters = async() => {
-        const {data: oneTimeContract} = await GET(`contract-managment-service/reports/oneTimeContractReport?renewalDays=${dataToUseInReport?.renewalTimeFrame}`);
+        const {data: oneTimeContract} = await GET(`contract-managment-service/reports/oneTimeContractReport?renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}`);
         if(oneTimeContract){
             setOneTimeContract(oneTimeContract);
         }
@@ -489,7 +489,7 @@ const ReportTypeOverview = () => {
                                     <div className={`${style.grid3} ${style.marginTop20}`}>
                                         <div>
                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Renewal Time Frame </div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{`Renewal within Next ${dataToUseInReport?.renewalTimeFrame} days`}</div>
+                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{`Renewal within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
                                         </div>
                                         <div>
                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Sites </div>

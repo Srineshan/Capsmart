@@ -16,7 +16,7 @@ const ReportHeader = () => {
 
     useEffect(()=>{
       getLogo();
-    })
+    }, [])
 
     const getLogo = async() => {
       const {data: data} = await GET(`entity-service/entity/${TenantID}`);

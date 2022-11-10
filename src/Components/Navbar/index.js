@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import {TenantID,GET} from './../../Screens/dataSaver';
 import LogoutIcon from './../../images/logoutIcon.png';
 import Cookies from 'universal-cookie';
+import Popover from '@mui/material/Popover';
 import {isSuperAdminAccess} from '../../Screens/dataSaver';
 import {ErrorToaster} from './../../utils/toaster';
 import html2canvas from 'html2canvas';
@@ -20,57 +21,93 @@ const Navbar = () => {
     const [showReportsMenu, setShowReportsMenu] = useState(false);
     const [isContractManager, setIsContractManager] = useState(false);
     const [isEntityLevelAdmin, setIsEntityLevelAdmin] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const [anchorElHelp, setAnchorElHelp] = useState(null);
+    const openHelp = Boolean(anchorElHelp);
+    const [anchorElTools, setAnchorElTools] = useState(null);
+    const openTools = Boolean(anchorElTools);
     const [logo,setLogo] = useState(sessionStorage?.getItem('logo'));
 
-    const menuRef = useRef(null);
-    const toolsMenuRef = useRef(null);
-    const reportsMenuRef = useRef(null);
+    // const menuRef = useRef(null);
+    // const toolsMenuRef = useRef(null);
+    // const reportsMenuRef = useRef(null);
 
-    useMenuHide(menuRef);
-    useToolsMenuHide(toolsMenuRef);
-    useReportsMenuHide(reportsMenuRef);
+    // useMenuHide(menuRef);
+    // useToolsMenuHide(toolsMenuRef);
+    // useReportsMenuHide(reportsMenuRef);
 
-    function useMenuHide(ref) {
-        useEffect(() => {
-          function handleClickOutside(event) {
-            if (ref.current && !ref.current.contains(event.target)) {
-              setShowMenu(false)
-            }
-          }
-          document.addEventListener("mousedown", handleClickOutside);
-          return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-          };
-        }, [ref]);
-    }
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
 
-    function useToolsMenuHide(ref) {
-        useEffect(() => {
-          function handleToolsClickOutside(event) {
-            if (ref.current && !ref.current.contains(event.target)) {
-              setShowToolsMenu(false)
-            }
-          }
-          document.addEventListener("mousedown", handleToolsClickOutside);
-          return () => {
-            document.removeEventListener("mousedown", handleToolsClickOutside);
-          };
-        }, [ref]);
-    }
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
-    function useReportsMenuHide(ref) {
-        useEffect(() => {
-          function handleReportsClickOutside(event) {
-            if (ref.current && !ref.current.contains(event.target)) {
-              setShowReportsMenu(false)
-            }
-          }
-          document.addEventListener("mousedown", handleReportsClickOutside);
-          return () => {
-            document.removeEventListener("mousedown", handleReportsClickOutside);
-          };
-        }, [ref]);
-    }
+    const id = open ? 'simple-popover' : undefined;
+
+    const handleClickTools = (event) => {
+        setAnchorElTools(event.currentTarget);
+    };
+
+    const handleCloseTools = () => {
+        setAnchorElTools(null);
+    };
+
+    const idTools = open ? 'simple-popover' : undefined;
+
+    const handleClickHelp = (event) => {
+        setAnchorElHelp(event.currentTarget);
+    };
+
+    const handleCloseHelp = () => {
+        setAnchorElHelp(null);
+    };
+
+    const idHelp = open ? 'simple-popover' : undefined;
+
+    // function useMenuHide(ref) {
+    //     useEffect(() => {
+    //       function handleClickOutside(event) {
+    //         if (ref.current && !ref.current.contains(event.target)) {
+    //           setShowMenu(false)
+    //         }
+    //       }
+    //       document.addEventListener("mousedown", handleClickOutside);
+    //       return () => {
+    //         document.removeEventListener("mousedown", handleClickOutside);
+    //       };
+    //     }, [ref]);
+    // }
+
+    // function useToolsMenuHide(ref) {
+    //     useEffect(() => {
+    //       function handleToolsClickOutside(event) {
+    //         if (ref.current && !ref.current.contains(event.target)) {
+    //           setShowToolsMenu(false)
+    //         }
+    //       }
+    //       document.addEventListener("mousedown", handleToolsClickOutside);
+    //       return () => {
+    //         document.removeEventListener("mousedown", handleToolsClickOutside);
+    //       };
+    //     }, [ref]);
+    // }
+
+    // function useReportsMenuHide(ref) {
+    //     useEffect(() => {
+    //       function handleReportsClickOutside(event) {
+    //         if (ref.current && !ref.current.contains(event.target)) {
+    //           setShowReportsMenu(false)
+    //         }
+    //       }
+    //       document.addEventListener("mousedown", handleReportsClickOutside);
+    //       return () => {
+    //         document.removeEventListener("mousedown", handleReportsClickOutside);
+    //       };
+    //     }, [ref]);
+    // }
 
     // const handleScreenCapture = (screenCapture) => {
     //     setScreenCapture(screenCapture);
@@ -142,10 +179,20 @@ const Navbar = () => {
                     </Link>
                 )}
                 <Link to={'/tasks'} className={style.noFontStyle}>
-                    <div className={`${style.menuStyle} ${(window.location.pathname === "/tasks" || window.location.pathname === "/reports") && style.activeMenuColor}`} onClick={() => setShowReportsMenu(true)}>
+                    <div className={`${style.menuStyle} ${(window.location.pathname === "/tasks" || window.location.pathname === "/reports") && style.activeMenuColor}`} 
+                    onMouseEnter={(e) => handleClick(e)} onMouseLeave={() => handleClose()} aria-describedby={id}>
                         <p>REPORT</p>
-                        {showReportsMenu && (
-                            <div className={style.optionsCardStyle} ref={menuRef}>
+                        <Popover
+                            id={id}
+                            open={open}
+                            anchorEl={anchorEl}
+                            onClose={handleClose}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                        >
+                            <div className={style.optionsCardStyle} onClick={() => handleClose()}>
                                 <Link to={'/reports/servicesOrActivities'} className={style.noFontStyle}>
                                     <div className={style.options}>Services/ Activities Logs</div>
                                 </Link>
@@ -174,14 +221,24 @@ const Navbar = () => {
                                     <div className={style.options}>System Administration</div>
                                 </Link>
                             </div>
-                        )}
+                        </Popover>
                     </div>
                 </Link>
                 {isEntityLevelAdmin && (
-                    <div className={`${style.menuStyle} ${(window.location.pathname === "/user" || window.location.pathname === "/welcome" || window.location.pathname === "/tasksAndAlerts") && style.activeMenuColor}`} onClick={() => setShowToolsMenu(true)}>
+                    <div className={`${style.menuStyle} ${(window.location.pathname === "/user" || window.location.pathname === "/welcome" || window.location.pathname === "/tasksAndAlerts") && style.activeMenuColor}`} 
+                    onMouseEnter={(e) => handleClickTools(e)} onMouseLeave={() => handleCloseTools()} aria-describedby={idTools}>
                         <p>TOOLS</p>
-                        {showToolsMenu && (
-                            <div className={style.optionsCardStyle} ref={toolsMenuRef}>
+                        <Popover
+                            id={idTools}
+                            open={openTools}
+                            anchorEl={anchorElTools}
+                            onClose={handleCloseTools}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                        >
+                            <div className={style.optionsCardStyle}>
                                 <Link to={'/user'} className={style.noFontStyle}>
                                     <div className={style.options}>USER MANAGEMENT</div>
                                 </Link>
@@ -189,26 +246,30 @@ const Navbar = () => {
                                     <div className={style.options}>ENTITY MANAGEMENT</div>
                                 </Link>
                             </div>
-                        )}
+                        </Popover>
                     </div>
                 )}
-                {/* <ScreenCapture onEndCapture={handleScreenCapture}>
-                {({ onStartCapture }) => ( */}
-                    <div>
-                        <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} onClick={() => setShowMenu(true)}>
-                            <p>HELP</p>
-                        </div>
-                        {showMenu && (
-                            <div className={style.optionsCardStyle} ref={menuRef}>
+                <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} 
+                    onMouseEnter={(e) => handleClickHelp(e)} onMouseLeave={() => handleCloseHelp()} aria-describedby={idHelp}>
+                        <p>HELP</p>
+                        <Popover
+                            id={idHelp}
+                            open={openHelp}
+                            anchorEl={anchorElHelp}
+                            onClose={handleCloseHelp}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                        >
+                            <div className={style.optionsCardStyle}>
                                 <Link to={'/help'} className={style.noFontStyle}>
                                     <div className={style.options}>OPEN FEEDBACK TICKET</div>
                                 </Link>
                                 <div className={style.options} onClick={handleScreenshot}>SUPPORT PORTAL</div>
                             </div>
-                        )}
-                    </div>
-                    {/* )}
-                </ScreenCapture> */}
+                        </Popover>
+                </div>
             </div>
             <div className={style.displayInRow}>
                 {/* {!window.location.pathname.includes('reportTypeOverview') && (
