@@ -15,6 +15,8 @@ import ReferenceList from './../ReferenceList';
 const Home = () => {
     const navigate = useNavigate();
     const [alertsData, setAlertsData] = useState([]);
+    const [feedBackTileData, setFeedBackTileData] = useState([]);
+    const [userMetadata, setUserMetadata] = useState([]);
     const [viewAlerts, setViewAlerts] = useState(true);
     const [selectedOption, setSelectedOption] = useState('');
     let selectedOptionValue = sessionStorage.getItem('selectedOption');
@@ -23,12 +25,27 @@ const Home = () => {
         setSelectedOption(selectedOptionValue);
     }, [selectedOptionValue])
 
+    useEffect(() => {
+        feedBackTileValues();
+        userTileValues();
+    }, [])
+
     const togglePin = () => {
 
     }
 
     const getSelectedOption = (value) => {
         setSelectedOption(value)
+    }
+
+    const feedBackTileValues = async() => {
+        const {data: feedback} = await GET(`feedback-management-service/ticket/metadata`);
+        setFeedBackTileData(feedback);
+    }
+
+    const userTileValues = async() => {
+        const {data: user} = await GET(`user-management-service/user/metadata`);
+        setUserMetadata(user);
     }
 
     const tableHeaderValues = ["", "", "ALERT TYPE", "ALERT NAME", "ALERT DATE & TIME", "ACTION"];
@@ -129,7 +146,7 @@ const Home = () => {
                 <div>
                     <div className={`${style.grid4}`}>
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="REGISTERED USERS" bigNumber={221} bigText="APP USERS" smallNum1={20} smallNum2={4} smallText1="ON HOLD" smallText2="BLOCKED" currentTile="REGISTERED USERS" topText='' />
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="OPEN FEEDBACK TICKETS" bigNumber={6} bigText="TOTAL TICKETS" smallNum1={1} smallNum2={2} smallText1="PAST DUE" smallText2="HIGH IMPACT" currentTile="OPEN FEEDBACK TICKETS" topText='' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="OPEN FEEDBACK TICKETS" bigNumber={feedBackTileData?.allTickets} bigText="TOTAL TICKETS" smallNum1={feedBackTileData?.dueDateTickets} smallNum2={feedBackTileData?.highImpactTickets} smallText1="PAST DUE" smallText2="HIGH IMPACT" currentTile="OPEN FEEDBACK TICKETS" topText='' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="REFERENCE LISTS" bigNumber={6} bigText="CUSTOM" bigNumber2={5} bigText2="DEFAULT IN USE" smallNum1={5} smallNum2={5} smallText1="REVIEW FOR USE" smallText2="SETUP REQUIRED" currentTile="REFERENCE LISTS" topText='' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="DATA UPLOADS" bigNumber={2} bigText="DEFAULT IN USE" smallNum1={2} smallNum2={1} smallText1="FAILED TO PROCESS" smallText2="FAILED RECORDS" currentTile="DATA UPLOADS" topText='' />
                     </div>

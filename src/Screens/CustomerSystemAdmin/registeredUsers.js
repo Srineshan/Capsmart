@@ -8,6 +8,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import LevelTwoHeader from '../../Components/LevelTwoHeader';
 
 import style from './index.module.scss';
+import DeleteConfirmation from '../../Components/DeleteConfirmation';
 
 const RegisteredUsers = ({getSelectedOption}) => {
     const [viewRegistered, setViewRegistered] = useState(true);
@@ -20,6 +21,8 @@ const RegisteredUsers = ({getSelectedOption}) => {
     const [userMetadata, setUserMetadata] = useState([]);
     const [from, setFrom] = useState(startOfWeek(new Date()));
     const [to, setTo] = useState(endOfWeek(new Date()));
+    const [userId, setUserId] = useState('');
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const entityTableHeaderValues = ["", "USER NAME", "TITLE", "PROXY", "SURROGATE", "LAST LOGIN DATE/TIME", "AVG LOGIN PER DAY", "AVG DURATION PER LOGIN (MIN)", "ACTION"];
     const deactivatedTableHeaderValues = ["", "USER NAME", "TITLE", "SITE NAME", "DEPARTMENT", "LAST LOGIN DATE/TIME", "DEACTIVATED DATE/TIME", "DEACTIVATED BY", "ACTION"];
     const invitedTableHeaderValues = ["", "USER NAME", "USER AFFILIATION", "TITLE", "SITE NAME", "DEPARTMENT", "INVITED DATE/TIME", "INVITED BY", "ACTION"];
@@ -91,6 +94,7 @@ const RegisteredUsers = ({getSelectedOption}) => {
         await PUT(`user/${data?.id}/BLOCK`)
         .then(response=>{
             SuccessToaster('User Blocked Successfully');
+            getUser();
         })
         .catch(error=>{
             ErrorToaster('Unexpected Error Occured');
@@ -101,6 +105,7 @@ const RegisteredUsers = ({getSelectedOption}) => {
         await PUT(`user/${data?.id}/DEACTIVATE`)
         .then(response=>{
             SuccessToaster('User Deactivated Successfully');
+            getUser();
         })
         .catch(error=>{
             ErrorToaster('Unexpected Error Occured');
@@ -111,6 +116,7 @@ const RegisteredUsers = ({getSelectedOption}) => {
         await PUT(`user/${data?.id}/REACTIVATE`)
         .then(response=>{
             SuccessToaster('User Reactivated Successfully');
+            getUser();
         })
         .catch(error=>{
             ErrorToaster('Unexpected Error Occured');
@@ -121,14 +127,46 @@ const RegisteredUsers = ({getSelectedOption}) => {
         await PUT(`user/${data?.id}/UNBLOCK`)
         .then(response=>{
             SuccessToaster('User UnBlocked Successfully');
+            getUser();
         })
         .catch(error=>{
             ErrorToaster('Unexpected Error Occured');
         })
     }
 
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    }
+
+    const getDeleteConfirmation = async(value) => {
+        if(value){
+            await PUT(`user/${userId}/DELETE`)
+            .then(response=>{
+                SuccessToaster('User Deleted Successfully');
+                getUser();
+            })
+            .catch(error=>{
+                ErrorToaster('Unexpected Error Occured');
+            })
+        }
+    }
+
+    const handleDelete = (data) => {
+        setUserId(data?.id)
+        setShowDeleteConfirmation(true);
+    }
+
+    const millisToMinutesAndSeconds = (millis) => {
+        let minutes = Math.floor(millis / 60000);
+        let seconds = ((millis % 60000) / 1000).toFixed(0);
+        return (seconds == 60 ?
+            (minutes+1) + ":00" :
+            minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
+    }
+
     let dot = [];
     let userName = [];
+    let userAffiliation = [];
     let title = [];
     let proxy = [];
     let siteName = [];
@@ -139,11 +177,14 @@ const RegisteredUsers = ({getSelectedOption}) => {
     let angDurationPerLogin = [];
     let deactivatedDateOrTime = [];
     let deactivatedBy = [];
+    let invitedDateOrTime = [];
+    let invitedBy = [];
     let action = [];
 
     const getValues = () => {
          dot = [];
          userName = [];
+         userAffiliation = [];
          title = [];
          proxy = [];
          siteName = [];
@@ -154,20 +195,27 @@ const RegisteredUsers = ({getSelectedOption}) => {
          angDurationPerLogin = [];
          deactivatedDateOrTime = [];
          deactivatedBy = [];
+         invitedDateOrTime = [];
+         invitedBy = [];
          action = [];
 
          valuesToUse?.map(data=> 
         {
             dot.push('dot');
             userName.push(`${data?.name?.firstName} ${data?.name?.lastName}`);
-            title.push(data?.title?.title);
+            userAffiliation.push('-');
+            title.push(data?.title !== null ? data?.title?.title : '-');
             proxy.push('-');
             surrogate.push('-');
+            siteName.push('-');
+            department.push('-');
             lastLoginDateOrTime.push(data?.lastLogin !== null ? format(new Date(data?.lastLogin), 'MM-dd-yyyy HH:mm') : '-');
             avgLoginPerDay.push(data?.avgLoginCount);
-            angDurationPerLogin.push(data?.avgLoginSession?.milliseconds);
+            angDurationPerLogin.push(data?.avgLoginSession !== null ? millisToMinutesAndSeconds(data?.avgLoginSession?.milliseconds) : 0);
             deactivatedDateOrTime.push(data?.userBlockedOrDeactivatedDate !== null ? format(new Date(data?.userBlockedOrDeactivatedDate), 'MM-dd-yyyy HH:mm') : '-');
-            deactivatedBy.push('-');
+            deactivatedBy.push(data?.deactivatedBy !== null ? data?.deactivatedBy?.name : '-');
+            invitedDateOrTime.push('-');
+            invitedBy.push(data?.invitedBy !== null ? data?.invitedBy?.name : '-');
             action.push(true);
         })
 
@@ -195,12 +243,12 @@ const RegisteredUsers = ({getSelectedOption}) => {
         ] : [
             {"type": "dot", "value": dot},
             {"type": "text", "value": userName},
+            {"type": "text", "value": userAffiliation},
             {"type": "text", "value": title},
-            {"type": "countWithHover", "value": proxy},
-            {"type": "textWithHover", "value": surrogate},
-            {"type": "text", "value": lastLoginDateOrTime},
-            {"type": "text", "value": avgLoginPerDay},
-            {"type": "text", "value": angDurationPerLogin},
+            {"type": "text", "value": siteName},
+            {"type": "text", "value": department},
+            {"type": "text", "value": invitedDateOrTime},
+            {"type": "text", "value": invitedBy},
             {"type": "action", "value": action},
         ]
     }
@@ -218,7 +266,7 @@ const RegisteredUsers = ({getSelectedOption}) => {
 
     const deactivatedActionsData = [{'data': 'Reactivate', 'onClick': handleReactivate}]
     
-    const inviteActionsData = [{'data': 'Delete', 'onClick': togglePin},
+    const inviteActionsData = [{'data': 'Delete', 'onClick': handleDelete},
             {'data': 'Reminder', 'onClick': togglePin}
         ]
 
@@ -230,7 +278,7 @@ const RegisteredUsers = ({getSelectedOption}) => {
             <div className={`${style.grid4} ${style.marginTop20}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ENTITY REGISTERED USERS" bigNumber={userMetadata?.registeredUsers?.registeredUsersCount} smallNum1={userMetadata?.registeredUsers?.newRegisteredUsersCount} smallNum2={userMetadata?.registeredUsers?.blockedRegisteredUserCount} smallText1="NEW" smallText2="BLOCKED" currentTile="ENTITY REGISTERED USERS" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="CONTRACTED SERVICE PROVIDER USERS" bigNumber={userMetadata?.contractedServiceProviderUsers?.contractedServiceProviderUsersCount} smallNum1={userMetadata?.contractedServiceProviderUsers?.newContractedServiceProviderUsersCount} smallNum2={userMetadata?.contractedServiceProviderUsers?.blockedContractedServiceProviderUsersCount} smallText1="NEW" smallText2="BLOCKED" currentTile="CONTRACTED SERVICE PROVIDER USERS" topText='' />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="DEACTIVATED USERS" bigNumber={userMetadata?.deactivatedUsers?.deactivatedUsersCount} smallNum1="" smallNum2="" currentTile="DEACTIVATED USERS" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="DEACTIVATED USERS" bigNumber={userMetadata?.deactivatedUsers?.usersDeactivatedInSpecifiedTimePeriod} smallNum1="" smallNum2="" currentTile="DEACTIVATED USERS" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="INVITED USERS" bigNumber={userMetadata?.invitedUsers?.invitedUsers} smallNum1="" smallNum2={userMetadata?.invitedUsers?.pastDueUsers} smallText2="PAST DUE" currentTile="INVITED USERS" topText='' />
             </div>
             <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
@@ -257,10 +305,11 @@ const RegisteredUsers = ({getSelectedOption}) => {
                     tableHeaderValues={tableHeaderValues} 
                     tableDataValues={getValues()}
                     tableData={valuesToUse}
-                    gridStyle={style.registeredUsersGrid}
+                    gridStyle={selectedOption === 'INVITED USERS' ? style.invitedUsersGrid : style.registeredUsersGrid}
                     actions={actionsData}
                 />
             </div>
+            {showDeleteConfirmation && <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation} getDeleteConfirmation={getDeleteConfirmation} confirmationText="Do you want to delete this User?" />}
         </div>
     )
 }
