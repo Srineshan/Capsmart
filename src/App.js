@@ -37,9 +37,22 @@ import CustomerSetup from './Screens/SuperAdminDashboard/customerSetup';
 import AbsenseReasonsByIndustries from './Screens/ReferenceList/absenseReasonsByIndustries';
 import SuffixByIndustries from './Screens/ReferenceList/suffixByIndustries';
 import ContractedServiceProvidedByIndustries from './Screens/ReferenceList/contractedServiceProvider';
+import ProofOfDocumentationByEntity from './Screens/ReferenceList/proofOfDocumentationByEntity';
+import ContractDocumentTypeForUpload from './Screens/ReferenceList/contractDoumentTypeForUpload';
+import DepartmentsForCustomersMultiSite from './Screens/ReferenceList/departmentsForCustomerMultiSite';
+import AbsenceReasonsForCustomer from './Screens/ReferenceList/absenceReasonsForCustomer';
+import SuffixByCustomer from './Screens/ReferenceList/suffixByCustomer';
+import ContractDocumentUploadForCustomer from './Screens/ReferenceList/contractDocumentTypeUploadForCustomer';
+import ContractServiceProviderBySite from './Screens/ReferenceList/contractServiceProviderBySiteType';
+import ContractServiceProviderForMultiSite from './Screens/ReferenceList/contractServiceProviderMultiSite';
+import FunctionalTitleForCustomer from './Screens/ReferenceList/functionalTitleForCustomer';
+import FunctionalTitleMultiSitesForCustomer from './Screens/ReferenceList/functionalTitleMultiSitesForCustomer';
+import TerminationReasonForCustomer from './Screens/ReferenceList/contractTerminationReasonForCustomer';
+import SuperAdminDashboard from './Screens/ReferenceList/superAdminDashboard';
+import ClientAdminDashboard from './Screens/ReferenceList/customerAdminDashboard';
+import Thankyou from './Screens/SuperAdminDashboard/thankyou';
 import {Auth,GetEntityDetails} from './utils/auth';
 import {TenantID, GET} from './Screens/dataSaver';
-import Thankyou from './Screens/SuperAdminDashboard/thankyou';
 import ReportType from './Screens/Reports/reportType';
 import ReportTypeOverview from './Screens/Reports/reportTypeOverview';
 import TenetHealthLogo from './images/Tenet_Health_logo.png';
@@ -127,12 +140,30 @@ const App = ({props}) => {
           <Route  path="/activeCustomers" element={<CustomerManagement />}/>
           <Route  path="/customerSetup" element={<CustomerSetup />} />
           <Route  path="/referenceList" element={<ReferenceList />} />
+          <Route  path="/Screens/ReferenceList/superAdminDashboard" element={<SuperAdminDashboard />} />
+          <Route  path="/Screens/ReferenceList/customerAdminDashboard" element={<ClientAdminDashboard />} />
           <Route  path="/referenceList/industriesWithEntityTypes" element={<IndustriesWithEntityTypes />} />
           <Route  path="/referenceList/departmentsByEntityTypes" element={<DepartmentsByEntityTypes />} />
           <Route  path="/referenceList/functionalTitles" element={<FunctionalTitles />} />
           <Route  path="/referenceList/boardCertification" element={<BoardCertification />} />
           <Route  path="/referenceList/holidayListByIndustries" element={<HolidayListByIndustries />} />
           <Route  path="/referenceList/terminationReasons" element={<TerminationReasons />} />
+          <Route  path="/referenceList/absenseReasonsByIndustries" element={<AbsenseReasonsByIndustries />} />
+          <Route  path="/referenceList/suffixByIndustries" element={<SuffixByIndustries />} />
+          <Route  path="/referenceList/contractedServiceProviderByIndustries" element={<ContractedServiceProvidedByIndustries />} />
+          <Route  path="/referenceList/proofOfDocumentByEntity" element={<ProofOfDocumentationByEntity />} />
+          <Route  path="/referenceList/contractDoumentTypeForUpload" element={<ContractDocumentTypeForUpload />} />
+          <Route  path="/referenceList/holidayScheduleForCustomers" element={<HolidayScheduleForCustomers />} />
+          <Route  path="/referenceList/departmentsForCustomers" element={<DepartmentsForCustomers />} />
+          <Route  path="/referenceList/departmentsForCustomerMultiSite" element={<DepartmentsForCustomersMultiSite />} />
+          <Route  path="/referenceList/absenceReasonsForCustomer" element={<AbsenceReasonsForCustomer />} />
+          <Route  path="/referenceList/suffixByCustomer" element={<SuffixByCustomer />} />
+          <Route  path="/referenceList/contractDocumentTypeUploadForCustomer" element={<ContractDocumentUploadForCustomer />} />
+          <Route  path="/referenceList/contractServiceProviderBySiteType" element={<ContractServiceProviderBySite />} />
+          <Route  path="/referenceList/contractServiceProviderMultiSite" element={<ContractServiceProviderForMultiSite />} />
+          <Route  path="/referenceList/functionalTitleForCustomer" element={<FunctionalTitleForCustomer />} />
+          <Route  path="/referenceList/functionalTitleMultiSitesForCustomer" element={<FunctionalTitleMultiSitesForCustomer />} />
+          <Route  path="/referenceList/contractTerminationReasonForCustomer" element={<TerminationReasonForCustomer />} />
           <Route  path="/referenceList/holidayScheduleForCustomers" element={<HolidayScheduleForCustomers />} />
           <Route  path="/referenceList/departmentsForCustomers" element={<DepartmentsForCustomers />} />
           <Route  path="/referenceList/absenseReasonsByIndustries" element={<AbsenseReasonsByIndustries />} />

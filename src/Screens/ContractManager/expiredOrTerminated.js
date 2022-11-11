@@ -5,7 +5,6 @@ import PrintIcon from './../../images/printIcon.png';
 import File from './../../images/file.png';
 import ContractTiles from './contractTiles';
 import SearchBar from './../../Components/SearchBar';
-
 import style from './index.module.scss';
 import UserCard from './userCard';
 import LeftStatsCard from '../../Components/LeftStatsCard';

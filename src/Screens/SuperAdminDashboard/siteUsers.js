@@ -56,7 +56,6 @@ const SiteUsers = ({getActiveStep}) => {
     const [siteSpecific, setSiteSpecific] = useState(false);
     const [showUserTable, setShowUserTable] = useState(true);
     const [selectedSites, setSelectedSites] = useState([]);
-    const [siteID, setSiteID] = useState('3578689');
     const [showBulkUploadDialog, setShowBulkUploadDialog] = useState(false);
     const [showUploading, setShowUploading] = useState(false);
     const [isUploaded, setIsUploaded] = useState(false);
@@ -139,7 +138,7 @@ const SiteUsers = ({getActiveStep}) => {
             'Authorization': `Bearer ${Auth()}`
           },
       }).then(response=>{
-        setContracts(response?.data);
+        setContracts(response?.data?.contractList);
       }).catch(error=>{
         console.log('error',error)
       })

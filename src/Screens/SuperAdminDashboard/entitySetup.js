@@ -45,8 +45,8 @@ const EntitySetup = () => {
     const [selectDepartments, setSelectDepartments] = useState([]);
     const [entityData,setEntityData] = useState();
     const [showSaveInProgress,setShowSaveInProgress] = useState(false);
-    const [logo,setLogo] = useState(null);
-    const [thumbnail,setThumbnail] = useState(null);
+    const [logo,setLogo] = useState({name:'',url:'',file:null});
+    const [thumbnail,setThumbnail] = useState({name:'',url:'',file:null});
     const [entity,setEntity] = useState({id:'',customerType:'',npin:'',name:'',type:{type:'',id:''},subdomain:'',multiSiteEntity:false,primarySiteToUseApp:false,canSetupDepartment:false});
     const [address,setAddress] = useState({addressLine:'',city:'',state:'',country:'',zipcode:''});
     const [isUpdated,setIsUpdated] = useState(false);
@@ -100,8 +100,8 @@ const EntitySetup = () => {
       setAddress({city:siteData?.address?.city,state:siteData?.address?.state,zipcode:siteData?.address?.zipcode,addressLine:siteData?.address?.addressLine,country:siteData?.address?.country});
       setSelectDepartments(siteData?.departmentList?.departments);
       setDepartmentSpecific(siteData?.canSetupDepartment);
-      setLogo(data?.logo?.file?.fileURL || null);
-      setThumbnail(data?.logoThumbnail?.file?.fileURL || null);
+      setLogo({...logo, url:data?.logo?.file?.fileURL || ''});
+      setThumbnail({...thumbnail, url:data?.logoThumbnail?.file?.fileURL || ''});
     }
 
 
@@ -218,8 +218,11 @@ const EntitySetup = () => {
       updateEntity('SaveInProgress');
     }
 
+  console.log('logo',logo, thumbnail);
+
 
   const updateEntity = async(type) => {
+    let id = '';
     if(isUpdated){
       let filteredValue = entityData?.sites?.filter(data=>data.primarySite !== true)?.map(data=>data) || [];
       let primarySiteValue = entityData?.sites?.filter(data=>data.primarySite === true)?.map(data=>data)[0];
@@ -285,6 +288,9 @@ const EntitySetup = () => {
           await PUT('entity-service/entity',updatedValue)
             .then(response=>{
             SuccessToaster('Entity Updated Successfully');
+            id = response?.data?.id;
+            handleLogoUpload(response?.data?.id);
+            handleThumbnailUplaod(response?.data?.id);
             }).catch(error=>{
               console.log('error',error);
               ErrorToaster('Unexpected Error Updating Entity');
@@ -292,7 +298,9 @@ const EntitySetup = () => {
         }else{
           await POST('entity-service/entity',updatedValue)
             .then(response=>{
-              console.log('response',response);
+              id = response?.data?.id;
+              handleLogoUpload(response?.data?.id);
+              handleThumbnailUplaod(response?.data?.id);
             let newEntityId = response?.data?.id;
             if(type==='Continue'){
               window.location = `/app/entitySetup/${newEntityId}`
@@ -306,12 +314,14 @@ const EntitySetup = () => {
         setIsUpdated(false);
       }
       setUnassignedKeys([]);
-      sessionStorage.setItem('logo',entityData?.logo?.file?.fileURL);
-      sessionStorage.setItem('thumbnail',entityData?.logoThumbnail?.file?.fileURL);
-      sessionStorage.setItem('entityTypeId',entity?.typeId);
-      sessionStorage.setItem('entityTypeValue',entity?.type);
-      sessionStorage.setItem('industry',entity?.customerType);
-      sessionStorage.setItem('title',entity?.name);
+      if(id === TenantID){
+        sessionStorage.setItem('logo',entityData?.logo?.file?.fileURL);
+        sessionStorage.setItem('thumbnail',entityData?.logoThumbnail?.file?.fileURL);
+        sessionStorage.setItem('entityTypeId',entity?.typeId);
+        sessionStorage.setItem('entityTypeValue',entity?.type);
+        sessionStorage.setItem('industry',entity?.customerType);
+        sessionStorage.setItem('title',entity?.name);
+      }
     if(type === 'Continue'){
       setActiveStep(entity.multiSiteEntity === true ?"siteInformation":isSuperAdminAccess?"entitySystemAdmin":"siteUsers");
     }else {
@@ -325,12 +335,16 @@ const EntitySetup = () => {
       }
     }
 
-    const handleLogoUpload = async(e) => {
-      setLogo(URL.createObjectURL(e.target.files[0]));
+    const handleLogoFile = (e) => {
+      setIsUpdated(true);
+      setLogo({...logo, url:URL.createObjectURL(e.target.files[0]) || '', name:e.target?.files?.[0]?.name || '', file:e.target.files[0]});
+    }
+
+    const handleLogoUpload = async(entityId) => {
       const formData = new FormData();
       let data = {
         "file":{
-          "fileName":e.target?.files?.[0]?.name || ''
+          "fileName":logo?.name
         }
       }
       if(logo === null){
@@ -338,9 +352,9 @@ const EntitySetup = () => {
         formData.append('logo', new Blob([JSON.stringify(data)], {
          type: "application/json"
          }));
-         formData.append('logoFile',e.target.files[0]);
+         formData.append('logoFile',logo?.file);
 
-         await POST(`entity-service/entity/${TenantID}/logo`, formData)
+         await POST(`entity-service/entity/${entityId}/logo`, formData)
          .then(response=>{
            SuccessToaster('Company Logo Updated Successfully');
          })
@@ -351,9 +365,9 @@ const EntitySetup = () => {
         formData.append('logo', new Blob([JSON.stringify(data)], {
          type: "application/json"
          }));
-         formData.append('logoFile',e.target.files[0]);
+         formData.append('logoFile',logo?.file);
 
-         await PUT(`entity-service/entity/${TenantID}/logo`, formData)
+         await PUT(`entity-service/entity/${entityId}/logo`, formData)
          .then(response=>{
            SuccessToaster('Company Logo Updated Successfully');
          })
@@ -364,22 +378,26 @@ const EntitySetup = () => {
 
     }
 
-    const handleThumbnailUplaod = async(e) => {
-      setThumbnail(URL.createObjectURL(e.target.files[0]));
+    const handleThumbnailFile = (e) => {
+      setIsUpdated(true);
+      setThumbnail({...thumbnail, url:URL.createObjectURL(e.target.files[0]) || '', name:e.target?.files?.[0]?.name || '', file:e.target.files[0]});
+    }
+
+    const handleThumbnailUplaod = async(entityId) => {
       const formData = new FormData();
       let data = {
         "file":{
-          "fileName":e.target?.files?.[0]?.name || ''
+          "fileName":thumbnail?.name
         }
       }
-      if(thumbnail === null){
+      if(thumbnail?.url === ''){
         data.id = entityData?.logoThumbnail?.id;
         formData.append('logoThumbnail', new Blob([JSON.stringify(data)], {
          type: "application/json"
          }));
-         formData.append('logoThumbnailFile',e.target.files[0]);
+         formData.append('logoThumbnailFile',thumbnail?.file);
 
-         await POST(`entity-service/entity/${TenantID}/logoThumbnail`, formData)
+         await POST(`entity-service/entity/${entityId}/logoThumbnail`, formData)
          .then(response=>{
            SuccessToaster('Logo Thumbnail Updated Successfully');
          })
@@ -390,9 +408,9 @@ const EntitySetup = () => {
         formData.append('logoThumbnail', new Blob([JSON.stringify(data)], {
          type: "application/json"
          }));
-         formData.append('logoThumbnailFile',e.target.files[0]);
+         formData.append('logoThumbnailFile',thumbnail?.file);
 
-         await PUT(`entity-service/entity/${TenantID}/logoThumbnail`, formData)
+         await PUT(`entity-service/entity/${entityId}/logoThumbnail`, formData)
          .then(response=>{
            SuccessToaster('Logo Thumbnail Updated Successfully');
          })
@@ -408,7 +426,6 @@ const EntitySetup = () => {
       setIsUpdated(true);
     }
 
-    console.log('entity type',entity?.type);
     return(
       <>
         {activeStep === "entitySetup" ? (
@@ -480,17 +497,17 @@ const EntitySetup = () => {
 
                                   <label for="logo-upload">
                                   <div className={style.displayInRow}>
-                                      <img src={logo||UploadImg} alt="Upload" className={`${style.companyLogoUpload} ${style.cursor}`} />
+                                      <img src={logo?.url||UploadImg} alt="Upload" className={`${style.companyLogoUpload} ${style.cursor}`} />
 
-                                    <input id="logo-upload" type="file" onChange={handleLogoUpload}/>
+                                    <input id="logo-upload" type="file" onChange={handleLogoFile}/>
                                       <p className={style.uploadText}>Click To Upload Company Logo</p>
                                   </div>
                                     </label>
                                     <label for="thumbnail-upload">
                                     <div className={style.displayInRow}>
-                                      <img src={thumbnail||UploadImg} alt="Upload" className={`${style.logoThumbnailUpload} ${style.cursor}`} />
+                                      <img src={thumbnail?.url||UploadImg} alt="Upload" className={`${style.logoThumbnailUpload} ${style.cursor}`} />
 
-                                    <input id="thumbnail-upload" type="file" onChange={handleThumbnailUplaod}/>
+                                    <input id="thumbnail-upload" type="file" onChange={handleThumbnailFile}/>
                                       <p className={style.uploadText}>Click To Upload Logo Thumbnail</p>
                                       </div>
                                     </label>
