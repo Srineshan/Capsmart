@@ -241,8 +241,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             activities.push({"activity":data})
           ));
         }
-
-            const data = {
+        let data;
+        if(serviceType === 'Add-On Clinical Services'){
+          let temp = metadata;
+          temp?.map(data=>{
+            data.sites = siteData;
+            data.activityType = {activityType:'Add-On Clinical Services'};
+            data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
+          });
+          data = temp;
+        }
+        else{
+             data = [{
                   "sites": siteData,
                   "activityType": {
                     "activityType": serviceType
@@ -330,14 +340,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   "locationSpecified": showLocation,
                   "dedicatedHoursSpecified": serviceType === 'Supplemental Clinical Services' ? metadata?.dedicatedHoursSpecified : false,
                   "billableService": metadata?.billableService
-                }
+                }]
+              }
             let services = contractedServices || [];
             if(editService){
               let temp = services?.filter(data=>data?.activityType?.activityType !== serviceType || data?.performingActivity?.activity !== performingActivity)?.map(data=>data);
-              temp.push(data);
+              temp.push(...data);
               services = temp;
             }else{
-              services.push(data);
+              services.push(...data);
             }
             let formattedData = {
                 contractedServices: services
