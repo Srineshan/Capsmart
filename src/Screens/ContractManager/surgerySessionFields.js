@@ -93,7 +93,7 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Regular Surgery Schedule*</div>
+                <div className={style.extentionLableStyle}>Regular Service Schedule*</div>
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
@@ -119,7 +119,7 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Surgery Cases Target*</div>
+                <div className={style.extentionLableStyle}>Service Cases Target*</div>
                 <div className={`${style.displayInRow}`}>
                     <InputGroup  value={metadata?.withNurse} className={` ${style.threeFieldWidth}`} onChange={(e)=>{setpatientTarget(e.target.value)}}/>
                     <Checkbox label="No Target Applicable" value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth} `} onChange={(e)=>handleValueChange('noTargetApplicable', e.target.checked)}/>
@@ -186,7 +186,7 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Surgery Session Duration</div>
+                <div className={style.extentionLableStyle}>Service Session Duration</div>
                 <div className={`${style.threeFieldWidth}`}>
                     <TextField
                         size="small"
@@ -200,7 +200,7 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Surgery Session payment Amount*</div>
+                <div className={style.extentionLableStyle}>Service Session payment Amount*</div>
                 <div className={`${style.displayInRow}`}>
                     <div className={`${style.threeFieldWidth}`}>
                         <TextField
@@ -241,7 +241,7 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Surgery*</div>
+                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
                 <div className={style.displayInRow}>
                     <InputGroup
                         value={metadata?.workingTimeFrom}
