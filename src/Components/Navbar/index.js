@@ -1,5 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
 import logo from './../../images/metropolitan-hospital-logo.png';
 import TenetLogo from './../../images/Tenet_Health_logo.png';
 import SanmateoLogo from './../../images/sanmateo.jpg';
@@ -20,6 +21,15 @@ import jwt from 'jwt-decode';
 
 import style from './index.module.scss';
 
+const useStyles = makeStyles(theme => ({
+    popover: {
+      pointerEvents: 'none',
+    },
+    popoverContent: {
+      pointerEvents: 'auto',
+    },
+}));
+
 const Navbar = () => {
     const navigate = useNavigate()
     const [showMenu, setShowMenu] = useState(false);
@@ -30,10 +40,13 @@ const Navbar = () => {
     const [isEntityLevelAdmin, setIsEntityLevelAdmin] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
+    const popoverAnchor = useRef(null);
     const [anchorElHelp, setAnchorElHelp] = useState(null);
     const openHelp = Boolean(anchorElHelp);
+    const popoverAnchorHelp = useRef(null);
     const [anchorElTools, setAnchorElTools] = useState(null);
     const openTools = Boolean(anchorElTools);
+    const popoverAnchorTools = useRef(null);
     const [logo,setLogo] = useState(sessionStorage?.getItem('logo'));
 
     // const menuRef = useRef(null);
@@ -52,7 +65,7 @@ const Navbar = () => {
         setAnchorEl(null);
     };
 
-    const id = open ? 'simple-popover' : undefined;
+    const id = open ? 'mouse-over-popover' : undefined;
 
     const handleClickTools = (event) => {
         setAnchorElTools(event.currentTarget);
@@ -62,7 +75,7 @@ const Navbar = () => {
         setAnchorElTools(null);
     };
 
-    const idTools = open ? 'simple-popover' : undefined;
+    const idTools = open ? 'mouse-over-popover' : undefined;
 
     const handleClickHelp = (event) => {
         setAnchorElHelp(event.currentTarget);
@@ -72,56 +85,7 @@ const Navbar = () => {
         setAnchorElHelp(null);
     };
 
-    const idHelp = open ? 'simple-popover' : undefined;
-
-    // function useMenuHide(ref) {
-    //     useEffect(() => {
-    //       function handleClickOutside(event) {
-    //         if (ref.current && !ref.current.contains(event.target)) {
-    //           setShowMenu(false)
-    //         }
-    //       }
-    //       document.addEventListener("mousedown", handleClickOutside);
-    //       return () => {
-    //         document.removeEventListener("mousedown", handleClickOutside);
-    //       };
-    //     }, [ref]);
-    // }
-
-    // function useToolsMenuHide(ref) {
-    //     useEffect(() => {
-    //       function handleToolsClickOutside(event) {
-    //         if (ref.current && !ref.current.contains(event.target)) {
-    //           setShowToolsMenu(false)
-    //         }
-    //       }
-    //       document.addEventListener("mousedown", handleToolsClickOutside);
-    //       return () => {
-    //         document.removeEventListener("mousedown", handleToolsClickOutside);
-    //       };
-    //     }, [ref]);
-    // }
-
-    // function useReportsMenuHide(ref) {
-    //     useEffect(() => {
-    //       function handleReportsClickOutside(event) {
-    //         if (ref.current && !ref.current.contains(event.target)) {
-    //           setShowReportsMenu(false)
-    //         }
-    //       }
-    //       document.addEventListener("mousedown", handleReportsClickOutside);
-    //       return () => {
-    //         document.removeEventListener("mousedown", handleReportsClickOutside);
-    //       };
-    //     }, [ref]);
-    // }
-
-    // const handleScreenCapture = (screenCapture) => {
-    //     setScreenCapture(screenCapture);
-    //     sessionStorage.setItem('screenCapture', screenCapture);
-    //     sessionStorage.setItem('selectedOption', 'OPEN FEEDBACK TICKETS');
-    //     window.location.href = '/app/entitySitePortal';
-    // };
+    const idHelp = open ? 'mouse-over-popover' : undefined;
 
     const logout = () => {
       const cookies = new Cookies();
@@ -150,6 +114,8 @@ const Navbar = () => {
         setIsContractManager(roles.includes('Contract Manager') ? true : false);
         setIsEntityLevelAdmin((roles.includes('Super Sys Admin') || roles.includes('Entity Sys Admin') || roles.includes('Entity Sys User') || roles.includes('Distributor Admin')) ? true : false);
     }, [])
+
+    const classes = useStyles();
 
     const handleScreenshot = () => {
         setShowToolsMenu(false);
@@ -183,19 +149,25 @@ const Navbar = () => {
                         </div>
                     </Link>
                 )}
-                <Link to={'/tasks'} className={style.noFontStyle}>
-                    <div className={`${style.menuStyle} ${(window.location.pathname === "/tasks" || window.location.pathname === "/reports") && style.activeMenuColor}`} 
-                    onMouseEnter={(e) => handleClick(e)} onMouseLeave={() => handleClose()} aria-describedby={id}>
+                <div>
+                    <div className={`${style.menuStyle} ${(window.location.pathname.includes("/reports")) && style.activeMenuColor}`} 
+                    ref={popoverAnchor}
+                    onMouseEnter={(e) => handleClick(e)} onMouseLeave={() => handleClose()} aria-owns={open ? 'mouse-over-popover' : undefined}
+                    aria-haspopup="true">
                         <p>REPORT</p>
                         <Popover
-                            id={id}
+                            id={'mouse-over-popover'}
                             open={open}
-                            anchorEl={anchorEl}
+                            anchorEl={popoverAnchor.current}
                             onClose={handleClose}
                             anchorOrigin={{
                                 vertical: 'bottom',
                                 horizontal: 'left',
                             }}
+                            classes={{
+                                paper: classes.popoverContent,
+                            }}
+                            PaperProps={{onMouseEnter: handleClick, onMouseLeave: handleClose}}
                         >
                             <div className={style.optionsCardStyle} onClick={() => handleClose()}>
                                 <Link to={'/reports/servicesOrActivities'} className={style.noFontStyle}>
@@ -228,52 +200,68 @@ const Navbar = () => {
                             </div>
                         </Popover>
                     </div>
-                </Link>
+                </div>
                 {isEntityLevelAdmin && (
-                    <div className={`${style.menuStyle} ${(window.location.pathname === "/user" || window.location.pathname === "/welcome" || window.location.pathname === "/tasksAndAlerts") && style.activeMenuColor}`} 
-                    onMouseEnter={(e) => handleClickTools(e)} onMouseLeave={() => handleCloseTools()} aria-describedby={idTools}>
-                        <p>TOOLS</p>
-                        <Popover
-                            id={idTools}
-                            open={openTools}
-                            anchorEl={anchorElTools}
-                            onClose={handleCloseTools}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                        >
-                            <div className={style.optionsCardStyle}>
-                                <Link to={'/user'} className={style.noFontStyle}>
-                                    <div className={style.options}>USER MANAGEMENT</div>
-                                </Link>
-                                <Link to={isSuperAdminAccess ? '/tasksAndAlerts' : '/welcome'} className={style.noFontStyle}>
-                                    <div className={style.options}>ENTITY MANAGEMENT</div>
-                                </Link>
-                            </div>
-                        </Popover>
+                    <div>
+                        <div className={`${style.menuStyle} ${(window.location.pathname === "/user" || window.location.pathname === "/welcome" || window.location.pathname === "/tasksAndAlerts") && style.activeMenuColor}`} 
+                        ref={popoverAnchorTools}
+                        onMouseEnter={(e) => handleClickTools(e)} onMouseLeave={() => handleCloseTools()} aria-owns={openTools ? 'mouse-over-popover' : undefined}
+                        aria-haspopup="true">
+                            <p>TOOLS</p>
+                            <Popover
+                                id={'mouse-over-popover'}
+                                open={openTools}
+                                anchorEl={popoverAnchorTools.current}
+                                onClose={handleCloseTools}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                classes={{
+                                    paper: classes.popoverContent,
+                                }}
+                                PaperProps={{onMouseEnter: handleClickTools, onMouseLeave: handleCloseTools}}
+                            >
+                                <div className={style.optionsCardStyle}>
+                                    <Link to={'/user'} className={style.noFontStyle}>
+                                        <div className={style.options}>USER MANAGEMENT</div>
+                                    </Link>
+                                    <Link to={isSuperAdminAccess ? '/tasksAndAlerts' : '/welcome'} className={style.noFontStyle}>
+                                        <div className={style.options}>ENTITY MANAGEMENT</div>
+                                    </Link>
+                                </div>
+                            </Popover>
+                        </div>
                     </div>
                 )}
-                <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} 
-                    onMouseEnter={(e) => handleClickHelp(e)} onMouseLeave={() => handleCloseHelp()} aria-describedby={idHelp}>
-                        <p>HELP</p>
-                        <Popover
-                            id={idHelp}
-                            open={openHelp}
-                            anchorEl={anchorElHelp}
-                            onClose={handleCloseHelp}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                        >
-                            <div className={style.optionsCardStyle}>
-                                <Link to={'/help'} className={style.noFontStyle}>
-                                    <div className={style.options}>OPEN FEEDBACK TICKET</div>
-                                </Link>
-                                <div className={style.options} onClick={handleScreenshot}>SUPPORT PORTAL</div>
-                            </div>
-                        </Popover>
+                <div>
+                    <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} 
+                        ref={popoverAnchorHelp}
+                        onMouseEnter={(e) => handleClickHelp(e)} onMouseLeave={() => handleCloseHelp()} aria-owns={'mouse-over-popover'}
+                        aria-haspopup="true">
+                            <p>HELP</p>
+                            <Popover
+                                id={'mouse-over-popover'}
+                                open={openHelp}
+                                anchorEl={popoverAnchorHelp.current}
+                                onClose={handleCloseHelp}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                classes={{
+                                    paper: classes.popoverContent,
+                                }}
+                                PaperProps={{onMouseEnter: handleClickHelp, onMouseLeave: handleCloseHelp}}
+                            >
+                                <div className={style.optionsCardStyle}>
+                                    <Link to={'/help'} className={style.noFontStyle}>
+                                        <div className={style.options}>OPEN FEEDBACK TICKET</div>
+                                    </Link>
+                                    <div className={style.options} onClick={handleScreenshot}>SUPPORT PORTAL</div>
+                                </div>
+                            </Popover>
+                    </div>
                 </div>
             </div>
             <div className={style.displayInRow}>

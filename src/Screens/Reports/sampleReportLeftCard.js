@@ -74,6 +74,8 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
         reportingTimePeriod: reportingTimePeriod,
         from: format(new Date(from), 'yyyy-MM-dd'),
         to: format(new Date(to), 'yyyy-MM-dd'),
+        fromToDisplay: format(new Date(from), 'MM-dd-yyyy'),
+        toToDisplay: format(new Date(to), 'MM-dd-yyyy'),
         selectedContractedServiceProvider: selectedContractedServiceProvider,
         selectedContractedServiceProviderToSend: selectedContractedServiceProviderToSend,
     };
@@ -624,7 +626,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                         </FormControl>
                     </>
                 )}
-                <button className={`${style.primaryButtonStyle} ${style.marginTop20}`} onClick={()=> setShowSaveReport(true)} >Save Parameter Selection As My Report</button>
+                {/* <button className={`${style.primaryButtonStyle} ${style.marginTop20}`} onClick={()=> setShowSaveReport(true)} >Save Parameter Selection As My Report</button> */}
             </div>
             {showSaveReport && (
                 <SaveReport getSaveReportDialog={getSaveReportDialog} />

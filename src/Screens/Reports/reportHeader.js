@@ -23,6 +23,8 @@ const ReportHeader = () => {
       setLogo({logo:data?.logo?.file?.fileURL, title:data?.entityName?.entityName});
     }
 
+    console.log(logo)
+
     return(
         <div>
             <div className={style.spaceBetween}>
@@ -33,13 +35,14 @@ const ReportHeader = () => {
                     </div>
                 </div>
                 <div>
-                    <img src={logo.logo} alt="Hospital Logo" className={style.headerLogo} />
-                    <div className={style.entityNameHeaderStyle}>{logo.title}</div>
+                    {logo.logo && (
+                        <img src={logo.logo} alt="" className={style.headerLogo} />
+                    )}
+                    <div className={style.entityNameBolderStyle}>{logo.title}</div>
                 </div>
                 <div>
                     <div className={style.reportRunByTextStyle}>Report Run By : </div>
-                    <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{userDetail?.userName} at</div>
-                    <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{currentTime}</div>
+                    <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{userDetail?.userName} at {currentTime}</div>
                 </div>
             </div>
             <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
