@@ -5,7 +5,6 @@ import { GET, PUT } from './../dataSaver';
 
 import style from './index.module.scss';
 import AddServiceProvided from './addServiceToBeProvided';
-import EditServiceProvided from './editServiceToBeProvided';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPage, selectContractInfo }) => {
@@ -129,10 +128,6 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
           {
             (addService || editService) &&
             <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog}/>
-          }
-          {
-            // editService &&
-            // <EditServiceProvided getEditServiceDialog={getEditServiceDialog} getAddOn={getAddOn} contractId={contractId} selectedService={selectedService} selectContractInfo={selectContractInfo} />
           }
           <Dialog isOpen={showDeleteConfirmation} onClose={() => setShowDeleteConfirmation(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>

@@ -61,11 +61,11 @@ import StackedBarChart from "./stackedBarChart";
 // ];
 
 // const allKeys = ["Done", "ToDo", "NotDone"];
-const allKeys = ['Medical / Surgical Care Contracted Services','Supplemental Clinical Services'];
+const allKeys = ['Medical / Surgical Care Contracted Services','Supplemental Services'];
 
 const colors = {
   'Medical / Surgical Care Contracted Services':'#938AED',
-  'Supplemental Clinical Services':"#3B30AA"
+  'Supplemental Services':"#3B30AA"
   // Done: "#938AED",
   // ToDo: "#3B30AA",
   // NotDone: "#0C0555"

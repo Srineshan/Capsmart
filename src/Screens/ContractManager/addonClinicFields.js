@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import cloneDeep from 'lodash.clonedeep';
 import { InputGroup, EditableText } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import MenuItem from '@mui/material/MenuItem';
@@ -19,7 +20,8 @@ import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
 import style from './index.module.scss';
 
-const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation, locationToAdd}) => {
+const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected}) => {
+    const limit5 = 5;
     let additionalDetails = ['Require Patient Data' , 'Administrative Approval For Payment Required', 'Prior Pre-Authorisation Required', 'Require Reason For Add-On Service'];
     const [addOnServiceName, setAddOnServiceName] = useState('');
     const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
@@ -51,6 +53,37 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
     useEffect(()=>{
       getMetaData(metadata);
     },[metadata])
+
+    useEffect(()=>{
+      setSelectedValues();
+    }, [serviceSelected]);
+
+    console.log('metadata', metadata, serviceSelected);
+    const setSelectedValues = async() => {
+      if(editService){
+      let temp = metadata;
+      temp.push({
+        sites : [],
+        activityType: {activityType: 'Add-On Services'},
+        performingActivity : serviceSelected?.performingActivity?.activity,
+        payableAmount: { value: serviceSelected?.payableAmount?.value},
+        locations: newServices?.locations,
+        locationSpecified: newServices?.showLocation,
+        workingHours: {
+          normalWorkingHours: serviceSelected?.workingHours?.normalWorkingHours,
+          afterWorkingHours: serviceSelected?.workingHours?.afterWorkingHours,
+        },
+        activityResponse: {dataMap:{
+          additionalDetails : serviceSelected?.activityResponse?.dataMap?.additionalDetails || []
+        }},
+        activityApprovalWFRequired : serviceSelected?.activityApprovalWFRequired
+      });
+      setMetadata(temp);
+      let selectedServiceTemp = selectedServices;
+      selectedServiceTemp?.push(serviceSelected?.performingActivity?.activity);
+      setSelectedServices(selectedServiceTemp);
+    }
+  }
 
     const resetNewServices = () => {
       setNewServices({
@@ -97,21 +130,20 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
 
 
     const getFields = () => {
-
       let serviceFields = [];
-
       setFields(serviceFields);
     }
 
     let serviceList = [];
-    services?.filter(data=>['Clinic Blocks','Surgery Session','Add-On Clinical Services']?.includes(data?.activityType?.activityType))?.map(data=>{
+    let temp = services;
+    temp?.filter(data=>['Clinic Blocks','Surgery Session']?.includes(data?.activityType?.activityType))?.map(data=>{
       let activityName = data?.activityType?.activityType;
       let activities = data?.activities?.map(data=>data?.activity);
       let result = `${activityName} (${activities?.map(data=>data)?.join(', ')})`
       serviceList.push(result);
     });
 
-    const selectLocation = (index, location, name) => {
+    const selectLocation = (location, name) => {
       let locationTemp = metadata?.filter(data=>data?.performingActivity === name)?.map(data=>data?.locations)[0] || [];
       if(!locationTemp.map(data=>data?.location)?.includes(location?.location)){
         let temp = metadata;
@@ -132,14 +164,11 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
     const selectService = (name, checked) => {
       if(checked){
         let temp = metadata;
-        services?.map(data=>{
-          let serviceName = getServiceName(data?.activityType?.activityType, data?.activities?.map(data=>data?.activity));
-          if(serviceName === name){
-            data.performingActivity = serviceName;
-            temp.push(data);
-            setSelectedServices(temp?.map(data=>data?.performingActivity));
-          }
-        })
+        const selectedData = cloneDeep(services?.filter(data=>getServiceName(data?.activityType?.activityType, data?.activities?.map(data=>data?.activity)) === name)?.map(data=>data)[0]);
+        selectedData.performingActivity = name;
+        selectedData.activityType = {activityType:'Add-On Services'};
+        temp.push(selectedData);
+        setSelectedServices(temp?.map(data=>data?.performingActivity));
         setMetadata(temp);
       }else{
         let temp = metadata?.filter(data=>data?.performingActivity !== name)?.map(data=>data);
@@ -191,7 +220,7 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
       let temp = metadata;
       temp.push({
         sites : [],
-        activityType: {activityType: 'Add-On Clinical Services'},
+        activityType: {activityType: 'Add-On Services'},
         performingActivity : newServices?.name,
         payableAmount: { value: newServices?.rate},
         locations: newServices?.locations,
@@ -225,14 +254,32 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
       setShowNewService(true);
     }
 
-    console.log('new Services', newServices);
+    const updateRate = (serviceName,value)=>{
+      let temp = metadata;
+      temp?.filter(data=>data?.performingActivity === serviceName)?.map(data=>{
+        console.log('inside check', temp);
+        data.payableAmount = {'value':value};
+      });
+      setMetadata(temp);
+      getFields();
+    }
 
-    const limit5 = 5;
+    const handleWorkingHoursChange = (serviceName, value, name) => {
+      let temp = metadata;
+      temp?.filter(data=>data?.performingActivity === serviceName)?.map(data=>{
+        data.workingHours = {...data.workingHours, [name]:value};
+      });
+      setMetadata(temp);
+      getFields();
+    }
+
+
+    console.log('services', services);
 
     return (
         <div>
       {
-        serviceList?.map((service,i)=>(
+        !editService && serviceList?.map((service,i)=>(
         <div className={style.marginTop20} onClick={()=>setSelectedService(service || '')}>
             <FormGroup>
                 <FormControlLabel control={<Checkbox onChange={(e)=>selectService(service,e.target.checked)} checked={selectedServices?.filter(data=>data === service)?.map(data=>data)?.length !== 0 ? true : false}/>}  label={<Typography variant="body2">{service}</Typography>} />
@@ -260,7 +307,7 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
                                 label={metadata?.filter(data=>data?.performingActivity===service)?.map(item=>item)[0]?.locationSpecified ===  true ? 'YES' : 'NO'}
                             />
                             <div className={`${style.addGrid} ${style.fullWidth}`}>
-                                <DatalistInput items={locationItems} onSelect={(location)=>selectLocation(i, location, service)} className={style.fullWidth} onChange={(e)=>getNewLocation(e.target.value)}/>
+                                <DatalistInput items={locationItems} onSelect={(location)=>selectLocation(location, service)} className={style.fullWidth} onChange={(e)=>getNewLocation(e.target.value)}/>
                                 <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                                     <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd}/>
                                 </div>
@@ -276,10 +323,10 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
      ))
     }
     {
-      metadata?.filter(data=>!serviceList?.map(service=>service)?.includes(data?.performingActivity))?.map(data=>(
-        <div className={style.marginTop20}>
+      metadata?.filter(data=>!serviceList?.map(service=>service)?.includes(data?.performingActivity) || editService)?.map(data=>(
+        <div className={style.marginTop20} onClick={()=>setSelectedService(data?.performingActivity)}>
             <FormGroup>
-                <FormControlLabel control={<Checkbox checked={selectedServices?.includes(data?.performingActivity)} onChange={(e)=>selectService(data?.performingActivity, e.target.checked)}/>}  label={<Typography variant="body2">{data?.performingActivity}</Typography>} />
+                <FormControlLabel control={<Checkbox checked={selectedServices?.includes(data?.performingActivity)} onChange={(e)=>selectService(data?.performingActivity, e.target.checked)}/>}  label={<Typography variant="body2">{data?.performingActivity?.activity || data?.performingActivity}</Typography>} />
             </FormGroup>
             <div className={`${style.addonBoxStyle}`}>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -292,6 +339,7 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
                                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                                 }}
                                 value={data?.payableAmount?.value}
+                                onChange={(e)=>updateRate(data?.performingActivity, e.target.value)}
                             />
                         </div>
                         <div className={style.verticalAlignCenter}>
@@ -303,10 +351,10 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
                     <div className={style.extentionLableStyle}>Allowable Add-On Working Hours*</div>
                     <div className={style.twoCol}>
                         <FormGroup className={`${style.marginLeft10}`}>
-                            <FormControlLabel control={<Checkbox checked={data?.workingHours?.normalWorkingHours}/>}  label={<Typography variant="body2" color="textSecondary">During Normal Working Hours</Typography>} />
+                            <FormControlLabel control={<Checkbox checked={data?.workingHours?.normalWorkingHours} onChange={(e)=>handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'normalWorkingHours')}/>}  label={<Typography variant="body2" color="textSecondary">During Normal Working Hours</Typography>} />
                         </FormGroup>
                         <FormGroup className={`${style.marginLeft10}`}>
-                            <FormControlLabel control={<Checkbox checked={data?.workingHours?.afterWorkingHours}/>}  label={<Typography variant="body2" color="textSecondary">After Working Hours</Typography>} />
+                            <FormControlLabel control={<Checkbox checked={data?.workingHours?.afterWorkingHours} onChange={(e)=>handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'afterWorkingHours')}/>}  label={<Typography variant="body2" color="textSecondary">After Working Hours</Typography>} />
                         </FormGroup>
                     </div>
                 </div>
@@ -316,7 +364,7 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
                         <div className={`${style.displayInRow} `}>
                             <FormControlLabel
                                 control={
-                                    <Switch className={`${style.textAlignLeft}`} checked={data?.locationSpecified}/>
+                                    <Switch className={`${style.textAlignLeft}`} checked={data?.locationSpecified} onChange={()=>switchShowLocation(data?.performingActivity)}/>
                                 }
                                 className={`${style.switchFontStyle} ${style.flexLeft} `}
                                 label={data?.locationSpecified ? 'YES' : 'NO'}
@@ -324,16 +372,16 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
                             {
                               data?.locationSpecified &&
                               <div className={`${style.addGrid} ${style.fullWidth}`}>
-                                  <DatalistInput items={locationItems} onSelect={() => {}} className={style.fullWidth} />
+                                  <DatalistInput items={locationItems} onSelect={(location)=>selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e)=>getNewLocation(e.target.value)}/>
                                   <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                      <AddIcon sx={{ fontSize: 25, color: 'white' }} />
+                                      <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd}/>
                                   </div>
                               </div>
                             }
 
                         </div>
                         {data?.locationSpecified && data?.locations?.length !== 0 &&
-                          <MultiSelectDisplay values={data?.locations?.map(data=>data?.location)} />
+                          <MultiSelectDisplay values={data?.locations?.map(data=>data?.location)} removeItem={removeLocation}/>
                         }
                     </div>
                 </div>
@@ -355,10 +403,10 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
     }
 
 
-            <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
+         {!editService &&   <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
                 <InputGroup className={style.fullWidth} placeholder="Enter Add-On Service" value={newServices?.name} onChange={(e)=>setNewServices({...newServices, 'name':e.target.value})}/>
                 <div className={`${style.addAddonServiceButton} ${style.alignCenter}`} onClick={handleNewServiceName}>ADD ADD-ON SERVICES</div>
-            </div>
+            </div>}
 
           {showNewService &&
             <div className={`${style.addonAddBox} ${style.marginTop20}`}>

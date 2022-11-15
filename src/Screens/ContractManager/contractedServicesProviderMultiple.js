@@ -46,7 +46,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
                   users?.length !== 0 ? users?.map(data=>(
                     <div className={`${style.tableData} ${style.displayInRow}`} onClick={() => {setUserProviderData(data);setEditServiceProviderDialog(true)}}>
                         <div className={`${style.multipleDataTextWidth}`}></div>
-                        <p className={style.multipleDataTextWidth}>{`${data?.name?.firstName} ${data?.name?.lastName} - ${data?.name?.suffix}`}</p>
+                        <p className={style.multipleDataTextWidth}>{`${data?.name?.firstName} ${data?.name?.lastName} ${data?.name?.suffix?.suffix}`}</p>
                         <p className={style.multipleDataTextWidth}>{data?.serviceProviderType?.type} </p>
                         <p className={style.multipleDataTextWidth}>Chief Medical Officer</p>
                         <p className={style.multipleDataTextWidth}>-</p>

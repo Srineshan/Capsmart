@@ -13,7 +13,6 @@ import {PUT, GET, TenantID, POST} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Calculator from './../../Components/Calculator';
 import ReactStickyNotes from '@react-latest-ui/react-sticky-notes';
-
 import style from './index.module.scss';
 import SendEmailUserList from './mailUser';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
@@ -27,7 +26,7 @@ import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog }) => {
-    const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Clinical Services','Add-On Clinical Services','Administrative / Miscellaneous Services'];
+    const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Services','Add-On Services','Administrative / Miscellaneous Services'];
     const siteTypeId = sessionStorage.getItem('entityTypeId');
     const [serviceType, setServiceType] = useState('Clinic Blocks');
     const [siteList, setSiteList] = useState([]);
@@ -41,6 +40,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const [showLocation, setShowLocation] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState([]);
     const [metadata, setMetadata] = useState();
+    const [existingServices, setExistingServices] = useState([]);
     //old useStates
     const [activityType, setActivityType] = useState('OutPatient Surgery Clinic Session');
     const [activityContractedFor, setActivityContractedFor] = useState('');
@@ -76,6 +76,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const [coverageCallDutyType, setCoverageCallDutyType] = useState('All On Call Service Duty');
     const [contractedServices, setContractedServices] = useState([]);
     const [users,setUsers] = useState([]);
+    const [usedActivity, setUsedActivity] = useState([]);
     const [selectedUser, setSelectedUser] = useState([]);
     const [helpTool, setHelpTool] = useState({calculator:false,textArea:false});
     const [selectedUsers, setSelectedUsers] = useState([]);
@@ -140,6 +141,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
     }, [selectContractInfo, users])
 
+    useEffect(()=>{
+      let temp = [];
+      contractedServices?.filter(data=>data?.activityType?.activityType === serviceType)?.map(data=>data?.activities?.map(activity=>{
+        temp.push(activity?.activity);
+      }));
+      setUsedActivity(temp);
+    }, [serviceType, contractedServices])
+
     const getMetaData = (value) => {
       setMetadata(value);
     }
@@ -156,7 +165,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     const getContractedServices = async() => {
         const {data: contractedServices} = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
-        setContractedServices(contractedServices?.contractedServices)
+        setContractedServices(contractedServices?.contractedServices);
+        setExistingServices(contractedServices?.contractedServices);
     }
 
     const getUserData = async() => {
@@ -223,33 +233,34 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const handleSave = async(buttonType) => {
         let performingActivity = '';
         let activities = [];
-        if(serviceType !== 'Supplemental Clinical Services'){
+        if(serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services'){
           performingActivity = selectedActivity?.map(data=>data?.activity?.activity)?.join('-')
           selectedActivity?.map(data=>{
             activities?.push({"activity":data?.activity?.activity})
           })
         }
-        else if(serviceType === 'Administrative / Miscellaneous Services'){
+        if(serviceType === 'Administrative / Miscellaneous Services'){
           performingActivity = metadata?.selectedActivities?.map(data=>data?.activity)?.join('-')
           metadata?.selectedActivities?.map(data=>{
             activities?.push({"activity":data?.activity})
           })
         }
-        else{
+        if(serviceType === 'Supplemental Services'){
           performingActivity = metadata?.supplementServiceName?.map(data=>data)?.join('-') || '';
           metadata?.supplementServiceName?.map(data=>(
             activities.push({"activity":data})
           ));
         }
-        let data;
-        if(serviceType === 'Add-On Clinical Services'){
+        let data = [];
+        if(serviceType === 'Add-On Services'){
           let temp = metadata;
           temp?.map(data=>{
             data.sites = siteData;
-            data.activityType = {activityType:'Add-On Clinical Services'};
+            data.performingActivity = {activity:data?.performingActivity};
             data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
           });
           data = temp;
+          console.log('inside if', data);
         }
         else{
              data = [{
@@ -262,7 +273,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     "activity": performingActivity
                   },
                   "activities": activities,
-                  ...((serviceType === 'Supplemental Clinical Services' || serviceType === 'Administrative / Miscellaneous Services') &&
+                  ...((serviceType === 'Supplemental Services' || serviceType === 'Administrative / Miscellaneous Services') &&
                   {"hoursBorrowed": {
                       "activityType": {
                         "activityType": metadata?.dedicatedHoursActivityType || ''
@@ -338,21 +349,30 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   "activityApprovalWFRequired": true,
                   "designateSpecificContractor": isDesignatedSpecificContractor,
                   "locationSpecified": showLocation,
-                  "dedicatedHoursSpecified": serviceType === 'Supplemental Clinical Services' ? metadata?.dedicatedHoursSpecified : false,
+                  "dedicatedHoursSpecified": serviceType === 'Supplemental Services' ? metadata?.dedicatedHoursSpecified : false,
                   "billableService": metadata?.billableService
                 }]
               }
-            let services = contractedServices || [];
+              console.log('services',contractedServices, data);
+            let services = existingServices || [];
+            console.log('service down', services);
             if(editService){
-              let temp = services?.filter(data=>data?.activityType?.activityType !== serviceType || data?.performingActivity?.activity !== performingActivity)?.map(data=>data);
+              console.log('inside if');
+              let temp = services?.filter(data=>data?.activityType?.activityType !== serviceType && data?.performingActivity !== selectedService?.performingActivity)?.map(data=>data);
               temp.push(...data);
               services = temp;
             }else{
+              console.log('inside else')
+              console.log('data top', data, 'services top', services)
               services.push(...data);
+              console.log('data',data);
+              console.log('services', services);
             }
+            console.log('outside', services);
             let formattedData = {
                 contractedServices: services
             }
+            console.log('formattedData', formattedData);
 
             const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
             if(response){
@@ -363,14 +383,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             }
           if(buttonType === 'SAVE AND EXIT'){
             getAddServiceDialog(false);
+            getEditServiceDialog(false);
           }
+          reset();
     }
 
     const reset = () => {
-      setMetadata();
+      setMetadata([]);
       setSelectedLocation([]);
       setSelectedActivity([]);
-      setSiteData();
+      setSiteData([]);
     }
 
     const handleUsers = (value) => {
@@ -397,18 +419,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     const inputElementText = (text) => {
         return (
-            <button className={`${style.textElement}`} >{text}</button>
+            <button className={`${style.textElement}`}>{text}</button>
         )
     }
 
     const activityItems = useMemo(
       () =>
-        activity?.map((data) => ({
+        activity?.filter(data=>!usedActivity?.includes(data?.activity?.activity))?.map((data) => ({
           id: data.id,
           value: data?.activity?.activity,
           ...data,
         })),
-      [activity],
+      [activity, usedActivity],
     );
 
     const locationItems = useMemo(
@@ -513,7 +535,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             </div>
                         )}
                         {
-                          serviceType !== 'Administrative / Miscellaneous Services' && serviceType !== 'Add-On Clinical Services' &&
+                          serviceType !== 'Administrative / Miscellaneous Services' && serviceType !== 'Add-On Services' &&
                           <div>
                               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
@@ -534,7 +556,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                         }
 
 
-                        {serviceType !== 'Add-On Clinical Services' && <div>
+                        {serviceType !== 'Add-On Services' && <div>
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                                 <div>
@@ -572,9 +594,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                         ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService}/>
                         : serviceType === 'On Call Coverage Duty Days'
                         ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService}/>
-                        : serviceType === 'Supplemental Clinical Services'
+                        : serviceType === 'Supplemental Services'
                         ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService}/>
-                        : serviceType === 'Add-On Clinical Services'
+                        : serviceType === 'Add-On Services'
                         ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService}/>
                         : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService}/>}
                     </div>
