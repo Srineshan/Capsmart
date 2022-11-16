@@ -165,7 +165,7 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                 <div className={style.displayInRow}>
                     <img src={WritingFile} alt="Writing File" className={`${style.smallIcons} ${style.reduceTop10}`} />
                     <InputGroup
-                        value={selectContractInfo}
+                        value={selectContractInfo === 'INDIVIDUAL' ? 'INDIVIDUAL CONTRACTOR' : 'MULTIPLE CONTRACTORS'}
                         className={`${style.contractWidth} ${style.marginLeft20} ${style.reduceTop10} ${style.marginBottom}`} />
                     <Icon icon="cross" size={25} intent={Intent.DANGER} className={style.newContractCrossStyle} onClick={() => {getNewContract(false);getContractIdFromActive('');}}  />
                 </div>

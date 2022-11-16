@@ -206,9 +206,11 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
                         <div className={`${style.displayInRow} ${style.marginTop20}`}>
                             <p className={`${style.blue} ${style.activeContractsWidth}`}>ACTIVE CONTRACTS</p>
                             <SearchBar getSearchKey={getSearchKey}/>
-                            <img src={File} alt="File" className={style.smallIcons} />
-                            <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
-                            <img src={Filter} alt="Filter" className={style.filterIcon} />
+                            {
+                              // <img src={File} alt="File" className={style.smallIcons} />
+                              // <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
+                              // <img src={Filter} alt="Filter" className={style.filterIcon} />
+                            }
                         </div>
                         <button className={style.contractButton} onClick={() => {handleAddContract()}} >ADD CONTRACT</button>
                     </div>
@@ -229,7 +231,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
                 </div>
             </div>
             <div className={style.spaceBetween}>
-                <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
+                <p className={style.poweredBy}>Powered by - TimeSmart.AI</p>
                 <p className={style.poweredBy}>© TimeSmart.AI</p>
             </div>
         </div>

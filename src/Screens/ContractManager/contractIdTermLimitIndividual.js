@@ -276,7 +276,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
        if(method === 'POST' && contractIdFromActive === ''){
          await POST('contract-managment-service/contracts/contractDetail',formData)
          .then(response=>{getContractId(response?.data);
-         SuccessToaster('Contract Created Successfully');
+         SuccessToaster('Contract Draft Saved Successfully');
        }).catch(error=>{
          ErrorToaster('Unexpected Error Creating Contract');
        })
@@ -793,7 +793,8 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                   //             />
                   //         )}
                   //     </div>
-                  // </div> */}
+                  // </div>
+                  */}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Term Period*</div>
                     <div className={style.displayInRow}>
