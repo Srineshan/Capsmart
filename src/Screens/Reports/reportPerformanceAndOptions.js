@@ -25,7 +25,7 @@ import style from './index.module.scss';
 // import PDFDocument from './pdf';
 
 
-const ReportPerformanceAndOptions = ({getShowExpandedView, showExpandedView}) => {
+const ReportPerformanceAndOptions = ({getShowExpandedView, handle}) => {
     const {reportType} = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -170,11 +170,11 @@ const ReportPerformanceAndOptions = ({getShowExpandedView, showExpandedView}) =>
                             {/* </Link> */}
                         </div>
                         <div className={`${style.iconPadding} ${style.cursorPointer}`} >
-                            {showExpandedView ? (
-                                <ZoomInMapIcon style={{color:"#52575D"}} onClick={()=> getShowExpandedView(false)} />
-                            ) : (
+                            {/* {showExpandedView ? ( */}
+                                <ZoomInMapIcon style={{color:"#52575D"}}  onClick={handle.enter} />
+                            {/* ) : (
                                 <ZoomOutMapIcon style={{color:"#52575D"}} onClick={()=> getShowExpandedView(true)} />
-                            )}
+                            )} */}
                         </div>
                     </div>
                 </div>

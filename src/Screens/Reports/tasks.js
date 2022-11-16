@@ -8,12 +8,26 @@ import Envelope from './../../images/envelope-report.png';
 import Reject from './../../images/reject-report.png';
 import Request from './../../images/request-report.png';
 import ToDoReport from './../../images/todo-report.png';
+import { GET } from '../dataSaver';
+import { format } from 'date-fns';
 import style from './index.module.scss';
 
 const Tasks = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
+    const [currentUserDetails, setCurrentUserDetails] = useState();
+    const [userId, setUserId] = useState(user?.id);
+
+    useEffect(() => {
+        setUserId(user?.id);
+        setUserDetails();
+    }, [])
+
+    const setUserDetails = async() => {
+        const {data: user} = await GET(`user-management-service/user/${userId}`);
+        setCurrentUserDetails(user);
+    }
     return(
         <div className={style.margin20}>
             <div className={style.bigCardGrid}>
@@ -27,7 +41,7 @@ const Tasks = () => {
                                         Hi, {user?.userName}
                                     </div>
                                     <div className={style.loginStatus}>
-                                        last login SEP 7,21 11:48 am
+                                        last login {format(new Date(currentUserDetails?.lastLogin || new Date()), 'MMM d,yy h:mm a')}
                                     </div>
                                 </div>
                             </div>

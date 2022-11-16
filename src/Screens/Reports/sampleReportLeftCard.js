@@ -58,6 +58,18 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const userDetail = jwt(userDetails);
+    const [currentUserDetails, setCurrentUserDetails] = useState();
+    const [userId, setUserId] = useState(userDetail?.id);
+
+    useEffect(() => {
+        setUserId(userDetail?.id);
+        setUserDetails();
+    }, [])
+
+    const setUserDetails = async() => {
+        const {data: user} = await GET(`user-management-service/user/${userId}`);
+        setCurrentUserDetails(user);
+    }
 
     let dataToUseInReport = {
         renewalreportingTimePeriod: renewalreportingTimePeriod,
@@ -244,7 +256,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                                 Hi, {userDetail?.userName}
                             </div>
                             <div className={style.loginStatus}>
-                                last login SEP 7,21 11:48 am
+                                last login {format(new Date(currentUserDetails?.lastLogin || new Date()), 'MMM d,yy h:mm a')}
                             </div>
                         </div>
                     </div>
