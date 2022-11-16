@@ -169,6 +169,23 @@
     color: #F5F9FD;
 }
 
+.siteCard{
+    height: 35px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    color: #F5F9FD;
+}
+
+.deptCard{
+    height: 35px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    background: #F5F9FC 0% 0% no-repeat padding-box;
+    color: #7165E3;
+}
+
 .popoverStyle > * {
     box-shadow: none !important;
 }

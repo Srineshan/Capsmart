@@ -1,10 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import Popover from '@mui/material/Popover';
 import ChevronRight from './../../images/chevronRight.png';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Tooltip from '@mui/material/Tooltip';
 import Pagination from './../Pagination';
 import style from './index.module.scss';
+
+const useStyles = makeStyles(theme => ({
+    popover: {
+      pointerEvents: 'none',
+    },
+    popoverContent: {
+      pointerEvents: 'auto',
+    },
+}));
+
 
 const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page }) => {
     const [showOptions, setShowOptions] = useState(false);
@@ -15,6 +26,13 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
     const countHoverOpen = Boolean(countHover);
     const [textHover, setTextHover] = useState(null);
     const textHoverOpen = Boolean(textHover);
+    const [anchorElSite, setAnchorElSite] = useState(null);
+    const openSite = Boolean(anchorElSite);
+    const popoverAnchorSite = useRef(null);
+    const [anchorElDept, setAnchorElDept] = useState(null);
+    const openDept = Boolean(anchorElDept);
+    const popoverAnchorDept = useRef(null);
+
     const menuRef = useRef(null);
     const countHoverRef = useRef(null);
     const textHoverRef = useRef(null);
@@ -46,9 +64,32 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
         setTextHover(null);
     };
 
+    const handleClickSite = (event) => {
+        setAnchorElSite(event.currentTarget);
+    };
+
+    const handleCloseSite = () => {
+        setAnchorElSite(null);
+    };
+
+    const idSite = openSite ? 'mouse-over-popover' : undefined;
+
+    const handleClickDept = (event) => {
+        setAnchorElDept(event.currentTarget);
+    };
+
+    const handleCloseDept = () => {
+        setAnchorElDept(null);
+    };
+
+    const idDept = openDept ? 'mouse-over-popover' : undefined;
+
+
     const id = open ? 'simple-popover' : undefined;
     const countHoverId = countHoverOpen ? 'simple-popover' : undefined;
     const textHoverId = textHoverOpen ? 'simple-popover' : undefined;
+
+    const classes = useStyles();
 
     function useOptionsHide(ref) {
         useEffect(() => {
@@ -72,7 +113,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                         <p className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} key={index}>{data}</p>
                     ))}
                 </div>
-                {tableData?.legth !== 0 ? tableData?.map((data, index) => (
+                {tableData?.length !== 0 ? tableData?.map((data, index) => (
                     <>
                         <div className={`${style.tableData} ${gridStyle} ${index % 2 === 0 && style.alternativeBackgroundColor}`} key={index}>
                             {tableDataValues?.map(tableData => (
@@ -140,6 +181,80 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     <div className={`${style.cursorPointer} ${style.verticalAlignCenter}`} >
                                         {tableData?.icon?.[index]}
                                     </div>
+                                ) : tableData?.type === "site" ? (
+                                    tableData?.value?.[index]?.length !== 0 ?
+                                        <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} ref={popoverAnchorSite}
+                                        onMouseEnter={(e) => {handleClickSite(e); setSelectedMenuIndex(index)}} onMouseLeave={() => handleCloseSite()} aria-owns={openSite ? 'mouse-over-popover' : undefined}
+                                        aria-haspopup="true">
+                                            <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}
+                                            >{tableData?.value?.[index]?.length}</p>
+                                                {index === selectedMenuIndex && (
+                                                    <Popover
+                                                        id={'mouse-over-popover'}
+                                                        open={openSite}
+                                                        anchorEl={popoverAnchorSite.current}
+                                                        onClose={handleCloseSite}
+                                                        anchorOrigin={{
+                                                            vertical: 'bottom',
+                                                            horizontal: 'left',
+                                                        }}
+                                                        classes={{
+                                                            paper: classes.popoverContent,
+                                                        }}
+                                                        PaperProps={{onMouseEnter: handleClickSite, onMouseLeave: handleCloseSite}}
+                                                    >
+                                                        <div className={style.actionsCard}>
+                                                            {tableData?.value?.[index]?.map((siteData, siteIndex) => (
+                                                                <div className={`${style.siteCard} ${style.cursorPointer}`} key={siteIndex}>{siteData?.siteName?.siteName}</div>
+                                                            ))}
+                                                        </div>
+                                                    </Popover>
+                                                )}
+                                        </div>
+                                    : 
+                                    <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
+                                        -
+                                    </div>
+                                ) : tableData?.type === "department" ? (
+                                    tableData?.value?.[index]?.length !== 0 ?
+                                        <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} ref={popoverAnchorDept}
+                                        onMouseEnter={(e) => {handleClickDept(e); setSelectedMenuIndex(index)}} onMouseLeave={() => handleCloseDept()} aria-owns={openDept ? 'mouse-over-popover' : undefined}
+                                        aria-haspopup="true" >
+                                            <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}
+                                            >{tableData?.count?.[index]}
+                                            {index === selectedMenuIndex && (
+                                                <Popover
+                                                    id={'mouse-over-popover'}
+                                                    open={openDept}
+                                                    anchorEl={popoverAnchorDept.current}
+                                                    onClose={handleCloseDept}
+                                                    anchorOrigin={{
+                                                        vertical: 'bottom',
+                                                        horizontal: 'left',
+                                                    }}
+                                                    classes={{
+                                                        paper: classes.popoverContent,
+                                                    }}
+                                                    PaperProps={{onMouseEnter: handleClickDept, onMouseLeave: handleCloseDept}}
+                                                >
+                                                    <div className={style.actionsCard}>
+                                                        {tableData?.value?.[index]?.map((siteData, siteIndex) => (
+                                                            <>
+                                                                <div className={`${style.siteCard} ${style.cursorPointer}`} key={siteIndex}>{siteData?.siteName?.siteName}</div>
+                                                                {siteData?.departmentList?.departments?.map((deptData, deptIndex) => (
+                                                                    <div className={`${style.deptCard} ${style.cursorPointer}`} key={deptIndex}>{deptData?.departmentName?.name}</div>
+                                                                ))}
+                                                            </>
+                                                        ))}
+                                                    </div>
+                                                </Popover>
+                                            )}
+                                            </p>
+                                        </div>
+                                    : 
+                                    <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
+                                        -
+                                    </div>
                                 ) : tableData?.type === "action" ? (
                                     <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={() => { setShowOptions(true); setSelectedMenuIndex(index) }}>
                                         <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id}/>
@@ -166,12 +281,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                             ))}
                         </div>
                     </>
-                )) : (
-                    <div>
-                         <div className={style.noDataTextStyle}>Bad news!</div>
-                         <p className={style.noDataTextStyle}>no records found so far...</p>
-                    </div>
-                )}
+                )) : ''}
             </div>
             <Pagination selectPage={getSelectedPage} totalCount={totalCount||tableData?.length} selectedPage={page||1}/>
             {

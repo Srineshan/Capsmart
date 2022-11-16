@@ -59,7 +59,6 @@ const RegisteredUsers = ({getSelectedOption}) => {
         }
         if(selectedOption === 'INVITED USERS'){
             const {data: user} = await GET(`user-management-service/user?invited=true`);
-            console.log(user)
             setInvitedUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
             setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
         }
@@ -164,6 +163,21 @@ const RegisteredUsers = ({getSelectedOption}) => {
             minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
     }
 
+    const getDeptCount = (dept) => {
+        let departmentList = [];
+        let departmentCountList = [];
+        dept?.map(data => {
+            data?.map(innerData => {
+                innerData?.departmentList?.departments?.map(department => {
+                    departmentList.push(department)
+                })
+            })
+            departmentCountList.push(departmentList?.length)
+            departmentList = [];
+        })
+        return departmentCountList;
+    }
+
     let dot = [];
     let userName = [];
     let userAffiliation = [];
@@ -207,14 +221,14 @@ const RegisteredUsers = ({getSelectedOption}) => {
             title.push(data?.title !== null ? data?.title?.title : '-');
             proxy.push('-');
             surrogate.push('-');
-            siteName.push('-');
-            department.push('-');
+            siteName.push(data?.sites?.sites ? data?.sites?.sites : []);
+            department.push(data?.sites?.sites ? data?.sites?.sites : []);
             lastLoginDateOrTime.push(data?.lastLogin !== null ? format(new Date(data?.lastLogin), 'MM-dd-yyyy HH:mm') : '-');
             avgLoginPerDay.push(data?.avgLoginCount);
             angDurationPerLogin.push(data?.avgLoginSession !== null ? millisToMinutesAndSeconds(data?.avgLoginSession?.milliseconds) : 0);
             deactivatedDateOrTime.push(data?.userBlockedOrDeactivatedDate !== null ? format(new Date(data?.userBlockedOrDeactivatedDate), 'MM-dd-yyyy HH:mm') : '-');
             deactivatedBy.push(data?.deactivatedBy !== null ? data?.deactivatedBy?.name : '-');
-            invitedDateOrTime.push('-');
+            invitedDateOrTime.push(data?.userCreatedDate !== null ? format(new Date(data?.userCreatedDate), 'MM-dd-yyyy HH:mm') : '-');
             invitedBy.push(data?.invitedBy !== null ? data?.invitedBy?.name : '-');
             action.push(true);
         })
@@ -223,8 +237,8 @@ const RegisteredUsers = ({getSelectedOption}) => {
             {"type": "dot", "value": dot},
             {"type": "text", "value": userName},
             {"type": "text", "value": title},
-            {"type": "countWithHover", "value": proxy},
-            {"type": "textWithHover", "value": surrogate},
+            {"type": "text", "value": proxy},
+            {"type": "text", "value": surrogate},
             {"type": "text", "value": lastLoginDateOrTime},
             {"type": "text", "value": avgLoginPerDay},
             {"type": "text", "value": angDurationPerLogin},
@@ -234,8 +248,8 @@ const RegisteredUsers = ({getSelectedOption}) => {
             {"type": "dot", "value": dot},
             {"type": "text", "value": userName},
             {"type": "text", "value": title},
-            {"type": "countWithHover", "value": proxy},
-            {"type": "textWithHover", "value": surrogate},
+            {"type": "site", "value": siteName},
+            {"type": "department", "value": department, 'count': getDeptCount(department)},
             {"type": "text", "value": lastLoginDateOrTime},
             {"type": "text", "value": deactivatedDateOrTime},
             {"type": "text", "value": deactivatedBy},
@@ -245,8 +259,8 @@ const RegisteredUsers = ({getSelectedOption}) => {
             {"type": "text", "value": userName},
             {"type": "text", "value": userAffiliation},
             {"type": "text", "value": title},
-            {"type": "text", "value": siteName},
-            {"type": "text", "value": department},
+            {"type": "site", "value": siteName},
+            {"type": "department", "value": department, 'count': getDeptCount(department)},
             {"type": "text", "value": invitedDateOrTime},
             {"type": "text", "value": invitedBy},
             {"type": "action", "value": action},
@@ -256,12 +270,12 @@ const RegisteredUsers = ({getSelectedOption}) => {
     const registeredActionsData = [{'data': 'Modify', 'onClick': togglePin},
                         {'data': 'Deactivate', 'onClick': handleDeactivate},
                         {'data': 'Block', 'onClick': handleBlock},
-                        {'data': 'Assign Proxy', 'onClick': togglePin},
-                        {'data': 'Assign Surrogate', 'onClick': togglePin}
+                        // {'data': 'Assign Proxy', 'onClick': togglePin},
+                        // {'data': 'Assign Surrogate', 'onClick': togglePin}
     ]
 
     const blockedActionsData = [{'data': 'Deactivate', 'onClick': handleDeactivate},
-            {'data': 'UnBlock user', 'onClick': handleUnBlock}
+            {'data': 'Unblock user', 'onClick': handleUnBlock}
         ]
 
     const deactivatedActionsData = [{'data': 'Reactivate', 'onClick': handleReactivate}]
