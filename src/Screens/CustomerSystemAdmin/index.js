@@ -44,7 +44,7 @@ const Home = () => {
     }
 
     const userTileValues = async() => {
-        const {data: user} = await GET(`user-management-service/user/metadata`);
+        const {data: user} = await GET(`user-management-service/user/registeredUserMetadata`);
         setUserMetadata(user);
     }
 
@@ -145,7 +145,7 @@ const Home = () => {
                   :(
                 <div>
                     <div className={`${style.grid4}`}>
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="REGISTERED USERS" bigNumber={221} bigText="APP USERS" smallNum1={20} smallNum2={4} smallText1="ON HOLD" smallText2="BLOCKED" currentTile="REGISTERED USERS" topText='' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="REGISTERED USERS" bigNumber={userMetadata?.allRegisteredUsersCount} bigText="APP USERS" smallNum1={0} smallNum2={userMetadata?.allBlockedUsers} smallText1="ON HOLD" smallText2="BLOCKED" currentTile="REGISTERED USERS" topText='' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="OPEN FEEDBACK TICKETS" bigNumber={feedBackTileData?.allTickets} bigText="TOTAL TICKETS" smallNum1={feedBackTileData?.dueDateTickets} smallNum2={feedBackTileData?.highImpactTickets} smallText1="PAST DUE" smallText2="HIGH IMPACT" currentTile="OPEN FEEDBACK TICKETS" topText='' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="REFERENCE LISTS" bigNumber={6} bigText="CUSTOM" bigNumber2={5} bigText2="DEFAULT IN USE" smallNum1={5} smallNum2={5} smallText1="REVIEW FOR USE" smallText2="SETUP REQUIRED" currentTile="REFERENCE LISTS" topText='' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOption} tileLabel="DATA UPLOADS" bigNumber={2} bigText="DEFAULT IN USE" smallNum1={2} smallNum2={1} smallText1="FAILED TO PROCESS" smallText2="FAILED RECORDS" currentTile="DATA UPLOADS" topText='' />
