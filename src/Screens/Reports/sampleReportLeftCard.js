@@ -71,6 +71,8 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
         setCurrentUserDetails(user);
     }
 
+    console.log(currentUserDetails)
+
     let dataToUseInReport = {
         renewalreportingTimePeriod: renewalreportingTimePeriod,
         selectedSites: selectedSites,

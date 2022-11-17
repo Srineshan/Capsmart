@@ -120,6 +120,27 @@ const ReportTypeOverview = () => {
         }
     }, [dataToUseInReport, selectedPodTypeFromTile])
 
+    const getIsRefresh = (value) => {
+        if(value){
+            if(reportType === 'upcomingContractRenewals') {
+                getContractRenewalReportWithParameters();
+            }
+            if(reportType === 'oneTimeContract') {
+                getOneTimeContractWithParameters();
+            }
+            if(reportType === 'nonCompliant') {
+                getNonCompliantContractReportTile();
+            }
+            if(reportType === 'activitiesOrServices'){
+                getAcvityAndServicesWithParameter();
+            }
+            if(reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
+                setSelectedPodTypeFromTile(dataToUseInReport?.podType)
+                getNonCompliantContractReport();
+            }
+        }
+    }
+
     console.log(dataToUseInReport)
 
     useEffect(()=> {
@@ -453,7 +474,7 @@ const ReportTypeOverview = () => {
                 <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} />
                 <FullScreen handle={handle}>
                     <div className={style.scroll}>
-                        <ReportPerformanceAndOptions handle={handle} />
+                        <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} />
                         <div className={`${style.reportBackgroundCard} ${style.marginTop20}`}>
                             <ReportHeader />
                             <div className={style.justifyCenter}>
