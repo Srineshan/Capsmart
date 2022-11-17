@@ -153,8 +153,8 @@ const Home = () => {
                     <div className={`${style.bigCardStyleWithoutHeading} ${style.marginTop20}`}>
                         {/* <div className={style.spaceBetween}> */}
                             <div className={style.buttonGroupUsers}>
-                                <button className={viewAlerts && style.activeButton} onClick={() => setViewAlerts(true)}>Alerts ( 16 )</button>
-                                <button className={!viewAlerts && style.activeButton} onClick={() => setViewAlerts(false)}>To Do Tasks ( 8 )</button>
+                                <button className={viewAlerts && style.activeButton} onClick={() => setViewAlerts(true)}>Alerts ( 0 )</button>
+                                <button className={!viewAlerts && style.activeButton} onClick={() => setViewAlerts(false)}>To Do Tasks ( 0 )</button>
                             </div>
                             {/* <SearchBar /> */}
                         {/* </div> */}

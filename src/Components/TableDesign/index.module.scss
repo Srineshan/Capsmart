@@ -214,3 +214,35 @@
         font: normal normal normal 20px/31px Monsterrat; 
     }
 }
+
+.noContractsBox{
+    border: 2px dashed #c4bef3;
+    padding: 20px;
+    height: 180px;
+    margin: 50px;
+}
+
+.noContractsFontStyle{
+    font: normal normal bold 32px/40px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-align: center;
+}
+
+.noContractsSmallFontStyle{
+    font: normal normal bold 20px/25px Montserrat;
+    letter-spacing: 0px;
+    color: #6c727a;
+    text-align: center;
+}
+
+.justifyCenter{
+    justify-content: center !important;
+}
+
+.alignCenter{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}

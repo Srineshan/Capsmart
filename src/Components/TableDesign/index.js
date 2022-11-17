@@ -281,7 +281,16 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                             ))}
                         </div>
                     </>
-                )) : ''}
+                )) : (
+                    <div className={`${style.noContractsBox} ${style.alignCenter}`}>
+                      <div>
+                        <div className={style.noContractsFontStyle}>Bad news!</div>
+                        <div className={`${style.displayInRow} ${style.justifyCenter} ${style.marginTop20}`}>
+                          <div className={style.noContractsSmallFontStyle}>no records found so far...</div>
+                        </div>
+                      </div>
+                    </div>
+                )}
             </div>
             <Pagination selectPage={getSelectedPage} totalCount={totalCount||tableData?.length} selectedPage={page||1}/>
             {
