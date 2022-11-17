@@ -164,6 +164,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
       }
     }
 
+    const getSelectedUserDetails = (id) => {
+      let user = users?.filter(user=>user?.id === id)?.map(data=>data)[0];
+      return user;
+    }
+
 
     const handleTimeSheetWorkFlow = (name, reviewer, approver) => {
       let data =   {
@@ -174,7 +179,18 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
             "workflow": {
               "1": {
                 "workFlowUser": {
-                  "id": reviewer
+                  "id": reviewer,
+                  "title":{
+                    "title":getSelectedUserDetails(reviewer)?.title?.title || '',
+                    "id":null,
+                  },
+                  "name":{
+                    "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                  },
+                  "suffix":{
+                    "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                    "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
+                  }
                 },
                 "workFlowStatus": {
                   "status": "REVIEWER"
@@ -182,7 +198,18 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
               },
               "2": {
                 "workFlowUser": {
-                  "id": approver
+                  "id": approver,
+                  "title":{
+                    "title":getSelectedUserDetails(approver)?.title?.title || '',
+                    "id":null,
+                  },
+                  "name":{
+                    "name":getSelectedUserDetails(approver)?.name?.firstName || '',
+                  },
+                  "suffix":{
+                    "id":getSelectedUserDetails(approver)?.name?.suffix?.id || '',
+                    "suffix":getSelectedUserDetails(approver)?.name?.suffix?.suffix || '',
+                  }
                 },
                 "workFlowStatus": {
                   "status": "APPROVER"

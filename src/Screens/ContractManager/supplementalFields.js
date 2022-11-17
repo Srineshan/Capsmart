@@ -81,9 +81,8 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
           workingTimeFrom:serviceSelected?.workingPeriod?.from,
           workingTimeTo:serviceSelected?.workingPeriod?.to,
           serviceDays:serviceSelected?.serviceDays,
-        });
+          });
         }
-        console.log('meta', metadata);
 
 
     const limit5 = 5;
@@ -145,7 +144,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Supplemental Clinical Services To Perform*</div>
+                <div className={style.extentionLableStyle}>Supplemental Services To Perform*</div>
                 <div>
                     <div className={`${style.fullWidth} ${style.addGrid}`}>
                         <InputGroup className={style.fullWidth} placeholder="Add Supplemental Services specified in contract" value={supplementServiceName} onChange={(e)=>setSupplementServiceName(e.target.value)}/>
