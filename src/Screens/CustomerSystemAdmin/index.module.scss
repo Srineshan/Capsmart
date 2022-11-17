@@ -25,8 +25,28 @@
     margin-left: 10px;
 }
 
+.reduceMarginTop20{
+    margin-top: -20px;
+}
+
+.marginTop10{
+    margin-top: 10px;
+}
+
 .marginTop20{
     margin-top: 22px;
+}
+
+.marginLeft20{
+    margin-left: 10px;
+}
+
+.marginRight{
+    margin-right: 10px;
+}
+
+.marginRight30{
+    margin-right: 30px;
 }
 
 .activeContractGrid{
@@ -71,6 +91,12 @@
     grid-gap: 10px;
 }
 
+.invitedUsersGrid{
+    display: grid;
+    grid-template-columns: 5% 15% 10% 13% 10% 15% 8% 10% 5%;
+    grid-gap: 10px;
+}
+
 .bigCardStyle{
     height: calc(100vh - 325px);
     overflow: scroll;
@@ -93,7 +119,7 @@
 
 .buttonGroupUsers{
     float: left;
-    margin: 20px 20px 20px 28px;
+    margin: 20px 20px 10px 28px;
     button{
         height: 40px;
         margin-right: 10px;
@@ -121,4 +147,89 @@
 .spaceBetween{
     display: flex;
     justify-content: space-between;
+}
+
+.addManagerDialogBackground{
+    background-color: white !important;
+    padding: 10px 30px;
+    border-radius: 20px !important;
+}
+
+.addProofDialog{
+    height:75%;
+    width:55% !important;
+}
+
+.extensionStyle{
+    text-align: left;
+    font: normal normal bold 16px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+}
+
+.crossStyle{
+    color: linear-gradient(#7165E3, #FF6562) !important;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.extensionBorder{
+    background-color: #EBF2F7;
+    height: 3px;
+}
+
+.proofBorder{
+    border: 1px solid #b0a9ef;
+    border-radius: 8px;
+    opacity: 1;
+    overflow: scroll;
+    border-radius: 8px;
+    opacity: 1;
+    overflow: scroll;
+    margin-top: 10px;
+    padding: 20px;
+  }
+
+  .addManagerGrid{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 20px;
+}
+
+.extentionLableStyle{
+    text-align: left;
+    font: normal normal normal 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+    opacity: 1;
+    margin-top: 5px;
+}
+
+.reduce10Left{
+    margin-left: -10px;
+}
+
+.twoCol{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.fullWidth{
+    width: 100%;
+}
+
+.buttonStyle{
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    height: 40px;
+    width: 140px;
+    border-radius: 10px;
+    margin-bottom: -10px;
+}
+
+.floatRight{
+    float: right;
 }
