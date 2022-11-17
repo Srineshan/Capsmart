@@ -243,13 +243,13 @@ const FeedbackTicket = ({getSelectedOption}) => {
             <div className={`${style.grid4} ${style.marginTop20}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="OPEN TICKETS" bigNumber={openTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="OPEN TICKETS" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="NEW TICKETS" bigNumber={newTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="NEW TICKETS" topText='' />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="EXCEPTION ERRORS" bigNumber={1} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="EXCEPTION ERRORS" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="EXCEPTION ERRORS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="EXCEPTION ERRORS" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="RESOLVED TICKETS" bigNumber={resolvedTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="RESOLVED TICKETS" topText='' />
             </div>
             <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                 <div className={style.buttonGroupUsers}>
                     <button className={selectedOption === "OPEN TICKETS" && style.activeButton} onClick={() => setSelectedOption('OPEN TICKETS')}>Open Tickets ( {openTicket?.length} )</button>
-                    <button className={selectedOption === "EXCEPTION ERRORS" && style.activeButton} onClick={() => setSelectedOption('EXCEPTION ERRORS')}>Exception Error ( 1 )</button>
+                    <button className={selectedOption === "EXCEPTION ERRORS" && style.activeButton} onClick={() => setSelectedOption('EXCEPTION ERRORS')}>Exception Error ( 0 )</button>
                     <button className={selectedOption === "MESSAGES" && style.activeButton} onClick={() => setSelectedOption('MESSAGES')}>Messages ( {allMessages?.length} )</button>
                     <button className={selectedOption === "RESOLVED TICKETS" && style.activeButton} onClick={() => setSelectedOption('RESOLVED TICKETS')}>Resolved Tickets ( {resolvedTicket?.length} )</button>
                 </div>

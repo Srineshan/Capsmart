@@ -40,13 +40,16 @@ const LeftStatsCard = ({metadata}) => {
                     </div>
                     <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#FF6562' baseBgColor="#ffcdcc" className={style.progressMargin} />
                 </div>
-                <div className={style.progressbarStyle}>
-                    <div className={style.spaceBetween}>
-                        <p className={style.statisticsProgress}><strong>{expiringDoc}</strong> <span className={style.marginLeft20}>CONTRACT WITH EXPIRING DOC</span></p>
-                        <p className={style.viewStyle}>View</p>
-                    </div>
-                    <ProgressBar completed={expiringDoc} isLabelVisible={false} height='5px' bgColor='#FF6562' baseBgColor="#ffcdcc" className={style.progressMargin} />
-                </div>
+                {
+                  // <div className={style.progressbarStyle}>
+                  //     <div className={style.spaceBetween}>
+                  //         <p className={style.statisticsProgress}><strong>{expiringDoc}</strong> <span className={style.marginLeft20}>CONTRACT WITH EXPIRING DOC</span></p>
+                  //         <p className={style.viewStyle}>View</p>
+                  //     </div>
+                  //     <ProgressBar completed={expiringDoc} isLabelVisible={false} height='5px' bgColor='#FF6562' baseBgColor="#ffcdcc" className={style.progressMargin} />
+                  // </div>
+                }
+
             </div>
             <img src={PageFooterIcon} alt="footer" className={style.footerIconStyle} />
         </div>

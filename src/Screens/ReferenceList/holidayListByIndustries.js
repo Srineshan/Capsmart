@@ -165,7 +165,7 @@ const BoardCertification = () => {
                 </div>
             </div>
             {showAddCompanyHolidayDialog && <AddCompanyHoliday getAddCompanyHolidayDialog={getAddCompanyHolidayDialog} selectedIndustry={selectedIndustry} isEdit={isEdit} selectedHoliday={selectedHoliday} />}
-            {showDeleteConfirmation && <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation} getDeleteConfirmation={getDeleteConfirmation} confirmationText="Do you want to delete this hoiday?" />}
+            {showDeleteConfirmation && <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation} getDeleteConfirmation={getDeleteConfirmation} confirmationText="Do you want to delete this holiday?" />}
         </Fragment>
 
     )

@@ -160,7 +160,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
           "siteLevelResponsible":siteLevel,
         });
 
-        let roles = userDetails?.roles;
+        let roles = userDetails?.roles || [];
         selectedRoles?.map(data=>{
           if(!roles?.map(role=>role?.id).includes(data?.id)){
             roles.push(data);
@@ -338,7 +338,8 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     }
 
     const handleSuffixChange = (id, value) => {
-      setUserDetails({...userDetails, suffix:{id:id,value:value}});
+      let suffix = {id:id, value:value}
+      setUserDetails({...userDetails, suffix:suffix});
     }
 
     console.log('suffix',userDetails?.suffix);

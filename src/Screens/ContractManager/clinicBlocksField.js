@@ -95,7 +95,7 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Regular Clinic Schedule*</div>
+                <div className={style.extentionLableStyle}>Regular Service Schedule*</div>
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
@@ -206,7 +206,7 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Clinic Session Duration</div>
+                <div className={style.extentionLableStyle}>Service Session Duration</div>
                 <div className={`${style.threeFieldWidth}`}>
                     <TextField
                         size="small"
@@ -220,7 +220,7 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Clinic Session payment Amount*</div>
+                <div className={style.extentionLableStyle}>Service Session payment Amount*</div>
                 <div className={`${style.displayInRow}`}>
                     <div className={`${style.threeFieldWidth}`}>
                         <TextField
@@ -262,7 +262,7 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Clinic*</div>
+                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
                 <div className={style.displayInRow}>
                     <InputGroup
                         placeholder="HH:MM"

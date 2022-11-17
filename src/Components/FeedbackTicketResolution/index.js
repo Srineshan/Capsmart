@@ -28,6 +28,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const [assignTo, setAssignTo] = useState({});
     const [assignToId, setAssignToId] = useState();
     const [users, setUsers] = useState([]);
+    const [entityAndSiteLevelUsers, setEntityAndSiteLevelUsers] = useState([]);
     const [currentUser, setCurrentUser] = useState({});
     const [ticketDetails, setTicketDetails] = useState();
     const [ticketName, setTicketName] = useState('');
@@ -52,8 +53,6 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     useEffect(() => {
         setCurrentUser(users?.filter(data => data?.id === loggedUser?.id)?.map(data => data))
     }, [authValue, users]);
-
-    console.log(currentUser);
 
     useEffect(() => {
         getImgBlob();
@@ -94,7 +93,9 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
   
     const getUser = async() => {
         const {data: user} = await GET('user-management-service/user');
-        setUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
+        const {data: entityUsers} = await GET(`user-management-service/user/role?role=Entity Sys User&role=Entity Sys Admin`);
+        setUsers(user);
+        setEntityAndSiteLevelUsers(entityUsers)
         setCurrentUser(users?.filter(data => data?.id === loggedUser?.id)?.map(data => data))
     };
 
@@ -122,7 +123,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     }
 
     const handleAssignTo = (id) => {
-        setAssignTo(users?.filter(data => data?.id === id)?.map(data => data))
+        setAssignTo(entityAndSiteLevelUsers?.filter(data => data?.id === id)?.map(data => data))
     }
 
     const handleSave = async() => {
@@ -382,7 +383,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                         <option value="" >
                                                             Select Assignee
                                                         </option>
-                                                        {users?.map((data, index) => (
+                                                        {entityAndSiteLevelUsers?.map((data, index) => (
                                                             <option value={data?.id} >
                                                                 {`${data?.name?.firstName} ${data?.name?.lastName}`}
                                                             </option>
@@ -414,21 +415,31 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                     value={ticketStatus}
                                                     onChange={(e) => setTicketStatus(e.target.value)}
                                                     className={`${style.fieldWidth2InARow} ${style.transparentBackground}`}>
-                                                    <option value="NEW" >
-                                                        New
-                                                    </option>
-                                                    <option value="INPROGRESS" >
-                                                        In-Progress
-                                                    </option>
-                                                    <option value="ESCALATE" >
-                                                        Escalate
-                                                    </option>
-                                                    <option value="RESOLVED" >
-                                                        Resolved
-                                                    </option>
-                                                    <option value="CLOSED" >
-                                                        Closed
-                                                    </option>
+                                                        {ticketDetails?.status === 'NEW' && (
+                                                            <option value="NEW" >
+                                                                New
+                                                            </option>
+                                                        )}
+                                                        {(ticketDetails?.status === 'NEW' || ticketDetails?.status === 'INPROGRESS') && (
+                                                            <option value="INPROGRESS" >
+                                                                In-Progress
+                                                            </option>
+                                                        )}
+                                                        {(ticketDetails?.status === 'NEW' || ticketDetails?.status === 'INPROGRESS' || ticketDetails?.status === 'ESCALATE') && (
+                                                            <option value="ESCALATE" >
+                                                                Escalate
+                                                            </option>
+                                                        )}
+                                                        {(ticketDetails?.status === 'NEW' || ticketDetails?.status === 'INPROGRESS' || ticketDetails?.status === 'ESCALATE'  || ticketDetails?.status === 'RESOLVED' || ticketDetails?.status === 'CLOSED') && (
+                                                            <option value="RESOLVED" >
+                                                                Resolved
+                                                            </option>
+                                                        )}
+                                                        {(ticketDetails?.status === 'NEW' || ticketDetails?.status === 'INPROGRESS' || ticketDetails?.status === 'ESCALATE'  || ticketDetails?.status === 'RESOLVED' || ticketDetails?.status === 'CLOSED') && (
+                                                            <option value="CLOSED" >
+                                                                Closed
+                                                            </option>
+                                                        )}
                                                 </select>
                                             </div>
                                         </div>

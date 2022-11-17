@@ -128,10 +128,6 @@ const DataUpload = ({getSelectedOption}) => {
                     tableHeaderValues={tableHeaderValues} 
                     tableDataValues={getActiveFilesValues()}
                     tableData={activitiesFileMeta}
-                    getNewContract={() => {}}
-                    getContractType={() => {}}
-                    getSelectedContractType={() => {}}
-                    getContractIdFromActive={() => {}}
                     gridStyle={style.activeContractGrid}
                     actions={actionsData}
                 />

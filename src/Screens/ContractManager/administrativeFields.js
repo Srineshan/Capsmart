@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -10,52 +10,80 @@ import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
 import Popover from '@mui/material/Popover';
+import {GET, TenantID, POST} from './../dataSaver';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
-
 import style from './index.module.scss';
 
-const AdministrativeFields = () => {
+const AdministrativeFields = ({getMetaData, services, serviceSelected, editService}) => {
+  const [activity, setActivity] = useState([]);
+  const [showAdminActivity, setShowAdminActivity] = useState(false);
+  const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
+  const [workingPeriodTo, setWorkingPeriodTo] = useState('');
+  const [additionalSchedule, setAdditionalSchedule] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [adminActivity, setAdminActivity] = useState({
+    activity:'',
+    podRequired: true,
+    schedule: 'WEEK',
+    billable: false,
+  });
 
-  const [metadata,setMetadata] = useState({
-    min:'0',
-    max:'0',
-    frequency:'WEEK',
-    withNurse:'0',
-    withoutNurse:'0',
-    noTargetApplicable:true,
-    targetWithNurse:'0',
-    targetWithoutNurse:'0',
-    targetNoTargetApplicable:true,
-    additionalScheduleValue:'0',
-    additionalScheduleFrequency:'WEEK',
-    additionalScheduleRequired:true,
-    billableService:true,
-    rateType:'HOURLY',
-    sessionDuration:'0',
-    sessionAmount:'0',
-    totalSession:'0',
-    totalSessionFrequency:'YEAR',
-    workingTimeFrom:'',
-    workingTimeTo:'',
-    serviceDays:{
-      tuesday: false,
-      wednesday: false,
-      thursday: false,
-      friday: false,
-      saturday: false,
-      sunday: false,
-      weekDays: false,
-      weekEnds: false,
-      monday: false
-    },
-    weekdaysCount:'0',
-    weekendsCount:'0',
-  })
+  let specificDedicatedHoursList = [];
+    services?.filter(data=>['Clinic Blocks','Surgery Session']?.includes(data?.activityType?.activityType))?.map(data=>{
+    let activityName = data?.activityType?.activityType;
+    let activities = data?.activities?.map(data=>data?.activity);
+    let result = `${activityName} (${activities?.map(data=>data)?.join(', ')})`
+    specificDedicatedHoursList.push(result);
+  });
 
-    const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
-    const [workingPeriodTo, setWorkingPeriodTo] = useState('');
-    const [additionalSchedule, setAdditionalSchedule] = useState(false);
-    const [anchorEl, setAnchorEl] = useState(null);
+  const [metadata, setMetadata] = useState({
+        dedicatedHoursSpecified:false,
+        dedicatedHoursActivityType:'',
+        dedicatedHoursPerformingActivity:'',
+        totalSession:'0',
+        serviceDays:{
+          tuesday: false,
+          wednesday: false,
+          thursday: false,
+          friday: false,
+          saturday: false,
+          sunday: false,
+          weekDays: false,
+          weekEnds: false,
+          monday: false
+        },
+        selectedActivities: [],
+        weekdaysCount:'0',
+        weekendsCount:'0',
+        workingTimeFrom:'',
+        workingTimeTo:'',
+      })
+
+      useEffect(()=>{
+        setSelectedValues();
+      }, [serviceSelected]);
+
+      const setSelectedValues = () => {
+        setMetadata({...metadata,
+          dedicatedHoursSpecified:serviceSelected?.dedicatedHoursSpecified,
+          dedicatedHoursActivityType:serviceSelected?.hoursBorrowed?.activityType?.activityType,
+          dedicatedHoursPerformingActivity:serviceSelected?.hoursBorrowed?.performingActivity?.activity,
+          selectedActivities:serviceSelected?.activityResponse?.dataMap?.adminActivities,
+          totalSession:serviceSelected?.totalSessions?.value,
+          workingTimeFrom:serviceSelected?.workingPeriod?.from,
+          workingTimeTo:serviceSelected?.workingPeriod?.to,
+          serviceDays:serviceSelected?.serviceDays,
+      });
+      }
+
+    useEffect(()=>{
+      getMetaData(metadata);
+    },[metadata])
+
+    useEffect(()=>{
+      getAdminActivityList();
+    }, [])
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -74,6 +102,60 @@ const AdministrativeFields = () => {
       setMetadata({...metadata, serviceDays:serviceDays, weekdaysCount:daysCount?.weekdays, weekendsCount:daysCount?.weekends})
     }
 
+    const getAdminActivityList = async() => {
+      const {data: adminActivityList} = await GET(`contract-managment-service/contracts/adminActivity`);
+      setActivity(adminActivityList);
+    }
+
+    const handleValueChange = (name, value) => {
+      setMetadata({...metadata, [name]:value});
+    }
+
+    const activityToAdd = async() => {
+      let data = {
+                  "activity": adminActivity?.activity,
+                  "tenant": {
+                    "id": TenantID
+                  },
+                  "podRequired": adminActivity?.podRequired,
+                  "schedule": adminActivity?.schedule,
+                  "billable": adminActivity?.billable
+                }
+      await POST(`contract-managment-service/contracts/adminActivity`, data)
+      .then(response=>{
+        SuccessToaster('Activity Added to List');
+        getAdminActivityList();
+      })
+      .catch(error=>{
+        ErrorToaster('Adding Activity To List Failed');
+        console.log('Error');
+      })
+    }
+
+    const selectedHours = (index) => {
+      let temp = services?.filter(data=>['Clinic Blocks','Surgery Session']?.includes(data?.activityType?.activityType))?.map(data=>data);
+      let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
+      let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data=>data?.activity)?.join('-');
+      setMetadata({...metadata, dedicatedHoursActivityType:dedicatedHoursActivityType, dedicatedHoursPerformingActivity:dedicatedHoursPerformingActivity});
+    }
+
+    const handleAdminActivity = (name, value) => {
+      setAdminActivity({...adminActivity, [name]:value});
+    }
+
+    const onSelectActivity = (id, checked) => {
+      if(checked){
+        let temp = metadata?.selectedActivities || [];
+        temp.push(activity?.filter(data=>data?.id === id)?.map(data=>data)[0]);
+        console.log('temp', temp);
+        setMetadata({...metadata, selectedActivities: temp});
+      }else{
+        let temp = metadata?.selectedActivities?.filter(data=>data?.id !== id)?.map(data=>data);
+        setMetadata({...metadata, selectedActivities: temp});
+        console.log('temp', temp);
+      }
+    }
+
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -82,112 +164,122 @@ const AdministrativeFields = () => {
                     <div className={`${style.threeFieldWidth}`} >
                         <FormControlLabel
                             control={
-                                <Switch checked={additionalSchedule} className={` ${style.textAlignLeft}`} />
+                                <Switch
+                                  className={` ${style.textAlignLeft}`}
+                                  checked={metadata?.dedicatedHoursSpecified}
+                                  onChange={(e) => handleValueChange('dedicatedHoursSpecified',!metadata?.dedicatedHoursSpecified)}
+                                />
                             }
-                            onChange={() => setAdditionalSchedule(!additionalSchedule)}
                             className={`${style.switchFontStyle} ${style.flexLeft}`}
-                            label={additionalSchedule ? 'YES' : 'NO'}
+                            label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'}
                         />
                     </div>
-                    <Select
-                        displayEmpty
-                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                        className={`${style.fullWidth} ${style.marginLeft20}`}
-                    >
-                        <MenuItem value={'Clinic Block (Fracture, Orthopaedic clinic)'}>Clinic Block (Fracture, Orthopaedic clinic)</MenuItem>
-                        <MenuItem value={'Clinic Block (Fracture,)'}>Clinic Block (Fracture,)</MenuItem>
-                        <MenuItem value={'On Cal Duty Days( On Call Service)'}>On Cal Duty Days( On Call Service)</MenuItem>
-                        <MenuItem value={'Surgery Session(Orthopaedic Session)'}>Surgery Session(Orthopaedic Session)</MenuItem>
-                    </Select>
+                    {!metadata?.dedicatedHoursSpecified && (
+                        <Select
+                            displayEmpty
+                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                            className={`${style.fullWidth}`}
+                            onChange={(e)=>selectedHours(e.target.value)}
+                            value={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-',', ')})`}
+                        >
+                            <MenuItem value="">Select Dedicated Hours</MenuItem>
+                            {
+                              specificDedicatedHoursList?.map((data,index)=>(
+                                <MenuItem value={data}>{data}</MenuItem>
+                              ))
+                            }
+                        </Select>
+                    )}
                 </div>
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Allowable Administrative Duties & Function To Perform</div>
                 <div>
+                {
+                  activity?.map((data,index)=>(
                     <div className={`${style.displayInRow} ${style.marginBottom10}`}>
                         <FormGroup className={`${style.marginLeft10}`}>
-                            <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">Periodic Productivity Data Review (Monthly)</Typography>} />
+                            <FormControlLabel control={<Checkbox checked={metadata?.selectedActivities?.map(activities=>activities?.id)?.includes(data?.id)} onChange={(e)=>onSelectActivity(data?.id, e.target.checked)}/>}  label={<Typography variant="body2" color="textSecondary">{data?.activity}</Typography>} />
                         </FormGroup>
-                        <div className={`${style.chipStyle} ${style.redChip}`}>Monthly</div>
-                        <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>
-                        <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>
+                        <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
+                        {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                        {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                     </div>
-                    <div className={`${style.displayInRow} ${style.marginBottom10}`}>
-                        <FormGroup className={`${style.marginLeft10}`}>
-                            <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="textSecondary">Credentials Committee Meeting</Typography>} />
-                        </FormGroup>
-                        <div className={`${style.chipStyle} ${style.redChip}`}>Monthly</div>
-                        <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>
-                        <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>
-                    </div>
+                  ))
+                }
                 </div>
             </div>
 
-            <div className={`${style.addonAddBox} ${style.marginTop20}`}>
-                <div className={`${style.addManagerGrid}`}>
-                    <div className={style.extentionLableStyle}>Additional Administrative Services Name</div>
-                    <InputGroup placeholder='Add-On Service Name' className={style.fullWidth} />
-                </div>
-
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Classify As Billable Activity</div>
-                    <div className={`${style.threeFieldWidth} `}>
-                        <FormControlLabel
-                            control={
-                                <Switch className={`${style.textAlignLeft}`} />
-                            }
-                            className={`${style.switchFontStyle} ${style.flexLeft} `}
-                            label={'YES'}
-                        />
+            {
+              showAdminActivity &&
+                <div className={`${style.addonAddBox} ${style.marginTop20}`}>
+                    <div className={`${style.addManagerGrid}`}>
+                        <div className={style.extentionLableStyle}>Additional Administrative Services Name</div>
+                        <InputGroup placeholder='Add-On Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e)=>handleAdminActivity('activity', e.target.value)}/>
                     </div>
-                </div>
 
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Proof Of Completion / Documentation Required</div>
-                    <div className={style.displayInRow}>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Classify As Billable Activity</div>
                         <div className={`${style.threeFieldWidth} `}>
                             <FormControlLabel
                                 control={
-                                    <Switch className={`${style.textAlignLeft}`} />
+                                    <Switch className={`${style.textAlignLeft}`} onChange={(e)=>handleAdminActivity('billable', !adminActivity?.billable)}/>
                                 }
                                 className={`${style.switchFontStyle} ${style.flexLeft} `}
-                                label={'YES'}
+                                label={adminActivity?.billable ? 'YES' : 'NO'}
                             />
                         </div>
-                        <div className={style.threeFieldWidth}>
-                            <div className={style.extentionLableStyle}>Contracted Schedule*</div>
-                            <Select
-                                displayEmpty
-                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                className={`${style.fullWidth}`}
-                            >
-                                <MenuItem value="">Select Frequecy</MenuItem>
-                                <MenuItem value={'WEEK'}>Per Week</MenuItem>
-                                <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                                <MenuItem value={'YEAR'}>Per Year</MenuItem>
-                            </Select>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Proof Of Completion / Documentation Required</div>
+                        <div className={style.displayInRow}>
+                            <div className={`${style.threeFieldWidth} `}>
+                                <FormControlLabel
+                                    control={
+                                        <Switch className={`${style.textAlignLeft}`} onChange={(e)=>handleAdminActivity('podRequired', !adminActivity?.podRequired)}/>
+                                    }
+                                    className={`${style.switchFontStyle} ${style.flexLeft} `}
+                                    label={adminActivity?.podRequired ? 'YES' : 'NO'}
+                                />
+                            </div>
+                            <div className={style.threeFieldWidth}>
+                                <div className={style.extentionLableStyle}>Contracted Schedule*</div>
+                                <Select
+                                    displayEmpty
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    className={`${style.fullWidth}`}
+                                    value={adminActivity?.schedule}
+                                    onChange={(e)=>handleAdminActivity('schedule', e.target.value)}
+                                >
+                                    <MenuItem value="">Select Frequecy</MenuItem>
+                                    <MenuItem value={'WEEK'}>Per Week</MenuItem>
+                                    <MenuItem value={'MONTH'}>Per Month</MenuItem>
+                                    <MenuItem value={'YEAR'}>Per Year</MenuItem>
+                                </Select>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div>
-                    <div className={`${style.twoCol} ${style.marginTop20}`}>
-                        <button className={`${style.outlinedButton} ${style.fullWidth}`} >CANCEL</button>
-                        <button className={`${style.buttonStyle} ${style.fullWidth}`} >SAVE</button>
+                    <div>
+                        <div className={`${style.twoCol} ${style.marginTop20}`}>
+                            <button className={`${style.outlinedButton} ${style.fullWidth}`} onClick={(e)=>setShowAdminActivity(false)}>CANCEL</button>
+                            <button className={`${style.buttonStyle} ${style.fullWidth}`} onClick={(e)=>{activityToAdd()}}>SAVE</button>
+                        </div>
+                        <br />
                     </div>
-                    <br />
                 </div>
-            </div>
+            }
 
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Administrative Duties & Function To Perform</div>
-                <div className={`${style.addGrid} ${style.fullWidth}`}>
-                    <InputGroup className={style.fullWidth} />
+            <div>
+                {!showAdminActivity &&
+                  <div className={`${style.addGrid} ${style.fullWidth} ${style.marginTop20}`}>
+                    <InputGroup className={style.fullWidth} placeholder='New Additional Administrative Services Name' onChange={(e)=>handleAdminActivity('activity', e.target.value)}/>
                     <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`} >
-                        <AddIcon sx={{ fontSize: 25, color: 'white' }}  aria-describedby={id} onClick={(e) => handleClick(e)}/>
+                        <AddIcon sx={{ fontSize: 25, color: 'white' }}  aria-describedby={id} onClick={(e) => setShowAdminActivity(true)}/>
                     </div>
-                </div>
+                </div>}
                 {/* <Popover
                     id={id}
                     open={open}
@@ -243,29 +335,31 @@ const AdministrativeFields = () => {
                         InputProps={{
                             endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                         }}
+                        onChange={(e)=>handleValueChange('totalSession', e.target.value)}
+                        value={metadata?.totalSession}
                     />
                 </div>
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Service Days*</div>
-                <ServiceDays  setMetaData={getServiceDaysMetadata}/>
+                <ServiceDays  setMetaData={getServiceDaysMetadata} selectedService={serviceSelected}/>
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Administrative Services Workdays*</div>
                 <div className={style.displayInRow}>
                     <InputGroup
-                        value={workingPeriodFrom}
+                        value={metadata?.workingTimeFrom}
                         placeholder="HH:MM"
-                        onChange={(e)=> setWorkingPeriodFrom(e.target.value) }
+                        onChange={(e)=> handleValueChange('workingTimeFrom', e.target.value) }
                         className={style.threeFieldWidth}
                     />
                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
                     <InputGroup
-                        value={workingPeriodTo}
+                        value={metadata?.workingTimeTo}
                         placeholder="HH:MM"
-                        onChange={(e)=> setWorkingPeriodTo(e.target.value) }
+                        onChange={(e)=> handleValueChange('workingTimeTo', e.target.value) }
                         className={style.threeFieldWidth}
                     />
                 </div>
