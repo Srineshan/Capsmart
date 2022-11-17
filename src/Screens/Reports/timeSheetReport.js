@@ -177,7 +177,7 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
                                         <Run link={"/reportTypeOverview/activitiesOrServices"} />
                                     </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                    {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
                                         <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div>
@@ -194,7 +194,7 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Feb 15 2022</div>
                                         <Run link={"/reportTypeOverview/scheduledActivity"} />
-                                    </div>
+                                    </div> */}
                                 </div>
                             ) : reportType === 'contractManagement' ? (
                                 <div className={style.scrollStyle}>
@@ -219,7 +219,7 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                 </div>
                             ) : reportType === 'contractCompliance' ? (
                                 <div className={style.scrollStyle}>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                    {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>1</div>
                                         <Link to="/reportTypeOverview/complianceStatus" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Contract Based Proof of Documentation Compliance Status Summary</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>Contract Based Proof of Documentation Compliance Status Summary</div>
@@ -227,7 +227,7 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
                                         <Run link={"/reportTypeOverview/complianceStatus"} />
-                                    </div>
+                                    </div> */}
                                     <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
                                         <Link to="/reportTypeOverview/nonCompliant" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement</div></Link>

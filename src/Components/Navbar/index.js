@@ -173,7 +173,7 @@ const Navbar = () => {
                                 <Link to={'/reports/servicesOrActivities'} className={style.noFontStyle}>
                                     <div className={style.options}>Services/ Activities Logs</div>
                                 </Link>
-                                <Link to={'/reports/timesheets'} className={style.noFontStyle}>
+                                {/* <Link to={'/reports/timesheets'} className={style.noFontStyle}>
                                     <div className={style.options}>Timesheets</div>
                                 </Link>
                                 <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
@@ -184,19 +184,19 @@ const Navbar = () => {
                                 </Link>
                                 <Link to={'/reports/payments'} className={style.noFontStyle}>
                                     <div className={style.options}>Payments</div>
-                                </Link>
+                                </Link> */}
                                 <Link to={'/reports/contractManagement'} className={style.noFontStyle}>
                                     <div className={style.options}>Contract Management</div>
                                 </Link>
                                 <Link to={'/reports/contractCompliance'} className={style.noFontStyle}>
                                     <div className={style.options}>Contract Compliance</div>
                                 </Link>
-                                <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
+                                {/* <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
                                     <div className={style.options}>Contract Performance</div>
                                 </Link>
                                 <Link to={'/reports/systemAdministration'} className={style.noFontStyle}>
                                     <div className={style.options}>System Administration</div>
-                                </Link>
+                                </Link> */}
                             </div>
                         </Popover>
                     </div>
