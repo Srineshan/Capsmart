@@ -114,7 +114,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
             name.push(data?.contractName?.contractName);
             contractors.push("-");
             effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
-            podStatus.push({"value": "5", "src": GreenPage});
+            podStatus.push({"value": "3", "src": GreenPage});
             manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
             lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
             action.push(true)
