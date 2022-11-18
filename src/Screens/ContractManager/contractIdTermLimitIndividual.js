@@ -91,7 +91,6 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
 
     const getContractDetail = async() => {
       const {data: contractData} = await GET(`contract-managment-service/contracts/${createdContractId}/contractDetail`);
-      console.log('contract Data', contractData,user?.filter(data=>data?.id === contractData?.contractDetail?.contractManager?.userID)?.map(data=>data)[0]);
       if(contractData){
         let contractDetail = contractData?.contractDetail;
         setContractData(contractData?.contractDetail);
