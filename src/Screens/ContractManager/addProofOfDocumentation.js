@@ -119,7 +119,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ?
+        } : selectedPOD === 'Primary Speciality Board Certification' || selectedPOD === 'Secondary Specialty Board Certification' ?
         {
           podType: {type: selectedPOD},
           dataMap: {
@@ -135,7 +135,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ?
+        } : selectedPOD === 'Liability Insurance Certificate' || selectedPOD === 'Workers Compensation Insurance Certificate' || selectedPOD === 'Tail Insurance Coverage Certificate' ?
         {
           podType: {type: selectedPOD},
           dataMap: {
@@ -151,7 +151,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ?
+        } : selectedPOD === 'Medical license Certificate' || selectedPOD === 'Drug Enforcement Administration (DEA) License' ?
         {
           podType: {type: selectedPOD},
           dataMap: {
@@ -219,7 +219,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ?
+        } : selectedPOD === 'Primary Speciality Board Certification' || selectedPOD === 'Secondary Specialty Board Certification' ?
         {
           podType: {type: selectedPOD},
           dataMap: {
@@ -235,7 +235,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ?
+        } : selectedPOD === 'Liability Insurance Certificate' || selectedPOD === 'Workers Compensation Insurance Certificate' || selectedPOD === 'Tail Insurance Coverage Certificate' ?
         {
           podType: {type: selectedPOD},
           dataMap: {
@@ -251,7 +251,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ?
+        } : selectedPOD === 'Medical license Certificate' || selectedPOD === 'Drug Enforcement Administration (DEA) License' ?
         {
           podType: {type: selectedPOD},
           dataMap: {

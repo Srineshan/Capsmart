@@ -1178,6 +1178,15 @@ select {
     border-radius: 10px;
   }
 
+  .timesheetNextButtonStyle{
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    height: 35px;
+    width: 120px;
+    border-radius: 6px;
+  }
+
   @media screen and (max-width: 1350px) {
     .newContractButtonStyle, .newContractOutlinedButton{
         width: 140px;
@@ -1822,7 +1831,7 @@ select {
     background: #EBF2F7 0% 0% no-repeat padding-box;
     border: 1px solid #7165E3;
     border-radius: 6px 6px 0px 0px;
-    width: 180px;
+    min-width: 180px;
     height: 40px;
   }
 
@@ -1839,6 +1848,12 @@ select {
     width: 100%;
     margin-left: -10px;
     padding: 20px;
+}
+
+.verticalSpaceBetween{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .workflowBoxStyle{

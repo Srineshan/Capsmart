@@ -331,90 +331,28 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
 
     return (
         <div className={style.cloneBlockStyle}>
-            <div className={`${style.floatLeft} ${style.reduce10Left} ${style.horizontalScroll} ${style.fullWidth}`}>
+            <div className={`${style.flexLeft} ${style.reduce10Left} ${style.horizontalScroll} ${style.fullWidth}`}>
             {
               timeSheetTabs?.map(data=>(
                 <button className={`${style.timesheetButtonStyle} ${activeTab === data && style.selectedTimesheetButton}`} onClick={() => setActiveTab(data)}>{data}</button>
               ))
             }
-                <button className={`${style.timesheetButtonStyle} ${activeTab === "requests" && style.selectedTimesheetButton}`} onClick={() => setActiveTab('requests')}>Requests</button>
             </div>
-            <div className={`${style.timeSheetBoxStyle}`}>
-            {activeTab !== 'requests' ?
-                <div>
-                  <p>{activeTab}</p>
-                      {
-                        // <div className={`${style.extentionGrid}`}>
-                        // <div className={style.extentionLableStyle}>Select Timesheet To Define Process*</div>
-                        // <div className={style.displayInRow}>
-                        //     <InputGroup className={style.twoFieldWidth} placeholder={activeTab}
-                        //         value={activeTab} onChange={(e) => setSelectTimesheetToDefineProcess(e.target.value)} />
-                        // </div>
-                        // </div>
-                      }
+            <div className={`${style.timeSheetBoxStyle} ${style.verticalSpaceBetween}`}>
+              <div>
+                  <div className={`${style.extentionGrid}`}>
+                    <div className={style.extentionLableStyle}>Timesheet To Define Process*</div>
+                    <div className={style.displayInRow}>
+                      <InputGroup className={style.fullWidth} placeholder={activeTab}
+                        value={activeTab} readOnly />
+                    </div>
+                  </div>
                   <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value)=>{setTimesheet({...timesheet, reviewer:value})}} selectLabel="Select Reviewer" value={timesheet?.reviewer || '0'}/>
                   <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value)=>{setTimesheet({...timesheet, approver:value})}} selectLabel="Select Approver" value={timesheet?.approver || '0'}/>
               </div>
-              :<div>
               <div>
-                <div className={style.purpleTitle}>
-                  ADD-ON ACTIVITY / SERVICE REQUESTS
-                </div>
-                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAddOn({...addOn, reviewer:value})}} value={addOn?.reviewer}/>
-                {
-                // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAddOn({...addOn, approver:value})}} value={addOn?.approver}/>
-              }
+                <button className={`${style.timesheetNextButtonStyle} ${style.floatRight}`} onClick={()=> {getCurrentPage('Timesheet Submission Terms')}}>NEXT</button>
               </div>
-              <div className={style.marginTop50}>
-                <div className={style.purpleTitle}>
-                  PLANNED ABSENCE REQUESTS
-                </div>
-                {
-                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                  // <div className={style.extentionLableStyle}>Planned Absence Notification Days Limit*</div>
-                  // <div className={style.daysSelectorGrid}>
-                  // <select
-                  //     name="class"
-                  //     id="Class"
-                  //     className={`${style.fullWidth} `}>
-                  //     <option value="14" >
-                  //         14
-                  //     </option>
-                  // </select>
-                  // <div className={`${style.twoFieldWidth} ${style.verticalAlignCenter}`}>Days</div>
-                  // </div>
-                  // </div>
-                }
-                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAbsence({...absence, reviewer:value})}} value={absence?.reviewer}/>
-                {
-                  // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAbsence({...absence, approver:value})}} value={absence?.approver}/>
-                }
-              </div>
-              {
-                // <div className={style.marginTop50}>
-                //   <div className={style.purpleTitle}>
-                //     UNPLANNED ABSENCE NOTIFICATION
-                //   </div>
-                //   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                //   <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed*</div>
-                //   <div className={style.daysSelectorGrid}>
-                //   <select
-                //       name="class"
-                //       id="Class"
-                //       className={`${style.fullWidth} `}>
-                //       <option value="7" >
-                //           7
-                //       </option>
-                //   </select>
-                //   <div className={`${style.twoFieldWidth} ${style.verticalAlignCenter}`}>Days</div>
-                //   </div>
-                //   </div>
-                //   <ReviewerApproverField data={users} label="Indicate Supervisor To Notify*" selectLabel="Select Supervisor" />
-                // </div>
-
-              }
-              </div>
-            }
             </div>
                 {
                   /////        Do Not DELETE THIS CODE      ////////

@@ -21,6 +21,7 @@ import TimeSheetSubmissionTerms from './timeSheetSubmissionTerms';
 import TimesheetProcessingWorkflow from './timesheetProcessingWorkflow';
 
 import style from './index.module.scss';
+import RequestProcessingWorkflow from './requestProcessingWorkflow';
 
 const NewContractFromClone = ({contracts, getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method}) => {
     const [selectContractInfo, setSelectContractInfo] = useState(contractType);
@@ -242,8 +243,20 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                     onClick={() => setCurrentPage('Timesheet Processing Workflow')}>
                         Timesheet Processing Workflow
                     </div>
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${currentPage === "Request Processing Workflow" && style.selectedContractEntityStyle}`}
+                    onClick={() => setCurrentPage('Request Processing Workflow')}>
+                        Request Processing Workflow
+                    </div>
                 </div>
-                {currentPage === "Timesheet Processing Workflow" ? (
+                {currentPage === "Request Processing Workflow" ? (
+                    <RequestProcessingWorkflow
+                    getViewPage8={getViewPage8}
+                    getCurrentPage={getCurrentPage}
+                    selectContractInfo={selectContractInfo}
+                    contractId = {contractId}
+                    contractName={contractName}
+                     />
+                ) : currentPage === "Timesheet Processing Workflow" ? (
                     <TimesheetProcessingWorkflow
                     getViewPage8={getViewPage8}
                     getCurrentPage={getCurrentPage}
