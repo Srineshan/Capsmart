@@ -247,9 +247,12 @@ const ReportTypeOverview = () => {
         //     })
         // })
         // setBarData(barTemp);
-        setSeries([{'data':chartData?.activityStatusByCategorys?.map(data=>data?.done)},
-                {'data':chartData?.activityStatusByCategorys?.map(data=>data?.notdone)},
-                {'data':chartData?.activityStatusByCategorys?.map(data=>data?.todo)}])
+        setSeries([{'data':chartData?.activityStatusByCategorys?.map(data=>data?.done),
+                'name': 'Done'},
+                {'data':chartData?.activityStatusByCategorys?.map(data=>data?.notdone),
+                'name': 'Not Done'},
+                {'data':chartData?.activityStatusByCategorys?.map(data=>data?.todo),
+                'name': 'To Do'}])
         setCategories(chartData?.activityStatusByCategorys?.map(data=>data?.activityType));
 
         setBarData({
