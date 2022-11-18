@@ -26,21 +26,22 @@ const LeftStatsCard = ({metadata}) => {
                     </div>
                     <ProgressBar completed={multipleCount} isLabelVisible={false} height='5px' bgColor='#FEC106' baseBgColor="#fff2cc" className={style.progressMargin} />
                 </div>
-                <div className={style.progressbarStyle}>
-                    <div className={style.spaceBetween}>
-                        <p className={style.statisticsProgress}><strong>47</strong> <span className={style.marginLeft20}>UPCOMING RENEWAL</span></p>
-                        <p className={style.viewStyle}>View</p>
-                    </div>
-                    <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#FF6562' baseBgColor="#ffcdcc" className={style.progressMargin} />
-                </div>
-                <div className={style.progressbarStyle}>
-                    <div className={style.spaceBetween}>
-                        <p className={style.statisticsProgress}><strong>50</strong> <span className={style.marginLeft20}>AUTO RENEWED</span></p>
-                        <p className={style.viewStyle}>View</p>
-                    </div>
-                    <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#FF6562' baseBgColor="#ffcdcc" className={style.progressMargin} />
-                </div>
+
                 {
+                  // <div className={style.progressbarStyle}>
+                  //     <div className={style.spaceBetween}>
+                  //         <p className={style.statisticsProgress}><strong>47</strong> <span className={style.marginLeft20}>UPCOMING RENEWAL</span></p>
+                  //         <p className={style.viewStyle}>View</p>
+                  //     </div>
+                  //     <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#FF6562' baseBgColor="#ffcdcc" className={style.progressMargin} />
+                  // </div>
+                  // <div className={style.progressbarStyle}>
+                  //     <div className={style.spaceBetween}>
+                  //         <p className={style.statisticsProgress}><strong>50</strong> <span className={style.marginLeft20}>AUTO RENEWED</span></p>
+                  //         <p className={style.viewStyle}>View</p>
+                  //     </div>
+                  //     <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#FF6562' baseBgColor="#ffcdcc" className={style.progressMargin} />
+                  // </div>
                   // <div className={style.progressbarStyle}>
                   //     <div className={style.spaceBetween}>
                   //         <p className={style.statisticsProgress}><strong>{expiringDoc}</strong> <span className={style.marginLeft20}>CONTRACT WITH EXPIRING DOC</span></p>
