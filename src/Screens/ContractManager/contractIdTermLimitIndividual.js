@@ -62,7 +62,8 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
     useEffect(() => {
       getUserData();
       getSites();
-      if(method !== 'POST'){
+      if(method === 'PUT' && createdContractId !== ''){
+        console.log('get activated');
         getContractDetail();
       }
     },[])
@@ -154,8 +155,14 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       const {data:sites} = await GET('entity-service/sites');
       if(sites){
         setSites(sites);
+        if(!isMultiSiteEntity){
+          setSelectedSites(sites);
+          setSelectedSite(sites?.[0]?.id);
+        }
     }
   }
+
+  console.log('sites', selectedSites);
 
       const getAddNewManagerDialog = (value) => {
         setAddNewManagerDialog(value);
@@ -582,6 +589,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                         )}
                     </div>
                 </div>
+              {isMultiSiteEntity &&
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Site Specific Contract*</div>
                     <div>
@@ -616,6 +624,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                         )}
                     </div>
                 </div>
+              }
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Department Specific Contract*</div>
                     <div>
@@ -631,7 +640,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                                     <select
                                         name="class"
                                         id="Class"
-                                        value={selectedSite || 'Select...'}
+                                        value={selectedSites?.[0]?.id || 'Select...'}
                                         onChange={(e) => setSelectedSite(e.target.value)}
                                         className={`${style.fullWidth} ${style.marginLeft20} `}>
                                         <option value='Select...'>

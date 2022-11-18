@@ -21,6 +21,7 @@ import TimeSheetSubmissionTerms from './timeSheetSubmissionTerms';
 import TimesheetProcessingWorkflow from './timesheetProcessingWorkflow';
 
 import style from './index.module.scss';
+import RequestProcessingWorkflow from './requestProcessingWorkflow';
 
 const NewContractFromClone = ({contracts, getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method}) => {
     const [selectContractInfo, setSelectContractInfo] = useState(contractType);
@@ -36,6 +37,8 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
     const [viewPage6, setViewPage6] = useState(false);
     const [viewPage7, setViewPage7] = useState(false);
     const [viewPage8, setViewPage8] = useState(false);
+    const [viewPage9, setViewPage9] = useState(false);
+    const [viewPage10, setViewPage10] = useState(false);
     const [currentPage, setCurrentPage] = useState('Contract ID & Term Limit');
     const [isMultipleContract, setIsMultipleContract] = useState(false);
     const [contractId,setContractId] = useState(contractIdFromActive);
@@ -134,6 +137,14 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
 
     const getViewPage8 = (value) => {
         setViewPage8(value);
+    }
+
+    const getViewPage9 = (value) => {
+        setViewPage9(value);
+    }
+
+    const getViewPage10 = (value) => {
+        setViewPage10(value);
     }
 
     const getCurrentPage = (value) => {
@@ -238,14 +249,32 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${currentPage === "Timesheet Processing Workflow" && style.selectedContractEntityStyle}`}
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage9 ? style.completedEntityCardStyle : ''} ${currentPage === "Timesheet Processing Workflow" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Timesheet Processing Workflow')}>
                         Timesheet Processing Workflow
+                        {viewPage9 && (
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
+                    </div>
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage10 ? style.completedEntityCardStyle : ''} ${currentPage === "Request Processing Workflow" && style.selectedContractEntityStyle}`}
+                    onClick={() => setCurrentPage('Request Processing Workflow')}>
+                        Request Processing Workflow
+                        {viewPage10 && (
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
                     </div>
                 </div>
-                {currentPage === "Timesheet Processing Workflow" ? (
+                {currentPage === "Request Processing Workflow" ? (
+                    <RequestProcessingWorkflow
+                    getViewPage10={getViewPage10}
+                    getCurrentPage={getCurrentPage}
+                    selectContractInfo={selectContractInfo}
+                    contractId = {contractId}
+                    contractName={contractName}
+                     />
+                ) : currentPage === "Timesheet Processing Workflow" ? (
                     <TimesheetProcessingWorkflow
-                    getViewPage8={getViewPage8}
+                    getViewPage9={getViewPage9}
                     getCurrentPage={getCurrentPage}
                     selectContractInfo={selectContractInfo}
                     contractId = {contractId}
@@ -264,7 +293,7 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                     contractId = {contractId}
                      />
                 ) : (currentPage === "Contracted Add on service specification" || currentPage === "Contracted Services Specification")  ?
-                  <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId = {contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo}/>
+                  <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId = {contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo} isMultiSiteEntity={isMultiSiteEntity}/>
                   :currentPage === "Documentation Proof Required"  ? (
                     <DocumentationProofRequired
                     getViewPage5={getViewPage5}

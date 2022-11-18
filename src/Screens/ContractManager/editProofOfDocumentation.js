@@ -46,6 +46,8 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
     const [sites, setSites] = useState([]);
     const [selectedSite, setSelectedSite] = useState({});
 
+    console.log(selectedProof, selectedPOD)
+
     const handleReset = () => {
       setSelectedPOD('Medical Staff Membership & Privileges');
       setContractorName('');
@@ -111,7 +113,7 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
     }
 
     const handleContinue = async () => {
-      let data;
+      let data = {};
       if(!isMultipleContract){
         if(selectedPOD === 'Medical Staff Membership & Privileges' && selectedSite === {}){
           ErrorToaster('Fill in mandatory fields');
@@ -125,8 +127,8 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           ErrorToaster('Fill in mandatory fields');
           return;
         }
-         data = selectedPOD === 'Medical Staff Membership & Privileges' ?
-        {
+         if(selectedPOD === 'Medical Staff Membership & Privileges') {
+         data = {
           id: selectedProof?.id,
           podType: {type: selectedPOD},
           dataMap: {
@@ -142,8 +144,9 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ?
-        {
+        }
+       } else if (selectedPOD === 'Primary Speciality Board Certification' || selectedPOD === 'Secondary Specialty Board Certification') {
+        data = {
           id: selectedProof?.id,
           podType: {type: selectedPOD},
           dataMap: {
@@ -159,8 +162,9 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ?
-        {
+        } 
+      }else if (selectedPOD === 'Liability Insurance Certificate' || selectedPOD === 'Workers Compensation Insurance Certificate' || selectedPOD === 'Tail Insurance Coverage Certificate') {
+        data = {
           id: selectedProof?.id,
           podType: {type: selectedPOD},
           dataMap: {
@@ -176,8 +180,9 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ?
-        {
+        }
+       } else if (selectedPOD === 'Medical license Certificate' || selectedPOD === 'Drug Enforcement Administration (DEA) License') {
+        data = {
           id: selectedProof?.id,
           podType: {type: selectedPOD},
           dataMap: {
@@ -192,8 +197,9 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Controlled Substance DEA Registration Certificate' ?
-        {
+        } 
+       } else if (selectedPOD === 'Controlled Substance DEA Registration Certificate') {
+        data = {
           id: selectedProof?.id,
           podType: {type: selectedPOD},
           dataMap: {
@@ -207,10 +213,13 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : '';
+        } 
+      } else {
+        data = {}
+      };
 
       }else{
-        if(selectedPOD === 'Medical Staff Membership & Privileges' && contractorName === '' || selectedSite === {}){
+        if((selectedPOD === 'Medical Staff Membership & Privileges' && contractorName === '') || selectedSite === {}){
           ErrorToaster('Fill in mandatory fields');
           return;
         }
@@ -230,8 +239,8 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           ErrorToaster('Fill in mandatory Fields');
           return;
         }
-         data = selectedPOD === 'Medical Staff Membership & Privileges' ?
-        {
+         if(selectedPOD === 'Medical Staff Membership & Privileges') {
+          data = {
           id: selectedProof?.id,
           podType: {type: selectedPOD},
           dataMap: {
@@ -247,8 +256,9 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ?
-        {
+        } 
+       } else if (selectedPOD === 'Primary Speciality Board Certification' || selectedPOD === 'Secondary Specialty Board Certification') {
+        data = {
           id: selectedProof?.id,
           podType: {type: selectedPOD},
           dataMap: {
@@ -264,8 +274,9 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ?
-        {
+        } 
+       } else if (selectedPOD === 'Liability Insurance Certificate' || selectedPOD === 'Workers Compensation Insurance Certificate' || selectedPOD === 'Tail Insurance Coverage Certificate') {
+        data = {
           id: selectedProof?.id,
           podType: {type: selectedPOD},
           dataMap: {
@@ -281,8 +292,9 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ?
-        {
+        } 
+       } else if (selectedPOD === 'Medical license Certificate' || selectedPOD === 'Drug Enforcement Administration (DEA) License') {
+        data = {
           id: selectedProof?.id,
           podType: {type: selectedPOD},
           dataMap: {
@@ -298,8 +310,9 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Controlled Substance DEA Registration Certificate' ?
-        {
+        } 
+       } else if (selectedPOD === 'Controlled Substance DEA Registration Certificate') {
+        data = {
           id: selectedProof?.id,
           podType: {type: selectedPOD},
           dataMap: {
@@ -314,7 +327,10 @@ const EditProofOfDocumentation = ({getShowEditProofDialog, isMultipleContract, c
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : '';
+        } 
+      } else {
+        data = {};
+      }
       }
 
       let podData = {
