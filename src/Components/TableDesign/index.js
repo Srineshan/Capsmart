@@ -170,7 +170,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     ) : tableData?.type === "imgWithCount" ? (
                                     <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
                                         <img src={tableData?.img} alt="warning" className={style.colorFileStyle} />
-                                        <p className={`${style.tableDataFontStyle} ${style.marginTop10}`}>5</p>
+                                        <p className={`${style.tableDataFontStyle} ${style.marginTop10}`}>3</p>
                                     </div>
                                 ) : tableData?.type === "iconWithCount" ? (
                                     <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
@@ -211,7 +211,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                     </Popover>
                                                 )}
                                         </div>
-                                    : 
+                                    :
                                     <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
                                         -
                                     </div>
@@ -251,7 +251,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                             )}
                                             </p>
                                         </div>
-                                    : 
+                                    :
                                     <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
                                         -
                                     </div>
