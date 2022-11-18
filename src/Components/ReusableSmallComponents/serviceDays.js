@@ -30,17 +30,67 @@ const ServiceDays = ({setMetaData, selectedService}) => {
       setMetaData(daysCount, serviceDays);
     }, [daysCount, serviceDays])
 
+    useEffect(()=>{
+      let weekDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+      let weekEnds = ['saturday', 'sunday'];
+      let weekDaysCount = 0;
+      let weekEndsCount = 0;
+      Object.keys(serviceDays || [])?.filter(data=>weekEnds?.map(days=>days)?.includes(data) && serviceDays[data] === true)?.map(data=>{
+        weekEndsCount = weekEndsCount + 52;
+      });
+      Object.keys(serviceDays || [])?.filter(data=>weekDays?.map(days=>days)?.includes(data) && serviceDays[data] === true)?.map(data=>{
+        weekDaysCount = weekDaysCount + 52;
+      });
+      console.log('dayscount', weekDaysCount,weekEndsCount );
+      setDaysCount({...daysCount, weekdays: weekDaysCount, weekends: weekEndsCount});
+
+    }, [serviceDays])
+
+    const onWeekDaysCheck = (checked) => {
+      if(checked){
+        setServiceDays({...serviceDays,
+        tuesday: true,
+        wednesday: true,
+        thursday: true,
+        friday: true,
+        weekDays:checked,
+        monday: true})
+      }else{
+        setServiceDays({...serviceDays,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
+        weekDays:checked,
+        monday: false})
+      }
+    }
+
+    const onWeekEndsCheck = (checked) => {
+      if(checked){
+        setServiceDays({...serviceDays,
+        saturday: true,
+        sunday: true,
+        weekEnds:checked})
+      }else{
+        setServiceDays({...serviceDays,
+        saturday: false,
+        sunday: false,
+        weekEnds:checked})
+      }
+    }
+
     return(
         <div>
             <div className={style.displayInRow}>
                 <div className={`${style.displayInRow} ${style.fullWidth}`}>
                     <FormGroup className={`${style.threeFieldWidth}`}>
-                        <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekDays} onChange={(e)=>setServiceDays({...serviceDays, weekDays:e.target.checked})}/>} label={<Typography variant="body2" color="textSecondary">Weekdays</Typography>} />
+                        <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekDays} onChange={(e)=>onWeekDaysCheck(e.target.checked)}/>} label={<Typography variant="body2" color="textSecondary">Weekdays</Typography>} />
                     </FormGroup>
                     <TextField
                         size="small"
-                        value={daysCount?.weekends}
-                        onChange={(e)=> setDaysCount({...daysCount, weekends:e.target.value})}
+                        value={daysCount?.weekdays}
+                        onChange={(e)=> setDaysCount({...daysCount, weekdays:e.target.value})}
                         sx={{ fontSize: 15 }}
                         InputProps={{
                             endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
@@ -49,19 +99,19 @@ const ServiceDays = ({setMetaData, selectedService}) => {
                 </div>
                 <div className={`${style.displayInRow} ${style.fullWidth}`}>
                     <FormGroup className={`${style.marginLeft10} ${style.threeFieldWidth}`}>
-                        <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekEnds} onChange={(e)=>setServiceDays({...serviceDays, weekEnds:e.target.checked})}/>}  label={<Typography variant="body2" color="textSecondary">Weekends</Typography>} />
+                        <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekEnds} onChange={(e)=>onWeekEndsCheck(e.target.checked)}/>}  label={<Typography variant="body2" color="textSecondary">Weekends</Typography>} />
                     </FormGroup>
                     <TextField
                         size="small"
-                        value={daysCount?.weekdays}
-                        onChange={(e)=> setDaysCount({...daysCount, weekdays:e.target.value})}
+                        value={daysCount?.weekends}
+                        onChange={(e)=> setDaysCount({...daysCount, weekends:e.target.value})}
                         InputProps={{
                             endAdornment: <InputAdornment position="end">Days</InputAdornment>,
                         }}
                     />
                 </div>
                 <div className={style.marginLeft10}>
-                    <div className={`${style.greenBase} ${style.alignCenter}`}>182</div>
+                    <div className={`${style.greenBase} ${style.alignCenter}`}>{daysCount?.weekdays + daysCount?.weekends}</div>
                     <div className={style.totalTextStyle}>TOTAL</div>
                 </div>
             </div>

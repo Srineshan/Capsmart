@@ -12,7 +12,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import {format} from 'date-fns';
 import style from './index.module.scss';
 
-const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contractId}) => {
+const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contractId, isMultiSiteEntity}) => {
     const [certificateCopyAvbl,setCertificateCopyAvbl] = useState(true);
     const podTypes = ['Medical Staff Membership & Privileges',
                       'Primary Speciality Board Certification',
@@ -85,6 +85,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
         setSelectedSite(tempSelectedSites);
       }
     }
+
+    console.log('selectedSite', selectedSite);
 
     const handleContinue = async () => {
       let data;
@@ -384,25 +386,29 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
                         </select>
                       </div>
                    </div>
-                   <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                     <div className={style.extentionLableStyle}>Privileging Facility*</div>
-                     <div className={style.reduce10Left}>
-                     <select
-                      name="class"
-                      id="Class"
-                      onChange={(e) => handleSites(e.target.value)}
-                      className={`${style.fullWidth} ${style.marginLeft20} `}>
-                          <option value="0" >
-                            Select Sites
-                          </option>
-                          {sites?.map((data, index) => (
-                            <option key={`${data}-${index}`} value={data?.siteName?.siteName} >
-                              {data?.siteName?.siteName}
-                            </option>
-                          ))}
-                      </select>
-                       </div>
-                 </div>
+                   {
+                     isMultiSiteEntity &&
+                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Privileging Facility*</div>
+                        <div className={style.reduce10Left}>
+                        <select
+                         name="class"
+                         id="Class"
+                         onChange={(e) => handleSites(e.target.value)}
+                         className={`${style.fullWidth} ${style.marginLeft20} `}>
+                             <option value="0" >
+                               Select Sites
+                             </option>
+                             {sites?.map((data, index) => (
+                               <option key={`${data}-${index}`} value={data?.siteName?.siteName} >
+                                 {data?.siteName?.siteName}
+                               </option>
+                             ))}
+                         </select>
+                          </div>
+                    </div>
+                   }
+
                 </>:
                   <>
                     {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

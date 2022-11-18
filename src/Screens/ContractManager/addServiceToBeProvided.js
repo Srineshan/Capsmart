@@ -470,8 +470,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     <div className={style.spaceBetween}>
                         <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
                         <div>
-                          <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, textArea:!helpTool?.textArea})} />
-                          <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, calculator:!helpTool?.calculator})} />
+                        {
+                          // <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, textArea:!helpTool?.textArea})} />
+                          // <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, calculator:!helpTool?.calculator})} />
+                        }
                           <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => {getAddServiceDialog(false);getEditServiceDialog(false);}} />
                         </div>
                     </div>

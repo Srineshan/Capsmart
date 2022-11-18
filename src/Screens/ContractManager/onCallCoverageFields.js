@@ -143,7 +143,7 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
                         <MenuItem value="">Select Frequecy</MenuItem>
                         <MenuItem value={'WEEK'}>Per Week</MenuItem>
                         <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                        <MenuItem value={'YEAR'}>Per Year</MenuItem>
+                        <MenuItem value={'YEAR'}>Per Contract Year</MenuItem>
                     </Select>
                 </div>
             </div>
@@ -161,21 +161,26 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
                             label={metadata?.additionalScheduleRequired ? 'YES' : 'NO'}
                         />
                     </div>
-                    <InputGroup value={metadata?.additionalScheduleValue}
-                    onChange={(e) => handleValueChange('additionalScheduleValue',e.target.value)}
-                    className={` ${style.threeFieldWidth}`} />
-                    <Select
-                        displayEmpty
-                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                        className={`${style.threeFieldWidth} ${style.marginLeft20}`}
-                        value={metadata?.additionalScheduleFrequency}
-                        onChange={(e)=>handleValueChange('additionalScheduleFrequency',e.target.value)}
-                    >
-                        <MenuItem value="">Select Frequecy</MenuItem>
-                        <MenuItem value={'WEEK'}>Every Other Week</MenuItem>
-                        <MenuItem value={'MONTH'}>Every Other Month</MenuItem>
-                        <MenuItem value={'YEAR'}>Every Other Year</MenuItem>
-                    </Select>
+                    {
+                      metadata?.additionalSchedule &&
+                      <>
+                          <InputGroup value={metadata?.additionalScheduleValue}
+                          onChange={(e) => handleValueChange('additionalScheduleValue',e.target.value)}
+                          className={` ${style.threeFieldWidth}`} />
+                          <Select
+                              displayEmpty
+                              SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                              className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                              value={metadata?.additionalScheduleFrequency}
+                              onChange={(e)=>handleValueChange('additionalScheduleFrequency',e.target.value)}
+                          >
+                              <MenuItem value="">Select Frequecy</MenuItem>
+                              <MenuItem value={'WEEK'}>Every Other Week</MenuItem>
+                              <MenuItem value={'MONTH'}>Every Other Month</MenuItem>
+                              <MenuItem value={'YEAR'}>Every Other Year</MenuItem>
+                          </Select>
+                      </>
+                    }
                 </div>
             </div>
 
@@ -193,16 +198,20 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
                             label={metadata?.billableService ? 'YES' : 'NO'}
                         />
                     </div>
-                    <Select
-                        displayEmpty
-                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                        className={`${style.threeFieldWidth}`}
-                        value={metadata?.rateType}
-                        onChange={(e)=>handleValueChange('rateType',e.target.value)}
-                    >
-                        <MenuItem value="">Select Frequecy</MenuItem>
-                        <MenuItem value={'HOURLY'}>Hourly</MenuItem>
-                    </Select>
+                    {
+                      metadata?.billableService &&
+                      <Select
+                          displayEmpty
+                          SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                          className={`${style.threeFieldWidth}`}
+                          value={metadata?.rateType}
+                          onChange={(e)=>handleValueChange('rateType',e.target.value)}
+                      >
+                          <MenuItem value="">Select Frequecy</MenuItem>
+                          <MenuItem value={'HOURLY'}>Hourly</MenuItem>
+                      </Select>
+                    }
+
                 </div>
             </div>
 
@@ -234,7 +243,7 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
                         />
                     </div>
                     <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ 50 per Hour (Pro Rata)</p>
+                        <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ {metadata?.sessionAmount / metadata?.sessionDuration || 0} per Hour (Pro Rata)</p>
                     </div>
                 </div>
             </div>

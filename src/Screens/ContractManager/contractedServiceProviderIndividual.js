@@ -360,8 +360,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 "sites" : sites
               },
               "serviceProviderType": serviceProviderType,
-              "activated": true,
-              "blocked": true,
               "npin": {
                 "missing": npinMissing,
                 "notApplicable": npinNotApplicable,
@@ -411,7 +409,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     });
 
     const getRoles = async() => {
-        const {data: roles} = await GET('user-management-service/roles');
+        const {data: roles} = await GET('user-management-service/roles?roleType=APP');
         setRoles(roles);
     };
 
@@ -711,7 +709,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
               <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contract ID & Term Limit')}}>BACK</button>
               <div>
                 <button className={style.newContractOutlinedButton} onClick={() => handleSave()}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {getViewPage3(true);getCurrentPage('Contractor Business Entity')}}>CONTINUE</button>
+                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave();getViewPage3(true);getCurrentPage('Contractor Business Entity')}}>CONTINUE</button>
               </div>
             </div>
 

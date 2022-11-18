@@ -174,7 +174,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                 )}
             </div>
             {
-              (totalCount || tableData?.length) > 4 &&
+              (totalCount || tableData?.length) > 10 &&
               <Pagination selectPage={getSelectedPage} totalCount={totalCount||tableData?.length} selectedPage={page||1}/>
             }
             {

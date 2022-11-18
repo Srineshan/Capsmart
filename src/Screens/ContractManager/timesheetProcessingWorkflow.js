@@ -170,8 +170,39 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
     }
 
 
-    const handleTimeSheetWorkFlow = (name, reviewer, approver) => {
-      let data =   {
+    const handleTimeSheetWorkFlow = (name, reviewer, approver, activeTab) => {
+      let data = {};
+      if(activeTab === 'requests'){
+         data =   {
+            "name": {
+              "name": name
+            },
+            "workFlowMap": {
+              "workflow": {
+                "1": {
+                  "workFlowUser": {
+                    "id": reviewer,
+                    "title":{
+                      "title":getSelectedUserDetails(reviewer)?.title?.title || '',
+                      "id":null,
+                    },
+                    "name":{
+                      "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                    },
+                    "suffix":{
+                      "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                      "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
+                    }
+                  },
+                  "workFlowStatus": {
+                    "status": "APPROVED"
+                  }
+                },
+              }
+            }
+          }
+      }else{
+       data = {
           "name": {
             "name": name
           },
@@ -193,7 +224,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
                   }
                 },
                 "workFlowStatus": {
-                  "status": "REVIEWER"
+                  "status": "REVIEWED"
                 }
               },
               "2": {
@@ -212,23 +243,24 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
                   }
                 },
                 "workFlowStatus": {
-                  "status": "APPROVER"
+                  "status": "APPROVED"
                 }
               }
             }
           }
         }
+      }
       return data;
     }
 
     const submit = async() => {
       if(activeTab === 'requests'){
-        let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`,addOn.reviewer, addOn.approver);
-        let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver);
+        let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`,addOn.reviewer, addOn.approver, activeTab);
+        let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, activeTab);
         await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
         await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
       }else{
-        let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver );
+        let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, activeTab );
         updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
       }
     }
@@ -310,13 +342,16 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
             <div className={`${style.timeSheetBoxStyle}`}>
             {activeTab !== 'requests' ?
                 <div>
-                  <div className={`${style.extentionGrid}`}>
-                      <div className={style.extentionLableStyle}>Select Timesheet To Define Process*</div>
-                      <div className={style.displayInRow}>
-                          <InputGroup className={style.twoFieldWidth} placeholder={activeTab}
-                              value={activeTab} onChange={(e) => setSelectTimesheetToDefineProcess(e.target.value)} />
-                      </div>
-                  </div>
+                  <p>{activeTab}</p>
+                      {
+                        // <div className={`${style.extentionGrid}`}>
+                        // <div className={style.extentionLableStyle}>Select Timesheet To Define Process*</div>
+                        // <div className={style.displayInRow}>
+                        //     <InputGroup className={style.twoFieldWidth} placeholder={activeTab}
+                        //         value={activeTab} onChange={(e) => setSelectTimesheetToDefineProcess(e.target.value)} />
+                        // </div>
+                        // </div>
+                      }
                   <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value)=>{setTimesheet({...timesheet, reviewer:value})}} selectLabel="Select Reviewer" value={timesheet?.reviewer || '0'}/>
                   <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value)=>{setTimesheet({...timesheet, approver:value})}} selectLabel="Select Approver" value={timesheet?.approver || '0'}/>
               </div>
@@ -325,50 +360,59 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
                 <div className={style.purpleTitle}>
                   ADD-ON ACTIVITY / SERVICE REQUESTS
                 </div>
-                <ReviewerApproverField data={users} label="Designate Request Reviewer*" selectLabel="Select Reviewer" onValueChange={(value)=>{setAddOn({...addOn, reviewer:value})}} value={addOn?.reviewer}/>
-                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAddOn({...addOn, approver:value})}} value={addOn?.approver}/>
+                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAddOn({...addOn, reviewer:value})}} value={addOn?.reviewer}/>
+                {
+                // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAddOn({...addOn, approver:value})}} value={addOn?.approver}/>
+              }
               </div>
               <div className={style.marginTop50}>
                 <div className={style.purpleTitle}>
                   PLANNED ABSENCE REQUESTS
                 </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Planned Absence Notification Days Limit*</div>
-                <div className={style.daysSelectorGrid}>
-                <select
-                    name="class"
-                    id="Class"
-                    className={`${style.fullWidth} `}>
-                    <option value="14" >
-                        14
-                    </option>
-                </select>
-                <div className={`${style.twoFieldWidth} ${style.verticalAlignCenter}`}>Days</div>
-                </div>
-                </div>
-                <ReviewerApproverField data={users} label="Designate Request Reviewer*" selectLabel="Select Reviewer" onValueChange={(value)=>{setAbsence({...absence, reviewer:value})}} value={absence?.reviewer}/>
-                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAbsence({...absence, approver:value})}} value={absence?.approver}/>
+                {
+                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  // <div className={style.extentionLableStyle}>Planned Absence Notification Days Limit*</div>
+                  // <div className={style.daysSelectorGrid}>
+                  // <select
+                  //     name="class"
+                  //     id="Class"
+                  //     className={`${style.fullWidth} `}>
+                  //     <option value="14" >
+                  //         14
+                  //     </option>
+                  // </select>
+                  // <div className={`${style.twoFieldWidth} ${style.verticalAlignCenter}`}>Days</div>
+                  // </div>
+                  // </div>
+                }
+                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAbsence({...absence, reviewer:value})}} value={absence?.reviewer}/>
+                {
+                  // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAbsence({...absence, approver:value})}} value={absence?.approver}/>
+                }
               </div>
-              <div className={style.marginTop50}>
-                <div className={style.purpleTitle}>
-                  UNPLANNED ABSENCE NOTIFICATION
-                </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed*</div>
-                <div className={style.daysSelectorGrid}>
-                <select
-                    name="class"
-                    id="Class"
-                    className={`${style.fullWidth} `}>
-                    <option value="7" >
-                        7
-                    </option>
-                </select>
-                <div className={`${style.twoFieldWidth} ${style.verticalAlignCenter}`}>Days</div>
-                </div>
-                </div>
-                <ReviewerApproverField data={users} label="Indicate Supervisor To Notify*" selectLabel="Select Supervisor" />
-              </div>
+              {
+                // <div className={style.marginTop50}>
+                //   <div className={style.purpleTitle}>
+                //     UNPLANNED ABSENCE NOTIFICATION
+                //   </div>
+                //   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                //   <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed*</div>
+                //   <div className={style.daysSelectorGrid}>
+                //   <select
+                //       name="class"
+                //       id="Class"
+                //       className={`${style.fullWidth} `}>
+                //       <option value="7" >
+                //           7
+                //       </option>
+                //   </select>
+                //   <div className={`${style.twoFieldWidth} ${style.verticalAlignCenter}`}>Days</div>
+                //   </div>
+                //   </div>
+                //   <ReviewerApproverField data={users} label="Indicate Supervisor To Notify*" selectLabel="Select Supervisor" />
+                // </div>
+
+              }
               </div>
             }
             </div>
