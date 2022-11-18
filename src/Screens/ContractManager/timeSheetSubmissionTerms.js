@@ -128,6 +128,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
     });
 
     const handleTimesheetValue = (i, name, value) => {
+      console.log('data', i, name, value);
       let temp = timeSheetLabelData;
       if(name === 'label'){
         temp[i] = {label:value, value:temp[i]?.value}
@@ -139,7 +140,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
       formatActivities();
     }
 
-    console.log(timeSheetLabelData)
+    console.log('data',timeSheetLabelData)
 
     const handleContractedActivityTagsRemove = (tags,index) => {
       setContractedActivityTags(contractedActivityTags?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data));
@@ -193,6 +194,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                             name="class"
                             id="Class"
                             value={timeSheetLabelData?.[i]?.value}
+                            key={`logPeriod${i}`}
                             onChange={(e) => handleTimesheetValue(i, 'value', e.target.value)}
                             className={`${style.fullWidth}`}>
                             <option value="0" >
@@ -318,7 +320,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                                 <Switch checked={contractedTimeCommitment} className={`${style.textAlignLeft}`} onChange={() => setContractedTimeCommitment(!contractedTimeCommitment)} />
                             }
                             className={`${style.switchFontStyle}`}
-                            label={'YES'}
+                            label={contractedTimeCommitment ? 'YES' : 'NO'}
                         />
                         {timeSheetCount === 1 && (
                             <div className={style.displayInRow}>

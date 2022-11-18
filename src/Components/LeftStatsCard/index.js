@@ -1,6 +1,6 @@
 import React from 'react';
 import ProgressBar from "@ramonak/react-progress-bar";
-import PageFooterIcon from './../../images/pageFooterIcon.png';
+import TimeSmartLogo from './../../images/timeSmartAI-logo.png';
 
 import style from './index.module.scss';
 
@@ -51,7 +51,7 @@ const LeftStatsCard = ({metadata}) => {
                 }
 
             </div>
-            <img src={PageFooterIcon} alt="footer" className={style.footerIconStyle} />
+            <img src={TimeSmartLogo} alt="footer" className={style.footerIconStyle}/>
         </div>
     )
 }

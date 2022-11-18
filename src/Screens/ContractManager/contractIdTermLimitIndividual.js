@@ -19,7 +19,7 @@ import style from './index.module.scss';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
-const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields, fileData, contractIdFromActive, method}) => {
+const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields, fileData, contractIdFromActive, method, isMultiSiteEntity}) => {
     const [selectContractManager, setSelectContractManager] = useState();
     const [siteSpecific, setSiteSpecific] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
@@ -58,12 +58,10 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
     const [departmentsName,setDepartmentsName] = useState([]);
     const [selectedDepartmentId,setSelectedDepartmentId] = useState([]);
     const [createdContractId,setCreatedContractId] = useState(contractIdFromActive);
-    const [isMultiSiteEntity,setIsMultiSiteEntity] = useState(false);
 
     useEffect(() => {
       getUserData();
       getSites();
-      getEntityData();
       if(method !== 'POST'){
         getContractDetail();
       }
@@ -86,11 +84,6 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       setFileFields(fullyExecutedContractData);
     },[fullyExecutedContractData])
 
-    const getEntityData = async() => {
-      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
-      console.log('entityData',data);
-      setIsMultiSiteEntity(data?.multiSiteEntity);
-    }
 
     const getContractDetail = async() => {
       const {data: contractData} = await GET(`contract-managment-service/contracts/${createdContractId}/contractDetail`);
@@ -104,8 +97,6 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
         setSiteSpecific(contractDetail?.siteSpecificContract);
         setFullyExecutedContract(contractDetail?.fullyExecutedContract);
         setSelectContractManager(user?.filter(data=>data?.id === contractDetail?.contractManager?.userID)?.map(data=>data)[0]);
-        console.log('user', user);
-        console.log('cm', user?.filter(data=>data?.id === contractDetail?.contractManager?.userID)?.map(data=>data)[0]);
         setContractPriorId({id:contractDetail?.priorContract?.id,na:contractDetail?.priorContract?.notApplicable});
         setContractTermPeriodFrom(contractDetail?.contractTerm?.startDate !== null ? new Date(contractDetail?.contractTerm?.startDate) : null);
         setContractTermPeriodTo(contractDetail?.contractTerm?.endDate  !== null ? new Date(contractDetail?.contractTerm?.endDate) : null );
@@ -276,7 +267,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
        if(method === 'POST' && contractIdFromActive === ''){
          await POST('contract-managment-service/contracts/contractDetail',formData)
          .then(response=>{getContractId(response?.data);
-         SuccessToaster('Contract Created Successfully');
+         SuccessToaster('Contract Draft Saved Successfully');
        }).catch(error=>{
          ErrorToaster('Unexpected Error Creating Contract');
        })
@@ -793,7 +784,8 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                   //             />
                   //         )}
                   //     </div>
-                  // </div> */}
+                  // </div>
+                  */}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Term Period*</div>
                     <div className={style.displayInRow}>

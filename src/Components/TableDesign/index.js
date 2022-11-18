@@ -292,7 +292,10 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                     </div>
                 )}
             </div>
-            <Pagination selectPage={getSelectedPage} totalCount={totalCount||tableData?.length} selectedPage={page||1}/>
+            {
+              (totalCount || tableData?.length) > 10 &&
+              <Pagination selectPage={getSelectedPage} totalCount={totalCount||tableData?.length} selectedPage={page||1}/>
+            }
             {
               // <div className={style.spaceBetween}>
               //     <p></p>

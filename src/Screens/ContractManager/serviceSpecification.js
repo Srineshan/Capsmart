@@ -100,7 +100,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
                 <p className={`${style.documentProofDataTextWidth} ${style.cursorPointer}`} onClick={() => { getEditServiceDialog(true); setSelectedService(data) }}>{data?.activityType?.activityType}</p>
                 <p className={style.documentProofDataTextWidth}>{data?.performingActivity?.activity} </p>
                 <p className={style.documentProofDataTextWidth}>{data?.users?.[0]?.name?.firstName}</p>
-                <Icon icon="trash" size={20} className={`${style.marginRight20} ${style.cursorPointer}`} color="#52575D" onClick={() => { setShowDeleteConfirmation(true); setContractedServiceToBeRemoved(index) }} />
+                <Icon icon="cross" size={20} className={`${style.marginRight20} ${style.cursorPointer}`} intent={Intent.DANGER} onClick={() => { setShowDeleteConfirmation(true); setContractedServiceToBeRemoved(index) }} />
               </div>
             ))}
             {/* <div className={`${style.serviceSpecificationTableData} ${style.displayInRow}`}>
