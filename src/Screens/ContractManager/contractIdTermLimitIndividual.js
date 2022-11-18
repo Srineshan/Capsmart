@@ -788,7 +788,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                   */}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Term Period*</div>
-                    <div className={style.displayInRow}>
+                    <div className={style.termPeriodGrid}>
                         {/* <DateInput
                             formatDate={date => date.toLocaleDateString()}
                             parseDate={str => new Date(str)}
@@ -814,7 +814,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                             }}/>}
                           />
                         </LocalizationProvider>
-                    <p className={style.toStyle}>To</p>
+                    <p className={`${style.toStyle} ${style.alignCenter}`}>To</p>
                         {/* <DateInput
                             formatDate={date => date.toLocaleDateString()}
                             parseDate={str => new Date(str)}
@@ -846,7 +846,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contracted Services Effective Date*</div>
-                    <div className={`${style.leftAlign} `}>
+                    <div className={`${style.leftAlign} ${style.effectiveDateWidth}`}>
                     {/* <DateInput
                         formatDate={date => date.toLocaleDateString()}
                         parseDate={str => new Date(str)}
