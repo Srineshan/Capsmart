@@ -3,7 +3,7 @@ import { InputGroup, Icon, Dialog, Classes, Intent } from '@blueprintjs/core';
 import {GET,DELETE} from './../dataSaver';
 import {ErrorToaster, SuccessToaster}  from './../../utils/toaster';
 import CompletedIcon from './../../images/completedIcon.png';
-import Loader from './../../images/loader.gif';
+import LoadingScreen from '../../Components/LoadingScreen';
 import RedWarning from './../../images/redWarning.png';
 import FileImg from './../../images/fileImg.png';
 import AddProofOfDocumentation from './addProofOfDocumentation';
@@ -69,7 +69,7 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
   }
 
     if(isLoading){
-      return <img src={Loader} />
+      return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
     }
 
     return(

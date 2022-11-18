@@ -301,7 +301,8 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                     getCurrentPage={getCurrentPage}
                     contractType = {contractType}
                     contractId = {contractId}
-                    contracts={contracts}/>
+                    contracts={contracts}
+                    contractName={contractName}/>
                 ) : (currentPage === "Contract ID & Term Limit") ? (
                     <ContractIdTermLimitIndividual
                     getViewPage1={getViewPage1}

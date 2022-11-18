@@ -171,13 +171,17 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
         ];
     }
 
-    const activeActionsData = [{'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
-        {'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean'},
-        {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'}]
+    const activeActionsData = [
+      // {'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
+      //   {'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean'},
+      //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'}
+      ]
 
-    const draftActionsData = [{'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
+    const draftActionsData = [
+        // {'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
         {'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id'},
-        {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}]
+        // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}
+      ]
 
 
     const handleAddContract = () => {

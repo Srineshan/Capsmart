@@ -84,6 +84,10 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       setFileFields(fullyExecutedContractData);
     },[fullyExecutedContractData])
 
+    useEffect(()=>{
+      setSelectContractManager(user?.filter(data=>data?.id === contractData?.contractManager?.userID)?.map(data=>data)[0]);
+    },[user])
+
 
     const getContractDetail = async() => {
       const {data: contractData} = await GET(`contract-managment-service/contracts/${createdContractId}/contractDetail`);
@@ -136,6 +140,9 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       }
     }
 
+    console.log('manager',selectContractManager);
+
+
     const getUserData = async() => {
       const {data: user} = await GET('user-management-service/user/role?role=Contract Manager');
       if(user){
@@ -181,7 +188,6 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       }
       return siteData;
     }
-
 
     const addContract = async() => {
       if(selectedContractContinuationPolicy === 'Select Value'){
@@ -383,8 +389,6 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       }
       setReminderFields(temp);
     }
-
-    console.log('user items',items, selectContractManager, contractName);
 
     const addNewDocumentField = () => {
       let temp = fullyExecutedContractData;

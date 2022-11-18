@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import CompletedIcon from './../../images/completedIcon.png';
 import { GET, PUT } from './../dataSaver';
+import LoadingScreen from '../../Components/LoadingScreen';
 
 import style from './index.module.scss';
 import AddServiceProvided from './addServiceToBeProvided';
@@ -17,6 +18,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [contractedServiceToBeRemoved, setContractedServiceToBeRemoved] = useState();
   const [userLength, setUserLength] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     getContractedServices();
@@ -63,6 +65,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     if (userData) {
       setUsers(userData);
     }
+    setIsLoading(false);
   }
 
   const handleDeleteService = async () => {
@@ -79,6 +82,10 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     }
     setShowDeleteConfirmation(false);
     setContractedServiceToBeRemoved();
+  }
+
+  if(isLoading){
+    return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
 
   return (

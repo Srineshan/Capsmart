@@ -42,7 +42,7 @@ const ITEM_PADDING_TOP = 8;
     },
   };
 
-const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId, contractType}) => {
+const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId, contractType, contractName}) => {
     const testContractId = contractId;
     const [user,setUsers] = useState([]);
     const [userName, setUserName] = useState('');
@@ -55,7 +55,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     const [serviceProviderType, setServiceProviderType] = useState({contractedServiceProviderType:'',id:''});
     const [npin, setNpin] = useState('');
     const [npinMissing, setNpinMissing] = useState(false);
-    const [contractName,setContractName] = useState('');
+    // const [contractName,setContractName] = useState('');
     const [npinNotApplicable, setNpinNotApplicable] = useState(false);
     const [contractorFirstName, setContractorFirstName] = useState('');
     const [contractorMiddleName, setContractorMiddleName] = useState('');
@@ -88,7 +88,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
         getRoles();
         getUserData();
         getUsersData();
-        getContractName();
+        // getContractName();
     },[])
 
     useEffect(()=>{
@@ -156,12 +156,14 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     }
 
 
-    const getContractName = async() => {
-      const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
-      if(contractData){
-        setContractName(contractData?.contractName?.contractName);
-      }
-    }
+    // const getContractName = async() => {
+    //   const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
+    //   if(contractData){
+    //     setContractName(contractData?.contractName?.contractName);
+    //   }
+    // }
+
+    console.log('name', contractName);
 
     const getUserData = async() => {
       if(contractId !== '' && contractId !== undefined){
