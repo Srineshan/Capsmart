@@ -85,7 +85,7 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
                     <button className={`${style.addCotractorButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.marginRight20}`}
                         onClick={()=>{setShowProofDialog(true)}} >ADD PROOF OF DOCUMENTATION</button>
                 </div>
-                <div className={`${style.documentPageHeader} ${style.marginTop10}`}>
+                <div className={`${isMultiSiteEntity ? style.documentPageHeader : style.documentPageHeaderWithoutSite} ${style.marginTop10}`}>
                     <p className={style.documentProofTextWidth}></p>
                     <p className={style.documentProofTextWidth}>POD TYPE</p>
                     {isMultiSiteEntity && <p className={style.documentProofTextWidth}>SITE</p>}
@@ -95,7 +95,7 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
                 </div>
                 {
                   documents?.map((data, index)=>(
-                    <div className={`${style.documentDataProof} ${style.displayInRow}`} key={index} >
+                    <div className={`${isMultiSiteEntity ? style.documentDataProof : style.documentDataProofWithoutSite} ${style.displayInRow}`} key={index} >
                         <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
                         <p className={`${style.documentProofDataTextWidth} ${style.cursorPointer}`} onClick={() => {setSelectedProof(data);setShowEditProofDialog(true)}}>{data?.podType?.type}</p>
                         {isMultiSiteEntity && <p className={style.documentProofDataTextWidth}>{data?.dataMap?.dataMap?.privilegingFacility?.siteName?.siteName}</p>}
@@ -104,7 +104,7 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
                             {data?.file?.fileName !== '' && <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />}
                             <p className={style.documentProofDataTextWidth}>{data?.file?.fileName !== '' ? data?.file?.fileName : 'Not Available'}</p>
                         </div>
-                        <Icon icon="cross" size={20} intent={Intent.DANGER} onClick={()=>{setFileToDelete(data?.id);setDeleteExecutedContractDialog(true);}}/>
+                        <Icon icon="cross" size={17} intent={Intent.DANGER} onClick={()=>{setFileToDelete(data?.id);setDeleteExecutedContractDialog(true);}}/>
                     </div>
                   ))
                 }

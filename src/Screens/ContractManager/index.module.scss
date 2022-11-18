@@ -383,6 +383,17 @@ body{
     grid-template-columns: 10% 25% 20% 20% 20% 5%;
 }
 
+.documentPageHeaderWithoutSite{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 10% 35% 25% 25% 5%;
+}
+
 .serviceSpecificationTableHeader{
     background: #BEB9F2 0% 0% no-repeat padding-box;
     height: 50px;
@@ -442,6 +453,19 @@ body{
     margin-top: 5px;
     display: grid;
     grid-template-columns: 10% 25% 20% 20% 20% 5%;
+    word-break: break-word !important;
+}
+
+.documentDataProofWithoutSite{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: 10% 35% 25% 25% 5%;
     word-break: break-word !important;
 }
 
@@ -824,9 +848,13 @@ body{
     margin-top: 5px;
 }
 
-.toStyle{
-    color: #52575D;
-    margin: 5px 20px 0 20px;
+.termPeriodGrid{
+    display: grid;
+    grid-template-columns: 45% 10% 45%;
+}
+
+.effectiveDateWidth{
+    width: 45%;
 }
 
 .greyText{
