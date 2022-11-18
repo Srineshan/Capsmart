@@ -537,7 +537,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             </div>
                         )}
                         {
-                          serviceType !== 'Administrative / Miscellaneous Services' && serviceType !== 'Add-On Services' &&
+                          serviceType !== 'Administrative / Miscellaneous Services' && serviceType !== 'Add-On Services' && serviceType !== 'Supplemental Services' &&
                           <div>
                               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                   <div className={style.extentionLableStyle}>Activities To Be Performed*</div>

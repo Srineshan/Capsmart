@@ -158,7 +158,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                     }
                 </div>
             </div>
-            {!metadata?.dedicatedHoursSpecified && (
+            {metadata?.dedicatedHoursSpecified && (
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Billable Service*</div>

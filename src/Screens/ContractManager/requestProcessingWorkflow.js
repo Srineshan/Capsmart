@@ -9,7 +9,7 @@ import ReviewerApproverField from './reviewerApproverField';
 
 import style from './index.module.scss';
 
-const RequestProcessingWorkflow = ({ getCurrentPage, selectContractInfo, contractId, contractName }) => {
+const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName }) => {
     const [addOn, setAddOn] = useState({ id: '', reviewer: '', approver: '' });
     const [absence, setAbsence] = useState({ id: '', reviewer: '', approver: '' });
     const [timesheet, setTimesheet] = useState({ id: '', reviewer: '', approver: '' });
@@ -18,7 +18,7 @@ const RequestProcessingWorkflow = ({ getCurrentPage, selectContractInfo, contrac
     // const [viewWorkflowDialog, setViewWorkflowDialog] = useState(false);
     // const [workflowName, setWorkflowName] = useState('');
     // const [workflowDescription, setWorkflowDescription] = useState('');
-    const [activeTab, setActiveTab] = useState('');
+    const [activeTab, setActiveTab] = useState('requests');
     const [selectTimesheetToDefineProcess, setSelectTimesheetToDefineProcess] = useState('');
     const [customWorkFlow, setCustomWorkFlow] = useState(false);
     const [workflowTemplateToUse, setWorkflowTemplateToUse] = useState('');
@@ -308,9 +308,6 @@ const RequestProcessingWorkflow = ({ getCurrentPage, selectContractInfo, contrac
 
     return (
         <div className={style.cloneBlockStyle}>
-            <div className={`${style.flexLeft} ${style.reduce10Left} ${style.horizontalScroll} ${style.fullWidth}`}>
-                <button className={`${style.timesheetButtonStyle} ${activeTab === "requests" && style.selectedTimesheetButton}`} onClick={() => setActiveTab('requests')}>Requests</button>
-            </div>
             <div className={`${style.timeSheetBoxStyle}`}>
                 <div>
                     <div>
@@ -339,6 +336,7 @@ const RequestProcessingWorkflow = ({ getCurrentPage, selectContractInfo, contrac
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
                         onClick={() => {
                             submit();
+                            getViewPage9(true);
                             getCurrentPage('Request Processing Workflow')
                         }}
                     >CONTINUE</button>
