@@ -130,7 +130,7 @@ const SiteUsers = ({getActiveStep}) => {
     }
 
     const getContracts = async() => {
-      await axios(`https://rest.timesmart.io/contract-managment-service/contracts`,{
+      await axios(`https://rest.timesmart.live/contract-managment-service/contracts`,{
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ const SiteUsers = ({getActiveStep}) => {
     }
 
     const getUserData = async() => {
-      await axios(`https://rest.timesmart.io/user-management-service/user`,{
+      await axios(`https://rest.timesmart.live/user-management-service/user`,{
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

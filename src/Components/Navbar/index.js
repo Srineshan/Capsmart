@@ -98,7 +98,7 @@ const Navbar = () => {
                     'Authorization' : `Bearer ${token}`,
                   },
      };
-     fetch('https://rest.timesmart.io/user-management-service/auth/logout', requestOptions)
+     fetch('https://rest.timesmart.live/user-management-service/auth/logout', requestOptions)
          .then(response => {
            cookies.remove('user');
            cookies.remove('entityId');
