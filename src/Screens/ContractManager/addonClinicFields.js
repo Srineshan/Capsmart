@@ -329,7 +329,7 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
                 <FormControlLabel control={<Checkbox checked={selectedServices?.includes(data?.performingActivity)} onChange={(e)=>selectService(data?.performingActivity, e.target.checked)}/>}  label={<Typography variant="body2">{data?.performingActivity?.activity || data?.performingActivity}</Typography>} />
             </FormGroup>
             <div className={`${style.addonBoxStyle}`}>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={`${style.addManagerGrid}`}>
                     <div className={style.extentionLableStyle}>ADD-ON Payment Rate*</div>
                     <div className={`${style.displayInRow}`}>
                         <div className={`${style.threeFieldWidth}`}>

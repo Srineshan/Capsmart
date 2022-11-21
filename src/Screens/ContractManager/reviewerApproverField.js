@@ -3,7 +3,8 @@ import style from './index.module.scss';
 
 const ReviewerApproverField = ({data,label,onValueChange,selectLabel,value}) => {
   const [selectedValue,setSelectedValue] = useState(value);
-  console.log('valueCheck', value, value)
+  console.log('valueCheck', value, data)
+
   // useEffect(()=>{
   //   setSelectedValue(value);
   // },[value])
@@ -23,7 +24,7 @@ const ReviewerApproverField = ({data,label,onValueChange,selectLabel,value}) => 
                 {selectLabel}
             </option>
             {data?.map(data=>(
-              <option value={data?.id}>
+              <option value={data?.userId}>
                 {data?.title?.title}
               </option>
             ))

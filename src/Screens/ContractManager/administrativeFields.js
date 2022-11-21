@@ -24,13 +24,13 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
   const [anchorEl, setAnchorEl] = useState(null);
   const [adminActivity, setAdminActivity] = useState({
     activity:'',
-    podRequired: true,
+    podRequired: false,
     schedule: 'WEEK',
     billable: false,
   });
 
   let specificDedicatedHoursList = [];
-    services?.filter(data=>['Clinic Blocks','Surgery Session']?.includes(data?.activityType?.activityType))?.map(data=>{
+    services?.filter(data=>['Clinic Blocks','Surgery Session','On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data=>{
     let activityName = data?.activityType?.activityType;
     let activities = data?.activities?.map(data=>data?.activity);
     let result = `${activityName} (${activities?.map(data=>data)?.join(', ')})`
@@ -133,7 +133,7 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
     }
 
     const selectedHours = (index) => {
-      let temp = services?.filter(data=>['Clinic Blocks','Surgery Session']?.includes(data?.activityType?.activityType))?.map(data=>data);
+      let temp = services?.filter(data=>['Clinic Blocks','Surgery Session','On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data=>data);
       let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
       let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data=>data?.activity)?.join('-');
       setMetadata({...metadata, dedicatedHoursActivityType:dedicatedHoursActivityType, dedicatedHoursPerformingActivity:dedicatedHoursPerformingActivity});
@@ -256,7 +256,7 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
                                     <MenuItem value="">Select Frequecy</MenuItem>
                                     <MenuItem value={'WEEK'}>Per Week</MenuItem>
                                     <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                                    <MenuItem value={'YEAR'}>Per Year</MenuItem>
+                                    <MenuItem value={'YEAR'}>Per Contract Year</MenuItem>
                                 </Select>
                             </div>
                         </div>

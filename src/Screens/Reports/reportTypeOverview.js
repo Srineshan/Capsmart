@@ -7,6 +7,7 @@ import ReportHeader from './reportHeader';
 import ReportFooter from './reportFooter';
 import { useParams } from 'react-router-dom';
 import {format} from 'date-fns';
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
 // import PieChart from './d3-chart/pieChart';
 import Pie from './d3-chart/pieGraph';
 // import LineChart from './d3-chart/lineChart';
@@ -53,6 +54,7 @@ const ReportTypeOverview = () => {
     const data = [{ label: 'Done', value: 60 }, { label: 'To Do', value: 20 }, { label: 'Not Done', value: 20 }];
     const pieSampleData = [{ key: 'Done', value: 60 }, { key: 'To Do', value: 20 }, { key: 'Not Done', value: 20 }];
     const {reportType} = useParams();
+    const handle = useFullScreenHandle();
     const [contractRenewalReport, setContractRenewalReport] = useState([]);
     const [oneTimeContract, setOneTimeContract] = useState([]);
     const [nonCompliantContract, setNonCompliantContract] = useState([]);
@@ -62,7 +64,6 @@ const ReportTypeOverview = () => {
     const [multipleContract, setMultipleContract] = useState([]);
     const [user,setUsers] = useState([]);
     const [dataToUseInReport, setDataToUseInReport] = useState({});
-    const [showExpandedView, setShowExpandedView] = useState(false);
     const [pieData,setPieData] = useState([]);
     const [lineData, setLineData] = useState([]);
     const [barData,setBarData] = useState();
@@ -119,6 +120,27 @@ const ReportTypeOverview = () => {
         }
     }, [dataToUseInReport, selectedPodTypeFromTile])
 
+    const getIsRefresh = (value) => {
+        if(value){
+            if(reportType === 'upcomingContractRenewals') {
+                getContractRenewalReportWithParameters();
+            }
+            if(reportType === 'oneTimeContract') {
+                getOneTimeContractWithParameters();
+            }
+            if(reportType === 'nonCompliant') {
+                getNonCompliantContractReportTile();
+            }
+            if(reportType === 'activitiesOrServices'){
+                getAcvityAndServicesWithParameter();
+            }
+            if(reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
+                setSelectedPodTypeFromTile(dataToUseInReport?.podType)
+                getNonCompliantContractReport();
+            }
+        }
+    }
+
     console.log(dataToUseInReport)
 
     useEffect(()=> {
@@ -149,7 +171,7 @@ const ReportTypeOverview = () => {
       setPieData(temp);
       let lineTemp = [];
       chartData?.completedActivitiesByDate?.map((line,index)=>{
-        lineTemp[index] = {date:line.statedate, value:line.count};
+        lineTemp[index] = {date:format(new Date(line.statedate), 'MM-dd'), value:line.count};
       })
       lineTemp.sort((a,b)=>new Date(a.date)-new Date(b.date));
       setLineData(lineTemp);
@@ -198,6 +220,8 @@ const ReportTypeOverview = () => {
     }
   }
 
+  console.log(pieData)
+
 
     const getAcvityAndServicesWithParameter = async() => {
         const {data:chartData} = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
@@ -211,7 +235,7 @@ const ReportTypeOverview = () => {
         setPieData(temp);
         let lineTemp = [];
         chartData?.completedActivitiesByDate?.map((line,index)=>{
-            lineTemp[index] = {date:line.statedate, value:line.count};
+            lineTemp[index] = {date:format(new Date(line.statedate), 'MM-dd'), value:line.count};
         })
         lineTemp.sort((a,b)=>new Date(a.date)-new Date(b.date));
         setLineData(lineTemp);
@@ -273,7 +297,7 @@ const ReportTypeOverview = () => {
     }
 
     const getContractRenewalReportWithParameters = async() => {
-        const {data: contractRenewalReport} = await GET(`contract-managment-service/reports/contractRenewalReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&renewalDays=${dataToUseInReport?.renewalTimeFrame}&contractPolicyType=${dataToUseInReport?.contractContinuationPolicy}`);
+        const {data: contractRenewalReport} = await GET(`contract-managment-service/reports/contractRenewalReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}&contractPolicyType=${dataToUseInReport?.contractContinuationPolicy}`);
         if(contractRenewalReport){
             setContractRenewalReport(contractRenewalReport);
         }
@@ -287,7 +311,7 @@ const ReportTypeOverview = () => {
     }
 
     const getOneTimeContractWithParameters = async() => {
-        const {data: oneTimeContract} = await GET(`contract-managment-service/reports/oneTimeContractReport?renewalDays=${dataToUseInReport?.renewalTimeFrame}`);
+        const {data: oneTimeContract} = await GET(`contract-managment-service/reports/oneTimeContractReport?renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}`);
         if(oneTimeContract){
             setOneTimeContract(oneTimeContract);
         }
@@ -305,10 +329,6 @@ const ReportTypeOverview = () => {
         if(nonCompliantContract){
             setNonCompliantContract(nonCompliantContract);
         }
-    }
-
-    const getShowExpandedView = (value) => {
-        setShowExpandedView(value);
     }
 
     let activityPerformed = [];
@@ -450,25 +470,16 @@ const ReportTypeOverview = () => {
     return(
         <Fragment>
             <Navbar />
-            <div className={`${!showExpandedView && style.bigCardGrid} ${style.margin20WithoutTop} ${style.marginTop10}`}>
-                {!showExpandedView && (
-                    <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} />
-                )}
-                <StyledWatermark
-                    text="CONFIDENTIAL"
-                    style={{
-                    width: '100%',
-                    height: '100%'
-                    }}
-                    multiple
-                >
-                    <div>
-                        <ReportPerformanceAndOptions getShowExpandedView={getShowExpandedView} showExpandedView={showExpandedView} />
+            <div className={`${style.bigCardGrid} ${style.margin20WithoutTop} ${style.marginTop10}`}>
+                <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} />
+                <FullScreen handle={handle}>
+                    <div className={style.scroll}>
+                        <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} />
                         <div className={`${style.reportBackgroundCard} ${style.marginTop20}`}>
                             <ReportHeader />
                             <div className={style.justifyCenter}>
                                 <div className={style.marginTop20}>
-                                    <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter} ${style.marginTop5}`}>
+                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5}`}>
                                         {reportType === "upcomingContractRenewals" ? 'Upcoming Contract Renewals'
                                         : reportType === "oneTimeContract" ? "List of One Time Contracts that will Terminate on Expiration"
                                         : reportType === "scheduledActivity" ? "Scheduled Activity/ Services - Forcasted To Actual"
@@ -478,18 +489,18 @@ const ReportTypeOverview = () => {
                                         : 'Activities/ Services Log Status Summary'}
                                     </div>
                                     {dataToUseInReport?.reportingTimePeriod !== "" && (
-                                        <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5}`}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} </div>
+                                        <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5}`}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
                                     )}
                                 </div>
                             </div>
                             <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
                             <div className={style.marginTop20}>
-                                <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Reporting Parameters Applied</div>
+                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Reporting Parameters Applied</div>
                                 {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ) ? (
-                                    <div className={`${style.grid3} ${style.marginTop20}`}>
+                                    <div className={`${style.grid2} ${style.marginTop20}`}>
                                         <div>
                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Renewal Time Frame </div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{`Renewal within Next ${dataToUseInReport?.renewalTimeFrame} days`}</div>
+                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{`Renewal within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
                                         </div>
                                         <div>
                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Sites </div>
@@ -510,11 +521,7 @@ const ReportTypeOverview = () => {
                                         )}
                                     </div>
                                 ) : (reportType === "activitiesOrServices") ? (
-                                    <div className={`${style.grid3} ${style.marginTop20}`}>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Reporting Time Period </div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.reportingTimePeriod}</div>
-                                        </div>
+                                    <div className={`${style.grid2} ${style.marginTop20}`}>
                                         <div>
                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Sites </div>
                                             <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
@@ -533,7 +540,7 @@ const ReportTypeOverview = () => {
                                         </div>
                                     </div>
                                 ) : (reportType === "nonCompliant") ? (
-                                    <div className={`${style.grid3} ${style.marginTop20}`}>
+                                    <div className={`${style.grid2} ${style.marginTop20}`}>
                                         <div>
                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Sites </div>
                                             <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
@@ -559,7 +566,7 @@ const ReportTypeOverview = () => {
                                         </div>
                                     </div>
                                 ) : (
-                                <div className={`${style.grid3} ${style.marginTop20}`}>
+                                <div className={`${style.grid2} ${style.marginTop20}`}>
                                     <div>
                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Site </div>
                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Site 1, Site 2, Site 3</div>
@@ -591,13 +598,13 @@ const ReportTypeOverview = () => {
                                 <>
                                     <div className={style.grid2}>
                                         <div>
-                                            <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Activity / Services Status</div>
+                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Activity / Services Status</div>
                                             {/* <Pie data={pieData} width={250} height={250} innerRadius={0} outerRadius={100} /> */}
                                             <ApexPieChart pieData={pieData} />
                                         </div>
 
                                         <div>
-                                            <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Activity / Services Status</div>
+                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Activity / Services Status</div>
                                             <div className={style.marginTop20}>
                                                 {/* <BarChart data={barData}/> */}
                                                 <ApexGroupedBarChart series={series} categories={categories} />
@@ -606,52 +613,64 @@ const ReportTypeOverview = () => {
                                     </div>
                                     <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
                                     <div className={style.marginTop40}>
-                                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Trend For Activities / Services Completed</div>
+                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Trend For Activities / Services Completed</div>
                                         {/* <LineChart /> */}
                                         <ApexLineChart lineData={lineData} />
                                     </div>
                                     <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
                                     <div className={style.marginTop40}>
-                                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Percentage Of Activities / Services Completed By Category Type</div>
+                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Percentage Of Activities / Services Completed By Category Type</div>
                                         {/* <StackedBarChartBaseLayout1 chartData={stackedData}/> */}
                                         <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
                                     </div>
                                     <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                    <ReportsTable 
-                                        tableType={'Completed Activity / Service Log'}
-                                        tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Completion Date/ Time', 'Contracted Provider', 'Site']}
-                                        tableValue={reportLog?.filter(data=>data?.activityStatus === "DONE")}
-                                        activitiesServicesValues = {getActivitiesServicesValues('DONE')}
-                                        styleName={style.grid5}
-                                    />
-                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                    <ReportsTable 
-                                        tableType={'To Do Activity/ Services'}
-                                        tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site']}
-                                        tableValue={reportLog?.filter(data=>data?.activityStatus === "TODO")}
-                                        activitiesServicesValues = {getActivitiesServicesValues('TODO')}
-                                        styleName={style.grid5}
-                                    />
-                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                    <ReportsTable 
-                                        tableType={'Not Done Activity / Service Log'}
-                                        tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site', 'Reason Not Done']}
-                                        tableValue={reportLog?.filter(data=>data?.activityStatus === "NOTDONE")}
-                                        activitiesServicesValues = {getActivitiesServicesValues('NOTDONE')}
-                                        styleName={style.grid5}
-                                    />
+                                    {reportLog?.filter(data=>data?.activityStatus === "DONE")?.length !== 0 && (
+                                        <>
+                                            <ReportsTable 
+                                                tableType={'Completed Activity / Service Log'}
+                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Completion Date/ Time', 'Contracted Provider', 'Site']}
+                                                tableValue={reportLog?.filter(data=>data?.activityStatus === "DONE")}
+                                                activitiesServicesValues = {getActivitiesServicesValues('DONE')}
+                                                styleName={style.grid5}
+                                            />
+                                            <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                        </>
+                                    )}
+                                    {reportLog?.filter(data=>data?.activityStatus === "TODO")?.length !== 0 && (
+                                        <>
+                                            <ReportsTable 
+                                                tableType={'To Do Activity/ Services'}
+                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site']}
+                                                tableValue={reportLog?.filter(data=>data?.activityStatus === "TODO")}
+                                                activitiesServicesValues = {getActivitiesServicesValues('TODO')}
+                                                styleName={style.grid5}
+                                            />
+                                            <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                        </>
+                                    )}
+                                    {reportLog?.filter(data=>data?.activityStatus === "NOTDONE")?.length !== 0 && (
+                                        <>
+                                            <ReportsTable 
+                                                tableType={'Not Done Activity / Service Log'}
+                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site', 'Reason Not Done']}
+                                                tableValue={reportLog?.filter(data=>data?.activityStatus === "NOTDONE")}
+                                                activitiesServicesValues = {getActivitiesServicesValues('NOTDONE')}
+                                                styleName={style.grid5}
+                                            />
+                                        </>
+                                    )}
                                 </>
                                 ) : (reportType === "scheduledActivity" || reportType === "scheduledActivityByContract") ? (
                                     <>
                                         <div className={style.grid2}>
                                             <div>
-                                                <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
+                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
                                                 <div className={style.marginTop20}>
                                                     <StackedBarChartBaseLayout2 />
                                                 </div>
                                             </div>
                                             <div>
-                                                <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
+                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
                                                 <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
                                             </div>
                                         </div>
@@ -659,19 +678,19 @@ const ReportTypeOverview = () => {
                                         <div className={style.contractNameCardStyle}>Contract Name 1 - Individual Contractor Contract</div>
                                         <div className={`${style.grid2} ${style.marginTop40}`}>
                                             <div>
-                                                <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
+                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
                                                 <div className={style.marginTop20}>
                                                     <StackedBarChartBaseLayout2 />
                                                 </div>
                                             </div>
                                             <div>
-                                                <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
+                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
                                                 <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
                                             </div>
                                         </div>
                                         <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
                                         <div className={style.marginTop40}>
-                                            <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Scheduled Activity/ Services Completion Status</div>
+                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Scheduled Activity/ Services Completion Status</div>
                                             <div className={`${style.grid6} ${style.marginTop20}`}>
                                                 <div></div>
                                                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Total To do</div>
@@ -709,19 +728,19 @@ const ReportTypeOverview = () => {
                                         <div className={style.contractNameCardStyle}>Contract Name 2 - Multiple Contractor Contract - 5 Service Providers</div>
                                         <div className={`${style.grid2} ${style.marginTop20}`}>
                                             <div>
-                                                <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
+                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
                                                 <div className={style.marginTop20}>
                                                     <StackedBarChartBaseLayout2 />
                                                 </div>
                                             </div>
                                             <div>
-                                                <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
+                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
                                                 <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
                                             </div>
                                         </div>
                                         <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
                                         <div className={style.marginTop40}>
-                                            <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Scheduled Activity/ Services Completion Status</div>
+                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Scheduled Activity/ Services Completion Status</div>
                                             <div className={`${style.grid6} ${style.marginTop20}`}>
                                                 <div></div>
                                                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Total To do</div>
@@ -784,7 +803,7 @@ const ReportTypeOverview = () => {
                                         </div>
                                         <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
                                         <div className={style.marginTop40}>
-                                            <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Non Compliant Providers With Required Documents</div>
+                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Non Compliant Providers With Required Documents</div>
                                             <div className={`${style.grid7} ${style.marginTop20}`}>
                                                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Provider Name</div>
                                                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Title</div>
@@ -806,7 +825,7 @@ const ReportTypeOverview = () => {
                                         </div>
                                         <div className={style.marginTop40}>
                                             <div>
-                                                <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Providers With Required Documents Needing Compliance Within Next 30 Days</div>
+                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Providers With Required Documents Needing Compliance Within Next 30 Days</div>
                                                 <div className={`${style.grid7} ${style.marginTop20}`}>
                                                     <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Provider Name</div>
                                                     <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Title</div>
@@ -829,7 +848,7 @@ const ReportTypeOverview = () => {
                                         </div>
                                         <div className={style.marginTop40}>
                                                 <div>
-                                                    <div className={`${style.entityNameHeaderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Providers In Compliance With Required Documents</div>
+                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Providers In Compliance With Required Documents</div>
                                                     <div className={`${style.grid7} ${style.marginTop20}`}>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Provider Name</div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Title</div>
@@ -939,7 +958,7 @@ const ReportTypeOverview = () => {
                             <ReportFooter />
                         </div>
                     </div>
-                </StyledWatermark>
+                </FullScreen>
             </div>
         </Fragment>
     )

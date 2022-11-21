@@ -34,9 +34,9 @@ const Pagination = ({selectedPage, selectPage, totalCount}) => {
     <div className={style.spaceBetween}>
     <p></p>
         <div className={style.displayInRow}>
-            <p className={style.paginationStyle}>{startCount !== count ? `${startCount} - ${endCount} of ${count}` : `${startCount} of ${count}`}</p>
             <Icon icon="chevron-left" className={`${style.margin} ${style.cursor} ${style.border}`} onClick={()=>{updatePageCount('decrement');}}/>
-            <Icon icon="chevron-right" className={`${style.margin} ${style.cursor} ${style.border}`} onClick={()=>{updatePageCount('increment');}}/>
+              <p className={style.paginationStyle}>{startCount !== count ? `${startCount} - ${endCount} of ${count}` : `${startCount} of ${count}`}</p>
+            <Icon icon="chevron-right" className={`${style.margin} ${style.cursor} ${style.border} ${style.marginRight}`} onClick={()=>{updatePageCount('increment');}}/>
             {
               // <img src={ChevronRight} className={style.roundChevron} />
             }

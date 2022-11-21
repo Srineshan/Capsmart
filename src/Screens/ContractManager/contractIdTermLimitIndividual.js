@@ -19,7 +19,7 @@ import style from './index.module.scss';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
-const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields, fileData, contractIdFromActive, method}) => {
+const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields, fileData, contractIdFromActive, method, isMultiSiteEntity}) => {
     const [selectContractManager, setSelectContractManager] = useState();
     const [siteSpecific, setSiteSpecific] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
@@ -58,13 +58,12 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
     const [departmentsName,setDepartmentsName] = useState([]);
     const [selectedDepartmentId,setSelectedDepartmentId] = useState([]);
     const [createdContractId,setCreatedContractId] = useState(contractIdFromActive);
-    const [isMultiSiteEntity,setIsMultiSiteEntity] = useState(false);
 
     useEffect(() => {
       getUserData();
       getSites();
-      getEntityData();
-      if(method !== 'POST'){
+      if(method === 'PUT' && createdContractId !== ''){
+        console.log('get activated');
         getContractDetail();
       }
     },[])
@@ -86,11 +85,10 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       setFileFields(fullyExecutedContractData);
     },[fullyExecutedContractData])
 
-    const getEntityData = async() => {
-      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
-      console.log('entityData',data);
-      setIsMultiSiteEntity(data?.multiSiteEntity);
-    }
+    useEffect(()=>{
+      setSelectContractManager(user?.filter(data=>data?.id === contractData?.contractManager?.userID)?.map(data=>data)[0]);
+    },[user])
+
 
     const getContractDetail = async() => {
       const {data: contractData} = await GET(`contract-managment-service/contracts/${createdContractId}/contractDetail`);
@@ -104,8 +102,6 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
         setSiteSpecific(contractDetail?.siteSpecificContract);
         setFullyExecutedContract(contractDetail?.fullyExecutedContract);
         setSelectContractManager(user?.filter(data=>data?.id === contractDetail?.contractManager?.userID)?.map(data=>data)[0]);
-        console.log('user', user);
-        console.log('cm', user?.filter(data=>data?.id === contractDetail?.contractManager?.userID)?.map(data=>data)[0]);
         setContractPriorId({id:contractDetail?.priorContract?.id,na:contractDetail?.priorContract?.notApplicable});
         setContractTermPeriodFrom(contractDetail?.contractTerm?.startDate !== null ? new Date(contractDetail?.contractTerm?.startDate) : null);
         setContractTermPeriodTo(contractDetail?.contractTerm?.endDate  !== null ? new Date(contractDetail?.contractTerm?.endDate) : null );
@@ -145,6 +141,9 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       }
     }
 
+    console.log('manager',selectContractManager);
+
+
     const getUserData = async() => {
       const {data: user} = await GET('user-management-service/user/role?role=Contract Manager');
       if(user){
@@ -156,8 +155,14 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       const {data:sites} = await GET('entity-service/sites');
       if(sites){
         setSites(sites);
+        if(!isMultiSiteEntity){
+          setSelectedSites(sites);
+          setSelectedSite(sites?.[0]?.id);
+        }
     }
   }
+
+  console.log('sites', selectedSites);
 
       const getAddNewManagerDialog = (value) => {
         setAddNewManagerDialog(value);
@@ -190,7 +195,6 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       }
       return siteData;
     }
-
 
     const addContract = async() => {
       if(selectedContractContinuationPolicy === 'Select Value'){
@@ -276,7 +280,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
        if(method === 'POST' && contractIdFromActive === ''){
          await POST('contract-managment-service/contracts/contractDetail',formData)
          .then(response=>{getContractId(response?.data);
-         SuccessToaster('Contract Created Successfully');
+         SuccessToaster('Contract Draft Saved Successfully');
        }).catch(error=>{
          ErrorToaster('Unexpected Error Creating Contract');
        })
@@ -392,8 +396,6 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       }
       setReminderFields(temp);
     }
-
-    console.log('user items',items, selectContractManager, contractName);
 
     const addNewDocumentField = () => {
       let temp = fullyExecutedContractData;
@@ -587,6 +589,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                         )}
                     </div>
                 </div>
+              {isMultiSiteEntity &&
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Site Specific Contract*</div>
                     <div>
@@ -621,6 +624,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                         )}
                     </div>
                 </div>
+              }
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Department Specific Contract*</div>
                     <div>
@@ -636,7 +640,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                                     <select
                                         name="class"
                                         id="Class"
-                                        value={selectedSite || 'Select...'}
+                                        value={selectedSites?.[0]?.id || 'Select...'}
                                         onChange={(e) => setSelectedSite(e.target.value)}
                                         className={`${style.fullWidth} ${style.marginLeft20} `}>
                                         <option value='Select...'>
@@ -793,10 +797,11 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                   //             />
                   //         )}
                   //     </div>
-                  // </div> */}
+                  // </div>
+                  */}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Term Period*</div>
-                    <div className={style.displayInRow}>
+                    <div className={style.termPeriodGrid}>
                         {/* <DateInput
                             formatDate={date => date.toLocaleDateString()}
                             parseDate={str => new Date(str)}
@@ -822,7 +827,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                             }}/>}
                           />
                         </LocalizationProvider>
-                    <p className={style.toStyle}>To</p>
+                    <p className={`${style.toStyle} ${style.alignCenter}`}>To</p>
                         {/* <DateInput
                             formatDate={date => date.toLocaleDateString()}
                             parseDate={str => new Date(str)}
@@ -854,7 +859,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contracted Services Effective Date*</div>
-                    <div className={`${style.leftAlign} `}>
+                    <div className={`${style.leftAlign} ${style.effectiveDateWidth}`}>
                     {/* <DateInput
                         formatDate={date => date.toLocaleDateString()}
                         parseDate={str => new Date(str)}

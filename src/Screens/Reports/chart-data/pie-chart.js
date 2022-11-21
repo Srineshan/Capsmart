@@ -2,6 +2,15 @@ import React from 'react';
 import Chart from 'react-apexcharts';
 
 const ApexPieChart = ({pieData}) => {
+
+    const getPieChartLabels = () => {
+      let pieChartLabels = [];
+      pieData?.map(data=>{
+        pieChartLabels.push(data?.key === "DONE" ? 'Done' : data?.key === "TODO" ? 'To Do' : data?.key === "NOTDONE" ? 'Not Done' : '')
+      })
+      return pieChartLabels;
+    }
+
     const chartData = {
         options: {
             theme: {
@@ -32,7 +41,7 @@ const ApexPieChart = ({pieData}) => {
                 },
                 position: 'bottom',
             },
-            labels: pieData?.map(data=>data?.key),
+            labels: getPieChartLabels(),
             responsive: [
               {
                 breakpoint: 480,

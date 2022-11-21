@@ -42,9 +42,11 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
         }
       }
       await PUT(`contract-managment-service/contracts/${data?.id}/contractStatus/${status}`,activationData)
-      .then(response=>{SuccessToaster('Contract Activated Successfully');
-      getContracts();
-      getContractsMetadata();})
+      .then(response=>
+        {SuccessToaster('Contract Activated Successfully');
+          getContracts();
+          getContractsMetadata();
+        })
       .catch(error=>{ErrorToaster('Contract Activation Failed');})
     };
 
@@ -112,9 +114,9 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
             name.push(data?.contractName?.contractName);
             contractors.push("-");
             effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
-            podStatus.push({"value": "5", "src": GreenPage});
+            podStatus.push({"value": "3", "src": GreenPage});
             manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
-            lastUpdated.push('08-01-2022')
+            lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
             action.push(true)
         })
 
@@ -151,7 +153,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
             name.push(data?.contractName?.contractName);
             activationStatus.push(data?.status);
             manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
-            lastUpdated.push('08-01-2022')
+            lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
             lastUpdatedBy.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
             action.push(true)
         })
@@ -169,13 +171,17 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
         ];
     }
 
-    const activeActionsData = [{'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
-        {'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean'},
-        {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'}]
+    const activeActionsData = [
+      // {'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
+      //   {'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean'},
+      //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'}
+      ]
 
-    const draftActionsData = [{'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
+    const draftActionsData = [
+        // {'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
         {'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id'},
-        {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}]
+        // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}
+      ]
 
 
     const handleAddContract = () => {
@@ -192,6 +198,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
    let actions = selectedContract === 'activecontracts' ? activeActionsData : draftActionsData;
    let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : style.draftContractGrid;
 
+   console.log('selectedContract', selectedContract);
     return(
         <div className={style.margin20}>
             <div className={`${style.bigCardGrid}`}>
@@ -204,11 +211,13 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
                 <div className={style.bigCardStyle}>
                     <div className={style.spaceBetween}>
                         <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                            <p className={`${style.blue} ${style.activeContractsWidth}`}>ACTIVE CONTRACTS</p>
+                            <p className={`${style.blue} ${style.activeContractsWidth}`}>{selectedContract === 'activecontracts' ? 'ACTIVE CONTRACTS' : selectedContract === 'draft' ? 'DRAFT CONTRACTS' : selectedContract === 'upcomingrenewals' ? 'UPCOMING RENEWALS' : 'EXIPIRED/TERMINATED CONTRACTS'}</p>
                             <SearchBar getSearchKey={getSearchKey}/>
-                            <img src={File} alt="File" className={style.smallIcons} />
-                            <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
-                            <img src={Filter} alt="Filter" className={style.filterIcon} />
+                            {
+                              // <img src={File} alt="File" className={style.smallIcons} />
+                              // <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
+                              // <img src={Filter} alt="Filter" className={style.filterIcon} />
+                            }
                         </div>
                         <button className={style.contractButton} onClick={() => {handleAddContract()}} >ADD CONTRACT</button>
                     </div>
@@ -229,7 +238,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
                 </div>
             </div>
             <div className={style.spaceBetween}>
-                <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
+                <p className={style.poweredBy}>Powered by - TimeSmart.AI</p>
                 <p className={style.poweredBy}>© TimeSmart.AI</p>
             </div>
         </div>

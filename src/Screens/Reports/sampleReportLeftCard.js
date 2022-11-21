@@ -58,6 +58,20 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const userDetail = jwt(userDetails);
+    const [currentUserDetails, setCurrentUserDetails] = useState();
+    const [userId, setUserId] = useState(userDetail?.id);
+
+    useEffect(() => {
+        setUserId(userDetail?.id);
+        setUserDetails();
+    }, [])
+
+    const setUserDetails = async() => {
+        const {data: user} = await GET(`user-management-service/user/${userId}`);
+        setCurrentUserDetails(user);
+    }
+
+    console.log(currentUserDetails)
 
     let dataToUseInReport = {
         renewalreportingTimePeriod: renewalreportingTimePeriod,
@@ -74,6 +88,8 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
         reportingTimePeriod: reportingTimePeriod,
         from: format(new Date(from), 'yyyy-MM-dd'),
         to: format(new Date(to), 'yyyy-MM-dd'),
+        fromToDisplay: format(new Date(from), 'MM-dd-yyyy'),
+        toToDisplay: format(new Date(to), 'MM-dd-yyyy'),
         selectedContractedServiceProvider: selectedContractedServiceProvider,
         selectedContractedServiceProviderToSend: selectedContractedServiceProviderToSend,
     };
@@ -242,7 +258,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                                 Hi, {userDetail?.userName}
                             </div>
                             <div className={style.loginStatus}>
-                                last login SEP 7,21 11:48 am
+                                last login {format(new Date(currentUserDetails?.lastLogin || new Date()), 'MMM d,yy h:mm a')}
                             </div>
                         </div>
                     </div>
@@ -624,7 +640,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                         </FormControl>
                     </>
                 )}
-                <button className={`${style.primaryButtonStyle} ${style.marginTop20}`} onClick={()=> setShowSaveReport(true)} >Save Parameter Selection As My Report</button>
+                {/* <button className={`${style.primaryButtonStyle} ${style.marginTop20}`} onClick={()=> setShowSaveReport(true)} >Save Parameter Selection As My Report</button> */}
             </div>
             {showSaveReport && (
                 <SaveReport getSaveReportDialog={getSaveReportDialog} />

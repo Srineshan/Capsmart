@@ -9,7 +9,7 @@ import ReviewerApproverField from './reviewerApproverField';
 
 import style from './index.module.scss';
 
-const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContractInfo, contractId, contractName }) => {
+const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName }) => {
     const [addOn, setAddOn] = useState({id:'', reviewer:'', approver:''});
     const [absence, setAbsence] = useState({id:'', reviewer:'', approver:''});
     const [timesheet, setTimesheet] = useState({id:'', reviewer:'', approver:''});
@@ -26,6 +26,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
     const [timeSheetTabs, setTimeSheetTabs] = useState([]);
     const [timesheetWorkFlow, setTimeSheetWorkFlow] = useState([]);
     const [users,setUsers] = useState([]);
+    const [tabIndex, setTabIndex] = useState(0);
     const [selectedTimeSheet,setSelectedTimeSheet] = useState({id:'',reviewer:'',approver:''});
 
     useEffect(()=>{
@@ -45,11 +46,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
         setTimesheet({id:'',approver:'',reviewer:''});
         getTimeSheetSubmissionTerms();
     }
-    },[activeTab])
+    setTabIndex(timeSheetTabs?.indexOf(activeTab));
+  },[activeTab])
 
     useEffect(()=>{
       getUserData();
-      getTimeSheetSubmissionTerms();
       getTimeSheetValues();
       getTimeSheetWorkFlow();
     },[])
@@ -57,12 +58,14 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
    useEffect(()=>{
      getAddOnRequestWorkFlow();
      getAbsenceRequestWorkFlow();
+     getTimeSheetSubmissionTerms();
    }, [timesheetWorkFlow])
 
     const refresh = () => {
       getTimeSheetWorkFlow();
     }
 
+    console.log('timesheet', timesheet, users);
     const getUserData = async() => {
       const {data:userList} = await GET(`contract-managment-service/contracts/workFlowUser`)
       if(userList){
@@ -170,8 +173,39 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
     }
 
 
-    const handleTimeSheetWorkFlow = (name, reviewer, approver) => {
-      let data =   {
+    const handleTimeSheetWorkFlow = (name, reviewer, approver, activeTab) => {
+      let data = {};
+      if(activeTab === 'requests'){
+         data =   {
+            "name": {
+              "name": name
+            },
+            "workFlowMap": {
+              "workflow": {
+                "1": {
+                  "workFlowUser": {
+                    "id": reviewer,
+                    "title":{
+                      "title":getSelectedUserDetails(reviewer)?.title?.title || '',
+                      "id":null,
+                    },
+                    "name":{
+                      "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                    },
+                    "suffix":{
+                      "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                      "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
+                    }
+                  },
+                  "workFlowStatus": {
+                    "status": "APPROVED"
+                  }
+                },
+              }
+            }
+          }
+      }else{
+       data = {
           "name": {
             "name": name
           },
@@ -193,7 +227,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
                   }
                 },
                 "workFlowStatus": {
-                  "status": "REVIEWER"
+                  "status": "REVIEWED"
                 }
               },
               "2": {
@@ -212,26 +246,29 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
                   }
                 },
                 "workFlowStatus": {
-                  "status": "APPROVER"
+                  "status": "APPROVED"
                 }
               }
             }
           }
         }
+      }
       return data;
     }
 
     const submit = async() => {
       if(activeTab === 'requests'){
-        let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`,addOn.reviewer, addOn.approver);
-        let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver);
+        let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`,addOn.reviewer, addOn.approver, activeTab);
+        let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, activeTab);
         await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
         await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
       }else{
-        let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver );
+        let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, activeTab );
         updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
       }
     }
+
+    console.log('index', tabIndex, timeSheetTabs, timeSheetTabs?.length);
 
     const handleContinue = async (workflowId) => {
     //     let data = {
@@ -296,81 +333,43 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
         }
     };
 
+    const getNextTab = () => {
+      let tabIndexValue = timeSheetTabs?.indexOf(activeTab);
+      setActiveTab(timeSheetTabs[tabIndexValue+1]);
+      console.log('tab', tabIndexValue);
+      setTabIndex(tabIndexValue+1);
+    }
+
 
     return (
         <div className={style.cloneBlockStyle}>
-            <div className={`${style.floatLeft} ${style.reduce10Left} ${style.horizontalScroll} ${style.fullWidth}`}>
+            <div className={`${style.flexLeft} ${style.reduce10Left} ${style.horizontalScroll} ${style.fullWidth}`}>
             {
               timeSheetTabs?.map(data=>(
                 <button className={`${style.timesheetButtonStyle} ${activeTab === data && style.selectedTimesheetButton}`} onClick={() => setActiveTab(data)}>{data}</button>
               ))
             }
-                <button className={`${style.timesheetButtonStyle} ${activeTab === "requests" && style.selectedTimesheetButton}`} onClick={() => setActiveTab('requests')}>Requests</button>
             </div>
-            <div className={`${style.timeSheetBoxStyle}`}>
-            {activeTab !== 'requests' ?
-                <div>
+            <div className={`${style.timeSheetBoxStyle} ${style.verticalSpaceBetween}`}>
+              <div>
                   <div className={`${style.extentionGrid}`}>
-                      <div className={style.extentionLableStyle}>Select Timesheet To Define Process*</div>
-                      <div className={style.displayInRow}>
-                          <InputGroup className={style.twoFieldWidth} placeholder={activeTab}
-                              value={activeTab} onChange={(e) => setSelectTimesheetToDefineProcess(e.target.value)} />
-                      </div>
+                    <div className={style.extentionLableStyle}>Timesheet To Define Process*</div>
+                    <div className={style.displayInRow}>
+                      <InputGroup className={style.fullWidth} placeholder={activeTab}
+                        value={activeTab} readOnly />
+                    </div>
                   </div>
                   <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value)=>{setTimesheet({...timesheet, reviewer:value})}} selectLabel="Select Reviewer" value={timesheet?.reviewer || '0'}/>
                   <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value)=>{setTimesheet({...timesheet, approver:value})}} selectLabel="Select Approver" value={timesheet?.approver || '0'}/>
               </div>
-              :<div>
-              <div>
-                <div className={style.purpleTitle}>
-                  ADD-ON ACTIVITY / SERVICE REQUESTS
+              {
+                tabIndex < timeSheetTabs?.length-1 &&
+                <div>
+                  <button className={`${style.timesheetNextButtonStyle} ${style.floatRight}`} onClick={()=> {submit();getNextTab();}}>NEXT</button>
                 </div>
-                <ReviewerApproverField data={users} label="Designate Request Reviewer*" selectLabel="Select Reviewer" onValueChange={(value)=>{setAddOn({...addOn, reviewer:value})}} value={addOn?.reviewer}/>
-                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAddOn({...addOn, approver:value})}} value={addOn?.approver}/>
-              </div>
-              <div className={style.marginTop50}>
-                <div className={style.purpleTitle}>
-                  PLANNED ABSENCE REQUESTS
-                </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Planned Absence Notification Days Limit*</div>
-                <div className={style.daysSelectorGrid}>
-                <select
-                    name="class"
-                    id="Class"
-                    className={`${style.fullWidth} `}>
-                    <option value="14" >
-                        14
-                    </option>
-                </select>
-                <div className={`${style.twoFieldWidth} ${style.verticalAlignCenter}`}>Days</div>
-                </div>
-                </div>
-                <ReviewerApproverField data={users} label="Designate Request Reviewer*" selectLabel="Select Reviewer" onValueChange={(value)=>{setAbsence({...absence, reviewer:value})}} value={absence?.reviewer}/>
-                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value)=>{setAbsence({...absence, approver:value})}} value={absence?.approver}/>
-              </div>
-              <div className={style.marginTop50}>
-                <div className={style.purpleTitle}>
-                  UNPLANNED ABSENCE NOTIFICATION
-                </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed*</div>
-                <div className={style.daysSelectorGrid}>
-                <select
-                    name="class"
-                    id="Class"
-                    className={`${style.fullWidth} `}>
-                    <option value="7" >
-                        7
-                    </option>
-                </select>
-                <div className={`${style.twoFieldWidth} ${style.verticalAlignCenter}`}>Days</div>
-                </div>
-                </div>
-                <ReviewerApproverField data={users} label="Indicate Supervisor To Notify*" selectLabel="Select Supervisor" />
-              </div>
-              </div>
-            }
+              }
+
+
             </div>
                 {
                   /////        Do Not DELETE THIS CODE      ////////
@@ -484,17 +483,20 @@ const TimesheetProcessingWorkflow = ({ getViewPage8, getCurrentPage, selectContr
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Timesheet Submission Terms')}}>BACK</button>
                 <div>
-                    <button className={style.newContractOutlinedButton}
-                    onClick={() =>{
-                      submit();
-                    }
-                    }
-                    >SAVE IN-PROGRESS</button>
+                {
+                  // <button className={style.newContractOutlinedButton}
+                  // onClick={() =>{
+                  //   submit();
+                  // }
+                  // }
+                  // >SAVE IN-PROGRESS</button>
+                }
+
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
                     onClick={() => {
                       submit();
-                      getViewPage8(true);
-                       getCurrentPage('Timesheet Processing Workflow') }}
+                      getViewPage9(true);
+                       getCurrentPage('Request Processing Workflow') }}
                        >CONTINUE</button>
                 </div>
             </div>

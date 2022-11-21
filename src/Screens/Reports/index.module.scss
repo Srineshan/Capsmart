@@ -414,13 +414,19 @@
 
 .timeSheetTableGrid{
     display: grid;
-    grid-template-columns: 5% 15% 15% 10% 10% 15% 10% 10%;
+    grid-template-columns: 25px 15% 15% 10% 10% 15% 13% 10%;
+    grid-gap: 10px;
+}
+
+.savedReportTableGrid{
+    display: grid;
+    grid-template-columns: 25px 30% 30% 18% 10%;
     grid-gap: 10px;
 }
 
 .reportsTableGrid{
     display: grid;
-    grid-template-columns: 5% 25% 25% 15% 10% 10%;
+    grid-template-columns: 25px 20% 20% 15% 13% 10% 10%;
     grid-gap: 10px;
 }
 
@@ -1190,6 +1196,12 @@
     color: #52575D;
 }
 
+.entityNameBolderStyle{
+    font: normal normal bolder 19px/23px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
 .reportRunByTextStyle{
     text-align: left;
     font: normal normal bold 13px/17px Montserrat;
@@ -1336,4 +1348,15 @@
     align-items: center;
     padding-left: 20px;
     margin-top: 20px;
+}
+
+.popoverStyle{
+    font: normal normal bold 13px/20px Montserrat;
+    color: #52575D;
+    padding: 10px;
+}
+
+.scroll{
+    height: 100vh;
+    overflow: scroll;
 }
