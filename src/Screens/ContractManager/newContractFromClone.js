@@ -214,13 +214,16 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage5 ? style.completedEntityCardStyle : ''} ${currentPage === "Documentation Proof Required" && style.selectedContractEntityStyle}`}
-                    onClick={() => setCurrentPage('Documentation Proof Required')}>
-                        Documentation Proof Required
-                        {viewPage5 && (
-                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
-                        )}
-                    </div>
+                    {
+                      // <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage5 ? style.completedEntityCardStyle : ''} ${currentPage === "Documentation Proof Required" && style.selectedContractEntityStyle}`}
+                      // onClick={() => setCurrentPage('Documentation Proof Required')}>
+                      //     Documentation Proof Required
+                      //     {viewPage5 && (
+                      //         <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                      //     )}
+                      // </div>
+                    }
+
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${((viewPage5 && addOn) || viewPage6) ? style.completedEntityCardStyle : ''} ${currentPage === "Contracted Services Specification" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Contracted Services Specification')}>
                         Contracted Services Specification
@@ -304,7 +307,7 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                      />
                 ) : currentPage === "Contractor Business Entity"  ? (
                     <ContractorBusinessEntity
-                    getViewPage4={getViewPage4}
+                    getViewPage5={getViewPage5}
                     getCurrentPage={getCurrentPage}
                     selectContractInfo={selectContractInfo}
                     contractId = {contractId}

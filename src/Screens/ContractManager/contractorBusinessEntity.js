@@ -7,7 +7,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
-const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractInfo, contractId, contractName}) => {
+const ContractorBusinessEntity = ({getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName}) => {
     const [isUserUpdated, setIsUserUpdated] = useState(false);
     const [sameAsContractor, setSameAsContractor] = useState(false);
     const [contractorNPIN, setContractorNPIN] = useState({
@@ -313,7 +313,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                 <div>
                     <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                    onClick={() => { handleContinue();getViewPage4(true); getCurrentPage('Documentation Proof Required') }}
+                    onClick={() => { handleContinue();getViewPage5(true); getCurrentPage('Contracted Services Specification') }}
                     >CONTINUE</button>
                 </div>
             </div>
