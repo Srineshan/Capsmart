@@ -110,17 +110,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     }
 
     const updateTimeSheetWorkflow = async(data, workFlowName, type) => {
-      let id = type === 'AddOn' ? addOn?.id : type === 'Absence' ? absence?.id : timesheet?.id;
+      let id = timesheet?.id;
       if(id === ''){
         await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
          .then(response=>{
-           console.log('response', response, response?.data, type);
-           if(type === 'AddOn' || type === 'Absence'){
-             console.log('inside If', type);
-             updateWorkflow(response?.data, workFlowName, type);
-           }else{
-             handleContinue(response?.data)
-           }
+           handleContinue(response?.data)
            SuccessToaster('Workflow Updated Successfully');
          })
          .catch(error=>{
@@ -168,44 +162,13 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     }
 
     const getSelectedUserDetails = (id) => {
-      let user = users?.filter(user=>user?.id === id)?.map(data=>data)[0];
+      let user = users?.filter(user=>user?.userId === id)?.map(data=>data)[0];
       return user;
     }
 
 
     const handleTimeSheetWorkFlow = (name, reviewer, approver, activeTab) => {
-      let data = {};
-      if(activeTab === 'requests'){
-         data =   {
-            "name": {
-              "name": name
-            },
-            "workFlowMap": {
-              "workflow": {
-                "1": {
-                  "workFlowUser": {
-                    "id": reviewer,
-                    "title":{
-                      "title":getSelectedUserDetails(reviewer)?.title?.title || '',
-                      "id":null,
-                    },
-                    "name":{
-                      "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
-                    },
-                    "suffix":{
-                      "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
-                      "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
-                    }
-                  },
-                  "workFlowStatus": {
-                    "status": "APPROVED"
-                  }
-                },
-              }
-            }
-          }
-      }else{
-       data = {
+       let data = {
           "name": {
             "name": name
           },
@@ -252,49 +215,15 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             }
           }
         }
-      }
       return data;
     }
 
     const submit = async() => {
-      if(activeTab === 'requests'){
-        let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`,addOn.reviewer, addOn.approver, activeTab);
-        let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, activeTab);
-        await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
-        await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
-      }else{
         let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, activeTab );
         updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
-      }
     }
 
-    console.log('index', tabIndex, timeSheetTabs, timeSheetTabs?.length);
-
     const handleContinue = async (workflowId) => {
-    //     let data = {
-    //       "workFlowDetails": [{
-    //         "timesheetLabel": {
-    //             "label": selectTimesheetToDefineProcess
-    //         },
-    //         "workFlowTemplate": {
-    //             "id": "",
-    //             "name": {
-    //                 "name": workflowTemplateToUse
-    //             }
-    //         },
-    //         "workFlowDescription": {
-    //             "value": workflowDescription
-    //         },
-    //         "workFlow": {
-    //             "id": "",
-    //             "workFlowName": {
-    //                 "name": workflowName
-    //             }
-    //         },
-    //         "customWorkFlow": customWorkFlow
-    //     }]
-    // }
-
           let temp = timesheetProcessingWorkflow;
           temp?.push({
                     "timesheetLabel": {
@@ -336,7 +265,6 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     const getNextTab = () => {
       let tabIndexValue = timeSheetTabs?.indexOf(activeTab);
       setActiveTab(timeSheetTabs[tabIndexValue+1]);
-      console.log('tab', tabIndexValue);
       setTabIndex(tabIndexValue+1);
     }
 
