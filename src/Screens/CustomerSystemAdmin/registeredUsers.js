@@ -347,9 +347,11 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                             </div>
                         )}
                     </div>
-                    <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginRight30}`}>
-                        <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => setShowAddUserDialog(true)} />
-                    </div>
+                    {(selectedOption === 'ENTITY REGISTERED USERS' || selectedOption === 'CONTRACTED SERVICE PROVIDER USERS') && (
+                        <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginRight30}`}>
+                            <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => setShowAddUserDialog(true)} />
+                        </div>
+                    )}
                 </div>
                 <div className={style.reduceMarginTop20}>
                     <Table
@@ -362,7 +364,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                 </div>
             </div>
             {showDeleteConfirmation && <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation} getDeleteConfirmation={getDeleteConfirmation} confirmationText="Do you want to delete this User?" />}
-            {showAddUserDialog && <AddUserInCustomerAdmin getManageUserDialog={getManageUserDialog} isEdit={isEdit} userId={userId} />}
+            {showAddUserDialog && <AddUserInCustomerAdmin getManageUserDialog={getManageUserDialog} isEdit={isEdit} userId={userId} userType={selectedOption === 'ENTITY REGISTERED USERS' ? 'REGISTERED_USER' : 'CONTRACTED_SERVICE_PROVIDER_USER'} />}
         </div>
     )
 }

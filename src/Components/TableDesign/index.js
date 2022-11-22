@@ -183,7 +183,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     </div>
                                 ) : tableData?.type === "site" ? (
                                     tableData?.value?.[index]?.length !== 0 ?
-                                        <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} ref={popoverAnchorSite}
+                                        <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} ref={anchorElSite}
                                         onMouseEnter={(e) => {handleClickSite(e); setSelectedMenuIndex(index)}} onMouseLeave={() => handleCloseSite()} aria-owns={openSite ? 'mouse-over-popover' : undefined}
                                         aria-haspopup="true">
                                             <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}
@@ -192,16 +192,15 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                     <Popover
                                                         id={'mouse-over-popover'}
                                                         open={openSite}
-                                                        anchorEl={popoverAnchorSite.current}
+                                                        anchorEl={anchorElSite}
                                                         onClose={handleCloseSite}
                                                         anchorOrigin={{
                                                             vertical: 'bottom',
                                                             horizontal: 'left',
                                                         }}
-                                                        classes={{
-                                                            paper: classes.popoverContent,
-                                                        }}
-                                                        PaperProps={{onMouseEnter: handleClickSite, onMouseLeave: handleCloseSite}}
+                                                        sx={{
+                                                            pointerEvents: 'none',
+                                                          }}
                                                     >
                                                         <div className={style.actionsCard}>
                                                             {tableData?.value?.[index]?.map((siteData, siteIndex) => (
@@ -217,7 +216,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     </div>
                                 ) : tableData?.type === "department" ? (
                                     tableData?.value?.[index]?.length !== 0 ?
-                                        <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} ref={popoverAnchorDept}
+                                        <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} ref={anchorElDept}
                                         onMouseEnter={(e) => {handleClickDept(e); setSelectedMenuIndex(index)}} onMouseLeave={() => handleCloseDept()} aria-owns={openDept ? 'mouse-over-popover' : undefined}
                                         aria-haspopup="true" >
                                             <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}
@@ -226,16 +225,15 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                 <Popover
                                                     id={'mouse-over-popover'}
                                                     open={openDept}
-                                                    anchorEl={popoverAnchorDept.current}
+                                                    anchorEl={anchorElDept}
                                                     onClose={handleCloseDept}
                                                     anchorOrigin={{
                                                         vertical: 'bottom',
                                                         horizontal: 'left',
                                                     }}
-                                                    classes={{
-                                                        paper: classes.popoverContent,
+                                                    sx={{
+                                                        pointerEvents: 'none',
                                                     }}
-                                                    PaperProps={{onMouseEnter: handleClickDept, onMouseLeave: handleCloseDept}}
                                                 >
                                                     <div className={style.actionsCard}>
                                                         {tableData?.value?.[index]?.map((siteData, siteIndex) => (

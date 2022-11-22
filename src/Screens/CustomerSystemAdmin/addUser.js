@@ -11,7 +11,7 @@ import { FormatPhoneNumber } from '../../utils/formatting';
 
 import style from './index.module.scss';
 
-const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
+const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId, userType}) => {
     const [selectedDepartments, setSelectedDepartments] = useState([])
     const [selectedSites, setSelectedSites] = useState([])
     const [addUser, setAddUser] = useState({firstName: "", lastName: "", email: "", phone: "", roles: [], sites: [], title: {title:"",id:""}});
@@ -163,7 +163,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                 "lastName": addUser?.lastName,
                 ...(isEdit ? {"suffix": userDataById?.name?.suffix} : {"suffix": {}}),
               },
-              "userType": "REGISTERED_USER",
+              "userType": userType,
               ...(isEdit && {"contracts": userDataById?.contracts}),
               "title":addUser?.title,
               "email": {
