@@ -581,10 +581,19 @@ body{
     margin-top: 5px;
 }
 
-.tableDataGrid{
-    width: 100%;
+.ticketTableDataGrid{
     display: grid;
-    grid-template-columns: 5% 15% 15% 10% 10% 17% 15% 13%;
+    grid-template-columns: 5% 10% 15% 15% 15% 15% 15% 10%;
+}
+
+.tutorialTableDataGrid{
+    display: grid;
+    grid-template-columns: 5% 10% 20% 15% 10% 10% 20% 10%;
+}
+
+.releaseTableDataGrid{
+    display: grid;
+    grid-template-columns: 5% 10% 20% 15% 10% 13% 10% 10% 5%;
 }
 
 .tableDataGrid2{
