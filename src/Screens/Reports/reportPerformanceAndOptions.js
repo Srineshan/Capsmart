@@ -25,7 +25,7 @@ import style from './index.module.scss';
 // import PDFDocument from './pdf';
 
 
-const ReportPerformanceAndOptions = ({handle, getIsRefresh}) => {
+const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint}) => {
     const {reportType} = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -146,7 +146,7 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh}) => {
                             </div> */}
                          {/* )}
                         </PDFDownloadLink> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => window.print()} 
+                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={handlePrint} 
                          onMouseEnter={(e) => setAnchorElPrint(e.currentTarget)} onMouseLeave={() => setAnchorElPrint(null)} aria-owns={openPrint ? 'mouse-over-popover' : undefined}
                          aria-haspopup="true">
                             {/* <Link to={'/chart'} className={style.noFontStyle}> */}

@@ -1,22 +1,17 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useRef, useCallback } from 'react';
 import SampleReportLeftCard from './sampleReportLeftCard';
 import Navbar from '../../Components/Navbar';
-import {GET} from './../dataSaver';
+import { GET } from './../dataSaver';
 import ReportPerformanceAndOptions from './reportPerformanceAndOptions';
 import ReportHeader from './reportHeader';
 import ReportFooter from './reportFooter';
 import { useParams } from 'react-router-dom';
-import {format} from 'date-fns';
+import { useReactToPrint } from "react-to-print";
+import { format } from 'date-fns';
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
-// import PieChart from './d3-chart/pieChart';
 import Pie from './d3-chart/pieGraph';
-// import LineChart from './d3-chart/lineChart';
-// import BarChart from './d3-chart/BarChart';
 import Watermark from 'react-awesome-watermark';
 import styled from 'styled-components';
-// import Chart from 'react-apexcharts'
-// import chartData5 from './chart-data/line-chart-2';
-// import StackedBarChartBaseLayout1 from './d3-chart/BarChart/stackedBarChartBaseLayout';
 import StackedBarChartBaseLayout2 from './d3-chart/BarChart/stackedBarChartBaseLayout2';
 import StackedBarChartBaseLayout3 from './d3-chart/BarChart/stackedBarChartBaseLayout3';
 import ApexPieChart from './chart-data/pie-chart';
@@ -53,8 +48,11 @@ const StyledWatermark = styled(Watermark)`
 const ReportTypeOverview = () => {
     const data = [{ label: 'Done', value: 60 }, { label: 'To Do', value: 20 }, { label: 'Not Done', value: 20 }];
     const pieSampleData = [{ key: 'Done', value: 60 }, { key: 'To Do', value: 20 }, { key: 'Not Done', value: 20 }];
-    const {reportType} = useParams();
+    const { reportType } = useParams();
     const handle = useFullScreenHandle();
+    const componentRef = useRef(null);
+    const onBeforeGetContentResolve = useRef(null);
+    const [loading, setLoading] = useState(false);
     const [contractRenewalReport, setContractRenewalReport] = useState([]);
     const [oneTimeContract, setOneTimeContract] = useState([]);
     const [nonCompliantContract, setNonCompliantContract] = useState([]);
@@ -62,79 +60,79 @@ const ReportTypeOverview = () => {
     const [nonCompliantContractTile, setNonCompliantContractTile] = useState([]);
     const [individualContract, setIndividualContract] = useState([]);
     const [multipleContract, setMultipleContract] = useState([]);
-    const [user,setUsers] = useState([]);
+    const [user, setUsers] = useState([]);
     const [dataToUseInReport, setDataToUseInReport] = useState({});
-    const [pieData,setPieData] = useState([]);
+    const [pieData, setPieData] = useState([]);
     const [lineData, setLineData] = useState([]);
-    const [barData,setBarData] = useState();
+    const [barData, setBarData] = useState();
     const [stackedData, setStackedData] = useState([]);
     const [stackedKeys, setStackedKeys] = useState([]);
-    const [reportLog,setReportLog] = useState([]);
-    const [series,setSeries] = useState([]);
-    const [categories,setCategories] = useState([]);
-    const [stackedSeries,setStackedSeries] = useState([]);
-    const [stackedCategories,setStackedCategories] = useState([]);
+    const [reportLog, setReportLog] = useState([]);
+    const [series, setSeries] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [stackedSeries, setStackedSeries] = useState([]);
+    const [stackedCategories, setStackedCategories] = useState([]);
     const [isNonCompliantReportTileClicked, setIsNonCompliantReportTileClicked] = useState(false);
     const podTypes = ['Medical Staff Membership & Privileges',
-                      'Primary Speciality Board Certification',
-                      'Secondary Specialty Board Certification',
-                      'Liability Insurance Certificate',
-                      'Workers Compensation Insurance Certificate',
-                      'Tail Insurance Coverage Certificate',
-                      'Medical license Certificate',
-                      'Drug Enforcement Administration (DEA) License',
-                      'Controlled Substance DEA Registration Certificate'];
-
-    useEffect(()=>{
-        if(reportType === 'upcomingContractRenewals') {
-            getContractRenewalReport();
-        }
-        if(reportType === 'oneTimeContract') {
-            getOneTimeContract();
-        }
-        if(reportType === 'nonCompliant') {
-            getNonCompliantContractReportTile();
-        }
-        if(reportType === 'activitiesOrServices'){
-          getAcvityAndServices();
-        }
-        getUsersData();
-      },[])
+        'Primary Speciality Board Certification',
+        'Secondary Specialty Board Certification',
+        'Liability Insurance Certificate',
+        'Workers Compensation Insurance Certificate',
+        'Tail Insurance Coverage Certificate',
+        'Medical license Certificate',
+        'Drug Enforcement Administration (DEA) License',
+        'Controlled Substance DEA Registration Certificate'];
 
     useEffect(() => {
-        if(reportType === 'upcomingContractRenewals') {
-            getContractRenewalReportWithParameters();
+        if (reportType === 'upcomingContractRenewals') {
+            getContractRenewalReport();
         }
-        if(reportType === 'oneTimeContract') {
-            getOneTimeContractWithParameters();
+        if (reportType === 'oneTimeContract') {
+            getOneTimeContract();
         }
-        if(reportType === 'nonCompliant') {
+        if (reportType === 'nonCompliant') {
             getNonCompliantContractReportTile();
         }
-        if(reportType === 'activitiesOrServices'){
+        if (reportType === 'activitiesOrServices') {
+            getAcvityAndServices();
+        }
+        getUsersData();
+    }, [])
+
+    useEffect(() => {
+        if (reportType === 'upcomingContractRenewals') {
+            getContractRenewalReportWithParameters();
+        }
+        if (reportType === 'oneTimeContract') {
+            getOneTimeContractWithParameters();
+        }
+        if (reportType === 'nonCompliant') {
+            getNonCompliantContractReportTile();
+        }
+        if (reportType === 'activitiesOrServices') {
             getAcvityAndServicesWithParameter();
-          }
-        if(reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
+        }
+        if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
             setSelectedPodTypeFromTile(dataToUseInReport?.podType)
             getNonCompliantContractReport();
         }
     }, [dataToUseInReport, selectedPodTypeFromTile])
 
     const getIsRefresh = (value) => {
-        if(value){
-            if(reportType === 'upcomingContractRenewals') {
+        if (value) {
+            if (reportType === 'upcomingContractRenewals') {
                 getContractRenewalReportWithParameters();
             }
-            if(reportType === 'oneTimeContract') {
+            if (reportType === 'oneTimeContract') {
                 getOneTimeContractWithParameters();
             }
-            if(reportType === 'nonCompliant') {
+            if (reportType === 'nonCompliant') {
                 getNonCompliantContractReportTile();
             }
-            if(reportType === 'activitiesOrServices'){
+            if (reportType === 'activitiesOrServices') {
                 getAcvityAndServicesWithParameter();
             }
-            if(reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
+            if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
                 setSelectedPodTypeFromTile(dataToUseInReport?.podType)
                 getNonCompliantContractReport();
             }
@@ -143,148 +141,177 @@ const ReportTypeOverview = () => {
 
     console.log(dataToUseInReport)
 
-    useEffect(()=> {
+    useEffect(() => {
         setIndividualContract(contractRenewalReport?.filter(data => data?.contractType === "INDIVIDUAL")?.map(data => data));
         setMultipleContract(contractRenewalReport?.filter(data => data?.contractType === "MULTIPLE")?.map(data => data));
     }, [contractRenewalReport]);
 
-    useEffect(()=> {
+    useEffect(() => {
         setIndividualContract(oneTimeContract?.filter(data => data?.contractType === "INDIVIDUAL")?.map(data => data));
         setMultipleContract(oneTimeContract?.filter(data => data?.contractType === "MULTIPLE")?.map(data => data));
     }, [oneTimeContract]);
 
-    useEffect(()=> {
-        if(reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
+    useEffect(() => {
+        if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
             getNonCompliantContractReport();
         }
     }, [isNonCompliantReportTileClicked]);
 
-    const getAcvityAndServices = async() => {
-    const {data:chartData} = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
-    const {data:reportLogData} = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
-    setReportLog(reportLogData);
-    if(chartData){
-      let temp = [];
-      chartData?.activityServiceReports?.map((pie,index)=>{
-        temp[index] = {key:pie.activityStatus, value:pie.count}
-      })
-      setPieData(temp);
-      let lineTemp = [];
-      chartData?.completedActivitiesByDate?.map((line,index)=>{
-        lineTemp[index] = {date:format(new Date(line.statedate), 'MM-dd'), value:line.count};
-      })
-      lineTemp.sort((a,b)=>new Date(a.date)-new Date(b.date));
-      setLineData(lineTemp);
+    const reactToPrintContent = useCallback(() => {
+        return componentRef.current;
+    }, [componentRef.current]);
 
-    //   let barTemp = [];
-    //   chartData?.activityStatusByCategorys?.map((bar,index)=>{
-    //     let arr = [{name:bar.activityType,type:1,Done:bar.done},{name:bar.activityType,type:2,ToDo:bar.todo},{name:bar.activityType,type:3,NotDone:bar.notdone}]
-    //     arr.map(data=>{
-    //       barTemp.push(data);
-    //         })
-    //     })
-            setSeries([{'data':chartData?.activityStatusByCategorys?.map(data=>data?.done),
-                'name': 'Done'},
-                {'data':chartData?.activityStatusByCategorys?.map(data=>data?.todo),
-                'name': 'To Do'},
-                {'data':chartData?.activityStatusByCategorys?.map(data=>data?.notdone),
-                'name': 'Not Done'},
-                ])
-            setCategories(chartData?.activityStatusByCategorys?.map(data=>data?.activityType));
+    const handlePrint = useReactToPrint({
+        content: reactToPrintContent,
+        documentTitle: "Report",
+        // onBeforeGetContent: handleOnBeforeGetContent,
+        // onBeforePrint: handleBeforePrint,
+        // onAfterPrint: handleAfterPrint,
+        removeAfterPrint: true
+    });
 
-        setBarData({
-            'series' : series,
-            'categories' : categories
-        });
-
-
-      let stackedTemp = [];
-      let keysForChart = [];
-      let months = {'1':'Jan','2':'Feb','3':'March','4':'April','5':'May','6':'June','7':'July','8':'Aug','9':'Sep','10':'Oct','11':'Nov','12':'Dec'};
-      chartData?.completedActivitiesBycategoryAndMonth?.map((stack,index)=>{
-       let values = stack.types;
-       keysForChart = Object.keys(stack.types);
-       setStackedKeys(keysForChart);
-       values['name'] = months[stack?.month];
-       values['type'] = 1;
-       stackedTemp.push(values);
-      })
-      let tempStackedSeries = [];
-      keysForChart?.map((data, index) => {
-        tempStackedSeries.push({'data':stackedTemp?.map(stackedData=>stackedData?.[data]),
-        'name': data})
-        setStackedSeries(tempStackedSeries);
-      })
-      setStackedData(stackedTemp);
-      setStackedCategories(stackedTemp?.map(stackedData=>stackedData?.name));
-    }
-  }
-
-  console.log(pieData)
-
-
-    const getAcvityAndServicesWithParameter = async() => {
-        const {data:chartData} = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-        const {data:reportLogData} = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+    const getAcvityAndServices = async () => {
+        const { data: chartData } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
+        const { data: reportLogData } = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
         setReportLog(reportLogData);
-        if(chartData){
-        let temp = [];
-        chartData?.activityServiceReports?.map((pie,index)=>{
-            temp[index] = {key:pie.activityStatus, value:pie.count}
-        })
-        setPieData(temp);
-        let lineTemp = [];
-        chartData?.completedActivitiesByDate?.map((line,index)=>{
-            lineTemp[index] = {date:format(new Date(line.statedate), 'MM-dd'), value:line.count};
-        })
-        lineTemp.sort((a,b)=>new Date(a.date)-new Date(b.date));
-        setLineData(lineTemp);
-        // let barTemp = [];
-        // chartData?.activityStatusByCategorys?.map((bar,index)=>{
-        //     let arr = [{name:bar.activityType,type:1,Done:bar.done},{name:bar.activityType,type:2,ToDo:bar.todo},{name:bar.activityType,type:3,NotDone:bar.notdone}]
-        //     arr.map(data=>{
-        //     barTemp.push(data);
-        //     })
-        // })
-        // setBarData(barTemp);
-        setSeries([{'data':chartData?.activityStatusByCategorys?.map(data=>data?.done),
-                'name': 'Done'},
-                {'data':chartData?.activityStatusByCategorys?.map(data=>data?.notdone),
-                'name': 'Not Done'},
-                {'data':chartData?.activityStatusByCategorys?.map(data=>data?.todo),
-                'name': 'To Do'}])
-        setCategories(chartData?.activityStatusByCategorys?.map(data=>data?.activityType));
+        if (chartData) {
+            let temp = [];
+            chartData?.activityServiceReports?.map((pie, index) => {
+                temp[index] = { key: pie.activityStatus, value: pie.count }
+            })
+            setPieData(temp);
+            let lineTemp = [];
+            chartData?.completedActivitiesByDate?.map((line, index) => {
+                lineTemp[index] = { date: format(new Date(line.statedate), 'MM-dd'), value: line.count };
+            })
+            lineTemp.sort((a, b) => new Date(a.date) - new Date(b.date));
+            setLineData(lineTemp);
 
-        setBarData({
-            'series' : series,
-            'categories' : categories
-        });
-        let stackedTemp = [];
-        let keysForChart = [];
-        let months = {'1':'Jan','2':'Feb','3':'March','4':'April','5':'May','6':'June','7':'July','8':'Aug','9':'Sep','10':'Oct','11':'Nov','12':'Dec'};
-        chartData?.completedActivitiesBycategoryAndMonth?.map((stack,index)=>{
-         let values = stack.types;
-         keysForChart = Object.keys(stack.types);
-         setStackedKeys(keysForChart);
-         values['name'] = months[stack?.month];
-         values['type'] = 1;
-         stackedTemp.push(values);
-        })
-        let tempStackedSeries = [];
-        keysForChart?.map((data, index) => {
-            tempStackedSeries.push({'data':stackedTemp?.map(stackedData=>stackedData?.[data]),
-            'name': data})
-            setStackedSeries(tempStackedSeries);
-        })
-        setStackedData(stackedTemp);
-        setStackedCategories(stackedTemp?.map(stackedData=>stackedData?.name));
+            //   let barTemp = [];
+            //   chartData?.activityStatusByCategorys?.map((bar,index)=>{
+            //     let arr = [{name:bar.activityType,type:1,Done:bar.done},{name:bar.activityType,type:2,ToDo:bar.todo},{name:bar.activityType,type:3,NotDone:bar.notdone}]
+            //     arr.map(data=>{
+            //       barTemp.push(data);
+            //         })
+            //     })
+            setSeries([{
+                'data': chartData?.activityStatusByCategorys?.map(data => data?.done),
+                'name': 'Done'
+            },
+            {
+                'data': chartData?.activityStatusByCategorys?.map(data => data?.todo),
+                'name': 'To Do'
+            },
+            {
+                'data': chartData?.activityStatusByCategorys?.map(data => data?.notdone),
+                'name': 'Not Done'
+            },
+            ])
+            setCategories(chartData?.activityStatusByCategorys?.map(data => data?.activityType));
+
+            setBarData({
+                'series': series,
+                'categories': categories
+            });
+
+
+            let stackedTemp = [];
+            let keysForChart = [];
+            let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
+            chartData?.completedActivitiesBycategoryAndMonth?.map((stack, index) => {
+                let values = stack.types;
+                keysForChart = Object.keys(stack.types);
+                setStackedKeys(keysForChart);
+                values['name'] = months[stack?.month];
+                values['type'] = 1;
+                stackedTemp.push(values);
+            })
+            let tempStackedSeries = [];
+            keysForChart?.map((data, index) => {
+                tempStackedSeries.push({
+                    'data': stackedTemp?.map(stackedData => stackedData?.[data]),
+                    'name': data
+                })
+                setStackedSeries(tempStackedSeries);
+            })
+            setStackedData(stackedTemp);
+            setStackedCategories(stackedTemp?.map(stackedData => stackedData?.name));
+        }
     }
-  }
 
-    const getUsersData = async() => {
-        const {data: user} = await GET('user-management-service/user');
-        if(user){
-          setUsers(user);
+    console.log(pieData)
+
+
+    const getAcvityAndServicesWithParameter = async () => {
+        const { data: chartData } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+        const { data: reportLogData } = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+        setReportLog(reportLogData);
+        if (chartData) {
+            let temp = [];
+            chartData?.activityServiceReports?.map((pie, index) => {
+                temp[index] = { key: pie.activityStatus, value: pie.count }
+            })
+            setPieData(temp);
+            let lineTemp = [];
+            chartData?.completedActivitiesByDate?.map((line, index) => {
+                lineTemp[index] = { date: format(new Date(line.statedate), 'MM-dd'), value: line.count };
+            })
+            lineTemp.sort((a, b) => new Date(a.date) - new Date(b.date));
+            setLineData(lineTemp);
+            // let barTemp = [];
+            // chartData?.activityStatusByCategorys?.map((bar,index)=>{
+            //     let arr = [{name:bar.activityType,type:1,Done:bar.done},{name:bar.activityType,type:2,ToDo:bar.todo},{name:bar.activityType,type:3,NotDone:bar.notdone}]
+            //     arr.map(data=>{
+            //     barTemp.push(data);
+            //     })
+            // })
+            // setBarData(barTemp);
+            setSeries([{
+                'data': chartData?.activityStatusByCategorys?.map(data => data?.done),
+                'name': 'Done'
+            },
+            {
+                'data': chartData?.activityStatusByCategorys?.map(data => data?.notdone),
+                'name': 'Not Done'
+            },
+            {
+                'data': chartData?.activityStatusByCategorys?.map(data => data?.todo),
+                'name': 'To Do'
+            }])
+            setCategories(chartData?.activityStatusByCategorys?.map(data => data?.activityType));
+
+            setBarData({
+                'series': series,
+                'categories': categories
+            });
+            let stackedTemp = [];
+            let keysForChart = [];
+            let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
+            chartData?.completedActivitiesBycategoryAndMonth?.map((stack, index) => {
+                let values = stack.types;
+                keysForChart = Object.keys(stack.types);
+                setStackedKeys(keysForChart);
+                values['name'] = months[stack?.month];
+                values['type'] = 1;
+                stackedTemp.push(values);
+            })
+            let tempStackedSeries = [];
+            keysForChart?.map((data, index) => {
+                tempStackedSeries.push({
+                    'data': stackedTemp?.map(stackedData => stackedData?.[data]),
+                    'name': data
+                })
+                setStackedSeries(tempStackedSeries);
+            })
+            setStackedData(stackedTemp);
+            setStackedCategories(stackedTemp?.map(stackedData => stackedData?.name));
+        }
+    }
+
+    const getUsersData = async () => {
+        const { data: user } = await GET('user-management-service/user');
+        if (user) {
+            setUsers(user);
         }
     }
 
@@ -292,44 +319,44 @@ const ReportTypeOverview = () => {
         setDataToUseInReport(value);
     }
 
-    const getContractRenewalReport = async() => {
-        const {data: contractRenewalReport} = await GET('contract-managment-service/reports/contractRenewalReport');
-        if(contractRenewalReport){
+    const getContractRenewalReport = async () => {
+        const { data: contractRenewalReport } = await GET('contract-managment-service/reports/contractRenewalReport');
+        if (contractRenewalReport) {
             setContractRenewalReport(contractRenewalReport);
         }
     }
 
-    const getContractRenewalReportWithParameters = async() => {
-        const {data: contractRenewalReport} = await GET(`contract-managment-service/reports/contractRenewalReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}&contractPolicyType=${dataToUseInReport?.contractContinuationPolicy}`);
-        if(contractRenewalReport){
+    const getContractRenewalReportWithParameters = async () => {
+        const { data: contractRenewalReport } = await GET(`contract-managment-service/reports/contractRenewalReport?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}&contractPolicyType=${dataToUseInReport?.contractContinuationPolicy}`);
+        if (contractRenewalReport) {
             setContractRenewalReport(contractRenewalReport);
         }
     }
 
-    const getOneTimeContract = async() => {
-        const {data: oneTimeContract} = await GET(`contract-managment-service/reports/oneTimeContractReport`);
-        if(oneTimeContract){
+    const getOneTimeContract = async () => {
+        const { data: oneTimeContract } = await GET(`contract-managment-service/reports/oneTimeContractReport`);
+        if (oneTimeContract) {
             setOneTimeContract(oneTimeContract);
         }
     }
 
-    const getOneTimeContractWithParameters = async() => {
-        const {data: oneTimeContract} = await GET(`contract-managment-service/reports/oneTimeContractReport?renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}`);
-        if(oneTimeContract){
+    const getOneTimeContractWithParameters = async () => {
+        const { data: oneTimeContract } = await GET(`contract-managment-service/reports/oneTimeContractReport?renewalDays=${dataToUseInReport?.renewalreportingTimePeriod}`);
+        if (oneTimeContract) {
             setOneTimeContract(oneTimeContract);
         }
     }
 
-    const getNonCompliantContractReportTile = async() => {
-        const {data: nonCompliantContract} = await GET(`contract-managment-service/reports/documentProofReport?contractNames=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-        if(nonCompliantContract){
+    const getNonCompliantContractReportTile = async () => {
+        const { data: nonCompliantContract } = await GET(`contract-managment-service/reports/documentProofReport?contractNames=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+        if (nonCompliantContract) {
             setNonCompliantContractTile(nonCompliantContract);
         }
     }
 
-    const getNonCompliantContractReport = async() => {
-        const {data: nonCompliantContract} = await GET(`contract-managment-service/reports/nonCompliantContractReport?podType=${encodeURIComponent(selectedPodTypeFromTile)}&contractStatus=${dataToUseInReport?.contractStatus}&contractNames=${dataToUseInReport?.selectedContracts}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-        if(nonCompliantContract){
+    const getNonCompliantContractReport = async () => {
+        const { data: nonCompliantContract } = await GET(`contract-managment-service/reports/nonCompliantContractReport?podType=${encodeURIComponent(selectedPodTypeFromTile)}&contractStatus=${dataToUseInReport?.contractStatus}&contractNames=${dataToUseInReport?.selectedContracts}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+        if (nonCompliantContract) {
             setNonCompliantContract(nonCompliantContract);
         }
     }
@@ -341,18 +368,16 @@ const ReportTypeOverview = () => {
     let reasonNotDone = [];
 
     const getActivitiesServicesValues = (value) => {
-         activityPerformed = [];
-         startDateTime = [];
-         endDateTime = [];
-         contractProvider = [];
-         reasonNotDone = [];
-         reportLog?.filter(data=>data?.activityStatus === value)?.map(data=> 
-        {
+        activityPerformed = [];
+        startDateTime = [];
+        endDateTime = [];
+        contractProvider = [];
+        reasonNotDone = [];
+        reportLog?.filter(data => data?.activityStatus === value)?.map(data => {
             activityPerformed.push(data?.activityPerformed?.activity);
             startDateTime.push(`${format(new Date(data?.activityTimeFrame?.stateDate), 'MM-dd-yyyy')}, ${data?.activityTimeFrame?.startTime}`)
             endDateTime.push(`${format(new Date(data?.activityTimeFrame?.endDate), 'MM-dd-yyyy')}, ${data?.activityTimeFrame?.endTme}`)
-            user?.filter(user=>user?.id === data?.user?.id)?.map(data=>
-            {
+            user?.filter(user => user?.id === data?.user?.id)?.map(data => {
                 contractProvider.push(data?.name?.firstName)
             });
             reasonNotDone.push(data?.activityNotes?.notes);
@@ -362,22 +387,22 @@ const ReportTypeOverview = () => {
             activityPerformed,
             startDateTime,
             endDateTime,
-            contractProvider, 
-             ''
+            contractProvider,
+            ''
         ] : value === "TODO" ? [
             activityPerformed,
             startDateTime,
-            contractProvider, 
-             ''
+            contractProvider,
+            ''
         ] : [
             activityPerformed,
             startDateTime,
-            contractProvider, 
-             '',
+            contractProvider,
+            '',
             reasonNotDone
         ];
     }
-    
+
     let contractManagementContractName = [];
     let contractManagementContractId = [];
     let contractManagementExpirationDate = [];
@@ -399,8 +424,7 @@ const ReportTypeOverview = () => {
 
         let mapValue = value === "INDIVIDUAL" ? individualContract : multipleContract;
 
-        mapValue?.map(data=> 
-        {
+        mapValue?.map(data => {
             contractManagementContractName.push(data?.contractName?.contractName);
             contractManagementContractId.push(data?.contractDetail?.contractId?.id)
             contractManagementExpirationDate.push(format(new Date(data?.contractDetail?.contractTerm?.endDate), 'MM-dd-yyyy'))
@@ -414,7 +438,7 @@ const ReportTypeOverview = () => {
             contractManagementContractName,
             contractManagementContractId,
             contractManagementExpirationDate,
-            contractManagementContractingEntity, 
+            contractManagementContractingEntity,
             contractManagementPointOfContact,
             contractManagementPointOfContactNumber,
             contractManagementEmail
@@ -441,13 +465,12 @@ const ReportTypeOverview = () => {
         contractCompliacePointOfContactNumber = [];
         contractCompliaceEmail = [];
 
-        let mapValue = value === "documentNotUploadedContracts" ? nonCompliantContract?.documentNotUploadedContracts : 
-        value === "expiredContracts" ? nonCompliantContract?.expiredContracts :
-        value === "renewalContracts" ? nonCompliantContract?.renewalContracts :
-        nonCompliantContract?.notExpiredContracts;
+        let mapValue = value === "documentNotUploadedContracts" ? nonCompliantContract?.documentNotUploadedContracts :
+            value === "expiredContracts" ? nonCompliantContract?.expiredContracts :
+                value === "renewalContracts" ? nonCompliantContract?.renewalContracts :
+                    nonCompliantContract?.notExpiredContracts;
 
-        mapValue?.map(data=> 
-        {
+        mapValue?.map(data => {
             contractCompliaceContractName.push(data?.contractName?.contractName);
             contractCompliaceContractId.push(data?.contractDetail?.contractId?.id)
             contractCompliaceContractManager.push(`${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.firstName)} ${user?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data?.name?.lastName)}`)
@@ -470,498 +493,508 @@ const ReportTypeOverview = () => {
         ];
     }
 
-    return(
+    return (
         <Fragment>
             <Navbar />
             <div className={`${style.bigCardGrid} ${style.margin20WithoutTop} ${style.marginTop10}`}>
                 <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} />
-                <FullScreen handle={handle}>
-                    <div className={style.scroll}>
-                        <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} />
-                        <div className={`${style.reportBackgroundCard} ${style.marginTop20}`}>
-                            <ReportHeader />
-                            <div className={style.justifyCenter}>
-                                <div className={style.marginTop20}>
-                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5}`}>
-                                        {reportType === "upcomingContractRenewals" ? 'Upcoming Contract Renewals'
-                                        : reportType === "oneTimeContract" ? "List of One Time Contracts that will Terminate on Expiration"
-                                        : reportType === "scheduledActivity" ? "Scheduled Activity/ Services - Forcasted To Actual"
-                                        : reportType === "scheduledActivityByContract" ? "Scheduled Activity/ Services - Forcasted To Actual By Contract"
-                                        : reportType === "complianceStatus" ? "Proof Of Documentation Status By Contractor"
-                                        : reportType === "nonCompliant" ? 'List of Contracts that are non compliant with proof of documentation requirement'
-                                        : 'Activities/ Services Log Status Summary'}
-                                    </div>
-                                    {dataToUseInReport?.reportingTimePeriod !== "" && (
-                                        <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5}`}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
-                                    )}
-                                </div>
-                            </div>
-                            <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                            <div className={style.marginTop20}>
-                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Reporting Parameters Applied</div>
-                                {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ) ? (
-                                    <div className={`${style.grid2} ${style.marginTop20}`}>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Renewal Time Frame </div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{`Renewal within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
-                                        </div>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Sites </div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
-                                        </div>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Departments</div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
-                                        </div>
-                                        {reportType === "upcomingContractRenewals" && (
-                                            <div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Continuation Policy</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.contractContinuationPolicy === 'AUTORENEWAL' ? "Auto Renewal"
-                                                : dataToUseInReport?.contractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM" ? "Written Contract Extension For Fixed Term"
-                                                : dataToUseInReport?.contractContinuationPolicy === "NEWCONTRACTONEXPIRATION" ? "New Contract On Expiration"
-                                                : dataToUseInReport?.contractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION" ? "One Time Contract - Terminate On Expiration" : 'All'}</div>
-                                            </div>
-                                        )}
-                                    </div>
-                                ) : (reportType === "activitiesOrServices") ? (
-                                    <div className={`${style.grid2} ${style.marginTop20}`}>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Sites </div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
-                                        </div>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Departments</div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
-                                        </div>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracts </div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
-                                        </div>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Service Provider </div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => data?.name?.firstName).join(', ') || 'All'}</div>
-                                        </div>
-                                    </div>
-                                ) : (reportType === "nonCompliant") ? (
-                                    <div className={`${style.grid2} ${style.marginTop20}`}>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Sites </div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
-                                        </div>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Departments</div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
-                                        </div>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracts </div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
-                                        </div>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Status</div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.contractStatus === 'ACTIVE' ? 'Active'
-                                            : dataToUseInReport?.contractStatus === 'DRAFT' ? 'Draft'
-                                            : dataToUseInReport?.contractStatus === 'EXPIRED' ? 'Expired'
-                                            : dataToUseInReport?.contractStatus === 'TERMINATED' ? 'Terminated' : '' }</div>
-                                        </div>
-                                        <div>
-                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Proof Of Documentation </div>
-                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.podType || 'Select One'}</div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                <div className={`${style.grid2} ${style.marginTop20}`}>
-                                    <div>
-                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Site </div>
-                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Site 1, Site 2, Site 3</div>
-                                    </div>
-                                    <div>
-                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Department/ Service Area </div>
-                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>All Departments</div>
-                                    </div>
-                                    <div>
-                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Service Provider</div>
-                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Doctor 1, Doctor 2, Doctor 3</div>
-                                    </div>
-                                    <div>
-                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Service/ Activity Category</div>
-                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
-                                    </div>
-                                    <div>
-                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Type of Service/ Activity Performed</div>
-                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
-                                    </div>
-                                    <div>
-                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Completion Status</div>
-                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
-                                    </div>
-                                </div>
-                                )}
-                                <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
-                                {reportType === "activitiesOrServices" ? (
-                                <>
-                                    <div className={style.grid2}>
-                                        <div>
-                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Activity / Services Status</div>
-                                            {/* <Pie data={pieData} width={250} height={250} innerRadius={0} outerRadius={100} /> */}
-                                            <ApexPieChart pieData={pieData} />
-                                        </div>
-
-                                        <div>
-                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Activity / Services Status</div>
+                <div>
+                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} />
+                    <FullScreen handle={handle}>
+                        <div className={style.scroll}>
+                            <div className={`${style.reportBackgroundCard} ${style.marginTop20}`} ref={componentRef}>
+                                <table style={{ width: '100%' }}>
+                                    <thead>
+                                        <ReportHeader />
+                                    </thead>
+                                    <tbody>
+                                        <div className={style.justifyCenter}>
                                             <div className={style.marginTop20}>
-                                                {/* <BarChart data={barData}/> */}
-                                                <ApexGroupedBarChart series={series} categories={categories} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
-                                    <div className={style.marginTop40}>
-                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Trend For Activities / Services Completed</div>
-                                        {/* <LineChart /> */}
-                                        <ApexLineChart lineData={lineData} />
-                                    </div>
-                                    <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
-                                    <div className={style.marginTop40}>
-                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Percentage Of Activities / Services Completed By Category Type</div>
-                                        {/* <StackedBarChartBaseLayout1 chartData={stackedData}/> */}
-                                        <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
-                                    </div>
-                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                    {reportLog?.filter(data=>data?.activityStatus === "DONE")?.length !== 0 && (
-                                        <>
-                                            <ReportsTable 
-                                                tableType={'Completed Activity / Service Log'}
-                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Completion Date/ Time', 'Contracted Provider', 'Site']}
-                                                tableValue={reportLog?.filter(data=>data?.activityStatus === "DONE")}
-                                                activitiesServicesValues = {getActivitiesServicesValues('DONE')}
-                                                styleName={style.grid5}
-                                            />
-                                            <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                        </>
-                                    )}
-                                    {reportLog?.filter(data=>data?.activityStatus === "TODO")?.length !== 0 && (
-                                        <>
-                                            <ReportsTable 
-                                                tableType={'To Do Activity/ Services'}
-                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site']}
-                                                tableValue={reportLog?.filter(data=>data?.activityStatus === "TODO")}
-                                                activitiesServicesValues = {getActivitiesServicesValues('TODO')}
-                                                styleName={style.grid5}
-                                            />
-                                            <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                        </>
-                                    )}
-                                    {reportLog?.filter(data=>data?.activityStatus === "NOTDONE")?.length !== 0 && (
-                                        <>
-                                            <ReportsTable 
-                                                tableType={'Not Done Activity / Service Log'}
-                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site', 'Reason Not Done']}
-                                                tableValue={reportLog?.filter(data=>data?.activityStatus === "NOTDONE")}
-                                                activitiesServicesValues = {getActivitiesServicesValues('NOTDONE')}
-                                                styleName={style.grid5}
-                                            />
-                                        </>
-                                    )}
-                                </>
-                                ) : (reportType === "scheduledActivity" || reportType === "scheduledActivityByContract") ? (
-                                    <>
-                                        <div className={style.grid2}>
-                                            <div>
-                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
-                                                <div className={style.marginTop20}>
-                                                    <StackedBarChartBaseLayout2 />
+                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5}`}>
+                                                    {reportType === "upcomingContractRenewals" ? 'Upcoming Contract Renewals'
+                                                        : reportType === "oneTimeContract" ? "List of One Time Contracts that will Terminate on Expiration"
+                                                            : reportType === "scheduledActivity" ? "Scheduled Activity/ Services - Forcasted To Actual"
+                                                                : reportType === "scheduledActivityByContract" ? "Scheduled Activity/ Services - Forcasted To Actual By Contract"
+                                                                    : reportType === "complianceStatus" ? "Proof Of Documentation Status By Contractor"
+                                                                        : reportType === "nonCompliant" ? 'List of Contracts that are non compliant with proof of documentation requirement'
+                                                                            : 'Activities/ Services Log Status Summary'}
                                                 </div>
-                                            </div>
-                                            <div>
-                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
-                                                <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
-                                            </div>
-                                        </div>
-                                        <div className={`${style.headerBorderStyle}`}></div>
-                                        <div className={style.contractNameCardStyle}>Contract Name 1 - Individual Contractor Contract</div>
-                                        <div className={`${style.grid2} ${style.marginTop40}`}>
-                                            <div>
-                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
-                                                <div className={style.marginTop20}>
-                                                    <StackedBarChartBaseLayout2 />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
-                                                <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
+                                                {dataToUseInReport?.reportingTimePeriod !== "" && (
+                                                    <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5}`}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
+                                                )}
                                             </div>
                                         </div>
                                         <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                        <div className={style.marginTop40}>
-                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Scheduled Activity/ Services Completion Status</div>
-                                            <div className={`${style.grid6} ${style.marginTop20}`}>
-                                                <div></div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Total To do</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Completed</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Not Verified</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Not Completed</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Yet to Complete</div>
-                                            </div>
-                                            <div className={`${style.grid6} ${style.marginTop20}`}>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Medical Services</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
-                                            </div>
-                                            <div className={`${style.grid6} ${style.marginTop20}`}>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Administrative Services</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
-                                            </div>
-                                            <div className={`${style.grid6} ${style.marginTop20}`}>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Supplemental Services</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
-                                            </div>
-                                        </div>
-                                        <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                        <div className={style.contractNameCardStyle}>Contract Name 2 - Multiple Contractor Contract - 5 Service Providers</div>
-                                        <div className={`${style.grid2} ${style.marginTop20}`}>
-                                            <div>
-                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
-                                                <div className={style.marginTop20}>
-                                                    <StackedBarChartBaseLayout2 />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
-                                                <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
-                                            </div>
-                                        </div>
-                                        <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                        <div className={style.marginTop40}>
-                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Scheduled Activity/ Services Completion Status</div>
-                                            <div className={`${style.grid6} ${style.marginTop20}`}>
-                                                <div></div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Total To do</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Completed</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Not Verified</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Not Completed</div>
-                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Yet to Complete</div>
-                                            </div>
-                                            <div className={`${style.grid6} ${style.marginTop20}`}>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Medical Services</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
-                                            </div>
-                                            <div className={`${style.grid6} ${style.marginTop20}`}>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Administrative Services</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
-                                            </div>
-                                            <div className={`${style.grid6} ${style.marginTop20}`}>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Supplemental Services</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
-                                            </div>
-                                        </div>
-                                    </>
-                                ) : (reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
-                                    <>
-                                        {individualContract?.length !== 0 && (
-                                            <ReportsTable 
-                                                tableType={'Individual Service Provider Contract Renewal'}
-                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address']}
-                                                tableValue={individualContract}
-                                                activitiesServicesValues = {getContractManagementUpcomingValues('INDIVIDUAL')}
-                                                styleName={style.individualServiceReportGrid}
-                                            />
-                                        )}
-                                        {multipleContract?.length !== 0 && (
-                                            <ReportsTable 
-                                                tableType={'Multiple Service Provider Contract Renewal'}
-                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
-                                                tableValue={multipleContract}
-                                                activitiesServicesValues = {getContractManagementUpcomingValues('MULTIPLE')}
-                                                styleName={style.individualServiceReportGrid}
-                                            />
-                                        )}
-                                    </>
-                                ) : reportType === "complianceStatus" ? (
-                                    <>
-                                        <div className={style.marginTop40}>
-                                            <StackedBarChartBaseLayout3 />
-                                        </div>
-                                        <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                        <div className={style.marginTop40}>
-                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Non Compliant Providers With Required Documents</div>
-                                            <div className={`${style.grid7} ${style.marginTop20}`}>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Provider Name</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Title</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Department</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Site</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant PODs</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant days</div>
-                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Open Tasks</div>
-                                            </div>
-                                            <div className={`${style.grid7} ${style.marginTop20}`}>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>John Doe</div>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Chief Medical Officer</div>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>--</div>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Good Samaritan Hospital</div>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>3</div>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>20</div>
-                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>2</div>
-                                            </div>
-                                        </div>
-                                        <div className={style.marginTop40}>
-                                            <div>
-                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Providers With Required Documents Needing Compliance Within Next 30 Days</div>
-                                                <div className={`${style.grid7} ${style.marginTop20}`}>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Provider Name</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Title</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Department</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Site</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant PODs</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant days</div>
-                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Open Tasks</div>
-                                                </div>
-                                                <div className={`${style.grid7} ${style.marginTop20}`}>
-                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>John Doe</div>
-                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Chief Medical Officer</div>
-                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>--</div>
-                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Good Samaritan Hospital</div>
-                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>3</div>
-                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>20</div>
-                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>2</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className={style.marginTop40}>
-                                                <div>
-                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Providers In Compliance With Required Documents</div>
-                                                    <div className={`${style.grid7} ${style.marginTop20}`}>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Provider Name</div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Title</div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Department</div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Site</div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant PODs</div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant days</div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Open Tasks</div>
+                                        <div className={style.marginTop20}>
+                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Reporting Parameters Applied</div>
+                                            {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
+                                                <div className={`${style.grid2} ${style.marginTop20}`}>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Renewal Time Frame </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{`Renewal within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
                                                     </div>
-                                                    <div className={`${style.grid7} ${style.marginTop20}`}>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>John Doe</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Chief Medical Officer</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>--</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Good Samaritan Hospital</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>3</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>20</div>
-                                                        <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>2</div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Sites </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Departments</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                    </div>
+                                                    {reportType === "upcomingContractRenewals" && (
+                                                        <div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Continuation Policy</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.contractContinuationPolicy === 'AUTORENEWAL' ? "Auto Renewal"
+                                                                : dataToUseInReport?.contractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM" ? "Written Contract Extension For Fixed Term"
+                                                                    : dataToUseInReport?.contractContinuationPolicy === "NEWCONTRACTONEXPIRATION" ? "New Contract On Expiration"
+                                                                        : dataToUseInReport?.contractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION" ? "One Time Contract - Terminate On Expiration" : 'All'}</div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : (reportType === "activitiesOrServices") ? (
+                                                <div className={`${style.grid2} ${style.marginTop20}`}>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Sites </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Departments</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracts </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Service Provider </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => data?.name?.firstName).join(', ') || 'All'}</div>
                                                     </div>
                                                 </div>
-                                        </div>
-                                    </>
-                                    ) : reportType === "nonCompliant" ? (
-                                        <>
-                                            {isNonCompliantReportTileClicked ? (
-                                                <>
-                                                {nonCompliantContract?.documentNotUploadedContracts?.length !== 0 && (
-                                                    <ReportsTable 
-                                                        tableType={`Contracts With No ${selectedPodTypeFromTile} Proof Of Documentation`}
-                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
-                                                        tableValue={nonCompliantContract?.documentNotUploadedContracts}
-                                                        activitiesServicesValues = {getContractComplianceValues('documentNotUploadedContracts')}
-                                                        styleName={style.individualServiceReportGrid}
-                                                    />
-                                                )}
-                                                {nonCompliantContract?.expiredContracts?.length !== 0 && (
-                                                    <ReportsTable 
-                                                        tableType={`Contracts With Expired ${selectedPodTypeFromTile}`}
-                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
-                                                        tableValue={nonCompliantContract?.expiredContracts}
-                                                        activitiesServicesValues = {getContractComplianceValues('expiredContracts')}
-                                                        styleName={style.individualServiceReportGrid}
-                                                    />
-                                                )}
-                                                {nonCompliantContract?.renewalContracts?.length !== 0 && (
-                                                    <ReportsTable 
-                                                        tableType={`Contracts With Renewals in next 30 days ${selectedPodTypeFromTile}`}
-                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
-                                                        tableValue={nonCompliantContract?.renewalContracts}
-                                                        activitiesServicesValues = {getContractComplianceValues('renewalContracts')}
-                                                        styleName={style.individualServiceReportGrid}
-                                                    />
-                                                )}
-                                                {nonCompliantContract?.notExpiredContracts?.length !== 0 && (
-                                                    <ReportsTable 
-                                                        tableType={`Contracts With Not Expired ${selectedPodTypeFromTile}`}
-                                                        tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
-                                                        tableValue={nonCompliantContract?.notExpiredContracts}
-                                                        activitiesServicesValues = {getContractComplianceValues('notExpiredContracts')}
-                                                        styleName={style.individualServiceReportGrid}
-                                                    />
-                                                )}
-                                                </>
+                                            ) : (reportType === "nonCompliant") ? (
+                                                <div className={`${style.grid2} ${style.marginTop20}`}>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Sites </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Departments</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracts </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contract Status</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.contractStatus === 'ACTIVE' ? 'Active'
+                                                            : dataToUseInReport?.contractStatus === 'DRAFT' ? 'Draft'
+                                                                : dataToUseInReport?.contractStatus === 'EXPIRED' ? 'Expired'
+                                                                    : dataToUseInReport?.contractStatus === 'TERMINATED' ? 'Terminated' : ''}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Proof Of Documentation </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.podType || 'Select One'}</div>
+                                                    </div>
+                                                </div>
                                             ) : (
-                                                <div className={`${style.complianceGrid2} ${style.marginTop20}`}>
-                                                    {podTypes?.map((data, index) => (
-                                                    <div className={`${style.complianceCardStyle} ${style.cursorPointer}`} key={index} onClick={() => {setIsNonCompliantReportTileClicked(true);setSelectedPodTypeFromTile(data)}}>
-                                                        <div className={style.complianceLeftCardStyle}>
-                                                            <div className={style.complianPercentageStyle}>
-                                                            {`${nonCompliantContractTile?.podTypePercentage?.[data] || 0}%`}
-                                                            </div>
-                                                        </div>
-                                                        <div className={style.complianceRightCardStyle}>
-                                                            <div className={style.fullWidth}>
-                                                                <div className={style.complianceHeadingStyle}>{data}</div>
-                                                                <div className={`${style.complianceListGrid} ${style.marginTop20}`}>
-                                                                    <div className={style.redDotStyle}></div>
-                                                                    <div className={`${style.reportRunByTextStyle}`}>Expired</div>
-                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft}`}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.expiredDocumentCount}</div>
-                                                                </div>
-                                                                <div className={`${style.complianceListGrid} ${style.marginTop10}`}>
-                                                                    <div className={style.yellowDotStyle}></div>
-                                                                    <div className={`${style.reportRunByTextStyle}`}>Renewals in next 30 days</div>
-                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft}`}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.renewalIn30DaysDocumentCount}</div>
-                                                                </div>
-                                                                <div className={`${style.complianceListGrid} ${style.marginTop10}`}>
-                                                                    <div className={style.greenDotStyle}></div>
-                                                                    <div className={`${style.reportRunByTextStyle}`}>Not expired</div>
-                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft}`}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.notExpiredDocumentCount}</div>
-                                                                </div>
-                                                                <div className={`${style.complianceListGrid} ${style.marginTop10}`}>
-                                                                    <div className={style.blueDotStyle}></div>
-                                                                    <div className={`${style.reportRunByTextStyle}`}>Document copy not on file</div>
-                                                                    <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft}`}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.documentFileNotFoundCount}</div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                <div className={`${style.grid2} ${style.marginTop20}`}>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Site </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Site 1, Site 2, Site 3</div>
                                                     </div>
-                                                    ))}
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Department/ Service Area </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>All Departments</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Service Provider</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Doctor 1, Doctor 2, Doctor 3</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Service/ Activity Category</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Type of Service/ Activity Performed</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Completion Status</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
+                                                    </div>
                                                 </div>
                                             )}
-                                        </>
-                                    ) : (
-                                    <>
-                                    </>
-                                )}
+                                            <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
+                                            {reportType === "activitiesOrServices" ? (
+                                                <>
+                                                    <div className={style.grid2}>
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Activity / Services Status</div>
+                                                            <ApexPieChart pieData={pieData} />
+                                                        </div>
+
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>By Category Of Service Performed</div>
+                                                            <div className={style.marginTop20}>
+                                                                <ApexGroupedBarChart series={series} categories={categories} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
+                                                    <div className={style.marginTop40}>
+                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Trend For Activities / Services Completed</div>
+                                                        <div className={style.reportWidthToFitFullScreen}>
+                                                            <ApexLineChart lineData={lineData} />
+                                                        </div>
+                                                    </div>
+                                                    <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
+                                                    <div className={style.marginTop40}>
+                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Percentage Of Activities / Services Completed By Category Type</div>
+                                                        <div className={style.reportWidthToFitFullScreen}>
+                                                            <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
+                                                        </div>
+                                                    </div>
+                                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                                    {reportLog?.filter(data => data?.activityStatus === "DONE")?.length !== 0 && (
+                                                        <>
+                                                            <ReportsTable
+                                                                tableType={'Completed Activity / Service Log'}
+                                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Completion Date/ Time', 'Contracted Provider', 'Site']}
+                                                                tableValue={reportLog?.filter(data => data?.activityStatus === "DONE")}
+                                                                activitiesServicesValues={getActivitiesServicesValues('DONE')}
+                                                                styleName={style.grid5}
+                                                            />
+                                                            <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                                        </>
+                                                    )}
+                                                    {reportLog?.filter(data => data?.activityStatus === "TODO")?.length !== 0 && (
+                                                        <>
+                                                            <ReportsTable
+                                                                tableType={'To Do Activity/ Services'}
+                                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site']}
+                                                                tableValue={reportLog?.filter(data => data?.activityStatus === "TODO")}
+                                                                activitiesServicesValues={getActivitiesServicesValues('TODO')}
+                                                                styleName={style.grid5}
+                                                            />
+                                                            <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                                        </>
+                                                    )}
+                                                    {reportLog?.filter(data => data?.activityStatus === "NOTDONE")?.length !== 0 && (
+                                                        <>
+                                                            <ReportsTable
+                                                                tableType={'Not Done Activity / Service Log'}
+                                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site', 'Reason Not Done']}
+                                                                tableValue={reportLog?.filter(data => data?.activityStatus === "NOTDONE")}
+                                                                activitiesServicesValues={getActivitiesServicesValues('NOTDONE')}
+                                                                styleName={style.grid5}
+                                                            />
+                                                        </>
+                                                    )}
+                                                </>
+                                            ) : (reportType === "scheduledActivity" || reportType === "scheduledActivityByContract") ? (
+                                                <>
+                                                    <div className={style.grid2}>
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
+                                                            <div className={style.marginTop20}>
+                                                                <StackedBarChartBaseLayout2 />
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
+                                                            <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
+                                                        </div>
+                                                    </div>
+                                                    <div className={`${style.headerBorderStyle}`}></div>
+                                                    <div className={style.contractNameCardStyle}>Contract Name 1 - Individual Contractor Contract</div>
+                                                    <div className={`${style.grid2} ${style.marginTop40}`}>
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
+                                                            <div className={style.marginTop20}>
+                                                                <StackedBarChartBaseLayout2 />
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
+                                                            <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
+                                                        </div>
+                                                    </div>
+                                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                                    <div className={style.marginTop40}>
+                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Scheduled Activity/ Services Completion Status</div>
+                                                        <div className={`${style.grid6} ${style.marginTop20}`}>
+                                                            <div></div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Total To do</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Completed</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Not Verified</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Not Completed</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Yet to Complete</div>
+                                                        </div>
+                                                        <div className={`${style.grid6} ${style.marginTop20}`}>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Medical Services</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
+                                                        </div>
+                                                        <div className={`${style.grid6} ${style.marginTop20}`}>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Administrative Services</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
+                                                        </div>
+                                                        <div className={`${style.grid6} ${style.marginTop20}`}>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Supplemental Services</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                                    <div className={style.contractNameCardStyle}>Contract Name 2 - Multiple Contractor Contract - 5 Service Providers</div>
+                                                    <div className={`${style.grid2} ${style.marginTop20}`}>
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Hours Completed Summary</div>
+                                                            <div className={style.marginTop20}>
+                                                                <StackedBarChartBaseLayout2 />
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop20} ${style.marginBottom20}`}>Dollars Paid Summary</div>
+                                                            <Pie data={pieSampleData} width={200} height={200} innerRadius={0} outerRadius={100} />
+                                                        </div>
+                                                    </div>
+                                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                                    <div className={style.marginTop40}>
+                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Scheduled Activity/ Services Completion Status</div>
+                                                        <div className={`${style.grid6} ${style.marginTop20}`}>
+                                                            <div></div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Total To do</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Completed</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Not Verified</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Not Completed</div>
+                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Yet to Complete</div>
+                                                        </div>
+                                                        <div className={`${style.grid6} ${style.marginTop20}`}>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Medical Services</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
+                                                        </div>
+                                                        <div className={`${style.grid6} ${style.marginTop20}`}>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Administrative Services</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
+                                                        </div>
+                                                        <div className={`${style.grid6} ${style.marginTop20}`}>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.marginTop5}`}>Supplemental Services</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>12 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>1</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>7 ($ xxx)</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>2 ($ xxx)</div>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            ) : (reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
+                                                <>
+                                                    {individualContract?.length !== 0 && (
+                                                        <ReportsTable
+                                                            tableType={'Individual Service Provider Contract Renewal'}
+                                                            tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address']}
+                                                            tableValue={individualContract}
+                                                            activitiesServicesValues={getContractManagementUpcomingValues('INDIVIDUAL')}
+                                                            styleName={style.individualServiceReportGrid}
+                                                        />
+                                                    )}
+                                                    {multipleContract?.length !== 0 && (
+                                                        <ReportsTable
+                                                            tableType={'Multiple Service Provider Contract Renewal'}
+                                                            tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
+                                                            tableValue={multipleContract}
+                                                            activitiesServicesValues={getContractManagementUpcomingValues('MULTIPLE')}
+                                                            styleName={style.individualServiceReportGrid}
+                                                        />
+                                                    )}
+                                                </>
+                                            ) : reportType === "complianceStatus" ? (
+                                                <>
+                                                    <div className={style.marginTop40}>
+                                                        <StackedBarChartBaseLayout3 />
+                                                    </div>
+                                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                                    <div className={style.marginTop40}>
+                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Non Compliant Providers With Required Documents</div>
+                                                        <div className={`${style.grid7} ${style.marginTop20}`}>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Provider Name</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Title</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Department</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Site</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant PODs</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant days</div>
+                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Open Tasks</div>
+                                                        </div>
+                                                        <div className={`${style.grid7} ${style.marginTop20}`}>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>John Doe</div>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Chief Medical Officer</div>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>--</div>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Good Samaritan Hospital</div>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>3</div>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>20</div>
+                                                            <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>2</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className={style.marginTop40}>
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Providers With Required Documents Needing Compliance Within Next 30 Days</div>
+                                                            <div className={`${style.grid7} ${style.marginTop20}`}>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Provider Name</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Title</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Department</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Site</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant PODs</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant days</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Open Tasks</div>
+                                                            </div>
+                                                            <div className={`${style.grid7} ${style.marginTop20}`}>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>John Doe</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Chief Medical Officer</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>--</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Good Samaritan Hospital</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>3</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>20</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>2</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className={style.marginTop40}>
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Providers In Compliance With Required Documents</div>
+                                                            <div className={`${style.grid7} ${style.marginTop20}`}>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Provider Name</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Title</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Department</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Site</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant PODs</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Non Compliant days</div>
+                                                                <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Open Tasks</div>
+                                                            </div>
+                                                            <div className={`${style.grid7} ${style.marginTop20}`}>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>John Doe</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Chief Medical Officer</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>--</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Good Samaritan Hospital</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>3</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>20</div>
+                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>2</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            ) : reportType === "nonCompliant" ? (
+                                                <>
+                                                    {isNonCompliantReportTileClicked ? (
+                                                        <>
+                                                            {nonCompliantContract?.documentNotUploadedContracts?.length !== 0 && (
+                                                                <ReportsTable
+                                                                    tableType={`Contracts With No ${selectedPodTypeFromTile} Proof Of Documentation`}
+                                                                    tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                                    tableValue={nonCompliantContract?.documentNotUploadedContracts}
+                                                                    activitiesServicesValues={getContractComplianceValues('documentNotUploadedContracts')}
+                                                                    styleName={style.individualServiceReportGrid}
+                                                                />
+                                                            )}
+                                                            {nonCompliantContract?.expiredContracts?.length !== 0 && (
+                                                                <ReportsTable
+                                                                    tableType={`Contracts With Expired ${selectedPodTypeFromTile}`}
+                                                                    tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                                    tableValue={nonCompliantContract?.expiredContracts}
+                                                                    activitiesServicesValues={getContractComplianceValues('expiredContracts')}
+                                                                    styleName={style.individualServiceReportGrid}
+                                                                />
+                                                            )}
+                                                            {nonCompliantContract?.renewalContracts?.length !== 0 && (
+                                                                <ReportsTable
+                                                                    tableType={`Contracts With Renewals in next 30 days ${selectedPodTypeFromTile}`}
+                                                                    tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                                    tableValue={nonCompliantContract?.renewalContracts}
+                                                                    activitiesServicesValues={getContractComplianceValues('renewalContracts')}
+                                                                    styleName={style.individualServiceReportGrid}
+                                                                />
+                                                            )}
+                                                            {nonCompliantContract?.notExpiredContracts?.length !== 0 && (
+                                                                <ReportsTable
+                                                                    tableType={`Contracts With Not Expired ${selectedPodTypeFromTile}`}
+                                                                    tableHeader={['Contract Name', 'Contract ID', 'Contract Manager', 'Contract Effective Date', 'Contracting Entity', 'Point of Contact', 'Phone Number', 'Email Address']}
+                                                                    tableValue={nonCompliantContract?.notExpiredContracts}
+                                                                    activitiesServicesValues={getContractComplianceValues('notExpiredContracts')}
+                                                                    styleName={style.individualServiceReportGrid}
+                                                                />
+                                                            )}
+                                                        </>
+                                                    ) : (
+                                                        <div className={`${style.complianceGrid2} ${style.marginTop20}`}>
+                                                            {podTypes?.map((data, index) => (
+                                                                <div className={`${style.complianceCardStyle} ${style.cursorPointer}`} key={index} onClick={() => { setIsNonCompliantReportTileClicked(true); setSelectedPodTypeFromTile(data) }}>
+                                                                    <div className={style.complianceLeftCardStyle}>
+                                                                        <div className={style.complianPercentageStyle}>
+                                                                            {`${nonCompliantContractTile?.podTypePercentage?.[data] || 0}%`}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className={style.complianceRightCardStyle}>
+                                                                        <div className={style.fullWidth}>
+                                                                            <div className={style.complianceHeadingStyle}>{data}</div>
+                                                                            <div className={`${style.complianceListGrid} ${style.marginTop20}`}>
+                                                                                <div className={style.redDotStyle}></div>
+                                                                                <div className={`${style.reportRunByTextStyle}`}>Expired</div>
+                                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft}`}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.expiredDocumentCount}</div>
+                                                                            </div>
+                                                                            <div className={`${style.complianceListGrid} ${style.marginTop10}`}>
+                                                                                <div className={style.yellowDotStyle}></div>
+                                                                                <div className={`${style.reportRunByTextStyle}`}>Renewals in next 30 days</div>
+                                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft}`}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.renewalIn30DaysDocumentCount}</div>
+                                                                            </div>
+                                                                            <div className={`${style.complianceListGrid} ${style.marginTop10}`}>
+                                                                                <div className={style.greenDotStyle}></div>
+                                                                                <div className={`${style.reportRunByTextStyle}`}>Not expired</div>
+                                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft}`}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.notExpiredDocumentCount}</div>
+                                                                            </div>
+                                                                            <div className={`${style.complianceListGrid} ${style.marginTop10}`}>
+                                                                                <div className={style.blueDotStyle}></div>
+                                                                                <div className={`${style.reportRunByTextStyle}`}>Document copy not on file</div>
+                                                                                <div className={`${style.reportTypeValueBoldTextStyle} ${style.textAlignLeft}`}>{nonCompliantContractTile?.podTypeTileCountMap?.[data]?.documentFileNotFoundCount}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                </>
+                                            )}
+                                        </div>
+                                    </tbody>
+                                    <tfoot>
+                                        <ReportFooter />
+                                    </tfoot>
+                                </table>
                             </div>
-                            <ReportFooter />
                         </div>
-                    </div>
-                </FullScreen>
+                    </FullScreen>
+                </div>
             </div>
         </Fragment>
     )

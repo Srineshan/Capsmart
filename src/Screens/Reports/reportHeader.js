@@ -26,7 +26,7 @@ const ReportHeader = () => {
     console.log(logo)
 
     return(
-        <div>
+        <div className={style.headerBackground}>
             <div className={style.spaceBetween}>
                 <div>
                     <div className={style.confidentialBoxStyle}>

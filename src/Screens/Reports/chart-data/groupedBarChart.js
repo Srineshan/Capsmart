@@ -59,7 +59,6 @@ const ApexGroupedBarChart = ({series, categories}) => {
     
     
     };
-    console.log(series, categories);
     return(
         <Chart {...chartData}  type="bar" height={300} />
     )
