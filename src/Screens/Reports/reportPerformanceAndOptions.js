@@ -25,7 +25,7 @@ import style from './index.module.scss';
 // import PDFDocument from './pdf';
 
 
-const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint}) => {
+const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdated}) => {
     const {reportType} = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -72,7 +72,7 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint}) => {
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
                          onMouseEnter={(e) => setAnchorElRefresh(e.currentTarget)} onMouseLeave={() => setAnchorElRefresh(null)} aria-owns={openRefresh ? 'mouse-over-popover' : undefined}
                          aria-haspopup="true">
-                            <CachedOutlinedIcon style={{color:"#52575D"}} onClick={() => {setShowReportRefreshingDialog(true);getIsRefresh(true)}} />
+                            <CachedOutlinedIcon style={{color: isUpdated ? '#F46044' : '#52575D'}} onClick={() => {setShowReportRefreshingDialog(true);getIsRefresh(true)}} />
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{

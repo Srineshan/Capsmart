@@ -53,6 +53,7 @@ const ReportTypeOverview = () => {
     const componentRef = useRef(null);
     const onBeforeGetContentResolve = useRef(null);
     const [loading, setLoading] = useState(false);
+    const [isUpdated, setIsUpdated] = useState(false);
     const [contractRenewalReport, setContractRenewalReport] = useState([]);
     const [oneTimeContract, setOneTimeContract] = useState([]);
     const [nonCompliantContract, setNonCompliantContract] = useState([]);
@@ -99,27 +100,28 @@ const ReportTypeOverview = () => {
         getUsersData();
     }, [])
 
-    useEffect(() => {
-        if (reportType === 'upcomingContractRenewals') {
-            getContractRenewalReportWithParameters();
-        }
-        if (reportType === 'oneTimeContract') {
-            getOneTimeContractWithParameters();
-        }
-        if (reportType === 'nonCompliant') {
-            getNonCompliantContractReportTile();
-        }
-        if (reportType === 'activitiesOrServices') {
-            getAcvityAndServicesWithParameter();
-        }
-        if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
-            setSelectedPodTypeFromTile(dataToUseInReport?.podType)
-            getNonCompliantContractReport();
-        }
-    }, [dataToUseInReport, selectedPodTypeFromTile])
+    // useEffect(() => {
+    //     if (reportType === 'upcomingContractRenewals') {
+    //         getContractRenewalReportWithParameters();
+    //     }
+    //     if (reportType === 'oneTimeContract') {
+    //         getOneTimeContractWithParameters();
+    //     }
+    //     if (reportType === 'nonCompliant') {
+    //         getNonCompliantContractReportTile();
+    //     }
+    //     if (reportType === 'activitiesOrServices') {
+    //         getAcvityAndServicesWithParameter();
+    //     }
+    //     if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
+    //         setSelectedPodTypeFromTile(dataToUseInReport?.podType)
+    //         getNonCompliantContractReport();
+    //     }
+    // }, [dataToUseInReport, selectedPodTypeFromTile])
 
     const getIsRefresh = (value) => {
         if (value) {
+            setIsUpdated(false);
             if (reportType === 'upcomingContractRenewals') {
                 getContractRenewalReportWithParameters();
             }
@@ -169,6 +171,10 @@ const ReportTypeOverview = () => {
         // onAfterPrint: handleAfterPrint,
         removeAfterPrint: true
     });
+
+    const getIsUpdated = (value) => {
+        setIsUpdated(value);
+    }
 
     const getAcvityAndServices = async () => {
         const { data: chartData } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
@@ -497,9 +503,9 @@ const ReportTypeOverview = () => {
         <Fragment>
             <Navbar />
             <div className={`${style.bigCardGrid} ${style.margin20WithoutTop} ${style.marginTop10}`}>
-                <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} />
+                <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} getIsUpdated={getIsUpdated} />
                 <div>
-                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} />
+                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isUpdated} />
                     <FullScreen handle={handle}>
                         <div className={style.scroll}>
                             <div className={`${style.reportBackgroundCard} ${style.marginTop20}`} ref={componentRef}>

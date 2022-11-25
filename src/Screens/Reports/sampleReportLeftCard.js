@@ -28,7 +28,7 @@ const MenuProps = {
     },
   },
 };
-const SampleReportLeftCard = ({getDataToUseInReport}) => {
+const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
     const [showSaveReport, setShowSaveReport] = useState(false);
     const {reportType} = useParams();
     const [activityType, setActivityType] = useState('Outpatient Clinic Service');
@@ -197,7 +197,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
         const {
           target: { value },
         } = event;
-        
+        getIsUpdated(true);
         setSelectedSites(
           typeof value === 'string' ? value.split(',') : value
         );
@@ -210,7 +210,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
         const {
           target: { value },
         } = event;
-
+        getIsUpdated(true);
         setSelectedDepartments(
           typeof value === 'string' ? value.split(',') : value
         );
@@ -225,7 +225,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
         const {
           target: { value },
         } = event;
-
+        getIsUpdated(true);
         setSelectedContracts(
           typeof value === 'string' ? value.split(',') : value
         );
@@ -238,7 +238,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
         const {
           target: { value },
         } = event;
-
+        getIsUpdated(true);
         setSelectedContractedServiceProvider(
           typeof value === 'string' ? value.split(',') : value
         );
@@ -275,7 +275,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                         labelId="demo-simple-select-standard-label1"
                         id="demo-simple-select-standard1"
                         value={renewalreportingTimePeriod}
-                        onChange={(e) => setRenewalreportingTimePeriod(e.target.value)}
+                        onChange={(e) => {setRenewalreportingTimePeriod(e.target.value);getIsUpdated(true)}}
                         label="Renewal Time Frame"
                         >
                             <MenuItem value={30}>Renewal within Next 30 days</MenuItem>
@@ -330,7 +330,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                             labelId="demo-simple-select-standard-label4"
                             id="demo-simple-select-standard4"
                             value={contractContinuationPolicy}
-                            onChange={(e) => setContractContinuationPolicy(e.target.value)}
+                            onChange={(e) => {setContractContinuationPolicy(e.target.value);getIsUpdated(true)}}
                             label="Contract Continuation Policy"
                             MenuProps={MenuProps}
                             >
@@ -351,7 +351,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                             id="demo-multiple-name1"
                             MenuProps={MenuProps}
                             value={reportingTimePeriod}
-                            onChange={(e) => setReportingTimePeriod(e.target.value)}
+                            onChange={(e) => {setReportingTimePeriod(e.target.value);getIsUpdated(true)}}
                             >
                                 <MenuItem value={'Current Week'}>Current Week</MenuItem>
                                 <MenuItem value={'Last Week'}>Last Week</MenuItem>
@@ -376,7 +376,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                                             }
                                         }}
                                         value={from}
-                                        onChange={(e) => setFrom(e)}
+                                        onChange={(e) => {setFrom(e);getIsUpdated(true)}}
                                         renderInput={(params) => <TextField {...params} inputProps={{
                                         ...params.inputProps,
                                         placeholder: "From"
@@ -394,7 +394,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                                             }
                                         }}
                                         value={to}
-                                        onChange={(e) => setTo(e)}
+                                        onChange={(e) => {setTo(e);getIsUpdated(true)}}
                                         renderInput={(params) => <TextField {...params} inputProps={{
                                         ...params.inputProps,
                                         placeholder: "To"
@@ -553,7 +553,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                             labelId="demo-simple-select-standard-label3"
                             id="demo-simple-select-standard3"
                             value={contractStatus}
-                            onChange={(e) => setContractStatus(e.target.value)}
+                            onChange={(e) => {setContractStatus(e.target.value);getIsUpdated(true)}}
                             label="Contract Continuation Policy"
                             MenuProps={MenuProps}
                             >
@@ -569,7 +569,7 @@ const SampleReportLeftCard = ({getDataToUseInReport}) => {
                             labelId="demo-simple-select-standard-label4"
                             id="demo-simple-select-standard4"
                             value={podType}
-                            onChange={(e) => setPodType(e.target.value)}
+                            onChange={(e) => {setPodType(e.target.value);getIsUpdated(true)}}
                             label="Proof of Documentation"
                             MenuProps={MenuProps}
                             >
