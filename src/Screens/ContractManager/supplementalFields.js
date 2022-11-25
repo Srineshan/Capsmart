@@ -22,7 +22,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
 
     const [supplementServiceName, setSupplementServiceName] = useState('');
     let specificDedicatedHoursList = [];
-    services?.filter(data=>['Clinic Blocks','Surgery Session']?.includes(data?.activityType?.activityType))?.map(data=>{
+    services?.filter(data=>['Clinic Blocks','Surgery Session','On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data=>{
       let activityName = data?.activityType?.activityType;
       let activities = data?.activities?.map(data=>data?.activity);
       let result = `${activityName} (${activities?.map(data=>data)?.join(', ')})`
@@ -30,7 +30,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
     });
 
     const selectedHours = (index) => {
-      let temp = services?.filter(data=>['Clinic Blocks','Surgery Session']?.includes(data?.activityType?.activityType))?.map(data=>data);
+      let temp = services?.filter(data=>['Clinic Blocks','Surgery Session','On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data=>data);
       let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
       let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data=>data?.activity)?.join('-');
       setMetadata({...metadata, dedicatedHoursActivityType:dedicatedHoursActivityType, dedicatedHoursPerformingActivity:dedicatedHoursPerformingActivity});
@@ -158,7 +158,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                     }
                 </div>
             </div>
-            {!metadata?.dedicatedHoursSpecified && (
+            {metadata?.dedicatedHoursSpecified && (
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Billable Service*</div>
@@ -166,22 +166,25 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                             <div className={`${style.threeFieldWidth}`} >
                                 <FormControlLabel
                                     control={
-                                        <Switch checked={additionalSchedule} className={` ${style.textAlignLeft} `} />
+                                        <Switch checked={metadata?.billableService} className={` ${style.textAlignLeft} `} />
                                     }
-                                    onChange={() => setAdditionalSchedule(!additionalSchedule)}
+                                    onChange={() => handleValueChange('billableService', !metadata?.billableService)}
                                     className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                    label={additionalSchedule ? 'YES' : 'NO'}
+                                    label={metadata?.billableService ? 'YES' : 'NO'}
                                 />
                             </div>
-                            <Select
-                                displayEmpty
-                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                className={`${style.threeFieldWidth} ${style.marginLeft20}`}
-                                value={metadata?.rateType}
-                                onChange={(e)=>handleValueChange('rateType', e.target.value)}
-                            >
-                                <MenuItem value={'HOURLY'}>Hourly</MenuItem>
-                            </Select>
+                            {
+                              metadata?.billableService &&
+                                <Select
+                                    displayEmpty
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                                    value={metadata?.rateType}
+                                    onChange={(e)=>handleValueChange('rateType', e.target.value)}
+                                >
+                                    <MenuItem value={'HOURLY'}>Hourly</MenuItem>
+                                </Select>
+                            }
                         </div>
                     </div>
 
@@ -202,7 +205,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                                 displayEmpty
                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 className={`${style.threeFieldWidth} ${style.marginLeft20}`}
-                                onChange={(e)=>handleValueChange({...metadata, 'totalSessionFrequency': e.target.value})}
+                                onChange={(e)=>handleValueChange('totalSessionFrequency', e.target.value)}
                                 value={metadata?.totalSessionFrequency}
                             >
                                 <MenuItem value="">Select Frequecy</MenuItem>
@@ -226,7 +229,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                                 />
                             </div>
                             <div className={style.verticalAlignCenter}>
-                                <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$50 per Hour (Pro Rata)</p>
+                                <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>{metadata?.sessionAmount / metadata?.totalSession || 0} per Hour (Pro Rata)</p>
                             </div>
                         </div>
                     </div>

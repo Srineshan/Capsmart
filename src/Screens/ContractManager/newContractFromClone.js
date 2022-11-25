@@ -8,7 +8,7 @@ import WritingFile from './../../images/writingFile.png';
 import CompletedIcon from './../../images/completedIcon.png';
 import RedWarning from './../../images/redWarning.png';
 import ServiceSpecification from './serviceSpecification';
-import {DELETE} from './../dataSaver';
+import {DELETE, TenantID, GET} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import 'react-datalist-input/dist/styles.css';
 import ContractIdTermLimitIndividual from './contractIdTermLimitIndividual';
@@ -21,6 +21,7 @@ import TimeSheetSubmissionTerms from './timeSheetSubmissionTerms';
 import TimesheetProcessingWorkflow from './timesheetProcessingWorkflow';
 
 import style from './index.module.scss';
+import RequestProcessingWorkflow from './requestProcessingWorkflow';
 
 const NewContractFromClone = ({contracts, getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method}) => {
     const [selectContractInfo, setSelectContractInfo] = useState(contractType);
@@ -36,6 +37,8 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
     const [viewPage6, setViewPage6] = useState(false);
     const [viewPage7, setViewPage7] = useState(false);
     const [viewPage8, setViewPage8] = useState(false);
+    const [viewPage9, setViewPage9] = useState(false);
+    const [viewPage10, setViewPage10] = useState(false);
     const [currentPage, setCurrentPage] = useState('Contract ID & Term Limit');
     const [isMultipleContract, setIsMultipleContract] = useState(false);
     const [contractId,setContractId] = useState(contractIdFromActive);
@@ -43,14 +46,22 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
     const [contractName, setContractName] = useState('');
     const [fileDeletionIndex,setFileDeletionIndex] = useState();
     const [fileItems,setFileItems] = useState([]);
+    const [isMultiSiteEntity,setIsMultiSiteEntity] = useState(false);
+
 
     useEffect(()=>{
         getFileData();
+        getEntityData();
     },[]);
 
     useEffect(()=>{
       getFileData();
     }, [fileFields])
+
+    const getEntityData = async() => {
+      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
+      setIsMultiSiteEntity(data?.multiSiteEntity);
+    }
 
 
     const getFileData = () => {
@@ -128,6 +139,14 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
         setViewPage8(value);
     }
 
+    const getViewPage9 = (value) => {
+        setViewPage9(value);
+    }
+
+    const getViewPage10 = (value) => {
+        setViewPage10(value);
+    }
+
     const getCurrentPage = (value) => {
         setCurrentPage(value);
     }
@@ -165,7 +184,7 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                 <div className={style.displayInRow}>
                     <img src={WritingFile} alt="Writing File" className={`${style.smallIcons} ${style.reduceTop10}`} />
                     <InputGroup
-                        value={selectContractInfo}
+                        value={selectContractInfo === 'INDIVIDUAL' ? 'INDIVIDUAL CONTRACTOR' : 'MULTIPLE CONTRACTORS'}
                         className={`${style.contractWidth} ${style.marginLeft20} ${style.reduceTop10} ${style.marginBottom}`} />
                     <Icon icon="cross" size={25} intent={Intent.DANGER} className={style.newContractCrossStyle} onClick={() => {getNewContract(false);getContractIdFromActive('');}}  />
                 </div>
@@ -185,7 +204,7 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                     onClick={() => setCurrentPage('Contracted Services Provider(s)')}>
                         Contracted Services Provider(s)
                         {viewPage3 && (
-                            <img src={RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage4 ? style.completedEntityCardStyle : ''} ${currentPage === "Contractor Business Entity" && style.selectedContractEntityStyle}`}
@@ -230,14 +249,32 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                             <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${currentPage === "Timesheet Processing Workflow" && style.selectedContractEntityStyle}`}
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage9 ? style.completedEntityCardStyle : ''} ${currentPage === "Timesheet Processing Workflow" && style.selectedContractEntityStyle}`}
                     onClick={() => setCurrentPage('Timesheet Processing Workflow')}>
                         Timesheet Processing Workflow
+                        {viewPage9 && (
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
+                    </div>
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage10 ? style.completedEntityCardStyle : ''} ${currentPage === "Request Processing Workflow" && style.selectedContractEntityStyle}`}
+                    onClick={() => setCurrentPage('Request Processing Workflow')}>
+                        Request Processing Workflow
+                        {viewPage10 && (
+                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        )}
                     </div>
                 </div>
-                {currentPage === "Timesheet Processing Workflow" ? (
+                {currentPage === "Request Processing Workflow" ? (
+                    <RequestProcessingWorkflow
+                    getViewPage10={getViewPage10}
+                    getCurrentPage={getCurrentPage}
+                    selectContractInfo={selectContractInfo}
+                    contractId = {contractId}
+                    contractName={contractName}
+                     />
+                ) : currentPage === "Timesheet Processing Workflow" ? (
                     <TimesheetProcessingWorkflow
-                    getViewPage8={getViewPage8}
+                    getViewPage9={getViewPage9}
                     getCurrentPage={getCurrentPage}
                     selectContractInfo={selectContractInfo}
                     contractId = {contractId}
@@ -256,13 +293,14 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                     contractId = {contractId}
                      />
                 ) : (currentPage === "Contracted Add on service specification" || currentPage === "Contracted Services Specification")  ?
-                  <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId = {contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo}/>
+                  <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId = {contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo} isMultiSiteEntity={isMultiSiteEntity}/>
                   :currentPage === "Documentation Proof Required"  ? (
                     <DocumentationProofRequired
                     getViewPage5={getViewPage5}
                     getCurrentPage={getCurrentPage}
                     contractId = {contractId}
                     isMultipleContract={isMultipleContract}
+                    isMultiSiteEntity={isMultiSiteEntity}
                      />
                 ) : currentPage === "Contractor Business Entity"  ? (
                     <ContractorBusinessEntity
@@ -279,7 +317,8 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                     getCurrentPage={getCurrentPage}
                     contractType = {contractType}
                     contractId = {contractId}
-                    contracts={contracts}/>
+                    contracts={contracts}
+                    contractName={contractName}/>
                 ) : (currentPage === "Contract ID & Term Limit") ? (
                     <ContractIdTermLimitIndividual
                     getViewPage1={getViewPage1}
@@ -293,6 +332,7 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                     setName={getContractName}
                     method={method}
                     fileData={fileFields}
+                    isMultiSiteEntity={isMultiSiteEntity}
                     />
                 ) : (selectContractInfo === "MULTIPLE" && currentPage === "Contracted Services Provider(s)") ? (
                     <ContractedServicesProviderMultiple
@@ -311,38 +351,29 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                     <p className={style.descriptionStyle}>
                     {currentPage}
                     </p>
-                    <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Activity Performed</p>
-                    <div className={style.welcomeBorder}></div>
-                    {viewPage1 && !viewPage2 && (
-                        <div className={style.validationAlert}>
-                            <div className={style.displayInRow}>
-                                <div>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}><strong>Text to Alert User</strong></p>
-                                    <p className={`${style.blackText} ${style.leftAlign}`}>This area will display specific alerts for the users</p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Reference Contract Documents</p>
-                    <div className={style.welcomeBorder}></div>
                     {
-                      // <div className={style.documentCard}>
-                      //     <div>
-                      //         <div>
-                      //             <p className={`${style.blackText} ${style.leftAlign}`}><strong>Executed Contract (Current)</strong></p>
-                      //             <div className={style.spaceBetween}>
-                      //                 <p className={`${style.blackText} ${style.leftAlign}`}>{contractName}</p>
-                      //                 {
-                      //                   // <div>
-                      //                   //     <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => getDeleteExecutedContractDialog(true)}  />
-                      //                   // </div>
-                      //                 }
+                      // <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Activity Performed</p>
+                      // <div className={style.welcomeBorder}></div>
+                      // {viewPage1 && !viewPage2 && (
+                      //     <div className={style.validationAlert}>
+                      //         <div className={style.displayInRow}>
+                      //             <div>
+                      //                 <p className={`${style.blackText} ${style.leftAlign}`}><strong>Text to Alert User</strong></p>
+                      //                 <p className={`${style.blackText} ${style.leftAlign}`}>This area will display specific alerts for the users</p>
                       //             </div>
                       //         </div>
                       //     </div>
-                      // </div>
+                      // )}
                     }
-                    {fileItems}
+
+                    {fileItems?.length !== 0 &&
+                      <>
+                        <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Reference Contract Documents</p>
+                        <div className={style.welcomeBorder}></div>
+                        {fileItems}
+                      </>
+                    }
+
                 </div>
             </div>
             {deleteExecutedContractDialog && (
