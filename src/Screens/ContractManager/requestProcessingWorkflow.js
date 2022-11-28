@@ -71,7 +71,7 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
     const getAddOnRequestWorkFlow = async () => {
         const { data: addOnWorkflow } = await GET(`contract-managment-service/contracts/${contractId}/addOnRequestWorkFlow`);
         if (addOnWorkflow) {
-            let workflowData = timesheetWorkFlow?.filter(data => data?.id === addOnWorkflow?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0];
+            let workflowData = timesheetWorkFlow?.filter(data => data?.id === addOnWorkflow?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
             let workFlowValues = Object?.values(workflowData);
             let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
             let approver = workFlowValues?.[1]?.workFlowUser?.id;
@@ -82,7 +82,7 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
     const getAbsenceRequestWorkFlow = async () => {
         const { data: absenceWorkFlow } = await GET(`contract-managment-service/contracts/${contractId}/absenceRequestWorkFlow`);
         if (absenceWorkFlow) {
-            let workflowData = timesheetWorkFlow?.filter(data => data?.id === absenceWorkFlow?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0];
+            let workflowData = timesheetWorkFlow?.filter(data => data?.id === absenceWorkFlow?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
             let workFlowValues = Object.values(workflowData);
             let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
             let approver = workFlowValues?.[1]?.workFlowUser?.id;
