@@ -27,7 +27,7 @@ const ReportHeader = () => {
 
     return(
         <div className={style.headerBackground}>
-            <div className={style.spaceBetween}>
+            <div className={`${style.spaceBetween} ${style.alignCenter}`}>
                 <div>
                     <div className={style.confidentialBoxStyle}>
                         <div className={style.confidentialTextStyle}>CONFIDENTIAL</div>

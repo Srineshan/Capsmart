@@ -1373,11 +1373,5 @@
 
 @page  
 { 
-    margin: 15mm 10mm;  
+    margin: 20mm 15px;  
 } 
-
-@media print {
-    html, body {
-        height: 99%;    
-    }
-}

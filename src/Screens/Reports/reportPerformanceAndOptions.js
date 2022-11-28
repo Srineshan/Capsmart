@@ -25,7 +25,7 @@ import style from './index.module.scss';
 // import PDFDocument from './pdf';
 
 
-const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdated}) => {
+const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdated, isLoading}) => {
     const {reportType} = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -171,7 +171,7 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdat
                         </div>
                         <div className={`${style.iconPadding} ${style.cursorPointer}`} >
                             {/* {showExpandedView ? ( */}
-                                <ZoomInMapIcon style={{color:"#52575D"}}  onClick={handle.enter} />
+                                <ZoomOutMapIcon style={{color:"#52575D"}}  onClick={handle.enter} />
                             {/* ) : (
                                 <ZoomOutMapIcon style={{color:"#52575D"}} onClick={()=> getShowExpandedView(true)} />
                             )} */}
@@ -216,7 +216,7 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdat
                     <div className={style.reportSavedStyle}>Report Saved</div>
                 </div>
             </Dialog>
-            <Dialog isOpen={showReportRefreshingDialog} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`}>
+            <Dialog isOpen={isLoading} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
                     <div className={style.justifyCenter}>
                         <CachedOutlinedIcon sx={{ fontSize: 60 }} style={{color:"#7165E3"}} className={style.reportIconStyle}  />

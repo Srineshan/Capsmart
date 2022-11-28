@@ -52,7 +52,7 @@ const ReportTypeOverview = () => {
     const handle = useFullScreenHandle();
     const componentRef = useRef(null);
     const onBeforeGetContentResolve = useRef(null);
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [isUpdated, setIsUpdated] = useState(false);
     const [contractRenewalReport, setContractRenewalReport] = useState([]);
     const [oneTimeContract, setOneTimeContract] = useState([]);
@@ -98,7 +98,7 @@ const ReportTypeOverview = () => {
             getAcvityAndServices();
         }
         getUsersData();
-    }, [])
+    }, [dataToUseInReport])
 
     // useEffect(() => {
     //     if (reportType === 'upcomingContractRenewals') {
@@ -121,6 +121,7 @@ const ReportTypeOverview = () => {
 
     const getIsRefresh = (value) => {
         if (value) {
+            setIsLoading(true);
             setIsUpdated(false);
             if (reportType === 'upcomingContractRenewals') {
                 getContractRenewalReportWithParameters();
@@ -177,8 +178,8 @@ const ReportTypeOverview = () => {
     }
 
     const getAcvityAndServices = async () => {
-        const { data: chartData } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
-        const { data: reportLogData } = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
+        const { data: chartData } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+        const { data: reportLogData } = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
         setReportLog(reportLogData);
         if (chartData) {
             let temp = [];
@@ -252,6 +253,7 @@ const ReportTypeOverview = () => {
         const { data: chartData } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
         const { data: reportLogData } = await GET(`timesheet-management-service/report/activityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
         setReportLog(reportLogData);
+        setIsLoading(false);
         if (chartData) {
             let temp = [];
             chartData?.activityServiceReports?.map((pie, index) => {
@@ -337,6 +339,7 @@ const ReportTypeOverview = () => {
         if (contractRenewalReport) {
             setContractRenewalReport(contractRenewalReport);
         }
+        setIsLoading(false);
     }
 
     const getOneTimeContract = async () => {
@@ -351,6 +354,7 @@ const ReportTypeOverview = () => {
         if (oneTimeContract) {
             setOneTimeContract(oneTimeContract);
         }
+        setIsLoading(false);
     }
 
     const getNonCompliantContractReportTile = async () => {
@@ -358,6 +362,7 @@ const ReportTypeOverview = () => {
         if (nonCompliantContract) {
             setNonCompliantContractTile(nonCompliantContract);
         }
+        setIsLoading(false);
     }
 
     const getNonCompliantContractReport = async () => {
@@ -365,6 +370,7 @@ const ReportTypeOverview = () => {
         if (nonCompliantContract) {
             setNonCompliantContract(nonCompliantContract);
         }
+        setIsLoading(false);
     }
 
     let activityPerformed = [];
@@ -505,7 +511,7 @@ const ReportTypeOverview = () => {
             <div className={`${style.bigCardGrid} ${style.margin20WithoutTop} ${style.marginTop10}`}>
                 <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} getIsUpdated={getIsUpdated} />
                 <div>
-                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isUpdated} />
+                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isUpdated} isLoading={isLoading} />
                     <FullScreen handle={handle}>
                         <div className={style.scroll}>
                             <div className={`${style.reportBackgroundCard} ${style.marginTop20}`} ref={componentRef}>
@@ -573,7 +579,7 @@ const ReportTypeOverview = () => {
                                                     </div>
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Service Provider </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => data?.name?.firstName).join(', ') || 'All'}</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.name?.firstName}</div>
                                                     </div>
                                                 </div>
                                             ) : (reportType === "nonCompliant") ? (

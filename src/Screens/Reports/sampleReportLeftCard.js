@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import { InputGroup } from '@blueprintjs/core';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -107,8 +108,10 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
     useEffect(() => {
         getSites();
         getContracts();
-        getUsersData();
-    }, [])
+        setSelectedContractedServiceProvider(currentUserDetails?.id);
+        setSelectedContractedServiceProviderToSend(currentUserDetails);
+        // getUsersData();
+    }, [currentUserDetails])
 
     useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
@@ -117,6 +120,7 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
     selectedContractedServiceProviderToSend, from, to]);
 
     useEffect(() => {
+        console.log('entered', selectedSitesToSend)
         let tempDept = [];
         setDepartments([]);
         selectedSitesToSend?.map(siteData => {
@@ -127,6 +131,8 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
         let uniqueDepartments = tempDept.filter((ele, ind) => ind === tempDept.findIndex(elem => elem.id === ele.id && elem.id === ele.id));
         setDepartments(uniqueDepartments);
     }, [selectedSitesToSend]);
+
+    console.log(selectedSitesToSend)
 
     useEffect(()=> {
         if(reportType === "activitiesOrServices"){
@@ -174,24 +180,42 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
         setShowSaveReport(value);
     }
 
-    const getSites = async () => {
-        const {data:sites} = await GET('entity-service/sites');
-        if(sites){
-          setSites(sites);
-      }
-    }
+    // const getSites = async () => {
+    //     const {data:sites} = await GET('entity-service/sites');
+    //     if(sites){
+    //       setSites(sites);
+    //   }
+    // }
 
-    const getContracts = async() => {
-        const {data: contracts} = await GET(`contract-managment-service/contracts`);
-        setContracts(contracts?.contractList);
-    };
+    // const getContracts = async() => {
+    //     const {data: contracts} = await GET(`contract-managment-service/contracts`);
+    //     setContracts(contracts?.contractList);
+    // };
 
-    const getUsersData = async() => {
-        const {data: user} = await GET('user-management-service/user');
-        if(user){
-          setUsers(user);
+    // const getUsersData = async() => {
+    //     const {data: user} = await GET('user-management-service/user');
+    //     if(user){
+    //       setUsers(user);
+    //     }
+    // }
+
+    const getSites = () => {
+        setSites(currentUserDetails?.sites?.sites);
+        if(currentUserDetails?.sites?.sites?.length === 1){
+            setSelectedSites([currentUserDetails?.sites?.sites?.[0]?.id]);
+            setSelectedSitesToSend([currentUserDetails?.sites?.sites?.[0]]);
         }
     }
+
+    const getContracts = () => {
+        setContracts(currentUserDetails?.contracts);
+        if(currentUserDetails?.contracts?.length === 1){
+            setSelectedContracts([currentUserDetails?.contracts?.[0]?.id]);
+            setSelectedContractsToSend([currentUserDetails?.contracts?.[0]]);
+        }
+    }
+
+    console.log(sites)
 
     const handleChangeSites = (event) => {
         const {
@@ -218,8 +242,6 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
             typeof value === 'string' ? departments?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : departments?.filter(data => value?.includes(data?.id))?.map(data => data),
           );
     };
-
-    console.log(from, to)
 
     const handleChangeContracts = (event) => {
         const {
@@ -414,7 +436,7 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
                             onChange={handleChangeSites}
                             MenuProps={MenuProps}
                             >
-                            {sites.map((data) => (
+                            {sites?.map((data) => (
                                 <MenuItem
                                 key={data?.id}
                                 value={data?.id}
@@ -434,7 +456,7 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
                             onChange={handleChangeDepartments}
                             MenuProps={MenuProps}
                             >
-                            {departments.map((data) => (
+                            {departments?.map((data) => (
                                 <MenuItem
                                 key={data?.id}
                                 value={data?.id}
@@ -454,7 +476,7 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
                             onChange={handleChangeContracts}
                             MenuProps={MenuProps}
                             >
-                            {contracts.map((data) => (
+                            {contracts?.map((data) => (
                                 <MenuItem
                                 key={data?.id}
                                 value={data?.id}
@@ -469,19 +491,15 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
                             <Select
                             labelId="demo-multiple-name-label5"
                             id="demo-multiple-name5"
-                            multiple
                             value={selectedContractedServiceProvider}
                             onChange={handleChangeContractedServiceProviders}
                             MenuProps={MenuProps}
                             >
-                            {user.map((data) => (
                                 <MenuItem
-                                key={data?.id}
-                                value={data?.id}
+                                value={currentUserDetails?.id}
                                 >
-                                {data?.name?.firstName}
+                                {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
                                 </MenuItem>
-                            ))}
                             </Select>
                         </FormControl>
                     </>
@@ -497,7 +515,7 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
                             onChange={handleChangeSites}
                             MenuProps={MenuProps}
                             >
-                            {sites.map((data) => (
+                            {sites?.map((data) => (
                                 <MenuItem
                                 key={data?.id}
                                 value={data?.id}
@@ -517,7 +535,7 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
                             onChange={handleChangeDepartments}
                             MenuProps={MenuProps}
                             >
-                            {departments.map((data) => (
+                            {departments?.map((data) => (
                                 <MenuItem
                                 key={data?.id}
                                 value={data?.id}
@@ -537,7 +555,7 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
                             onChange={handleChangeContracts}
                             MenuProps={MenuProps}
                             >
-                            {contracts.map((data) => (
+                            {contracts?.map((data) => (
                                 <MenuItem
                                 key={data?.id}
                                 value={data?.id}

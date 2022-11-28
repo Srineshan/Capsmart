@@ -3,7 +3,6 @@ import React from 'react';
 import style from './index.module.scss';
 
 const ReportsTable = ({tableType, tableHeader, tableValue, activitiesServicesValues, styleName}) => {
-    console.log(tableValue, activitiesServicesValues)
     return(
         <div className={style.marginTop40}>
             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{tableType}</div>
