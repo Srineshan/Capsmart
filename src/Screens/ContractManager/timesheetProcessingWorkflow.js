@@ -111,9 +111,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
 
     const updateTimeSheetWorkflow = async(data, workFlowName, type) => {
       let id = timesheet?.id;
+      console.log('id', id);
       if(id === ''){
         await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
          .then(response=>{
+           console.log('post',response?.data);
            handleContinue(response?.data)
            SuccessToaster('Workflow Updated Successfully');
          })
@@ -124,6 +126,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
       else{
           await PUT(`timesheet-management-service/workflow/${id}`, data)
            .then(response=>{
+             console.log('put', response?.data);
             SuccessToaster('Workflow Updated Successfully');
            })
            .catch(error=>{
