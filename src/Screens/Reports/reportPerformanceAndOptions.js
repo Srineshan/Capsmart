@@ -25,7 +25,7 @@ import style from './index.module.scss';
 // import PDFDocument from './pdf';
 
 
-const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdated, isLoading}) => {
+const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdated, isLoading, dataToUseInReport}) => {
     const {reportType} = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -296,7 +296,7 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdat
                 </div>
             </Dialog>
             {showSaveReport && (
-                <SaveReport getSaveReportDialog={getSaveReportDialog} />
+                <SaveReport getSaveReportDialog={getSaveReportDialog} dataToUseInReport={dataToUseInReport} reportType={reportType} />
             )}
         </div>
     )

@@ -54,7 +54,7 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
     const [showCustomRangeSelection, setShowCustomRangeSelection] = useState(false);
     const [from, setFrom] = useState(startOfWeek(new Date()));
     const [to, setTo] = useState(endOfWeek(new Date()));
-
+    let reportFilter = JSON.parse(sessionStorage.getItem('reportFilter'));
 
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
@@ -71,8 +71,6 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
         const {data: user} = await GET(`user-management-service/user/${userId}`);
         setCurrentUserDetails(user);
     }
-
-    console.log(currentUserDetails)
 
     let dataToUseInReport = {
         renewalreportingTimePeriod: renewalreportingTimePeriod,
@@ -110,8 +108,17 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
         getContracts();
         setSelectedContractedServiceProvider(currentUserDetails?.id);
         setSelectedContractedServiceProviderToSend(currentUserDetails);
-        // getUsersData();
+        if(reportFilter){
+            setFrom(new Date(reportFilter?.startDate));
+            setTo(new Date(reportFilter?.endDate));
+            setSelectedContracts(reportFilter?.contracts);
+            setSelectedSites(reportFilter?.sites);
+            setSelectedDepartments(reportFilter?.departments);
+            setReportingTimePeriod(reportFilter?.reportingTimePeriod);
+        }
     }, [currentUserDetails])
+
+    console.log(reportFilter)
 
     useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
@@ -120,7 +127,6 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
     selectedContractedServiceProviderToSend, from, to]);
 
     useEffect(() => {
-        console.log('entered', selectedSitesToSend)
         let tempDept = [];
         setDepartments([]);
         selectedSitesToSend?.map(siteData => {
@@ -131,8 +137,6 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
         let uniqueDepartments = tempDept.filter((ele, ind) => ind === tempDept.findIndex(elem => elem.id === ele.id && elem.id === ele.id));
         setDepartments(uniqueDepartments);
     }, [selectedSitesToSend]);
-
-    console.log(selectedSitesToSend)
 
     useEffect(()=> {
         if(reportType === "activitiesOrServices"){
@@ -214,8 +218,6 @@ const SampleReportLeftCard = ({getDataToUseInReport, getIsUpdated}) => {
             setSelectedContractsToSend([currentUserDetails?.contracts?.[0]]);
         }
     }
-
-    console.log(sites)
 
     const handleChangeSites = (event) => {
         const {

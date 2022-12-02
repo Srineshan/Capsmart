@@ -4,6 +4,7 @@ body{
     scrollbar-width: none !important;
     ::-webkit-scrollbar {
         display: none !important;
+        background: transparent !important;
     }
 }
 
@@ -1747,6 +1748,7 @@ select {
     width: 0 !important;
     height: 0 !important;
     display: none !important;
+    background: transparent !important;
   }
 
   .tagStyle {

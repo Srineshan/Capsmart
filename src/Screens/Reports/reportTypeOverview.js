@@ -98,26 +98,28 @@ const ReportTypeOverview = () => {
             getAcvityAndServices();
         }
         getUsersData();
-    }, [dataToUseInReport])
+    }, [])
 
-    // useEffect(() => {
-    //     if (reportType === 'upcomingContractRenewals') {
-    //         getContractRenewalReportWithParameters();
-    //     }
-    //     if (reportType === 'oneTimeContract') {
-    //         getOneTimeContractWithParameters();
-    //     }
-    //     if (reportType === 'nonCompliant') {
-    //         getNonCompliantContractReportTile();
-    //     }
-    //     if (reportType === 'activitiesOrServices') {
-    //         getAcvityAndServicesWithParameter();
-    //     }
-    //     if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
-    //         setSelectedPodTypeFromTile(dataToUseInReport?.podType)
-    //         getNonCompliantContractReport();
-    //     }
-    // }, [dataToUseInReport, selectedPodTypeFromTile])
+    useEffect(() => {
+        if(!isUpdated){
+            if (reportType === 'upcomingContractRenewals') {
+                getContractRenewalReportWithParameters();
+            }
+            if (reportType === 'oneTimeContract') {
+                getOneTimeContractWithParameters();
+            }
+            if (reportType === 'nonCompliant') {
+                getNonCompliantContractReportTile();
+            }
+            if (reportType === 'activitiesOrServices') {
+                getAcvityAndServicesWithParameter();
+            }
+            if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
+                setSelectedPodTypeFromTile(dataToUseInReport?.podType)
+                getNonCompliantContractReport();
+            }
+        }
+    }, [dataToUseInReport, selectedPodTypeFromTile])
 
     const getIsRefresh = (value) => {
         if (value) {
@@ -141,8 +143,6 @@ const ReportTypeOverview = () => {
             }
         }
     }
-
-    console.log(dataToUseInReport)
 
     useEffect(() => {
         setIndividualContract(contractRenewalReport?.filter(data => data?.contractType === "INDIVIDUAL")?.map(data => data));
@@ -245,9 +245,6 @@ const ReportTypeOverview = () => {
             setStackedCategories(stackedTemp?.map(stackedData => stackedData?.name));
         }
     }
-
-    console.log(pieData)
-
 
     const getAcvityAndServicesWithParameter = async () => {
         const { data: chartData } = await GET(`timesheet-management-service/report/activityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
@@ -511,7 +508,7 @@ const ReportTypeOverview = () => {
             <div className={`${style.bigCardGrid} ${style.margin20WithoutTop} ${style.marginTop10}`}>
                 <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} getIsUpdated={getIsUpdated} />
                 <div>
-                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isUpdated} isLoading={isLoading} />
+                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isUpdated} isLoading={isLoading} dataToUseInReport={dataToUseInReport} />
                     <FullScreen handle={handle}>
                         <div className={style.scroll}>
                             <div className={`${style.reportBackgroundCard} ${style.marginTop20}`} ref={componentRef}>
