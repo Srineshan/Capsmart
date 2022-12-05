@@ -58,7 +58,6 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
       setSelectedValues();
     }, [serviceSelected]);
 
-    console.log('metadata', metadata, serviceSelected);
     const setSelectedValues = async() => {
       if(editService){
       let temp = metadata;
