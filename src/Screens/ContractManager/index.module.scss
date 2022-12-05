@@ -853,6 +853,12 @@ body{
     grid-template-columns: 45% 10% 45%;
 }
 
+.contractedTime{
+  display: grid;
+  grid-template-columns: 45% 45%;
+  grid-column-gap: 10%;
+}
+
 .effectiveDateWidth{
     width: 45%;
 }
@@ -1254,6 +1260,11 @@ select {
 .weekSelectStyle{
     margin-top: 0px;
     height: 30px;
+}
+
+.timeCommitment{
+  margin-top:-1px;
+  height:31px;
 }
 
 .marginBottom{

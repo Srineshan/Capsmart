@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { InputGroup, Icon, Intent, Dialog, Classes } from '@blueprintjs/core';
 import AddNewContractManager from './addNewContractManager';
 import Alert from './alert';
+import FileImg from './../../images/fileImg.png';
 import DeleteExecutedContractDialog from './deleteExecutedContractDialog';
 import NewServiceProvider from './newServiceProvider';
 import WritingFile from './../../images/writingFile.png';
@@ -49,6 +50,7 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
     const [isMultiSiteEntity,setIsMultiSiteEntity] = useState(false);
     const [helpTextData, setHelpTextData] = useState();
     const [selectedField, setSelectedField] = useState('');
+    const [selectedFileURL, setSelectedFileURL] = useState('');
 
     useEffect(()=>{
         getFileData();
@@ -79,6 +81,8 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
       setIsMultiSiteEntity(data?.multiSiteEntity);
     }
 
+    console.log('fileData', fileFields);
+
 
     const getFileData = () => {
       let temp = [];
@@ -87,13 +91,15 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
           <div className={`${style.documentCard} ${style.marginTop10}`}>
               <div>
                   <div>
-                      <p className={`${style.blackText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.type}</strong></p>
                       <div className={style.spaceBetween}>
-                          <p className={`${style.blackText} ${style.leftAlign}`}>{fileFields?.[i]?.name}</p>
+                        <p className={`${style.blackText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.type}</strong></p>
                           <div>
-                              <Icon icon="trash" className={style.trashStyle} size={10} onClick={() => {getDeleteExecutedContractDialog(true);setFileDeletionIndex(i);}}  />
+                              <Icon icon="trash" className={style.trashStyle} size={17} onClick={() => {getDeleteExecutedContractDialog(true);setFileDeletionIndex(i);}}  />
+                              <a className={style.blackText} href={fileFields?.[i]?.filePath} target="_blank"><Icon icon="document" className={style.trashStyle} size={17} onClick={() => {setSelectedFileURL(fileFields?.[i]?.filePath)}}  /></a>
                           </div>
                       </div>
+                      <p className={`${style.blackText} ${style.leftAlign}`}>{fileFields?.[i]?.fileName}</p>
+
                   </div>
               </div>
           </div>
@@ -284,6 +290,7 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                         )}
                     </div>
                 </div>
+
                 {currentPage === "Request Processing Workflow" ? (
                     <RequestProcessingWorkflow
                     getViewPage10={getViewPage10}
@@ -370,22 +377,20 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
 
                 ) : ''}
                 <div className={style.cloneBlockStyle}>
-                    <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Identification Information</p>
+                    <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>{currentPage}</p>
                     <div className={style.welcomeBorder}></div>
                     <div>
-                        <p className={`${style.blackText} ${style.leftAlign}`}><strong>{currentPage}</strong></p>
-                        <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[currentPage]?.description || ''}</p>
-                    </div>
-                    {selectedField !== '' &&
-                      <>
-                        <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Activity Performed</p>
-                        <div className={style.welcomeBorder}></div>
-                          <div>
-                              <p className={`${style.blackText} ${style.leftAlign}`}><strong>{selectedField}</strong></p>
-                              <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[selectedField]?.description || ''}</p>
-                          </div>
-                      </>
+                    {
+                      selectedField === '' ?
+                      <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[currentPage]?.description || ''}</p>
+                      :
+                      <div>
+                          <p className={`${style.blackText} ${style.leftAlign}`}><strong>{selectedField}</strong></p>
+                          <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[selectedField]?.description || ''}</p>
+                      </div>
+
                     }
+                    </div>
 
                     {
                       // <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Activity Performed</p>
@@ -402,11 +407,20 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                       // )}
                     }
 
-                    {fileItems?.length !== 0 &&
+                    {fileItems?.length !== 0 ?
                       <>
                         <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Reference Contract Documents</p>
                         <div className={style.welcomeBorder}></div>
                         {fileItems}
+                      </>
+                      :
+                      <>
+                        <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Reference Contract Documents</p>
+                        <div className={style.welcomeBorder}></div>
+                            <div>
+                              <p className={`${style.blackText}`}>Contract Documents Not Uploaded</p>
+                              {currentPage !== 'Contract ID & Term Limit' && <p className={`${style.cursorPointer} ${style.blueColor}`} onClick={()=>setCurrentPage('Contract ID & Term Limit')}>Click to Upload your documents</p>}
+                            </div>
                       </>
                     }
 

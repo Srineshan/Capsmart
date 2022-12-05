@@ -25,7 +25,7 @@ import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
 
-const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity }) => {
+const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedContractServiceIndex }) => {
     const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Services','Add-On Services','Administrative / Miscellaneous Services'];
     const siteTypeId = sessionStorage.getItem('entityTypeId');
     const [serviceType, setServiceType] = useState('Clinic Blocks');
@@ -54,10 +54,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
     const [workingPeriodTo, setWorkingPeriodTo] = useState('');
     const [contractedServiceProvider, setContractedServiceProvider] = useState('');
-    const [activityOrServiceType, setActivityOrServiceType] = useState('Medical / Surgical Care Contracted Services');
-    const [regularClinicSchedule, setRegularClinicSchedule] = useState(0);
     const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
-    const [regularClinicScheduleFrequency, setRegularClinicScheduleFrequency] = useState('WEEK');
     const [allActivities, setAllActivities] = useState(false);
     const [additionalCompensationTitle, setAdditionalCompensationTitle] = useState('');
     const [additionalCompensationPerMonth, setAdditionalCompensationPerMonth] = useState(0);
@@ -246,7 +243,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           })
         }
         if(serviceType === 'Supplemental Services'){
-          performingActivity = metadata?.supplementServiceName?.map(data=>data)?.join('-') || '';
+          performingActivity = metadata?.supplementServiceName?.map(data=>data)?.join('-');
           metadata?.supplementServiceName?.map(data=>(
             activities.push({"activity":data})
           ));
@@ -260,7 +257,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
           });
           data = temp;
-          console.log('inside if', data);
         }
         else{
              data = [{
@@ -353,26 +349,33 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   "billableService": metadata?.billableService
                 }]
               }
-              console.log('services',contractedServices, data);
             let services = existingServices || [];
-            console.log('service down', services);
             if(editService){
-              console.log('inside if');
-              let temp = services?.filter(data=>data?.activityType?.activityType !== serviceType && data?.performingActivity !== selectedService?.performingActivity)?.map(data=>data);
+              console.log('selected', selectedService);
+              // console.log('in edit',services?.filter(data=>data?.activityType?.activityType === serviceType && data?.performingActivity === selectedService?.performingActivity)?.map(data=>data));
+              // existingServices?.map(data=>{
+              //   console.log('serviceType', data?.activityType?.activityType, serviceType);
+              //   console.log('performingActivity', data?.performingActivity, selectedService?.performingActivity);
+              // })
+              let temp = existingServices?.filter((data, index)=>index !== selectedContractServiceIndex)?.map(data=>data);
               temp.push(...data);
               services = temp;
+              // existingServices?.map(service=>{
+              //   if(service?.activityType?.activityType !== serviceType && service?.performingActivity !== selectedService?.performingActivity){
+              //     // console.log('selected if', service?.activityType?.activityType, service?.performingActivity, data);
+              //     temp.push(...data);
+              //   }
+              // })
+              // let temp = services?.filter(data=>data?.activityType?.activityType !== serviceType && data?.performingActivity !== selectedService?.performingActivity)?.map(data=>data);
+              // console.log('temp', temp, data);
+              // temp.push(...data);
+              // services = temp;
             }else{
-              console.log('inside else')
-              console.log('data top', data, 'services top', services)
               services.push(...data);
-              console.log('data',data);
-              console.log('services', services);
             }
-            console.log('outside', services);
             let formattedData = {
                 contractedServices: services
             }
-            console.log('formattedData', formattedData);
 
             const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
             if(response){
@@ -480,27 +483,28 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     <div className={style.extensionBorder}></div>
                     <div className={rightHelpArea ? style.addServiceGrid : ''}>
                     <div className={style.proofBorder}>
-                        <div className={`${style.addManagerGrid} `}>
+                    <div className={`${style.addManagerGrid}`}>
+                        <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
+                        <div>
+                            <Select
+                                displayEmpty
+                                value={serviceType}
+                                onChange={(e) => {setServiceType(e.target.value)}}
+                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                className={`${style.fullWidth}`}
+                            >
+                            <MenuItem value="">Select Activity /Service Type</MenuItem>
+                            {serviceTypeList?.map(data=>(
+                              <MenuItem value={data}>{data}</MenuItem>
+                            ))}
+                            </Select>
+                        </div>
+                    </div>
+                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
                             <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData} isMultiSiteEntity={isMultiSiteEntity}/>
                         </div>
-                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
-                            <div>
-                                <Select
-                                    displayEmpty
-                                    value={serviceType}
-                                    onChange={(e) => {setServiceType(e.target.value)}}
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                    className={`${style.fullWidth}`}
-                                >
-                                <MenuItem value="">Select Activity /Service Type</MenuItem>
-                                {serviceTypeList?.map(data=>(
-                                  <MenuItem value={data}>{data}</MenuItem>
-                                ))}
-                                </Select>
-                            </div>
-                        </div>
+
                         {selectContractInfo !== "INDIVIDUAL" && (
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>

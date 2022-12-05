@@ -482,6 +482,9 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                       <InputGroup className={style.fullWidth}
                       placeholder="NPIN"
                       value={npin}
+                      type="Number"
+                      maxLength={10}
+                      disabled={npinMissing || npinNotApplicable}
                       onChange={(e) => setNpin(e.target.value)}/>
                       <FormGroup>
                           <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => setNpinMissing(e.target.checked)} />} label="Missing" />

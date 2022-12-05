@@ -41,7 +41,6 @@ const ServiceDays = ({setMetaData, selectedService}) => {
       Object.keys(serviceDays || [])?.filter(data=>weekDays?.map(days=>days)?.includes(data) && serviceDays[data] === true)?.map(data=>{
         weekDaysCount = weekDaysCount + 52;
       });
-      console.log('dayscount', weekDaysCount,weekEndsCount );
       setDaysCount({...daysCount, weekdays: weekDaysCount, weekends: weekEndsCount});
 
     }, [serviceDays])
@@ -106,7 +105,7 @@ const ServiceDays = ({setMetaData, selectedService}) => {
                         value={daysCount?.weekends}
                         onChange={(e)=> setDaysCount({...daysCount, weekends:e.target.value})}
                         InputProps={{
-                            endAdornment: <InputAdornment position="end">Days</InputAdornment>,
+                            endAdornment: <InputAdornment position="end">Day</InputAdornment>,
                         }}
                     />
                 </div>

@@ -19,6 +19,8 @@ import style from './index.module.scss';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
+const TEXTFIELDLEN = 100;
+const DESCLEN = 250;
 const ContractIdTermLimitIndividual = (
   {contracts,
    getViewPage1,
@@ -172,10 +174,7 @@ const ContractIdTermLimitIndividual = (
         }
     }
   }
-
-  console.log('sites', selectedSites);
-
-      const getAddNewManagerDialog = (value) => {
+    const getAddNewManagerDialog = (value) => {
         setAddNewManagerDialog(value);
     }
 
@@ -213,9 +212,8 @@ const ContractIdTermLimitIndividual = (
         return;
       }
       let contractFiles = [];
-      fullyExecutedContract && fullyExecutedContractData?.map(data=>{
+      fullyExecutedContract && fullyExecutedContractData?.filter(data=>data?.file !== null)?.map(data=>{
         contractFiles?.push({
-          // filePath:data.filePath,
           fileName:data.fileName,
           documentType:data.type,
           documentDescription:data.desc,
@@ -286,7 +284,8 @@ const ContractIdTermLimitIndividual = (
        formData.append('contractDetail', new Blob([JSON.stringify(data)], {
             type: "application/json"
         }));
-        file?.map(data=>{
+        file?.filter(data=>data !== null)?.map(data=>{
+          console.log('data',data);
           formData.append('contractFiles', data);
         })
        if(method === 'POST' && contractIdFromActive === ''){
@@ -486,7 +485,7 @@ const ContractIdTermLimitIndividual = (
             <label for="file-upload"  className={style.customFileUpload}>
                 Choose File
             </label>
-            <input id="file-upload" type="file" onChange={(e)=> handleFileUpload(e)}/>
+            <input id="file-upload" type="file"  accept="image/*, .pdf, .doc, .docx" onChange={(e)=> handleFileUpload(e)}/>
           </div>
         )
     }
@@ -508,13 +507,15 @@ const ContractIdTermLimitIndividual = (
             <div className={`${style.newContractFromCloneBoxStyle}`}>
                 <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>Contract / Agreement Name*</div>
-                    <InputGroup placeholder="Contract Name" className={style.fullWidth} value={contractName} onChange={(e)=>{setContractName(e.target.value);setName(e.target.value)}}
+                    <InputGroup placeholder="Contract Name" className={style.fullWidth} value={contractName}
+                    maxLength={TEXTFIELDLEN} onChange={(e)=>{setContractName(e.target.value);setName(e.target.value)}}
                     onFocus={()=>{getSelectedField('Contract / Agreement Name')}}/>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract ID*</div>
                     <div className={style.displayInRow}>
-                        <InputGroup placeholder="Contract Id" value={contractId.id}
+                        <InputGroup placeholder="Contract Id" value={contractId.id} disabled={contractId.missing}
+                        maxLength={TEXTFIELDLEN}
                         onFocus={()=>{getSelectedField('Contract ID')}} className={`${style.entityFieldWidth}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
                       <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked, id:''})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                     </div>
@@ -525,6 +526,7 @@ const ContractIdTermLimitIndividual = (
                       <div className={style.displayInRow}>
                           <DatalistInput items={priorContractItems || []}
                           onSelect={onSelectContractId} className={style.selectFieldWidth}
+                          maxLength={TEXTFIELDLEN}
                           onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})} placeholder="Search by CID / Name" value={contractPriorId?.id}
                           />
                             <Checkbox label="NA"  checked={contractPriorId.na} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
@@ -539,6 +541,7 @@ const ContractIdTermLimitIndividual = (
                         <DatalistInput items={items || []} onSelect={onSelect}
                         onChange={(e)=>setUserName(e.target.value)}
                         className={style.selectFieldWidth}
+                        maxLength={TEXTFIELDLEN}
                         value={contractData?.contractManager?.name?.firstName}
                         onFocus={()=>{getSelectedField('Assigned Contract Manager')}}/>
                         {(!items?.map(data=>data?.name?.firstName)?.includes(userName) && !userName === '') && (
@@ -552,7 +555,7 @@ const ContractIdTermLimitIndividual = (
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Fully Executed Contract on File*</div>
+                    <div className={style.extentionLableStyle}>Contract Documents On File*</div>
                     <div onFocus={()=>{getSelectedField('Fully Executed Contract on File')}}>
                         <div className={`${style.spaceBetween}`}>
                             <FormControlLabel
@@ -603,9 +606,11 @@ const ContractIdTermLimitIndividual = (
                               </div>
                               <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
                               value={fileFieldData?.name}
+                              maxLength={TEXTFIELDLEN}
                               onChange={(e)=>handleFileChange(e,'name')}/>
-                              <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc} className={`${style.fullWidth} ${style.marginTop10}`}  onChange={(e)=>handleFileChange(e,'desc')}/>
-                              <div >
+                              <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc}
+                              maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`}  onChange={(e)=>handleFileChange(e,'desc')}/>
+                              <div>
                                   <InputGroup value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : 'Choose File...'}  leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e)=>handleFileUpload(e)} />
                               </div>
                           </div>
@@ -636,7 +641,7 @@ const ContractIdTermLimitIndividual = (
                         </div>
                         {siteSpecific && (
                             <TagInput
-                                placeholder="Enter tags/keywords relative to the post"
+                                placeholder="Selected Sites"
                                 values={selectedSites?.map(data=>data?.siteName?.siteName)}
                                 className={`${style.marginTop20}`}
                                 onRemove={handleTagsRemove}
@@ -705,7 +710,7 @@ const ContractIdTermLimitIndividual = (
                         )}
                         {departmentSpecific && (
                             <TagInput
-                                placeholder="Enter tags/keywords relative to the post"
+                                placeholder="Selected Departments"
                                 values={selectedDepartmentSites?.filter(data=>data?.site_id === selectedSite)?.map(data=>data?.name) || []}
                                 className={`${style.marginTop20}`}
                                 onRemove={handleTagSet2Remove}
@@ -789,6 +794,31 @@ const ContractIdTermLimitIndividual = (
                       </LocalizationProvider>
                     </div>
                 </div>
+
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
+                    <div className={style.contractedTime}>
+                    <InputGroup type="number"/>
+                    <select
+                        name="class"
+                        id="Class"
+                        className={`${style.timeCommitment}`}>
+                          <option value="Select...">
+                            Select...
+                          </option>
+                            <option value="Hours Per Week">
+                            Hours Per Week
+                            </option>
+                            <option value="Hours Per Month">
+                            Hours Per Month
+                            </option>
+                            <option value="Hours Per Contract Year">
+                            Hours Per Contract Year
+                            </option>
+                    </select>
+                    </div>
+                </div>
+
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Continuation Policy*</div>
                     <div>

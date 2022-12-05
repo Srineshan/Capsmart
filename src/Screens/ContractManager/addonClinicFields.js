@@ -178,6 +178,8 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
       getFields();
     }
 
+    console.log('metadata', metadata);
+
     const handleRequestApprovalChange = (name) => {
       let temp = metadata;
       temp?.filter(data=>getServiceName(data?.activityType?.activityType, data?.activities?.map(data=>data?.activity)) === name)?.map(data=>{
@@ -272,9 +274,6 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
       setMetadata(temp);
       getFields();
     }
-
-
-    console.log('services', services);
 
     return (
         <div>

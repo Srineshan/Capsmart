@@ -110,7 +110,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
         {
             dot.push('green');
             contractType.push(data?.contractType);
-            contractId.push(data?.contractDetail?.contractId?.id);
+            contractId.push(data?.contractDetail?.contractId?.id || '-');
             name.push(data?.contractName?.contractName);
             contractors.push("-");
             effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
