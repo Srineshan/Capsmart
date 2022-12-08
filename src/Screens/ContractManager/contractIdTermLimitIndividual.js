@@ -795,29 +795,31 @@ const ContractIdTermLimitIndividual = (
                     </div>
                 </div>
 
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
-                    <div className={style.contractedTime}>
-                    <InputGroup type="number"/>
-                    <select
-                        name="class"
-                        id="Class"
-                        className={`${style.timeCommitment}`}>
-                          <option value="Select...">
-                            Select...
-                          </option>
-                            <option value="Hours Per Contract Year">
-                              Hours Per Contract Year
-                            </option>
-                            <option value="Weeks Per Contract Year">
-                              Weeks Per Contract Year
-                            </option>
-                            <option value="Months Per Contract Year">
-                              Months Per Contract Year
-                            </option>
-                    </select>
-                    </div>
-                </div>
+                {
+                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  //     <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
+                  //     <div className={style.contractedTime}>
+                  //     <InputGroup type="number"/>
+                  //     <select
+                  //         name="class"
+                  //         id="Class"
+                  //         className={`${style.timeCommitment}`}>
+                  //           <option value="Select...">
+                  //             Select...
+                  //           </option>
+                  //             <option value="Hours Per Contract Year">
+                  //               Hours Per Contract Year
+                  //             </option>
+                  //             <option value="Weeks Per Contract Year">
+                  //               Weeks Per Contract Year
+                  //             </option>
+                  //             <option value="Months Per Contract Year">
+                  //               Months Per Contract Year
+                  //             </option>
+                  //     </select>
+                  //     </div>
+                  // </div>
+                }
 
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Continuation Policy*</div>
