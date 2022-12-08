@@ -1,143 +1,249 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import Navbar from '../../Components/Navbar';
-import SideBar from './../../Components/Sidebar';
-import { Icon, Intent } from "@blueprintjs/core";
-import style from './index.module.scss';
-import AddTerminationReasons from './addTerminationReasons';
-import AddNewEntity from './../../images/addEntity.png';
-import AddRefresh from './../../images/refreshEntity.png';
-import OpenFolder from './../../images/openFolder.png';
-import BlackBorderFolder from './../../images/blackBorderFolder.png';
-import IndustriesEntityFolder from './../../images/industriesEntityFolder.png';
-import DeleteHcFolder from './../../images/deleteHcFolder.png';
-import DeleteHcRow from './../../images/deleteHcRow.png';
-import EditBlue from './../../images/editBlue.png';
-import AddAbsenseReasonsForHealthcare from './addAbsenseReasonsForHealthcare';
-import Titlebar from '../../Components/titlemenu';
-import { Link } from 'react-router-dom';
-import {GET} from './../dataSaver';
+import React, { Fragment, useEffect, useState } from "react";
+import style from "./index.module.scss";
+import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
+import DeleteHcRow from "./../../images/deleteHcRow.png";
+import EditBlue from "./../../images/editBlue.png";
+import AddAbsenseReasonsForHealthcare from "./addAbsenseReasonsForHealthcare";
+import { GET, DELETE } from "./../dataSaver";
+import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
+import DeleteConfirmation from "../../Components/DeleteConfirmation";
 
-const AbsenseReasonsByIndustries = () => {
-    const [showAddAbsenseReasonsDialog, setAddAbsenseReasonsDialog] = useState(false);
-    const [isEdit, setIsEdit] = useState(false);
+const AbsenseReasonsByIndustries = ({
+    getAddEntityDialog,
+    showAddEntityDialog,
+    isEdit,
+    setIsEdit,
+}) => {
+    const [sideMenu, setSideMenu] = useState([]);
+    const [selectedTitle, setSelectedTitle] = useState(`${sideMenu?.[0]?.id}`);
+    const [industryId, setIndustryId] = useState("");
+    const [tableEntityData, setTableEntityData] = useState([]);
+    const [deleteEntityId, setDeleteEntityId] = useState("");
+    const [selectedAbsence, setSelectedAbsence] = useState({});
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-    const getAddAbsenseReasonsDialog = (value) => {
-        setAddAbsenseReasonsDialog(value);
-    }
+    const getIndustryData = async () => {
+        const { data: data } = await GET(`entity-service/industryMaster`);
+        setSideMenu(data);
+    };
 
+    const getEntityData = async () => {
+        const { data: data } = await GET(
+            `entity-service/absenceReasonMaster?industryId=${industryId}`
+        );
+        setTableEntityData(data);
+    };
 
+    const SelectedHandler = (data) => {
+        setSelectedTitle(data.industry);
+        setIndustryId(data.id);
+    };
 
+    const deleteHandler = (data) => {
+        setDeleteEntityId(data?.id);
+        setShowDeleteConfirmation(true);
+    };
+
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    };
+
+    const getDeleteConfirmation = (value) => {
+        if (value) {
+            deleteEntity(deleteEntityId);
+        }
+    };
+
+    const deleteEntity = async (id) => {
+        await DELETE(`entity-service/absenceReasonMaster/${id}`)
+            .then((response) => {
+                SuccessToaster("Absence Deleted Successfully");
+                getEntityData();
+            })
+            .catch((error) => {
+                ErrorToaster(error);
+            });
+    };
+
+    useEffect(() => {
+        getIndustryData();
+    }, []);
+
+    useEffect(() => {
+        getEntityData();
+    }, [selectedTitle]);
+
+    useEffect(() => {
+        setSelectedTitle(sideMenu?.[0]?.industry);
+        setIndustryId(sideMenu?.[0]?.id);
+    }, [sideMenu]);
 
     return (
         <Fragment>
-            <Navbar />
-            <div className={style.margin20}>
-                <div className={style.bigCardGrid}>
-                    <SideBar />
-                    <div>
-                        <div className={`${style.displayInRow} ${style.marginTop10}`}>
-                            <div className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}>
-                                ABSENCE REASONS BY INDUSTRIES
-                            </div>
-                            <div className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}>
-                                UPDATED ON FEB 16, 2022 16:45 EST
-                            </div>
-                            <div className={style.crossStyle}>
-                                <img src={AddRefresh} className={`${style.colorFileStyle} ${style.marginLeft20}`} />
-                                <img src={AddNewEntity} onClick={() => getAddAbsenseReasonsDialog(true)} className={`${style.colorFileStyle} ${style.marginLeft20}`} />
-                                <Link to={"/Screens/ReferenceList/superAdminDashboard"}> <Icon icon="cross" size={25} intent={Intent.DANGER} className={`${style.marginLeft20} ${style.marginBottom5} ${style.crossColor}`} /> </Link>
-                                {/* intent={Intent.DANGER} */}
-                            </div>
-                        </div>
-                        <div className={style.marginTop35}>
-                            <div className={style.centreCardStyle}>
-                                <div className={style.margin20}>
-                                    <div className={style.departmentCardColumnsGrid}>
-                                        <Titlebar />
-                                        {/* <div className={style.displayInCol}>
-                                            <div className={`${style.industriesCardStyle} ${style.selectedIndustriesBackground}`}>
-                                                <div className={style.spaceBetween}>
-                                                    <p className={style.industriesCardTextStyle1}>HEALTHCARE</p>
-                                                    <p className={style.industriesCardTextStyle1}>7</p>
-                                                </div>
-                                            </div>
-                                            <div className={`${style.industriesCardStyle} ${style.marginTop10}`}>
-                                                <div className={style.spaceBetween}>
-                                                    <p className={`${style.industriesCardTextStyle1}`}>FINANCE</p>
-                                                    <p className={`${style.industriesCardTextStyle1}`}>0</p>
-                                                </div>
-                                            </div>
-                                            <div className={`${style.industriesCardStyle} ${style.marginTop10}`}>
-                                                <div className={style.spaceBetween}>
-                                                    <p className={style.industriesCardTextStyle1}>GOVERNMENT</p>
-                                                    <p className={style.industriesCardTextStyle1}>0</p>
-                                                </div>
-                                            </div>
-                                        </div> */}
-                                        <div >
-                                            <div className={style.tableHeaderIndustriesEntity}>
-                                                <p className={style.tableHeaderIndustriesFontStyle}>ABSENCE REASONS FOR HEALTHCARE</p>
-                                            </div>
-                                            <div className={style.terminationHeader}>
-                                                <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                <p className={style.tableHeaderIndustriesFontStyle}>PLANNED</p>
-                                            </div>
-                                            <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Personal / Family Vacation</p>
-                                                <p className={style.tableDataFontStyle}>14 Days Prior</p>
-                                                <img src={EditBlue} onClick={() => { getAddAbsenseReasonsDialog(true); setIsEdit(true) }} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Religious Holiday</p>
-                                                <p className={style.tableDataFontStyle}>14 Days Prior</p>
-                                                <img src={EditBlue} onClick={() => { getAddAbsenseReasonsDialog(true); setIsEdit(true) }} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Personal / Family Emergency</p>
-                                                <p className={style.tableDataFontStyle}>14 Days Prior</p>
-                                                <img src={EditBlue} onClick={() => { getAddAbsenseReasonsDialog(true); setIsEdit(true) }} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={style.terminationHeader}>
-                                                <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                <p className={style.tableHeaderIndustriesFontStyle}>UNPLANNED</p>
-                                            </div>
-                                            <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Detrimental Professional Competence / Conduct Reports</p>
-                                                <p className={style.tableDataFontStyle}>14 Days Prior</p>
-                                                <img src={EditBlue} onClick={() => { getAddAbsenseReasonsDialog(true); setIsEdit(true) }} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-
-                                            <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Violation of Contract Rules and / or Policies</p>
-                                                <p className={style.tableDataFontStyle}>14 Days Prior</p>
-                                                <img src={EditBlue} onClick={() => { getAddAbsenseReasonsDialog(true); setIsEdit(true) }} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                        </div>
-                                    </div>
+            <div className={style.departmentCardColumnsGrid}>
+                <div className={style.displayInCol}>
+                    {sideMenu?.map((data) => {
+                        return (
+                            <div
+                                className={
+                                    data?.industry === selectedTitle
+                                        ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
+                                        : `${style.industriesCardStyle} ${style.marginTop10}`
+                                }
+                                onClick={() => {
+                                    SelectedHandler(data);
+                                }}
+                            >
+                                <div className={style.spaceBetween}>
+                                    <p className={style.industriesCardTextStyle1}>
+                                        {data.industry}
+                                    </p>
+                                    {/* <p className={style.industriesCardTextStyle1}>7</p> */}
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        );
+                    })}
                 </div>
-                <div className={style.spaceBetween}>
-                    <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                    <p className={style.poweredBy}>© TimeSmart.AI</p>
+
+                <div className={style.industriesEntityCardStyle}>
+                    <div className={style.tableHeaderIndustriesEntity}>
+                        <p className={style.tableHeaderIndustriesFontStyle}>
+                            ABSENCE REASONS FOR HEALTHCARE
+                        </p>
+                    </div>
+                    {tableEntityData?.filter((data) => data.absenceType === "PLANNED")
+                        .length !== 0 ? (
+                        <div className={style.terminationHeader}>
+                            <img
+                                src={IndustriesEntityFolder}
+                                alt="IndustriesEntityFolder"
+                                className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                            />
+                            <p className={style.tableHeaderIndustriesFontStyle}>PLANNED</p>
+                        </div>
+                    ) : (
+                        <></>
+                    )}
+
+                    {tableEntityData
+                        ?.filter((data) => data.absenceType === "PLANNED")
+                        .map((data, innerIndex) => {
+                            return (
+                                <>
+                                    <div
+                                        className={
+                                            innerIndex % 2 !== 0
+                                                ? `${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                                : `${style.absenseLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                        }
+                                    >
+                                        <p></p>
+                                        <p className={style.tableDataFontStyle}>
+                                            {data.absenceReason}
+                                        </p>
+                                        <p className={style.tableDataFontStyle}>
+                                            {`${data.notificationPeriod.numberOfDays}`} Days Prior
+                                        </p>
+                                        <img
+                                            src={EditBlue}
+                                            onClick={() => {
+                                                getAddEntityDialog(true);
+                                                setIsEdit(true);
+                                                setSelectedAbsence(data);
+                                            }}
+                                            className={style.colorFileStyle}
+                                            alt=""
+                                        />
+                                        <img
+                                            src={DeleteHcRow}
+                                            className={style.colorFileStyle}
+                                            onClick={() => {
+                                                deleteHandler(data);
+                                            }}
+                                            alt=""
+                                        />
+                                    </div>
+                                </>
+                            );
+                        })}
+
+                    {tableEntityData?.filter((data) => data.absenceType === "UNPLANNED")
+                        .length !== 0 ? (
+                        <div className={style.terminationHeader}>
+                            <img
+                                src={IndustriesEntityFolder}
+                                alt="IndustriesEntityFolder"
+                                className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                            />
+                            <p className={style.tableHeaderIndustriesFontStyle}>UNPLANNED</p>
+                        </div>
+                    ) : (
+                        <></>
+                    )}
+
+                    {tableEntityData
+                        ?.filter((data) => data.absenceType === "UNPLANNED")
+                        .map((data, innerIndex) => {
+                            return (
+                                <>
+                                    <div
+                                        className={
+                                            innerIndex % 2 !== 0
+                                                ? `${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                                : `${style.absenseLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                        }
+                                    >
+                                        <p></p>
+                                        <p className={style.tableDataFontStyle}>
+                                            {data.absenceReason}
+                                        </p>
+                                        <p className={style.tableDataFontStyle}>
+                                            {`${data.notificationPeriod.numberOfDays}`} Days Prior
+                                        </p>
+                                        <img
+                                            src={EditBlue}
+                                            onClick={() => {
+                                                getAddEntityDialog(true);
+                                                setIsEdit(true);
+                                                setSelectedAbsence(data);
+                                            }}
+                                            className={style.colorFileStyle}
+                                            alt=""
+                                        />
+                                        <img
+                                            src={DeleteHcRow}
+                                            className={style.colorFileStyle}
+                                            onClick={() => {
+                                                deleteHandler(data);
+                                            }}
+                                            alt=""
+                                        />{" "}
+                                    </div>
+                                </>
+                            );
+                        })}
                 </div>
             </div>
-            {showAddAbsenseReasonsDialog && <AddAbsenseReasonsForHealthcare getAddAbsenseReasonsDialog={getAddAbsenseReasonsDialog} isEdit={isEdit} />}
-        </Fragment>
 
-    )
-}
+            {showAddEntityDialog && (
+                <AddAbsenseReasonsForHealthcare
+                    getAddEntityDialog={getAddEntityDialog}
+                    IndustryId={industryId}
+                    isEdit={isEdit}
+                    selectedAbsence={selectedAbsence}
+                    getEntityData={getEntityData}
+                />
+            )}
+
+            {showDeleteConfirmation && (
+                <DeleteConfirmation
+                    getShowDeleteConfirmation={getShowDeleteConfirmation}
+                    getDeleteConfirmation={getDeleteConfirmation}
+                    confirmationText="Do you want to delete this Absense Reasons?"
+                />
+            )}
+        </Fragment>
+    );
+};
 
 export default AbsenseReasonsByIndustries;

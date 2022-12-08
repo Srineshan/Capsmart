@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup } from '@blueprintjs/core';
+import style from './index.module.scss';
 import AddHealthcareGroup from './../../images/addGroupBlue.png';
 import { POST, PUT } from '../dataSaver'
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 import { useEffect } from 'react';
-import style from './index.module.scss';
 
-const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, seletedEntity, isEdit, getEntityData }) => {
+const AddSuffixEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, seletedEntity, isEdit, getEntityData }) => {
 
     const [entityId, setEntityId] = useState('')
     const [entityName, setEntityName] = useState('')
@@ -14,14 +14,14 @@ const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, 
     const saveSubmitHandler = async () => {
         const data = {
             ...(isEdit && { 'id': entityId }),
-            "type": entityName,
+            "suffix": entityName,
             "industryId": {
                 "id": IndustryId
             }
         }
 
         if (!isEdit ?
-            await POST('entity-service/entityTypeMaster', JSON.stringify(data))
+            await POST('entity-service/nameSuffixMaster', JSON.stringify(data))
                 .then(response => {
                     SuccessToaster('Event Added Successfully');
                     getAddHcEntityDialog(false)
@@ -31,7 +31,7 @@ const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, 
                     ErrorToaster(error);
                 })
             :
-            await PUT(`entity-service/entityTypeMaster/${entityId}`, JSON.stringify(data))
+            await PUT(`entity-service/nameSuffixMaster/${entityId}`, JSON.stringify(data))
                 .then(response => {
                     SuccessToaster('Event Updated Successfully');
                     getAddHcEntityDialog(false)
@@ -41,12 +41,14 @@ const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, 
                     ErrorToaster(error);
                 })
         )
+
             getAddHcEntityDialog(false)
+
     }
 
     useEffect(() => {
         if (isEdit) {
-            setEntityName(seletedEntity?.type)
+            setEntityName(seletedEntity?.suffix)
             setEntityId(seletedEntity?.id)
         }
     }, [isEdit, seletedEntity])
@@ -96,4 +98,4 @@ const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, 
     )
 }
 
-export default AddHealthCareEntity;
+export default AddSuffixEntity;

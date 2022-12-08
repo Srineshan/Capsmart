@@ -22,7 +22,7 @@ const ReferenceList = () => {
       </div>:
         adminType==='Super Admin' ? <SuperAdminDashboard/> : <CustomerAdminDashboard />
       } */}
-      {userRoles?.roles?.includes('Distributor Admin') ? <SuperAdminDashboard/> : <CustomerAdminDashboard />}
+      {userRoles?.roles?.includes('Distributor Admin') ? <CustomerAdminDashboard /> : <SuperAdminDashboard/> }
 
     </div>
 
