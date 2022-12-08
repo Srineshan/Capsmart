@@ -121,7 +121,7 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Service Cases Target*</div>
                 <div className={`${style.displayInRow}`}>
-                    <InputGroup  value={metadata?.withNurse} className={` ${style.threeFieldWidth}`} onChange={(e)=>{setpatientTarget(e.target.value)}}/>
+                    <InputGroup  value={metadata?.withNurse} disabled={metadata?.noTargetApplicable} className={` ${style.threeFieldWidth}`} onChange={(e)=>{setpatientTarget(e.target.value)}}/>
                     <Checkbox label="No Target Applicable" value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth} `} onChange={(e)=>handleValueChange('noTargetApplicable', e.target.checked)}/>
                 </div>
             </div>
@@ -179,17 +179,17 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                         />
                     </div>
                     {
-                      metadata?.billableService &&
-                      <Select
-                          displayEmpty
-                          SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                          className={`${style.threeFieldWidth}`}
-                          onChange={(e)=>handleValueChange('rateType', e.target.value)}
-                          value={metadata?.rateType}
-                      >
-                          <MenuItem value="">Select Frequecy</MenuItem>
-                          <MenuItem value={'HOURLY'}>Hourly</MenuItem>
-                      </Select>
+                      // metadata?.billableService &&
+                      // <Select
+                      //     displayEmpty
+                      //     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                      //     className={`${style.threeFieldWidth}`}
+                      //     onChange={(e)=>handleValueChange('rateType', e.target.value)}
+                      //     value={metadata?.rateType}
+                      // >
+                      //     <MenuItem value="">Select Frequecy</MenuItem>
+                      //     <MenuItem value={'HOURLY'}>Hourly</MenuItem>
+                      // </Select>
                     }
                 </div>
             </div>

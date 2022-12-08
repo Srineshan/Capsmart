@@ -111,11 +111,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
 
     const updateTimeSheetWorkflow = async(data, workFlowName, type) => {
       let id = timesheet?.id;
-      console.log('id', id);
       if(id === ''){
         await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
          .then(response=>{
-           console.log('post',response?.data);
            handleContinue(response?.data)
            SuccessToaster('Workflow Updated Successfully');
          })
@@ -126,7 +124,6 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
       else{
           await PUT(`timesheet-management-service/workflow/${id}`, data)
            .then(response=>{
-             console.log('put', response?.data);
             SuccessToaster('Workflow Updated Successfully');
            })
            .catch(error=>{
@@ -171,7 +168,35 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
 
 
     const handleTimeSheetWorkFlow = (name, reviewer, approver, activeTab) => {
-       let data = {
+      let data;
+      if(reviewer === approver){
+        data = {
+          "name": {
+            "name": name
+          },
+          "workFlowMap": {
+            "workflow": {
+              "1": {
+                "workFlowUser": {
+                  "id": reviewer,
+                  "title":{
+                    "title":getSelectedUserDetails(reviewer)?.title?.title || '',
+                    "id":null,
+                  },
+                  "name":{
+                    "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                  },
+                  "suffix":{
+                    "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                    "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
+                  }
+                },
+                "workFlowStatus": {
+                  "status": "APPROVED"
+                }
+              }}}}
+      }else{
+        data = {
           "name": {
             "name": name
           },
@@ -218,6 +243,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             }
           }
         }
+      }
       return data;
     }
 
@@ -259,9 +285,15 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
         if(timesheetFlow){
           let workflowData = timesheetWorkFlow?.filter(data=>data?.id === id)?.map(data=>data?.workFlowMap?.workflow)[0];
           let workFlowValues = Object.values(workflowData);
-          let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
-          let approver = workFlowValues?.[1]?.workFlowUser?.id;
-          setTimesheet({...timesheet, id:id, reviewer: reviewer, approver: approver});
+          if(workFlowValues?.length === 1){
+            let approver = workFlowValues?.[0]?.workFlowUser?.id;
+            setTimesheet({...timesheet, id:id, reviewer: approver, approver: approver});
+          }else{
+            let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
+            let approver = workFlowValues?.[1]?.workFlowUser?.id;
+            setTimesheet({...timesheet, id:id, reviewer: reviewer, approver: approver});
+          }
+
         }
     };
 

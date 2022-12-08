@@ -42,6 +42,7 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
         dedicatedHoursActivityType:'',
         dedicatedHoursPerformingActivity:'',
         totalSession:'0',
+        sessionAmount: '0',
         serviceDays:{
           tuesday: false,
           wednesday: false,
@@ -74,6 +75,7 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
           workingTimeFrom:serviceSelected?.workingPeriod?.from,
           workingTimeTo:serviceSelected?.workingPeriod?.to,
           serviceDays:serviceSelected?.serviceDays,
+          sessionAmount: serviceSelected?.payableAmount?.value,
       });
       }
 
@@ -128,7 +130,6 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
       })
       .catch(error=>{
         ErrorToaster('Adding Activity To List Failed');
-        console.log('Error');
       })
     }
 
@@ -136,7 +137,7 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
       let temp = services?.filter(data=>['Clinic Blocks','Surgery Session','On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data=>data);
       let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
       let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data=>data?.activity)?.join('-');
-      setMetadata({...metadata, dedicatedHoursActivityType:dedicatedHoursActivityType, dedicatedHoursPerformingActivity:dedicatedHoursPerformingActivity});
+      setMetadata({...metadata, dedicatedHoursActivityType:dedicatedHoursActivityType, dedicatedHoursPerformingActivity:dedicatedHoursPerformingActivity, sessionAmount:temp[index]?.payableAmount?.value});
     }
 
     const handleAdminActivity = (name, value) => {
@@ -147,12 +148,10 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
       if(checked){
         let temp = metadata?.selectedActivities || [];
         temp.push(activity?.filter(data=>data?.id === id)?.map(data=>data)[0]);
-        console.log('temp', temp);
         setMetadata({...metadata, selectedActivities: temp});
       }else{
         let temp = metadata?.selectedActivities?.filter(data=>data?.id !== id)?.map(data=>data);
         setMetadata({...metadata, selectedActivities: temp});
-        console.log('temp', temp);
       }
     }
 
@@ -340,6 +339,27 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
                     />
                 </div>
             </div>
+        {
+          metadata?.dedicatedHoursSpecified &&
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Administrative Services Payment Amount*</div>
+                <div className={`${style.displayInRow}`}>
+                    <div className={`${style.threeFieldWidth}`}>
+                        <TextField
+                            size="small"
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                            }}
+                            onChange={(e)=>handleValueChange('sessionAmount',e.target.value)}
+                            value={metadata?.sessionAmount}
+                        />
+                    </div>
+                    <div className={style.verticalAlignCenter}>
+                        <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>per Hour</p>
+                    </div>
+                </div>
+            </div>
+          }
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Service Days*</div>

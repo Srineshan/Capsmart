@@ -128,19 +128,15 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
     });
 
     const handleTimesheetValue = (i, name, value) => {
-      console.log('data', i, name, value);
       let temp = timeSheetLabelData;
       if(name === 'label'){
         temp[i] = {label:value, value:temp[i]?.value}
       }else{
         temp[i] = {label: temp[i]?.label, value:value}
       }
-      console.log('entered', temp)
       setTimeSheetLabelData(temp);
       formatActivities();
     }
-
-    console.log('data',timeSheetLabelData)
 
     const handleContractedActivityTagsRemove = (tags,index) => {
       setContractedActivityTags(contractedActivityTags?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data));
@@ -241,8 +237,6 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
           setContractedActivityTags(temp);
         }
     };
-
-    console.log(timesheetValues)
 
     const handleContinue = async() => {
         let data = {
