@@ -6,13 +6,13 @@ import Tile from '../../Components/Tile';
 import LevelTwoHeader from '../../Components/LevelTwoHeader';
 import FeedbackTicketResolution from '../../Components/FeedbackTicketResolution';
 import Table from '../../Components/TableDesign';
-import {format, startOfWeek, endOfWeek, startOfMonth, endOfMonth} from 'date-fns';
+import {format, subDays} from 'date-fns';
 import { GET } from './../dataSaver';
 import MessageIcon from '@mui/icons-material/Message';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
-
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Tickets from './tickets';
 import Tutorials from './tutorials';
 import FAQ from './faq';
@@ -38,15 +38,17 @@ const HelpHome = () => {
     const [ticketId, setTicketId] = useState('');
     const [isEdit, setIsEdit] = useState(false);
     const [users, setUsers] = useState([]);
-    const [from, setFrom] = useState(startOfMonth(new Date()));
-    const [to, setTo] = useState(endOfMonth(new Date()));
+    const [from, setFrom] = useState(subDays(new Date(), 60));
+    const [to, setTo] = useState(new Date());
     const [currentUser, setCurrentUser] = useState({});
     const ticketsTableHeaderValues = ["", "TICKET ID", "TYPE", "SUBJECT/ ISSUE", "CUSTOMER", "START DATE/TIME", "LAST UPDATED", "USER NAME"];
     const tutorialsTableHeaderValues = ["", "TITLE", "DESCRIPTION", "AUTHOR", "TYPE", "DATE / TIME", "LINK", "COMMENT"];
     const releaseTableHeaderValues = ["", "TITLE", "DESCRIPTION", "AUTHOR", "TYPE", "DATE / TIME", "UPLOAD", "COMMENT", "ACTION"];
+    const messageTableHeaderValues = ["", "TYPE", "RELATED TO", "MESSAGE / COMMENT", "LAST RESPONDED", "DATE / TIME", "ACTION"];
     const tableHeaderValues = (selectedOption === 'TICKETS') ? ticketsTableHeaderValues : (selectedOption === "TUTORIALS & VIDEOS") ? tutorialsTableHeaderValues :
-    (selectedOption === "RELEASE NOTES") ? releaseTableHeaderValues : ''; 
+    (selectedOption === "RELEASE NOTES") ? releaseTableHeaderValues : selectedOption === "Messages" ? messageTableHeaderValues : ''; 
     const [allMessages, setAllMessages] = useState();
+    let customerName = sessionStorage.getItem('title');
     var cookie = new Cookie();
     let authValue = cookie.get('user');
     const loggedUser = jwt(authValue);
@@ -91,6 +93,8 @@ const HelpHome = () => {
         setCurrentUser(users?.filter(data => data?.id === loggedUser?.id)?.map(data => data))
     };
 
+    console.log(myTicket, allMessages)
+
     const onClickFunction = (data) => {
         setTicketId(data?.id);
         setIsEdit(true);
@@ -101,6 +105,10 @@ const HelpHome = () => {
         setTicketId(data?.ticketId?.id);
         setIsEdit(true);
         setShowFeedbackTicketResolution(true);
+    }
+
+    const handleFromUpload = () => {
+        sessionStorage.setItem('fromUpload', true);
     }
 
     let messageDot = [];
@@ -151,12 +159,9 @@ const HelpHome = () => {
     let type = [];
     let subject = [];
     let openDateOrTime = [];
-    let impact = [];
-    let appInUse = [];
+    let customer = [];
     let submittedBy = [];
-    let messages = [];
     let lastUpdated = [];
-    let action = [];
 
     const getTicketValues = () => {
          dot = [];
@@ -165,12 +170,9 @@ const HelpHome = () => {
          type = [];
          subject = [];
          openDateOrTime = [];
-         impact = [];
-         appInUse = [];
+         customer = [];
          submittedBy = [];
-         messages = [];
          lastUpdated = [];
-         action = [];
 
         myTicket?.map(data=> 
         {
@@ -180,12 +182,9 @@ const HelpHome = () => {
             type.push(data?.type);
             subject.push(data?.subject);
             openDateOrTime.push(format(new Date(data?.createdDateTime), 'MM-dd-yyyy HH:mm'));
-            impact.push(<WarningAmberIcon style={{color: data?.impact === "HIGH" ? '#FF6562' : '#88D5A6'}} />);
-            appInUse.push('TIMESMART.AI');
+            customer.push(customerName);
             submittedBy.push(`${data?.createdBy?.name?.firstName} ${data?.createdBy?.name?.lastName}`);
-            messages.push('2');
             lastUpdated.push(format(new Date(data?.modifiedDateTime), 'MM-dd-yyyy'));
-            action.push(true);
         })
 
         return [
@@ -193,13 +192,10 @@ const HelpHome = () => {
             {"type": "text", "value": tktId, "onClickFunction": onClickFunction},
             {"type": "text", "value": type, "onClickFunction": onClickFunction},
             {"type": "text", "value": subject, "onClickFunction": onClickFunction},
+            {"type": "text", "value": customer, "onClickFunction": onClickFunction},
             {"type": "text", "value": openDateOrTime, "onClickFunction": onClickFunction},
-            {"type": "icon", "icon": impact},
-            {"type": "text", "value": appInUse, "onClickFunction": onClickFunction},
-            {"type": "text", "value": submittedBy, "onClickFunction": onClickFunction},
-            {"type": "iconWithCount", "value": messages, "icon": <MessageIcon style={{fontSize: 15, color: '#707070'}} />},
             {"type": "text", "value": lastUpdated, "onClickFunction": onClickFunction},
-            {"type": "action", "value": action},
+            {"type": "text", "value": submittedBy, "onClickFunction": onClickFunction},
         ];
     }
 
@@ -211,24 +207,34 @@ return(
                 <div>
                     <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={'UPDATED ON FEB 16, 2022 16:45 EST'}  />
                     <div className={`${style.grid4} ${style.marginTop20}`}>
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" topText='LAST 30 DAYS' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={myTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" topText='LAST 30 DAYS' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TUTORIALS & VIDEOS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TUTORIALS & VIDEOS" topText='LAST 30 DAYS' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="FAQS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="FAQS" topText='LAST 7 DAYS' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="RELEASE NOTES" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="RELEASE NOTES" topText='LAST 30 DAYS' />
                     </div>
                     {selectedOption !== "FAQS" ? (
                         <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
-                            <Table
-                                tableHeaderValues={tableHeaderValues} 
-                                tableDataValues={(selectedOption === 'TICKETS' || selectedOption === "TUTORIALS & VIDEOS")
-                                ? getTicketValues() : selectedOption === "RELEASE NOTES" ? getTicketValues() 
-                                : getMessagesValues()}
-                                tableData={(selectedOption === 'TICKETS' || selectedOption === "TUTORIALS & VIDEOS" || selectedOption === "RELEASE NOTES")
-                                ? myTicket : allMessages}
-                                gridStyle={selectedOption === 'TICKETS' ? style.ticketTableDataGrid : selectedOption === "TUTORIALS & VIDEOS" ? style.tutorialTableDataGrid
-                                    : selectedOption === "RELEASE NOTES" ? style.releaseTableDataGrid 
-                                    : ''}
-                            />
+                            <div className={`${style.floatRight} ${style.marginTop20} ${style.marginRight30} ${style.cursorPointer}`}>
+                                <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => {setIsEdit(false);setShowFeedbackTicketResolution(true);handleFromUpload()}} />
+                            </div>
+                            <div className={style.buttonGroupUsers}>
+                                <button className={selectedOption === "TICKETS" && style.activeButton} onClick={() => setSelectedOption('TICKETS')}>Open Tickets ( {myTicket?.length} )</button>
+                                <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( 0 )</button>
+                                <button className={selectedOption === "Messages" && style.activeButton} onClick={() => setSelectedOption('Messages')}>Messages ( {allMessages?.length} )</button>
+                            </div>
+                            {selectedOption !== "Exception Error Tickets" && (
+                                <Table
+                                    tableHeaderValues={tableHeaderValues} 
+                                    tableDataValues={(selectedOption === 'TICKETS' || selectedOption === "TUTORIALS & VIDEOS")
+                                    ? getTicketValues() : selectedOption === "RELEASE NOTES" ? getTicketValues() 
+                                    : selectedOption === "Messages" ? getMessagesValues() : []}
+                                    tableData={(selectedOption === 'TICKETS' || selectedOption === "TUTORIALS & VIDEOS" || selectedOption === "RELEASE NOTES")
+                                    ? myTicket : selectedOption === "Messages" ? allMessages : []}
+                                    gridStyle={selectedOption === 'TICKETS' ? style.ticketTableDataGrid : selectedOption === "TUTORIALS & VIDEOS" ? style.tutorialTableDataGrid
+                                        : selectedOption === "RELEASE NOTES" ? style.releaseTableDataGrid 
+                                        : selectedOption === "Messages" ? style.messageTableDataGrid : ''}
+                                />
+                            )}
                             {showFeedbackTicketResolution && (
                                 <FeedbackTicketResolution getShowFeedbackTicketResolution={getShowFeedbackTicketResolution} ticketId={ticketId} isEdit={isEdit} />
                             )}
