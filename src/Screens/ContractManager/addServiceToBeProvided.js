@@ -25,7 +25,7 @@ import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
 
-const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity }) => {
+const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex }) => {
     const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Services','Add-On Services','Administrative / Miscellaneous Services'];
     const siteTypeId = sessionStorage.getItem('entityTypeId');
     const [serviceType, setServiceType] = useState('Clinic Blocks');
@@ -230,6 +230,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
     }
 
+    console.log('metadata', metadata);
     const handleSave = async(buttonType) => {
         let performingActivity = '';
         let activities = [];
@@ -252,16 +253,20 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           ));
         }
         let data = [];
-        if(serviceType === 'Add-On Services'){
+        if(serviceType === 'Add-On Services' && !editService){
           let temp = metadata;
+          data = temp;
           temp?.map(data=>{
             data.sites = siteData;
             data.performingActivity = {activity:data?.performingActivity};
             data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
           });
-          data = temp;
         }
         else{
+          let dataValues = metadata;
+          if(serviceType === 'Add-On Services'){
+            dataValues = metadata?.[0];
+          }
              data = [{
                   "sites": siteData,
                   "activityType": {
@@ -275,71 +280,71 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   ...((serviceType === 'Supplemental Services' || serviceType === 'Administrative / Miscellaneous Services') &&
                   {"hoursBorrowed": {
                       "activityType": {
-                        "activityType": metadata?.dedicatedHoursActivityType || ''
+                        "activityType": dataValues?.dedicatedHoursActivityType || ''
                       },
                       "performingActivity": {
-                        "activity": metadata?.dedicatedHoursPerformingActivity || ''
+                        "activity": dataValues?.dedicatedHoursPerformingActivity || ''
                       }
                     }}),
                   "locations": selectedLocation,
                   "contractedSchedule": {
                     "minimum": {
-                      "value": parseInt(metadata?.min || '0')
+                      "value": parseInt(dataValues?.min || '0')
                     },
                     "maximum": {
-                      "value": parseInt(metadata?.max || '0')
+                      "value": parseInt(dataValues?.max || '0')
                     },
-                    "frequency": metadata?.frequency
+                    "frequency": dataValues?.frequency
                   },
                   "patientsSeenTarget": {
                     "withNurse": {
-                      "value": parseInt(metadata?.withNurse || '0')
+                      "value": parseInt(dataValues?.withNurse || '0')
                     },
                     "withoutNurse": {
-                      "value": parseInt(metadata?.withoutNurse || "0")
+                      "value": parseInt(dataValues?.withoutNurse || "0")
                     },
-                    "noTargetApplicable": metadata?.noTargetApplicable || false
+                    "noTargetApplicable": dataValues?.noTargetApplicable
                   },
                   "scheduledPatientsTarget": {
                     "withNurse": {
-                      "value": parseInt(metadata?.targetWithNurse || '0')
+                      "value": parseInt(dataValues?.targetWithNurse || '0')
                     },
                     "withoutNurse": {
-                      "value": parseInt(metadata?.targetWithoutNurse || '0')
+                      "value": parseInt(dataValues?.targetWithoutNurse || '0')
                     },
-                    "noTargetApplicable": metadata?.targetNoTargetApplicable || false
+                    "noTargetApplicable": dataValues?.targetNoTargetApplicable
                   },
                   "additionalSchedule": {
-                    "value": parseInt(metadata?.additionalScheduleValue),
-                    "frequency": metadata?.additionalScheduleFrequency,
-                    "scheduleRequired": metadata?.additionalScheduleRequired
+                    "value": parseInt(dataValues?.additionalScheduleValue),
+                    "frequency": dataValues?.additionalScheduleFrequency,
+                    "scheduleRequired": dataValues?.additionalScheduleRequired
                   },
-                  "rateType": metadata?.rateType,
+                  "rateType": dataValues?.rateType,
                   "activityResponse": {
                     "dataMap": {
                       ...(serviceType === 'On Call Coverage Duty Days' && {
-                        'onCallCoverageFor' : metadata?.onCallCoverageFor,
+                        'onCallCoverageFor' : dataValues?.onCallCoverageFor,
                       }
                     ),
                     ...(serviceType === 'Administrative / Miscellaneous Services' && {
-                      'adminActivities' : metadata?.selectedActivities,
+                      'adminActivities' : dataValues?.selectedActivities,
                     }),
                     }
                   },
                   "duration": {
-                    "hours": parseInt(metadata?.sessionDuration)
+                    "hours": parseInt(dataValues?.sessionDuration)
                   },
                   "payableAmount": {
-                    "value": parseInt(metadata?.sessionAmount)
+                    "value": parseInt(dataValues?.sessionAmount)
                   },
                   "totalSessions": {
-                    "value": parseInt(metadata?.totalSession),
-                    "frequency": metadata?.totalSessionFrequency
+                    "value": parseInt(dataValues?.totalSession),
+                    "frequency": dataValues?.totalSessionFrequency
                   },
-                  "serviceDays": metadata?.serviceDays,
+                  "serviceDays": dataValues?.serviceDays,
                   "workingPeriod": {
-                    "from": metadata?.workingTimeFrom,
-                    "to": metadata?.workingTimeTo
+                    "from": dataValues?.workingTimeFrom,
+                    "to": dataValues?.workingTimeTo
                   },
                   "workingHours": {
                     "normalWorkingHours": true,
@@ -348,30 +353,25 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   "activityApprovalWFRequired": true,
                   "designateSpecificContractor": isDesignatedSpecificContractor,
                   "locationSpecified": showLocation,
-                  "dedicatedHoursSpecified": serviceType === 'Supplemental Services' ? metadata?.dedicatedHoursSpecified : false,
-                  "billableService": metadata?.billableService
+                  "dedicatedHoursSpecified": ['Supplemental Services','Administrative / Miscellaneous Services'].includes(serviceType) ? dataValues?.dedicatedHoursSpecified : false,
+                  "billableService": dataValues?.billableService
                 }]
               }
-              console.log('services',contractedServices, data);
+            if(editService && serviceType === 'Add-On Services'){
+                data[0].activities = metadata?.[0]?.activities;
+                data[0].performingActivity = {activity:metadata?.[0]?.performingActivity};
+            }
             let services = existingServices || [];
-            console.log('service down', services);
             if(editService){
-              console.log('inside if');
-              let temp = services?.filter(data=>data?.activityType?.activityType !== serviceType && data?.performingActivity !== selectedService?.performingActivity)?.map(data=>data);
+              let temp = services?.filter((data,index)=>index !== selectedIndex)?.map(data=>data);
               temp.push(...data);
               services = temp;
             }else{
-              console.log('inside else')
-              console.log('data top', data, 'services top', services)
               services.push(...data);
-              console.log('data',data);
-              console.log('services', services);
             }
-            console.log('outside', services);
             let formattedData = {
                 contractedServices: services
             }
-            console.log('formattedData', formattedData);
 
             const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
             if(response){
@@ -520,7 +520,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                                 className={`${style.fullWidth}`}
                                             >
-                                                <MenuItem value="">Select Contracted Services Provided</MenuItem>
+                                                <MenuItem value="">Select Contractors for Services to be Provided</MenuItem>
                                                 {users?.map((data, index) => (
                                                     <MenuItem value={data?.id} key={index}> {data?.name?.firstName} {data?.name?.lastName}</MenuItem>
                                                 ))}

@@ -132,8 +132,6 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
     const removeSupplementServiceName = (index) => {
       let temp = metadata?.supplementServiceName;
       setMetadata({...metadata, supplementServiceName: temp?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data)});
-
-      console.log('removed',temp?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data))
     }
 
     return (
@@ -197,16 +195,16 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                                 />
                             </div>
                             {
-                              metadata?.billableService &&
-                                <Select
-                                    displayEmpty
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                    className={`${style.threeFieldWidth} ${style.marginLeft20}`}
-                                    value={metadata?.rateType}
-                                    onChange={(e)=>handleValueChange('rateType', e.target.value)}
-                                >
-                                    <MenuItem value={'HOURLY'}>Hourly</MenuItem>
-                                </Select>
+                              // metadata?.billableService &&
+                              //   <Select
+                              //       displayEmpty
+                              //       SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                              //       className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                              //       value={metadata?.rateType}
+                              //       onChange={(e)=>handleValueChange('rateType', e.target.value)}
+                              //   >
+                              //       <MenuItem value={'HOURLY'}>Hourly</MenuItem>
+                              //   </Select>
                             }
                         </div>
                     </div>

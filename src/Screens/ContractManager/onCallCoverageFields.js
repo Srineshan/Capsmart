@@ -199,17 +199,17 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
                         />
                     </div>
                     {
-                      metadata?.billableService &&
-                      <Select
-                          displayEmpty
-                          SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                          className={`${style.threeFieldWidth}`}
-                          value={metadata?.rateType}
-                          onChange={(e)=>handleValueChange('rateType',e.target.value)}
-                      >
-                          <MenuItem value="">Select Frequecy</MenuItem>
-                          <MenuItem value={'HOURLY'}>Hourly</MenuItem>
-                      </Select>
+                      // metadata?.billableService &&
+                      // <Select
+                      //     displayEmpty
+                      //     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                      //     className={`${style.threeFieldWidth}`}
+                      //     value={metadata?.rateType}
+                      //     onChange={(e)=>handleValueChange('rateType',e.target.value)}
+                      // >
+                      //     <MenuItem value="">Select Frequecy</MenuItem>
+                      //     <MenuItem value={'HOURLY'}>Hourly</MenuItem>
+                      // </Select>
                     }
 
                 </div>

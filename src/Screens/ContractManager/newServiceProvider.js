@@ -123,7 +123,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     });
 
     const getRolesData = async() => {
-      const {data: roles} = await GET(`user-management-service/roles`);
+      const {data: roles} = await GET(`user-management-service/roles?roleType=APP`);
       if(roles){
         setRoles(roles);
       }

@@ -46,7 +46,6 @@ const SiteDepartmentField = ({sites, getSelectedSites, selectedSites}) => {
     }
 
     const onAdd = () => {
-      console.log('inside Onclick')
       if(selectedSite === undefined){
         ErrorToaster('Select Site to add');
         return;
@@ -135,12 +134,17 @@ const SiteDepartmentField = ({sites, getSelectedSites, selectedSites}) => {
             </div>
             {
               siteData?.map((site, siteIndex)=>(
-                <div className={`${style.siteDeptFieldCard} ${style.displayInRow} ${style.marginTop10}`}>
-                    <div className={`${style.siteCard} ${style.siteDeptTextStyle} ${style.verticalAlignCenter} ${style.marginRight10}`}>{site?.siteName?.siteName}</div>
+                 <div className={`${style.siteDeptFieldCard} ${style.marginTop10}`}>
+                 {
+                   // <div className={`${style.siteDeptFieldCard} ${style.displayInRow} ${style.marginTop10}`}>
+                   //     <div className={`${style.siteCard} ${style.siteDeptTextStyle} ${style.verticalAlignCenter} ${style.marginRight10}`}>{site?.siteName?.siteName}</div>
+
+                 }
                     {
+
                       site?.departmentList?.departments?.map((dept, deptIndex)=>(
                         <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
-                            <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{dept?.departmentName?.name}</div>
+                            <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{dept?.departmentName?.name}-{site?.siteName?.siteName}</div>
                             <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={()=>{onRemoveDept(siteIndex, deptIndex, dept?.id)}}/>
                         </div>
                       ))

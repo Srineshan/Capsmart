@@ -431,6 +431,12 @@ body{
     grid-gap: 10px;
 }
 
+.activeContractGridWithoutAction{
+    display: grid;
+    grid-template-columns: 5% 11% 11% 11% 11% 11% 7% 10% 10%;
+    grid-gap: 10px;
+}
+
 .draftContractGrid{
     display: grid;
     grid-template-columns: 8% 10% 10% 10% 10% 10% 10% 12% 10%;

@@ -806,14 +806,14 @@ const ContractIdTermLimitIndividual = (
                           <option value="Select...">
                             Select...
                           </option>
-                            <option value="Hours Per Week">
-                            Hours Per Week
-                            </option>
-                            <option value="Hours Per Month">
-                            Hours Per Month
-                            </option>
                             <option value="Hours Per Contract Year">
-                            Hours Per Contract Year
+                              Hours Per Contract Year
+                            </option>
+                            <option value="Weeks Per Contract Year">
+                              Weeks Per Contract Year
+                            </option>
+                            <option value="Months Per Contract Year">
+                              Months Per Contract Year
                             </option>
                     </select>
                     </div>
