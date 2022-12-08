@@ -1197,7 +1197,7 @@
 }
 
 .entityNameBolderStyle{
-    font: normal normal bolder 19px/23px Montserrat;
+    font: normal normal bold 18px/23px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
@@ -1360,3 +1360,18 @@
     height: 100vh;
     overflow: scroll;
 }
+
+.headerBackground{
+    background: #fff 0% 0% no-repeat padding-box;
+    padding: 30px 40px;
+    margin: -30px -40px;
+}
+
+.reportWidthToFitFullScreen{
+    width: 85%;
+}
+
+@page  
+{ 
+    margin: 20mm 15px;  
+} 

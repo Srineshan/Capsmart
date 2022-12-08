@@ -25,7 +25,7 @@ import style from './index.module.scss';
 // import PDFDocument from './pdf';
 
 
-const ReportPerformanceAndOptions = ({handle, getIsRefresh}) => {
+const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdated, isLoading}) => {
     const {reportType} = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -72,7 +72,7 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh}) => {
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
                          onMouseEnter={(e) => setAnchorElRefresh(e.currentTarget)} onMouseLeave={() => setAnchorElRefresh(null)} aria-owns={openRefresh ? 'mouse-over-popover' : undefined}
                          aria-haspopup="true">
-                            <CachedOutlinedIcon style={{color:"#52575D"}} onClick={() => {setShowReportRefreshingDialog(true);getIsRefresh(true)}} />
+                            <CachedOutlinedIcon style={{color: isUpdated ? '#F46044' : '#52575D'}} onClick={() => {setShowReportRefreshingDialog(true);getIsRefresh(true)}} />
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -146,7 +146,7 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh}) => {
                             </div> */}
                          {/* )}
                         </PDFDownloadLink> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => window.print()} 
+                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={handlePrint} 
                          onMouseEnter={(e) => setAnchorElPrint(e.currentTarget)} onMouseLeave={() => setAnchorElPrint(null)} aria-owns={openPrint ? 'mouse-over-popover' : undefined}
                          aria-haspopup="true">
                             {/* <Link to={'/chart'} className={style.noFontStyle}> */}
@@ -171,7 +171,7 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh}) => {
                         </div>
                         <div className={`${style.iconPadding} ${style.cursorPointer}`} >
                             {/* {showExpandedView ? ( */}
-                                <ZoomInMapIcon style={{color:"#52575D"}}  onClick={handle.enter} />
+                                <ZoomOutMapIcon style={{color:"#52575D"}}  onClick={handle.enter} />
                             {/* ) : (
                                 <ZoomOutMapIcon style={{color:"#52575D"}} onClick={()=> getShowExpandedView(true)} />
                             )} */}
@@ -216,7 +216,7 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh}) => {
                     <div className={style.reportSavedStyle}>Report Saved</div>
                 </div>
             </Dialog>
-            <Dialog isOpen={showReportRefreshingDialog} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`}>
+            <Dialog isOpen={isLoading} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
                     <div className={style.justifyCenter}>
                         <CachedOutlinedIcon sx={{ fontSize: 60 }} style={{color:"#7165E3"}} className={style.reportIconStyle}  />
