@@ -19,12 +19,29 @@ import style from './index.module.scss';
 
 const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
-const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, getCurrentPage, contractType, selectedContractType, getContractId, setName, setFileFields, fileData, contractIdFromActive, method}) => {
-    const [selectContractManager, setSelectContractManager] = useState('');
+const TEXTFIELDLEN = 100;
+const DESCLEN = 250;
+const ContractIdTermLimitIndividual = (
+  {contracts,
+   getViewPage1,
+   getViewPage2,
+   getCurrentPage,
+   contractType,
+   selectedContractType,
+   getContractId,
+   setName,
+   setFileFields,
+   fileData,
+   contractIdFromActive,
+   method,
+   isMultiSiteEntity,
+   getSelectedField}) => {
+    const [selectContractManager, setSelectContractManager] = useState();
     const [siteSpecific, setSiteSpecific] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
     const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('Select Value');
     const [item, setItem] = useState();
+    const [contractData, setContractData] = useState();
     const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
     const [priorContractItem, setPriorContractItem] = useState();
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
@@ -57,19 +74,11 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
     const [departmentsName,setDepartmentsName] = useState([]);
     const [selectedDepartmentId,setSelectedDepartmentId] = useState([]);
     const [createdContractId,setCreatedContractId] = useState(contractIdFromActive);
-    const [isMultiSiteEntity,setIsMultiSiteEntity] = useState(false);
-
-    // useEffect(()=>{
-    //   if(!siteSpecific){
-    //     selectedSites([]);
-    //   }
-    // },[siteSpecific,departmentSpecific])
 
     useEffect(() => {
-      getSites();
-      getEntityData();
       getUserData();
-      if(method !== 'POST'){
+      getSites();
+      if(method === 'PUT' && createdContractId !== ''){
         getContractDetail();
       }
     },[])
@@ -91,16 +100,16 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       setFileFields(fullyExecutedContractData);
     },[fullyExecutedContractData])
 
-    const getEntityData = async() => {
-      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
-      console.log('entityData',data);
-      setIsMultiSiteEntity(data?.multiSiteEntity);
-    }
+    useEffect(()=>{
+      setSelectContractManager(user?.filter(data=>data?.id === contractData?.contractManager?.userID)?.map(data=>data)[0]);
+    },[user])
+
 
     const getContractDetail = async() => {
       const {data: contractData} = await GET(`contract-managment-service/contracts/${createdContractId}/contractDetail`);
       if(contractData){
         let contractDetail = contractData?.contractDetail;
+        setContractData(contractData?.contractDetail);
         setName(contractData?.contractName?.contractName || '');
         setContractName(contractData?.contractName?.contractName);
         setContractId({id:contractDetail?.contractId?.id,missing:contractData?.contractIdMissing});
@@ -147,6 +156,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       }
     }
 
+
     const getUserData = async() => {
       const {data: user} = await GET('user-management-service/user/role?role=Contract Manager');
       if(user){
@@ -158,10 +168,13 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       const {data:sites} = await GET('entity-service/sites');
       if(sites){
         setSites(sites);
+        if(!isMultiSiteEntity){
+          setSelectedSites(sites);
+          setSelectedSite(sites?.[0]?.id);
+        }
     }
   }
-
-      const getAddNewManagerDialog = (value) => {
+    const getAddNewManagerDialog = (value) => {
         setAddNewManagerDialog(value);
     }
 
@@ -193,16 +206,14 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       return siteData;
     }
 
-
     const addContract = async() => {
       if(selectedContractContinuationPolicy === 'Select Value'){
         ErrorToaster('Select Contract Continuation Policy');
         return;
       }
       let contractFiles = [];
-      fullyExecutedContract && fullyExecutedContractData?.map(data=>{
+      fullyExecutedContract && fullyExecutedContractData?.filter(data=>data?.file !== null)?.map(data=>{
         contractFiles?.push({
-          filePath:data.filePath,
           fileName:data.fileName,
           documentType:data.type,
           documentDescription:data.desc,
@@ -273,12 +284,14 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
        formData.append('contractDetail', new Blob([JSON.stringify(data)], {
             type: "application/json"
         }));
-        console.log('file Data',file);
-       formData.append('contractFiles',file);
+        file?.filter(data=>data !== null)?.map(data=>{
+          console.log('data',data);
+          formData.append('contractFiles', data);
+        })
        if(method === 'POST' && contractIdFromActive === ''){
          await POST('contract-managment-service/contracts/contractDetail',formData)
          .then(response=>{getContractId(response?.data);
-         SuccessToaster('Contract Created Successfully');
+         SuccessToaster('Contract Draft Saved Successfully');
        }).catch(error=>{
          ErrorToaster('Unexpected Error Creating Contract');
        })
@@ -381,7 +394,9 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
       for(let i=0;i<renewalReminder?.length;i++){
         temp[i] = (
           <div className={`${style.renewalRemainderBoxGrid} ${style.marginBottom}`} key={`reminder${i}-${renewalReminder?.[i]?.days}`}>
-              <div className={style.marginTop}>Set Renewal Reminder*</div>
+              <div className={style.marginTop}>
+                Set Renewal Reminder*
+              </div>
               <div className={style.displayInRow}>
                 <EditableText className={style.inputRenewalRemainderStyle} defaultValue={renewalReminder?.[i]?.days} placeholder="" onChange={(e)=>handleReminder(e,i)} key={`days${i}${renewalReminder?.[i]?.days}`}/>
                 <div className={`${style.marginTop10} ${style.marginLeft20}`}>Days</div>
@@ -393,15 +408,6 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
         )
       }
       setReminderFields(temp);
-    }
-
-    const handlContractManagerOnChange = (e) => {
-      setUserName(e.target.value);
-      if(e.target.value !== ''){
-        setSelectContractManager(items?.filter(data=>data.name?.firstName === userName)?.map(data=>data));
-      }else{
-        setSelectContractManager();
-      }
     }
 
     const addNewDocumentField = () => {
@@ -479,7 +485,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
             <label for="file-upload"  className={style.customFileUpload}>
                 Choose File
             </label>
-            <input id="file-upload" type="file" onChange={(e)=> handleFileUpload(e)}/>
+            <input id="file-upload" type="file"  accept="image/*, .pdf, .doc, .docx" onChange={(e)=> handleFileUpload(e)}/>
           </div>
         )
     }
@@ -501,12 +507,16 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
             <div className={`${style.newContractFromCloneBoxStyle}`}>
                 <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>Contract / Agreement Name*</div>
-                    <InputGroup placeholder="Contract Name" className={style.fullWidth} value={contractName} onChange={(e)=>{setContractName(e.target.value);setName(e.target.value)}}/>
+                    <InputGroup placeholder="Contract Name" className={style.fullWidth} value={contractName}
+                    maxLength={TEXTFIELDLEN} onChange={(e)=>{setContractName(e.target.value);setName(e.target.value)}}
+                    onFocus={()=>{getSelectedField('Contract / Agreement Name')}}/>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract ID*</div>
                     <div className={style.displayInRow}>
-                        <InputGroup placeholder="Contract Id" value={contractId.id} className={`${style.entityFieldWidth}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
+                        <InputGroup placeholder="Contract Id" value={contractId.id} disabled={contractId.missing}
+                        maxLength={TEXTFIELDLEN}
+                        onFocus={()=>{getSelectedField('Contract ID')}} className={`${style.entityFieldWidth}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
                       <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked, id:''})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                     </div>
                 </div>
@@ -514,7 +524,11 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                   <div className={contracts?.length !== 0 ? `${style.extentionGrid} ${style.marginTop20}`:`${style.extentionGrid} ${style.marginTop20} ${style.disabledView} `}>
                       <div className={style.extentionLableStyle}>Prior Contract ID*</div>
                       <div className={style.displayInRow}>
-                          <DatalistInput items={priorContractItems || []} onSelect={onSelectContractId} className={style.selectFieldWidth} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})} placeholder="Search by CID / Name" value={contractPriorId?.id}/>
+                          <DatalistInput items={priorContractItems || []}
+                          onSelect={onSelectContractId} className={style.selectFieldWidth}
+                          maxLength={TEXTFIELDLEN}
+                          onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})} placeholder="Search by CID / Name" value={contractPriorId?.id}
+                          />
                             <Checkbox label="NA"  checked={contractPriorId.na} onChange={(e)=>setContractPriorId({...contractPriorId, id:'', na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
 
                       </div>
@@ -524,7 +538,12 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                     <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
                     <div className={style.displayInRow}>
                     <div>
-                        <DatalistInput items={items || []} onSelect={onSelect}  onChange={(e)=>setUserName(e.target.value)} className={style.selectFieldWidth} value={items?.filter(data=>data?.id === selectContractManager?.id)?.map(data=>data?.value)[0]}/>
+                        <DatalistInput items={items || []} onSelect={onSelect}
+                        onChange={(e)=>setUserName(e.target.value)}
+                        className={style.selectFieldWidth}
+                        maxLength={TEXTFIELDLEN}
+                        value={contractData?.contractManager?.name?.firstName}
+                        onFocus={()=>{getSelectedField('Assigned Contract Manager')}}/>
                         {(!items?.map(data=>data?.name?.firstName)?.includes(userName) && !userName === '') && (
                             <div className={style.addBoxDescription}>
                             The Contract Manager you are trying to add is not a registered
@@ -536,8 +555,8 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Fully Executed Contract on File*</div>
-                    <div>
+                    <div className={style.extentionLableStyle}>Contract Documents On File*</div>
+                    <div onFocus={()=>{getSelectedField('Fully Executed Contract on File')}}>
                         <div className={`${style.spaceBetween}`}>
                             <FormControlLabel
                                 control={
@@ -587,16 +606,20 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                               </div>
                               <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
                               value={fileFieldData?.name}
+                              maxLength={TEXTFIELDLEN}
                               onChange={(e)=>handleFileChange(e,'name')}/>
-                              <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc} className={`${style.fullWidth} ${style.marginTop10}`}  onChange={(e)=>handleFileChange(e,'desc')}/>
-                              <div >
+                              <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc}
+                              maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`}  onChange={(e)=>handleFileChange(e,'desc')}/>
+                              <div>
                                   <InputGroup value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : 'Choose File...'}  leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e)=>handleFileUpload(e)} />
                               </div>
                           </div>
                         )}
                     </div>
                 </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              {isMultiSiteEntity &&
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}
+                onFocus={()=>{getSelectedField('Site Specific Contract')}}>
                     <div className={style.extentionLableStyle}>Site Specific Contract*</div>
                     <div>
                         <div className={style.displayInRow}>
@@ -618,7 +641,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                         </div>
                         {siteSpecific && (
                             <TagInput
-                                placeholder="Enter tags/keywords relative to the post"
+                                placeholder="Selected Sites"
                                 values={selectedSites?.map(data=>data?.siteName?.siteName)}
                                 className={`${style.marginTop20}`}
                                 onRemove={handleTagsRemove}
@@ -630,7 +653,9 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                         )}
                     </div>
                 </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              }
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}
+                     onFocus={()=>{getSelectedField('Department Specific Contract')}}>
                     <div className={style.extentionLableStyle}>Department Specific Contract*</div>
                     <div>
                         <div className={style.displayInRow}>
@@ -645,7 +670,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                                     <select
                                         name="class"
                                         id="Class"
-                                        value={selectedSite || 'Select...'}
+                                        value={selectedSites?.[0]?.id || 'Select...'}
                                         onChange={(e) => setSelectedSite(e.target.value)}
                                         className={`${style.fullWidth} ${style.marginLeft20} `}>
                                         <option value='Select...'>
@@ -685,7 +710,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                         )}
                         {departmentSpecific && (
                             <TagInput
-                                placeholder="Enter tags/keywords relative to the post"
+                                placeholder="Selected Departments"
                                 values={selectedDepartmentSites?.filter(data=>data?.site_id === selectedSite)?.map(data=>data?.name) || []}
                                 className={`${style.marginTop20}`}
                                 onRemove={handleTagSet2Remove}
@@ -697,122 +722,11 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                         )}
                     </div>
                 </div>
-                {/* // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                  //     <div className={style.extentionLableStyle}>Site Specific Contract*</div>
-                  //     <div>
-                  //         <div className={style.displayInRow}>
-                  //             <FormControlLabel
-                  //                 control={
-                  //                     <Switch checked={siteSpecific} className={`${style.textAlignLeft}`} onChange={() => setSiteSpecific(!siteSpecific)}  />
-                  //                 }
-                  //                 className={`${style.switchFontStyle}`}
-                  //                 label={siteSpecific ? 'YES' : "NO"}
-                  //             />
-                  //             {siteSpecific && (
-                  //                 <div className={style.displayInRow}>
-                  //                     <DatalistInput items={siteItems||[]} placeholder="Select Sites" onSelect={onSelectSite}  className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
-                  //                     {
-                  //                       // <div className={`${style.addSymbolStyle} ${style.marginLeft20}`} onClick={()=>{setSelectedSites([...selectedSites,])}}><span className={style.plusSymbolPosition}>+</span></div>
-                  //                     }
-                  //                     </div>
-                  //             )}
-                  //         </div>
-                  //         {siteSpecific && (
-                  //             <TagInput
-                  //                 placeholder="Enter tags/keywords relative to the post"
-                  //                 values={selectedSites?.map(data=>data?.siteName?.siteName)}
-                  //                 className={`${style.marginTop20}`}
-                  //                 onRemove={handleTagsRemove}
-                  //                 separator={/[\s,]/}
-                  //                 addOnBlur={true}
-                  //                 addOnPaste={true}
-                  //                 tagProps={getTagProps}
-                  //             />
-                  //         )}
-                  //     </div>
-                  // </div>
-                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                  //     <div className={style.extentionLableStyle}>Department Specific Contract*</div>
-                  //     <div>
-                  //         <div className={style.displayInRow}>
-                  //             <FormControlLabel
-                  //                 control={
-                  //                     <Switch checked={departmentSpecific && siteSpecific} className={` ${style.textAlignLeft}`} onChange={()=>{if(siteSpecific){setDepartmentSpecific(!departmentSpecific)}}}  />
-                  //                 }
-                  //                 className={`${style.switchFontStyle}`}
-                  //                 label={departmentSpecific ? 'YES' : "NO"}
-                  //             />
-                  //             {departmentSpecific && (
-                  //                 <div>
-                  //                   <div>
-                  //                       <select
-                  //                           name="class"
-                  //                           id="Class"
-                  //                           value={selectedSite || 'Select...'}
-                  //                           onChange={(e) => setSelectedSite(e.target.value)}
-                  //                           className={`${style.fullWidth} ${style.marginLeft20} `}>
-                  //                           <option value='Select...'>
-                  //                             Select Site...
-                  //                           </option>
-                  //                           {
-                  //                             selectedSites?.map(data=>(
-                  //                               <option value={data?.id}>
-                  //                                 {data?.siteName?.siteName}
-                  //                               </option>
-                  //                             ))
-                  //                           }
-                  //                       </select>
-                  //                   </div>
-                  //                   {
-                  //                     selectedSites?.filter(data=>data?.id === selectedSite)?.map(data=>(
-                  //                       <div>
-                  //                           <select
-                  //                               name="class"
-                  //                               id="Class"
-                  //                               onChange={(e) => onSelectDepartment(e.target.value)}
-                  //                               className={`${style.fullWidth} ${style.marginLeft20} ${style.marginTop20}`}>
-                  //                               <option value='Select...'>
-                  //                                 Select Department...
-                  //                               </option>
-                  //                               {
-                  //                                 data?.departmentList?.departments?.map(dept=>(
-                  //                                   <option value={dept?.id}>
-                  //                                     {dept?.departmentName?.name}
-                  //                                   </option>
-                  //                                 ))
-                  //                               }
-                  //                           </select>
-                  //                       </div>
-                  //                     ))
-                  //                   }
-                  //
-                  //                 </div>
-                  //             )}
-                  //         </div>
-                  //         {departmentSpecific && (
-                  //             <TagInput
-                  //                 placeholder="Enter tags/keywords relative to the post"
-                  //                 values={selectedDepartmentSites?.filter(data=>data?.site_id === selectedSite)?.map(data=>data?.name) || []}
-                  //                 className={`${style.marginTop20}`}
-                  //                 onRemove={handleTagSet2Remove}
-                  //                 separator={/[\s,]/}
-                  //                 addOnBlur={true}
-                  //                 addOnPaste={true}
-                  //                 tagProps={getTagProps}
-                  //             />
-                  //         )}
-                  //     </div>
-                  // </div> */}
+
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Term Period*</div>
-                    <div className={style.displayInRow}>
-                        {/* <DateInput
-                            formatDate={date => date.toLocaleDateString()}
-                            parseDate={str => new Date(str)}
-                            placeholder={"MM-DD-YYYY"}
-                            value={contractTermPeriodFrom}
-                            onChange={(e)=> setContractTermPeriodFrom(e || new Date()) }
-                        /> */}
+                    <div className={style.termPeriodGrid}>
+                      <div onFocus={()=>{getSelectedField('Contract Term Period Start Date')}}>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <DatePicker
                             value={contractTermPeriodFrom}
@@ -831,15 +745,9 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                             }}/>}
                           />
                         </LocalizationProvider>
-                    <p className={style.toStyle}>To</p>
-                        {/* <DateInput
-                            formatDate={date => date.toLocaleDateString()}
-                            parseDate={str => new Date(str)}
-                            placeholder={"MM-DD-YYYY"}
-                            value={contractTermPeriodTo}
-                            onChange={(e)=> setContractTermPeriodTo(e || new Date()) }
-                            minDate={contractTermPeriodFrom}
-                        /> */}
+                      </div>
+                    <p className={`${style.toStyle} ${style.alignCenter}`}>To</p>
+                      <div onFocus={()=>{getSelectedField('Contract Term Period End Date')}}>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <DatePicker
                             value={contractTermPeriodTo}
@@ -859,19 +767,12 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                             }} />}
                           />
                         </LocalizationProvider>
+                      </div>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contracted Services Effective Date*</div>
-                    <div className={`${style.leftAlign} `}>
-                    {/* <DateInput
-                        formatDate={date => date.toLocaleDateString()}
-                        parseDate={str => new Date(str)}
-                        placeholder={"MM-DD-YYYY"}
-                        value={contractEffectiveDate}
-                        onChange={(e)=> setContractEffectiveDate(e || new Date()) }
-                        minDate={contractTermPeriodFrom}
-                    /> */}
+                    <div className={`${style.leftAlign} ${style.effectiveDateWidth}`} onFocus={()=>{getSelectedField('Contracted Services Effective Date')}}>
                       <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
                           value={contractEffectiveDate}
@@ -893,10 +794,37 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                       </LocalizationProvider>
                     </div>
                 </div>
+
+                {
+                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  //     <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
+                  //     <div className={style.contractedTime}>
+                  //     <InputGroup type="number"/>
+                  //     <select
+                  //         name="class"
+                  //         id="Class"
+                  //         className={`${style.timeCommitment}`}>
+                  //           <option value="Select...">
+                  //             Select...
+                  //           </option>
+                  //             <option value="Hours Per Contract Year">
+                  //               Hours Per Contract Year
+                  //             </option>
+                  //             <option value="Weeks Per Contract Year">
+                  //               Weeks Per Contract Year
+                  //             </option>
+                  //             <option value="Months Per Contract Year">
+                  //               Months Per Contract Year
+                  //             </option>
+                  //     </select>
+                  //     </div>
+                  // </div>
+                }
+
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Continuation Policy*</div>
                     <div>
-                        <div>
+                        <div onFocus={()=>{getSelectedField('Contract Continuation Policy')}}>
                             <select
                                 name="class"
                                 id="Class"
@@ -922,7 +850,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                         </div>
                         {selectedContractContinuationPolicy === "AUTORENEWAL" && (
                             <div className={`${style.renewalBoxStyle}`}>
-                                <div className={`${style.renewalBoxGrid}`}>
+                                <div className={`${style.renewalBoxGrid}`} onFocus={()=>{getSelectedField('Auto Renewal - Auto Renewal Term')}}>
                                     <div className={style.marginTop}>Auto Renewal Term*</div>
                                     <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e)=>setAutoRenewal({...autoRenewal, renewalTerm:e})} />
                                     <select
@@ -939,7 +867,7 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                                             </option>
                                     </select>
                                 </div>
-                                <div className={`${style.renewalBoxGrid}`}>
+                                <div className={`${style.renewalBoxGrid}`} onFocus={()=>{getSelectedField('Auto Renewal - Allowable Auto Renewal Terms')}}>
                                     <div className={style.marginTop10}>Allowable Auto Renewal Terms*</div>
                                     <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm} onChange={(e)=>setAutoRenewal({...autoRenewal, allowableRenewalTerm:e})} />
                                 </div>
@@ -948,7 +876,12 @@ const ContractIdTermLimitIndividual = ({contracts, getViewPage1, getViewPage2, g
                         {(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
                             || selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
                             || selectedContractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION") && (
-                            <div className={`${style.renewalRemainderBoxStyle}`}>
+                            <div className={`${style.renewalRemainderBoxStyle}`}
+                            onFocus={()=>{getSelectedField(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
+                            ? "Written Contract Extension - Set Renewal Reminder"
+                            :selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
+                            ?"New Contract on Expiration - Set Renewal Reminder"
+                            :"One Time Contract - Set Renewal Reminder")}}>
                               {reminderFields}
                               <div className={`${style.renewalBoxGrid}`}>
                                 {renewalReminder?.length <= 2 && (

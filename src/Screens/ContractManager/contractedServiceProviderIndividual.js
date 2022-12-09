@@ -42,7 +42,7 @@ const ITEM_PADDING_TOP = 8;
     },
   };
 
-const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId, contractType}) => {
+const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, contractId, contractType, contractName, getSelectedField}) => {
     const testContractId = contractId;
     const [user,setUsers] = useState([]);
     const [userName, setUserName] = useState('');
@@ -55,7 +55,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     const [serviceProviderType, setServiceProviderType] = useState({contractedServiceProviderType:'',id:''});
     const [npin, setNpin] = useState('');
     const [npinMissing, setNpinMissing] = useState(false);
-    const [contractName,setContractName] = useState('');
     const [npinNotApplicable, setNpinNotApplicable] = useState(false);
     const [contractorFirstName, setContractorFirstName] = useState('');
     const [contractorMiddleName, setContractorMiddleName] = useState('');
@@ -88,7 +87,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
         getRoles();
         getUserData();
         getUsersData();
-        getContractName();
     },[])
 
     useEffect(()=>{
@@ -153,14 +151,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     setSites(temp);
     setSiteTitleValues(siteValue);
     setDepartmentTitleValues(deptValue);
-    }
-
-
-    const getContractName = async() => {
-      const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
-      if(contractData){
-        setContractName(contractData?.contractName?.contractName);
-      }
     }
 
     const getUserData = async() => {
@@ -360,8 +350,6 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                 "sites" : sites
               },
               "serviceProviderType": serviceProviderType,
-              "activated": true,
-              "blocked": true,
               "npin": {
                 "missing": npinMissing,
                 "notApplicable": npinNotApplicable,
@@ -411,7 +399,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
     });
 
     const getRoles = async() => {
-        const {data: roles} = await GET('user-management-service/roles');
+        const {data: roles} = await GET('user-management-service/roles?roleType=APP');
         setRoles(roles);
     };
 
@@ -482,18 +470,21 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
               <div>
-                <div className={`${style.extentionGrid}`}>
+                <div className={`${style.extentionGrid}`} onFocus={()=>{getSelectedField('Service Provider Type')}}>
                 <div className={style.extentionLableStyle}>Service Provider Type*</div>
                     <div className={style.grid3}>
                       <ProviderTypeList value={serviceProviderType?.id} onChangeFunc={(id,value)=>setServiceProviderType({id:id,contractedServiceProviderType:value})} className={[style.fullWidth]}/>
                     </div>
                   </div>
-                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={()=>{getSelectedField('NPIN')}}>
                       <div className={style.extentionLableStyle}>NPIN*</div>
                       <div className={style.grid3}>
                       <InputGroup className={style.fullWidth}
                       placeholder="NPIN"
                       value={npin}
+                      type="Number"
+                      maxLength={10}
+                      disabled={npinMissing || npinNotApplicable}
                       onChange={(e) => setNpin(e.target.value)}/>
                       <FormGroup>
                           <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => setNpinMissing(e.target.checked)} />} label="Missing" />
@@ -508,23 +499,28 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                       <div className={style.grid3}>
                           <InputGroup className={style.fullWidth} placeholder="First"
                           value={contractorFirstName}
+                          onFocus={()=>{getSelectedField('Contractor First Name')}}
                           onChange={(e) => setContractorFirstName(e.target.value)} />
                           <InputGroup className={style.fullWidth} placeholder="Middle"
                           value={contractorMiddleName}
+                          onFocus={()=>{getSelectedField('Contractor Middle Initials')}}
                           onChange={(e) => setContractorMiddleName(e.target.value)}/>
                           <InputGroup className={style.fullWidth} placeholder="Last"
                           value={contractorLastName}
+                          onFocus={()=>{getSelectedField('Contractor Last Name')}}
                           onChange={(e) => setContractorLastName(e.target.value)}/>
                       </div>
                   </div>
-                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}
+                  onFocus={()=>{getSelectedField('Suffix')}}>
                       <div className={style.extentionLableStyle}>Suffix*</div>
                       <div className={style.grid3}>
                           <SuffixList value={contractorNameSuffix?.id} onChangeFunc={(id,value)=>setContractorNameSuffix({...contractorNameSuffix, id:id,suffix:value})} className={[style.fullWidth]}/>
                       </div>
                   </div>
 
-                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}
+                  onFocus={()=>{getSelectedField('Email Contractor id')}}>
                       <div className={style.extentionLableStyle}>Email Contractor id*</div>
                       <div className={style.displayInRow}>
                           <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
@@ -532,7 +528,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                           onChange={(e) => setContractorEmail(e.target.value)}/>
                       </div>
                   </div>
-                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}
+                  onFocus={()=>{getSelectedField('Cell Phone')}}>
                       <div className={style.extentionLableStyle}>Cell Phone*</div>
                       <div className={style.grid2}>
                       <InputGroup placeholder="Numeric" className={style.fullWidth}
@@ -545,19 +542,23 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                       <div className={style.grid3}>
                       <InputGroup className={style.fullWidth} placeholder="City"
                       value={city}
+                      onFocus={()=>{getSelectedField('Address City')}}
                       onChange={(e) => setCity(e.target.value)}/>
                       <InputGroup className={style.fullWidth} placeholder="State"
                       value={state}
+                      onFocus={()=>{getSelectedField('Address State')}}
                       onChange={(e) => setState(e.target.value)}/>
                       <InputGroup className={style.fullWidth} placeholder="Zipcode"
                       value={zipCode}
+                      onFocus={()=>{getSelectedField('Address Zip Code')}}
                       onChange={(e) => setZipCode(e.target.value)}/>
                       </div>
                   </div>
               </div>
 
 
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}
+                onFocus={()=>{getSelectedField('Site Level Responsibility')}}>
                     <div className={style.extentionLableStyle}>Site Level Responsibility*</div>
                     <div>
                         <div className={style.flexLeft}>
@@ -609,7 +610,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                         )}
                     </div>
                 </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}
+                onFocus={()=>{getSelectedField('Department Level Responsibility')}}>
                     <div className={style.extentionLableStyle}>Department Level Responsibility*</div>
                     <div>
                         <div className={style.flexLeft}>
@@ -684,7 +686,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                     </div>
                 </div>
 
-              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}
+              onFocus={()=>{getSelectedField('Assign Contractor With App User Role')}}>
                    <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
                    <div className={`${style.reduce10Left} ${style.marginRight}`}>
                        <select
@@ -711,7 +714,7 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
               <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contract ID & Term Limit')}}>BACK</button>
               <div>
                 <button className={style.newContractOutlinedButton} onClick={() => handleSave()}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {getViewPage3(true);getCurrentPage('Contractor Business Entity')}}>CONTINUE</button>
+                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave();getViewPage3(true);getCurrentPage('Contractor Business Entity')}}>CONTINUE</button>
               </div>
             </div>
 

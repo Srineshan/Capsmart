@@ -39,6 +39,10 @@ body{
     margin-top: 15px !important;
 }
 
+.marginRight30{
+    margin-right: 30px;
+}
+
 .padding10{
     padding: 10px;
 }
@@ -581,10 +585,24 @@ body{
     margin-top: 5px;
 }
 
-.tableDataGrid{
-    width: 100%;
+.ticketTableDataGrid{
     display: grid;
-    grid-template-columns: 5% 15% 15% 10% 10% 17% 15% 13%;
+    grid-template-columns: 5% 10% 15% 15% 15% 15% 15% 10%;
+}
+
+.tutorialTableDataGrid{
+    display: grid;
+    grid-template-columns: 5% 10% 20% 15% 10% 10% 20% 10%;
+}
+
+.releaseTableDataGrid{
+    display: grid;
+    grid-template-columns: 5% 10% 20% 15% 10% 13% 10% 10% 5%;
+}
+
+.messageTableDataGrid{
+    display: grid;
+    grid-template-columns: 5% 10% 15% 32% 15% 15% 5%;
 }
 
 .tableDataGrid2{
@@ -2228,4 +2246,13 @@ select {
 
 .reduceTop20{
     margin-top: -20px;
+}
+
+.activeButton{
+    background: #7165E3 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid #7165E3;
+    border-radius: 6px;
+    opacity: 0.75;
+    color: white;
+    font-weight: 600;
 }

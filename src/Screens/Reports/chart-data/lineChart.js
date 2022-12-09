@@ -34,10 +34,6 @@ const ApexLineChart = ({lineData}) => {
                 xaxis: {
                 categories: lineData?.map(data=>data?.date),
                 },
-                yaxis: {
-                min: 0,
-                max: 10
-                },
             }
     };
     return(

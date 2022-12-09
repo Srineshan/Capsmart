@@ -13,7 +13,6 @@ import {PUT, GET, TenantID, POST} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Calculator from './../../Components/Calculator';
 import ReactStickyNotes from '@react-latest-ui/react-sticky-notes';
-
 import style from './index.module.scss';
 import SendEmailUserList from './mailUser';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
@@ -26,9 +25,8 @@ import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
 
-const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog }) => {
-    console.log('selectedservice', selectedService);
-    const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Clinical Services','Add-On Clinical Services','Administrative / Miscellaneous Services'];
+const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex }) => {
+    const serviceTypeList = ['Clinic Blocks','Surgery Session','On Call Coverage Duty Days','Supplemental Services','Add-On Services','Administrative / Miscellaneous Services'];
     const siteTypeId = sessionStorage.getItem('entityTypeId');
     const [serviceType, setServiceType] = useState('Clinic Blocks');
     const [siteList, setSiteList] = useState([]);
@@ -42,6 +40,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const [showLocation, setShowLocation] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState([]);
     const [metadata, setMetadata] = useState();
+    const [existingServices, setExistingServices] = useState([]);
     //old useStates
     const [activityType, setActivityType] = useState('OutPatient Surgery Clinic Session');
     const [activityContractedFor, setActivityContractedFor] = useState('');
@@ -77,6 +76,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const [coverageCallDutyType, setCoverageCallDutyType] = useState('All On Call Service Duty');
     const [contractedServices, setContractedServices] = useState([]);
     const [users,setUsers] = useState([]);
+    const [usedActivity, setUsedActivity] = useState([]);
     const [selectedUser, setSelectedUser] = useState([]);
     const [helpTool, setHelpTool] = useState({calculator:false,textArea:false});
     const [selectedUsers, setSelectedUsers] = useState([]);
@@ -141,6 +141,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
     }, [selectContractInfo, users])
 
+    useEffect(()=>{
+      let temp = [];
+      contractedServices?.filter(data=>data?.activityType?.activityType === serviceType)?.map(data=>data?.activities?.map(activity=>{
+        temp.push(activity?.activity);
+      }));
+      setUsedActivity(temp);
+    }, [serviceType, contractedServices])
+
     const getMetaData = (value) => {
       setMetadata(value);
     }
@@ -157,7 +165,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     const getContractedServices = async() => {
         const {data: contractedServices} = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
-        setContractedServices(contractedServices?.contractedServices)
+        setContractedServices(contractedServices?.contractedServices);
+        setExistingServices(contractedServices?.contractedServices);
     }
 
     const getUserData = async() => {
@@ -188,7 +197,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     const locationToAdd = async() => {
       let siteId = siteData?.map(data=>data?.id)[0];
-      console.log('id',siteId);
       let data = {
           "location": newLocation,
           "siteId": siteId,
@@ -222,24 +230,44 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
     }
 
-    // let performingActivity = selectedActivity?.map(data=>data?.activity?.activity)?.join('-');
-
-    const handleSave = async() => {
+    console.log('metadata', metadata);
+    const handleSave = async(buttonType) => {
         let performingActivity = '';
         let activities = [];
-        if(serviceType !== 'Supplemental Clinical Services'){
+        if(serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services'){
           performingActivity = selectedActivity?.map(data=>data?.activity?.activity)?.join('-')
           selectedActivity?.map(data=>{
             activities?.push({"activity":data?.activity?.activity})
           })
-        }else{
+        }
+        if(serviceType === 'Administrative / Miscellaneous Services'){
+          performingActivity = metadata?.selectedActivities?.map(data=>data?.activity)?.join('-')
+          metadata?.selectedActivities?.map(data=>{
+            activities?.push({"activity":data?.activity})
+          })
+        }
+        if(serviceType === 'Supplemental Services'){
           performingActivity = metadata?.supplementServiceName?.map(data=>data)?.join('-') || '';
           metadata?.supplementServiceName?.map(data=>(
             activities.push({"activity":data})
           ));
         }
-
-            const data = {
+        let data = [];
+        if(serviceType === 'Add-On Services' && !editService){
+          let temp = metadata;
+          data = temp;
+          temp?.map(data=>{
+            data.sites = siteData;
+            data.performingActivity = {activity:data?.performingActivity};
+            data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
+          });
+        }
+        else{
+          let dataValues = metadata;
+          if(serviceType === 'Add-On Services'){
+            dataValues = metadata?.[0];
+          }
+             data = [{
                   "sites": siteData,
                   "activityType": {
                     "activityType": serviceType
@@ -249,70 +277,74 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     "activity": performingActivity
                   },
                   "activities": activities,
-                  ...(serviceType === 'Supplemental Clinical Services' && {"hoursBorrowed": {
+                  ...((serviceType === 'Supplemental Services' || serviceType === 'Administrative / Miscellaneous Services') &&
+                  {"hoursBorrowed": {
                       "activityType": {
-                        "activityType": metadata?.dedicatedHoursActivityType || ''
+                        "activityType": dataValues?.dedicatedHoursActivityType || ''
                       },
                       "performingActivity": {
-                        "activity": metadata?.dedicatedHoursPerformingActivity || ''
+                        "activity": dataValues?.dedicatedHoursPerformingActivity || ''
                       }
                     }}),
                   "locations": selectedLocation,
                   "contractedSchedule": {
                     "minimum": {
-                      "value": parseInt(metadata?.min || '0')
+                      "value": parseInt(dataValues?.min || '0')
                     },
                     "maximum": {
-                      "value": parseInt(metadata?.max || '0')
+                      "value": parseInt(dataValues?.max || '0')
                     },
-                    "frequency": metadata?.frequency
+                    "frequency": dataValues?.frequency
                   },
                   "patientsSeenTarget": {
                     "withNurse": {
-                      "value": parseInt(metadata?.withNurse || '0')
+                      "value": parseInt(dataValues?.withNurse || '0')
                     },
                     "withoutNurse": {
-                      "value": parseInt(metadata?.withoutNurse || "0")
+                      "value": parseInt(dataValues?.withoutNurse || "0")
                     },
-                    "noTargetApplicable": metadata?.noTargetApplicable
+                    "noTargetApplicable": dataValues?.noTargetApplicable
                   },
                   "scheduledPatientsTarget": {
                     "withNurse": {
-                      "value": parseInt(metadata?.targetWithNurse || '0')
+                      "value": parseInt(dataValues?.targetWithNurse || '0')
                     },
                     "withoutNurse": {
-                      "value": parseInt(metadata?.targetWithoutNurse || '0')
+                      "value": parseInt(dataValues?.targetWithoutNurse || '0')
                     },
-                    "noTargetApplicable": true
+                    "noTargetApplicable": dataValues?.targetNoTargetApplicable
                   },
                   "additionalSchedule": {
-                    "value": parseInt(metadata?.additionalScheduleValue),
-                    "frequency": metadata?.additionalScheduleFrequency,
-                    "scheduleRequired": metadata?.additionalScheduleRequired
+                    "value": parseInt(dataValues?.additionalScheduleValue),
+                    "frequency": dataValues?.additionalScheduleFrequency,
+                    "scheduleRequired": dataValues?.additionalScheduleRequired
                   },
-                  "rateType": metadata?.rateType,
+                  "rateType": dataValues?.rateType,
                   "activityResponse": {
                     "dataMap": {
                       ...(serviceType === 'On Call Coverage Duty Days' && {
-                        'onCallCoverageFor' : metadata?.onCallCoverageFor,
+                        'onCallCoverageFor' : dataValues?.onCallCoverageFor,
                       }
                     ),
+                    ...(serviceType === 'Administrative / Miscellaneous Services' && {
+                      'adminActivities' : dataValues?.selectedActivities,
+                    }),
                     }
                   },
                   "duration": {
-                    "hours": parseInt(metadata?.sessionDuration)
+                    "hours": parseInt(dataValues?.sessionDuration)
                   },
                   "payableAmount": {
-                    "value": parseInt(metadata?.sessionAmount)
+                    "value": parseInt(dataValues?.sessionAmount)
                   },
                   "totalSessions": {
-                    "value": parseInt(metadata?.totalSession),
-                    "frequency": metadata?.totalSessionFrequency
+                    "value": parseInt(dataValues?.totalSession),
+                    "frequency": dataValues?.totalSessionFrequency
                   },
-                  "serviceDays": metadata?.serviceDays,
+                  "serviceDays": dataValues?.serviceDays,
                   "workingPeriod": {
-                    "from": metadata?.workingTimeFrom,
-                    "to": metadata?.workingTimeTo
+                    "from": dataValues?.workingTimeFrom,
+                    "to": dataValues?.workingTimeTo
                   },
                   "workingHours": {
                     "normalWorkingHours": true,
@@ -321,16 +353,21 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   "activityApprovalWFRequired": true,
                   "designateSpecificContractor": isDesignatedSpecificContractor,
                   "locationSpecified": showLocation,
-                  "dedicatedHoursSpecified": serviceType === 'Supplemental Clinical Services' ? metadata?.dedicatedHoursSpecified : false,
-                  "billableService": metadata?.billableService
-                }
-            let services = contractedServices || [];
+                  "dedicatedHoursSpecified": ['Supplemental Services','Administrative / Miscellaneous Services'].includes(serviceType) ? dataValues?.dedicatedHoursSpecified : false,
+                  "billableService": dataValues?.billableService
+                }]
+              }
+            if(editService && serviceType === 'Add-On Services'){
+                data[0].activities = metadata?.[0]?.activities;
+                data[0].performingActivity = {activity:metadata?.[0]?.performingActivity};
+            }
+            let services = existingServices || [];
             if(editService){
-              let temp = services?.filter(data=>data?.activityType?.activityType !== serviceType || data?.performingActivity?.activity !== performingActivity)?.map(data=>data);
-              temp.push(data);
+              let temp = services?.filter((data,index)=>index !== selectedIndex)?.map(data=>data);
+              temp.push(...data);
               services = temp;
             }else{
-              services.push(data);
+              services.push(...data);
             }
             let formattedData = {
                 contractedServices: services
@@ -339,47 +376,22 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
             if(response){
                 SuccessToaster('Contracted Service Updated Successfully');
-                getContractedServices();
             }
             else {
                 ErrorToaster('Unexpected Error');
             }
-        // getContractedServices()
+          if(buttonType === 'SAVE AND EXIT'){
+            getAddServiceDialog(false);
+            getEditServiceDialog(false);
+          }
+          reset();
     }
-
-    console.log('type', activityType);
 
     const reset = () => {
-        setMin(0);
-        setMax(0);
-        setWithNurse(0);
-        setWithoutNurse(0);
-        setAdditionalClinicSchedule(0);
-        setAdditionalSchedule(false);
-        setDuration(0);
-        setPayment(0);
-        setTotalContractedService(0);
-        setWorkingPeriodFrom('');
-        setWorkingPeriodTo('');
-    }
-
-    const resetAll = () => {
-        setMin(0);
-        setMax(0);
-        setWithNurse(0);
-        setWithoutNurse(0);
-        setAdditionalClinicSchedule(0);
-        setAdditionalSchedule(false);
-        setDuration(0);
-        setPayment(0);
-        setTotalContractedService(0);
-        setWorkingPeriodFrom('');
-        setWorkingPeriodTo('');
-        setActivityContractedFor('');
-        setContractedServiceProvider('');
-        if(selectContractInfo !== "INDIVIDUAL"){
-            setSelectedUsers([]);
-        }
+      setMetadata([]);
+      setSelectedLocation([]);
+      setSelectedActivity([]);
+      setSiteData([]);
     }
 
     const handleUsers = (value) => {
@@ -406,24 +418,23 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     const inputElementText = (text) => {
         return (
-            <button className={`${style.textElement}`} >{text}</button>
+            <button className={`${style.textElement}`}>{text}</button>
         )
     }
 
     const activityItems = useMemo(
       () =>
-        activity?.map((data) => ({
+        activity?.filter(data=>!usedActivity?.includes(data?.activity?.activity))?.map((data) => ({
           id: data.id,
           value: data?.activity?.activity,
           ...data,
         })),
-      [activity],
+      [activity, usedActivity],
     );
 
     const locationItems = useMemo(
       () =>
         locationList?.map((data) => ({
-          // id: data.id,
           value: data?.location,
           location: data?.location
         })),
@@ -450,7 +461,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       }
     }
 
-    console.log('selectedActivity', selectedActivity);
 
     return (
         <div>
@@ -459,8 +469,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     <div className={style.spaceBetween}>
                         <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
                         <div>
-                          <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, textArea:!helpTool?.textArea})} />
-                          <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, calculator:!helpTool?.calculator})} />
+                        {
+                          // <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, textArea:!helpTool?.textArea})} />
+                          // <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, calculator:!helpTool?.calculator})} />
+                        }
                           <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => {getAddServiceDialog(false);getEditServiceDialog(false);}} />
                         </div>
                     </div>
@@ -469,7 +481,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     <div className={style.proofBorder}>
                         <div className={`${style.addManagerGrid} `}>
                             <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
-                            <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData}/>
+                            <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData} isMultiSiteEntity={isMultiSiteEntity}/>
                         </div>
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
@@ -508,7 +520,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                                 className={`${style.fullWidth}`}
                                             >
-                                                <MenuItem value="">Select Contracted Services Provided</MenuItem>
+                                                <MenuItem value="">Select Contractors for Services to be Provided</MenuItem>
                                                 {users?.map((data, index) => (
                                                     <MenuItem value={data?.id} key={index}> {data?.name?.firstName} {data?.name?.lastName}</MenuItem>
                                                 ))}
@@ -523,25 +535,29 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                 </div>
                             </div>
                         )}
-                        <div>
-                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
-                                <div>
-                                    <div className={style.addGrid}>
-                                        <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e)=>setNewActivity(e.target.value)}/>
-                                        <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
-                                        </div>
-                                    </div>
-                                    {
-                                      selectedActivity?.length !== 0 &&
-                                      <MultiSelectDisplay values={selectedActivity?.map(data=>data?.activity?.activity)} removeItem={removeFriendlyName}/>
-                                    }
-                                </div>
-                            </div>
-                        </div>
+                        {
+                          serviceType !== 'Administrative / Miscellaneous Services' && serviceType !== 'Add-On Services' && serviceType !== 'Supplemental Services' &&
+                          <div>
+                              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                  <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
+                                  <div>
+                                      <div className={style.addGrid}>
+                                          <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e)=>setNewActivity(e.target.value)}/>
+                                          <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                              <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
+                                          </div>
+                                      </div>
+                                      {
+                                        selectedActivity?.length !== 0 &&
+                                        <MultiSelectDisplay values={selectedActivity?.map(data=>data?.activity?.activity)} removeItem={removeFriendlyName}/>
+                                      }
+                                  </div>
+                              </div>
+                          </div>
+                        }
 
-                        {serviceType !== 'Add-On Clinical Services' && <div>
+
+                        {serviceType !== 'Add-On Services' && <div>
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                                 <div>
@@ -579,18 +595,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                         ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService}/>
                         : serviceType === 'On Call Coverage Duty Days'
                         ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService}/>
-                        : serviceType === 'Supplemental Clinical Services'
+                        : serviceType === 'Supplemental Services'
                         ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService}/>
-                        : serviceType === 'Add-On Clinical Services'
+                        : serviceType === 'Add-On Services'
                         ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService}/>
-                        : <AdministrativeFields />}
+                        : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService}/>}
                     </div>
                   </div>
                 </div>
                 <div>
                     <div className={`${style.floatRight}`}>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave();resetAll()}}>ADD MORE</button>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave();resetAll();getAddServiceDialog(false);}}>SAVE & EXIT</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave('ADD MORE');reset()}}>ADD MORE</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={()=> {handleSave('SAVE AND EXIT');reset()}}>SAVE & EXIT</button>
                     </div>
                 </div>
             </Dialog>

@@ -383,6 +383,17 @@ body{
     grid-template-columns: 10% 25% 20% 20% 20% 5%;
 }
 
+.documentPageHeaderWithoutSite{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 10% 35% 25% 25% 5%;
+}
+
 .serviceSpecificationTableHeader{
     background: #BEB9F2 0% 0% no-repeat padding-box;
     height: 50px;
@@ -420,6 +431,12 @@ body{
     grid-gap: 10px;
 }
 
+.activeContractGridWithoutAction{
+    display: grid;
+    grid-template-columns: 5% 11% 11% 11% 11% 11% 7% 10% 10%;
+    grid-gap: 10px;
+}
+
 .draftContractGrid{
     display: grid;
     grid-template-columns: 8% 10% 10% 10% 10% 10% 10% 12% 10%;
@@ -442,6 +459,19 @@ body{
     margin-top: 5px;
     display: grid;
     grid-template-columns: 10% 25% 20% 20% 20% 5%;
+    word-break: break-word !important;
+}
+
+.documentDataProofWithoutSite{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: 10% 35% 25% 25% 5%;
     word-break: break-word !important;
 }
 
@@ -824,9 +854,19 @@ body{
     margin-top: 5px;
 }
 
-.toStyle{
-    color: #52575D;
-    margin: 5px 20px 0 20px;
+.termPeriodGrid{
+    display: grid;
+    grid-template-columns: 45% 10% 45%;
+}
+
+.contractedTime{
+  display: grid;
+  grid-template-columns: 45% 45%;
+  grid-column-gap: 10%;
+}
+
+.effectiveDateWidth{
+    width: 45%;
 }
 
 .greyText{
@@ -1150,6 +1190,15 @@ select {
     border-radius: 10px;
   }
 
+  .timesheetNextButtonStyle{
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    height: 35px;
+    width: 120px;
+    border-radius: 6px;
+  }
+
   @media screen and (max-width: 1350px) {
     .newContractButtonStyle, .newContractOutlinedButton{
         width: 140px;
@@ -1217,6 +1266,11 @@ select {
 .weekSelectStyle{
     margin-top: 0px;
     height: 30px;
+}
+
+.timeCommitment{
+  margin-top:-1px;
+  height:31px;
 }
 
 .marginBottom{
@@ -1794,7 +1848,7 @@ select {
     background: #EBF2F7 0% 0% no-repeat padding-box;
     border: 1px solid #7165E3;
     border-radius: 6px 6px 0px 0px;
-    width: 180px;
+    min-width: 180px;
     height: 40px;
   }
 
@@ -1811,6 +1865,12 @@ select {
     width: 100%;
     margin-left: -10px;
     padding: 20px;
+}
+
+.verticalSpaceBetween{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .workflowBoxStyle{

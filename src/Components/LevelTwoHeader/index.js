@@ -58,8 +58,7 @@ const LevelTwoHeader = ({ heading, updatedTime, onCloseLevel2, needDateFilter, g
         }
     };
 
-    console.log(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1))
-    return (
+    return(
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <div className={`${style.displayInRow}`}>
                 <div className={`${style.userNameStyle} ${style.alignCenter} `}>
@@ -72,7 +71,7 @@ const LevelTwoHeader = ({ heading, updatedTime, onCloseLevel2, needDateFilter, g
             <div className={`${style.displayInRow}`}>
                 {needDateFilter && (
                     <>
-                        <div className={style.marginRight}>
+                        <div className={`${style.marginRight} ${style.dateRangeTextStyle}`}>
                             {`${format(new Date(from), 'MM-dd-yyyy')} to ${format(new Date(to), 'MM-dd-yyyy')}`}
                         </div>
                         <FormControl sx={{ minWidth: 180, fontSize: 20 }} className={`${style.reduceMarginTop} ${style.marginLeft20}`} size="small">
