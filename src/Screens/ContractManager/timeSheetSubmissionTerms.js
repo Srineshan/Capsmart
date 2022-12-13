@@ -299,7 +299,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
     return (
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>Number of Timesheets to Submit for Services Performed</div>
                     <InputGroup className={style.fourFieldWidth} type="number" value={timeSheetCount} onChange={(e) => setTimeSheetCount(parseInt(e.target.value))} />
                 </div>
