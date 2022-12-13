@@ -20,12 +20,13 @@ import UserLogo4 from './../../images/userLogo6.png';
 import Search from './../../images/search.png';
 import Info from './../../images/info.png';
 import SaveReport from './saveReport';
+import ReactToPdf from "react-to-pdf";
 
 import style from './index.module.scss';
 // import PDFDocument from './pdf';
 
 
-const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdated, isLoading, dataToUseInReport}) => {
+const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdated, isLoading, dataToUseInReport, refToUse}) => {
     const {reportType} = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -141,9 +142,13 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdat
                         }
                         fileName={`report.pdf`}>
                         {({ blob, url, loading, error }) => ( */}
-                            {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
-                                <DownloadingOutlinedIcon style={{color:"#52575D"}} />
-                            </div> */}
+                        <ReactToPdf targetRef={refToUse} filename="sample.pdf" x={.5} y={.5} scale={0.8}>
+                            {({ toPdf }) => 
+                                <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={toPdf}>
+                                    <DownloadingOutlinedIcon style={{color:"#52575D"}} />
+                                </div>
+                            }
+                        </ReactToPdf>
                          {/* )}
                         </PDFDownloadLink> */}
                         <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={handlePrint} 

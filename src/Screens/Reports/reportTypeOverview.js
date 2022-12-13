@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, useRef, useCallback } from 'react';
+import React, { Fragment, useState, useEffect, useRef, useCallback, createRef } from 'react';
 import SampleReportLeftCard from './sampleReportLeftCard';
 import Navbar from '../../Components/Navbar';
 import { GET } from './../dataSaver';
@@ -51,6 +51,7 @@ const ReportTypeOverview = () => {
     const { reportType } = useParams();
     const handle = useFullScreenHandle();
     const componentRef = useRef(null);
+    const PDFRef = createRef();
     const onBeforeGetContentResolve = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isUpdated, setIsUpdated] = useState(false);
@@ -508,9 +509,9 @@ const ReportTypeOverview = () => {
             <div className={`${style.bigCardGrid} ${style.margin20WithoutTop} ${style.marginTop10}`}>
                 <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} getIsUpdated={getIsUpdated} />
                 <div>
-                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isUpdated} isLoading={isLoading} dataToUseInReport={dataToUseInReport} />
+                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isUpdated} isLoading={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} />
                     <FullScreen handle={handle}>
-                        <div className={style.scroll}>
+                        <div className={style.scroll} ref={PDFRef}>
                             <div className={`${style.reportBackgroundCard} ${style.marginTop20}`} ref={componentRef}>
                                 <table style={{ width: '100%' }}>
                                     <thead>
