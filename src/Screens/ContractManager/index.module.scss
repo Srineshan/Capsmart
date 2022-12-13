@@ -1,8 +1,5 @@
 @import '../../styles/mixins.scss';
 
-$headingBlue: #003685;
-$shiningBlue: #0067ff;
-
 body{
     background: #F8FCFF 0% 0% no-repeat padding-box;
     -ms-overflow-style: none !important;
@@ -2163,4 +2160,36 @@ select {
     background-color: #ebe9fb;
     margin: 0 -20px;
     padding: 0 20px;
+}
+
+.selectBoxStyle{
+    border: 1px solid #E9E9F0;
+    border-radius: 4px;
+    height: 35px;
+}
+
+.arrowDownStyle{
+    height: 10px;
+    width: 15px;
+    object-fit: contain;
+}
+
+.selectOptionsBox{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 11px #52575D4D;
+    border-radius: 0px 0px 6px 6px;
+}
+
+.selectOptionsMenuStyle{
+    border-bottom: 1px solid #E9E9F0;
+    padding: 0px 10px;
+}
+
+.selectedOptionstyle{
+    background: #ebe9fb 0% 0% no-repeat padding-box;
+}
+
+.contractScrollStyle{
+    height: calc(100vh - 435px);
+    overflow: scroll;
 }

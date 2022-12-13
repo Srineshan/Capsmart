@@ -235,6 +235,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
                         getSelectedPage={getSelectedPage}
                         totalCount={totalCount}
                         page={page}
+                        scrollStyle={style.contractScrollStyle}
                     />
                 </div>
             </div>
