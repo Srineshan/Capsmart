@@ -11,7 +11,7 @@ import DatalistInput from 'react-datalist-input';
 import {GET,PUT,POST,role,TenantID} from './../dataSaver';
 import AddNewContractManager from './addNewContractManager';
 import {Auth} from './../../utils/auth'
-import {format} from 'date-fns';
+import {format, sub, add} from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import axios from 'axios';
 
@@ -729,9 +729,12 @@ const ContractIdTermLimitIndividual = (
                       <div onFocus={()=>{getSelectedField('Contract Term Period Start Date')}}>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <DatePicker
+                            minDate={sub(new Date(),{years:3})}
+                            maxDate={add(new Date(), {months: 6})}
                             value={contractTermPeriodFrom}
                             onChange={(newValue) => {
                               setContractTermPeriodFrom(newValue);
+                              setContractEffectiveDate(newValue);
                             }}
                             InputProps={{
                               style: {
@@ -761,6 +764,7 @@ const ContractIdTermLimitIndividual = (
                               }
                             }}
                             minDate={contractTermPeriodFrom}
+                            maxDate={add(new Date(),{years:5})}
                             renderInput={(params) => <TextField  {...params} inputProps={{
                               ...params.inputProps,
                               placeholder: "End Date"
@@ -786,6 +790,7 @@ const ContractIdTermLimitIndividual = (
                             }
                           }}
                           minDate={contractTermPeriodFrom}
+                          maxDate={contractTermPeriodTo}
                           renderInput={(params) => <TextField  {...params} inputProps={{
                             ...params.inputProps,
                             placeholder: "Effective Date"

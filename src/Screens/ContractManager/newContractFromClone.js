@@ -368,6 +368,7 @@ const NewContractFromClone = ({contracts, getNewContract, contractType, selected
                 ) : (selectContractInfo === "MULTIPLE" && currentPage === "Contracted Services Provider(s)") ? (
                     <ContractedServicesProviderMultiple
                     getNewServiceProviderDialog={getNewServiceProviderDialog}
+                    newServiceProviderDialog={newServiceProviderDialog}
                     getViewPage1={getViewPage1}
                     getViewPage2={getViewPage2}
                     getViewPage3={getViewPage3}

@@ -41,39 +41,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const [selectedLocation, setSelectedLocation] = useState([]);
     const [metadata, setMetadata] = useState();
     const [existingServices, setExistingServices] = useState([]);
-    //old useStates
-    const [activityType, setActivityType] = useState('OutPatient Surgery Clinic Session');
-    const [activityContractedFor, setActivityContractedFor] = useState('');
-    const [isDesignatedSpecificContractor, setIsDesignatedSpecificContractor] = useState(true);
-    const [addOnService, setAddOnService] = useState('');
-    const [sessionRate, setSessionRate] = useState(0);
-    const [sessionDuration, setSessionDuration] = useState(0);
-    const [fractureClinicalSessionRate, setFractureClinicalSessionRate] = useState(0);
-    const [fractureClinicalSessionDuration, setFractureClinicalSessionDuration] = useState(0);
-    const [sessionExtension, setSessionExtension] = useState(0);
-    const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
-    const [workingPeriodTo, setWorkingPeriodTo] = useState('');
+    const [isDesignatedSpecificContractor, setIsDesignatedSpecificContractor] = useState(false);
     const [contractedServiceProvider, setContractedServiceProvider] = useState('');
-    const [activityOrServiceType, setActivityOrServiceType] = useState('Medical / Surgical Care Contracted Services');
-    const [regularClinicSchedule, setRegularClinicSchedule] = useState(0);
-    const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
-    const [regularClinicScheduleFrequency, setRegularClinicScheduleFrequency] = useState('WEEK');
-    const [allActivities, setAllActivities] = useState(false);
-    const [additionalCompensationTitle, setAdditionalCompensationTitle] = useState('');
-    const [additionalCompensationPerMonth, setAdditionalCompensationPerMonth] = useState(0);
-    const [min, setMin] = useState(0);
-    const [max, setMax] = useState(0);
-    const [frequency, setFrequency] = useState('WEEK');
-    const [duration, setDuration] = useState(0);
-    const [payment, setPayment] = useState(0);
-    const [withNurse, setWithNurse] = useState(0);
-    const [withoutNurse, setWithoutNurse] = useState(0);
-    const [noTargetApplicable, setNoTargetApplicable] = useState(false);
-    const [additionalSchedule, setAdditionalSchedule] = useState(false);
-    const [totalContractedService, setTotalContractedService] = useState(0);
-    const [totalContractedServiceFrequency, setTotalContractedServiceFrequency] = useState('WEEK');
-    const [dutyDays, setDutyDays] = useState([]);
-    const [coverageCallDutyType, setCoverageCallDutyType] = useState('All On Call Service Duty');
     const [contractedServices, setContractedServices] = useState([]);
     const [users,setUsers] = useState([]);
     const [usedActivity, setUsedActivity] = useState([]);
@@ -88,6 +57,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         getSelectedSites(selectedService?.sites);
         getNewLocation(selectedService?.locations);
         setServiceType(selectedService?.activityType?.activityType);
+        setIsDesignatedSpecificContractor(selectedService?.designateSpecificContractor);
+        setSelectedUsers(selectedService?.users || []);
         let temp = [];
         selectedService?.activities?.map(data=>{
           temp.push({activity:data})
@@ -220,14 +191,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       if(sites && siteList?.length === 0){
         setSiteList(sites);
       }
-    }
-
-    const handleDutyDays = (value) => {
-        if(!dutyDays.includes(value)){
-            setDutyDays([...dutyDays, value])
-        } else {
-            setDutyDays(dutyDays?.filter(data => data !== value)?.map(data => data))
-        }
     }
 
     console.log('metadata', metadata);
@@ -513,7 +476,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                             label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
                                         />
 
-                                        {isDesignatedSpecificContractor && (
+                                        {isDesignatedSpecificContractor ? (
                                             <Select
                                                 displayEmpty
                                                 onChange={(e) => handleUsers(e.target.value)}
@@ -525,7 +488,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                                     <MenuItem value={data?.id} key={index}> {data?.name?.firstName} {data?.name?.lastName}</MenuItem>
                                                 ))}
                                             </Select>
-                                        )}
+                                        ):<p className={` ${style.marginTop10}`}>Any Contractor</p>
+                                      }
                                     </div>
                                     {usersTags?.length !== 0 && (
                                         <div className={`${style.marginTop20} ${style.marginLeft20}`}>

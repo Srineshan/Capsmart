@@ -274,6 +274,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
     }
 
     const handleSave = async() => {
+      console.log('inside save func');
       let contractData = userProviderData?.contracts;
       contractData?.filter(data=>data?.id === contractId)?.map(data=>{
         let site = {
@@ -284,10 +285,10 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
         data.departmentLevelResponsible = departmentLevel;
         data.siteLevelResponsible = siteLevel;
       });
-      let roles = userDetails?.roles;
+      let roles = userDetails?.roles || [];
       selectedRoles?.map(data=>{
         if(!roles?.map(role=>role?.id).includes(data?.id)){
-          roles.push(data);
+          roles?.push(data);
         }
       });
       let sites = userDetails?.sites?.sites || [];

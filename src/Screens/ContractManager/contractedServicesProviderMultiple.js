@@ -3,15 +3,15 @@ import {GET, PUT, POST, TenantID} from './../dataSaver';
 import EditServiceProvider from './editServiceProviderDialog';
 import style from './index.module.scss';
 
-const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage, contractId, contractName}) => {
+const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, newServiceProviderDialog, getViewPage1, getViewPage2, getViewPage3, getCurrentPage, contractId, contractName}) => {
   const contractID = contractId;
     const [users,setUsers] = useState([]);
     const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
     const [userProviderData, setUserProviderData] = useState({});
 
     useEffect(()=>{
-      getUserData();
-    },[editServiceProviderDialog])
+        getUserData();
+    },[editServiceProviderDialog, newServiceProviderDialog])
 
     const getUserData = async() => {
       if(contractId !== ''){
@@ -23,7 +23,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
     }
 
     const getEditServiceDialog = (value) => {
-      setEditServiceProviderDialog(value)
+      setEditServiceProviderDialog(value);
     }
 
     return(
@@ -32,7 +32,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
                 <div className={style.spaceBetween}>
                     <div className={`${style.extentionLableStyle} ${style.marginTop20} ${style.marginLeft20}`}>Contracted Service Providers:<strong className={`${style.blackText} ${style.bold} ${style.marginLeft20}`}>{users?.length || 0}</strong></div>
                     <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} `}
-                    onClick={() => getNewServiceProviderDialog(true)} >ADD CONTRACTED PROVIDER</button>
+                    onClick={() => {getNewServiceProviderDialog(true);getUserData();}} >ADD CONTRACTED PROVIDER</button>
                 </div>
                 <div className={`${style.tableHeader} ${style.marginTop10}`}>
                     <p className={style.multipleContractorTextWidth}>DATA STATUS</p>
@@ -46,9 +46,9 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
                   users?.length !== 0 ? users?.map(data=>(
                     <div className={`${style.tableData} ${style.displayInRow}`} onClick={() => {setUserProviderData(data);setEditServiceProviderDialog(true)}}>
                         <div className={`${style.multipleDataTextWidth}`}></div>
-                        <p className={style.multipleDataTextWidth}>{`${data?.name?.firstName} ${data?.name?.lastName} ${data?.name?.suffix?.suffix}`}</p>
-                        <p className={style.multipleDataTextWidth}>{data?.serviceProviderType?.type} </p>
-                        <p className={style.multipleDataTextWidth}>Chief Medical Officer</p>
+                        <p className={style.multipleDataTextWidth}>{`${data?.name?.firstName} ${data?.name?.lastName}`}</p>
+                        <p className={style.multipleDataTextWidth}>{data?.serviceProviderType?.contractedServiceProviderType || '-'} </p>
+                        <p className={style.multipleDataTextWidth}>-</p>
                         <p className={style.multipleDataTextWidth}>-</p>
                     </div>
                   ))
