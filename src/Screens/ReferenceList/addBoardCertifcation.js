@@ -4,18 +4,18 @@ import ArrowDown from './../../images/arrowDown.png';
 import style from './index.module.scss';
 import AddHealthcareGroup from './../../images/addGroupBlue.png';
 
-const AddBoardCertifcation = ({ getAddBoardCertificationDialog }) => {
+const AddBoardCertifcation = ({ getAddEntityDialog }) => {
     const arrowDown = () => {
-        return(
+        return (
             <img src={ArrowDown} className={`${style.colorFileStyle3} ${style.marginRight}`} />
         )
     }
     return (
-        <Dialog isOpen={getAddBoardCertificationDialog} onClose={() => getAddBoardCertificationDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
+        <Dialog isOpen={getAddEntityDialog} onClose={() => getAddEntityDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
                 <div className={style.spaceBetween}>
                     <p className={style.extensionStyle}>ADD / Edit Board Certification Specialties</p>
-                    <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.dialogCrossStyle} onClick={() => getAddBoardCertificationDialog(false)} />
+                    <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.dialogCrossStyle} onClick={() => getAddEntityDialog(false)} />
                 </div>
                 <div className={style.ReferenceListEntityBorder}></div>
                 <div className={`${style.addHealthCareBoxStyle}`}>
@@ -70,7 +70,7 @@ const AddBoardCertifcation = ({ getAddBoardCertificationDialog }) => {
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
                         <button className={style.outlinedButton}>SAVE & ADDMORE</button>
-                        <button onClick={() => getAddBoardCertificationDialog(false)} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & CLOSE</button>
+                        <button onClick={() => getAddEntityDialog(false)} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & CLOSE</button>
                     </div>
                 </div>
             </div>
