@@ -16,7 +16,7 @@ import LeftStatsCard from '../../Components/LeftStatsCard';
 import style from './index.module.scss';
 
 const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelectedContract,getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page}) => {
-    const activeHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "CONTRACTORS", "EFFECTIVE DATE", "POD STATUS", "MANAGER", "LAST UPDATED"];
+    const activeHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "CONTRACTORS", "EFFECTIVE DATE", "MANAGER", "LAST UPDATED"];
     const draftHeaderValues =  ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "MANAGER", "LAST UPDATED", "LAST UPDATED BY", "ACTION"];
     const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "MANAGER", "LAST UPDATE", "ACTION"];
     const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "EXPIRATION DATE", "MANAGER", "LAST UPDATE"];
@@ -114,7 +114,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
             name.push(data?.contractName?.contractName);
             contractors.push("-");
             effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
-            podStatus.push({"value": "3", "src": GreenPage});
+            // podStatus.push({"value": "3", "src": GreenPage});
             manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
             lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
             action.push(true);
@@ -127,7 +127,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
             {"type": "text", "value": name, "onClickFunction": onClickFunction},
             {"type": "text", "value": contractors, "onClickFunction": onClickFunction},
             {"type": "text", "value": effectiveDate, "onClickFunction": onClickFunction},
-            {"type": "imgWithCount", "value": podStatus, "img": GreenPage},
+            // {"type": "imgWithCount", "value": podStatus, "img": GreenPage},
             {"type": "text", "value": manager, "onClickFunction": onClickFunction},
             {"type": "text", "value": lastUpdated, "onClickFunction": onClickFunction},
             // {"type": "action", "value": action},

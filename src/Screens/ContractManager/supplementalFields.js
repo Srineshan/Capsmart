@@ -256,6 +256,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                             <div className={`${style.threeFieldWidth}`}>
                                 <TextField
                                     size="small"
+                                    disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
@@ -264,7 +265,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                                 />
                             </div>
                             <div className={style.verticalAlignCenter}>
-                                <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>{metadata?.sessionAmount / metadata?.totalSession || 0} per Hour (Pro Rata)</p>
+                                <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>{(metadata?.sessionAmount / metadata?.totalSession || 0).toFixed(2)} per Hour (Pro Rata)</p>
                             </div>
                         </div>
                     </div>

@@ -41,7 +41,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const [selectedLocation, setSelectedLocation] = useState([]);
     const [metadata, setMetadata] = useState();
     const [existingServices, setExistingServices] = useState([]);
-    const [isDesignatedSpecificContractor, setIsDesignatedSpecificContractor] = useState(false);
+    const [isDesignatedSpecificContractor, setIsDesignatedSpecificContractor] = useState(true);
     const [contractedServiceProvider, setContractedServiceProvider] = useState('');
     const [contractedServices, setContractedServices] = useState([]);
     const [users,setUsers] = useState([]);
@@ -424,7 +424,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       }
     }
 
+ const handleDesignateContractor = () => {
+   setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor);
+   if(isDesignatedSpecificContractor){
+     setSelectedUsers(users);
+   }else{
+     setSelectedUsers([]);
+   }
+ }
 
+console.log('selectedUsers', selectedUsers);
     return (
         <div>
             <Dialog isOpen={getAddServiceDialog} onClose={() => {getAddServiceDialog(false);getEditServiceDialog(false);}} className={rightHelpArea ? `${style.addServiceDialog} ${style.addManagerDialogBackground}` : `${style.manageServiceDialog} ${style.addManagerDialogBackground}`}>
@@ -470,7 +479,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                                     <div className={`${style.displayInRow} `}>
                                         <FormControlLabel
                                             control={
-                                                <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor)} />
+                                                <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => handleDesignateContractor()} />
                                             }
                                             className={`${style.switchFontStyle} ${style.flexLeft} `}
                                             label={isDesignatedSpecificContractor ? 'YES' : 'NO'}

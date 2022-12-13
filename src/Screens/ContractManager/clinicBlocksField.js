@@ -48,6 +48,8 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
       weekendsCount:'0',
     })
 
+    console.log(metadata?.sessionDuration);
+
     useEffect(()=>{
       setSelectedValues();
     }, [serviceSelected]);
@@ -233,6 +235,7 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
                     <div className={`${style.threeFieldWidth}`}>
                         <TextField
                             size="small"
+                            disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
                             InputProps={{
                                 startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                             }}
@@ -241,7 +244,7 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
                         />
                     </div>
                     <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ {metadata?.sessionAmount / metadata?.sessionDuration || 0} per Hour (Pro Rata)</p>
+                        <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ {(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)</p>
                     </div>
                 </div>
             </div>
