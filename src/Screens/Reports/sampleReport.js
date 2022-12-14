@@ -76,7 +76,7 @@ const SampleReport = () => {
                                 <div className={style.spaceBetween}>
                                     <div className={`${style.performanceTextStyle} ${style.alignCenter}`}>TOP CATEGORIES</div>
                                 </div>
-                                <div className={`${style.performanceBorder} ${style.marginTop20}`}></div> 
+                                <div className={`${style.performanceBorder} ${style.marginTop20}`}></div>
                                 <div className={`${style.chartMargin}`}>
                                     <Chart {...donutChart}  type="donut" height={270} className={style.marginTop20} />
                                 </div>

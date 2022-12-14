@@ -31,6 +31,7 @@ export const currentUser = () => {
     user.firstName = decoded?.userName?.split(' ')[0];
     user.lastName = decoded?.userName?.split(' ')[1];
     user.email = decoded?.sub;
+    user.roles = decoded?.roles?.split(',');
   }
   return user;
 }

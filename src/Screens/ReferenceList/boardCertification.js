@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import ReferenceListNavbar from './../../Components/ReferenceListNavbar';
+import Navbar from '../../Components/Navbar';
 import SideBar from './../../Components/Sidebar';
 import { Icon, Intent } from "@blueprintjs/core";
 import style from './index.module.scss';
@@ -15,6 +15,7 @@ import EditHcFolder from './../../images/editHcFolder.png';
 import DeleteHcFolder from './../../images/deleteHcFolder.png';
 import DeleteHcRow from './../../images/deleteHcRow.png';
 import EditHcRow from './../../images/editHcRow.png';
+import Titlebar from '../../Components/titlemenu';
 
 const BoardCertification = () => {
     const [showBoardCertificationDialog, setShowBoardCertificationDialog] = useState(false);
@@ -25,7 +26,7 @@ const BoardCertification = () => {
 
     return (
         <Fragment>
-            <ReferenceListNavbar />
+            <Navbar />
             <div className={style.margin20}>
                 <div className={style.bigCardGrid}>
                     <SideBar />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Chart from 'react-apexcharts';
 
 const ApexGroupedBarChart = ({series, categories}) => {
@@ -8,7 +8,10 @@ const ApexGroupedBarChart = ({series, categories}) => {
       options: {
         chart: {
           type: 'bar',
-          height: 300
+          height: 300,
+          toolbar: {
+            show: false,
+          }
         },
         plotOptions: {
           bar: {

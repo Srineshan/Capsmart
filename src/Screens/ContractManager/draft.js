@@ -43,7 +43,7 @@ const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivation
          lastUpdatedBy = [];
          action = [];
 
-        draftContracts?.map(data=> 
+        draftContracts?.map(data=>
         {
             dot.push('yellow');
             contractType.push(data?.contractType);
@@ -96,7 +96,7 @@ const Draft = ({getSelectedContract, getDeleteDraftDialog, getContractActivation
                         <button className={style.contractButton} onClick={() => getAddContract(true)} >ADD CONTRACT</button>
                     </div>
                     <Table
-                        tableHeaderValues={tableHeaderValues} 
+                        tableHeaderValues={tableHeaderValues}
                         tableDataValues={getDraftContractsValues()}
                         tableData={draftContracts}
                         getNewContract={getNewContract}

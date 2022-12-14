@@ -20,6 +20,8 @@ import RedWarning from './../../images/redWarning.png';
 import ContractExtension from './../../images/contractExtension.png';
 import ProgressBar from "@ramonak/react-progress-bar";
 import SearchBar from './../../Components/SearchBar';
+import { GET } from '../dataSaver';
+import { format } from 'date-fns';
 import style from './index.module.scss';
 
 const TasksAndAlerts = () => {
@@ -27,6 +29,18 @@ const TasksAndAlerts = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
+    const [currentUserDetails, setCurrentUserDetails] = useState();
+    const [userId, setUserId] = useState(user?.id);
+
+    useEffect(() => {
+        setUserId(user?.id);
+        setUserDetails();
+    }, [])
+
+    const setUserDetails = async() => {
+        const {data: user} = await GET(`user-management-service/user/${userId}`);
+        setCurrentUserDetails(user);
+    }
     return(
         <Fragment>
             <Navbar />
@@ -40,7 +54,7 @@ const TasksAndAlerts = () => {
                                 {user?.userName}
                                 </div>
                                 <div className={style.loginStatus}>
-                                    last login SEP 7,21 11:48 am
+                                    last login {format(new Date(currentUserDetails?.lastLogin || new Date()), 'MMM d,yy h:mm a')}
                                 </div>
                             </div>
                             <img src={ChevronRight} className={style.chevronRightStyle}/>

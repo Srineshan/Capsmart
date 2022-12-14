@@ -12,7 +12,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import {format} from 'date-fns';
 import style from './index.module.scss';
 
-const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contractId}) => {
+const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contractId, isMultiSiteEntity}) => {
     const [certificateCopyAvbl,setCertificateCopyAvbl] = useState(true);
     const podTypes = ['Medical Staff Membership & Privileges',
                       'Primary Speciality Board Certification',
@@ -86,6 +86,8 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
       }
     }
 
+    console.log('selectedSite', selectedSite);
+
     const handleContinue = async () => {
       let data;
       if(!isMultipleContract){
@@ -117,7 +119,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ?
+        } : selectedPOD === 'Primary Speciality Board Certification' || selectedPOD === 'Secondary Specialty Board Certification' ?
         {
           podType: {type: selectedPOD},
           dataMap: {
@@ -133,7 +135,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ?
+        } : selectedPOD === 'Liability Insurance Certificate' || selectedPOD === 'Workers Compensation Insurance Certificate' || selectedPOD === 'Tail Insurance Coverage Certificate' ?
         {
           podType: {type: selectedPOD},
           dataMap: {
@@ -149,7 +151,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ?
+        } : selectedPOD === 'Medical license Certificate' || selectedPOD === 'Drug Enforcement Administration (DEA) License' ?
         {
           podType: {type: selectedPOD},
           dataMap: {
@@ -217,7 +219,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Primary Speciality Board Certification' || 'Secondary Specialty Board Certification' ?
+        } : selectedPOD === 'Primary Speciality Board Certification' || selectedPOD === 'Secondary Specialty Board Certification' ?
         {
           podType: {type: selectedPOD},
           dataMap: {
@@ -233,7 +235,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Liability Insurance Certificate' || 'Workers Compensation Insurance Certificate' || 'Tail Insurance Coverage Certificate' ?
+        } : selectedPOD === 'Liability Insurance Certificate' || selectedPOD === 'Workers Compensation Insurance Certificate' || selectedPOD === 'Tail Insurance Coverage Certificate' ?
         {
           podType: {type: selectedPOD},
           dataMap: {
@@ -249,7 +251,7 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
           fileName: fileName
             },
           certificateCopyAvailable: certificateCopyAvbl
-        } : selectedPOD === 'Medical license Certificate' || 'Drug Enforcement Administration (DEA) License' ?
+        } : selectedPOD === 'Medical license Certificate' || selectedPOD === 'Drug Enforcement Administration (DEA) License' ?
         {
           podType: {type: selectedPOD},
           dataMap: {
@@ -384,25 +386,29 @@ const AddProofOfDocumentation = ({getShowProofDialog, isMultipleContract, contra
                         </select>
                       </div>
                    </div>
-                   <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                     <div className={style.extentionLableStyle}>Privileging Facility*</div>
-                     <div className={style.reduce10Left}>
-                     <select
-                      name="class"
-                      id="Class"
-                      onChange={(e) => handleSites(e.target.value)}
-                      className={`${style.fullWidth} ${style.marginLeft20} `}>
-                          <option value="0" >
-                            Select Sites
-                          </option>
-                          {sites?.map((data, index) => (
-                            <option key={`${data}-${index}`} value={data?.siteName?.siteName} >
-                              {data?.siteName?.siteName}
-                            </option>
-                          ))}
-                      </select>
-                       </div>
-                 </div>
+                   {
+                     isMultiSiteEntity &&
+                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Privileging Facility*</div>
+                        <div className={style.reduce10Left}>
+                        <select
+                         name="class"
+                         id="Class"
+                         onChange={(e) => handleSites(e.target.value)}
+                         className={`${style.fullWidth} ${style.marginLeft20} `}>
+                             <option value="0" >
+                               Select Sites
+                             </option>
+                             {sites?.map((data, index) => (
+                               <option key={`${data}-${index}`} value={data?.siteName?.siteName} >
+                                 {data?.siteName?.siteName}
+                               </option>
+                             ))}
+                         </select>
+                          </div>
+                    </div>
+                   }
+
                 </>:
                   <>
                     {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

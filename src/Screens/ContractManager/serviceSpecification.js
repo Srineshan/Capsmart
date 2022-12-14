@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import CompletedIcon from './../../images/completedIcon.png';
 import { GET, PUT } from './../dataSaver';
+import LoadingScreen from '../../Components/LoadingScreen';
 
 import style from './index.module.scss';
 import AddServiceProvided from './addServiceToBeProvided';
-import EditServiceProvided from './editServiceToBeProvided';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
-const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPage, selectContractInfo }) => {
+const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPage, selectContractInfo, isMultiSiteEntity }) => {
   const [addService, setAddService] = useState(false);
   const [editService, setEditService] = useState(false);
   const [addOn, setAddOn] = useState(false);
@@ -16,11 +16,13 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [selectedService, setSelectedService] = useState({});
   const [users, setUsers] = useState([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [contractedServiceToBeRemoved, setContractedServiceToBeRemoved] = useState();
+  const [selectedContractServiceIndex, setSelectedContractServiceIndex] = useState();
   const [userLength, setUserLength] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     getContractedServices();
-  }, [addService, editService, contractedServiceToBeRemoved])
+  }, [addService, editService, selectedContractServiceIndex])
 
   useEffect(() => {
     getUserData();
@@ -37,6 +39,9 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const getAddServiceDialog = (value) => {
     setAddService(value);
     setSelectedService({});
+    if(value === false){
+      getContractedServices();
+    }
   }
 
   const getEditServiceDialog = (value) => {
@@ -47,12 +52,11 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const getAddOn = (value) => {
     setAddOn(value);
     getAddon(value);
-    console.log('received')
   }
 
   const getContractedServices = async () => {
     const { data: contractedServices } = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
-    setContractedServices(contractedServices?.contractedServices)
+    setContractedServices(contractedServices?.contractedServices);
   }
 
   const getUserData = async () => {
@@ -60,11 +64,12 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     if (userData) {
       setUsers(userData);
     }
+    setIsLoading(false);
   }
 
   const handleDeleteService = async () => {
     let formattedData = {
-      contractedServices: contractedServices?.filter((data, index) => contractedServiceToBeRemoved !== index)?.map(data => data)
+      contractedServices: contractedServices?.filter((data, index) => selectedContractServiceIndex !== index)?.map(data => data)
     }
 
     const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
@@ -75,7 +80,11 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       ErrorToaster('Unexpected Error');
     }
     setShowDeleteConfirmation(false);
-    setContractedServiceToBeRemoved();
+    setSelectedContractServiceIndex();
+  }
+
+  if(isLoading){
+    return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
 
   return (
@@ -94,10 +103,10 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
             {contractedServices?.map((data, index) => (
               <div className={`${style.serviceSpecificationTableData} ${style.displayInRow}`} key={index}>
                 <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
-                <p className={`${style.documentProofDataTextWidth} ${style.cursorPointer}`} onClick={() => { getEditServiceDialog(true); setSelectedService(data) }}>{data?.activityType?.activityType}</p>
+                <p className={`${style.documentProofDataTextWidth} ${style.cursorPointer}`} onClick={() => { getEditServiceDialog(true); setSelectedService(data); setSelectedContractServiceIndex(index); }}>{data?.activityType?.activityType}</p>
                 <p className={style.documentProofDataTextWidth}>{data?.performingActivity?.activity} </p>
-                <p className={style.documentProofDataTextWidth}>Demo data</p>
-                <Icon icon="trash" size={20} className={`${style.marginRight20} ${style.cursorPointer}`} color="#52575D" onClick={() => { setShowDeleteConfirmation(true); setContractedServiceToBeRemoved(index) }} />
+                <p className={style.documentProofDataTextWidth}>{data?.users?.[0]?.name?.firstName}</p>
+                <Icon icon="cross" size={20} className={`${style.marginRight20} ${style.cursorPointer}`} intent={Intent.DANGER} onClick={() => { setShowDeleteConfirmation(true); setSelectedContractServiceIndex(index) }} />
               </div>
             ))}
             {/* <div className={`${style.serviceSpecificationTableData} ${style.displayInRow}`}>
@@ -124,11 +133,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
           </div>
           {
             (addService || editService) &&
-            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog}/>
-          }
-          {
-            // editService &&
-            // <EditServiceProvided getEditServiceDialog={getEditServiceDialog} getAddOn={getAddOn} contractId={contractId} selectedService={selectedService} selectContractInfo={selectContractInfo} />
+            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog} isMultiSiteEntity={isMultiSiteEntity} selectedIndex={selectedContractServiceIndex}/>
           }
           <Dialog isOpen={showDeleteConfirmation} onClose={() => setShowDeleteConfirmation(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>

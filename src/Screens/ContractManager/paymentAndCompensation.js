@@ -5,7 +5,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 import style from './index.module.scss';
 
-const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPage, contractId}) => {
+const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPage, contractId, getSelectedField}) => {
     const [compensation, setCompensation] = useState('RVUBASED');
     const [paymentAndCompensation, setPaymentAndCompensation] = useState({});
     const [rvuQuantity, setRvuQuantity] =useState({
@@ -13,7 +13,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
     })
     const [frequency, setFrequency] = useState('')
     const [fteEquivalent, setFteEquivalent] = useState({
-        value: 0
+        value: parseFloat(0)
     })
     const [rvuReferenceUsed, setRvuReferenceUsed] = useState({
         value: ''
@@ -25,7 +25,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
         days: 0
     })
     const [dollarRate, setDollarRate] = useState({
-        hour: 0
+        hour: parseFloat(0)
     })
     const [dollarValue, setDollarValue] = useState({
         perTimesheetSubmission: 0,
@@ -60,7 +60,6 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
             else {
                 ErrorToaster('Unexpected Error');
             }
-        console.log(data)
     }
 
     const getPaymentAndCompensation = async() => {
@@ -88,7 +87,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
     return (
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
-                <div className={`${style.extentionGrid} ${selectContractInfo === "Individual Contractor" && style.marginTop20}`}>
+                <div className={`${style.extentionGrid} ${selectContractInfo === "Individual Contractor" && style.marginTop20}`} onFocus={()=>{getSelectedField('Compensation Basis')}}>
                     <div className={style.extentionLableStyle}>Compensation Basis*</div>
                     <div>
                         <RadioGroup
@@ -104,7 +103,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                 </div>
                 {compensation === "RVUBASED" && (
                     <div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={()=>{getSelectedField('RVU Quantity')}}>
                             <div className={style.extentionLableStyle}>RVU Quantity*</div>
                             <div className={style.displayInRow}>
                                 <InputGroup className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0" type='number'
@@ -124,26 +123,26 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                                         Per Month
                                     </option>
                                     <option value="YEAR" >
-                                        Per Year
+                                        Per Contract Year
                                     </option>
                                 </select>
                             </div>
                         </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={()=>{getSelectedField('FTE Equivalent')}} >
                             <div className={style.extentionLableStyle}>FTE Equivalent</div>
                             <InputGroup className={style.twoFieldWidth} value={fteEquivalent?.value} placeholder="0" type='number'
                             onChange={(e) => setFteEquivalent({
-                                ...fteEquivalent, value: e.target.value.slice(0, limit3)
+                                ...fteEquivalent, value: parseFloat(e.target.value.slice(0, limit4))
                             })} />
                         </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={()=>{getSelectedField('RVU Reference Used')}}>
                             <div className={style.extentionLableStyle}>RVU Reference Used</div>
-                            <InputGroup className={style.fullWidth} value={rvuReferenceUsed?.value} placeholder="Enter RVU Reference Used" 
+                            <InputGroup className={style.fullWidth} value={rvuReferenceUsed?.value} placeholder="Enter RVU Reference Used"
                             onChange={(e) => setRvuReferenceUsed({
                                 ...rvuReferenceUsed, value: e.target.value
                             })} />
                         </div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={()=>{getSelectedField('RVU Quantity Variance (+/-)')}}>
                             <div className={style.extentionLableStyle}>RVU Quantity Variance (+/-)</div>
                             <InputGroup className={style.twoFieldWidth} value={rvuQuantityVariance?.value} placeholder="0" type='number'
                             onChange={(e) => setRvuQuantityVariance({
@@ -166,7 +165,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                     <div className={style.extentionLableStyle}>Dollar Hourly Rate*</div>
                     <InputGroup className={style.fourFieldWidth} value={dollarRate?.hour} placeholder="0" type='number'
                         onChange={(e) => setDollarRate({
-                            ...dollarRate, hour: e.target.value.slice(0, limit5)
+                            ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7))
                         })} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -196,6 +195,9 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                         <option value="Per Timesheet Period" >
                             Per Timesheet Period
                         </option>
+                        <option value="On Last Invoice For Contract Year" >
+                            On Last Invoice For Contract Year
+                        </option>
                     </select>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -208,8 +210,11 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage7, getCurrentPag
                             ...compensationOffsetCriteria, providingAdditionalServices: e.target.value, reducedNumberOfServices: compensationOffsetCriteria?.reducedNumberOfServices
                         })}
                         className={`${style.fullWidth}`}>
-                        <option value="Per Contract Period" >
-                            Per Contract Period
+                        <option value="Per Timesheet Period" >
+                            Per Timesheet Period
+                        </option>
+                        <option value="On Last Invoice For Contract Year" >
+                            On Last Invoice For Contract Year
                         </option>
                     </select>
                 </div>

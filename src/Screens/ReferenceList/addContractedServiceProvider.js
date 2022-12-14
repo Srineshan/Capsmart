@@ -10,6 +10,7 @@ const AddContractedServiceForHealthcare = ({ getAddContractedServiceDialog}) => 
             <img src={ArrowDown} className={`${style.colorFileStyle3} ${style.marginRight}`} />
         )
     }
+
     return (
         <Dialog isOpen={getAddContractedServiceDialog} onClose={() => getAddContractedServiceDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
@@ -25,8 +26,8 @@ const AddContractedServiceForHealthcare = ({ getAddContractedServiceDialog}) => 
                             <select
                                 name="class"
                                 id="Class"
-                                className={`${style.fullWidth}`}>
-                                <option value="Hospital / Acute Care Facility (ACF)" >
+                                className={`${style.width75Percent}`}>
+                                <option value="Hospital / Acute Care Facility (ACF)">
                                 Hospital / Acute Care Facility (ACF)
                                 </option>
                             </select>
@@ -49,7 +50,7 @@ const AddContractedServiceForHealthcare = ({ getAddContractedServiceDialog}) => 
                 </div>
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
-                        <button className={style.outlinedButton}>CANCEL</button>
+                        <button  onClick={() => getAddContractedServiceDialog(false)}  className={style.outlinedButton}>CANCEL</button>
                         <button onClick={() => getAddContractedServiceDialog(false)} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE</button>
                     </div>
                 </div>

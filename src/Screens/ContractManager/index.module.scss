@@ -1,8 +1,5 @@
 @import '../../styles/mixins.scss';
 
-$headingBlue: #003685;
-$shiningBlue: #0067ff;
-
 body{
     background: #F8FCFF 0% 0% no-repeat padding-box;
     -ms-overflow-style: none !important;
@@ -391,6 +388,17 @@ body{
     grid-template-columns: 10% 25% 20% 20% 20% 5%;
 }
 
+.documentPageHeaderWithoutSite{
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    height: 50px;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 10% 35% 25% 25% 5%;
+}
+
 .serviceSpecificationTableHeader{
     background: #BEB9F2 0% 0% no-repeat padding-box;
     height: 50px;
@@ -428,6 +436,12 @@ body{
     grid-gap: 10px;
 }
 
+.activeContractGridWithoutAction{
+    display: grid;
+    grid-template-columns: 5% 11% 11% 11% 11% 11% 7% 10% 10%;
+    grid-gap: 10px;
+}
+
 .draftContractGrid{
     display: grid;
     grid-template-columns: 8% 10% 10% 10% 10% 10% 10% 12% 10%;
@@ -450,6 +464,19 @@ body{
     margin-top: 5px;
     display: grid;
     grid-template-columns: 10% 25% 20% 20% 20% 5%;
+    word-break: break-word !important;
+}
+
+.documentDataProofWithoutSite{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    width: 96%;
+    margin-left: 2%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: 10% 35% 25% 25% 5%;
     word-break: break-word !important;
 }
 
@@ -832,9 +859,19 @@ body{
     margin-top: 5px;
 }
 
-.toStyle{
-    color: #52575D;
-    margin: 5px 20px 0 20px;
+.termPeriodGrid{
+    display: grid;
+    grid-template-columns: 45% 10% 45%;
+}
+
+.contractedTime{
+  display: grid;
+  grid-template-columns: 45% 45%;
+  grid-column-gap: 10%;
+}
+
+.effectiveDateWidth{
+    width: 45%;
 }
 
 .greyText{
@@ -1191,6 +1228,15 @@ select {
     padding: 10px 20px;
   }
 
+  .timesheetNextButtonStyle{
+    background-color: #7165E3;
+    color: white;
+    border: 1px solid #7165E3;
+    height: 35px;
+    width: 120px;
+    border-radius: 6px;
+  }
+
   @media screen and (max-width: 1350px) {
     .newContractButtonStyle, .newContractOutlinedButton{
         width: 140px;
@@ -1263,6 +1309,11 @@ select {
 .weekSelectStyle{
     margin-top: 0px;
     height: 30px;
+}
+
+.timeCommitment{
+  margin-top:-1px;
+  height:31px;
 }
 
 .marginBottom{
@@ -1840,7 +1891,7 @@ select {
     background: #EBF2F7 0% 0% no-repeat padding-box;
     border: 1px solid #7165E3;
     border-radius: 6px 6px 0px 0px;
-    width: 180px;
+    min-width: 180px;
     height: 40px;
   }
 
@@ -1857,6 +1908,12 @@ select {
     width: 100%;
     margin-left: -10px;
     padding: 20px;
+}
+
+.verticalSpaceBetween{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .workflowBoxStyle{
@@ -2263,4 +2320,36 @@ select {
     border: 1px solid #c4bef3;
     border-radius: 8px;
     padding: 10px;
+}
+
+.selectBoxStyle{
+    border: 1px solid #E9E9F0;
+    border-radius: 4px;
+    height: 35px;
+}
+
+.arrowDownStyle{
+    height: 10px;
+    width: 15px;
+    object-fit: contain;
+}
+
+.selectOptionsBox{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 11px #52575D4D;
+    border-radius: 0px 0px 6px 6px;
+}
+
+.selectOptionsMenuStyle{
+    border-bottom: 1px solid #E9E9F0;
+    padding: 0px 10px;
+}
+
+.selectedOptionstyle{
+    background: #ebe9fb 0% 0% no-repeat padding-box;
+}
+
+.contractScrollStyle{
+    height: calc(100vh - 435px);
+    overflow: scroll;
 }

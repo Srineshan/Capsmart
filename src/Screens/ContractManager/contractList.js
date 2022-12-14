@@ -23,7 +23,7 @@ import LeftStatsCard from '../../Components/LeftStatsCard';
 import style from './index.module.scss';
 
 const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelectedContract,getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page}) => {
-    const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID", "", "NAME", "CONTRACTORS", "EFFECTIVE DATE", "POD STATUS", "LAST UPDATED", "ACTION"];
+    const activeHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "CONTRACTORS", "EFFECTIVE DATE", "POD STATUS", "MANAGER", "LAST UPDATED"];
     const draftHeaderValues =  ["", "CONTRACT TYPE", "ID", "NAME", "ACTIVATION STATUS", "MANAGER", "LAST UPDATED", "LAST UPDATED BY", "ACTION"];
     const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "MANAGER", "LAST UPDATE", "ACTION"];
     const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "EXPIRATION DATE", "MANAGER", "LAST UPDATE"];
@@ -54,9 +54,11 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
         }
       }
       await PUT(`contract-managment-service/contracts/${data?.id}/contractStatus/${status}`,activationData)
-      .then(response=>{SuccessToaster('Contract Activated Successfully');
-      getContracts();
-      getContractsMetadata();})
+      .then(response=>
+        {SuccessToaster('Contract Activated Successfully');
+          getContracts();
+          getContractsMetadata();
+        })
       .catch(error=>{ErrorToaster('Contract Activation Failed');})
     };
 
@@ -138,7 +140,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
             dot.push('green');
             notification.push(<WarningAmberIcon style={{color: '#FF6562'}} />);
             contractType.push(data?.contractType);
-            contractId.push(data?.contractDetail?.contractId?.id);
+            contractId.push(data?.contractDetail?.contractId?.id || '-');
             lock.push(<LockOpenOutlinedIcon style={{color: '#14B15A'}} />)
             lockHoverText.push('Contract available for other contract managers to access & work on');
             podHoverText.push(['Medical Lic Cer { Contrname}', 'Medical Lic Cer { Contrname}'])
@@ -146,10 +148,10 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
             name.push(data?.contractName?.contractName);
             contractors.push("2");
             effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
-            podStatus.push({"value": "5", "src": GreenPage});
-            // manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
-            lastUpdated.push('08-01-2022')
-            action.push(true)
+            podStatus.push({"value": "3", "src": GreenPage});
+            manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
+            lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
+            action.push(true);
         })
 
         return [
@@ -164,7 +166,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
             {"type": "imgWithCount", "value": podStatus, "img": GreenPage, "hoverText": podHoverText,'isShowHoverText': true},
             // {"type": "text", "value": manager, "onClickFunction": onClickFunction},
             {"type": "text", "value": lastUpdated, "onClickFunction": onClickFunction},
-            {"type": "action", "value": action},
+            // {"type": "action", "value": action},
         ];
     }
 
@@ -187,7 +189,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
             name.push(data?.contractName?.contractName);
             activationStatus.push(data?.status);
             manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
-            lastUpdated.push('08-01-2022')
+            lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
             lastUpdatedBy.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
             action.push(true)
         })
@@ -205,13 +207,17 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
         ];
     }
 
-    const activeActionsData = [{'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
-        {'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean'},
-        {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'}]
+    const activeActionsData = [
+      // {'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
+      //   {'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean'},
+      //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'}
+      ]
 
-    const draftActionsData = [{'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
+    const draftActionsData = [
+        // {'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
         {'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id'},
-        {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}]
+        // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}
+      ]
 
 
     const handleAddContract = () => {
@@ -226,8 +232,10 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
    let tableHeaderValues = selectedContract === 'activecontracts' ? activeHeaderValues : selectedContract === 'draft' ? draftHeaderValues : selectedContract === 'upcomingrenewals' ? upcomingHeaderValues : expiredHeaderValues;
    let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : getDraftContractsValues();
    let actions = selectedContract === 'activecontracts' ? activeActionsData : draftActionsData;
-   let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : style.draftContractGrid;
+   let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGridWithoutAction : style.draftContractGrid;
+   // let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : style.draftContractGrid;
 
+   console.log('selectedContract', selectedContract);
     return(
         <div className={style.margin20}>
             <div className={`${style.bigCardGrid}`}>
@@ -289,6 +297,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
                         getSelectedPage={getSelectedPage}
                         totalCount={totalCount}
                         page={page}
+                        scrollStyle={style.contractScrollStyle}
                     />
                     {/* <div className={`${style.noContractsBox} ${style.alignCenter}`}>
                       <div>
@@ -305,7 +314,7 @@ const ContractList = ({getSearchKey, getDeleteDraftDialog,contracts, getSelected
                 </div>
             </div>
             <div className={style.spaceBetween}>
-                <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
+                <p className={style.poweredBy}>Powered by - TimeSmart.AI</p>
                 <p className={style.poweredBy}>© TimeSmart.AI</p>
             </div>
         </div>

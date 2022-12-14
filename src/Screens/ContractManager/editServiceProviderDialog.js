@@ -130,7 +130,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
     });
 
     const getRolesData = async() => {
-      const {data: roles} = await GET(`user-management-service/roles`);
+      const {data: roles} = await GET(`user-management-service/roles?roleType=APP`);
       if(roles){
         setRoles(roles);
       }
@@ -375,8 +375,6 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
               ErrorToaster('Unexpected Error');
           })
     }
-
-    console.log('suffix',userDetails?.suffix);
 
 
     return(

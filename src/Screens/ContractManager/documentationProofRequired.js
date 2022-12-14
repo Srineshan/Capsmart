@@ -3,6 +3,7 @@ import { InputGroup, Icon, Dialog, Classes, Intent } from '@blueprintjs/core';
 import {GET,DELETE} from './../dataSaver';
 import {ErrorToaster, SuccessToaster}  from './../../utils/toaster';
 import CompletedIcon from './../../images/completedIcon.png';
+import LoadingScreen from '../../Components/LoadingScreen';
 import RedWarning from './../../images/redWarning.png';
 import FileImg from './../../images/fileImg.png';
 import AddProofOfDocumentation from './addProofOfDocumentation';
@@ -11,7 +12,7 @@ import style from './index.module.scss';
 import EditProofOfDocumentation from './editProofOfDocumentation';
 import NoProofOfDocumentationDialog from './noProofOfDocumentationDialog';
 
-const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, isMultipleContract}) => {
+const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, isMultipleContract, isMultiSiteEntity}) => {
   const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] = useState(false);
   const [documents,setDocuments] = useState([]);
   const [fileToDelete,setFileToDelete] = useState('');
@@ -21,6 +22,7 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
   const [userLength, setUserLength] = useState(0);
   const [selectedProof, setSelectedProof] = useState({});
   const [noProofOfDocumentationPlan, setNoProofOfDocumentationPlan] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(()=>{
     getDocumentationData();
@@ -51,6 +53,7 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
     if (userData) {
       setUsers(userData);
     }
+    setIsLoading(false);
   }
 
   const getDeleteExecutedContractDialog = (value) => {
@@ -71,6 +74,10 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
     })
   }
 
+    if(isLoading){
+      return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
+    }
+
     return(
       <>
       {userLength !== 0 ? (
@@ -84,26 +91,26 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
                     <button className={`${style.addCotractorButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.marginRight20}`}
                         onClick={()=>{setShowProofDialog(true)}} >ADD PROOF OF DOCUMENTATION</button>
                 </div>
-                <div className={`${style.documentPageHeader} ${style.marginTop10}`}>
+                <div className={`${isMultiSiteEntity ? style.documentPageHeader : style.documentPageHeaderWithoutSite} ${style.marginTop10}`}>
                     <p className={style.documentProofTextWidth}></p>
                     <p className={style.documentProofTextWidth}>POD TYPE</p>
-                    <p className={style.documentProofTextWidth}>SITE</p>
+                    {isMultiSiteEntity && <p className={style.documentProofTextWidth}>SITE</p>}
                     <p className={style.documentProofTextWidth}>CONTRACTOR</p>
                     <p className={style.documentProofTextWidth}>COPY ON FILE</p>
                     <p className={style.documentProofTextWidth}></p>
                 </div>
                 {
                   documents?.map((data, index)=>(
-                    <div className={`${style.documentDataProof} ${style.displayInRow}`} key={index} >
+                    <div className={`${isMultiSiteEntity ? style.documentDataProof : style.documentDataProofWithoutSite} ${style.displayInRow}`} key={index} >
                         <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
                         <p className={`${style.documentProofDataTextWidth} ${style.cursorPointer}`} onClick={() => {setSelectedProof(data);setShowEditProofDialog(true)}}>{data?.podType?.type}</p>
-                        <p className={style.documentProofDataTextWidth}>{data?.dataMap?.dataMap?.privilegingFacility?.siteName?.siteName}</p>
+                        {isMultiSiteEntity && <p className={style.documentProofDataTextWidth}>{data?.dataMap?.dataMap?.privilegingFacility?.siteName?.siteName}</p>}
                         <p className={style.documentProofDataTextWidth}>{users?.filter(userData => data?.dataMap?.dataMap?.contractedServiceProvider === userData?.id)?.map(data => data)[0]?.name?.firstName} {users?.filter(userData => data?.dataMap?.dataMap?.contractedServiceProvider === userData?.id)?.map(data => data)[0]?.name?.lastName}</p>
                         <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                            <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />
-                            <p className={style.documentProofDataTextWidth}>{data?.file?.fileName !== '' ? data?.file?.fileName : 'Missing'}</p>
+                            {data?.file?.fileName !== '' && <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />}
+                            <p className={style.documentProofDataTextWidth}>{data?.file?.fileName !== '' ? data?.file?.fileName : 'Not Available'}</p>
                         </div>
-                        <Icon icon="trash" size={20} color="#52575D" onClick={()=>{setFileToDelete(data?.id);setDeleteExecutedContractDialog(true);}}/>
+                        <Icon icon="cross" size={17} intent={Intent.DANGER} onClick={()=>{setFileToDelete(data?.id);setDeleteExecutedContractDialog(true);}}/>
                     </div>
                   ))
                 }
@@ -137,7 +144,7 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
 
             {
               showProofDialog &&
-              <AddProofOfDocumentation getShowProofDialog={getShowProofDialog} isMultipleContract={isMultipleContract} contractId={contractId}/>
+              <AddProofOfDocumentation getShowProofDialog={getShowProofDialog} isMultipleContract={isMultipleContract} contractId={contractId} isMultiSiteEntity={isMultiSiteEntity}/>
             }
             {
               showEditProofDialog &&

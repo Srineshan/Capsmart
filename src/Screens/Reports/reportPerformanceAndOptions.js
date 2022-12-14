@@ -11,6 +11,7 @@ import CachedOutlinedIcon from '@mui/icons-material/CachedOutlined';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap';
+import Popover from '@mui/material/Popover';
 import { useParams } from 'react-router-dom';
 import UserLogo1 from './../../images/userLogo3.png';
 import UserLogo2 from './../../images/userLogo4.png';
@@ -24,13 +25,22 @@ import style from './index.module.scss';
 // import PDFDocument from './pdf';
 
 
-const ReportPerformanceAndOptions = ({getShowExpandedView, showExpandedView}) => {
+const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdated, isLoading}) => {
     const {reportType} = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
     const [showShareDialog, setShowShareDialog] = useState(false);
     const [showReportSavedDialog, setShowReportSavedDialog] = useState(false);
     const [showSaveReport, setShowSaveReport] = useState(false);
+    const [anchorElRefresh, setAnchorElRefresh] = useState(null);
+    const openRefresh = Boolean(anchorElRefresh);
+    const [anchorElSchedule, setAnchorElSchedule] = useState(null);
+    const openSchedule = Boolean(anchorElSchedule);
+    const [anchorElSave, setAnchorElSave] = useState(null);
+    const openSave = Boolean(anchorElSave);
+    const [anchorElPrint, setAnchorElPrint] = useState(null);
+    const openPrint = Boolean(anchorElPrint);
+
 
     const getSaveReportDialog = (value) => {
         setShowSaveReport(value);
@@ -51,7 +61,7 @@ const ReportPerformanceAndOptions = ({getShowExpandedView, showExpandedView}) =>
                 </div>
                 <div className={` ${style.margin20}`}>
                     <div className={style.displayInRow}>
-                        <img src={Info} className={`${style.infoStyle} ${style.marginTop5}`} />
+                        {/* <img src={Info} className={`${style.infoStyle} ${style.marginTop5}`} /> */}
                         <div className={`${style.displayInRow} ${style.marginLeft20}`}>
                             <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
@@ -59,17 +69,71 @@ const ReportPerformanceAndOptions = ({getShowExpandedView, showExpandedView}) =>
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                         </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}>
-                            <CachedOutlinedIcon style={{color:"#52575D"}} onClick={() => setShowReportRefreshingDialog(true)} />
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
+                         onMouseEnter={(e) => setAnchorElRefresh(e.currentTarget)} onMouseLeave={() => setAnchorElRefresh(null)} aria-owns={openRefresh ? 'mouse-over-popover' : undefined}
+                         aria-haspopup="true">
+                            <CachedOutlinedIcon style={{color: isUpdated ? '#F46044' : '#52575D'}} onClick={() => {setShowReportRefreshingDialog(true);getIsRefresh(true)}} />
+                            <Popover
+                                id={'mouse-over-popover'}
+                                sx={{
+                                    pointerEvents: 'none',
+                                }}
+                                open={openRefresh}
+                                anchorEl={anchorElRefresh}
+                                onClose={() => setAnchorElRefresh(null)}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                disableRestoreFocus
+                            >
+                                <div className={style.popoverStyle}>Click to Refresh this Report</div>
+                            </Popover>
                         </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`}>
+                        {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
                             <ShareOutlinedIcon style={{color:"#52575D"}} onClick={() => setShowShareDialog(true)} />
-                        </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`}>
+                        </div> */}
+                        <div className={`${style.iconPadding} ${style.cursorPointer}`}
+                         onMouseEnter={(e) => setAnchorElSchedule(e.currentTarget)} onMouseLeave={() => setAnchorElSchedule(null)} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
+                         aria-haspopup="true">
                             <CalendarTodayIcon style={{color:"#52575D"}} onClick={()=> setShowSaveReport(true)} />
+                            <Popover
+                                id={'mouse-over-popover'}
+                                sx={{
+                                    pointerEvents: 'none',
+                                }}
+                                open={openSchedule}
+                                anchorEl={anchorElSchedule}
+                                onClose={() => setAnchorElSchedule(null)}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                disableRestoreFocus
+                            >
+                                <div className={style.popoverStyle}>Click to Schedule this Report</div>
+                            </Popover>
                         </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => setShowSaveReportOutput(true)}>
+                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => setShowSaveReportOutput(true)}
+                         onMouseEnter={(e) => setAnchorElSave(e.currentTarget)} onMouseLeave={() => setAnchorElSave(null)} aria-owns={openSave ? 'mouse-over-popover' : undefined}
+                         aria-haspopup="true">
                             <SaveOutlinedIcon style={{color:"#52575D"}} />
+                            <Popover
+                                id={'mouse-over-popover'}
+                                sx={{
+                                    pointerEvents: 'none',
+                                }}
+                                open={openSave}
+                                anchorEl={anchorElSave}
+                                onClose={() => setAnchorElSave(null)}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                disableRestoreFocus
+                            >
+                                <div className={style.popoverStyle}>Click to Save this Report</div>
+                            </Popover>
                         </div>
                       {/* <PDFDownloadLink
                         document={
@@ -77,22 +141,40 @@ const ReportPerformanceAndOptions = ({getShowExpandedView, showExpandedView}) =>
                         }
                         fileName={`report.pdf`}>
                         {({ blob, url, loading, error }) => ( */}
-                            <div className={`${style.iconPadding} ${style.cursorPointer}`}>
+                            {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
                                 <DownloadingOutlinedIcon style={{color:"#52575D"}} />
-                            </div>
+                            </div> */}
                          {/* )}
                         </PDFDownloadLink> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => window.print()} >
+                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={handlePrint} 
+                         onMouseEnter={(e) => setAnchorElPrint(e.currentTarget)} onMouseLeave={() => setAnchorElPrint(null)} aria-owns={openPrint ? 'mouse-over-popover' : undefined}
+                         aria-haspopup="true">
                             {/* <Link to={'/chart'} className={style.noFontStyle}> */}
                                 <PrintOutlinedIcon style={{color:"#52575D"}} />
+                                <Popover
+                                id={'mouse-over-popover'}
+                                sx={{
+                                    pointerEvents: 'none',
+                                }}
+                                open={openPrint}
+                                anchorEl={anchorElPrint}
+                                onClose={() => setAnchorElPrint(null)}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                disableRestoreFocus
+                            >
+                                <div className={style.popoverStyle}>Click to Print this Report</div>
+                            </Popover>
                             {/* </Link> */}
                         </div>
                         <div className={`${style.iconPadding} ${style.cursorPointer}`} >
-                            {showExpandedView ? (
-                                <ZoomInMapIcon style={{color:"#52575D"}} onClick={()=> getShowExpandedView(false)} />
-                            ) : (
+                            {/* {showExpandedView ? ( */}
+                                <ZoomOutMapIcon style={{color:"#52575D"}}  onClick={handle.enter} />
+                            {/* ) : (
                                 <ZoomOutMapIcon style={{color:"#52575D"}} onClick={()=> getShowExpandedView(true)} />
-                            )}
+                            )} */}
                         </div>
                     </div>
                 </div>
@@ -134,7 +216,7 @@ const ReportPerformanceAndOptions = ({getShowExpandedView, showExpandedView}) =>
                     <div className={style.reportSavedStyle}>Report Saved</div>
                 </div>
             </Dialog>
-            <Dialog isOpen={showReportRefreshingDialog} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`}>
+            <Dialog isOpen={isLoading} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
                     <div className={style.justifyCenter}>
                         <CachedOutlinedIcon sx={{ fontSize: 60 }} style={{color:"#7165E3"}} className={style.reportIconStyle}  />

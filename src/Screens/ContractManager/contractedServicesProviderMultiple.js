@@ -46,7 +46,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
                   users?.length !== 0 ? users?.map(data=>(
                     <div className={`${style.tableData} ${style.displayInRow}`} onClick={() => {setUserProviderData(data);setEditServiceProviderDialog(true)}}>
                         <div className={`${style.multipleDataTextWidth}`}></div>
-                        <p className={style.multipleDataTextWidth}>{`${data?.name?.firstName} ${data?.name?.lastName} - ${data?.name?.suffix}`}</p>
+                        <p className={style.multipleDataTextWidth}>{`${data?.name?.firstName} ${data?.name?.lastName} ${data?.name?.suffix?.suffix}`}</p>
                         <p className={style.multipleDataTextWidth}>{data?.serviceProviderType?.type} </p>
                         <p className={style.multipleDataTextWidth}>Chief Medical Officer</p>
                         <p className={style.multipleDataTextWidth}>-</p>
@@ -58,7 +58,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
             </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
                 <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {{getViewPage2 ? getViewPage3(true) : getViewPage2(true)};getViewPage1(false);getCurrentPage('Contracted Services Provider(s)')}}>CONTINUE</button>
+                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {{getViewPage2(true)};getViewPage1(false);getCurrentPage('Contractor Business Entity')}}>CONTINUE</button>
             </div>
             {editServiceProviderDialog && (
               <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId}/>

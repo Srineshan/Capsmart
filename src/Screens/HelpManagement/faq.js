@@ -56,8 +56,8 @@ const FAQ = ({getSelectedHelp}) => {
     return(
         <>
             {!faqPage2 ? (
-            <div className={style.margin20}>
-                <div className={style.bigCardGrid}>
+            <div>
+                {/* <div className={style.bigCardGrid}>
                     <div className={style.chevronCardStyle}>
                         <div className={`${style.alignCenter}`}>
                             <img src={ChevronRight} className={style.chevronRightStyle}/>
@@ -114,13 +114,13 @@ const FAQ = ({getSelectedHelp}) => {
                         </div>
                     </div>
 
-                </div>
-                <div className={style.bigCardGrid}>
+                </div> */}
+                {/* <div className={style.bigCardGrid}>
                     <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
                         <div className={style.openCardStyle}>
                         </div>
-                    </div>
-                    <div className={style.bigCardStyle}>
+                    </div> */}
+                    <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                         <div className={style.spaceBetween}>
                             <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
                             <div className={`${style.displayInRow} ${style.marginTop20}`}>
@@ -274,7 +274,7 @@ const FAQ = ({getSelectedHelp}) => {
                             </div>
                         ) : ''}
                     </div>
-                </div>
+                {/* </div> */}
                 <div className={style.spaceBetween}>
                     <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
                     <p className={style.poweredBy}>© TimeSmart.AI</p>
@@ -282,8 +282,8 @@ const FAQ = ({getSelectedHelp}) => {
                 {newFAQPostDialog && <NewFAQPost getNewFAQPostDialog={getNewFAQPostDialog} />}
             </div>
             ) : (
-                <div className={style.margin20}>
-                    <div className={style.bigCardGrid}>
+                <div>
+                    {/* <div className={style.bigCardGrid}>
                         <div className={style.chevronCardStyle}>
                             <div className={`${style.alignCenter}`}>
                                 <img src={ChevronRight} className={style.chevronRightStyle}/>
@@ -340,13 +340,13 @@ const FAQ = ({getSelectedHelp}) => {
                             </div>
                         </div>
 
-                    </div>
-                    <div className={style.bigCardGrid}>
-                        <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
+                    </div> */}
+                    <div>
+                        {/* <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
                             <div className={style.openCardStyle}>
                             </div>
-                        </div>
-                        <div className={style.bigCardStyle}>
+                        </div> */}
+                        <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                             <div className={style.spaceBetween}>
                                 <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
