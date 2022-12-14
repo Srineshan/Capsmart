@@ -1,4 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Navbar from '../../Components/Navbar';
 import SideBar from "./../../Components/Sidebar";
 import { Icon, Intent } from "@blueprintjs/core";
@@ -13,10 +14,8 @@ import EditHcFolder from "./../../images/editHcFolder.png";
 import DeleteHcFolder from "./../../images/deleteHcFolder.png";
 import DeleteHcRow from "./../../images/deleteHcRow.png";
 import EditHcRow from "./../../images/editHcRow.png";
-import Titlebar from "../../Components/titlemenu";
 import { GET, DELETE } from "./../dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
-
 
 const FunctionalTitles = () => {
   const [showAddFunctionalTitlesDialog, setAddFunctionalTitlesDialog] =
@@ -70,302 +69,271 @@ const FunctionalTitles = () => {
 
   return (
     <Fragment>
-      <Navbar />
-      <div className={style.margin20}>
-        <div className={style.bigCardGrid}>
-          <SideBar />
-          <div>
-            <div className={`${style.displayInRow} ${style.marginTop10}`}>
+      <div className={style.departmentCardColumnsGrid}>
+        <div>
+          {allData.map((industryType) => (
+            <>
               <div
-                className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}
+                className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
               >
-                FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS
+                <img
+                  src={TransparentFolder}
+                  className={`${style.colorFileStyle2} ${style.marginLeft15}`} alt=""
+                />
+                <p
+                  className={`${style.healthCareHeaderTextStyle} ${style.textColorBlue} `}
+                >
+                  {industryType.industry.industry}
+                </p>
+                <img
+                  src={ArrowDown}
+                  className={`${style.colorFileStyle3} ${style.marginRight}`} alt=""
+                />
               </div>
-              <div
-                className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
-              >
-                UPDATED ON FEB 16, 2022 16:45 EST
-              </div>
-              <div className={style.crossStyle}>
-                <Icon icon="cross" size={25} intent={Intent.DANGER} />
-              </div>
-            </div>
-            <div className={style.addAndRefreshCardStyle}>
-              <img
-                src={AddRefresh}
-                className={`${style.colorFileStyle} ${style.marginLeft20}`}
-              />
-              <img
-                src={AddNewEntity}
-                onClick={() => getAddFunctionalTitlesDialog(true)}
-                className={`${style.colorFileStyle} ${style.marginLeft20}`}
-              />
-            </div>
-            <div className={style.marginTop35}>
-              <div className={style.centreCardStyle}>
-                <div className={style.margin20}>
-                  <div className={style.departmentCardColumnsGrid}>
-                    <div>
-                      {allData.map((industryType) => (
-                        <>
-                          <div
-                            className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
-                          >
-                            <img
-                              src={TransparentFolder}
-                              className={`${style.colorFileStyle2} ${style.marginLeft15}`}
-                            />
-                            <p
-                              className={`${style.healthCareHeaderTextStyle} ${style.textColorBlue} `}
-                            >
-                              {industryType.industry.industry}
-                            </p>
-                            <img
-                              src={ArrowDown}
-                              className={`${style.colorFileStyle3} ${style.marginRight}`}
-                            />
-                          </div>
-                          {
-                            industryType.entities.map((entityType) => (
-                              <>
-                                <div
-                                  className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
-                                >
-                                  <img
-                                    src={TransparentFolder}
-                                    className={`${style.colorFileStyle2} ${style.marginLeft15}`}
-                                  />
-                                  <p className={style.healthCareHeaderTextStyle2}>
-                                    HOSPITAL/ACUTE CARE FACILITY
-                                  </p>
-                                  <img
-                                    src={ArrowDown}
-                                    className={`${style.colorFileStyle3} ${style.marginRight}`}
-                                  />
-                                </div>
-                              </>
-                            ))
-                          }
-                        </>
-                      ))}
-
-
-                      <div
-                        className={`${style.healthCareListCardStyle}  ${style.marginTop15} ${style.HealthCareListBackground2} ${style.spaceBetween}`}
-                      >
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          Physician / Doctor
-                        </p>
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          5
-                        </p>
-                      </div>
-                      <div
-                        className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
-                      >
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          Dental Professional
-                        </p>
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          0
-                        </p>
-                      </div>
-                      <div
-                        className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
-                      >
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          Allied Health Professionals
-                        </p>
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          0
-                        </p>
-                      </div>
-                      <div
-                        className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
-                      >
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          Administration Staff
-                        </p>
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          0
-                        </p>
-                      </div>
-                      <div
-                        className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
-                      >
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          Advanced Care Staff
-                        </p>
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          0
-                        </p>
-                      </div>
-                      <div
-                        className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
-                      >
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          Nursing Professional
-                        </p>
-                        <p
-                          className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                        >
-                          0
-                        </p>
-                      </div>
+              {
+                industryType.entities.map((entityType) => (
+                  <>
+                    <div
+                      className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
+                    >
+                      <img
+                        src={TransparentFolder}
+                        className={`${style.colorFileStyle2} ${style.marginLeft15}`} alt=""
+                      />
+                      <p className={style.healthCareHeaderTextStyle2}>
+                        HOSPITAL/ACUTE CARE FACILITY
+                      </p>
+                      <img
+                        src={ArrowDown}
+                        className={`${style.colorFileStyle3} ${style.marginRight}`} alt=""
+                      />
                     </div>
-                    <div className={style.DepartmentEntityCardStyle}>
-                      <div className={style.tableHeaderFuntionalTitles}>
-                        <p></p>
-                        <p className={style.tableHeaderIndustriesFontStyle}>
-                          HOSPITAL / ACUTE CARE FACILITY
-                        </p>
-                        <p className={style.tableHeaderIndustriesFontStyle}>
-                          ALIAS 1
-                        </p>
-                        <p className={style.tableHeaderIndustriesFontStyle}>
-                          ALIAS 2
-                        </p>
-                        <p className={style.tableHeaderIndustriesFontStyle}>
-                          LAST UPDATED
-                        </p>
-                        <p></p>
-                      </div>
-                      <div className={style.healthCareIndustriesHeader}>
-                        <img
-                          src={IndustriesEntityFolder}
-                          alt="IndustriesEntityFolder"
-                          className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                        />
-                        <p className={style.tableHeaderIndustriesFontStyle}>
-                          Hospital/Acute Care Facility (ACF)
-                        </p>
-                        <img
-                          src={EditHcFolder}
-                          onClick={() => getAddFunctionalTitlesDialog(true)}
-                          className={style.colorFileStyle}
-                        />
-                        <img
-                          src={DeleteHcFolder}
-                          className={style.colorFileStyle}
-                        />
-                      </div>
-                      <div
-                        className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-                      >
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>
-                          Anesthesiologist
-                        </p>
-                        <p></p>
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <img src={EditHcRow} className={style.colorFileStyle} />
-                        <img
-                          src={DeleteHcRow}
-                          className={style.colorFileStyle}
-                        />
-                      </div>
-                      <div
-                        className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-                      >
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>Cardiologist</p>
-                        <p></p>
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <img src={EditHcRow} className={style.colorFileStyle} />
-                        <img
-                          src={DeleteHcRow}
-                          className={style.colorFileStyle}
-                        />
-                      </div>
-                      <div
-                        className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-                      >
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>
-                          Chief Medical Information Officer
-                        </p>
-                        <p className={style.tableDataFontStyle}>
-                          Chief Medical Informatics Officer
-                        </p>
-                        <p className={style.tableDataFontStyle}>
-                          Clinical Informatics Officer
-                        </p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <img src={EditHcRow} className={style.colorFileStyle} />
-                        <img
-                          src={DeleteHcRow}
-                          className={style.colorFileStyle}
-                        />
-                      </div>
-                      <div
-                        className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-                      >
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>
-                          Chief Medical Officer
-                        </p>
-                        <p></p>
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <img src={EditHcRow} className={style.colorFileStyle} />
-                        <img
-                          src={DeleteHcRow}
-                          className={style.colorFileStyle}
-                        />
-                      </div>
-                      <div
-                        className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-                      >
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>
-                          Chief of Staff
-                        </p>
-                        <p></p>
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <img
-                          src={EditHcFolder}
-                          className={style.colorFileStyle}
-                        />
-                        <img
-                          src={DeleteHcRow}
-                          className={style.colorFileStyle}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  </>
+                ))
+              }
+            </>
+          ))}
+
+          <div className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}>
+            <img src={TransparentFolder} className={`${style.colorFileStyle2} ${style.marginLeft15}`} alt="" />
+            <p className={style.healthCareHeaderTextStyle}>HEALTHCARE</p>
+            <img src={ArrowDown} className={`${style.colorFileStyle2} ${style.marginRight}`} alt="" />
+          </div>
+
+          <div className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}>
+            <img src={TransparentFolder} className={`${style.colorFileStyle2} ${style.marginLeft15}`} alt="" />
+            <p className={style.healthCareHeaderTextStyle}> HOSPITAL / ACUTE CARE FACILITY</p>
+            <img src={ArrowDown} className={`${style.colorFileStyle2} ${style.marginRight}`} alt="" />
+          </div>
+
+          <div
+            className={`${style.healthCareListCardStyle}  ${style.marginTop15} ${style.HealthCareListBackground2} ${style.spaceBetween}`}
+          >
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              Physician / Doctor
+            </p>
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              5
+            </p>
+          </div>
+          <div
+            className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
+          >
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              Dental Professional
+            </p>
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              0
+            </p>
+          </div>
+          <div
+            className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
+          >
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              Allied Health Professionals
+            </p>
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              0
+            </p>
+          </div>
+          <div
+            className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
+          >
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              Administration Staff
+            </p>
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              0
+            </p>
+          </div>
+          <div
+            className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
+          >
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              Advanced Care Staff
+            </p>
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              0
+            </p>
+          </div>
+          <div
+            className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
+          >
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              Nursing Professional
+            </p>
+            <p
+              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+            >
+              0
+            </p>
           </div>
         </div>
-        <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-          <p className={style.poweredBy}>© TimeSmart.AI</p>
+        <div className={style.DepartmentEntityCardStyle}>
+          <div className={style.tableHeaderFuntionalTitles}>
+            <p></p>
+            <p className={style.tableHeaderIndustriesFontStyle}>
+              HOSPITAL / ACUTE CARE FACILITY
+            </p>
+            <p className={style.tableHeaderIndustriesFontStyle}>
+              ALIAS 1
+            </p>
+            <p className={style.tableHeaderIndustriesFontStyle}>
+              ALIAS 2
+            </p>
+            <p className={style.tableHeaderIndustriesFontStyle}>
+              LAST UPDATED
+            </p>
+            <p></p>
+          </div>
+          <div className={style.healthCareIndustriesHeader}>
+            <img
+              src={IndustriesEntityFolder}
+              alt="IndustriesEntityFolder"
+              className={`${style.colorFileStyle} ${style.marginLeft5}`}
+            />
+            <p className={style.tableHeaderIndustriesFontStyle}>
+              Hospital/Acute Care Facility (ACF)
+            </p>
+            <img
+              src={EditHcFolder}
+              onClick={() => getAddFunctionalTitlesDialog(true)}
+              className={style.colorFileStyle}
+              alt=""
+            />
+            <img
+              src={DeleteHcFolder}
+              className={style.colorFileStyle}
+              alt=""
+            />
+          </div>
+          <div
+            className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
+          >
+            <p></p>
+            <p className={style.tableDataFontStyle}>
+              Anesthesiologist
+            </p>
+            <p></p>
+            <p></p>
+            <p className={style.tableDataFontStyle}>03-29-2022</p>
+            <img src={EditHcRow} className={style.colorFileStyle} alt="" />
+            <img
+              src={DeleteHcRow}
+              className={style.colorFileStyle} alt=""
+            />
+          </div>
+          <div
+            className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+          >
+            <p></p>
+            <p className={style.tableDataFontStyle}>Cardiologist</p>
+            <p></p>
+            <p></p>
+            <p className={style.tableDataFontStyle}>03-29-2022</p>
+            <img src={EditHcRow} className={style.colorFileStyle} alt="" />
+            <img
+              src={DeleteHcRow}
+              className={style.colorFileStyle} alt=""
+            />
+          </div>
+          <div
+            className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
+          >
+            <p></p>
+            <p className={style.tableDataFontStyle}>
+              Chief Medical Information Officer
+            </p>
+            <p className={style.tableDataFontStyle}>
+              Chief Medical Informatics Officer
+            </p>
+            <p className={style.tableDataFontStyle}>
+              Clinical Informatics Officer
+            </p>
+            <p className={style.tableDataFontStyle}>03-29-2022</p>
+            <img src={EditHcRow} className={style.colorFileStyle} alt="" />
+            <img
+              src={DeleteHcRow}
+              className={style.colorFileStyle} alt=""
+            />
+          </div>
+          <div
+            className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+          >
+            <p></p>
+            <p className={style.tableDataFontStyle}>
+              Chief Medical Officer
+            </p>
+            <p></p>
+            <p></p>
+            <p className={style.tableDataFontStyle}>03-29-2022</p>
+            <img src={EditHcRow} className={style.colorFileStyle} alt="" />
+            <img
+              src={DeleteHcRow}
+              className={style.colorFileStyle} alt=""
+            />
+          </div>
+          <div
+            className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
+          >
+            <p></p>
+            <p className={style.tableDataFontStyle}>
+              Chief of Staff
+            </p>
+            <p></p>
+            <p></p>
+            <p className={style.tableDataFontStyle}>03-29-2022</p>
+            <img
+              src={EditHcFolder}
+              className={style.colorFileStyle} alt=""
+            />
+            <img
+              src={DeleteHcRow}
+              className={style.colorFileStyle} alt=""
+            />
+          </div>
         </div>
       </div>
       {showAddFunctionalTitlesDialog && (

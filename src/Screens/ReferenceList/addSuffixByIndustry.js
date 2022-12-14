@@ -4,7 +4,7 @@ import style from './index.module.scss';
 import { POST } from '../dataSaver'
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 
-const AddIndustryTypeEntity = ({ getAddEntityDialog, getIndustryData }) => {
+const AddSuffixByIndustry = ({ getAddEntityDialog, getIndustryData }) => {
 
     const [industryName, setIndustryName] = useState("")
 
@@ -58,4 +58,4 @@ const AddIndustryTypeEntity = ({ getAddEntityDialog, getIndustryData }) => {
     )
 }
 
-export default AddIndustryTypeEntity;
+export default AddSuffixByIndustry;
