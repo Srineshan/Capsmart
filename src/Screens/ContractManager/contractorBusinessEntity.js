@@ -14,11 +14,11 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
     const [contractorNPIN, setContractorNPIN] = useState({
         notApplicable: false,
         npin: "",
-        missing: true
+        missing: false
     });
     const [contractorEntityTaxId, setContractorEntityTaxId] = useState({
         taxId: "",
-        missing: true
+        missing: false
     });
     const [businessEntity, setBusinessEntity] = useState({
         name: ''
@@ -34,7 +34,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
           },
           contactNumber: {
             number: 0,
-            missing: true
+            missing: false
           }
     });
     const [roles, setRoles] = useState([])
@@ -114,9 +114,9 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
             "email": {
               "officialEmail": businessEntityUser?.email?.officialEmail
             },
-            ...((userId === undefined || userId === '0') && "password": {
+            ...((userId === undefined || userId === '0') && {"password": {
               "password": "admin123"
-            }),
+            }}),
             "communication": {
               "personalEmail": businessEntityUser?.email?.officialEmail,
               "mobileNumber": businessEntityUser?.contactNumber?.number,
@@ -245,12 +245,13 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                             <div className={style.extentionLableStyle}>Contractor NPIN*</div>
                             <div className={style.twoCol}>
                                 <InputGroup className={style.fullWidth}
+                                disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
                                 value={contractorNPIN?.npin} placeholder="Enter Contractor NPIN"
                                 onChange={(e) => setContractorNPIN({...contractorNPIN, npin: e.target.value})}  />
                                 <div className={`${style.displayInRow} ${style.marginTop10}`}>
-                                    <Checkbox label="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({...contractorNPIN, missing: e.target.checked})} />
+                                    <Checkbox label="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({...contractorNPIN, missing: e.target.checked, notApplicable:false})} />
                                     <Checkbox label="NA" checked={contractorNPIN?.notApplicable}  className={style.marginLeft20}
-                                    onChange={(e) => setContractorNPIN({...contractorNPIN, notApplicable: e.target.checked})}  />
+                                    onChange={(e) => setContractorNPIN({...contractorNPIN, notApplicable: e.target.checked, missing: false})}  />
                                 </div>
                             </div>
                         </div>
@@ -258,7 +259,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                         onFocus={()=>{getSelectedField('Contractor Entity Tax ID')}}>
                             <div className={style.extentionLableStyle}>Contractor Entity Tax ID*</div>
                             <div className={style.twoCol}>
-                                <InputGroup className={style.fullWidth} value={contractorEntityTaxId?.taxId} placeholder="Enter Contractor Entity Tax ID"
+                                <InputGroup className={style.fullWidth} disabled={contractorEntityTaxId?.missing} value={contractorEntityTaxId?.taxId} placeholder="Enter Contractor Entity Tax ID"
                                 onChange={(e) => setContractorEntityTaxId({...contractorEntityTaxId, taxId: e.target.value})} />
                                 <Checkbox label="Missing" checked={contractorEntityTaxId?.missing} className={`${style.marginTop10}`}
                                 onChange={(e) => setContractorEntityTaxId({...contractorEntityTaxId, missing: e.target.checked})}  />
@@ -302,7 +303,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                         >
                             <div className={style.extentionLableStyle}>Cell Phone*</div>
                             <div className={style.twoCol}>
-                                <InputGroup className={style.fullWidth} value={businessEntityUser?.contactNumber?.number} placeholder="Enter Phone Number" type='number'
+                                <InputGroup className={style.fullWidth} disabled={businessEntityUser?.contactNumber?.missing} value={businessEntityUser?.contactNumber?.number} placeholder="Enter Phone Number" type='number'
                                 onChange={(e) =>
                                   {
                                     setBusinessEntityUser({...businessEntityUser, contactNumber: {number: e.target.value, missing: businessEntityUser?.contactNumber?.missing}});

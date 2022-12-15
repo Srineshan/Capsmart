@@ -36,6 +36,9 @@ const ContractIdTermLimitIndividual = (
    method,
    isMultiSiteEntity,
    getSelectedField}) => {
+    const [calendarStart, setCalendarStart] = useState(false);
+    const [calendarEnd, setCalendarEnd] = useState(false);
+    const [calendarEffective, setCalendarEffective] = useState(false);
     const [selectContractManager, setSelectContractManager] = useState();
     const [siteSpecific, setSiteSpecific] = useState(false);
     const [selectedContract, setSelectedContract] = useState('Select...');
@@ -49,8 +52,6 @@ const ContractIdTermLimitIndividual = (
     const [fileFieldData,setFileFieldData] = useState({id:'',type:'',name:'',desc:'',fileName:'',file:null,filePath:''});
     const [files,setFiles] = useState([]);
     const [departmentSpecific, setDepartmentSpecific] = useState(false);
-    const [tags, setTags] = useState(VALUES);
-    const [tagSet2, setTagSet2] = useState(VALUES2);
     const [contractTermPeriodFrom, setContractTermPeriodFrom] = useState(null);
     const [contractTermPeriodTo, setContractTermPeriodTo] = useState(null);
     const [contractEffectiveDate, setContractEffectiveDate] = useState(null);
@@ -502,6 +503,8 @@ const ContractIdTermLimitIndividual = (
       setDepartmentSpecific(!departmentSpecific);
     }
 
+    console.log('name', userName, items);
+
     return(
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -515,8 +518,8 @@ const ContractIdTermLimitIndividual = (
                     <div className={style.extentionLableStyle}>Contract ID*</div>
                     <div className={style.displayInRow}>
                         <InputGroup placeholder="Contract Id" value={contractId.id} disabled={contractId.missing}
-                        maxLength={TEXTFIELDLEN}
-                        onFocus={()=>{getSelectedField('Contract ID')}} className={`${style.entityFieldWidth}`} onChange={(e)=>setContractId({...contractId, id:e.target.value, missing:false})}/>
+                        maxLength={10}
+                        onFocus={()=>{getSelectedField('Contract ID')}} className={`${style.entityFieldWidth}`} onChange={(e)=>setContractId({...contractId, id:e.target.value.toUpperCase(), missing:false})}/>
                       <Checkbox label="Missing"  checked={contractId.missing} onChange={(e)=>setContractId({...contractId, missing:e.target.checked, id:''})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                     </div>
                 </div>
@@ -544,14 +547,14 @@ const ContractIdTermLimitIndividual = (
                         maxLength={TEXTFIELDLEN}
                         value={contractData?.contractManager?.name?.firstName}
                         onFocus={()=>{getSelectedField('Assigned Contract Manager')}}/>
-                        {(!items?.map(data=>data?.name?.firstName)?.includes(userName) && !userName === '') && (
-                            <div className={style.addBoxDescription}>
+                        {(!items?.map(data=>data?.name?.firstName)?.includes(userName) && userName !== '') && (
+                            <div className={`${style.addBoxDescription} ${style.marginTop}`}>
                             The Contract Manager you are trying to add is not a registered
                             user. To add a new contract manager click on the "ADD" button.
                             </div>
                         )}
                     </div>
-                    <button className={`${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledButton}`} onClick={() =>setAddNewManagerDialog(true)}>ADD</button>
+                    <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(items?.map(data=>data?.name?.firstName)?.includes(userName) || userName === '') && style.disabledUploadButton}`} onClick={() =>setAddNewManagerDialog(true)} >ADD</button>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -566,7 +569,7 @@ const ContractIdTermLimitIndividual = (
                                 label={fullyExecutedContract ? 'YES' : "NO"}
                             />
                             {fullyExecutedContract && (
-                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={()=>{addNewDocumentField()}}>UPLOAD</button>
+                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`}  onClick={()=>{addNewDocumentField()}}>UPLOAD</button>
                             )}
                         </div>
                         {fullyExecutedContract && (
@@ -729,10 +732,14 @@ const ContractIdTermLimitIndividual = (
                       <div onFocus={()=>{getSelectedField('Contract Term Period Start Date')}}>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <DatePicker
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
                             minDate={sub(new Date(),{years:3})}
                             maxDate={add(new Date(), {months: 6})}
                             value={contractTermPeriodFrom}
                             onChange={(newValue) => {
+                              setCalendarStart(true);
                               setContractTermPeriodFrom(newValue);
                               setContractEffectiveDate(newValue);
                             }}
@@ -740,9 +747,14 @@ const ContractIdTermLimitIndividual = (
                               style: {
                                   fontSize: 14,
                                   height: 30,
+                              },
+                              onFocus: e => {
+                                setCalendarStart(true);
                               }
                           }}
-                            renderInput={(params) => <TextField {...params} inputProps={{
+                            renderInput={(params) => <TextField {...params}
+                            onClick = {() => setCalendarStart(true)}
+                            inputProps={{
                               ...params.inputProps,
                               placeholder: "Start Date"
                             }}/>}
@@ -753,6 +765,9 @@ const ContractIdTermLimitIndividual = (
                       <div onFocus={()=>{getSelectedField('Contract Term Period End Date')}}>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <DatePicker
+                            open={calendarEnd}
+                            onOpen={() => setCalendarEnd(true)}
+                            onClose={() => setCalendarEnd(false)}
                             value={contractTermPeriodTo}
                             onChange={(newValue) => {
                               setContractTermPeriodTo(newValue);
@@ -765,7 +780,8 @@ const ContractIdTermLimitIndividual = (
                             }}
                             minDate={contractTermPeriodFrom}
                             maxDate={add(new Date(),{years:5})}
-                            renderInput={(params) => <TextField  {...params} inputProps={{
+                            renderInput={(params) => <TextField  {...params} onClick = {() => setCalendarEnd(true)}
+                            inputProps={{
                               ...params.inputProps,
                               placeholder: "End Date"
                             }} />}
@@ -779,6 +795,9 @@ const ContractIdTermLimitIndividual = (
                     <div className={`${style.leftAlign} ${style.effectiveDateWidth}`} onFocus={()=>{getSelectedField('Contracted Services Effective Date')}}>
                       <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
+                          open={calendarEffective}
+                          onOpen={() => setCalendarEffective(true)}
+                          onClose={() => setCalendarEffective(false)}
                           value={contractEffectiveDate}
                           onChange={(newValue) => {
                             setContractEffectiveDate(newValue);
@@ -791,7 +810,9 @@ const ContractIdTermLimitIndividual = (
                           }}
                           minDate={contractTermPeriodFrom}
                           maxDate={contractTermPeriodTo}
-                          renderInput={(params) => <TextField  {...params} inputProps={{
+                          renderInput={(params) => <TextField  {...params}
+                          onClick = {() => setCalendarEffective(true)}
+                          inputProps={{
                             ...params.inputProps,
                             placeholder: "Effective Date"
                           }} />}
@@ -842,14 +863,14 @@ const ContractIdTermLimitIndividual = (
                                     <option value="AUTORENEWAL" >
                                     Auto Renewal
                                     </option>
-                                    <option value="WRITTENCONTRACTEXTENSIONFORFIXEDTERM" >
-                                    Written Contract Extension For Fixed Term
-                                    </option>
                                     <option value="NEWCONTRACTONEXPIRATION" >
                                     New Contract On Expiration
                                     </option>
                                     <option value="ONETIMECONTRACTTERMINATEONEXPIRATION" >
                                     One Time Contract - Terminate On Expiration
+                                    </option>
+                                    <option value="WRITTENCONTRACTEXTENSIONFORFIXEDTERM" >
+                                    Written Contract Extension For Fixed Term
                                     </option>
                             </select>
                         </div>
@@ -857,7 +878,7 @@ const ContractIdTermLimitIndividual = (
                             <div className={`${style.renewalBoxStyle}`}>
                                 <div className={`${style.renewalBoxGrid}`} onFocus={()=>{getSelectedField('Auto Renewal - Auto Renewal Term')}}>
                                     <div className={style.marginTop}>Auto Renewal Term*</div>
-                                    <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e)=>setAutoRenewal({...autoRenewal, renewalTerm:e})} />
+                                    <EditableText className={`${style.inputRenewalStyle}`} placeholder=""  value={autoRenewal.renewalTerm} onChange={(e)=>setAutoRenewal({...autoRenewal, renewalTerm:e})} type="number" min="1" max="52"/>
                                     <select
                                         name="class"
                                         id="Class"

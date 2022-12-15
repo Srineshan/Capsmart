@@ -30,7 +30,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, newSer
         <div className={style.cloneBlockStyle}>
             <div className={style.tableHeight}>
                 <div className={style.spaceBetween}>
-                    <div className={`${style.extentionLableStyle} ${style.marginTop20} ${style.marginLeft20}`}>Contracted Service Providers:<strong className={`${style.blackText} ${style.bold} ${style.marginLeft20}`}>{users?.length || 0}</strong></div>
+                    <div className={`${style.extentionLableStyle} ${style.biggerFont} ${style.marginTop20} ${style.marginLeft20}`}>Contracted Service Providers:<strong className={`${style.blackText} ${style.bold} ${style.marginLeft20}`}>{users?.length || 0}</strong></div>
                     <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} `}
                     onClick={() => {getNewServiceProviderDialog(true);getUserData();}} >ADD CONTRACTED PROVIDER</button>
                 </div>
@@ -56,9 +56,11 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, newSer
                 }
                 </>
             </div>
-            <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
+            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contract ID & Term Limit')}}>BACK</button>
+            <div className={`${style.floatRight}`}>
                 <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {{getViewPage2(true)};getViewPage1(false);getCurrentPage('Contractor Business Entity')}}>CONTINUE</button>
+            </div>
             </div>
             {editServiceProviderDialog && (
               <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId}/>
