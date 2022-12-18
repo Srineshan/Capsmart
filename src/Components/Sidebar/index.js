@@ -2,10 +2,12 @@ import React from 'react';
 import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import PageFooterIcon from './../../images/pageFooterIcon.png';
+import {currentUser} from './../../utils/auth';
 
 import style from './index.module.scss';
 
 const SideBar = () => {
+    const currentUserData = currentUser()
     return(
         <div>
             <div className={style.chevronCardStyle}>
@@ -16,7 +18,7 @@ const SideBar = () => {
             <div className={`${style.cardStyle} ${style.marginTop20}`}>
                 <div className={`${style.displayInCol} ${style.alignCenter}`}>
                         <div className={`${style.userNameStyle} `}>
-                        JOHN
+                        {currentUserData?.firstName}
                     </div>
                     <img src={DoctorAnime} className={style.userLogo} />
                 </div>

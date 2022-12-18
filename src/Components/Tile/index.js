@@ -1,7 +1,7 @@
 import React from 'react';
 import style from './index.module.scss';
 
-const Tile = ({selectedContract, getSelectedContract, tileLabel, bigNumber, bigText, bigNumber2, bigText2, smallNum1, smallNum2, smallText1, smallText2, currentTile, topText }) => {
+const Tile = ({selectedContract, getSelectedContract, tileLabel, bigNumber, bigText, bigNumber2, bigText2, smallNum1, smallNum2, smallText1, smallText2, currentTile, topText, bottomText }) => {
 
   let bigNumberColor = currentTile === 'active contract' ? style.green : (currentTile === 'expired or terminated' || currentTile === "DEACTIVATED USERS" || currentTile === "INVITED USERS") ? style.red : style.purple;
   let selectedCountColor1 = currentTile === 'expired or terminated' ? style.selectedRedCountStyle : style.selectedGreenCountStyle;
@@ -13,6 +13,9 @@ const Tile = ({selectedContract, getSelectedContract, tileLabel, bigNumber, bigT
         }
         <div className={style.spaceBetweenColumn}>
           <h5 className={`${style.headingForContracts}`}>{tileLabel}</h5>
+          {
+            bottomText !== '' && <p className={style.bottomTextStyle}>{bottomText}</p>
+          }
           <div className={`${style.spaceBetween}`}>
               <div className={style.displayInColRev}>
                 {bigNumber2 && (

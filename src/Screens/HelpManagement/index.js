@@ -207,10 +207,10 @@ return(
                 <div>
                     <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={'UPDATED ON FEB 16, 2022 16:45 EST'}  />
                     <div className={`${style.grid4} ${style.marginTop20}`}>
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={myTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" topText='LAST 30 DAYS' />
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TUTORIALS & VIDEOS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TUTORIALS & VIDEOS" topText='LAST 30 DAYS' />
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="FAQS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="FAQS" topText='LAST 7 DAYS' />
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="RELEASE NOTES" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="RELEASE NOTES" topText='LAST 30 DAYS' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={myTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" bottomText='LAST 30 DAYS' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TUTORIALS & VIDEOS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TUTORIALS & VIDEOS" bottomText='LAST 30 DAYS' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="FAQS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="FAQS" bottomText='LAST 7 DAYS' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="RELEASE NOTES" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="RELEASE NOTES" bottomText='LAST 30 DAYS' />
                     </div>
                     {selectedOption !== "FAQS" ? (
                         <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
