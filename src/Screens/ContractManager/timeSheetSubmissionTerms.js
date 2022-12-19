@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { InputGroup, TagInput, EditableText } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
+import ArrowDown from './../../images/arrowDown.png';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
+import Typography from '@mui/material/Typography';
 import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
@@ -10,6 +14,8 @@ const VALUES3 = ['Activity Reviewer'];
 
 const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) => {
     const [timeSheetCount, setTimeSheetCount] = useState(0);
+    const [showSelectBox, setShowSelectBox] = useState(false);
+    const [selectBoxIndex, setSelectBoxIndex] = useState(-1);
     const [contractedTimeCommitment, setContractedTimeCommitment] = useState(false);
     const [activityTags, setActivityTags] = useState(VALUES3);
     const [contractedActivityTags, setContractedActivityTags] = useState([]);
@@ -35,6 +41,9 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
         activityType: '', performingActivity: ''
     }]);
 
+    const menuRef = useRef(null);
+    useOptionsHide(menuRef);
+
     const getContractedServices = async () => {
         const { data: contractedServices } = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
         setContractedServices(contractedServices?.contractedServices)
@@ -55,7 +64,21 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
     useEffect(()=>{
       formatActivities();
       getTimesheetFields();
-    },[contractedActivityTags?.length, timeSheetLabelData, contractedServices])
+    },[contractedActivityTags?.length, timeSheetLabelData, contractedServices, showSelectBox])
+
+    function useOptionsHide(ref) {
+        useEffect(() => {
+            function handleClickOutside(event) {
+                if (ref.current && !ref.current.contains(event.target)) {
+                    setShowSelectBox(false)
+                }
+            }
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [ref]);
+    }
 
 
     const handleContractedActivityTagsAdd = (values, i) => {
@@ -66,6 +89,10 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
 
     };
 
+    const handleClick = (index) => {
+        setSelectBoxIndex(index);
+        setShowSelectBox(!showSelectBox);
+    };
 
     const formatActivities = () => {
         let timeSheetValueData = [];
@@ -153,7 +180,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                 </div>
                 {timeSheetCount > 1 && (
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Site Specific Contract*</div>
+                        <div className={style.extentionLableStyle}>{`Contracted Activity to include for timesheet ${i+1}*`}</div>
                         <div>
                             <select
                                 name="class"
@@ -170,6 +197,30 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                                     </option>
                                 ))}
                             </select>
+                            <div className={`${style.selectBoxStyle} ${style.fullWidth} ${style.verticalAlignCenter} ${style.spaceBetween}`}
+                             onClick={() => handleClick(i)}>
+                                <div></div>
+                                <img src={ArrowDown} className={`${style.marginRight} ${style.arrowDownStyle}`} />
+                            </div>
+                            {(showSelectBox && i === selectBoxIndex) && (
+                                <div className={style.selectOptionsBox} ref={menuRef}>
+                                    <div className={`${style.selectOptionsMenuStyle}`}>
+                                        <FormGroup>
+                                            <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2">All Activities</Typography>} />
+                                        </FormGroup>
+                                    </div>
+                                    <div className={`${style.selectOptionsMenuStyle} ${style.selectedOptionstyle}`}>
+                                        <FormGroup>
+                                            <FormControlLabel control={<Checkbox checked />}  label={<Typography variant="body2" color="#7165E3">Clinic Block</Typography>} />
+                                        </FormGroup>
+                                    </div>
+                                    <div className={`${style.selectOptionsMenuStyle} ${style.marginLeft30}`}>
+                                        <FormGroup>
+                                            <FormControlLabel control={<Checkbox disabled={true} />}  label={<Typography variant="body2" className={style.disabledView}>Fracture Clinic</Typography>} />
+                                        </FormGroup>
+                                    </div>
+                                </div>
+                            )}
                             <TagInput
                                 placeholder="Contracted Activity to include for timesheet 1*"
                                 values={contractedActivityTags?.filter((data,index)=>data?.index === i)?.map(data=>`${data?.type}-${data?.activity}`) || []}
@@ -299,14 +350,14 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
     return (
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>Number of Timesheets to Submit for Services Performed</div>
                     <InputGroup className={style.fourFieldWidth} type="number" value={timeSheetCount} onChange={(e) => setTimeSheetCount(parseInt(e.target.value))} />
                 </div>
                 <div>
                     {timesheetFields}
                 </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                {/*<div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
                     <div className={`${style.displayInRow}  `}>
                         <FormControlLabel
@@ -395,6 +446,10 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                             <EditableText value={invoiceProcessingDayGoal}  placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayGoal(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
                         </div>
                     </div>
+                </div> */}
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Contracted Activity to include for timesheet*</div>
+                    <InputGroup placeholder="All Activities" className={style.fullWidth} readOnly />
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on activity service date *</div>
@@ -404,7 +459,7 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                     </div>
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on contract end date</div>
+                    <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on contract end date *</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
                         <EditableText value={dayLimitForSubmissionBasedOnContractEndDate}  placeholder="0" type='number' onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
