@@ -123,7 +123,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     });
 
     const getRolesData = async() => {
-      const {data: roles} = await GET(`user-management-service/roles`);
+      const {data: roles} = await GET(`user-management-service/roles?roleType=APP`);
       if(roles){
         setRoles(roles);
       }
@@ -342,8 +342,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
       setUserDetails({...userDetails, suffix:suffix});
     }
 
-    console.log('suffix',userDetails?.suffix);
-
     const getSiteData  = () => {
       let siteData = [];
       sites?.map(data=>{
@@ -408,7 +406,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>NPIN*</div>
                   <div className={style.grid3}>
-                  <InputGroup className={style.fullWidth} value={nPin?.npin} onChange={(e)=>setNpin({...nPin, npin:e.target.value,na:false,missing:false})}/>
+                  <InputGroup className={style.fullWidth} disabled={nPin?.missing || nPin?.na} value={nPin?.npin} onChange={(e)=>setNpin({...nPin, npin:e.target.value,na:false,missing:false})}/>
                   <Checkbox label="Missing"  checked={nPin?.missing} onChange={(e)=>setNpin({...nPin, npin:'',missing:e.target.checked, na:false})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                   <Checkbox label="Not Applicable"  checked={nPin?.na} onChange={(e)=>setNpin({...nPin, npin:'',missing:false, na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                   </div>

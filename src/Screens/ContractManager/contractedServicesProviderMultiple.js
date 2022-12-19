@@ -58,7 +58,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, getVie
             </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
                 <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {{getViewPage2 ? getViewPage3(true) : getViewPage2(true)};getViewPage1(false);getCurrentPage('Contracted Services Provider(s)')}}>CONTINUE</button>
+                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {{getViewPage2(true)};getViewPage1(false);getCurrentPage('Contractor Business Entity')}}>CONTINUE</button>
             </div>
             {editServiceProviderDialog && (
               <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId}/>

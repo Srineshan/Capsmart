@@ -63,7 +63,7 @@ const SuperAdminDashboard = () => {
                                         </Link>
                                         <Link to={'/referenceList/suffixByIndustries'} className={style.linkStyle}>
                                             <div className={style.dashboardCardStyle}>
-                                                <h5 className={`${style.headingForReferenceList}`}>NAME SUFFIX BY INDUSTRY TYPE</h5><br/>
+                                                <h5 className={`${style.headingForReferenceList}`}>NAME SUFFIX BY INDUSTRY TYPE</h5><br />
                                                 <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                     <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
                                                     <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
@@ -90,7 +90,7 @@ const SuperAdminDashboard = () => {
                                         </Link>
                                         <Link to={'/referenceList/boardCertification'} className={style.linkStyle}>
                                             <div className={style.dashboardCardStyle}>
-                                                <h5 className={`${style.headingForReferenceList}`}>BOARD CERTIFICATION SPECIALTIES BY INDUSTRIES</h5><br/>
+                                                <h5 className={`${style.headingForReferenceList}`}>BOARD CERTIFICATION SPECIALTIES BY INDUSTRIES</h5><br />
                                                 <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                     <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
                                                     <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
@@ -99,7 +99,7 @@ const SuperAdminDashboard = () => {
                                         </Link>
                                         <Link to={'/referenceList/terminationReasons'} className={style.linkStyle}>
                                             <div className={style.dashboardCardStyle}>
-                                                <h5 className={`${style.headingForReferenceList}`}>TERMINATION REASONS BY ENTITY TYPE</h5><br/>
+                                                <h5 className={`${style.headingForReferenceList}`}>TERMINATION REASONS BY ENTITY TYPE</h5><br />
                                                 <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                     <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
                                                     <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
@@ -107,13 +107,13 @@ const SuperAdminDashboard = () => {
                                             </div>
                                         </Link>
                                         <Link to={'/referenceList/proofOfDocumentByEntity'} className={style.linkStyle}>
-                                        <div className={style.dashboardCardStyle}>
-                                            <h5 className={`${style.headingForReferenceList}`}>POOF OF DOCUMENTATION BY INDUSTRIES</h5>
-                                            <div className={`${style.optionsStyle} ${style.displayInCol}`}>
-                                                <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
-                                                <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
+                                            <div className={style.dashboardCardStyle}>
+                                                <h5 className={`${style.headingForReferenceList}`}>PROOF OF DOCUMENTATION BY INDUSTRIES</h5>
+                                                <div className={`${style.optionsStyle} ${style.displayInCol}`}>
+                                                    <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
+                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
+                                                </div>
                                             </div>
-                                        </div>
                                         </Link>
                                         <div className={style.dashboardCardStyle}>
                                             <h5 className={`${style.headingForReferenceList}`}>CONTRACTED SERVICES BY INDUSTRIES</h5>
@@ -124,7 +124,7 @@ const SuperAdminDashboard = () => {
                                         </div>
                                         <Link to={'/referenceList/holidayListByIndustries'} className={style.linkStyle}>
                                             <div className={style.dashboardCardStyle}>
-                                                <h5 className={`${style.headingForReferenceList}`}>HOLIDAY LIST BY INDUSTRIES</h5><br/>
+                                                <h5 className={`${style.headingForReferenceList}`}>HOLIDAY LIST BY INDUSTRIES</h5><br />
                                                 <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                     <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
                                                     <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
@@ -133,7 +133,7 @@ const SuperAdminDashboard = () => {
                                         </Link>
                                         <Link to={'/referenceList/contractDoumentTypeForUpload'} className={style.linkStyle}>
                                             <div className={style.dashboardCardStyle}>
-                                                <h5 className={`${style.headingForReferenceList}`}>CONTRACT DOCUMENT <br/> TYPE  FOR UPLOAD</h5>
+                                                <h5 className={`${style.headingForReferenceList}`}>CONTRACT DOCUMENT <br /> TYPE  FOR UPLOAD</h5>
                                                 <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                     <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
                                                     <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>

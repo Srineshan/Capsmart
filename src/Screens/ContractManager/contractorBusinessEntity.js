@@ -10,6 +10,7 @@ import style from './index.module.scss';
 const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField}) => {
     const [isUserUpdated, setIsUserUpdated] = useState(false);
     const [sameAsContractor, setSameAsContractor] = useState(false);
+    const [contractUser, setContractUser] = useState();
     const [contractorNPIN, setContractorNPIN] = useState({
         notApplicable: false,
         npin: "",
@@ -55,8 +56,10 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
     const getUserData = async() => {
       if(contractId !== '' && contractId !== undefined){
         const {data: userData} = await GET(`user-management-service/user?contractID=${contractId}`);
+        if(selectContractInfo === 'INDIVIDUAL'){
+          setContractUser(userData?.filter(data=>!data?.roles?.map(role=>role?.id)?.includes('6344d59a45ca246bd12dd77b'))?.map(data=>data)[0])
+        }
         let entityManager = userData?.filter(data=>data?.roles?.map(role=>role?.id)?.includes('6344d59a45ca246bd12dd77b'))?.map(data=>data)
-        console.log('userData Entity',userData);
         if(entityManager?.length !== 0){
           setUserId(entityManager?.[0]?.id);
         }
@@ -196,7 +199,20 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
         getContractorBusinessEntity();
     },[])
 
-    console.log('roles',selectedRoles);
+
+    const handleSameContact = () => {
+      setSameAsContractor(!sameAsContractor);
+      if(sameAsContractor && selectContractInfo === 'INDIVIDUAL'){
+        setBusinessEntityUser({
+            name: contractUser?.name,
+            email: contractUser?.email,
+            contactNumber: {
+                number: 0,
+                missing: true
+              }
+        })
+      }
+    }
 
     return (
         <div className={style.cloneBlockStyle}>
@@ -207,7 +223,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                         <div className={style.extentionLableStyle}>Contractor Business Contact Same As Contractor*</div>
                         <FormControlLabel
                             control={
-                                <Switch checked={sameAsContractor} className={`${style.textAlignLeft}`} onChange={() => setSameAsContractor(!sameAsContractor)} />
+                                <Switch checked={sameAsContractor} className={`${style.textAlignLeft}`} onChange={() => handleSameContact()} />
                             }
                             className={`${style.switchFontStyle} ${style.marginTop}`}
                             label={sameAsContractor ? 'YES' : 'NO'}

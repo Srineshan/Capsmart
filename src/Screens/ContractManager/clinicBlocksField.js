@@ -18,10 +18,10 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
       frequency:'WEEK',
       withNurse:'0',
       withoutNurse:'0',
-      noTargetApplicable:true,
+      noTargetApplicable:false,
       targetWithNurse:'0',
       targetWithoutNurse:'0',
-      targetNoTargetApplicable:true,
+      targetNoTargetApplicable:false,
       additionalScheduleValue:'0',
       additionalScheduleFrequency:'WEEK',
       additionalScheduleRequired:true,
@@ -125,11 +125,11 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.withNurseGrid}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <div className={style.textElement}>WITH NURSE</div>
-                        <EditableText placeholder="" type='number' value={metadata?.withNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('withNurse',e)}/>
+                        <EditableText placeholder="" type='number' disabled={metadata?.noTargetApplicable} value={metadata?.withNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('withNurse',e)}/>
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <div className={style.textElement}>WITHOUT NURSE</div>
-                        <EditableText placeholder="" type='number' className={style.serviceProvidedEditableTextStyle} value={metadata?.withoutNurse} onChange={(e)=>handleValueChange('withoutNurse',e)}/>
+                        <EditableText placeholder="" type='number' disabled={metadata?.noTargetApplicable} className={style.serviceProvidedEditableTextStyle} value={metadata?.withoutNurse} onChange={(e)=>handleValueChange('withoutNurse',e)}/>
                     </div>
                     <Checkbox label="No Target Applicable" checked={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} onChange={(e)=>handleValueChange('noTargetApplicable',e.target.checked)}/>
                 </div>
@@ -140,11 +140,11 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
                 <div className={`${style.withNurseGrid} ${style.fullWidth}`}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <div className={style.textElement}>WITH NURSE</div>
-                        <EditableText placeholder="" type='number' value={metadata?.targetWithNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('targetWithNurse',e)}/>
+                        <EditableText placeholder="" type='number' disabled={metadata?.targetNoTargetApplicable} value={metadata?.targetWithNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('targetWithNurse',e)}/>
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <div className={style.textElement}>WITHOUT NURSE</div>
-                        <EditableText placeholder="" type='number' value={metadata?.targetWithoutNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('targetWithoutNurse',e)}/>
+                        <EditableText placeholder="" type='number' disabled={metadata?.targetNoTargetApplicable} value={metadata?.targetWithoutNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('targetWithoutNurse',e)}/>
                     </div>
                     <Checkbox label="No Target Applicable"  checked={metadata?.targetNoTargetApplicable} className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} onChange={(e)=>handleValueChange('targetNoTargetApplicable',e.target.checked)}/>
                 </div>
@@ -197,17 +197,17 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
                         />
                     </div>
                     {
-                      metadata?.billableService &&
-                        <Select
-                            displayEmpty
-                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                            className={`${style.threeFieldWidth}`}
-                            value={metadata?.rateType}
-                            onChange={(e)=>handleValueChange('rateType',e.target.value)}
-                        >
-                            <MenuItem value="">Select Frequecy</MenuItem>
-                            <MenuItem value={'HOURLY'}>Hourly</MenuItem>
-                        </Select>
+                      // metadata?.billableService &&
+                      //   <Select
+                      //       displayEmpty
+                      //       SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                      //       className={`${style.threeFieldWidth}`}
+                      //       value={metadata?.rateType}
+                      //       onChange={(e)=>handleValueChange('rateType',e.target.value)}
+                      //   >
+                      //       <MenuItem value="">Select Frequecy</MenuItem>
+                      //       <MenuItem value={'HOURLY'}>Hourly</MenuItem>
+                      //   </Select>
                     }
 
                 </div>

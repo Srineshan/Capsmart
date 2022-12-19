@@ -4,35 +4,35 @@ import ArrowDown from './../../images/arrowDown.png';
 import style from './index.module.scss';
 import AddHealthcareGroup from './../../images/addGroupBlue.png';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import { POST,GET } from './../dataSaver'
+import { POST, GET } from './../dataSaver'
 
-const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationReasonData}) => {
+const AddTerminationReasons = ({ getAddEntityDialog, terminationReasonData }) => {
     const [currentindustryType, setCurrentIndustryType] = useState("")
     const [terminationBy, setTerminationBy] = useState("")
     const [primaryReason, setPrimaryReason] = useState("")
     const [secondaryReason, setSecondaryReason] = useState("")
     const [currentEntityType, setCurrentEntityType] = useState("")
-    const [industryTypes,setIndustryTypes] = useState([])
-    const [entityTypes,setEntityTypes] = useState([])
-    const [editTermination , setEditTermination] = useState([])
+    const [industryTypes, setIndustryTypes] = useState([])
+    const [entityTypes, setEntityTypes] = useState([])
+    const [editTermination, setEditTermination] = useState([])
 
-      let data = []
+    let data = []
 
-      const getAllIndustries = async() => {
-          const {data : data} = await GET (`/industryMaster`);
-          setIndustryTypes(data);
+    const getAllIndustries = async () => {
+        const { data: data } = await GET(`/industryMaster`);
+        setIndustryTypes(data);
     }
 
 
-    const getEntityData = async(industryId) =>{
-        console.log("ok",data)
-        const {data : types} = await GET (`/entityTypeMaster?industryId=${industryId}`);
+    const getEntityData = async (industryId) => {
+        console.log("ok", data)
+        const { data: types } = await GET(`/entityTypeMaster?industryId=${industryId}`);
         setEntityTypes(types)
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         getAllIndustries()
-        if(terminationReasonData!=null){
+        if (terminationReasonData != null) {
             setCurrentIndustryType()
             setTerminationBy()
             setPrimaryReason()
@@ -40,11 +40,11 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
             setCurrentEntityType()
 
         }
-    },[])
+    }, [])
 
     const SubmitTerminationReason = async () => {
         const TerminationInput = {
-            "id":currentEntityType,
+            "id": currentEntityType,
             "terminationBy": terminationBy,
             "primary_reason": primaryReason,
             "secondary_reasons": [
@@ -61,7 +61,7 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
             .catch(error => {
                 ErrorToaster(error);
             })
-        getAddTerminationReasonsDialog(false)
+        getAddEntityDialog(false)
     }
 
 
@@ -73,32 +73,32 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
         )
     }
     return (
-        <Dialog isOpen={getAddTerminationReasonsDialog} onClose={() => getAddTerminationReasonsDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
+        <Dialog isOpen={getAddEntityDialog} onClose={() => getAddEntityDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
                 <div className={style.spaceBetween}>
                     <p className={style.extensionStyle}>Add / Edit Termination Reasons</p>
-                    <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.dialogCrossStyle} onClick={() => getAddTerminationReasonsDialog(false)} />
+                    <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.dialogCrossStyle} onClick={() => getAddEntityDialog(false)} />
                 </div>
                 <div className={style.ReferenceListEntityBorder}></div>
                 <div className={`${style.addHealthCareBoxStyle}`}>
                     <div className={`${style.extentionGrid}`}>
                         <div className={style.entityLableStyle}>Industry Type*</div>
                         <div className={style.displayInRow}>
-                            <select value={currentindustryType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj =>{ setCurrentIndustryType(obj.target.value); getEntityData(obj.target.value)}} >
-                                    {
-                                        industryTypes.map(type=>(<option value={type.id}>{type.industry}</option>))
-                                    }
-                                </select>
+                            <select value={currentindustryType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => { setCurrentIndustryType(obj.target.value); getEntityData(obj.target.value) }} >
+                                {
+                                    industryTypes.map(type => (<option value={type.id}>{type.industry}</option>))
+                                }
+                            </select>
                         </div>
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>Entity Type*</div>
                         <div className={style.displayInRow}>
-                            <select value={currentEntityType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => {setCurrentEntityType(obj.target.value); } }>
-                            {
-                                        entityTypes.map(type=>(<option value={type.id}>{type.type}</option>))
-                                    }
-                                </select>
+                            <select value={currentEntityType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => { setCurrentEntityType(obj.target.value); }}>
+                                {
+                                    entityTypes.map(type => (<option value={type.id}>{type.type}</option>))
+                                }
+                            </select>
                         </div>
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>

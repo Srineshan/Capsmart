@@ -57,13 +57,21 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
     useEffect(()=>{
       setSelectedValues();
     }, [serviceSelected]);
-
-    console.log('metadata', metadata, serviceSelected);
     const setSelectedValues = async() => {
       if(editService){
-      let temp = metadata;
+      let temp = [];
       temp.push({
-        sites : [],
+        activities: serviceSelected?.activities,
+        min: serviceSelected?.contractedSchedule?.minimum?.value,
+        max: serviceSelected?.contractedSchedule?.maximum?.value,
+        frequency: serviceSelected?.contractedSchedule?.frequency,
+        sessionDuration:serviceSelected?.duration?.hours,
+        sessionAmount:serviceSelected?.payableAmount?.value,
+        totalSession:serviceSelected?.totalSessions?.value,
+        totalSessionFrequency:serviceSelected?.totalSessions?.frequency,
+        workingTimeFrom:serviceSelected?.workingPeriod?.from,
+        workingTimeTo:serviceSelected?.workingPeriod?.to,
+        serviceDays:serviceSelected?.serviceDays,
         activityType: {activityType: 'Add-On Services'},
         performingActivity : serviceSelected?.performingActivity?.activity,
         payableAmount: { value: serviceSelected?.payableAmount?.value},
@@ -140,7 +148,10 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
       let activityName = data?.activityType?.activityType;
       let activities = data?.activities?.map(data=>data?.activity);
       let result = `${activityName} (${activities?.map(data=>data)?.join(', ')})`
-      serviceList.push(result);
+      let alreadyExist = services?.filter(data=>data?.activityType?.activityType === 'Add-On Services' && data?.performingActivity?.activity === result)?.map(data=>data);
+      if(alreadyExist?.length === 0){
+        serviceList.push(result);
+      }
     });
 
     const selectLocation = (location, name) => {
@@ -220,6 +231,7 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
       let temp = metadata;
       temp.push({
         sites : [],
+        activities:[{activity: newServices?.name}],
         activityType: {activityType: 'Add-On Services'},
         performingActivity : newServices?.name,
         payableAmount: { value: newServices?.rate},
@@ -257,7 +269,6 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
     const updateRate = (serviceName,value)=>{
       let temp = metadata;
       temp?.filter(data=>data?.performingActivity === serviceName)?.map(data=>{
-        console.log('inside check', temp);
         data.payableAmount = {'value':value};
       });
       setMetadata(temp);
@@ -272,9 +283,6 @@ const AddonClinicFields = ({getMetaData, services, locationItems, getNewLocation
       setMetadata(temp);
       getFields();
     }
-
-
-    console.log('services', services);
 
     return (
         <div>
