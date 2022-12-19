@@ -3,9 +3,10 @@ import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button } from '@bl
 import ArrowDown from './../../images/arrowDown.png';
 import style from './index.module.scss';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import { POST, GET } from './../dataSaver'
+import { POST, GET, PUT } from './../dataSaver'
 
-const AddFunctionalTitles = ({ getAddEntityDialog }) => {
+const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData, selectedEntity, selectedFunctional, IndustryData, EntityData }) => {
+    const [functionalId, setFunctionalId] = useState('');
     const [title, setTitle] = useState('');
     const [alias1, setalias1] = useState('');
     const [alias2, setalias2] = useState('');
@@ -16,59 +17,126 @@ const AddFunctionalTitles = ({ getAddEntityDialog }) => {
     const [entityTypes, setEntityTypes] = useState([])
     const [contarctedServiceProviderType, setContarctedServiceProviderType] = useState([])
 
-
     const getAllIndustries = async () => {
-        const { data: data } = await GET(`/industryMaster`);
+        const { data: data } = await GET(`entity-service/industryMaster`);
         setIndustryTypes(data);
-        console.log("data", data)
     }
 
-
     const getEntityData = async (industryId) => {
-        const { data: types } = await GET(`/entityTypeMaster?industryId=${industryId}`);
+        const { data: types } = await GET(`entity-service/entityTypeMaster?industryId=${industryId}`);
         setEntityTypes(types)
-        console.log("ok", types)
     }
 
     const getContractedServiceProviderData = async (cspId) => {
-        const { data: csptypes } = await GET(`/contractedServiceProviderMaster?siteTypeId=${cspId}`);
-        console.log("csp", csptypes)
+        const { data: csptypes } = await GET(`entity-service/contractedServiceProviderMaster?siteTypeId=${cspId}`);
         setContarctedServiceProviderType(csptypes)
     }
 
-    useEffect(() => {
-        getAllIndustries()
-    }, [])
-
-
     const AddFunctionalTitlesData = async () => {
-        const TitleInput = {
+        const data = {
+            ...(isEdit && { 'id': functionalId }),
             "title": title,
             "alias1": alias1,
             "alias2": alias2,
             "contractedServiceProviderTypeId": {
                 "id": currentCSPType
+            },
+            "entityId": {
+                "id": currentEntityType
             }
         }
 
-        await POST('/functionalTitlesForCSPTypeMaster', JSON.stringify(TitleInput))
-            .then(response => {
-                console.log(response)
-                SuccessToaster('User Added Successfully');
+        console.log(data);
 
+        if (isEdit ? await POST('entity-service/functionalTitlesForCSPTypeMaster', JSON.stringify(data))
+            .then(response => {
+                SuccessToaster('FunctionlTitle Added Successfully');
+                getAddEntityDialog(false)
+                getFuntionalTitleData()
             })
             .catch(error => {
                 ErrorToaster(error);
             })
-        getAddEntityDialog(false)
+            :
+            await PUT(`entity-service/functionalTitlesForCSPTypeMaster/${functionalId}`, JSON.stringify(data))
+                .then(response => {
+                    SuccessToaster('FunctionlTitle Updated Successfully');
+                    getAddEntityDialog(false)
+                    getFuntionalTitleData()
+                })
+                .catch(error => {
+                    ErrorToaster(error);
+                })
+        )
+
+            getAddEntityDialog(false)
     }
 
+    const AddMoreFunctionalData = async () => {
+        const data = {
+            ...(isEdit && { 'id': functionalId }),
+            "title": title,
+            "alias1": alias1,
+            "alias2": alias2,
+            "contractedServiceProviderTypeId": {
+                "id": currentCSPType
+            },
+            "entityId": {
+                "id": currentEntityType
+            }
+        }
+        getAddEntityDialog(true)
+        setEntityTypes([])
+        setContarctedServiceProviderType([])
+        setCurrentIndustryType("")
+        setCurrentEntityType("")
+        setCurrentCSPType("")
+        setTitle("")
+        setalias1("")
+        setalias2("")
+        await POST('entity-service/functionalTitlesForCSPTypeMaster', JSON.stringify(data))
+            .then(response => {
+                SuccessToaster('User Added Successfully');
+                getAddEntityDialog(true)
+                getFuntionalTitleData()
+            })
+            .catch(error => {
+                ErrorToaster(error);
+            })
+        getAddEntityDialog(true)
+    }
+
+
+    useEffect(() => {
+        getAllIndustries()
+    }, [])
+
+    useEffect(() => {
+        if (contarctedServiceProviderType.length !== 0) {
+            setCurrentCSPType(contarctedServiceProviderType?.[0]?.id)
+        }
+    }, [currentEntityType, contarctedServiceProviderType])
+
+    useEffect(() => {
+        if (isEdit) {
+            setCurrentIndustryType(IndustryData?.id);
+            setEntityTypes([{ ...EntityData }])
+            setContarctedServiceProviderType([{ ...selectedEntity }])
+            setCurrentEntityType(EntityData?.id)
+            setCurrentCSPType(selectedEntity?.id)
+            setFunctionalId(selectedFunctional?.id);
+            setTitle(selectedFunctional?.title);
+            setalias1(selectedFunctional?.alias1)
+            setalias2(selectedFunctional?.alias2)
+        }
+    }, [selectedFunctional])
 
     const arrowDown = () => {
         return (
             <img src={ArrowDown} className={`${style.colorFileStyle3} ${style.marginRight}`} />
         )
     }
+
     return (
         <Dialog isOpen={getAddEntityDialog} onClose={() => getAddEntityDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
@@ -101,7 +169,7 @@ const AddFunctionalTitles = ({ getAddEntityDialog }) => {
                     <div className={`${style.editHealthCareGrid2} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>Contracted Service Provide Type*</div>
                         <div className={style.displayInRow}>
-                            <select value={currentCSPType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => { setCurrentCSPType(obj.target.value); }}>
+                            <select value={currentCSPType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => { setCurrentCSPType(obj.target.value) }}>
                                 {
                                     contarctedServiceProviderType.map(type => (<option value={type.id}>{type.contractedServiceProviderType}</option>))
                                 }
@@ -123,12 +191,12 @@ const AddFunctionalTitles = ({ getAddEntityDialog }) => {
                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                         <div>
                         </div>
-                        <div className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}>ADD MORE</div>
+                        {!isEdit && <div className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}>ADD MORE</div>}
                     </div>
                 </div>
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
-                        <button className={style.outlinedButton}>SAVE & ADD MORE</button>
+                        {!isEdit && <button className={style.outlinedButton} onClick={() => AddMoreFunctionalData()}>SAVE & ADD MORE</button>}
                         <button onClick={() => AddFunctionalTitlesData()} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & CLOSE</button>
                     </div>
                 </div>
