@@ -6,7 +6,8 @@ import Tile from '../../Components/Tile';
 import LevelTwoHeader from '../../Components/LevelTwoHeader';
 import FeedbackTicketResolution from '../../Components/FeedbackTicketResolution';
 import Table from '../../Components/TableDesign';
-import {format, subDays} from 'date-fns';
+import { format, subDays } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz'
 import { GET } from './../dataSaver';
 import MessageIcon from '@mui/icons-material/Message';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -27,6 +28,7 @@ import FiberManualRecordOutlinedIcon from '@mui/icons-material/FiberManualRecord
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import style from './index.module.scss';
 import ReleaseNotes from './releaseNotes';
+import SearchBar from '../../Components/SearchBar';
 
 const HelpHome = () => {
     const [myTicket, setMyTicket] = useState([]);
@@ -38,7 +40,7 @@ const HelpHome = () => {
     const [ticketId, setTicketId] = useState('');
     const [isEdit, setIsEdit] = useState(false);
     const [users, setUsers] = useState([]);
-    const [from, setFrom] = useState(subDays(new Date(), 60));
+    const [from, setFrom] = useState(subDays(new Date(), 30));
     const [to, setTo] = useState(new Date());
     const [currentUser, setCurrentUser] = useState({});
     const ticketsTableHeaderValues = ["", "TICKET ID", "TYPE", "SUBJECT/ ISSUE", "CUSTOMER", "START DATE/TIME", "LAST UPDATED", "USER NAME"];
@@ -46,7 +48,7 @@ const HelpHome = () => {
     const releaseTableHeaderValues = ["", "TITLE", "DESCRIPTION", "AUTHOR", "TYPE", "DATE / TIME", "UPLOAD", "COMMENT", "ACTION"];
     const messageTableHeaderValues = ["", "TYPE", "RELATED TO", "MESSAGE / COMMENT", "LAST RESPONDED", "DATE / TIME", "ACTION"];
     const tableHeaderValues = (selectedOption === 'TICKETS') ? ticketsTableHeaderValues : (selectedOption === "TUTORIALS & VIDEOS") ? tutorialsTableHeaderValues :
-    (selectedOption === "RELEASE NOTES") ? releaseTableHeaderValues : selectedOption === "Messages" ? messageTableHeaderValues : ''; 
+        (selectedOption === "RELEASE NOTES") ? releaseTableHeaderValues : selectedOption === "Messages" ? messageTableHeaderValues : '';
     const [allMessages, setAllMessages] = useState();
     let customerName = sessionStorage.getItem('title');
     var cookie = new Cookie();
@@ -57,11 +59,11 @@ const HelpHome = () => {
         getTicket();
     }, [showFeedbackTicketResolution, from, to]);
 
-    useEffect(()=>{
+    useEffect(() => {
         getCommentMessages();
     }, [currentUser]);
 
-    useEffect(()=>{
+    useEffect(() => {
         getUser();
     }, []);
 
@@ -82,23 +84,27 @@ const HelpHome = () => {
         setMyTicket(ticket?.map(data => data));
     };
 
-    const getCommentMessages = async() => {
-        const {data:messages} = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUser?.[0]?.id}`);
+    const getCommentMessages = async () => {
+        const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUser?.[0]?.id}`);
         setAllMessages(messages);
     }
 
-    const getUser = async() => {
-        const {data: user} = await GET('user-management-service/user');
+    const getUser = async () => {
+        const { data: user } = await GET('user-management-service/user');
         setUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
         setCurrentUser(users?.filter(data => data?.id === loggedUser?.id)?.map(data => data))
     };
-
-    console.log(myTicket, allMessages)
 
     const onClickFunction = (data) => {
         setTicketId(data?.id);
         setIsEdit(true);
         setShowFeedbackTicketResolution(true);
+    }
+
+    const getTicketId = (value) => {
+        setShowFeedbackTicketResolution(true);
+        setTicketId(value?.ticketId?.id);
+        setIsEdit(true);
     }
 
     const messagesOnClickFunction = (data) => {
@@ -121,17 +127,16 @@ const HelpHome = () => {
     let messageAction = [];
 
     const getMessagesValues = () => {
-         messageDot = [];
-         messageDotTooltipValues = [];
-         messageType = [];
-         relatedTo = [];
-         messageOrComment = [];
-         lastResponded = [];
-         messageDateOrTime = [];
-         messageAction = [];
+        messageDot = [];
+        messageDotTooltipValues = [];
+        messageType = [];
+        relatedTo = [];
+        messageOrComment = [];
+        lastResponded = [];
+        messageDateOrTime = [];
+        messageAction = [];
 
-        allMessages?.map(data=> 
-        {
+        allMessages?.map(data => {
             messageDot.push('green');
             messageDotTooltipValues.push('In-Progress');
             messageType.push('Comment');
@@ -143,13 +148,13 @@ const HelpHome = () => {
         })
 
         return [
-            {"type": "dot", "value": messageDot, 'tooltipValue': messageDotTooltipValues},
-            {"type": "text", "value": messageType, "onClickFunction": messagesOnClickFunction},
-            {"type": "text", "value": relatedTo, "onClickFunction": messagesOnClickFunction},
-            {"type": "text", "value": messageOrComment, "onClickFunction": messagesOnClickFunction},
-            {"type": "text", "value": lastResponded, "onClickFunction": messagesOnClickFunction},
-            {"type": "text", "value": messageDateOrTime, "onClickFunction": messagesOnClickFunction},
-            {"type": "action", "value": messageAction},
+            { "type": "dot", "value": messageDot, 'tooltipValue': messageDotTooltipValues },
+            { "type": "text", "value": messageType, "onClickFunction": messagesOnClickFunction },
+            { "type": "text", "value": relatedTo, "onClickFunction": messagesOnClickFunction },
+            { "type": "text", "value": messageOrComment, "onClickFunction": messagesOnClickFunction },
+            { "type": "text", "value": lastResponded, "onClickFunction": messagesOnClickFunction },
+            { "type": "text", "value": messageDateOrTime, "onClickFunction": messagesOnClickFunction },
+            { "type": "action", "value": messageAction },
         ];
     }
 
@@ -164,20 +169,19 @@ const HelpHome = () => {
     let lastUpdated = [];
 
     const getTicketValues = () => {
-         dot = [];
-         dotTooltipValues = [];
-         tktId = [];
-         type = [];
-         subject = [];
-         openDateOrTime = [];
-         customer = [];
-         submittedBy = [];
-         lastUpdated = [];
+        dot = [];
+        dotTooltipValues = [];
+        tktId = [];
+        type = [];
+        subject = [];
+        openDateOrTime = [];
+        customer = [];
+        submittedBy = [];
+        lastUpdated = [];
 
-        myTicket?.map(data=> 
-        {
-            dot.push('green');
-            dotTooltipValues.push('In-Progress');
+        myTicket?.map(data => {
+            dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'grey' : '');
+            dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : '');
             tktId.push(data?.ticketId);
             type.push(data?.type);
             subject.push(data?.subject);
@@ -188,24 +192,28 @@ const HelpHome = () => {
         })
 
         return [
-            {"type": "dot", "value": dot, 'tooltipValue': dotTooltipValues},
-            {"type": "text", "value": tktId, "onClickFunction": onClickFunction},
-            {"type": "text", "value": type, "onClickFunction": onClickFunction},
-            {"type": "text", "value": subject, "onClickFunction": onClickFunction},
-            {"type": "text", "value": customer, "onClickFunction": onClickFunction},
-            {"type": "text", "value": openDateOrTime, "onClickFunction": onClickFunction},
-            {"type": "text", "value": lastUpdated, "onClickFunction": onClickFunction},
-            {"type": "text", "value": submittedBy, "onClickFunction": onClickFunction},
+            { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
+            { "type": "text", "value": tktId, "onClickFunction": onClickFunction },
+            { "type": "text", "value": type, "onClickFunction": onClickFunction },
+            { "type": "text", "value": subject, "onClickFunction": onClickFunction },
+            { "type": "text", "value": customer, "onClickFunction": onClickFunction },
+            { "type": "text", "value": openDateOrTime, "onClickFunction": onClickFunction },
+            { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
+            { "type": "text", "value": submittedBy, "onClickFunction": onClickFunction },
         ];
     }
 
-return(
-        <Fragment> 
+    const messagesActionsData = [{ 'data': 'Reply', 'onClick': getTicketId },
+    { 'data': 'View', 'onClick': getTicketId }]
+
+
+    return (
+        <Fragment>
             <Navbar />
             <div className={`${style.bigCardGrid} ${style.margin20}`}>
                 <SideBar />
                 <div>
-                    <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={'UPDATED ON FEB 16, 2022 16:45 EST'}  />
+                    <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={'UPDATED ON FEB 16, 2022 16:45 EST'} hideClose={true} />
                     <div className={`${style.grid4} ${style.marginTop20}`}>
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={myTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" bottomText='LAST 30 DAYS' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TUTORIALS & VIDEOS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TUTORIALS & VIDEOS" bottomText='LAST 30 DAYS' />
@@ -214,26 +222,31 @@ return(
                     </div>
                     {selectedOption !== "FAQS" ? (
                         <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
-                            <div className={`${style.floatRight} ${style.marginTop20} ${style.cursorPointer}`}>
-                                {/* <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => {setIsEdit(false);setShowFeedbackTicketResolution(true);handleFromUpload()}} /> */}
-                                <button className={style.contractButton} onClick={() => {setIsEdit(false);setShowFeedbackTicketResolution(true);handleFromUpload()}}>ADD TICKET</button>
+                            <div className={style.spaceBetween}>
+                                <p className={`${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yyyy H:m zzz')}</p>
+                                <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                                    <SearchBar />
+                                    <button className={style.contractButton} onClick={() => { setIsEdit(false); setShowFeedbackTicketResolution(true); handleFromUpload() }}>ADD TICKET</button>
+                                </div>
                             </div>
                             <div className={style.buttonGroupUsers}>
                                 <button className={selectedOption === "TICKETS" && style.activeButton} onClick={() => setSelectedOption('TICKETS')}>Tickets ( {myTicket?.length} )</button>
-                                <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( 0 )</button>
+                                {/* <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( 0 )</button> */}
                                 <button className={selectedOption === "Messages" && style.activeButton} onClick={() => setSelectedOption('Messages')}>Messages ( {allMessages?.length} )</button>
                             </div>
                             {selectedOption !== "Exception Error Tickets" && (
                                 <Table
-                                    tableHeaderValues={tableHeaderValues} 
+                                    tableHeaderValues={tableHeaderValues}
                                     tableDataValues={(selectedOption === 'TICKETS' || selectedOption === "TUTORIALS & VIDEOS")
-                                    ? getTicketValues() : selectedOption === "RELEASE NOTES" ? getTicketValues() 
-                                    : selectedOption === "Messages" ? getMessagesValues() : []}
+                                        ? getTicketValues() : selectedOption === "RELEASE NOTES" ? getTicketValues()
+                                            : selectedOption === "Messages" ? getMessagesValues() : []}
                                     tableData={(selectedOption === 'TICKETS' || selectedOption === "TUTORIALS & VIDEOS" || selectedOption === "RELEASE NOTES")
-                                    ? myTicket : selectedOption === "Messages" ? allMessages : []}
+                                        ? myTicket : selectedOption === "Messages" ? allMessages : []}
                                     gridStyle={selectedOption === 'TICKETS' ? style.ticketTableDataGrid : selectedOption === "TUTORIALS & VIDEOS" ? style.tutorialTableDataGrid
-                                        : selectedOption === "RELEASE NOTES" ? style.releaseTableDataGrid 
-                                        : selectedOption === "Messages" ? style.messageTableDataGrid : ''}
+                                        : selectedOption === "RELEASE NOTES" ? style.releaseTableDataGrid
+                                            : selectedOption === "Messages" ? style.messageTableDataGrid : ''}
+                                    scrollStyle={style.helpScrollStyle}
+                                    actions={selectedOption === 'Messages' ? messagesActionsData : []}
                                 />
                             )}
                             {showFeedbackTicketResolution && (
@@ -243,7 +256,7 @@ return(
                     ) : (
                         <FAQ />
                     )}
-                    </div>
+                </div>
             </div>
             <div>
                 {showChatView && (
@@ -262,7 +275,7 @@ return(
                                     </div>
                                     <div className={style.marginLeft20}>
                                         <img src={UserLogo} alt={'logo'} className={style.userLogoVerySmall} />
-                                        <div>John</div> 
+                                        <div>John</div>
                                     </div>
                                 </div>
                             </div>
@@ -276,7 +289,7 @@ return(
                                             <LockOutlinedIcon sx={{ fontSize: 15 }} className={style.whiteIcon} />
                                         </div>
                                         <div className={style.encryptionFontSize}>
-                                        The messages you send to this chat are Secured with end-to-end encryption.
+                                            The messages you send to this chat are Secured with end-to-end encryption.
                                         </div>
                                     </div>
                                 </div>
@@ -287,8 +300,8 @@ return(
                                         <img src={UserLogo} alt={'logo'} className={`${style.chatLogo} ${style.chatLogo3Pos}`} />
                                     </div>
                                     <div className={style.messageContainer}>
-                                    Hi there, <br /><br />
-                                     Welcome to TimeSmart.AI Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
+                                        Hi there, <br /><br />
+                                        Welcome to TimeSmart.AI Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
                                     </div>
                                 </div>
                             </div>
@@ -316,12 +329,12 @@ return(
                     <div className={style.spaceBetween}>
                         <p></p>
                         <p className={style.extensionStyle}>VIDEO CALL</p>
-                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowVideoOptions(false)}  />
+                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowVideoOptions(false)} />
                     </div>
                     <div>
                         <div className={`${style.displayInCol} ${style.marginTop20} ${style.alignCenter}`}>
-                            <button className={style.videoButtonStyle} onClick={() => {setShowVideoConnectingDialog(true);setShowVideoOptions(false)}}>TECHNICAL SUPPORT</button>
-                            <button className={`${style.videoButtonStyle} ${style.marginTop20}`} onClick={() => {setShowVideoConnectingDialog(true);setShowVideoOptions(false)}}>ASSESSMENT SUPPORT</button>
+                            <button className={style.videoButtonStyle} onClick={() => { setShowVideoConnectingDialog(true); setShowVideoOptions(false) }}>TECHNICAL SUPPORT</button>
+                            <button className={`${style.videoButtonStyle} ${style.marginTop20}`} onClick={() => { setShowVideoConnectingDialog(true); setShowVideoOptions(false) }}>ASSESSMENT SUPPORT</button>
                         </div>
                     </div>
                 </div>
@@ -331,18 +344,18 @@ return(
                     <div className={style.spaceBetween}>
                         <p></p>
                         <p className={style.extensionStyle}>CONNECTING VIDEO CALL</p>
-                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowVideoConnectingDialog(false)}  />
+                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowVideoConnectingDialog(false)} />
                     </div>
                     <div className={style.spaceBetween}>
-                        <DesktopWindowsIcon  style={{ fontSize: 80, color: '#7165E3' }} className={style.marginTop10} />
+                        <DesktopWindowsIcon style={{ fontSize: 80, color: '#7165E3' }} className={style.marginTop10} />
                         <div className={`${style.displayInRow} ${style.verticalCenter}`}>
-                            <FiberManualRecordIcon style={{ color: '#7165E3', fontSize: 12}}  className={`${style.marginTop40}`}/>
-                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12}}  className={`${style.marginTop40}`} />
-                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12}}  className={`${style.marginTop40}`} />
-                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12}}  className={`${style.marginTop40}`} />
-                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12}}  className={`${style.marginTop40}`} />
+                            <FiberManualRecordIcon style={{ color: '#7165E3', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#7165E3', fontSize: 12 }} className={`${style.marginTop40}`} />
                         </div>
-                        <DesktopWindowsIcon  style={{ fontSize: 80, color: '#7165E3' }} className={style.marginTop10} />
+                        <DesktopWindowsIcon style={{ fontSize: 80, color: '#7165E3' }} className={style.marginTop10} />
                     </div>
                     <div>
                         <div className={`${style.displayInCol} ${style.marginTop20} ${style.alignCenter}`}>
