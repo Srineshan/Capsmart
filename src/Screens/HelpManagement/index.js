@@ -79,7 +79,7 @@ const HelpHome = () => {
 
     const getTicket = async () => {
         const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
-        setMyTicket(ticket.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
+        setMyTicket(ticket?.map(data => data));
     };
 
     const getCommentMessages = async() => {
@@ -214,11 +214,12 @@ return(
                     </div>
                     {selectedOption !== "FAQS" ? (
                         <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
-                            <div className={`${style.floatRight} ${style.marginTop20} ${style.marginRight30} ${style.cursorPointer}`}>
-                                <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => {setIsEdit(false);setShowFeedbackTicketResolution(true);handleFromUpload()}} />
+                            <div className={`${style.floatRight} ${style.marginTop20} ${style.cursorPointer}`}>
+                                {/* <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => {setIsEdit(false);setShowFeedbackTicketResolution(true);handleFromUpload()}} /> */}
+                                <button className={style.contractButton} onClick={() => {setIsEdit(false);setShowFeedbackTicketResolution(true);handleFromUpload()}}>ADD TICKET</button>
                             </div>
                             <div className={style.buttonGroupUsers}>
-                                <button className={selectedOption === "TICKETS" && style.activeButton} onClick={() => setSelectedOption('TICKETS')}>Open Tickets ( {myTicket?.length} )</button>
+                                <button className={selectedOption === "TICKETS" && style.activeButton} onClick={() => setSelectedOption('TICKETS')}>Tickets ( {myTicket?.length} )</button>
                                 <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( 0 )</button>
                                 <button className={selectedOption === "Messages" && style.activeButton} onClick={() => setSelectedOption('Messages')}>Messages ( {allMessages?.length} )</button>
                             </div>

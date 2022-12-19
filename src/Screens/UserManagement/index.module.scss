@@ -460,6 +460,7 @@ body{
     width: 100%;
     display: grid;
     grid-template-columns: 5% 15% 15% 10% 10% 17% 15% 13%;
+    word-wrap: break-word;
 }
 
 .documentDataProof{
