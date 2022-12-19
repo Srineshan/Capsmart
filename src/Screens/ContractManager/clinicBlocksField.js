@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
+import { TimePicker } from "@blueprintjs/datetime";
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
+import {GetDateFromHours} from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
 import style from './index.module.scss';
@@ -31,8 +33,8 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
       sessionAmount:'0',
       totalSession:'0',
       totalSessionFrequency:'YEAR',
-      workingTimeFrom:'',
-      workingTimeTo:'',
+      workingTimeFrom:new Date(),
+      workingTimeTo:new Date(),
       serviceDays:{
         tuesday: false,
         wednesday: false,
@@ -47,8 +49,6 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
       weekdaysCount:'0',
       weekendsCount:'0',
     })
-
-    console.log(metadata?.sessionDuration);
 
     useEffect(()=>{
       setSelectedValues();
@@ -70,12 +70,12 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
       additionalScheduleRequired:serviceSelected?.additionalSchedule?.scheduleRequired,
       billableService:serviceSelected?.billableService,
       rateType:serviceSelected?.rateType,
-      sessionDuration:serviceSelected?.duration?.hours,
+      sessionDuration:serviceSelected?.duration?.hours || '0',
       sessionAmount:serviceSelected?.payableAmount?.value,
       totalSession:serviceSelected?.totalSessions?.value,
       totalSessionFrequency:serviceSelected?.totalSessions?.frequency,
-      workingTimeFrom:serviceSelected?.workingPeriod?.from,
-      workingTimeTo:serviceSelected?.workingPeriod?.to,
+      workingTimeFrom:GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+      workingTimeTo:GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
       serviceDays:serviceSelected?.serviceDays,
     });
     }
@@ -101,11 +101,11 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
-                        <EditableText placeholder="" type='number' value={metadata?.min} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('min',e)}/>
+                        <EditableText placeholder="" type='number' min="0" value={metadata?.min} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('min',e)}/>
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MAX</div>
-                        <EditableText placeholder="" type='number' value={metadata?.max} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('max',e)}/>
+                        <EditableText placeholder="" type='number' min="0" value={metadata?.max} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('max',e)}/>
                     </div>
                     <Select
                         displayEmpty
@@ -127,11 +127,11 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.withNurseGrid}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <div className={style.textElement}>WITH NURSE</div>
-                        <EditableText placeholder="" type='number' disabled={metadata?.noTargetApplicable} value={metadata?.withNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('withNurse',e)}/>
+                        <EditableText placeholder="" type='number' min="0" disabled={metadata?.noTargetApplicable} value={metadata?.withNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('withNurse',e)}/>
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <div className={style.textElement}>WITHOUT NURSE</div>
-                        <EditableText placeholder="" type='number' disabled={metadata?.noTargetApplicable} className={style.serviceProvidedEditableTextStyle} value={metadata?.withoutNurse} onChange={(e)=>handleValueChange('withoutNurse',e)}/>
+                        <EditableText placeholder="" type='number' min="0" disabled={metadata?.noTargetApplicable} className={style.serviceProvidedEditableTextStyle} value={metadata?.withoutNurse} onChange={(e)=>handleValueChange('withoutNurse',e)}/>
                     </div>
                     <Checkbox label="No Target Applicable" checked={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} onChange={(e)=>handleValueChange('noTargetApplicable',e.target.checked)}/>
                 </div>
@@ -142,11 +142,11 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
                 <div className={`${style.withNurseGrid} ${style.fullWidth}`}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <div className={style.textElement}>WITH NURSE</div>
-                        <EditableText placeholder="" type='number' disabled={metadata?.targetNoTargetApplicable} value={metadata?.targetWithNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('targetWithNurse',e)}/>
+                        <EditableText placeholder="" type='number' min="0" disabled={metadata?.targetNoTargetApplicable} value={metadata?.targetWithNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('targetWithNurse',e)}/>
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <div className={style.textElement}>WITHOUT NURSE</div>
-                        <EditableText placeholder="" type='number' disabled={metadata?.targetNoTargetApplicable} value={metadata?.targetWithoutNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('targetWithoutNurse',e)}/>
+                        <EditableText placeholder="" type='number' min="0" disabled={metadata?.targetNoTargetApplicable} value={metadata?.targetWithoutNurse} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('targetWithoutNurse',e)}/>
                     </div>
                     <Checkbox label="No Target Applicable"  checked={metadata?.targetNoTargetApplicable} className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} onChange={(e)=>handleValueChange('targetNoTargetApplicable',e.target.checked)}/>
                 </div>
@@ -253,7 +253,7 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <EditableText value={metadata?.totalSession} placeholder="" type='number' onChange={(e)=>
+                        <EditableText value={metadata?.totalSession} placeholder="" type='number' min="0" onChange={(e)=>
                           {
                             let value = e.slice(0, limit5);
                             handleValueChange('totalSession',value);
@@ -275,18 +275,19 @@ const ClinicBlocksFields = ({getMetaData, serviceSelected}) => {
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
                 <div className={style.displayInRow}>
-                    <InputGroup
-                        placeholder="HH:MM"
-                        onChange={(e)=>handleValueChange('workingTimeFrom',e.target.value)}
-                        value={metadata?.workingTimeFrom}
-                        className={style.threeFieldWidth}
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e)=>{
+                        handleValueChange('workingTimeFrom',e);
+                      }}
+                      value={new Date(metadata?.workingTimeFrom)}
                     />
-                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                    <InputGroup
-                        placeholder="HH:MM"
-                        onChange={(e)=>handleValueChange('workingTimeTo',e.target.value)}
-                        value={metadata?.workingTimeTo}
-                        className={style.threeFieldWidth}
+                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e)=>handleValueChange('workingTimeTo',e)}
+                        value={new Date(metadata?.workingTimeTo)}
+                        minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                     />
                 </div>
             </div>

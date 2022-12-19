@@ -7,6 +7,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SuffixList from './../../Components/SuffixList';
 import ProviderTypeList from './../../Components/ProviderTypeList';
 import FunctionalTitleList from './../../Components/FunctionalTitleList';
+import { FormatPhoneNumber } from './../../utils/formatting';
 
 import style from './index.module.scss';
 
@@ -117,8 +118,8 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
     }
 
     const rolesTags = selectedRoles
-    .filter(data => roles.map(role => role?.id === data?.id))
-    .map((tag, index) => {
+    ?.filter(data => roles.map(role => role?.id === data?.id))
+    ?.map((tag, index) => {
       const onRemove = () => {
         setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName));
       };
@@ -274,7 +275,6 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
     }
 
     const handleSave = async() => {
-      console.log('inside save func');
       let contractData = userProviderData?.contracts;
       contractData?.filter(data=>data?.id === contractId)?.map(data=>{
         let site = {
@@ -298,6 +298,32 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
           sites.push(data);
         }
       });
+
+      if(!npin?.missing && !npin?.na && npin.npin === ''){
+        ErrorToaster('NPIN is Mandatory if not Missing/NA');
+        return;
+      }
+      if(userDetails?.firstName === ''){
+        ErrorToaster('First Name is Mandatory');
+        return;
+      }
+      if(userDetails?.lastName === ''){
+        ErrorToaster('Last Name is Mandatory');
+        return;
+      }
+      if(!userDetails?.email?.includes('@') || !userDetails?.email?.includes('.')){
+        ErrorToaster('Enter a Valid Email');
+        return;
+      }
+      if(userDetails?.phone?.length !== 14){
+        ErrorToaster('Enter Valid Phone Number');
+        return;
+      }
+      if(roles?.length ===0){
+        ErrorToaster('Select User Role');
+        return;
+      }
+
         const data = {
             "id": userProviderData?.id,
             "name": {
@@ -375,6 +401,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
           .catch(error=>{
               ErrorToaster('Unexpected Error');
           })
+           getEditServiceDialog(false);
     }
 
 
@@ -390,9 +417,9 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                 <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>NPIN*</div>
                     <div className={style.grid3}>
-                    <InputGroup className={style.fullWidth} value={npin?.npin} onChange={(e)=>setNpin({npin:e.target.value,na:false,missing:false})}/>
+                    <InputGroup disabled={npin?.missing || npin?.na} className={style.fullWidth} value={npin?.npin} onChange={(e)=>setNpin({npin:e.target.value,na:false,missing:false})}/>
                     <Checkbox label="Missing"  checked={npin?.missing} onChange={(e)=>setNpin({ npin:'',missing:e.target.checked, na:false})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
-                    <Checkbox label="Not Applicable"  checked={npin?.notApplicable} onChange={(e)=>setNpin({ npin:'',missing:false, na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
+                    <Checkbox label="Not Applicable"  checked={npin?.na} onChange={(e)=>setNpin({ npin:'',missing:false, na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -432,7 +459,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Cell Phone*</div>
                     <div className={style.grid2}>
-                    <InputGroup placeholder="Numeric" value={userDetails?.phone} className={style.fullWidth} onChange={(e)=>handleUserData('phone',e.target.value)}/>
+                    <InputGroup placeholder="Numeric" value={userDetails?.phone} className={style.fullWidth} onChange={(e)=>handleUserData('phone',FormatPhoneNumber(e.target.value))}/>
                     {
                       // <RadioGroup
                       //     inline={true}
@@ -466,7 +493,6 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                         </div>
                         {siteLevel && (
                             <div className={`${style.siteLevelBoxStyle}`}>
-                              {/* {selectedContract === "Multiple Contractor" && ( */}
                               <div className={`${style.siteLevelGrid}`}>
                                         <div className={style.marginTop}>Site*</div>
                                         <select
@@ -608,7 +634,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
             </div>
             <div>
                 <div className={`${style.floatRight} ${style.marginTop20}`}>
-                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave(); getEditServiceDialog(false)}}>SAVE & EXIT</button>
+                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => {handleSave();}}>SAVE & EXIT</button>
                 </div>
             </div>
           </div>

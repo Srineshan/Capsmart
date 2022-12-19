@@ -6,6 +6,8 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
+import { TimePicker } from "@blueprintjs/datetime";
+import {GetDateFromHours} from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
 import style from './index.module.scss';
@@ -29,8 +31,8 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
       sessionAmount:'0',
       totalSession:'0',
       totalSessionFrequency:'YEAR',
-      workingTimeFrom:'',
-      workingTimeTo:'',
+      workingTimeFrom:new Date(),
+      workingTimeTo:new Date(),
       serviceDays:{
         tuesday: false,
         wednesday: false,
@@ -63,12 +65,12 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
       additionalScheduleRequired:serviceSelected?.additionalSchedule?.scheduleRequired,
       billableService:serviceSelected?.billableService,
       rateType:serviceSelected?.rateType,
-      sessionDuration:serviceSelected?.duration?.hours,
+      sessionDuration:serviceSelected?.duration?.hours || '0',
       sessionAmount:serviceSelected?.payableAmount?.value,
       totalSession:serviceSelected?.totalSessions?.value,
       totalSessionFrequency:serviceSelected?.totalSessions?.frequency,
-      workingTimeFrom:serviceSelected?.workingPeriod?.from,
-      workingTimeTo:serviceSelected?.workingPeriod?.to,
+      workingTimeFrom:GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+      workingTimeTo:GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
       serviceDays:serviceSelected?.serviceDays,
     });
     }
@@ -97,11 +99,11 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
-                        <EditableText type='number' placeholder='' value={metadata?.min} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('min',e)}/>
+                        <EditableText type='number' min="0" placeholder='' value={metadata?.min} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('min',e)}/>
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MAX</div>
-                        <EditableText value={metadata?.max} placeholder='' type='number' className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('max',e)}/>
+                        <EditableText value={metadata?.max} placeholder='' type='number' min="0" className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('max',e)}/>
                     </div>
                     <Select
                         displayEmpty
@@ -232,7 +234,7 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <EditableText placeholder='' value={metadata?.totalSession} type='number'
+                        <EditableText placeholder='' value={metadata?.totalSession} type='number' min="0"
                         className={style.editableSessionTextStyle}
                         onChange={(e)=>{
                           let value = e.slice(0, e.slice());
@@ -253,18 +255,19 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
                 <div className={style.displayInRow}>
-                    <InputGroup
-                        value={metadata?.workingTimeFrom}
-                        placeholder="HH:MM"
-                        className={style.threeFieldWidth}
-                        onChange={(e)=>handleValueChange('workingTimeFrom', e.target.value)}
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e)=>{
+                        handleValueChange('workingTimeFrom',e);
+                      }}
+                      value={new Date(metadata?.workingTimeFrom)}
                     />
-                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                    <InputGroup
-                        placeholder="HH:MM"
-                        onChange={(e)=>handleValueChange('workingTimeTo', e.target.value)}
-                        className={style.threeFieldWidth}
-                        value={metadata?.workingTimeTo}
+                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e)=>handleValueChange('workingTimeTo',e)}
+                        value={new Date(metadata?.workingTimeTo)}
+                        minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                     />
                 </div>
             </div>

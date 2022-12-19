@@ -7,7 +7,13 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, newSer
   const contractID = contractId;
     const [users,setUsers] = useState([]);
     const [editServiceProviderDialog, setEditServiceProviderDialog] = useState(false);
-    const [userProviderData, setUserProviderData] = useState({});
+    const [userProviderData, setUserProviderData] = useState(undefined);
+
+    useEffect(()=>{
+      if(userProviderData !== {} && userProviderData !== undefined){
+        setEditServiceProviderDialog(true);
+      }
+    }, [userProviderData])
 
     useEffect(()=>{
         getUserData();
@@ -44,7 +50,7 @@ const ContractedServicesProviderMultiple = ({getNewServiceProviderDialog, newSer
                 <>
                 {
                   users?.length !== 0 ? users?.map(data=>(
-                    <div className={`${style.tableData} ${style.displayInRow}`} onClick={() => {setUserProviderData(data);setEditServiceProviderDialog(true)}}>
+                    <div className={`${style.tableData} ${style.displayInRow}`} onClick={() => {setUserProviderData(data)}}>
                         <div className={`${style.multipleDataTextWidth}`}></div>
                         <p className={style.multipleDataTextWidth}>{`${data?.name?.firstName} ${data?.name?.lastName}`}</p>
                         <p className={style.multipleDataTextWidth}>{data?.serviceProviderType?.contractedServiceProviderType || '-'} </p>

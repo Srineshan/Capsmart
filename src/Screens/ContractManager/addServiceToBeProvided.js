@@ -30,6 +30,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const siteTypeId = sessionStorage.getItem('entityTypeId');
     const [serviceType, setServiceType] = useState('Clinic Blocks');
     const [siteList, setSiteList] = useState([]);
+    const [allLocation, setAllLocation] = useState([]);
     const [siteData, setSiteData] = useState([]);
     const [activity, setActivity] = useState([]);
     const [newActivity, setNewActivity] = useState('');
@@ -66,8 +67,17 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         setSelectedActivity(temp);
         setShowLocation(selectedService?.locations?.length !== 0 ? true : false);
         setSelectedLocation(selectedService?.locations?.map(data=>data));
+        removeSelectedLocationFromList();
       }
-    },[selectedService])
+    },[selectedService]);
+
+    const removeSelectedLocationFromList = () => {
+      setLocationList(allLocation?.filter(data=>!selectedLocation?.map(location=>location?.location).includes(data?.location))?.map(data=>data));
+    }
+
+    useEffect(()=> {
+      removeSelectedLocationFromList();
+    },[selectedLocation])
 
     let rightHelpArea = helpTool?.calculator || helpTool?.textArea;
 
@@ -131,7 +141,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     const getLocations = async() => {
       const {data: location} = await GET(`contract-managment-service/contracts/site/${siteData?.map(data=>data?.id)[0]}/location`);
-      setLocationList(location);
+      setAllLocation(location);
+      setLocationList(location?.filter(data=>!selectedLocation?.map(location=>location?.location).includes(data?.location))?.map(data=>data));
     }
 
     const getContractedServices = async() => {
@@ -167,6 +178,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
 
     const locationToAdd = async() => {
+      if(allLocation?.some(data=>data?.location === newLocation)){
+        ErrorToaster('Location already exists');
+        return;
+      }
+      if(newLocation !== ''){
       let siteId = siteData?.map(data=>data?.id)[0];
       let data = {
           "location": newLocation,
@@ -183,6 +199,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         console.log('Error');
       })
     }
+  }
 
     const getSites = async () => {
       const {data: contractData} = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
@@ -193,8 +210,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       }
     }
 
-    console.log('metadata', metadata);
     const handleSave = async(buttonType) => {
+        if(serviceType === ''){
+          ErrorToaster('Activity Type Selection is Mandatory');
+          return;
+        }
         let performingActivity = '';
         let activities = [];
         if(serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services'){
@@ -306,8 +326,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   },
                   "serviceDays": dataValues?.serviceDays,
                   "workingPeriod": {
-                    "from": dataValues?.workingTimeFrom,
-                    "to": dataValues?.workingTimeTo
+                    "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
+                    "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
                   },
                   "workingHours": {
                     "normalWorkingHours": true,
@@ -397,7 +417,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     const locationItems = useMemo(
       () =>
-        locationList?.map((data) => ({
+        locationList?.map((data) => data?.location &&({
           value: data?.location,
           location: data?.location
         })),
@@ -422,6 +442,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         temp.push(selectedItem);
         setSelectedLocation(temp);
       }
+      removeSelectedLocationFromList();
     }
 
  const handleDesignateContractor = () => {
@@ -433,7 +454,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
    }
  }
 
-console.log('selectedUsers', selectedUsers);
     return (
         <div>
             <Dialog isOpen={getAddServiceDialog} onClose={() => {getAddServiceDialog(false);getEditServiceDialog(false);}} className={rightHelpArea ? `${style.addServiceDialog} ${style.addManagerDialogBackground}` : `${style.manageServiceDialog} ${style.addManagerDialogBackground}`}>

@@ -1432,6 +1432,16 @@ select {
   width: 80px;
 }
 
+.dollarLeftElement{
+  color: #AFB2B6;
+  background-color: #fff;
+  border: none;
+  margin: 2px 2px;
+  height: 25px;
+  font-size: 12px;
+  width: 20px;
+}
+
 .textElement{
     background-color: #f1f2f3;
     color: #AFB2B6;
@@ -2196,4 +2206,13 @@ select {
 .contractScrollStyle{
     height: calc(100vh - 435px);
     overflow: scroll;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
 }

@@ -11,6 +11,8 @@ import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
 import Popover from '@mui/material/Popover';
 import {GET, TenantID, POST} from './../dataSaver';
+import { TimePicker } from "@blueprintjs/datetime";
+import {GetDateFromHours} from './../../utils/formatting';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import style from './index.module.scss';
@@ -18,8 +20,6 @@ import style from './index.module.scss';
 const AdministrativeFields = ({getMetaData, services, serviceSelected, editService}) => {
   const [activity, setActivity] = useState([]);
   const [showAdminActivity, setShowAdminActivity] = useState(false);
-  const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
-  const [workingPeriodTo, setWorkingPeriodTo] = useState('');
   const [additionalSchedule, setAdditionalSchedule] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [adminActivity, setAdminActivity] = useState({
@@ -57,12 +57,14 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
         selectedActivities: [],
         weekdaysCount:'0',
         weekendsCount:'0',
-        workingTimeFrom:'',
-        workingTimeTo:'',
+        workingTimeFrom:new Date(),
+        workingTimeTo:new Date(),
       })
 
       useEffect(()=>{
-        setSelectedValues();
+        if(serviceSelected !== {}){
+          setSelectedValues();
+        }
       }, [serviceSelected]);
 
       const setSelectedValues = () => {
@@ -71,9 +73,9 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
           dedicatedHoursActivityType:serviceSelected?.hoursBorrowed?.activityType?.activityType,
           dedicatedHoursPerformingActivity:serviceSelected?.hoursBorrowed?.performingActivity?.activity,
           selectedActivities:serviceSelected?.activityResponse?.dataMap?.adminActivities,
-          totalSession:serviceSelected?.totalSessions?.value,
-          workingTimeFrom:serviceSelected?.workingPeriod?.from,
-          workingTimeTo:serviceSelected?.workingPeriod?.to,
+          totalSession:serviceSelected?.totalSessions?.value || '0',
+          workingTimeFrom:GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+          workingTimeTo:GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
           serviceDays:serviceSelected?.serviceDays,
           sessionAmount: serviceSelected?.payableAmount?.value,
       });
@@ -154,6 +156,8 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
         setMetadata({...metadata, selectedActivities: temp});
       }
     }
+
+    console.log('date',metadata?.totalSession);
 
     return (
         <div>
@@ -367,20 +371,21 @@ const AdministrativeFields = ({getMetaData, services, serviceSelected, editServi
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Administrative Services Workdays*</div>
+                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
                 <div className={style.displayInRow}>
-                    <InputGroup
-                        value={metadata?.workingTimeFrom}
-                        placeholder="HH:MM"
-                        onChange={(e)=> handleValueChange('workingTimeFrom', e.target.value) }
-                        className={style.threeFieldWidth}
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e)=>{
+                        handleValueChange('workingTimeFrom',e);
+                      }}
+                      value={new Date(metadata?.workingTimeFrom)}
                     />
-                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                    <InputGroup
-                        value={metadata?.workingTimeTo}
-                        placeholder="HH:MM"
-                        onChange={(e)=> handleValueChange('workingTimeTo', e.target.value) }
-                        className={style.threeFieldWidth}
+                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e)=>handleValueChange('workingTimeTo',e)}
+                        value={new Date(metadata?.workingTimeTo)}
+                        minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                     />
                 </div>
             </div>

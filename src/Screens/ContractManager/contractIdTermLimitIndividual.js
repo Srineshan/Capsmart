@@ -85,6 +85,7 @@ const ContractIdTermLimitIndividual = (
     },[])
 
     useEffect(()=>{
+      console.log('inside test effect');
       getReminder();
     },[renewalReminder])
 
@@ -207,7 +208,7 @@ const ContractIdTermLimitIndividual = (
       return siteData;
     }
 
-    const addContract = async() => {
+    const addContract = async(buttonType) => {
       if(selectedContractContinuationPolicy === 'Select Value'){
         ErrorToaster('Select Contract Continuation Policy');
         return;
@@ -304,6 +305,11 @@ const ContractIdTermLimitIndividual = (
        ErrorToaster('Unexpected Error Updating Contract');
      })
      }
+     if(buttonType === 'CONTINUE'){
+       getViewPage2(true);
+       getViewPage1(false);
+       getCurrentPage('Contracted Services Provider(s)')
+     }
 
     }
 
@@ -381,9 +387,9 @@ const ContractIdTermLimitIndividual = (
     }
 
     const handleReminder = (e,i) => {
-      let temp = renewalReminder;
-      temp[i] = {'days':parseInt(e)};
-      setRenewalreminder(temp);
+        let temp = renewalReminder;
+        temp[i] = {'days':parseInt(e)};
+        setRenewalreminder(temp);
     }
 
     const handleFileChange = (e, name) => {
@@ -399,7 +405,7 @@ const ContractIdTermLimitIndividual = (
                 Set Renewal Reminder*
               </div>
               <div className={style.displayInRow}>
-                <EditableText className={style.inputRenewalRemainderStyle} defaultValue={renewalReminder?.[i]?.days} placeholder="" onChange={(e)=>handleReminder(e,i)} key={`days${i}${renewalReminder?.[i]?.days}`}/>
+                <EditableText className={style.inputRenewalRemainderStyle}  type="number" defaultValue={renewalReminder?.[i]?.days} placeholder="" max="99" onChange={(e)=> handleReminder(e,i)} key={`days${i}${renewalReminder?.[i]?.days}`}/>
                 <div className={`${style.marginTop10} ${style.marginLeft20}`}>Days</div>
               </div>
               {renewalReminder?.length !== 1 && (
@@ -750,6 +756,9 @@ const ContractIdTermLimitIndividual = (
                               },
                               onFocus: e => {
                                 setCalendarStart(true);
+                              },
+                              onBlur: e => {
+                                setCalendarStart(false);
                               }
                           }}
                             renderInput={(params) => <TextField {...params}
@@ -776,7 +785,13 @@ const ContractIdTermLimitIndividual = (
                               style: {
                                   fontSize: 14,
                                   height: 30,
-                              }
+                              },
+                               onFocus: e => {
+                                  setCalendarEnd(true);
+                                },
+                                onBlur: e => {
+                                  setCalendarEnd(false);
+                                }
                             }}
                             minDate={contractTermPeriodFrom}
                             maxDate={add(new Date(),{years:5})}
@@ -806,7 +821,13 @@ const ContractIdTermLimitIndividual = (
                             style: {
                                 fontSize: 14,
                                 height: 30,
-                            }
+                            },
+                            onFocus: e => {
+                               setCalendarEffective(true);
+                             },
+                             onBlur: e => {
+                               setCalendarEffective(false);
+                             }
                           }}
                           minDate={contractTermPeriodFrom}
                           maxDate={contractTermPeriodTo}
@@ -878,7 +899,7 @@ const ContractIdTermLimitIndividual = (
                             <div className={`${style.renewalBoxStyle}`}>
                                 <div className={`${style.renewalBoxGrid}`} onFocus={()=>{getSelectedField('Auto Renewal - Auto Renewal Term')}}>
                                     <div className={style.marginTop}>Auto Renewal Term*</div>
-                                    <EditableText className={`${style.inputRenewalStyle}`} placeholder=""  value={autoRenewal.renewalTerm} onChange={(e)=>setAutoRenewal({...autoRenewal, renewalTerm:e})} type="number" min="1" max="52"/>
+                                    <EditableText className={`${style.inputRenewalStyle}`} placeholder=""  value={autoRenewal.renewalTerm} onChange={(e)=> (e <= 52 && setAutoRenewal({...autoRenewal, renewalTerm:e}))} type="tel" />
                                     <select
                                         name="class"
                                         id="Class"
@@ -895,7 +916,7 @@ const ContractIdTermLimitIndividual = (
                                 </div>
                                 <div className={`${style.renewalBoxGrid}`} onFocus={()=>{getSelectedField('Auto Renewal - Allowable Auto Renewal Terms')}}>
                                     <div className={style.marginTop10}>Allowable Auto Renewal Terms*</div>
-                                    <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm} onChange={(e)=>setAutoRenewal({...autoRenewal, allowableRenewalTerm:e})} />
+                                    <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm} onChange={(e)=>(e <= 12 && setAutoRenewal({...autoRenewal, allowableRenewalTerm:e}))} type="tel"/>
                                 </div>
                             </div>
                         )}
@@ -920,8 +941,8 @@ const ContractIdTermLimitIndividual = (
                 </div>
             </div>
             <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={style.newContractOutlinedButton} onClick={()=>addContract()}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {addContract();getViewPage2(true);getViewPage1(false);getCurrentPage('Contracted Services Provider(s)')}}>CONTINUE</button>
+                <button className={style.newContractOutlinedButton} onClick={()=>addContract('SAVE_IN_PROGRESS')}>SAVE IN-PROGRESS</button>
+                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {addContract('CONTINUE')}}>CONTINUE</button>
             </div>
             {addNewManagerDialog && (
                 <AddNewContractManager getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUserData} contractId={contractIdFromActive}/>

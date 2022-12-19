@@ -41,8 +41,6 @@ const ServiceDays = ({setMetaData, selectedService}) => {
       Object.keys(serviceDays || [])?.filter(data=>weekDays?.map(days=>days)?.includes(data) && serviceDays[data] === true)?.map(data=>{
         weekDaysCount = weekDaysCount + 52;
       });
-      setDaysCount({...daysCount, weekdays: weekDaysCount, weekends: weekEndsCount});
-
     }, [serviceDays])
 
     const onWeekDaysCheck = (checked) => {
@@ -110,7 +108,7 @@ const ServiceDays = ({setMetaData, selectedService}) => {
                     />
                 </div>
                 <div className={style.marginLeft10}>
-                    <div className={`${style.greenBase} ${style.alignCenter}`}>{daysCount?.weekdays + daysCount?.weekends}</div>
+                    <div className={`${style.greenBase} ${style.alignCenter}`}>{parseInt(daysCount?.weekdays) + parseInt(daysCount?.weekends)}</div>
                     <div className={style.totalTextStyle}>TOTAL</div>
                 </div>
             </div>
