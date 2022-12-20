@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, Checkbox, Tag, Dialog, Classes } from '@blueprintjs/core';
+import { InputGroup, Tag, Dialog, Classes } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
-import { FormatPhoneNumber } from './../../utils/formatting';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import {POST, GET, PUT, TenantID} from './../dataSaver';
@@ -450,7 +449,6 @@ const ContractorBusinessEntity = ({getViewPage5, getCurrentPage, selectContractI
                             </div>
                           </div>
                         </div>
-                    </>
                 )}
 
                 {

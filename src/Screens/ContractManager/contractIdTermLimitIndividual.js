@@ -39,6 +39,7 @@ const ContractIdTermLimitIndividual = (
    method,
    isMultiSiteEntity,
    getSelectedField}) => {
+    const [contractAccessPrivilege, setContractAccessPrivilege] = useState(false);
     const [calendarStart, setCalendarStart] = useState(false);
     const [calendarEnd, setCalendarEnd] = useState(false);
     const [calendarEffective, setCalendarEffective] = useState(false);
@@ -216,7 +217,7 @@ const ContractIdTermLimitIndividual = (
     return siteData;
   }
 
-  const addContract = async () => {
+  const addContract = async (buttonType) => {
     if (selectedContractContinuationPolicy === 'Select Value') {
       ErrorToaster('Select Contract Continuation Policy');
       return;
@@ -313,15 +314,12 @@ const ContractIdTermLimitIndividual = (
        ErrorToaster('Unexpected Error Updating Contract');
      })
      }
-     if(buttonType === 'CONTINUE'){
+     if(buttonType === 'Continue'){
        getViewPage2(true);
        getViewPage1(false);
        getCurrentPage('Contracted Services Provider(s)')
      }
-
     }
-
-  }
 
   const onSelect = (selectedItem) => {
     setSelectContractManager(selectedItem);
@@ -963,63 +961,12 @@ const ContractIdTermLimitIndividual = (
                               </div>
                             </div>
                         )}
-                    </div>
-                </div>
-            </div>
-            <div className={`${style.floatRight} ${style.marginTop20}`}>
-                <button className={style.newContractOutlinedButton} onClick={()=>addContract('SAVE_IN_PROGRESS')}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={()=> {addContract('CONTINUE')}}>CONTINUE</button>
-            </div>
-            {selectedContractContinuationPolicy === "AUTORENEWAL" && (
-              <div className={`${style.renewalBoxStyle}`}>
-                <div className={`${style.renewalBoxGrid}`} onFocus={() => { getSelectedField('Auto Renewal - Auto Renewal Term') }}>
-                  <div className={style.marginTop}>Auto Renewal Term*</div>
-                  <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e) => setAutoRenewal({ ...autoRenewal, renewalTerm: e })} />
-                  <select
-                    name="class"
-                    id="Class"
-                    value={autoRenewal.calendar}
-                    onChange={(e) => setAutoRenewal({ ...autoRenewal, calendar: e.target.value })}
-                    className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                    <option value="WEEKS" >
-                      Weeks
-                    </option>
-                    <option value="MONTHS" >
-                      Months
-                    </option>
-                  </select>
-                </div>
-                <div className={`${style.renewalBoxGrid}`} onFocus={() => { getSelectedField('Auto Renewal - Allowable Auto Renewal Terms') }}>
-                  <div className={style.marginTop10}>Allowable Auto Renewal Terms*</div>
-                  <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm} onChange={(e) => setAutoRenewal({ ...autoRenewal, allowableRenewalTerm: e })} />
-                </div>
-              </div>
-            )}
-            {(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
-              || selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
-              || selectedContractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION") && (
-                <div className={`${style.renewalRemainderBoxStyle}`}
-                  onFocus={() => {
-                    getSelectedField(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
-                      ? "Written Contract Extension - Set Renewal Reminder"
-                      : selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
-                        ? "New Contract on Expiration - Set Renewal Reminder"
-                        : "One Time Contract - Set Renewal Reminder")
-                  }}>
-                  {reminderFields}
-                  <div className={`${style.renewalBoxGrid}`}>
-                    {renewalReminder?.length <= 2 && (
-                      <button className={`${style.addMoreButton} ${style.selectedColor} ${style.cursorPointer}`} onClick={addReminder}>ADD MORE</button>
-                    )}
-                  </div>
-                </div>
-              )}
           </div>
         </div>
       </div>
       <div className={`${style.floatRight} ${style.marginTop20}`}>
-        <button className={style.newContractOutlinedButton} onClick={() => addContract()}>SAVE IN-PROGRESS</button>
-        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { addContract(); getViewPage2(true); getViewPage1(false); getCurrentPage('Contracted Services Provider(s)') }}>CONTINUE</button>
+        <button className={style.newContractOutlinedButton} onClick={() => addContract('Save In Progress')}>SAVE IN-PROGRESS</button>
+        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { addContract('Continue'); getViewPage2(true); getViewPage1(false); getCurrentPage('Contracted Services Provider(s)') }}>CONTINUE</button>
       </div>
       {addNewManagerDialog && (
         <AddNewContractManager getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUserData} contractId={contractIdFromActive} />

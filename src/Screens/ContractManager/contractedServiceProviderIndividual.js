@@ -15,7 +15,6 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SuffixList from './../../Components/SuffixList';
 import ProviderTypeList from './../../Components/ProviderTypeList';
 import FunctionalTitleList from './../../Components/FunctionalTitleList';
-import { FormatPhoneNumber } from './../../utils/formatting';
 
 import style from './index.module.scss';
 
