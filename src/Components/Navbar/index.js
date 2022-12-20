@@ -102,7 +102,7 @@ const Navbar = () => {
             setIsContractPerformanceAvailable(true);
             setIsPaymentsAvailable(true);
         }
-        
+
     }, [currentUserRoles])
 
     // const menuRef = useRef(null);
@@ -186,6 +186,8 @@ const Navbar = () => {
         })
     };
 
+    let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' : '/entitySitePortal';
+
     return(
         <div className={style.navbarStyle}>
             <div className={style.spaceBetween}>
@@ -194,21 +196,23 @@ const Navbar = () => {
                   // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
                 }
                 <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
-                <Link to={'/entitySitePortal'} className={style.noFontStyle}>
-                    <div className={style.menuStyle}>
-                        <p>HOME</p>
+                <Link to={homeLink} className={style.noFontStyle}>
+                    <div className={`${style.menuStyle} ${(window.location.pathname.includes(homeLink)) && style.activeMenuColor}`}>
+                        <p>HOME - {currentUserRoles?.[0]?.toUpperCase()}</p>
                     </div>
                 </Link>
 
-                {isContractManager && (
-                    <Link to={'/contracts'} className={style.noFontStyle}>
-                        <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
-                            <p>CONTRACT MANAGER</p>
-                        </div>
-                    </Link>
-                )}
+                {
+                //   isContractManager && (
+                //     <Link to={'/contracts'} className={style.noFontStyle}>
+                //         <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
+                //             <p>CONTRACT MANAGER</p>
+                //         </div>
+                //     </Link>
+                // )
+              }
                 <div>
-                    <div className={`${style.menuStyle} ${(window.location.pathname.includes("/reports")) && style.activeMenuColor}`} 
+                    <div className={`${style.menuStyle} ${(window.location.pathname.includes("/reports")) && style.activeMenuColor}`}
                     ref={popoverAnchor}
                     onMouseEnter={(e) => handleClick(e)} onMouseLeave={() => handleClose()} aria-owns={open ? 'mouse-over-popover' : undefined}
                     aria-haspopup="true">
@@ -267,7 +271,7 @@ const Navbar = () => {
                 </div>
                 {isEntityLevelAdmin && (
                     <div>
-                        <div className={`${style.menuStyle} ${(window.location.pathname === "/user" || window.location.pathname === "/welcome" || window.location.pathname === "/tasksAndAlerts") && style.activeMenuColor}`} 
+                        <div className={`${style.menuStyle} ${(window.location.pathname === "/user" || window.location.pathname === "/welcome" || window.location.pathname === "/tasksAndAlerts") && style.activeMenuColor}`}
                         ref={popoverAnchorTools}
                         onMouseEnter={(e) => handleClickTools(e)} onMouseLeave={() => handleCloseTools()} aria-owns={openTools ? 'mouse-over-popover' : undefined}
                         aria-haspopup="true">
@@ -299,7 +303,7 @@ const Navbar = () => {
                     </div>
                 )}
                 <div>
-                    <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} 
+                    <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`}
                         ref={popoverAnchorHelp}
                         onMouseEnter={(e) => handleClickHelp(e)} onMouseLeave={() => handleCloseHelp()} aria-owns={'mouse-over-popover'}
                         aria-haspopup="true">

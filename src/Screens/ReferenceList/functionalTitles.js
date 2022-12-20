@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from '../../Components/Navbar';
+import Navbar from "../../Components/Navbar";
 import SideBar from "./../../Components/Sidebar";
 import { Icon, Intent } from "@blueprintjs/core";
 import style from "./index.module.scss";
@@ -16,216 +16,239 @@ import DeleteHcRow from "./../../images/deleteHcRow.png";
 import EditHcRow from "./../../images/editHcRow.png";
 import { GET, DELETE } from "./../dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
+import DeleteConfirmation from "../../Components/DeleteConfirmation";
 
-const FunctionalTitles = () => {
-  const [showAddFunctionalTitlesDialog, setAddFunctionalTitlesDialog] =
-    useState(false);
+const FunctionalTitles = ({
+  getAddEntityDialog,
+  showAddEntityDialog,
+  isEdit,
+  setIsEdit,
+}) => {
   const [allData, setAllData] = useState([]);
+  const [clicked, setClicked] = useState(0);
+  const [isClicked, setIsClicked] = useState(0);
+  const [selectedTitle, setSelectedTitle] = useState("");
+  const [selectedEntity, setSelectedEntity] = useState({});
+  const [selectedFunctional, setSelectedFunctional] = useState({});
+  const [getEntityDataList, setGetEntityDataList] = useState([]);
+  const [industryData, setIndustryData] = useState({})
+  const [entityData, setEntityData] = useState({})
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deleteEntityId, setDeleteEntityId] = useState("");
 
-  const getAddFunctionalTitlesDialog = (value) => {
-    setAddFunctionalTitlesDialog(value);
+  const entityAllData = async (industry) => {
+    const { data: entities } = await GET(
+      `entity-service/entityTypeMaster?industryId=${industry.id}`
+    );
+    const reconstructedEntities = await Promise.all(
+      entities.map(siteTypeAllData)
+    );
+    return await { ...industry, entities: reconstructedEntities };
+  };
+
+  const siteTypeAllData = async (siteTypeId) => {
+    const { data: CSPType } = await GET(
+      `entity-service/contractedServiceProviderMaster?siteTypeId=${siteTypeId.id}`
+    );
+    return await { ...siteTypeId, CSP: CSPType };
   };
 
   const getAllData = async () => {
-    const { data: data } = await GET(`/industryMaster`)
-    console.log(data)
-    setAllData([]);
-    data.forEach(async (industry) => {
-      const { data: entities } = await GET(`/entityTypeMaster?industryId=${industry.id}`)
-      console.log(entities)
-      entities.forEach(async (siteTypeId) => {
-        const { data: CSPType } = await GET(`/contractedServiceProviderMaster?siteTypeId=${siteTypeId.id}`)
-        console.log("Ok", CSPType)
-        setAllData((prev) => [...prev, { industry, entities, CSPType }]);
-        console.log("all", allData)
-      })
-    });
-
-  }
-
-  const getFuntionalTitileData = async (contractPID) => {
-    const { data: data } = await GET(
-      `/functionalTitlesForCSPTypeMaster?contractedServiceProviderTypeId=${contractPID}`
-    );
-    console.log(data);
+    const { data: data } = await GET(`entity-service/industryMaster`);
+    let allEntries = await Promise.all(data.map(entityAllData));
+    setAllData(allEntries);
   };
 
+  const handleToggle = (index, data) => {
+    if (clicked === index) {
+      return setClicked("0");
+    }
+    setClicked(index);
+    setIndustryData(data)
+  };
 
-  const handleFileDeletion = async (id) => {
-    await DELETE(`/functionalTitlesForCSPTypeMaster/${id}`)
+  const handleToggleCsp = (index, data) => {
+    if (isClicked === index) {
+      return setIsClicked("0");
+    }
+    setIsClicked(index);
+    setSelectedTitle(data?.CSP?.[0].contractedServiceProviderType);
+    setSelectedEntity(data.CSP[0])
+    setEntityData(data)
+  };
+
+  const EntityDefaultSet = (Data) => {
+    let updatedData = [...Data];
+    setIndustryData(updatedData?.[0])
+    updatedData?.[0]?.entities.some((list, index) => {
+      setEntityData(list?.type)
+      if (list.CSP.length > 0) {
+        setIsClicked(index);
+        setSelectedTitle(list.CSP[0]?.contractedServiceProviderType);
+        setSelectedEntity(list.CSP[0])
+        return true;
+      }
+    });
+  };
+
+  const getFuntionalTitleData = async (contractPID) => {
+    const { data: functionalData } = await GET(
+      `entity-service/functionalTitlesForCSPTypeMaster?contractedServiceProviderTypeId=${contractPID}`
+    );
+    setGetEntityDataList(functionalData);
+  };
+
+  const deleteHandler = (data) => {
+    setDeleteEntityId(data?.id);
+    setShowDeleteConfirmation(true);
+  };
+
+  const getShowDeleteConfirmation = (value) => {
+    setShowDeleteConfirmation(value);
+  };
+
+  const getDeleteConfirmation = (value) => {
+    if (value) {
+      deleteEntity(deleteEntityId);
+    }
+  };
+
+  const deleteEntity = async (id) => {
+    await DELETE(`entity-service/functionalTitlesForCSPTypeMaster/${id}`)
       .then((response) => {
-        SuccessToaster("Document Deleted Successfully");
+        SuccessToaster("FunctionlTitle Deleted Successfully");
+        getFuntionalTitleData();
       })
-      .then((error) => {
-        ErrorToaster("Unexpected Error occured deleting document");
+      .catch((error) => {
+        ErrorToaster(error);
       });
   };
 
   useEffect(() => {
-    getAllData()
-    // getFuntionalTitileData();
-    // handleFileDeletion();
+    getAllData();
   }, []);
+
+  useEffect(() => {
+    EntityDefaultSet(allData);
+  }, [allData]);
+
+  useEffect(() => {
+    getFuntionalTitleData(selectedEntity?.id);
+  }, [selectedEntity]);
 
   return (
     <Fragment>
       <div className={style.departmentCardColumnsGrid}>
         <div>
-          {allData.map((industryType) => (
-            <>
-              <div
-                className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
-              >
-                <img
-                  src={TransparentFolder}
-                  className={`${style.colorFileStyle2} ${style.marginLeft15}`} alt=""
-                />
-                <p
-                  className={`${style.healthCareHeaderTextStyle} ${style.textColorBlue} `}
+          {allData?.map((data, index) => {
+            return data?.entities.length !== 0 ? (
+              <>
+                <div
+                  className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween} ${style.marginTop10}`}
+                  key={index}
+                  onClick={() => handleToggle(index, data)}
                 >
-                  {industryType.industry.industry}
-                </p>
-                <img
-                  src={ArrowDown}
-                  className={`${style.colorFileStyle3} ${style.marginRight}`} alt=""
-                />
-              </div>
-              {
-                industryType.entities.map((entityType) => (
-                  <>
-                    <div
-                      className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
-                    >
-                      <img
-                        src={TransparentFolder}
-                        className={`${style.colorFileStyle2} ${style.marginLeft15}`} alt=""
-                      />
-                      <p className={style.healthCareHeaderTextStyle2}>
-                        HOSPITAL/ACUTE CARE FACILITY
-                      </p>
-                      <img
-                        src={ArrowDown}
-                        className={`${style.colorFileStyle3} ${style.marginRight}`} alt=""
-                      />
-                    </div>
-                  </>
-                ))
-              }
-            </>
-          ))}
-
-          <div className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}>
-            <img src={TransparentFolder} className={`${style.colorFileStyle2} ${style.marginLeft15}`} alt="" />
-            <p className={style.healthCareHeaderTextStyle}>HEALTHCARE</p>
-            <img src={ArrowDown} className={`${style.colorFileStyle2} ${style.marginRight}`} alt="" />
-          </div>
-
-          <div className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween}`}>
-            <img src={TransparentFolder} className={`${style.colorFileStyle2} ${style.marginLeft15}`} alt="" />
-            <p className={style.healthCareHeaderTextStyle}> HOSPITAL / ACUTE CARE FACILITY</p>
-            <img src={ArrowDown} className={`${style.colorFileStyle2} ${style.marginRight}`} alt="" />
-          </div>
-
-          <div
-            className={`${style.healthCareListCardStyle}  ${style.marginTop15} ${style.HealthCareListBackground2} ${style.spaceBetween}`}
-          >
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              Physician / Doctor
-            </p>
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              5
-            </p>
-          </div>
-          <div
-            className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
-          >
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              Dental Professional
-            </p>
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              0
-            </p>
-          </div>
-          <div
-            className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
-          >
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              Allied Health Professionals
-            </p>
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              0
-            </p>
-          </div>
-          <div
-            className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
-          >
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              Administration Staff
-            </p>
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              0
-            </p>
-          </div>
-          <div
-            className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
-          >
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              Advanced Care Staff
-            </p>
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              0
-            </p>
-          </div>
-          <div
-            className={`${style.healthCareListCardStyle} ${style.spaceBetween} ${style.marginTop}`}
-          >
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              Nursing Professional
-            </p>
-            <p
-              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-            >
-              0
-            </p>
-          </div>
+                  <img
+                    src={TransparentFolder}
+                    className={`${style.colorFileStyle2} ${style.marginLeft15}`}
+                    alt=""
+                  />
+                  <p className={style.healthCareHeaderTextStyle}>
+                    {data.industry}
+                  </p>
+                  <img
+                    src={ArrowDown}
+                    className={`${style.colorFileStyle2} ${style.marginRight}`}
+                    alt=""
+                  />
+                </div>
+                <div
+                  className={
+                    clicked === index
+                      ? `${style.listWrapper} ${style.open}`
+                      : `${style.listWrapper}`
+                  }
+                >
+                  {data?.entities?.map((entity, indx) => {
+                    return entity.CSP.length !== 0 ? (
+                      <>
+                        <div
+                          className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween} ${style.marginTop10}`}
+                          onClick={() => handleToggleCsp(indx, entity)}
+                        >
+                          <img
+                            src={TransparentFolder}
+                            className={`${style.colorFileStyle2} ${style.marginLeft15}`}
+                            alt=""
+                          />
+                          <p className={style.healthCareHeaderTextStyle3}>
+                            {" "}
+                            {entity.type}
+                          </p>
+                          <img
+                            src={ArrowDown}
+                            className={`${style.colorFileStyle2} ${style.marginRight}`}
+                            alt=""
+                          />
+                        </div>
+                        <div
+                          className={
+                            isClicked === indx
+                              ? `${style.listWrapper} ${style.open}`
+                              : `${style.listWrapper}`
+                          }
+                        >
+                          {entity?.CSP?.map((siteType) => {
+                            return (
+                              <div
+                                className={
+                                  siteType?.contractedServiceProviderType ===
+                                    selectedTitle
+                                    ? `${style.healthCareListCardStyle}  ${style.marginTop10} ${style.HealthCareListBackground2} ${style.spaceBetween}`
+                                    : `${style.healthCareListCardStyle}  ${style.marginTop10}  ${style.spaceBetween}`
+                                }
+                                onClick={() => {
+                                  setSelectedTitle(
+                                    siteType.contractedServiceProviderType
+                                  );
+                                  setIsEdit(false);
+                                  setSelectedEntity(siteType);
+                                }}
+                              >
+                                <p
+                                  className={`${style.healthCareHeaderTextStyle2} ${style.marginTop10}`}
+                                >
+                                  {siteType.contractedServiceProviderType}
+                                </p>
+                                {/* <p className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}>
+                                            5
+                                          </p> */}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    ) : (
+                      <></>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <></>
+            );
+          })}
         </div>
+
         <div className={style.DepartmentEntityCardStyle}>
           <div className={style.tableHeaderFuntionalTitles}>
             <p></p>
             <p className={style.tableHeaderIndustriesFontStyle}>
-              HOSPITAL / ACUTE CARE FACILITY
+              ENTITY NAME
             </p>
-            <p className={style.tableHeaderIndustriesFontStyle}>
-              ALIAS 1
-            </p>
-            <p className={style.tableHeaderIndustriesFontStyle}>
-              ALIAS 2
-            </p>
-            <p className={style.tableHeaderIndustriesFontStyle}>
-              LAST UPDATED
-            </p>
+            <p className={style.tableHeaderIndustriesFontStyle}>ALIAS 1</p>
+            <p className={style.tableHeaderIndustriesFontStyle}>ALIAS 2</p>
+            <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
             <p></p>
           </div>
           <div className={style.healthCareIndustriesHeader}>
@@ -235,112 +258,63 @@ const FunctionalTitles = () => {
               className={`${style.colorFileStyle} ${style.marginLeft5}`}
             />
             <p className={style.tableHeaderIndustriesFontStyle}>
-              Hospital/Acute Care Facility (ACF)
+              {selectedEntity.contractedServiceProviderType}
             </p>
             <img
               src={EditHcFolder}
-              onClick={() => getAddFunctionalTitlesDialog(true)}
+              onClick={() => { getAddEntityDialog(true); setIsEdit(false) }}
               className={style.colorFileStyle}
               alt=""
             />
-            <img
-              src={DeleteHcFolder}
-              className={style.colorFileStyle}
-              alt=""
-            />
+            <img src={DeleteHcFolder} className={style.colorFileStyle} alt="" />
           </div>
-          <div
-            className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Anesthesiologist
-            </p>
-            <p></p>
-            <p></p>
-            <p className={style.tableDataFontStyle}>03-29-2022</p>
-            <img src={EditHcRow} className={style.colorFileStyle} alt="" />
-            <img
-              src={DeleteHcRow}
-              className={style.colorFileStyle} alt=""
-            />
-          </div>
-          <div
-            className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>Cardiologist</p>
-            <p></p>
-            <p></p>
-            <p className={style.tableDataFontStyle}>03-29-2022</p>
-            <img src={EditHcRow} className={style.colorFileStyle} alt="" />
-            <img
-              src={DeleteHcRow}
-              className={style.colorFileStyle} alt=""
-            />
-          </div>
-          <div
-            className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Chief Medical Information Officer
-            </p>
-            <p className={style.tableDataFontStyle}>
-              Chief Medical Informatics Officer
-            </p>
-            <p className={style.tableDataFontStyle}>
-              Clinical Informatics Officer
-            </p>
-            <p className={style.tableDataFontStyle}>03-29-2022</p>
-            <img src={EditHcRow} className={style.colorFileStyle} alt="" />
-            <img
-              src={DeleteHcRow}
-              className={style.colorFileStyle} alt=""
-            />
-          </div>
-          <div
-            className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Chief Medical Officer
-            </p>
-            <p></p>
-            <p></p>
-            <p className={style.tableDataFontStyle}>03-29-2022</p>
-            <img src={EditHcRow} className={style.colorFileStyle} alt="" />
-            <img
-              src={DeleteHcRow}
-              className={style.colorFileStyle} alt=""
-            />
-          </div>
-          <div
-            className={`${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Chief of Staff
-            </p>
-            <p></p>
-            <p></p>
-            <p className={style.tableDataFontStyle}>03-29-2022</p>
-            <img
-              src={EditHcFolder}
-              className={style.colorFileStyle} alt=""
-            />
-            <img
-              src={DeleteHcRow}
-              className={style.colorFileStyle} alt=""
-            />
-          </div>
+
+          {getEntityDataList?.map((data, index) => {
+            return (
+              <>
+                <div className={index % 2 === 0 ? `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}` : `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`} key={index}>
+                  <p></p>
+                  <p className={style.tableDataFontStyle}>{data?.title}</p>
+                  <p className={style.tableDataFontStyle}>{data?.alias1}</p>
+                  <p className={style.tableDataFontStyle}>{data?.alias2}</p>
+                  <p className={style.tableDataFontStyle}>03-29-2022</p>
+                  <img
+                    src={EditHcRow}
+                    className={style.colorFileStyle}
+                    alt=""
+                    onClick={() => {
+                      setIsEdit(true);
+                      getAddEntityDialog(true)
+                      setSelectedFunctional(data)
+                    }}
+                  />
+                  <img
+                    src={DeleteHcRow}
+                    className={style.colorFileStyle}
+                    alt=""
+                    onClick={() => { deleteHandler(data) }}
+                  />
+                </div>
+              </>
+            );
+          })}
         </div>
       </div>
-      {showAddFunctionalTitlesDialog && (
-        <AddFunctionalTitles
-          getAddFunctionalTitlesDialog={getAddFunctionalTitlesDialog}
-        />
+
+      {showAddEntityDialog && (
+        <AddFunctionalTitles getAddEntityDialog={getAddEntityDialog} getFuntionalTitleData={getFuntionalTitleData} selectedEntity={selectedEntity} isEdit={isEdit} selectedFunctional={selectedFunctional} IndustryData={industryData} EntityData={entityData} />
       )}
+
+      {
+        showDeleteConfirmation && (
+          <DeleteConfirmation
+            getShowDeleteConfirmation={getShowDeleteConfirmation}
+            getDeleteConfirmation={getDeleteConfirmation}
+            confirmationText="Do you want to delete this Functional Title?"
+          />
+        )
+      }
+
     </Fragment>
   );
 };

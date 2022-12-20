@@ -73,7 +73,7 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
                             <div>
                                 <img src={DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract' ? '' : style.reducedOpacity}`} />
                                 <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
-                                Multiple Contractor Contract
+                                Multiple Contractors Contract
                                 </div>
                             </div>
                         </div>

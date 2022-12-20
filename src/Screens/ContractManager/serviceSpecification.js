@@ -3,6 +3,7 @@ import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import CompletedIcon from './../../images/completedIcon.png';
 import { GET, PUT } from './../dataSaver';
 import LoadingScreen from '../../Components/LoadingScreen';
+import RedirectingPopUp from './redirectingPopUp';
 
 import style from './index.module.scss';
 import AddServiceProvided from './addServiceToBeProvided';
@@ -125,10 +126,10 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
         </div> */}
           </div>
           <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-            <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Documentation Proof Required') }}>BACK</button>
+            <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contractor Business Entity') }}>BACK</button>
             <div>
               <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
-              <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => getViewPage6(true)}>CONTINUE</button>
+              <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => {getViewPage6(true); getCurrentPage('Timesheet Submission Terms');}}>CONTINUE</button>
             </div>
           </div>
           {
@@ -155,24 +156,9 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
           </Dialog>
         </div>
       ) : (
-        <>
-          <div className={style.cloneBlockStyle}></div>
-          <Dialog isOpen={true} className={`${style.cloneDialog}`} canOutsideClickClose={false}>
-            <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
-              <div className={style.spaceBetween}>
-                <p className={style.extensionStyle}>NO USERS FOUND</p>
-              </div>
-              <div className={style.extensionBorder}></div>
-              <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
-              No Contracted Service Provider Is Found.
-              </p>
-              <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => getCurrentPage('Contracted Services Provider(s)')}>ADD CONTRACTOR</button>
-              </div>
-              <br />
-            </div>
-          </Dialog>
-        </>
+        (
+          <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Contracted Services Provider(s)'} title={'NO USERS FOUND'} description={'No Contracted Service Provider Is Found.'} buttonText={'ADD CONTRACTOR'}/>
+        )
       )}
     </>
   )

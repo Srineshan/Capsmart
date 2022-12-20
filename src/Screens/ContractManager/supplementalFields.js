@@ -8,13 +8,13 @@ import AddIcon from '@mui/icons-material/Add';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
+import { TimePicker } from "@blueprintjs/datetime";
+import {GetDateFromHours} from './../../utils/formatting';
 
 import style from './index.module.scss';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 
 const SupplementalFields = ({getMetaData, services, serviceSelected, editService}) => {
-    const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
-    const [workingPeriodTo, setWorkingPeriodTo] = useState('');
     const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
     const [totalContractedService, setTotalContractedService] = useState(0);
@@ -42,8 +42,8 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
         sessionDuration:temp[index]?.duration?.hours,
         totalSession:temp[index]?.totalSessions?.value,
         totalSessionFrequency:temp[index]?.totalSessions?.frequency,
-        workingTimeFrom:temp[index]?.workingPeriod?.from,
-        workingTimeTo:temp[index]?.workingPeriod?.to,
+        workingTimeFrom:GetDateFromHours(temp[index]?.workingPeriod?.from?.toString() || ''),
+        workingTimeTo:GetDateFromHours(temp[index]?.workingPeriod?.to?.toString() || ''),
         serviceDays:temp[index]?.serviceDays,
       });
     }
@@ -59,8 +59,8 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
           totalSessionFrequency:'YEAR',
           sessionAmount:'',
           sessionDuration:'0',
-          workingTimeFrom:'',
-          workingTimeTo:'',
+          workingTimeFrom:new Date(),
+          workingTimeTo:new Date(),
           serviceDays:{
             tuesday: false,
             wednesday: false,
@@ -91,7 +91,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
           billableService:serviceSelected?.billableService,
           rateType:serviceSelected?.rateType,
           sessionAmount:serviceSelected?.payableAmount?.value,
-          sessionDuration:serviceSelected?.duration?.hours,
+          sessionDuration:serviceSelected?.duration?.hours || '0',
           totalSession:serviceSelected?.totalSessions?.value,
           totalSessionFrequency:serviceSelected?.totalSessions?.frequency,
           workingTimeFrom:serviceSelected?.workingPeriod?.from,
@@ -256,6 +256,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                             <div className={`${style.threeFieldWidth}`}>
                                 <TextField
                                     size="small"
+                                    disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
@@ -264,7 +265,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                                 />
                             </div>
                             <div className={style.verticalAlignCenter}>
-                                <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>{metadata?.sessionAmount / metadata?.totalSession || 0} per Hour (Pro Rata)</p>
+                                <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>{(metadata?.sessionAmount / metadata?.totalSession || 0).toFixed(2)} per Hour (Pro Rata)</p>
                             </div>
                         </div>
                     </div>
@@ -277,18 +278,19 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
                         <div className={style.displayInRow}>
-                            <InputGroup
-                                placeholder="HH:MM"
-                                onChange={(e)=>handleValueChange('workingTimeFrom',e.target.value)}
-                                value={metadata?.workingTimeFrom}
-                                className={style.threeFieldWidth}
+                            <TimePicker
+                                useAmPm={false}
+                                onChange={(e)=>{
+                                handleValueChange('workingTimeFrom',e);
+                              }}
+                              value={new Date(metadata?.workingTimeFrom)}
                             />
-                            <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                            <InputGroup
-                                placeholder="HH:MM"
-                                onChange={(e)=>handleValueChange('workingTimeTo',e.target.value)}
-                                value={metadata?.workingTimeTo}
-                                className={style.threeFieldWidth}
+                            <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                            <TimePicker
+                                useAmPm={false}
+                                onChange={(e)=>handleValueChange('workingTimeTo',e)}
+                                value={new Date(metadata?.workingTimeTo)}
+                                minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                             />
                         </div>
                     </div>

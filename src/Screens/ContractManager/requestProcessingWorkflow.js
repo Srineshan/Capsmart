@@ -96,7 +96,6 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
             await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
                 .then(response => {
                     updateWorkflow(response?.data, workFlowName, type);
-                    SuccessToaster('Workflow Updated Successfully');
                 })
                 .catch(error => {
                     ErrorToaster('Unexpected Error');
@@ -105,7 +104,7 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
         else {
             await PUT(`timesheet-management-service/workflow/${id}`, data)
                 .then(response => {
-                    SuccessToaster('Workflow Updated Successfully');
+                    console.log('Success!');
                 })
                 .catch(error => {
                     ErrorToaster('Unexpected Error');
@@ -126,7 +125,7 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
         if (type === 'AddOn') {
             await PUT(`contract-managment-service/contracts/${contractId}/addOnRequestWorkFlow`, data)
                 .then(response => {
-                    SuccessToaster('AddOn Request Workflow Updated Successfully');
+                  console.log('Workflow Updated Successfully');
                 })
                 .catch(error => {
                     ErrorToaster('Unexpected Error');
@@ -134,7 +133,7 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
         } else {
             await PUT(`contract-managment-service/contracts/${contractId}/absenceRequestWorkFlow`, data)
                 .then(response => {
-                    SuccessToaster('Absence Request Workflow Updated Successfully');
+                    console.log('Workflow Updated Successfully');
                 })
                 .catch(error => {
                     ErrorToaster('Unexpected Error');
@@ -185,33 +184,7 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
             let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, activeTab);
             await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
             await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
-    }
-
-    const handleContinue = async (workflowId) => {
-        let temp = timesheetProcessingWorkflow;
-        temp?.push({
-            "timesheetLabel": {
-                "label": activeTab
-            },
-            "workFlowTemplate": {},
-            "workFlowDescription": {},
-            "workFlow": {
-                "id": workflowId,
-                "workFlowName": {
-                    "name": activeTab
-                }
-            },
-            "customWorkFlow": false
-        })
-        let data = { "workFlowDetails": temp }
-        await PUT(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`, data)
-            .then(response => {
-                SuccessToaster('Timesheet Processing Workflow Updated Successfully');
-            })
-            .catch(error => {
-                ErrorToaster('Unexpected Error');
-            })
-
+            SuccessToaster('Workflow Updated Successfully');
     }
 
     return (
