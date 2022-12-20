@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { InputGroup, EditableText } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
@@ -9,12 +10,20 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import { TimePicker } from "@blueprintjs/datetime";
-import {GetDateFromHours} from './../../utils/formatting';
+import { GetDateFromHours } from './../../utils/formatting';
 
 import style from './index.module.scss';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 
-const SupplementalFields = ({getMetaData, services, serviceSelected, editService}) => {
+const switchTheme = createTheme({
+    palette: {
+        primary: {
+            main: '#7165E3',
+        },
+    },
+});
+
+const SupplementalFields = ({ getMetaData, services, serviceSelected, editService }) => {
     const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
     const [totalContractedService, setTotalContractedService] = useState(0);
@@ -22,46 +31,47 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
 
     const [supplementServiceName, setSupplementServiceName] = useState('');
     let specificDedicatedHoursList = [];
-    services?.filter(data=>['Clinic Blocks','Surgery Session','On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data=>{
-      let activityName = data?.activityType?.activityType;
-      let activities = data?.activities?.map(data=>data?.activity);
-      let result = `${activityName} (${activities?.map(data=>data)?.join(', ')})`
-      specificDedicatedHoursList.push(result);
+    services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => {
+        let activityName = data?.activityType?.activityType;
+        let activities = data?.activities?.map(data => data?.activity);
+        let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
+        specificDedicatedHoursList.push(result);
     });
 
     const selectedHours = (index) => {
-      let temp = services?.filter(data=>['Clinic Blocks','Surgery Session','On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data=>data);
-      let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
-      let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data=>data?.activity)?.join('-');
-      setMetadata({...metadata,
-        dedicatedHoursActivityType:dedicatedHoursActivityType,
-        dedicatedHoursPerformingActivity:dedicatedHoursPerformingActivity,
-        billableService:temp[index]?.billableService,
-        rateType:temp[index]?.rateType,
-        sessionAmount:temp[index]?.payableAmount?.value,
-        sessionDuration:temp[index]?.duration?.hours,
-        totalSession:temp[index]?.totalSessions?.value,
-        totalSessionFrequency:temp[index]?.totalSessions?.frequency,
-        workingTimeFrom:GetDateFromHours(temp[index]?.workingPeriod?.from?.toString() || ''),
-        workingTimeTo:GetDateFromHours(temp[index]?.workingPeriod?.to?.toString() || ''),
-        serviceDays:temp[index]?.serviceDays,
-      });
+        let temp = services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => data);
+        let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
+        let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
+        setMetadata({
+            ...metadata,
+            dedicatedHoursActivityType: dedicatedHoursActivityType,
+            dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
+            billableService: temp[index]?.billableService,
+            rateType: temp[index]?.rateType,
+            sessionAmount: temp[index]?.payableAmount?.value,
+            sessionDuration: temp[index]?.duration?.hours,
+            totalSession: temp[index]?.totalSessions?.value,
+            totalSessionFrequency: temp[index]?.totalSessions?.frequency,
+            workingTimeFrom: GetDateFromHours(temp[index]?.workingPeriod?.from?.toString() || ''),
+            workingTimeTo: GetDateFromHours(temp[index]?.workingPeriod?.to?.toString() || ''),
+            serviceDays: temp[index]?.serviceDays,
+        });
     }
 
     const [metadata, setMetadata] = useState({
-          dedicatedHoursSpecified:false,
-          dedicatedHoursActivityType:'',
-          dedicatedHoursPerformingActivity:'',
-          supplementServiceName:[],
-          billableService:true,
-          rateType:'HOURLY',
-          totalSession:'0',
-          totalSessionFrequency:'YEAR',
-          sessionAmount:'',
-          sessionDuration:'0',
-          workingTimeFrom:new Date(),
-          workingTimeTo:new Date(),
-          serviceDays:{
+        dedicatedHoursSpecified: false,
+        dedicatedHoursActivityType: '',
+        dedicatedHoursPerformingActivity: '',
+        supplementServiceName: [],
+        billableService: true,
+        rateType: 'HOURLY',
+        totalSession: '0',
+        totalSessionFrequency: 'YEAR',
+        sessionAmount: '',
+        sessionDuration: '0',
+        workingTimeFrom: new Date(),
+        workingTimeTo: new Date(),
+        serviceDays: {
             tuesday: false,
             wednesday: false,
             thursday: false,
@@ -71,67 +81,68 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
             weekDays: false,
             weekEnds: false,
             monday: false
-          },
-          weekdaysCount:'0',
-          weekendsCount:'0'
-        })
+        },
+        weekdaysCount: '0',
+        weekendsCount: '0'
+    })
 
-        useEffect(()=>{
-          if(editService){
+    useEffect(() => {
+        if (editService) {
             setSelectedValues();
-          }
-        }, [serviceSelected]);
-
-        const setSelectedValues = () => {
-          setMetadata({...metadata,
-          dedicatedHoursSpecified:serviceSelected?.dedicatedHoursSpecified,
-          dedicatedHoursActivityType:serviceSelected?.hoursBorrowed?.activityType?.activityType,
-          dedicatedHoursPerformingActivity:serviceSelected?.hoursBorrowed?.performingActivity?.activity,
-          supplementServiceName:serviceSelected?.activities?.map(data=>data?.activity),
-          billableService:serviceSelected?.billableService,
-          rateType:serviceSelected?.rateType,
-          sessionAmount:serviceSelected?.payableAmount?.value,
-          sessionDuration:serviceSelected?.duration?.hours || '0',
-          totalSession:serviceSelected?.totalSessions?.value,
-          totalSessionFrequency:serviceSelected?.totalSessions?.frequency,
-          workingTimeFrom:serviceSelected?.workingPeriod?.from,
-          workingTimeTo:serviceSelected?.workingPeriod?.to,
-          serviceDays:serviceSelected?.serviceDays,
-          });
         }
+    }, [serviceSelected]);
+
+    const setSelectedValues = () => {
+        setMetadata({
+            ...metadata,
+            dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
+            dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
+            dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
+            supplementServiceName: serviceSelected?.activities?.map(data => data?.activity),
+            billableService: serviceSelected?.billableService,
+            rateType: serviceSelected?.rateType,
+            sessionAmount: serviceSelected?.payableAmount?.value,
+            sessionDuration: serviceSelected?.duration?.hours || '0',
+            totalSession: serviceSelected?.totalSessions?.value,
+            totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
+            workingTimeFrom: serviceSelected?.workingPeriod?.from,
+            workingTimeTo: serviceSelected?.workingPeriod?.to,
+            serviceDays: serviceSelected?.serviceDays,
+        });
+    }
 
 
     const limit5 = 5;
 
-    useEffect(()=>{
-      getMetaData(metadata)
-    },[metadata])
-    console.log('metadata',metadata);
+    useEffect(() => {
+        getMetaData(metadata)
+    }, [metadata])
+    console.log('metadata', metadata);
 
     const handleValueChange = (name, value) => {
-      if(name === 'dedicatedHoursSpecified' && value){
-        setMetadata({...metadata, dedicatedHoursActivityType:'', dedicatedHoursPerformingActivity:'', dedicatedHoursSpecified:value});
-      }else{
-        setMetadata({...metadata, [name]:value});
-      }
+        if (name === 'dedicatedHoursSpecified' && value) {
+            setMetadata({ ...metadata, dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+        } else {
+            setMetadata({ ...metadata, [name]: value });
+        }
     }
 
     const getServiceDaysMetadata = (daysCount, serviceDays) => {
-      setMetadata({...metadata, serviceDays:serviceDays, weekdaysCount:daysCount?.weekdays, weekendsCount:daysCount?.weekends})
+        setMetadata({ ...metadata, serviceDays: serviceDays, weekdaysCount: daysCount?.weekdays, weekendsCount: daysCount?.weekends })
     }
 
     const addSupplementService = () => {
-      let temp = metadata?.supplementServiceName;
-      if(!temp?.includes(supplementServiceName)){
-        temp?.push(supplementServiceName);
-        setMetadata({...metadata, supplementServiceName: temp});
-      }
-      setSupplementServiceName('');
+        let temp = metadata?.supplementServiceName;
+        if (!temp?.includes(supplementServiceName)) {
+            temp?.push(supplementServiceName);
+            setMetadata({ ...metadata, supplementServiceName: temp });
+        }
+        setSupplementServiceName('');
     }
 
     const removeSupplementServiceName = (index) => {
-      let temp = metadata?.supplementServiceName;
-      setMetadata({...metadata, supplementServiceName: temp?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data)});
+        let temp = metadata?.supplementServiceName;
+        setMetadata({ ...metadata, supplementServiceName: temp?.filter((data, indexValue) => index !== indexValue)?.map(data => data) });
     }
 
     return (
@@ -139,25 +150,28 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Dedicated Hours For Supplemental Services*</div>
                 <div className={`${style.displayInRow} `}>
-                    <FormControlLabel
-                        control={
-                            <Switch className={`${style.textAlignLeft}`} checked={metadata?.dedicatedHoursSpecified} onChange={(e) => handleValueChange('dedicatedHoursSpecified',!metadata?.dedicatedHoursSpecified)}  />
-                        }
-                        className={`${style.switchFontStyle} ${style.flexLeft} `}
-                        label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'}
-                    />
+                    <ThemeProvider theme={switchTheme}>
+                        <FormControlLabel
+                            control={
+                                <Switch className={`${style.textAlignLeft}`} checked={metadata?.dedicatedHoursSpecified} onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)} />
+                            }
+                            color='primary'
+                            className={`${style.switchFontStyle} ${style.flexLeft} `}
+                            label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'}
+                        />
+                    </ThemeProvider>
                     {!metadata?.dedicatedHoursSpecified && (
                         <Select
                             displayEmpty
                             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                             className={`${style.fullWidth}`}
-                            onChange={(e)=>selectedHours(e.target.value)}
+                            onChange={(e) => selectedHours(e.target.value)}
                         >
                             <MenuItem value="">Select source of hours for this service</MenuItem>
                             {
-                              specificDedicatedHoursList?.map((data,index)=>(
-                                <MenuItem value={index}>{data}</MenuItem>
-                              ))
+                                specificDedicatedHoursList?.map((data, index) => (
+                                    <MenuItem value={index}>{data}</MenuItem>
+                                ))
                             }
                         </Select>
                     )}
@@ -168,14 +182,14 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                 <div className={style.extentionLableStyle}>Supplemental Services To Perform*</div>
                 <div>
                     <div className={`${style.fullWidth} ${style.addGrid}`}>
-                        <InputGroup className={style.fullWidth} placeholder="Add Supplemental Services specified in contract" value={supplementServiceName} onChange={(e)=>setSupplementServiceName(e.target.value)}/>
+                        <InputGroup className={style.fullWidth} placeholder="Add Supplemental Services specified in contract" value={supplementServiceName} onChange={(e) => setSupplementServiceName(e.target.value)} />
                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={addSupplementService}/>
+                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={addSupplementService} />
                         </div>
                     </div>
                     {
-                     metadata?.supplementServiceName?.length !== 0 && metadata?.supplementServiceName &&
-                       <MultiSelectDisplay values={metadata?.supplementServiceName} removeItem={removeSupplementServiceName}/>
+                        metadata?.supplementServiceName?.length !== 0 && metadata?.supplementServiceName &&
+                        <MultiSelectDisplay values={metadata?.supplementServiceName} removeItem={removeSupplementServiceName} />
                     }
                 </div>
             </div>
@@ -185,26 +199,29 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                         <div className={style.extentionLableStyle}>Billable Service*</div>
                         <div className={style.displayInRow}>
                             <div className={`${style.threeFieldWidth}`} >
-                                <FormControlLabel
-                                    control={
-                                        <Switch checked={metadata?.billableService} className={` ${style.textAlignLeft} `} />
-                                    }
-                                    onChange={() => handleValueChange('billableService', !metadata?.billableService)}
-                                    className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                    label={metadata?.billableService ? 'YES' : 'NO'}
-                                />
+                                <ThemeProvider theme={switchTheme}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch checked={metadata?.billableService} className={` ${style.textAlignLeft} `} />
+                                        }
+                                        color='primary'
+                                        onChange={() => handleValueChange('billableService', !metadata?.billableService)}
+                                        className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                        label={metadata?.billableService ? 'YES' : 'NO'}
+                                    />
+                                </ThemeProvider>
                             </div>
                             {
-                              // metadata?.billableService &&
-                              //   <Select
-                              //       displayEmpty
-                              //       SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                              //       className={`${style.threeFieldWidth} ${style.marginLeft20}`}
-                              //       value={metadata?.rateType}
-                              //       onChange={(e)=>handleValueChange('rateType', e.target.value)}
-                              //   >
-                              //       <MenuItem value={'HOURLY'}>Hourly</MenuItem>
-                              //   </Select>
+                                // metadata?.billableService &&
+                                //   <Select
+                                //       displayEmpty
+                                //       SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                //       className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                                //       value={metadata?.rateType}
+                                //       onChange={(e)=>handleValueChange('rateType', e.target.value)}
+                                //   >
+                                //       <MenuItem value={'HOURLY'}>Hourly</MenuItem>
+                                //   </Select>
                             }
                         </div>
                     </div>
@@ -218,7 +235,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                                     }}
-                                    onChange={(e)=>handleValueChange('totalSession', e.target.value)}
+                                    onChange={(e) => handleValueChange('totalSession', e.target.value)}
                                     value={metadata?.totalSession}
                                 />
                             </div>
@@ -226,7 +243,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                                 displayEmpty
                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 className={`${style.threeFieldWidth} ${style.marginLeft20}`}
-                                onChange={(e)=>handleValueChange('totalSessionFrequency', e.target.value)}
+                                onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
                                 value={metadata?.totalSessionFrequency}
                             >
                                 <MenuItem value="">Select Frequecy</MenuItem>
@@ -244,7 +261,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                                 InputProps={{
                                     endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                                 }}
-                                onChange={(e)=>handleValueChange('sessionDuration',e.target.value)}
+                                onChange={(e) => handleValueChange('sessionDuration', e.target.value)}
                                 value={metadata?.sessionDuration}
                             />
                         </div>
@@ -261,7 +278,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
                                     value={metadata?.sessionAmount}
-                                    onChange={(e)=>handleValueChange('sessionAmount', e.target.value)}
+                                    onChange={(e) => handleValueChange('sessionAmount', e.target.value)}
                                 />
                             </div>
                             <div className={style.verticalAlignCenter}>
@@ -272,7 +289,7 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Applicable Supplemental Workdays*</div>
-                        <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected}/>
+                        <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -280,15 +297,15 @@ const SupplementalFields = ({getMetaData, services, serviceSelected, editService
                         <div className={style.displayInRow}>
                             <TimePicker
                                 useAmPm={false}
-                                onChange={(e)=>{
-                                handleValueChange('workingTimeFrom',e);
-                              }}
-                              value={new Date(metadata?.workingTimeFrom)}
+                                onChange={(e) => {
+                                    handleValueChange('workingTimeFrom', e);
+                                }}
+                                value={new Date(metadata?.workingTimeFrom)}
                             />
                             <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                             <TimePicker
                                 useAmPm={false}
-                                onChange={(e)=>handleValueChange('workingTimeTo',e)}
+                                onChange={(e) => handleValueChange('workingTimeTo', e)}
                                 value={new Date(metadata?.workingTimeTo)}
                                 minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                             />
