@@ -79,6 +79,7 @@ const ContractIdTermLimitIndividual = (
     const [departmentsName,setDepartmentsName] = useState([]);
     const [selectedDepartmentId,setSelectedDepartmentId] = useState([]);
     const [createdContractId,setCreatedContractId] = useState(contractIdFromActive);
+    const [contractedTimeCommitment, setContractTimeCommitment] = useState({value:0, frequency:''})
 
     useEffect(() => {
       getUserData();
@@ -126,6 +127,7 @@ const ContractIdTermLimitIndividual = (
       setContractId({ id: contractDetail?.contractId?.id, missing: contractData?.contractIdMissing });
       setDepartmentSpecific(contractDetail?.departmentSpecificContract);
       setSiteSpecific(contractDetail?.siteSpecificContract);
+      setContractTimeCommitment(contractDetail?.timeCommitment || {});
       setFullyExecutedContract(contractDetail?.fullyExecutedContract);
       setSelectContractManager(user?.filter(data => data?.id === contractDetail?.contractManager?.userID)?.map(data => data)[0]);
       setContractPriorId({ id: contractDetail?.priorContract?.id, na: contractDetail?.priorContract?.notApplicable });
@@ -281,6 +283,10 @@ const ContractIdTermLimitIndividual = (
           "reminderList": {
             "renewalReminderList": renewalReminder
           }
+        },
+        "timeCommitment": {
+          "value": parseInt(contractedTimeCommitment?.value),
+          "frequency": contractedTimeCommitment?.frequency,
         },
         "contractIdMissing": contractId?.missing,
         "fullyExecutedContract": fullyExecutedContract,
@@ -570,23 +576,28 @@ const ContractIdTermLimitIndividual = (
                      </div>
         </div>
 
-        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contract Access Privilege To Other Contract Manager</div>
-          <div className={style.verticalAlignCenter}>
-            <FormControlLabel
-              control={
-                <Switch checked={contractAccessPrivilege} className={`${style.floatLeft}`} onChange={() => { setContractAccessPrivilege(!contractAccessPrivilege) }} />
-              }
-              className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
-              label={contractAccessPrivilege ? 'YES' : "NO"}
-            />
-            {contractAccessPrivilege ? (
-              <LockOpenOutlinedIcon className={style.lockStyle} style={{ color: '#14B15A' }} />
-            ) : (
-              <LockOutlinedIcon className={style.lockStyle} style={{ color: '#F94848' }} />
-            )}
-          </div>
-        </div>
+
+        {
+            //// Contract Access Previlege Field DO NOT DELETE THIS ////
+          // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+          //   <div className={style.extentionLableStyle}>Contract Access Privilege To Other Contract Manager</div>
+          //   <div className={style.verticalAlignCenter}>
+          //     <FormControlLabel
+          //       control={
+          //         <Switch checked={contractAccessPrivilege} className={`${style.floatLeft}`} onChange={() => { setContractAccessPrivilege(!contractAccessPrivilege) }} />
+          //       }
+          //       className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
+          //       label={contractAccessPrivilege ? 'YES' : "NO"}
+          //     />
+          //     {contractAccessPrivilege ? (
+          //       <LockOpenOutlinedIcon className={style.lockStyle} style={{ color: '#14B15A' }} />
+          //     ) : (
+          //       <LockOutlinedIcon className={style.lockStyle} style={{ color: '#F94848' }} />
+          //     )}
+          //   </div>
+          // </div>
+        }
+
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <div className={style.extentionLableStyle}>Contract Documents On File*</div>
           <div onFocus={() => { getSelectedField('Fully Executed Contract on File') }}>
@@ -866,31 +877,32 @@ const ContractIdTermLimitIndividual = (
                     </div>
                 </div>
 
-        {
-          // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          //     <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
-          //     <div className={style.contractedTime}>
-          //     <InputGroup type="number"/>
-          //     <select
-          //         name="class"
-          //         id="Class"
-          //         className={`${style.timeCommitment}`}>
-          //           <option value="Select...">
-          //             Select...
-          //           </option>
-          //             <option value="Hours Per Contract Year">
-          //               Hours Per Contract Year
-          //             </option>
-          //             <option value="Weeks Per Contract Year">
-          //               Weeks Per Contract Year
-          //             </option>
-          //             <option value="Months Per Contract Year">
-          //               Months Per Contract Year
-          //             </option>
-          //     </select>
-          //     </div>
-          // </div>
-        }
+          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
+              <div className={style.contractedTime}>
+              <InputGroup type="number" min="1" value={contractedTimeCommitment?.value} onChange={(e)=>setContractTimeCommitment({...contractedTimeCommitment, value:e.target.value})} />
+              <select
+                  name="class"
+                  id="Class"
+                  value={contractedTimeCommitment?.frequency}
+                  onChange={(e)=>setContractTimeCommitment({...contractedTimeCommitment, frequency:e.target.value})}
+                  className={`${style.timeCommitment}`}>
+                    <option value="Select...">
+                      Select...
+                    </option>
+                      <option value="HOURS_PER_CONTRACTYEAR">
+                        Hours Per Contract Year
+                      </option>
+                      <option value="WEEKS_PER_CONTRACTYEAR">
+                        Weeks Per Contract Year
+                      </option>
+                      <option value="MONTHS_PER_CONTRACTYEAR">
+                        Months Per Contract Year
+                      </option>
+              </select>
+              </div>
+          </div>
+
 
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Contract Continuation Policy*</div>
