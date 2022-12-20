@@ -878,7 +878,13 @@ body {
     margin-top: 5px;
 }
 
-.termPeriodGrid {
+.biggerFont{
+  font: normal normal normal 15px/19px Montserrat;
+}
+
+
+
+.termPeriodGrid{
     display: grid;
     grid-template-columns: 45% 10% 45%;
 }
@@ -1497,7 +1503,17 @@ select {
     width: 80px;
 }
 
-.textElement {
+.dollarLeftElement{
+  color: #AFB2B6;
+  background-color: #fff;
+  border: none;
+  margin: 2px 2px;
+  height: 25px;
+  font-size: 12px;
+  width: 20px;
+}
+
+.textElement{
     background-color: #f1f2f3;
     color: #AFB2B6;
     border: none;
@@ -2417,4 +2433,13 @@ input[type="file"] {
 .redSmallNumberSelected {
     color: #fff;
     background-color: #F94848;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
 }

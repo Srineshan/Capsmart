@@ -30,6 +30,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const siteTypeId = sessionStorage.getItem('entityTypeId');
   const [serviceType, setServiceType] = useState('Clinic Blocks');
   const [siteList, setSiteList] = useState([]);
+  const [allLocation, setAllLocation] = useState([]);
   const [siteData, setSiteData] = useState([]);
   const [activity, setActivity] = useState([]);
   const [newActivity, setNewActivity] = useState('');
@@ -41,39 +42,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [selectedLocation, setSelectedLocation] = useState([]);
   const [metadata, setMetadata] = useState();
   const [existingServices, setExistingServices] = useState([]);
-  //old useStates
-  const [activityType, setActivityType] = useState('OutPatient Surgery Clinic Session');
-  const [activityContractedFor, setActivityContractedFor] = useState('');
   const [isDesignatedSpecificContractor, setIsDesignatedSpecificContractor] = useState(true);
-  const [addOnService, setAddOnService] = useState('');
-  const [sessionRate, setSessionRate] = useState(0);
-  const [sessionDuration, setSessionDuration] = useState(0);
-  const [fractureClinicalSessionRate, setFractureClinicalSessionRate] = useState(0);
-  const [fractureClinicalSessionDuration, setFractureClinicalSessionDuration] = useState(0);
-  const [sessionExtension, setSessionExtension] = useState(0);
-  const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
-  const [workingPeriodTo, setWorkingPeriodTo] = useState('');
   const [contractedServiceProvider, setContractedServiceProvider] = useState('');
-  const [activityOrServiceType, setActivityOrServiceType] = useState('Medical / Surgical Care Contracted Services');
-  const [regularClinicSchedule, setRegularClinicSchedule] = useState(0);
-  const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
-  const [regularClinicScheduleFrequency, setRegularClinicScheduleFrequency] = useState('WEEK');
-  const [allActivities, setAllActivities] = useState(false);
-  const [additionalCompensationTitle, setAdditionalCompensationTitle] = useState('');
-  const [additionalCompensationPerMonth, setAdditionalCompensationPerMonth] = useState(0);
-  const [min, setMin] = useState(0);
-  const [max, setMax] = useState(0);
-  const [frequency, setFrequency] = useState('WEEK');
-  const [duration, setDuration] = useState(0);
-  const [payment, setPayment] = useState(0);
-  const [withNurse, setWithNurse] = useState(0);
-  const [withoutNurse, setWithoutNurse] = useState(0);
-  const [noTargetApplicable, setNoTargetApplicable] = useState(false);
-  const [additionalSchedule, setAdditionalSchedule] = useState(false);
-  const [totalContractedService, setTotalContractedService] = useState(0);
-  const [totalContractedServiceFrequency, setTotalContractedServiceFrequency] = useState('WEEK');
-  const [dutyDays, setDutyDays] = useState([]);
-  const [coverageCallDutyType, setCoverageCallDutyType] = useState('All On Call Service Duty');
   const [contractedServices, setContractedServices] = useState([]);
   const [users, setUsers] = useState([]);
   const [usedActivity, setUsedActivity] = useState([]);
@@ -88,6 +58,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       getSelectedSites(selectedService?.sites);
       getNewLocation(selectedService?.locations);
       setServiceType(selectedService?.activityType?.activityType);
+      setIsDesignatedSpecificContractor(selectedService?.designateSpecificContractor);
+      setSelectedUsers(selectedService?.users || []);
       let temp = [];
       selectedService?.activities?.map(data => {
         temp.push({ activity: data })
@@ -95,8 +67,17 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setSelectedActivity(temp);
       setShowLocation(selectedService?.locations?.length !== 0 ? true : false);
       setSelectedLocation(selectedService?.locations?.map(data => data));
+      removeSelectedLocationFromList();
     }
-  }, [selectedService])
+  }, [selectedService]);
+
+  const removeSelectedLocationFromList = () => {
+    setLocationList(allLocation?.filter(data => !selectedLocation?.map(location => location?.location).includes(data?.location))?.map(data => data));
+  }
+
+  useEffect(() => {
+    removeSelectedLocationFromList();
+  }, [selectedLocation])
 
   let rightHelpArea = helpTool?.calculator || helpTool?.textArea;
 
@@ -160,7 +141,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   const getLocations = async () => {
     const { data: location } = await GET(`contract-managment-service/contracts/site/${siteData?.map(data => data?.id)[0]}/location`);
-    setLocationList(location);
+    setAllLocation(location);
+    setLocationList(location?.filter(data => !selectedLocation?.map(location => location?.location).includes(data?.location))?.map(data => data));
   }
 
   const getContractedServices = async () => {
@@ -196,21 +178,27 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const locationToAdd = async () => {
-    let siteId = siteData?.map(data => data?.id)[0];
-    let data = {
-      "location": newLocation,
-      "siteId": siteId,
-      "tenant": {
-        "id": TenantID
-      }
+    if (allLocation?.some(data => data?.location === newLocation)) {
+      ErrorToaster('Location already exists');
+      return;
     }
-    await POST(`contract-managment-service/contracts/site/${siteId}/location`, data)
-      .then(response => {
-        getLocations();
-      })
-      .catch(error => {
-        console.log('Error');
-      })
+    if (newLocation !== '') {
+      let siteId = siteData?.map(data => data?.id)[0];
+      let data = {
+        "location": newLocation,
+        "siteId": siteId,
+        "tenant": {
+          "id": TenantID
+        }
+      }
+      await POST(`contract-managment-service/contracts/site/${siteId}/location`, data)
+        .then(response => {
+          getLocations();
+        })
+        .catch(error => {
+          console.log('Error');
+        })
+    }
   }
 
   const getSites = async () => {
@@ -222,16 +210,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }
 
-  const handleDutyDays = (value) => {
-    if (!dutyDays.includes(value)) {
-      setDutyDays([...dutyDays, value])
-    } else {
-      setDutyDays(dutyDays?.filter(data => data !== value)?.map(data => data))
-    }
-  }
-
-  console.log('metadata', metadata);
   const handleSave = async (buttonType) => {
+    if (serviceType === '') {
+      ErrorToaster('Activity Type Selection is Mandatory');
+      return;
+    }
     let performingActivity = '';
     let activities = [];
     if (serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services') {
@@ -345,8 +328,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         },
         "serviceDays": dataValues?.serviceDays,
         "workingPeriod": {
-          "from": dataValues?.workingTimeFrom,
-          "to": dataValues?.workingTimeTo
+          "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
+          "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
         },
         "workingHours": {
           "normalWorkingHours": true,
@@ -436,7 +419,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   const locationItems = useMemo(
     () =>
-      locationList?.map((data) => ({
+      locationList?.map((data) => data?.location && ({
         value: data?.location,
         location: data?.location
       })),
@@ -461,8 +444,17 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       temp.push(selectedItem);
       setSelectedLocation(temp);
     }
+    removeSelectedLocationFromList();
   }
 
+  const handleDesignateContractor = () => {
+    setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor);
+    if (isDesignatedSpecificContractor) {
+      setSelectedUsers(users);
+    } else {
+      setSelectedUsers([]);
+    }
+  }
 
   return (
     <div>
@@ -471,8 +463,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
             <div>
-              <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea, calculator: !helpTool?.calculator })} />
-              <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator, textArea: !helpTool?.textArea })} />
+              {
+                // <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, textArea:!helpTool?.textArea})} />
+                // <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, calculator:!helpTool?.calculator})} />
+              }
               <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => { getAddServiceDialog(false); getEditServiceDialog(false); }} />
             </div>
           </div>
@@ -507,13 +501,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     <div className={`${style.displayInRow} `}>
                       <FormControlLabel
                         control={
-                          <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => setIsDesignatedSpecificContractor(!isDesignatedSpecificContractor)} />
+                          <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => handleDesignateContractor()} />
                         }
                         className={`${style.switchFontStyle} ${style.flexLeft} `}
                         label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
                       />
 
-                      {isDesignatedSpecificContractor && (
+                      {isDesignatedSpecificContractor ? (
                         <Select
                           displayEmpty
                           onChange={(e) => handleUsers(e.target.value)}
@@ -525,7 +519,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             <MenuItem value={data?.id} key={index}> {data?.name?.firstName} {data?.name?.lastName}</MenuItem>
                           ))}
                         </Select>
-                      )}
+                      ) : <p className={` ${style.marginTop10}`}>Any Contractor</p>
+                      }
                     </div>
                     {usersTags?.length !== 0 && (
                       <div className={`${style.marginTop20} ${style.marginLeft20}`}>
@@ -601,7 +596,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                         ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} />
                         : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
             </div>
-            {helptool?.calculator ? (
+            {helpTool?.calculator ? (
               <Calculator />
             ) : (
               <Calculator />

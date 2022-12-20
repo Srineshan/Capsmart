@@ -1,30 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, Tag } from '@blueprintjs/core';
+import { InputGroup, Tag, Dialog, Classes } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
-import { FormatPhoneNumber } from './../../utils/formatting';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import LoadingScreen from '../../Components/LoadingScreen';
+import RedirectingPopUp from './redirectingPopUp';
+import {EmailValidator, FormatPhoneNumber, EmptyStringCheck, PhoneValidator} from './../../utils/formatting';
 
 import style from './index.module.scss';
 
-const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField}) => {
+const ContractorBusinessEntity = ({getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField}) => {
     const [isUserUpdated, setIsUserUpdated] = useState(false);
+    const [userCount, setUserCount] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
     const [sameAsContractor, setSameAsContractor] = useState(false);
     const [contractUser, setContractUser] = useState();
+    const [allowBEM, setAllowBEM] = useState(false);
+    const [keepConfidential, setKeepConfidential] = useState(false);
     const [contractorNPIN, setContractorNPIN] = useState({
         notApplicable: false,
         npin: "",
-        missing: true
+        missing: false
     });
     const [contractorEntityTaxId, setContractorEntityTaxId] = useState({
         taxId: "",
-        missing: true
+        missing: false
     });
     const [businessEntity, setBusinessEntity] = useState({
         name: ''
@@ -40,7 +46,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
           },
           contactNumber: {
             number: 0,
-            missing: true
+            missing: false
           }
     });
     const [roles, setRoles] = useState([])
@@ -59,9 +65,15 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
       getUserData();
     },[])
 
+    useEffect(()=>{
+        getContractorData();
+    },[sameAsContractor])
+
     const getUserData = async() => {
+      setIsLoading(true);
       if(contractId !== '' && contractId !== undefined){
         const {data: userData} = await GET(`user-management-service/user?contractID=${contractId}`);
+        setUserCount(userData?.length || 0);
         if(selectContractInfo === 'INDIVIDUAL'){
           setContractUser(userData?.filter(data=>!data?.roles?.map(role=>role?.id)?.includes('6344d59a45ca246bd12dd77b'))?.map(data=>data)[0])
         }
@@ -70,13 +82,19 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
           setUserId(entityManager?.[0]?.id);
         }
       }
+      setIsLoading(false);
     }
 
-    const handleContinue = async() => {
-      if(!sameAsContractor && (businessEntityUser?.email?.officialEmail === '' || businessEntityUser?.email?.officialEmail === undefined)){
-        ErrorToaster('Enter a valid Email-ID');
-        return;
-      }
+    const handleContinue = async(buttonType) => {
+      if(EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory') ||
+        !contractorNPIN?.notApplicable && !contractorNPIN?.missing && EmptyStringCheck(contractorNPIN?.npin, 'NPIN is Mandatory') ||
+        !contractorEntityTaxId?.missing && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory') ||
+        EmptyStringCheck(businessEntityUser?.name?.firstName, 'First Name is Mandatory') ||
+        EmptyStringCheck(businessEntityUser?.name?.lastName, 'Last Name is Mandatory')||
+        EmailValidator(businessEntityUser?.email?.officialEmail)||
+        !businessEntityUser?.contactNumber?.missing && PhoneValidator(businessEntityUser?.contactNumber?.number)){
+          return;
+        }
 
         const data = {
             contractorNPIN: contractorNPIN,
@@ -96,7 +114,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
               ErrorToaster('Unexpected Error');
           }
 
-        if(!sameAsContractor){
+        if(allowBEM){
           const userData = {
             ...(userId !== '0' && {'id': userId}),
             "name": {
@@ -120,8 +138,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
             "email": {
               "officialEmail": businessEntityUser?.email?.officialEmail
             },
-            ...((userId === undefined || userId === '0') && {
-            "password": {
+            ...((userId === undefined || userId === '0') && {"password": {
               "password": "admin123"
             }}),
             "communication": {
@@ -154,7 +171,10 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
         });
       }
         }
-
+      if(buttonType === 'Continue'){
+        getViewPage5(true);
+        getCurrentPage('Contracted Services Specification');
+      }
     }
 
     const handleRoles = (value) => {
@@ -192,13 +212,13 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
 
     useEffect(()=>{
         setSameAsContractor(contractorBusinessEntity?.contractorContact);
-        setBusinessEntity(contractorBusinessEntity?.businessEntity);
-        setContractorNPIN(contractorBusinessEntity?.contractorNPIN);
-        setContractorEntityTaxId(contractorBusinessEntity?.contractorEntityTaxId);
-        setBusinessEntityUser(contractorBusinessEntity?.businessEntityUser);
+        setBusinessEntity(contractorBusinessEntity?.businessEntity || {});
+        setContractorNPIN(contractorBusinessEntity?.contractorNPIN || {});
+        setContractorEntityTaxId(contractorBusinessEntity?.contractorEntityTaxId || {});
+        setBusinessEntityUser(contractorBusinessEntity?.businessEntityUser || {});
         setAppRoleRequired(contractorBusinessEntity?.appRoleRequired);
         setSelectedRoles(contractorBusinessEntity?.roles || []);
-        setMailingAddress(contractorBusinessEntity?.mailingAddress);
+        setMailingAddress(contractorBusinessEntity?.mailingAddress || {});
     },[contractorBusinessEntity])
 
       useEffect(()=>{
@@ -210,22 +230,45 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
       const formattedPhoneNumber = FormatPhoneNumber(e.target.value);
       setBusinessEntityUser({...businessEntityUser, contactNumber: {number: formattedPhoneNumber, missing: businessEntityUser?.contactNumber?.missing}});
     };
-    
-    const handleSameContact = () => {
-      setSameAsContractor(!sameAsContractor);
-      if(sameAsContractor && selectContractInfo === 'INDIVIDUAL'){
-        setBusinessEntityUser({
-            name: contractUser?.name,
-            email: contractUser?.email,
-            contactNumber: {
-                number: 0,
-                missing: true
-              }
-        })
+
+    const getContractorData = () => {
+    if(sameAsContractor && selectContractInfo === 'INDIVIDUAL'){
+      setBusinessEntityUser({
+          name: contractUser?.name,
+          email: contractUser?.email,
+          contactNumber: {
+            number: contractUser?.communication?.mobileNumber,
+            missing: false
+          }
+      });
+      setMailingAddress({addressLine: "",
+      city: contractUser?.address?.city,
+      state: contractUser?.address?.state,
+      zipcode: contractUser?.address?.zipcode});
+    }
+  }
+
+    const updatePhone = (e) => {
+      if(e.target.value?.length < 16){
+        let number = FormatPhoneNumber(e.target.value)
+        setBusinessEntityUser({...businessEntityUser, contactNumber: {number: number , missing: businessEntityUser?.contactNumber?.missing}});
+        setIsUserUpdated(true);
       }
     }
 
+    const handleSameContact = () => {
+      setSameAsContractor(!sameAsContractor);
+         getContractorData();
+      }
+
+    if(isLoading){
+      return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
+    }
+
     return (
+      <>
+      {
+        userCount !== 0 ?
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
                 {selectContractInfo === "INDIVIDUAL" && (
@@ -241,21 +284,30 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                         />
                     </div>
                 )}
-                {!sameAsContractor && (
-                    <>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <div className={`${style.extentionGrid} ${selectContractInfo === "INDIVIDUAL" && style.marginTop20}`}>
+                            <div className={style.extentionLableStyle}>Business Entity Name*</div>
+                            <InputGroup className={style.fullWidth}
+                            value={businessEntity?.name}
+                            onFocus={()=>{getSelectedField('Business Entity Name')}}
+                            placeholder="Enter Business Entity Name"
+                            onChange={(e) => setBusinessEntity({...businessEntity, name: e.target.value})} />
+                        </div>
+                        <div className={`${style.extentionGrid} ${style.marginTop20}`}
+                            onFocus={()=>{getSelectedField('Contractor NPIN')}}>
                             <div className={style.extentionLableStyle}>Vendor NPIN*</div>
                             <div className={style.twoCol}>
-                                <InputGroup className={style.fullWidth} value={contractorNPIN?.npin} placeholder="Enter Vendor NPIN"
-                                onChange={(e) => setContractorNPIN({...contractorNPIN, npin: e.target.value})}  
-                                onFocus={()=>{getSelectedField('Contractor NPIN')}}/>
+                                <InputGroup className={style.fullWidth}
+                                disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
+                                value={contractorNPIN?.npin} placeholder="Enter Contractor NPIN"
+                                onChange={(e) => setContractorNPIN({...contractorNPIN, npin: e.target.value})}  />
                                 <div className={`${style.displayInRow}`}>
                                   <FormGroup className={style.marginLeft20}>
-                                    <FormControlLabel control={<Checkbox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({...contractorNPIN, missing: e.target.checked})} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} /> 
+                                    <FormControlLabel control={<Checkbox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({...contractorNPIN, missing: e.target.checked})} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
                                   </FormGroup>
                                   <FormGroup>
                                     <FormControlLabel control={<Checkbox value="NA" checked={contractorNPIN?.notApplicable} onChange={(e) => setContractorNPIN({...contractorNPIN, notApplicable: e.target.checked})}  />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
                                   </FormGroup>
+
                                 </div>
                             </div>
                         </div>
@@ -263,11 +315,11 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                         onFocus={()=>{getSelectedField('Contractor Entity Tax ID')}}>
                             <div className={style.extentionLableStyle}>Vendor Tax ID*</div>
                             <div className={style.twoCol}>
-                                <InputGroup className={style.fullWidth} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
+                                <InputGroup className={style.fullWidth} disabled={contractorEntityTaxId?.missing} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
                                 onChange={(e) => setContractorEntityTaxId({...contractorEntityTaxId, taxId: e.target.value})} />
                                 <div className={`${style.displayInRow}`}>
                                   <FormGroup className={style.marginLeft20}>
-                                    <FormControlLabel control={<Checkbox value="Missing" checked={contractorEntityTaxId?.missing} onChange={(e) => setContractorEntityTaxId({...contractorEntityTaxId, missing: e.target.checked})} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} /> 
+                                    <FormControlLabel control={<Checkbox value="Missing" checked={contractorEntityTaxId?.missing} onChange={(e) => setContractorEntityTaxId({...contractorEntityTaxId, missing: e.target.checked})} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
                                   </FormGroup>
                                   <FormGroup>
                                     <FormControlLabel control={<Checkbox value="NA" />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
@@ -316,13 +368,13 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                                   }}
                             />
                             <FormGroup className={style.marginLeft20}>
-                                <FormControlLabel control={<Checkbox value="Missing" 
+                                <FormControlLabel control={<Checkbox value="Missing"
                                 // checked={businessEntityUser?.contactNumber?.missing} onChange={(e) =>
                                 // {
                                 //   setBusinessEntityUser({...businessEntityUser, contactNumber: {missing: e.target.checked, number: businessEntityUser?.contactNumber?.number}});
                                 //   setIsUserUpdated(true);
                                 // }}
-                                  />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} /> 
+                                  />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
                               </FormGroup>
                             </div>
                         </div>
@@ -333,6 +385,7 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                             <div className={style.twoCol}>
                                 <TextField
                                     size="small"
+                                    disabled={businessEntityUser?.contactNumber?.missing}
                                     placeholder="Numeric" className={style.fullWidth}
                                     value={businessEntityUser?.contactNumber?.number}
                                     onChange={(e) =>
@@ -345,13 +398,13 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                                     }}
                                 />
                                 <FormGroup className={style.marginLeft20}>
-                                  <FormControlLabel control={<Checkbox value="NA" 
+                                  <FormControlLabel control={<Checkbox value="NA"
                                   // checked={businessEntityUser?.contactNumber?.missing} onChange={(e) =>
                                   // {
                                   //   setBusinessEntityUser({...businessEntityUser, contactNumber: {missing: e.target.checked, number: businessEntityUser?.contactNumber?.number}});
                                   //   setIsUserUpdated(true);
                                   // }}
-                                   />} label={<Typography variant="body2" color="textSecondary">Not Available</Typography>} /> 
+                                   />} label={<Typography variant="body2" color="textSecondary">Not Available</Typography>} />
                                 </FormGroup>
                             </div>
                         </div>
@@ -389,26 +442,47 @@ const ContractorBusinessEntity = ({getViewPage4, getCurrentPage, selectContractI
                             <div>
                               <InputGroup value="Business Contract Manager" className={style.fullWidth} />
                               <div className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}>
-                              The Business Contract Manager role allows the registered user to access 
-                              contract related information and reports only for the contract associated 
+                              The Business Contract Manager role allows the registered user to access
+                              contract related information and reports only for the contract associated
                               with their business entity.
                               </div>
                             </div>
                           </div>
                         </div>
-                    </>
                 )}
+
+                {
+                  selectContractInfo !== 'INDIVIDUAL' &&
+                  (
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Keep Contract Payment Data Confidential*</div>
+                        <FormControlLabel
+                            control={
+                                <Switch checked={keepConfidential} className={`${style.textAlignLeft}`} onChange={() => setKeepConfidential(!keepConfidential)} />
+                            }
+                            className={`${style.switchFontStyle} ${style.marginTop}`}
+                            label={keepConfidential ? 'YES' : 'NO'}
+                        />
+                    </div>
+                  )
+                }
             </div>
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contracted Services Provider(s)')}}>BACK</button>
                 <div>
-                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
+                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                    onClick={() => { handleContinue();getViewPage4(true); getCurrentPage('Documentation Proof Required') }}
+                    onClick={() => { handleContinue('Continue');}}
                     >CONTINUE</button>
                 </div>
             </div>
         </div>
+        :
+        (
+          <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Contracted Services Provider(s)'} title={'NO USERS FOUND'} description={'No Contracted Service Provider Is Found.'} buttonText={'ADD CONTRACTOR'}/>
+        )
+      }
+      </>
     )
 }
 

@@ -113,8 +113,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
         setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : [] );
         setSiteLevel(contractData?.siteLevelResponsible);
         setDepartmentLevel(contractData?.departmentLevelResponsible);
+        setSites(contractData?.sites?.sites || []);
       }else{
-        console.log('inside else');
         getSites();
       }
     }, [contractId, userProviderData, isUserPresent])
@@ -312,6 +312,30 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
           sites.push(data);
         }
       });
+      if(!npinMissing && !npinNotApplicable && npin === ''){
+        ErrorToaster('NPIN is Mandatory if not Missing/NA');
+        return;
+      }
+      if(contractorFirstName === ''){
+        ErrorToaster('First Name is Mandatory');
+        return;
+      }
+      if(contractorLastName === ''){
+        ErrorToaster('Last Name is Mandatory');
+        return;
+      }
+      if(!contractorEmail?.includes('@') || !contractorEmail?.includes('.')){
+        ErrorToaster('Enter a Valid Email');
+        return;
+      }
+      if(contractorPhone?.length !== 14){
+        ErrorToaster('Enter Valid Phone Number');
+        return;
+      }
+      if(roles?.length ===0){
+        ErrorToaster('Select User Role');
+        return;
+      }
         const data = {
             ...(isUserPresent && {'id': userProviderData?.id}),
             "name": {
@@ -501,14 +525,17 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                       <div className={style.grid3}>
                           <InputGroup className={style.fullWidth} placeholder="First"
                           value={contractorFirstName}
+                          maxLength={30}
                           onFocus={()=>{getSelectedField('Contractor First Name')}}
                           onChange={(e) => setContractorFirstName(e.target.value)} />
                           <InputGroup className={style.fullWidth} placeholder="Middle"
                           value={contractorMiddleName}
+                          maxLength={30}
                           onFocus={()=>{getSelectedField('Contractor Middle Initials')}}
                           onChange={(e) => setContractorMiddleName(e.target.value)}/>
                           <InputGroup className={style.fullWidth} placeholder="Last"
                           value={contractorLastName}
+                          maxLength={30}
                           onFocus={()=>{getSelectedField('Contractor Last Name')}}
                           onChange={(e) => setContractorLastName(e.target.value)}/>
                       </div>
@@ -527,9 +554,10 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                       <div className={style.displayInRow}>
                           <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
                           value={contractorEmail}
+                          maxLength={30}
                           onChange={(e) => setContractorEmail(e.target.value)}/>
                           <FormGroup className={style.marginLeft20}>
-                            <FormControlLabel control={<Checkbox value="Missing" />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} /> 
+                            <FormControlLabel control={<Checkbox value="Missing" />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
                           </FormGroup>
                           <FormGroup>
                             <FormControlLabel control={<Checkbox value="NA" />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
@@ -552,7 +580,8 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                             size="small"
                             placeholder="Numeric" className={style.fullWidth}
                             value={contractorPhone}
-                            onChange={(e) => handleInput(e)}
+                            maxLength={15}
+                            onChange={(e) => setContractorPhone(FormatPhoneNumber(e.target.value))}
                             InputProps={{
                                 startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>+1</InputAdornment>
                             }}
@@ -567,14 +596,17 @@ const ContractedServicesProviderIndividual = ({getViewPage3, getCurrentPage, con
                       <div className={style.grid3}>
                       <InputGroup className={style.fullWidth} placeholder="City"
                       value={city}
+                      maxLength={50}
                       onFocus={()=>{getSelectedField('Address City')}}
                       onChange={(e) => setCity(e.target.value)}/>
                       <InputGroup className={style.fullWidth} placeholder="State"
                       value={state}
+                      maxLength={20}
                       onFocus={()=>{getSelectedField('Address State')}}
                       onChange={(e) => setState(e.target.value)}/>
                       <InputGroup className={style.fullWidth} placeholder="Zipcode"
                       value={zipCode}
+                      maxLength={5}
                       onFocus={()=>{getSelectedField('Address Zip Code')}}
                       onChange={(e) => setZipCode(e.target.value)}/>
                       </div>

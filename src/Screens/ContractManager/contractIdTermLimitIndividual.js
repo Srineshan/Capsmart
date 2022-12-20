@@ -14,7 +14,7 @@ import AddNewContractManager from './addNewContractManager';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import { Auth } from './../../utils/auth'
-import { format } from 'date-fns';
+import { format, sub, add } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import axios from 'axios';
 
@@ -25,67 +25,74 @@ const VALUES2 = ['Department 1', "Department 2", "Department 3"];
 const TEXTFIELDLEN = 100;
 const DESCLEN = 250;
 const ContractIdTermLimitIndividual = (
-  { contracts,
-    getViewPage1,
-    getViewPage2,
-    getCurrentPage,
-    contractType,
-    selectedContractType,
-    getContractId,
-    setName,
-    setFileFields,
-    fileData,
-    contractIdFromActive,
-    method,
-    isMultiSiteEntity,
-    getSelectedField }) => {
-  const [selectContractManager, setSelectContractManager] = useState();
-  const [siteSpecific, setSiteSpecific] = useState(false);
-  const [selectedContract, setSelectedContract] = useState('Select...');
-  const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('Select Value');
-  const [item, setItem] = useState();
-  const [contractData, setContractData] = useState();
-  const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
-  const [priorContractItem, setPriorContractItem] = useState();
-  const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
-  const [contractAccessPrivilege, setContractAccessPrivilege] = useState(true);
-  const [fullyExecutedContractData, setFullyExecutedContractData] = useState(fileData);
-  const [fileFieldData, setFileFieldData] = useState({ id: '', type: '', name: '', desc: '', fileName: '', file: null, filePath: '' });
-  const [files, setFiles] = useState([]);
-  const [departmentSpecific, setDepartmentSpecific] = useState(false);
-  const [tags, setTags] = useState(VALUES);
-  const [tagSet2, setTagSet2] = useState(VALUES2);
-  const [contractTermPeriodFrom, setContractTermPeriodFrom] = useState(null);
-  const [contractTermPeriodTo, setContractTermPeriodTo] = useState(null);
-  const [contractEffectiveDate, setContractEffectiveDate] = useState(null);
-  const [contractName, setContractName] = useState('');
-  const [contractId, setContractId] = useState({ id: '', missing: false });
-  const [contractPriorId, setContractPriorId] = useState({ id: '', na: false });
-  const [contractNA, setContractNA] = useState(false);
-  const [user, setUsers] = useState([]);
-  const [selectedItem, setSelectedItem] = useState();
-  const [sites, setSites] = useState();
-  const [selectedSites, setSelectedSites] = useState([]);
-  const [autoRenewal, setAutoRenewal] = useState({ renewalTerm: '0', allowableRenewalTerm: '0', calendar: 'WEEKS' });
-  const [renewalReminder, setRenewalreminder] = useState([{ 'days': 0 }]);
-  const [reminderFields, setReminderFields] = useState([]);
-  const [documentFields, setDocumentFields] = useState([]);
-  const [userName, setUserName] = useState('');
-  const [selectedRole, setSelectedRole] = useState('');
-  const [addFileClicked, setAddFileClicked] = useState(false);
-  const [selectedDepartmentSites, setSelectedDepartmentSites] = useState([]);
-  const [selectedSite, setSelectedSite] = useState('');
-  const [departmentsName, setDepartmentsName] = useState([]);
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState([]);
-  const [createdContractId, setCreatedContractId] = useState(contractIdFromActive);
+  {contracts,
+   getViewPage1,
+   getViewPage2,
+   getCurrentPage,
+   contractType,
+   selectedContractType,
+   getContractId,
+   setName,
+   setFileFields,
+   fileData,
+   contractIdFromActive,
+   method,
+   isMultiSiteEntity,
+   getSelectedField}) => {
+    const [contractAccessPrivilege, setContractAccessPrivilege] = useState(false);
+    const [calendarStart, setCalendarStart] = useState(false);
+    const [calendarEnd, setCalendarEnd] = useState(false);
+    const [calendarEffective, setCalendarEffective] = useState(false);
+    const [selectContractManager, setSelectContractManager] = useState();
+    const [siteSpecific, setSiteSpecific] = useState(false);
+    const [selectedContract, setSelectedContract] = useState('Select...');
+    const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('Select Value');
+    const [item, setItem] = useState();
+    const [contractData, setContractData] = useState();
+    const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
+    const [priorContractItem, setPriorContractItem] = useState();
+    const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
+    const [fullyExecutedContractData,setFullyExecutedContractData] = useState(fileData);
+    const [fileFieldData,setFileFieldData] = useState({id:'',type:'',name:'',desc:'',fileName:'',file:null,filePath:''});
+    const [files,setFiles] = useState([]);
+    const [departmentSpecific, setDepartmentSpecific] = useState(false);
+    const [contractTermPeriodFrom, setContractTermPeriodFrom] = useState(null);
+    const [contractTermPeriodTo, setContractTermPeriodTo] = useState(null);
+    const [contractEffectiveDate, setContractEffectiveDate] = useState(null);
+    const [contractName,setContractName] = useState('');
+    const [contractId,setContractId] = useState({id:'',missing:false});
+    const [contractPriorId,setContractPriorId] = useState({id:'',na:false});
+    const [contractNA,setContractNA] = useState(false);
+    const [user,setUsers] = useState([]);
+    const [selectedItem,setSelectedItem] = useState();
+    const [sites,setSites] = useState();
+    const [selectedSites,setSelectedSites] = useState([]);
+    const [autoRenewal,setAutoRenewal] = useState({renewalTerm:'0',allowableRenewalTerm:'0',calendar:'WEEKS'});
+    const [renewalReminder,setRenewalreminder] = useState([{'days':0}]);
+    const [reminderFields,setReminderFields] = useState([]);
+    const [documentFields,setDocumentFields] = useState([]);
+    const [userName, setUserName] = useState('');
+    const [selectedRole, setSelectedRole] = useState('');
+    const [addFileClicked,setAddFileClicked] = useState(false);
+    const [selectedDepartmentSites,setSelectedDepartmentSites] = useState([]);
+    const [selectedSite,setSelectedSite] = useState('');
+    const [departmentsName,setDepartmentsName] = useState([]);
+    const [selectedDepartmentId,setSelectedDepartmentId] = useState([]);
+    const [createdContractId,setCreatedContractId] = useState(contractIdFromActive);
 
-  useEffect(() => {
-    getUserData();
-    getSites();
-    if (method === 'PUT' && createdContractId !== '') {
-      getContractDetail();
-    }
-  }, [])
+    useEffect(() => {
+      getUserData();
+      getSites();
+      if(method === 'PUT' && createdContractId !== ''){
+        getContractDetail();
+      }
+    },[])
+
+    useEffect(()=>{
+      console.log('inside test effect');
+      getReminder();
+    },[renewalReminder])
+
 
   useEffect(() => {
     getReminder();
@@ -210,7 +217,7 @@ const ContractIdTermLimitIndividual = (
     return siteData;
   }
 
-  const addContract = async () => {
+  const addContract = async (buttonType) => {
     if (selectedContractContinuationPolicy === 'Select Value') {
       ErrorToaster('Select Contract Continuation Policy');
       return;
@@ -292,24 +299,27 @@ const ContractIdTermLimitIndividual = (
       console.log('data', data);
       formData.append('contractFiles', data);
     })
-    if (method === 'POST' && contractIdFromActive === '') {
-      await POST('contract-managment-service/contracts/contractDetail', formData)
-        .then(response => {
-          getContractId(response?.data);
-          SuccessToaster('Contract Draft Saved Successfully');
-        }).catch(error => {
-          ErrorToaster('Unexpected Error Creating Contract');
-        })
-    } else {
-      await PUT(`contract-managment-service/contracts/${contractIdFromActive}/contractDetail`, formData)
-        .then(response => {
-          SuccessToaster('Contract Updated Successfully');
-        }).catch(error => {
-          ErrorToaster('Unexpected Error Updating Contract');
-        })
+       if(method === 'POST' && contractIdFromActive === ''){
+         await POST('contract-managment-service/contracts/contractDetail',formData)
+         .then(response=>{getContractId(response?.data);
+         SuccessToaster('Contract Draft Saved Successfully');
+       }).catch(error=>{
+         ErrorToaster('Unexpected Error Creating Contract');
+       })
+     }else{
+       await PUT(`contract-managment-service/contracts/${contractIdFromActive}/contractDetail`,formData)
+       .then(response=>{
+       SuccessToaster('Contract Updated Successfully');
+     }).catch(error=>{
+       ErrorToaster('Unexpected Error Updating Contract');
+     })
+     }
+     if(buttonType === 'Continue'){
+       getViewPage2(true);
+       getViewPage1(false);
+       getCurrentPage('Contracted Services Provider(s)')
+     }
     }
-
-  }
 
   const onSelect = (selectedItem) => {
     setSelectContractManager(selectedItem);
@@ -540,25 +550,26 @@ const ContractIdTermLimitIndividual = (
           </div>
         )}
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
-          <div className={style.displayInRow}>
-            <div>
-              <DatalistInput items={items || []} onSelect={onSelect}
-                onChange={(e) => setUserName(e.target.value)}
-                className={style.selectFieldWidth}
-                maxLength={TEXTFIELDLEN}
-                value={contractData?.contractManager?.name?.firstName}
-                onFocus={() => { getSelectedField('Assigned Contract Manager') }} />
-              {(!items?.map(data => data?.name?.firstName)?.includes(userName) && !userName === '') && (
-                <div className={style.addBoxDescription}>
-                  The Contract Manager you are trying to add is not a registered
-                  user. To add a new contract manager click on the "ADD" button.
-                </div>
-              )}
-            </div>
-            <button className={`${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledButton}`} onClick={() => setAddNewManagerDialog(true)}>ADD</button>
-          </div>
+                     <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
+                     <div className={style.displayInRow}>
+                     <div>
+                         <DatalistInput items={items || []} onSelect={onSelect}
+                         onChange={(e)=>setUserName(e.target.value)}
+                         className={style.selectFieldWidth}
+                         maxLength={TEXTFIELDLEN}
+                         value={contractData?.contractManager?.name?.firstName}
+                         onFocus={()=>{getSelectedField('Assigned Contract Manager')}}/>
+                         {(!items?.map(data=>data?.name?.firstName)?.includes(userName) && userName !== '') && (
+                             <div className={`${style.addBoxDescription} ${style.marginTop}`}>
+                             The Contract Manager you are trying to add is not a registered
+                             user. To add a new contract manager click on the "ADD" button.
+                             </div>
+                         )}
+                     </div>
+                     <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(items?.map(data=>data?.name?.firstName)?.includes(userName) || userName === '') && style.disabledUploadButton}`} onClick={() =>setAddNewManagerDialog(true)} >ADD</button>
+                     </div>
         </div>
+
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <div className={style.extentionLableStyle}>Contract Access Privilege To Other Contract Manager</div>
           <div className={style.verticalAlignCenter}>
@@ -745,89 +756,115 @@ const ContractIdTermLimitIndividual = (
           </div>
         </div>
 
-        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contract Term Period*</div>
-          <div className={style.termPeriodGrid}>
-            <div onFocus={() => { getSelectedField('Contract Term Period Start Date') }}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  value={contractTermPeriodFrom}
-                  onChange={(newValue) => {
-                    setContractTermPeriodFrom(newValue);
-                  }}
-                  InputProps={{
-                    style: {
-                      fontSize: 14,
-                      height: 30,
-                    }
-                  }}
-                  renderInput={(params) => <TextField {...params} inputProps={{
-                    ...params.inputProps,
-                    placeholder: "Start Date"
-                  }} />}
-                />
-              </LocalizationProvider>
-            </div>
-            <p className={`${style.toStyle} ${style.alignCenter}`}>To</p>
-            <div onFocus={() => { getSelectedField('Contract Term Period End Date') }}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  value={contractTermPeriodTo}
-                  onChange={(newValue) => {
-                    setContractTermPeriodTo(newValue);
-                  }}
-                  InputProps={{
-                    style: {
-                      fontSize: 14,
-                      height: 30,
-                    }
-                  }}
-                  minDate={contractTermPeriodFrom}
-                  renderInput={(params) => <TextField  {...params} inputProps={{
-                    ...params.inputProps,
-                    placeholder: "End Date"
-                  }} />}
-                />
-              </LocalizationProvider>
-            </div>
-          </div>
-        </div>
-        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
-          <div className={style.contractedTimeCommitment}>
-            <InputGroup value='48' className={style.fullWidth} />
-            <Select
-              SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-              className={`${style.fullWidth}`}
-            >
-              <MenuItem value={'WEEK'}>Hours Per Week</MenuItem>
-            </Select>
-          </div>
-        </div>
-        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contracted Services Effective Date*</div>
-          <div className={`${style.leftAlign} ${style.effectiveDateWidth}`} onFocus={() => { getSelectedField('Contracted Services Effective Date') }}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                value={contractEffectiveDate}
-                onChange={(newValue) => {
-                  setContractEffectiveDate(newValue);
-                }}
-                InputProps={{
-                  style: {
-                    fontSize: 14,
-                    height: 30,
-                  }
-                }}
-                minDate={contractTermPeriodFrom}
-                renderInput={(params) => <TextField  {...params} inputProps={{
-                  ...params.inputProps,
-                  placeholder: "MM-DD-YYYY"
-                }} />}
-              />
-            </LocalizationProvider>
-          </div>
-        </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Contract Term Period*</div>
+                    <div className={style.termPeriodGrid}>
+                      <div onFocus={()=>{getSelectedField('Contract Term Period Start Date')}}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <DatePicker
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
+                            minDate={sub(new Date(),{years:3})}
+                            maxDate={add(new Date(), {months: 6})}
+                            value={contractTermPeriodFrom}
+                            onChange={(newValue) => {
+                              setCalendarStart(true);
+                              setContractTermPeriodFrom(newValue);
+                              setContractEffectiveDate(newValue);
+                            }}
+                            InputProps={{
+                              style: {
+                                  fontSize: 14,
+                                  height: 30,
+                              },
+                              onFocus: e => {
+                                setCalendarStart(true);
+                              },
+                              onBlur: e => {
+                                setCalendarStart(false);
+                              }
+                          }}
+                            renderInput={(params) => <TextField {...params}
+                            onClick = {() => setCalendarStart(true)}
+                            inputProps={{
+                              ...params.inputProps,
+                              placeholder: "Start Date"
+                            }}/>}
+                          />
+                        </LocalizationProvider>
+                      </div>
+                    <p className={`${style.toStyle} ${style.alignCenter}`}>To</p>
+                      <div onFocus={()=>{getSelectedField('Contract Term Period End Date')}}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <DatePicker
+                            open={calendarEnd}
+                            onOpen={() => setCalendarEnd(true)}
+                            onClose={() => setCalendarEnd(false)}
+                            value={contractTermPeriodTo}
+                            onChange={(newValue) => {
+                              setContractTermPeriodTo(newValue);
+                            }}
+                            InputProps={{
+                              style: {
+                                  fontSize: 14,
+                                  height: 30,
+                              },
+                               onFocus: e => {
+                                  setCalendarEnd(true);
+                                },
+                                onBlur: e => {
+                                  setCalendarEnd(false);
+                                }
+                            }}
+                            minDate={contractTermPeriodFrom}
+                            maxDate={add(new Date(),{years:5})}
+                            renderInput={(params) => <TextField  {...params} onClick = {() => setCalendarEnd(true)}
+                            inputProps={{
+                              ...params.inputProps,
+                              placeholder: "End Date"
+                            }} />}
+                          />
+                        </LocalizationProvider>
+                      </div>
+                    </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Contracted Services Effective Date*</div>
+                    <div className={`${style.leftAlign} ${style.effectiveDateWidth}`} onFocus={()=>{getSelectedField('Contracted Services Effective Date')}}>
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DatePicker
+                          open={calendarEffective}
+                          onOpen={() => setCalendarEffective(true)}
+                          onClose={() => setCalendarEffective(false)}
+                          value={contractEffectiveDate}
+                          onChange={(newValue) => {
+                            setContractEffectiveDate(newValue);
+                          }}
+                          InputProps={{
+                            style: {
+                                fontSize: 14,
+                                height: 30,
+                            },
+                            onFocus: e => {
+                               setCalendarEffective(true);
+                             },
+                             onBlur: e => {
+                               setCalendarEffective(false);
+                             }
+                          }}
+                          minDate={contractTermPeriodFrom}
+                          maxDate={contractTermPeriodTo}
+                          renderInput={(params) => <TextField  {...params}
+                          onClick = {() => setCalendarEffective(true)}
+                          inputProps={{
+                            ...params.inputProps,
+                            placeholder: "Effective Date"
+                          }} />}
+                        />
+                      </LocalizationProvider>
+                    </div>
+                </div>
 
         {
           // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -855,83 +892,81 @@ const ContractIdTermLimitIndividual = (
           // </div>
         }
 
-        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contract Continuation Policy*</div>
-          <div>
-            <div onFocus={() => { getSelectedField('Contract Continuation Policy') }}>
-              <select
-                name="class"
-                id="Class"
-                value={selectedContractContinuationPolicy || 'Select...'}
-                onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
-                className={`${style.fullWidth}`}>
-                <option value="0" >
-                  Choose Your Contract Continuation Policy
-                </option>
-                <option value="AUTORENEWAL" >
-                  Auto Renewal
-                </option>
-                <option value="WRITTENCONTRACTEXTENSIONFORFIXEDTERM" >
-                  Written Contract Extension For Fixed Term
-                </option>
-                <option value="NEWCONTRACTONEXPIRATION" >
-                  New Contract On Expiration
-                </option>
-                <option value="ONETIMECONTRACTTERMINATEONEXPIRATION" >
-                  One Time Contract - Terminate On Expiration
-                </option>
-              </select>
-            </div>
-            {selectedContractContinuationPolicy === "AUTORENEWAL" && (
-              <div className={`${style.renewalBoxStyle}`}>
-                <div className={`${style.renewalBoxGrid}`} onFocus={() => { getSelectedField('Auto Renewal - Auto Renewal Term') }}>
-                  <div className={style.marginTop}>Auto Renewal Term*</div>
-                  <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e) => setAutoRenewal({ ...autoRenewal, renewalTerm: e })} />
-                  <select
-                    name="class"
-                    id="Class"
-                    value={autoRenewal.calendar}
-                    onChange={(e) => setAutoRenewal({ ...autoRenewal, calendar: e.target.value })}
-                    className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                    <option value="WEEKS" >
-                      Weeks
-                    </option>
-                    <option value="MONTHS" >
-                      Months
-                    </option>
-                  </select>
-                </div>
-                <div className={`${style.renewalBoxGrid}`} onFocus={() => { getSelectedField('Auto Renewal - Allowable Auto Renewal Terms') }}>
-                  <div className={style.marginTop10}>Allowable Auto Renewal Terms*</div>
-                  <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm} onChange={(e) => setAutoRenewal({ ...autoRenewal, allowableRenewalTerm: e })} />
-                </div>
-              </div>
-            )}
-            {(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
-              || selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
-              || selectedContractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION") && (
-                <div className={`${style.renewalRemainderBoxStyle}`}
-                  onFocus={() => {
-                    getSelectedField(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
-                      ? "Written Contract Extension - Set Renewal Reminder"
-                      : selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
-                        ? "New Contract on Expiration - Set Renewal Reminder"
-                        : "One Time Contract - Set Renewal Reminder")
-                  }}>
-                  {reminderFields}
-                  <div className={`${style.renewalBoxGrid}`}>
-                    {renewalReminder?.length <= 2 && (
-                      <button className={`${style.addMoreButton} ${style.selectedColor} ${style.cursorPointer}`} onClick={addReminder}>ADD MORE</button>
-                    )}
-                  </div>
-                </div>
-              )}
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Contract Continuation Policy*</div>
+                    <div>
+                        <div onFocus={()=>{getSelectedField('Contract Continuation Policy')}}>
+                            <select
+                                name="class"
+                                id="Class"
+                                value={selectedContractContinuationPolicy || 'Select...'}
+                                onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
+                                className={`${style.fullWidth}`}>
+                                    <option value="0" >
+                                    Choose Your Contract Continuation Policy
+                                    </option>
+                                    <option value="AUTORENEWAL" >
+                                    Auto Renewal
+                                    </option>
+                                    <option value="NEWCONTRACTONEXPIRATION" >
+                                    New Contract On Expiration
+                                    </option>
+                                    <option value="ONETIMECONTRACTTERMINATEONEXPIRATION" >
+                                    One Time Contract - Terminate On Expiration
+                                    </option>
+                                    <option value="WRITTENCONTRACTEXTENSIONFORFIXEDTERM" >
+                                    Written Contract Extension For Fixed Term
+                                    </option>
+                            </select>
+                        </div>
+                        {selectedContractContinuationPolicy === "AUTORENEWAL" && (
+                            <div className={`${style.renewalBoxStyle}`}>
+                                <div className={`${style.renewalBoxGrid}`} onFocus={()=>{getSelectedField('Auto Renewal - Auto Renewal Term')}}>
+                                    <div className={style.marginTop}>Auto Renewal Term*</div>
+                                    <EditableText className={`${style.inputRenewalStyle}`} placeholder=""  value={autoRenewal.renewalTerm} onChange={(e)=> (e <= 52 && setAutoRenewal({...autoRenewal, renewalTerm:e}))} type="tel" />
+                                    <select
+                                        name="class"
+                                        id="Class"
+                                        value={autoRenewal.calendar}
+                                        onChange={(e) => setAutoRenewal({...autoRenewal, calendar:e.target.value})}
+                                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
+                                            <option value="WEEKS" >
+                                            Weeks
+                                            </option>
+                                            <option value="MONTHS" >
+                                            Months
+                                            </option>
+                                    </select>
+                                </div>
+                                <div className={`${style.renewalBoxGrid}`} onFocus={()=>{getSelectedField('Auto Renewal - Allowable Auto Renewal Terms')}}>
+                                    <div className={style.marginTop10}>Allowable Auto Renewal Terms*</div>
+                                    <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm} onChange={(e)=>(e <= 12 && setAutoRenewal({...autoRenewal, allowableRenewalTerm:e}))} type="tel"/>
+                                </div>
+                            </div>
+                        )}
+                        {(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
+                            || selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
+                            || selectedContractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION") && (
+                            <div className={`${style.renewalRemainderBoxStyle}`}
+                            onFocus={()=>{getSelectedField(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
+                            ? "Written Contract Extension - Set Renewal Reminder"
+                            :selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
+                            ?"New Contract on Expiration - Set Renewal Reminder"
+                            :"One Time Contract - Set Renewal Reminder")}}>
+                              {reminderFields}
+                              <div className={`${style.renewalBoxGrid}`}>
+                                {renewalReminder?.length <= 2 && (
+                                  <button className={`${style.addMoreButton} ${style.selectedColor} ${style.cursorPointer}`} onClick={addReminder}>ADD MORE</button>
+                                )}
+                              </div>
+                            </div>
+                        )}
           </div>
         </div>
       </div>
       <div className={`${style.floatRight} ${style.marginTop20}`}>
-        <button className={style.newContractOutlinedButton} onClick={() => addContract()}>SAVE IN-PROGRESS</button>
-        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { addContract(); getViewPage2(true); getViewPage1(false); getCurrentPage('Contracted Services Provider(s)') }}>CONTINUE</button>
+        <button className={style.newContractOutlinedButton} onClick={() => addContract('Save In Progress')}>SAVE IN-PROGRESS</button>
+        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { addContract('Continue'); getViewPage2(true); getViewPage1(false); getCurrentPage('Contracted Services Provider(s)') }}>CONTINUE</button>
       </div>
       {addNewManagerDialog && (
         <AddNewContractManager getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUserData} contractId={contractIdFromActive} />

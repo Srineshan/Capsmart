@@ -7,6 +7,7 @@ import LoadingScreen from '../../Components/LoadingScreen';
 import RedWarning from './../../images/redWarning.png';
 import FileImg from './../../images/fileImg.png';
 import AddProofOfDocumentation from './addProofOfDocumentation';
+import RedirectingPopUp from './redirectingPopUp';
 
 import style from './index.module.scss';
 import EditProofOfDocumentation from './editProofOfDocumentation';
@@ -156,24 +157,9 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
             }
         </div>
         ) : (
-          <>
-            <div className={style.cloneBlockStyle}></div>
-            <Dialog isOpen={true} className={`${style.cloneDialog}`} canOutsideClickClose={false}>
-              <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
-                <div className={style.spaceBetween}>
-                  <p className={style.extensionStyle}>NO USERS FOUND</p>
-                </div>
-                <div className={style.extensionBorder}></div>
-                <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
-                No Contracted Service Provider Is Found.
-                </p>
-                <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                  <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => getCurrentPage('Contracted Services Provider(s)')}>ADD CONTRACTOR</button>
-                </div>
-                <br />
-              </div>
-            </Dialog>
-          </>
+          (
+            <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Contracted Services Provider(s)'} title={'NO USERS FOUND'} description={'No Contracted Service Provider Is Found.'} buttonText={'ADD CONTRACTOR'}/>
+          )
         )}
       </>
     )

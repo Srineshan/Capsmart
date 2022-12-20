@@ -309,7 +309,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : selectedContract === "draft" ? getDraftContractsValues() : getUpcomingContractsValues();
   let actions = selectedContract === 'activecontracts' ? activeActionsData : draftActionsData;
   let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGridWithoutAction : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
-  // let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : style.draftContractGrid; 
+  // let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : style.draftContractGrid;
 
   return (
     <div className={style.margin20}>

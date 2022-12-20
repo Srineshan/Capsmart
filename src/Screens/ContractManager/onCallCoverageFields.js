@@ -9,6 +9,8 @@ import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
+import { TimePicker } from "@blueprintjs/datetime";
+import {GetDateFromHours} from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
 import style from './index.module.scss';
@@ -28,8 +30,8 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
           sessionAmount:'0',
           totalSession:'0',
           totalSessionFrequency:'YEAR',
-          workingTimeFrom:'',
-          workingTimeTo:'',
+          workingTimeFrom:new Date(),
+          workingTimeTo:new Date(),
           serviceDays:{
             tuesday: false,
             wednesday: false,
@@ -60,12 +62,12 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
           additionalScheduleRequired:serviceSelected?.additionalSchedule?.scheduleRequired,
           billableService:serviceSelected?.billableService,
           rateType:serviceSelected?.rateType,
-          sessionDuration:serviceSelected?.duration?.hours,
+          sessionDuration:serviceSelected?.duration?.hours || '0',
           sessionAmount:serviceSelected?.payableAmount?.value,
           totalSession:serviceSelected?.totalSessions?.value,
           totalSessionFrequency:serviceSelected?.totalSessions?.frequency,
-          workingTimeFrom:serviceSelected?.workingPeriod?.from,
-          workingTimeTo:serviceSelected?.workingPeriod?.to,
+          workingTimeFrom:GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+          workingTimeTo:GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
           serviceDays:serviceSelected?.serviceDays,
         });
         }
@@ -127,11 +129,11 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
-                        <EditableText value={metadata?.min}  placeholder='' onChange={(e)=>handleValueChange('min',e)} type='number' className={style.serviceProvidedEditableTextStyle} />
+                        <EditableText value={metadata?.min}  placeholder='' onChange={(e)=>handleValueChange('min',e)} type='number' min="0" className={style.serviceProvidedEditableTextStyle} />
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MAX</div>
-                        <EditableText value={metadata?.max}  placeholder='' onChange={(e)=>handleValueChange('max',e)} type='number' className={style.serviceProvidedEditableTextStyle} />
+                        <EditableText value={metadata?.max}  placeholder='' onChange={(e)=>handleValueChange('max',e)} type='number' min="0" className={style.serviceProvidedEditableTextStyle} />
                     </div>
                     <Select
                         displayEmpty
@@ -235,6 +237,7 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
                     <div className={`${style.threeFieldWidth}`}>
                         <TextField
                             size="small"
+                            disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
                             InputProps={{
                                 startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                             }}
@@ -243,7 +246,7 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
                         />
                     </div>
                     <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ {metadata?.sessionAmount / metadata?.sessionDuration || 0} per Hour (Pro Rata)</p>
+                        <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ {(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)</p>
                     </div>
                 </div>
             </div>
@@ -252,7 +255,7 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <EditableText value={metadata?.totalSession} placeholder="" type='number' onChange={(e)=>{
+                        <EditableText value={metadata?.totalSession} placeholder="" type='number' min="0" onChange={(e)=>{
                           let value = e.slice(0, e.slice());
                           handleValueChange('totalSession', value);}}
                           className={style.editableSessionTextStyle} />
@@ -265,20 +268,21 @@ const OnCallCoverageFields = ({getMetaData, serviceSelected}) => {
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Duty Days*</div>
+                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
                 <div className={style.displayInRow}>
-                    <InputGroup
-                        value={metadata?.workingTimeFrom}
-                        placeholder="HH:MM"
-                        onChange={(e)=> handleValueChange('workingTimeFrom',e.target.value) }
-                        className={style.threeFieldWidth}
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e)=>{
+                        handleValueChange('workingTimeFrom',e);
+                      }}
+                      value={new Date(metadata?.workingTimeFrom)}
                     />
-                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop}`}>To</p>
-                    <InputGroup
-                        value={metadata?.workingTimeTo}
-                        placeholder="HH:MM"
-                        onChange={(e)=> handleValueChange('workingTimeTo',e.target.value) }
-                        className={style.threeFieldWidth}
+                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e)=>handleValueChange('workingTimeTo',e)}
+                        value={new Date(metadata?.workingTimeTo)}
+                        minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                     />
                 </div>
             </div>
