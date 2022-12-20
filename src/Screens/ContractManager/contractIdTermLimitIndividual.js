@@ -14,6 +14,7 @@ import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDe
 import AddNewContractManager from './addNewContractManager';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Auth } from './../../utils/auth'
 import { format, sub, add } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
@@ -25,6 +26,15 @@ const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
 const TEXTFIELDLEN = 100;
 const DESCLEN = 250;
+
+const switchTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#7165E3',
+    },
+  },
+});
+
 const ContractIdTermLimitIndividual = (
   { contracts,
     getViewPage1,
@@ -575,13 +585,16 @@ const ContractIdTermLimitIndividual = (
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <div className={style.extentionLableStyle}>Contract Access Privilege To Other Contract Manager</div>
           <div className={style.verticalAlignCenter}>
-            <FormControlLabel
-              control={
-                <Switch checked={contractAccessPrivilege} className={`${style.floatLeft}`} onChange={() => { setContractAccessPrivilege(!contractAccessPrivilege) }} />
-              }
-              className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
-              label={contractAccessPrivilege ? 'YES' : "NO"}
-            />
+            <ThemeProvider theme={switchTheme}>
+              <FormControlLabel
+                control={
+                  <Switch checked={contractAccessPrivilege} className={`${style.floatLeft}`} onChange={() => { setContractAccessPrivilege(!contractAccessPrivilege) }} />
+                }
+                color='primary'
+                className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
+                label={contractAccessPrivilege ? 'YES' : "NO"}
+              />
+            </ThemeProvider>
             {contractAccessPrivilege ? (
               <LockOpenOutlinedIcon className={style.lockStyle} style={{ color: '#14B15A' }} />
             ) : (
@@ -593,13 +606,16 @@ const ContractIdTermLimitIndividual = (
           <div className={style.extentionLableStyle}>Contract Documents On File*</div>
           <div onFocus={() => { getSelectedField('Fully Executed Contract on File') }}>
             <div className={`${style.spaceBetween}`}>
-              <FormControlLabel
-                control={
-                  <Switch checked={fullyExecutedContract} className={`${style.floatLeft}`} onChange={() => { setFullyExecutedContract(!fullyExecutedContract) }} />
-                }
-                className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
-                label={fullyExecutedContract ? 'YES' : "NO"}
-              />
+              <ThemeProvider theme={switchTheme}>
+                <FormControlLabel
+                  control={
+                    <Switch checked={fullyExecutedContract} className={`${style.floatLeft}`} onChange={() => { setFullyExecutedContract(!fullyExecutedContract) }} />
+                  }
+                  color='primary'
+                  className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
+                  label={fullyExecutedContract ? 'YES' : "NO"}
+                />
+              </ThemeProvider>
               {fullyExecutedContract && (
                 <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
               )}

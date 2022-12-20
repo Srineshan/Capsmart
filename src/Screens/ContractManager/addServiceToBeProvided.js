@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DatalistInput from 'react-datalist-input';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -24,6 +25,14 @@ import SupplementalFields from './supplementalFields';
 import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
+
+const switchTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#7165E3',
+    },
+  },
+});
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex }) => {
   const serviceTypeList = ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days', 'Supplemental Services', 'Add-On Services', 'Administrative / Miscellaneous Services'];
@@ -463,10 +472,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
             <div>
-              {
-                // <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, textArea:!helpTool?.textArea})} />
-                // <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({...helpTool, calculator:!helpTool?.calculator})} />
-              }
+              <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })} />
+              <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator })} />
               <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => { getAddServiceDialog(false); getEditServiceDialog(false); }} />
             </div>
           </div>
@@ -499,13 +506,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>
                   <div>
                     <div className={`${style.displayInRow} `}>
-                      <FormControlLabel
-                        control={
-                          <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => handleDesignateContractor()} />
-                        }
-                        className={`${style.switchFontStyle} ${style.flexLeft} `}
-                        label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
-                      />
+                      <ThemeProvider theme={switchTheme}>
+                        <FormControlLabel
+                          control={
+                            <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => handleDesignateContractor()} />
+                          }
+                          color='primary'
+                          className={`${style.switchFontStyle} ${style.flexLeft} `}
+                          label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
+                        />
+                      </ThemeProvider>
 
                       {isDesignatedSpecificContractor ? (
                         <Select
@@ -557,15 +567,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                   <div>
                     <div className={`${style.displayInRow} `}>
-                      <FormControlLabel
-                        control={
-                          <Switch className={`${style.textAlignLeft}`} />
-                        }
-                        checked={showLocation}
-                        onChange={() => setShowLocation(!showLocation)}
-                        className={`${style.switchFontStyle} ${style.flexLeft} `}
-                        label={showLocation ? 'YES' : 'NO'}
-                      />
+                      <ThemeProvider theme={switchTheme}>
+                        <FormControlLabel
+                          control={
+                            <Switch className={`${style.textAlignLeft}`} />
+                          }
+                          color='primary'
+                          checked={showLocation}
+                          onChange={() => setShowLocation(!showLocation)}
+                          className={`${style.switchFontStyle} ${style.flexLeft} `}
+                          label={showLocation ? 'YES' : 'NO'}
+                        />
+                      </ThemeProvider>
                       {showLocation &&
                         <div className={`${style.addGrid} ${style.fullWidth}`}>
                           <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
@@ -598,9 +611,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             </div>
             {helpTool?.calculator ? (
               <Calculator />
-            ) : (
+            ) : helpTool?.textArea ? (
               <Calculator />
-            )}
+            ) : ''}
           </div>
         </div>
         <div>

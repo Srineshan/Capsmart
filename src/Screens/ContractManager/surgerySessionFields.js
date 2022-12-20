@@ -1,95 +1,105 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
 import { TimePicker } from "@blueprintjs/datetime";
-import {GetDateFromHours} from './../../utils/formatting';
+import { GetDateFromHours } from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
 import style from './index.module.scss';
 
-const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
+const switchTheme = createTheme({
+    palette: {
+        primary: {
+            main: '#7165E3',
+        },
+    },
+});
+
+const SurgerySessionFields = ({ getMetaData, serviceSelected }) => {
     const limit5 = 5;
 
-    const [metadata,setMetadata] = useState({
-      min:'0',
-      max:'0',
-      frequency:'WEEK',
-      withNurse:'0',
-      withoutNurse:'0',
-      noTargetApplicable:false,
-      additionalScheduleValue:'0',
-      additionalScheduleFrequency:'WEEK',
-      additionalScheduleRequired:true,
-      billableService:true,
-      rateType:'HOURLY',
-      sessionDuration:'0',
-      sessionAmount:'0',
-      totalSession:'0',
-      totalSessionFrequency:'YEAR',
-      workingTimeFrom:new Date(),
-      workingTimeTo:new Date(),
-      serviceDays:{
-        tuesday: false,
-        wednesday: false,
-        thursday: false,
-        friday: false,
-        saturday: false,
-        sunday: false,
-        weekDays: false,
-        weekEnds: false,
-        monday: false
-      },
-      weekdaysCount:'0',
-      weekendsCount:'0',
+    const [metadata, setMetadata] = useState({
+        min: '0',
+        max: '0',
+        frequency: 'WEEK',
+        withNurse: '0',
+        withoutNurse: '0',
+        noTargetApplicable: false,
+        additionalScheduleValue: '0',
+        additionalScheduleFrequency: 'WEEK',
+        additionalScheduleRequired: true,
+        billableService: true,
+        rateType: 'HOURLY',
+        sessionDuration: '0',
+        sessionAmount: '0',
+        totalSession: '0',
+        totalSessionFrequency: 'YEAR',
+        workingTimeFrom: new Date(),
+        workingTimeTo: new Date(),
+        serviceDays: {
+            tuesday: false,
+            wednesday: false,
+            thursday: false,
+            friday: false,
+            saturday: false,
+            sunday: false,
+            weekDays: false,
+            weekEnds: false,
+            monday: false
+        },
+        weekdaysCount: '0',
+        weekendsCount: '0',
     })
 
-    useEffect(()=>{
-      setSelectedValues();
+    useEffect(() => {
+        setSelectedValues();
     }, [serviceSelected]);
 
     const setSelectedValues = () => {
-      setMetadata({...metadata,
-      min: serviceSelected?.contractedSchedule?.minimum?.value,
-      max: serviceSelected?.contractedSchedule?.maximum?.value,
-      frequency: serviceSelected?.contractedSchedule?.frequency,
-      withNurse:serviceSelected?.patientsSeenTarget?.withNurse?.value,
-      withoutNurse:serviceSelected?.patientsSeenTarget?.withoutNurse?.value,
-      noTargetApplicable:serviceSelected?.patientsSeenTarget?.noTargetApplicable,
-      additionalScheduleValue:serviceSelected?.additionalSchedule?.value,
-      additionalScheduleFrequency:serviceSelected?.additionalSchedule?.frequency,
-      additionalScheduleRequired:serviceSelected?.additionalSchedule?.scheduleRequired,
-      billableService:serviceSelected?.billableService,
-      rateType:serviceSelected?.rateType,
-      sessionDuration:serviceSelected?.duration?.hours || '0',
-      sessionAmount:serviceSelected?.payableAmount?.value,
-      totalSession:serviceSelected?.totalSessions?.value,
-      totalSessionFrequency:serviceSelected?.totalSessions?.frequency,
-      workingTimeFrom:GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
-      workingTimeTo:GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
-      serviceDays:serviceSelected?.serviceDays,
-    });
+        setMetadata({
+            ...metadata,
+            min: serviceSelected?.contractedSchedule?.minimum?.value,
+            max: serviceSelected?.contractedSchedule?.maximum?.value,
+            frequency: serviceSelected?.contractedSchedule?.frequency,
+            withNurse: serviceSelected?.patientsSeenTarget?.withNurse?.value,
+            withoutNurse: serviceSelected?.patientsSeenTarget?.withoutNurse?.value,
+            noTargetApplicable: serviceSelected?.patientsSeenTarget?.noTargetApplicable,
+            additionalScheduleValue: serviceSelected?.additionalSchedule?.value,
+            additionalScheduleFrequency: serviceSelected?.additionalSchedule?.frequency,
+            additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
+            billableService: serviceSelected?.billableService,
+            rateType: serviceSelected?.rateType,
+            sessionDuration: serviceSelected?.duration?.hours || '0',
+            sessionAmount: serviceSelected?.payableAmount?.value,
+            totalSession: serviceSelected?.totalSessions?.value,
+            totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
+            workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+            workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
+            serviceDays: serviceSelected?.serviceDays,
+        });
     }
 
 
-    useEffect(()=>{
-      getMetaData(metadata)
-    },[metadata])
+    useEffect(() => {
+        getMetaData(metadata)
+    }, [metadata])
 
     const handleValueChange = (name, value) => {
-      setMetadata({...metadata, [name]:value});
+        setMetadata({ ...metadata, [name]: value });
     }
 
     const getServiceDaysMetadata = (daysCount, serviceDays) => {
-      setMetadata({...metadata, serviceDays:serviceDays, weekdaysCount:daysCount?.weekdays, weekendsCount:daysCount?.weekends})
+        setMetadata({ ...metadata, serviceDays: serviceDays, weekdaysCount: daysCount?.weekdays, weekendsCount: daysCount?.weekends })
     }
 
     const setpatientTarget = (value) => {
-      setMetadata({...metadata, withNurse:value, withoutNurse:value});
+        setMetadata({ ...metadata, withNurse: value, withoutNurse: value });
     }
 
     return (
@@ -99,17 +109,17 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
-                        <EditableText type='number' min="0" placeholder='' value={metadata?.min} className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('min',e)}/>
+                        <EditableText type='number' min="0" placeholder='' value={metadata?.min} className={style.serviceProvidedEditableTextStyle} onChange={(e) => handleValueChange('min', e)} />
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MAX</div>
-                        <EditableText value={metadata?.max} placeholder='' type='number' min="0" className={style.serviceProvidedEditableTextStyle} onChange={(e)=>handleValueChange('max',e)}/>
+                        <EditableText value={metadata?.max} placeholder='' type='number' min="0" className={style.serviceProvidedEditableTextStyle} onChange={(e) => handleValueChange('max', e)} />
                     </div>
                     <Select
                         displayEmpty
                         SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                         className={`${style.fullWidth} ${style.marginLeft20}`}
-                        onChange={(e)=>handleValueChange('frequency',e.target.value)}
+                        onChange={(e) => handleValueChange('frequency', e.target.value)}
                         value={metadata?.frequency}
                     >
                         <MenuItem value="">Select Frequecy</MenuItem>
@@ -123,8 +133,8 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Service Cases Target*</div>
                 <div className={`${style.displayInRow}`}>
-                    <InputGroup  value={metadata?.withNurse} disabled={metadata?.noTargetApplicable} className={` ${style.threeFieldWidth}`} onChange={(e)=>{setpatientTarget(e.target.value)}}/>
-                    <Checkbox label="No Target Applicable" value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth} `} onChange={(e)=>handleValueChange('noTargetApplicable', e.target.checked)}/>
+                    <InputGroup value={metadata?.withNurse} disabled={metadata?.noTargetApplicable} className={` ${style.threeFieldWidth}`} onChange={(e) => { setpatientTarget(e.target.value) }} />
+                    <Checkbox label="No Target Applicable" value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth} `} onChange={(e) => handleValueChange('noTargetApplicable', e.target.checked)} />
                 </div>
             </div>
 
@@ -132,36 +142,39 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.extentionLableStyle}>Additional Schedule*</div>
                 <div className={style.displayInRow}>
                     <div className={`${style.threeFieldWidth}`} >
-                        <FormControlLabel
-                            control={
-                                <Switch checked={metadata?.additionalScheduleRequired} className={` ${style.textAlignLeft}`} />
-                            }
-                            onChange={(e)=>handleValueChange('additionalScheduleRequired', !metadata?.additionalScheduleRequired)}
-                            className={`${style.switchFontStyle} ${style.flexLeft}`}
-                            label={metadata?.additionalScheduleRequired ? 'YES' : 'NO'}
-                        />
+                        <ThemeProvider theme={switchTheme}>
+                            <FormControlLabel
+                                control={
+                                    <Switch checked={metadata?.additionalScheduleRequired} className={` ${style.textAlignLeft}`} />
+                                }
+                                color='primary'
+                                onChange={(e) => handleValueChange('additionalScheduleRequired', !metadata?.additionalScheduleRequired)}
+                                className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                label={metadata?.additionalScheduleRequired ? 'YES' : 'NO'}
+                            />
+                        </ThemeProvider>
                     </div>
                     {metadata?.additionalScheduleRequired &&
-                      (
-                        <>
-                          <InputGroup value={metadata?.additionalClinicScheduleValue}
-                          onChange={(e)=>handleValueChange('additionalScheduleValue', e.target.value)}
-                          className={` ${style.threeFieldWidth}`}/>
+                        (
+                            <>
+                                <InputGroup value={metadata?.additionalClinicScheduleValue}
+                                    onChange={(e) => handleValueChange('additionalScheduleValue', e.target.value)}
+                                    className={` ${style.threeFieldWidth}`} />
 
-                          <Select
-                              displayEmpty
-                              SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                              className={`${style.threeFieldWidth} ${style.marginLeft20}`}
-                              value = {metadata?.additionalScheduleFrequency}
-                              onChange={(e)=>handleValueChange('additionalScheduleFrequency', e.target.value)}
-                          >
-                              <MenuItem value="">Select Frequecy</MenuItem>
-                              <MenuItem value={'WEEK'}>Every Other Week</MenuItem>
-                              <MenuItem value={'MONTH'}>Every Other Month</MenuItem>
-                              <MenuItem value={'YEAR'}>Every Other Year</MenuItem>
-                          </Select>
-                        </>
-                      )}
+                                <Select
+                                    displayEmpty
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                                    value={metadata?.additionalScheduleFrequency}
+                                    onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
+                                >
+                                    <MenuItem value="">Select Frequecy</MenuItem>
+                                    <MenuItem value={'WEEK'}>Every Other Week</MenuItem>
+                                    <MenuItem value={'MONTH'}>Every Other Month</MenuItem>
+                                    <MenuItem value={'YEAR'}>Every Other Year</MenuItem>
+                                </Select>
+                            </>
+                        )}
 
                 </div>
             </div>
@@ -170,28 +183,31 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.extentionLableStyle}>Billable Service*</div>
                 <div className={style.displayInRow}>
                     <div className={`${style.threeFieldWidth}`} >
-                        <FormControlLabel
-                            control={
-                                <Switch checked={metadata?.billableService} className={` ${style.textAlignLeft}`}
-                                onChange={(e)=>handleValueChange('billableService', !metadata?.billableService)}
-                                />
+                        <ThemeProvider theme={switchTheme}>
+                            <FormControlLabel
+                                control={
+                                    <Switch checked={metadata?.billableService} className={` ${style.textAlignLeft}`}
+                                        onChange={(e) => handleValueChange('billableService', !metadata?.billableService)}
+                                    />
                                 }
+                                color='primary'
                                 className={`${style.switchFontStyle} ${style.flexLeft}`}
                                 label={metadata?.billableService ? 'YES' : 'NO'}
-                        />
+                            />
+                        </ThemeProvider>
                     </div>
                     {
-                      // metadata?.billableService &&
-                      // <Select
-                      //     displayEmpty
-                      //     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                      //     className={`${style.threeFieldWidth}`}
-                      //     onChange={(e)=>handleValueChange('rateType', e.target.value)}
-                      //     value={metadata?.rateType}
-                      // >
-                      //     <MenuItem value="">Select Frequecy</MenuItem>
-                      //     <MenuItem value={'HOURLY'}>Hourly</MenuItem>
-                      // </Select>
+                        // metadata?.billableService &&
+                        // <Select
+                        //     displayEmpty
+                        //     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                        //     className={`${style.threeFieldWidth}`}
+                        //     onChange={(e)=>handleValueChange('rateType', e.target.value)}
+                        //     value={metadata?.rateType}
+                        // >
+                        //     <MenuItem value="">Select Frequecy</MenuItem>
+                        //     <MenuItem value={'HOURLY'}>Hourly</MenuItem>
+                        // </Select>
                     }
                 </div>
             </div>
@@ -205,7 +221,7 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                             endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                         }}
                         value={metadata?.sessionDuration}
-                        onChange={(e)=>handleValueChange('sessionDuration', e.target.value)}
+                        onChange={(e) => handleValueChange('sessionDuration', e.target.value)}
                     />
                 </div>
             </div>
@@ -221,7 +237,7 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                                 startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                             }}
                             value={metadata?.sessionAmount}
-                            onChange={(e)=>handleValueChange('sessionAmount', e.target.value)}
+                            onChange={(e) => handleValueChange('sessionAmount', e.target.value)}
                         />
                     </div>
                     <div className={style.verticalAlignCenter}>
@@ -235,10 +251,11 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <EditableText placeholder='' value={metadata?.totalSession} type='number' min="0"
-                        className={style.editableSessionTextStyle}
-                        onChange={(e)=>{
-                          let value = e.slice(0, e.slice());
-                          handleValueChange('totalSession', value);}}/>
+                            className={style.editableSessionTextStyle}
+                            onChange={(e) => {
+                                let value = e.slice(0, e.slice());
+                                handleValueChange('totalSession', value);
+                            }} />
                         <div className={`${style.textElement} ${style.greenBase} ${style.redBase}`}>60 Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>
@@ -249,7 +266,7 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Service Days*</div>
-                <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected}/>
+                <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -257,15 +274,15 @@ const SurgerySessionFields = ({getMetaData, serviceSelected}) => {
                 <div className={style.displayInRow}>
                     <TimePicker
                         useAmPm={false}
-                        onChange={(e)=>{
-                        handleValueChange('workingTimeFrom',e);
-                      }}
-                      value={new Date(metadata?.workingTimeFrom)}
+                        onChange={(e) => {
+                            handleValueChange('workingTimeFrom', e);
+                        }}
+                        value={new Date(metadata?.workingTimeFrom)}
                     />
                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                     <TimePicker
                         useAmPm={false}
-                        onChange={(e)=>handleValueChange('workingTimeTo',e)}
+                        onChange={(e) => handleValueChange('workingTimeTo', e)}
                         value={new Date(metadata?.workingTimeTo)}
                         minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                     />
