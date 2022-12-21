@@ -17,12 +17,10 @@ export const Run = ({link}) => {
     const open = Boolean(anchorEl);
 
     const handleClick = (event) => {
-        console.log('entered')
         setAnchorEl(event.currentTarget);
     };
 
     const handleClose = () => {
-        console.log('leave')
         setAnchorEl(null);
     };
 

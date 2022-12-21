@@ -598,16 +598,11 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
             onFocus={() => { getSelectedField('Cell Phone') }}>
             <div className={style.extentionLableStyle}>Cell Phone*</div>
             <div className={style.twoCol}>
-              <TextField
-                size="small"
-                placeholder="Numeric" className={style.fullWidth}
-                value={contractorPhone}
-                maxLength={15}
-                onChange={(e) => setContractorPhone(FormatPhoneNumber(e.target.value))}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>+1</InputAdornment>
-                }}
-              />
+              <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
+                <InputGroup placeholder="Numeric" value={contractorPhone} maxLength={15}
+                  onChange={(e) => setContractorPhone(FormatPhoneNumber(e.target.value))} className={`${style.fullWidth}`} />
+              </div>
               <FormGroup>
                 <FormControlLabel control={<Checkbox value="NA" />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
               </FormGroup>

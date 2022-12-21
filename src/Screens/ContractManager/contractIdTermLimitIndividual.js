@@ -5,6 +5,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -421,16 +422,34 @@ const ContractIdTermLimitIndividual = (
     for (let i = 0; i < renewalReminder?.length; i++) {
       temp[i] = (
         <div className={`${style.renewalRemainderBoxGrid} ${style.marginBottom}`} key={`reminder${i}-${renewalReminder?.[i]?.days}`}>
-          <div className={style.marginTop}>
+          <div className={style.verticalAlignCenter}>
             Set Renewal Reminder*
           </div>
-          <div className={style.displayInRow}>
+          {/* <div className={style.displayInRow}>
             <EditableText className={style.inputRenewalRemainderStyle} defaultValue={renewalReminder?.[i]?.days} placeholder="" onChange={(e) => handleReminder(e, i)} key={`days${i}${renewalReminder?.[i]?.days}`} />
             <div className={`${style.marginTop10} ${style.marginLeft20}`}>Days</div>
+          </div> */}
+          <div className={style.renewalWidth}>
+            <TextField
+              size="small"
+              InputProps={{
+                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+              }}
+              onChange={(e) => handleReminder(e, i)}
+              key={`days${i}${renewalReminder?.[i]?.days}`}
+              defaultValue={renewalReminder?.[i]?.days}
+              inputProps={{
+                style: {
+                  height: 10,
+                },
+              }}
+            />
           </div>
-          {renewalReminder?.length !== 1 && (
-            <Icon icon="cross" className={style.marginTop10} color="black" onClick={() => removeReminder(i)} />
-          )}
+          <div className={style.verticalAlignCenter}>
+            {renewalReminder?.length !== 1 && (
+              <Icon icon="cross" color="#a0a5ab" onClick={() => removeReminder(i)} />
+            )}
+          </div>
         </div>
       )
     }
