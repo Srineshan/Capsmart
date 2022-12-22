@@ -129,6 +129,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   let action = [];
   let activationStatus = [];
   let lastUpdatedBy = [];
+  let contractorHoverText = [];
 
   const getActiveContractsValues = () => {
     dot = [];
@@ -138,6 +139,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     lock = [];
     lockHoverText = [];
     podHoverText = [];
+    contractorHoverText = [];
     name = [];
     contractors = [];
     effectiveDate = [];
@@ -153,12 +155,13 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       contractId.push(data?.contractDetail?.contractId?.id || '-');
       lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
       lockHoverText.push('Contract available for other contract managers to access & work on');
-      podHoverText.push(['Medical Lic Cer { Contrname}', 'Medical Lic Cer { Contrname}'])
+      podHoverText.push(['Medical Lic Cer { Contrname}', 'Medical Lic Cer { Contrname}']);
+      contractorHoverText.push(['Contractor 1', 'Contractor 2'])
       notification.push(<WarningAmberIcon style={{ color: '#FF6562' }} />);
       name.push(data?.contractName?.contractName);
       contractors.push("2");
       effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
-      podStatus.push({ "value": "3", "src": GreenPage });
+      podStatus.push("3");
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
       action.push(true);
@@ -171,9 +174,9 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
       { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
-      { "type": "iconWithCount", "value": contractors, "onClickFunction": onClickFunction, "icon": <GroupOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} /> },
+      { "type": "iconWithCount", "value": contractors, "hoverText": contractorHoverText, 'isShowHoverText': true, "icon": <GroupOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} /> },
       { "type": "text", "value": effectiveDate, "onClickFunction": onClickFunction },
-      { "type": "imgWithCount", "value": podStatus, "img": GreenPage, "hoverText": podHoverText, 'isShowHoverText': true },
+      { "type": "iconWithCount", "value": podStatus, "hoverText": podHoverText, 'isShowHoverText': true, "icon": <TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#14B15A' }} /> },
       // {"type": "text", "value": manager, "onClickFunction": onClickFunction},
       { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
       // {"type": "action", "value": action},
