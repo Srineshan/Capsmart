@@ -26,7 +26,7 @@ import style from './index.module.scss';
 // import PDFDocument from './pdf';
 
 
-const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdated, isLoading, dataToUseInReport, refToUse}) => {
+const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdated, isLoading, dataToUseInReport, refToUse, getIsDownloadClicked}) => {
     const {reportType} = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -41,7 +41,6 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdat
     const openSave = Boolean(anchorElSave);
     const [anchorElPrint, setAnchorElPrint] = useState(null);
     const openPrint = Boolean(anchorElPrint);
-
 
     const getSaveReportDialog = (value) => {
         setShowSaveReport(value);
@@ -142,13 +141,13 @@ const ReportPerformanceAndOptions = ({handle, getIsRefresh, handlePrint, isUpdat
                         }
                         fileName={`report.pdf`}>
                         {({ blob, url, loading, error }) => ( */}
-                        <ReactToPdf targetRef={refToUse} filename="sample.pdf" x={.5} y={.5} scale={0.8}>
-                            {({ toPdf }) => 
-                                <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={toPdf}>
+                        {/* <ReactToPdf targetRef={refToUse} filename="sample.pdf" x={.5} y={.5} scale={0.8}>
+                            {({ toPdf }) =>  */}
+                                <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => getIsDownloadClicked(true)}>
                                     <DownloadingOutlinedIcon style={{color:"#52575D"}} />
                                 </div>
-                            }
-                        </ReactToPdf>
+                            {/* }
+                        </ReactToPdf> */}
                          {/* )}
                         </PDFDownloadLink> */}
                         <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={handlePrint} 

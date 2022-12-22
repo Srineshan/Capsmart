@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom';
 import { useReactToPrint } from "react-to-print";
 import { format } from 'date-fns';
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import { toPDF } from '../../Components/ConvertToPdf';
 import Pie from './d3-chart/pieGraph';
 import Watermark from 'react-awesome-watermark';
 import styled from 'styled-components';
@@ -74,6 +75,7 @@ const ReportTypeOverview = () => {
     const [categories, setCategories] = useState([]);
     const [stackedSeries, setStackedSeries] = useState([]);
     const [stackedCategories, setStackedCategories] = useState([]);
+    const [isDownloadClicked, setIsDownloadClicked] = useState(false);
     const [isNonCompliantReportTileClicked, setIsNonCompliantReportTileClicked] = useState(false);
     const podTypes = ['Medical Staff Membership & Privileges',
         'Primary Speciality Board Certification',
@@ -176,6 +178,14 @@ const ReportTypeOverview = () => {
 
     const getIsUpdated = (value) => {
         setIsUpdated(value);
+    }
+
+    const getIsDownloadClicked = (value) => {
+        setIsDownloadClicked(value);
+        console.log('entered')
+        if(value){
+            toPDF(".Report");
+        }
     }
 
     const getAcvityAndServices = async () => {
@@ -509,9 +519,9 @@ const ReportTypeOverview = () => {
             <div className={`${style.bigCardGrid} ${style.margin20WithoutTop} ${style.marginTop10}`}>
                 <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} getIsUpdated={getIsUpdated} />
                 <div>
-                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isUpdated} isLoading={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} />
+                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isUpdated} isLoading={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} />
                     <FullScreen handle={handle}>
-                        <div className={style.scroll} ref={PDFRef}>
+                        <div className={`Report`} ref={PDFRef}>
                             <div className={`${style.reportBackgroundCard} ${style.marginTop20}`} ref={componentRef}>
                                 <table style={{ width: '100%' }}>
                                     <thead>
