@@ -301,14 +301,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   </ThemeProvider>
                 </div>
               )}
-              <div className={`${style.extentionGrid} ${selectContractInfo === "INDIVIDUAL" && style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Business Entity Name*</div>
-                <InputGroup className={style.fullWidth}
-                  value={businessEntity?.name}
-                  onFocus={() => { getSelectedField('Business Entity Name') }}
-                  placeholder="Enter Business Entity Name"
-                  onChange={(e) => setBusinessEntity({ ...businessEntity, name: e.target.value })} />
-              </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
                 onFocus={() => { getSelectedField('Contractor NPIN') }}>
                 <div className={style.extentionLableStyle}>Vendor NPIN*</div>
@@ -344,7 +336,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   </div>
                 </div>
               </div>
-              <div className={`${style.extentionGrid} ${selectContractInfo === "INDIVIDUAL" && style.marginTop20}`}>
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Business Entity Name*</div>
                 <InputGroup className={style.fullWidth}
                   value={businessEntity?.name}
@@ -397,19 +389,18 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               >
                 <div className={style.extentionLableStyle}>Cell Phone*</div>
                 <div className={style.twoCol}>
-                  <TextField
-                    size="small"
-                    disabled={businessEntityUser?.contactNumber?.missing}
-                    placeholder="Numeric" className={style.fullWidth}
-                    value={businessEntityUser?.contactNumber?.number}
-                    onChange={(e) => {
-                      handleInput(e);
-                      setIsUserUpdated(true);
-                    }}
-                    InputProps={{
-                      startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>+1</InputAdornment>
-                    }}
-                  />
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                    <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
+                    <InputGroup placeholder="Numeric"
+                      value={businessEntityUser?.contactNumber?.number}
+                      maxLength={15}
+                      disabled={businessEntityUser?.contactNumber?.missing}
+                      onChange={(e) => {
+                        handleInput(e);
+                        setIsUserUpdated(true);
+                      }}
+                      className={`${style.fullWidth}`} />
+                  </div>
                   <FormGroup className={style.marginLeft20}>
                     <FormControlLabel control={<Checkbox value="NA"
                     // checked={businessEntityUser?.contactNumber?.missing} onChange={(e) =>
@@ -465,7 +456,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   </div>
                 </div>
               </div>
-                )}
 
               {
                 selectContractInfo !== 'INDIVIDUAL' &&

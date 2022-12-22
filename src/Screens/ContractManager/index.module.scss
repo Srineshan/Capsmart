@@ -1698,6 +1698,18 @@ select {
     width: 50%;
 }
 
+.renewalWidth {
+    width: 100px;
+    height: 100%;
+}
+
+.plusOneText {
+    text-align: left;
+    font: normal normal medium 16px/20px Montserrat;
+    letter-spacing: 0px;
+    color: #aeb2b7;
+}
+
 .validationAlert {
     background: #ffcdcc 0% 0% no-repeat padding-box;
     border-radius: 10px;

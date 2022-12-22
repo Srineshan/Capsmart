@@ -22,13 +22,17 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
     const [anchorEl, setAnchorEl] = useState(null);
-    const [hoverPopover, setHoverPopover] = useState(null);
-    const [hoverPopoverIcon, setHoverPopoverIcon] = useState(null);
-    const [hoverPopoverImg, setHoverPopoverImg] = useState(null);
+    const [anchorElIcon, setAnchorElIcon] = useState(null);
+    const openIcon = Boolean(anchorElIcon);
+    const [anchorElIconWithCount, setAnchorElIconWithCount] = useState(null);
+    const openIconWithCount = Boolean(anchorElIconWithCount);
+    const [anchorElImgWithIcon, setAnchorElImgWithIcon] = useState(null);
+    const openImgWithIcon = Boolean(anchorElImgWithIcon);
+    const [anchorElCountWithHover, setAnchorElCountWithHover] = useState(null);
+    const openCountWithHover = Boolean(anchorElCountWithHover);
+    const [anchorElTextWithHover, setAnchorElTextWithHover] = useState(null);
+    const openTextWithHover = Boolean(anchorElTextWithHover);
     const open = Boolean(anchorEl);
-    const hoverOpen = Boolean(hoverPopover);
-    const hoverOpenIcon = Boolean(hoverPopoverIcon);
-    const hoverOpenImg = Boolean(hoverPopoverImg);
     const [countHover, setCountHover] = useState(null);
     const countHoverOpen = Boolean(countHover);
     const [textHover, setTextHover] = useState(null);
@@ -55,6 +59,56 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
         setAnchorEl(null);
     };
 
+    const handleClickIcon = (event, index, tableDataIndex) => {
+        setAnchorElIcon(event.currentTarget);
+        setSelectedMenuIndex(index)
+        setSelectedMenuColIndex(tableDataIndex);
+    };
+
+    const handleCloseIcon = () => {
+        setAnchorElIcon(null);
+    };
+
+    const handleClickImgWithIcon = (event, index, tableDataIndex) => {
+        setAnchorElImgWithIcon(event.currentTarget);
+        setSelectedMenuIndex(index)
+        setSelectedMenuColIndex(tableDataIndex);
+    };
+
+    const handleCloseImgWithIcon = () => {
+        setAnchorElImgWithIcon(null);
+    };
+
+    const handleClickIconWithCount = (event, index, tableDataIndex) => {
+        setAnchorElIconWithCount(event.currentTarget);
+        setSelectedMenuIndex(index)
+        setSelectedMenuColIndex(tableDataIndex);
+    };
+
+    const handleCloseIconWithCount = () => {
+        setAnchorElIconWithCount(null);
+    };
+
+    const handleClickCountWithHover = (event, index, tableDataIndex) => {
+        setAnchorElCountWithHover(event.currentTarget);
+        setSelectedMenuIndex(index)
+        setSelectedMenuColIndex(tableDataIndex);
+    };
+
+    const handleCloseCountWithHover = () => {
+        setAnchorElCountWithHover(null);
+    };
+
+    const handleClickTextWithHover = (event, index, tableDataIndex) => {
+        setAnchorElTextWithHover(event.currentTarget);
+        setSelectedMenuIndex(index)
+        setSelectedMenuColIndex(tableDataIndex);
+    };
+
+    const handleCloseTextWithHover = () => {
+        setAnchorElTextWithHover(null);
+    };
+
     const handleClickCountHover = (event) => {
         setCountHover(event.currentTarget);
     };
@@ -69,35 +123,6 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
 
     const handleCloseTextHover = () => {
         setTextHover(null);
-    };
-
-    const handlePopoverOpen = (event, index) => {
-        setHoverPopover(event.currentTarget);
-        setSelectedMenuIndex(index)
-    };
-
-    const handlePopoverClose = () => {
-        setHoverPopover(null);
-    };
-
-    const handlePopoverOpenImg = (event, index, tableDataIndex) => {
-        setHoverPopoverImg(event.currentTarget);
-        setSelectedMenuIndex(index)
-        setSelectedMenuColIndex(tableDataIndex);
-    };
-
-    const handlePopoverCloseImg = () => {
-        setHoverPopoverImg(null);
-    };
-
-    const handlePopoverOpenIcon = (event, index, tableDataIndex) => {
-        setHoverPopoverIcon(event.currentTarget);
-        setSelectedMenuIndex(index)
-        setSelectedMenuColIndex(tableDataIndex);
-    };
-
-    const handlePopoverCloseIcon = () => {
-        setHoverPopoverIcon(null);
     };
 
     const id = open ? 'simple-popover' : undefined;
@@ -164,17 +189,23 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     ) : tableData?.type === "textWithHover" ? (
                                         <div>
                                             <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`}
-                                                onMouseEnter={(e) => handleClickTextHover(e)} aria-describedby={textHoverId}>{tableData?.value?.[index]}</p>
+                                                onMouseEnter={(e) => handleClickTextWithHover(e, index, tableDataIndex)}
+                                                onMouseLeave={() => handleCloseTextWithHover()}
+                                                aria-owns={openTextWithHover ? 'mouse-over-popover' : undefined}
+                                                aria-haspopup="true">{tableData?.value?.[index]}</p>
                                             <Popover
-                                                id={textHoverId}
-                                                open={textHoverOpen}
-                                                anchorEl={textHover}
-                                                onClose={handleCloseTextHover}
+                                                id={'mouse-over-popover'}
+                                                sx={{
+                                                    pointerEvents: 'none',
+                                                }}
+                                                open={openTextWithHover}
+                                                anchorEl={anchorElTextWithHover}
+                                                onClose={handleCloseTextWithHover}
                                                 anchorOrigin={{
                                                     vertical: 'bottom',
                                                     horizontal: 'left',
                                                 }}
-                                                className={style.popoverStyle}
+                                                disableRestoreFocus
                                             >
                                                 <div className={style.actionsCard} ref={countHoverRef}>
                                                     <div className={`${style.specificActionCard} ${style.cursorPointer}`}>{`Jade Dsa. { Role } { Department}`}</div>
@@ -184,18 +215,24 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     ) : tableData?.type === "countWithHover" ? (
                                         <div>
                                             <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`}
-                                                onMouseEnter={(e) => handleClickCountHover(e)} aria-describedby={countHoverId}>{tableData?.value?.[index]}</p>
+                                                onMouseEnter={(e) => handleClickCountWithHover(e, index, tableDataIndex)}
+                                                onMouseLeave={() => handleCloseCountWithHover()}
+                                                aria-owns={openCountWithHover ? 'mouse-over-popover' : undefined}
+                                                aria-haspopup="true">{tableData?.value?.[index]}</p>
                                             <div className={style.popoverStyle}>
                                                 <Popover
-                                                    id={countHoverId}
-                                                    open={countHoverOpen}
-                                                    anchorEl={countHover}
-                                                    onClose={handleCloseCountHover}
+                                                    id={'mouse-over-popover'}
+                                                    sx={{
+                                                        pointerEvents: 'none',
+                                                    }}
+                                                    open={openCountWithHover}
+                                                    anchorEl={anchorElCountWithHover}
+                                                    onClose={handleCloseCountWithHover}
                                                     anchorOrigin={{
                                                         vertical: 'bottom',
                                                         horizontal: 'left',
                                                     }}
-                                                    className={style.popoverStyle}
+                                                    disableRestoreFocus
                                                 >
                                                     <div className={style.actionsCard} ref={countHoverRef}>
                                                         <div className={`${style.specificActionCard} ${style.cursorPointer}`}> Name</div>
@@ -204,24 +241,27 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                             </div>
                                         </div>
                                     ) : tableData?.type === "imgWithCount" ? (
-                                        <div aria-owns={hoverOpenIcon ? 'mouse-over-popover' : undefined}
-                                            aria-haspopup="true"
-                                            onMouseEnter={(e) => handlePopoverOpenImg(e, index, tableDataIndex)}
-                                            onMouseLeave={handlePopoverCloseImg}>
+                                        <div onMouseEnter={(e) => handleClickImgWithIcon(e, index, tableDataIndex)}
+                                            onMouseLeave={() => handleCloseImgWithIcon()}
+                                            aria-owns={openImgWithIcon ? 'mouse-over-popover' : undefined}
+                                            aria-haspopup="true">
                                             <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
                                                 <img src={tableData?.img} alt="warning" className={style.colorFileStyle} />
                                                 <p className={`${style.tableDataFontStyle} ${style.marginTop10}`}>5</p>
                                                 {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && (
                                                     <Popover
-                                                        id="mouse-over-popover"
-                                                        open={hoverOpenImg}
-                                                        anchorEl={hoverPopoverImg}
-                                                        onClose={handlePopoverCloseImg}
+                                                        id={'mouse-over-popover'}
+                                                        sx={{
+                                                            pointerEvents: 'none',
+                                                        }}
+                                                        open={openImgWithIcon}
+                                                        anchorEl={anchorElImgWithIcon}
+                                                        onClose={handleCloseImgWithIcon}
                                                         anchorOrigin={{
                                                             vertical: 'bottom',
                                                             horizontal: 'left',
                                                         }}
-                                                        className={style.popoverStyle}
+                                                        disableRestoreFocus
                                                     >
                                                         {tableData?.hoverText?.[index]?.map((data, innerIndex) => (
                                                             <div className={style.multipleOptionsCard} key={innerIndex}>
@@ -233,24 +273,27 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                             </div>
                                         </div>
                                     ) : tableData?.type === "iconWithCount" ? (
-                                        <div aria-owns={hoverOpen ? 'mouse-over-popover' : undefined}
-                                            aria-haspopup="true"
-                                            onMouseEnter={(e) => handlePopoverOpen(e, index)}
-                                            onMouseLeave={handlePopoverClose}>
+                                        <div onMouseEnter={(e) => handleClickIconWithCount(e, index, tableDataIndex)}
+                                            onMouseLeave={() => handleCloseIconWithCount()}
+                                            aria-owns={openIconWithCount ? 'mouse-over-popover' : undefined}
+                                            aria-haspopup="true">
                                             <Typography className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`}  >
                                                 {tableData?.icon}
                                                 <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
-                                                {index === selectedMenuIndex && (
+                                                {index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && (
                                                     <Popover
-                                                        id="mouse-over-popover"
-                                                        open={hoverOpen}
-                                                        anchorEl={hoverPopover}
-                                                        onClose={handlePopoverClose}
+                                                        id={'mouse-over-popover'}
+                                                        sx={{
+                                                            pointerEvents: 'none',
+                                                        }}
+                                                        open={openIconWithCount}
+                                                        anchorEl={anchorElIconWithCount}
+                                                        onClose={handleCloseIconWithCount}
                                                         anchorOrigin={{
                                                             vertical: 'bottom',
                                                             horizontal: 'left',
                                                         }}
-                                                        className={style.popoverStyle}
+                                                        disableRestoreFocus
                                                     >
                                                         <div className={style.actionsCard}>
                                                             <div className={`${style.specificActionCard} ${style.cursorPointer}`}> Name</div>
@@ -260,23 +303,26 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                             </Typography>
                                         </div>
                                     ) : tableData?.type === "icon" ? (
-                                        <div aria-owns={hoverOpenIcon ? 'mouse-over-popover' : undefined}
-                                            aria-haspopup="true"
-                                            onMouseEnter={(e) => handlePopoverOpenIcon(e, index, tableDataIndex)}
-                                            onMouseLeave={handlePopoverCloseIcon}>
+                                        <div onMouseEnter={(e) => handleClickIcon(e, index, tableDataIndex)}
+                                            onMouseLeave={() => handleCloseIcon()}
+                                            aria-owns={openIcon ? 'mouse-over-popover' : undefined}
+                                            aria-haspopup="true">
                                             <Typography className={`${style.cursorPointer} ${style.verticalAlignCenter}`} >
                                                 {tableData?.icon?.[index]}
                                                 {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && (
                                                     <Popover
-                                                        id="mouse-over-popover"
-                                                        open={hoverOpenIcon}
-                                                        anchorEl={hoverPopoverIcon}
-                                                        onClose={handlePopoverCloseIcon}
+                                                        id={'mouse-over-popover'}
+                                                        sx={{
+                                                            pointerEvents: 'none',
+                                                        }}
+                                                        open={openIcon}
+                                                        anchorEl={anchorElIcon}
+                                                        onClose={handleCloseIcon}
                                                         anchorOrigin={{
                                                             vertical: 'bottom',
                                                             horizontal: 'left',
                                                         }}
-                                                        className={style.popoverStyle}
+                                                        disableRestoreFocus
                                                     >
                                                         <div className={style.actionsCard}>
                                                             <div className={`${style.specificActionCard} ${style.cursorPointer}`}> {tableData?.hoverText?.[index]}</div>
