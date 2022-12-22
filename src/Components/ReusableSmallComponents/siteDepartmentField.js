@@ -18,13 +18,9 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     data?.departmentList?.departments
   )[0]);
 
-  useEffect(() => {
-    setSiteData(selectedSites);
-  }, [])
-
-  useEffect(() => {
-    getSelectedSites(siteData);
-  }, [siteData])
+    useEffect(()=>{
+        setSiteData(selectedSites);
+    },[selectedSites])
 
   const onDepartmentSelect = (e) => {
     const {

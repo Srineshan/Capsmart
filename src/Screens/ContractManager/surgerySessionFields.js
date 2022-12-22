@@ -94,8 +94,8 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected }) => {
         setMetadata({ ...metadata, [name]: value });
     }
 
-    const getServiceDaysMetadata = (daysCount, serviceDays) => {
-        setMetadata({ ...metadata, serviceDays: serviceDays, weekdaysCount: daysCount?.weekdays, weekendsCount: daysCount?.weekends })
+    const getServiceDaysMetadata = (serviceDays) => {
+        setMetadata({ ...metadata, serviceDays: serviceDays})
     }
 
     const setpatientTarget = (value) => {
