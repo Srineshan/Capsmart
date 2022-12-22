@@ -94,8 +94,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected }) => {
         setMetadata({ ...metadata, [name]: value });
     }
 
-    const getServiceDaysMetadata = (daysCount, serviceDays) => {
-        setMetadata({ ...metadata, serviceDays: serviceDays, weekdaysCount: daysCount?.weekdays, weekendsCount: daysCount?.weekends })
+    const getServiceDaysMetadata = (serviceDays) => {
+        setMetadata({ ...metadata, serviceDays: serviceDays})
     }
 
     const handleOnCallCoverageFor = (value, e) => {
@@ -177,7 +177,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected }) => {
                         </ThemeProvider>
                     </div>
                     {
-                        metadata?.additionalSchedule &&
+                        metadata?.additionalScheduleRequired &&
                         <>
                             <InputGroup value={metadata?.additionalScheduleValue}
                                 onChange={(e) => handleValueChange('additionalScheduleValue', e.target.value)}

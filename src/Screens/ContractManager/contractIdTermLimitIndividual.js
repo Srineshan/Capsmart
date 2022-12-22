@@ -4,6 +4,7 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import cloneDeep from 'lodash.clonedeep';
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -49,7 +50,8 @@ const ContractIdTermLimitIndividual = (
    contractIdFromActive,
    method,
    isMultiSiteEntity,
-   getSelectedField}) => {
+   getSelectedField,
+   getShowAlert}) => {
     const [contractAccessPrivilege, setContractAccessPrivilege] = useState(false);
     const [calendarStart, setCalendarStart] = useState(false);
     const [calendarEnd, setCalendarEnd] = useState(false);
@@ -90,7 +92,7 @@ const ContractIdTermLimitIndividual = (
     const [departmentsName,setDepartmentsName] = useState([]);
     const [selectedDepartmentId,setSelectedDepartmentId] = useState([]);
     const [createdContractId,setCreatedContractId] = useState(contractIdFromActive);
-    const [contractedTimeCommitment, setContractTimeCommitment] = useState({value:0, frequency:''})
+    const [contractedTimeCommitment, setContractTimeCommitment] = useState({value:0, frequency:''});
 
     useEffect(() => {
       getUserData();
@@ -109,7 +111,6 @@ const ContractIdTermLimitIndividual = (
   }, [])
 
   useEffect(() => {
-    console.log('inside test effect');
     getReminder();
   }, [renewalReminder])
 
@@ -134,6 +135,20 @@ const ContractIdTermLimitIndividual = (
   useEffect(() => {
     setSelectContractManager(user?.filter(data => data?.id === contractData?.contractManager?.userID)?.map(data => data)[0]);
   }, [user])
+
+  useEffect(()=>{
+    if(departmentSpecific){
+      let temp = [];
+      const siteList = siteSpecific ? cloneDeep(selectedSites) : cloneDeep(sites);
+      siteList?.map(data => {
+        data.departmentList.departments = [];
+        temp.push(data);
+      })
+      setSelectedDepartmentSites(temp);
+    }else{
+      setSelectedDepartmentSites([]);
+    }
+  },[selectedSites?.length, departmentSpecific, siteSpecific])
 
 
   const getContractDetail = async () => {
@@ -164,27 +179,8 @@ const ContractIdTermLimitIndividual = (
       if (fullyExecutedContractData?.length === 0) {
         setFullyExecutedContractData(fileData);
       }
-      if (contractDetail?.siteSpecificContract && !contractDetail?.departmentSpecificContract) {
-        setSelectedSites(contractDetail?.site?.sites || []);
-      }
-      else if (contractDetail?.siteSpecificContract && contractDetail?.departmentSpecificContract) {
-        let deptTemp = [];
-        let temp = contractDetail?.site?.sites;
-        contractDetail?.site?.sites?.map(data => {
-          data.departmentList?.departments?.map(dept => {
-            deptTemp.push({ id: dept?.id, name: dept?.departmentName?.name, site_id: data?.id });
-          })
-        })
-        setSelectedDepartmentSites(deptTemp || []);
-
-        temp?.map(data => {
-          data.departmentList.departments = sites?.filter(site => site?.id === data?.id)?.map(site => site?.departmentList?.departments)?.[0];
-        })
-        setSelectedSites(temp);
-      }
-      else {
-        console.log('No data');
-      }
+      setSelectedSites(contractDetail?.site?.sites || []);
+      onSelectDepartment(contractDetail?.site?.sites || []);
     }
   }
 
@@ -201,7 +197,7 @@ const ContractIdTermLimitIndividual = (
     if (sites) {
       setSites(sites);
       if (!isMultiSiteEntity) {
-        setSelectedSites(sites);
+        setSelectedSites(sites?.filter((data,index)=>index === 0)?.map(data=>data));
         setSelectedSite(sites?.[0]?.id);
       }
     }
@@ -216,29 +212,24 @@ const ContractIdTermLimitIndividual = (
 
   const getSiteData = () => {
     let siteData = [];
-
     if (!siteSpecific && !departmentSpecific) {
       siteData = sites;
     } else if (siteSpecific && !departmentSpecific) {
       siteData = selectedSites;
     } else {
-      let temp = selectedSites;
-      temp?.map(data => {
-        let departments = [];
-        let siteDepartments = selectedDepartmentSites?.filter(dept => dept?.site_id === data?.id)?.map(data => data);
-        if (siteDepartments?.length !== 0) {
-          siteDepartments?.map(dept => {
-            departments?.push({ id: dept?.id, departmentHead: { id: dept?.name }, departmentName: { name: dept?.name } })
-          })
-          data.departmentList.departments = departments;
-        }
-      })
-      siteData = temp;
+      siteData = selectedDepartmentSites;
     }
+
     return siteData;
   }
 
   const addContract = async (buttonType) => {
+    let sites = getSiteData();
+    if(departmentSpecific && sites?.some(data=>data?.departmentList?.departments?.length === 0)){
+      ErrorToaster('Select Departments for all the selected Sites');
+      return;
+    }
+
     if (selectedContractContinuationPolicy === 'Select Value') {
       ErrorToaster('Select Contract Continuation Policy');
       return;
@@ -281,7 +272,7 @@ const ContractIdTermLimitIndividual = (
         },
         "contractFiles": contractFiles,
         "site": {
-          "sites": getSiteData(),
+          "sites": sites
         },
         "contractTerm": {
           "startDate": contractTermPeriodFrom === null ? null : format(contractTermPeriodFrom, 'yyyy-MM-dd').toString(),
@@ -321,7 +312,6 @@ const ContractIdTermLimitIndividual = (
       type: "application/json"
     }));
     file?.filter(data => data !== null)?.map(data => {
-      console.log('data', data);
       formData.append('contractFiles', data);
     })
     if (method === 'POST' && contractIdFromActive === '') {
@@ -344,6 +334,8 @@ const ContractIdTermLimitIndividual = (
       getViewPage2(true);
       getViewPage1(false);
       getCurrentPage('Contracted Services Provider(s)')
+    }else{
+      getShowAlert(true);
     }
   }
 
@@ -356,6 +348,7 @@ const ContractIdTermLimitIndividual = (
     let temp = selectedSites;
     temp.push(selectedItem);
     setSelectedSites(temp);
+    setDepartmentSpecific(false);
   }
 
 
@@ -363,20 +356,10 @@ const ContractIdTermLimitIndividual = (
     setContractPriorId({ ...contractPriorId, id: selectedItem?.contractDetails?.contractId?.id, na: false });
   }
 
-
-  const getTagProps = (_v, index) => ({
-    minimal: true,
-  });
-
   const handleTagsRemove = (tags, index) => {
     let siteId = selectedSites?.filter((data, indexVal) => index === indexVal)?.map(data => data?.id)[0];
     setSelectedSites(selectedSites?.filter((data, indexValue) => index !== indexValue)?.map(data => data));
-    setSelectedDepartmentSites(selectedDepartmentSites?.filter(data => data?.site_id !== siteId)?.map(data => data));
-  };
-
-
-  const handleTagSet2Remove = (tags, index) => {
-    setSelectedDepartmentSites(selectedDepartmentSites?.filter((data, indexVal) => index !== indexVal)?.map(data => data));
+    setDepartmentSpecific(false);
   };
 
   const items = useMemo(
@@ -459,22 +442,8 @@ const ContractIdTermLimitIndividual = (
     setFileFieldData({ id: '', type: '', name: '', desc: '', fileName: '', file: null, filePath: '' });
   }
 
-  const onSelectDepartment = (deptId) => {
-    setSelectedItem(deptId);
-    let temp = selectedDepartmentSites;
-    let name = '';
-    selectedSites?.filter(data => data?.id === selectedSite)?.map(data => {
-      data?.departmentList?.departments?.map(dept => {
-        if (dept?.id === deptId) {
-          name = dept?.departmentName?.name;
-        }
-      })
-    })
-    const isAlreadyPresent = temp?.filter(data => data.id === deptId && data.site_id === selectedSite)?.map(data => data)?.length || 0;
-    if (!isAlreadyPresent) {
-      temp.push({ id: deptId, name: name, site_id: selectedSite });
-    }
-    setSelectedDepartmentSites(temp);
+  const onSelectDepartment = (data) => {
+    setSelectedDepartmentSites(data);
   }
 
   const getDocumentFields = () => {
@@ -568,7 +537,7 @@ const ContractIdTermLimitIndividual = (
               <DatalistInput items={priorContractItems || []}
                 onSelect={onSelectContractId} className={style.selectFieldWidth}
                 maxLength={TEXTFIELDLEN}
-                onChange={(e) => setContractPriorId({ ...contractPriorId, id: '', na: e.target.checked })} placeholder="Search by CID / Name" value={contractPriorId?.id}
+                onChange={(e) => setContractPriorId({ ...contractPriorId, id: e.target.value})} placeholder="Search by CID / Name" value={contractPriorId?.id}
               />
               <Checkbox label="NA" checked={contractPriorId.na} onChange={(e) => setContractPriorId({ ...contractPriorId, id: '', na: e.target.checked })} className={`${style.marginTop10} ${style.marginLeft20}`} />
 
@@ -592,7 +561,7 @@ const ContractIdTermLimitIndividual = (
                 </div>
               )}
             </div>
-            <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(items?.map(data => data?.name?.firstName)?.includes(userName) || userName === '') && style.disabledUploadButton}`} onClick={() => setAddNewManagerDialog(true)} >ADD</button>
+            <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(items?.map(data => data?.name?.firstName)?.includes(userName) || userName === '') && style.disabledUploadButton}`} disabled={(items?.map(data => data?.name?.firstName)?.includes(userName) || userName === '')} onClick={() => setAddNewManagerDialog(true)} >ADD</button>
           </div>
         </div>
 
@@ -687,19 +656,21 @@ const ContractIdTermLimitIndividual = (
             )}
           </div>
         </div>
-        {/* {isMultiSiteEntity &&
+       {isMultiSiteEntity &&
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
             onFocus={() => { getSelectedField('Site Specific Contract') }}>
             <div className={style.extentionLableStyle}>Site Specific Contract*</div>
             <div>
               <div className={style.displayInRow}>
+                <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch checked={siteSpecific} className={`${style.textAlignLeft}`} onChange={() => setSiteSpecific(!siteSpecific)} />
+                    <Switch checked={siteSpecific} color={'primary'} className={`${style.textAlignLeft}`} onChange={() => setSiteSpecific(!siteSpecific)} />
                   }
                   className={`${style.switchFontStyle}`}
                   label={siteSpecific ? 'YES' : "NO"}
                 />
+                </ThemeProvider>
                 {siteSpecific && (
                   <div className={style.displayInRow}>
                     <DatalistInput items={siteItems || []} placeholder="Select Sites" onSelect={onSelectSite} className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
@@ -718,17 +689,18 @@ const ContractIdTermLimitIndividual = (
                   separator={/[\s,]/}
                   addOnBlur={true}
                   addOnPaste={true}
-                  tagProps={getTagProps}
                 />
               )}
             </div>
           </div>
         }
+
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
           onFocus={() => { getSelectedField('Department Specific Contract') }}>
           <div className={style.extentionLableStyle}>Department Specific Contract*</div>
           <div>
             <div className={style.displayInRow}>
+            <ThemeProvider theme={switchTheme}>
               <FormControlLabel
                 control={
                   <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => { handleDepartmentSpecific() }} />
@@ -736,67 +708,18 @@ const ContractIdTermLimitIndividual = (
                 className={`${style.switchFontStyle}`}
                 label={departmentSpecific ? 'YES' : "NO"}
               />
-              {departmentSpecific && (
-                <select
-                  name="class"
-                  id="Class"
-                  value={selectedSites?.[0]?.id || 'Select...'}
-                  onChange={(e) => setSelectedSite(e.target.value)}
-                  className={`${style.fullWidth} ${style.marginLeft20} `}>
-                  <option value='Select...'>
-                    Select Site...
-                  </option>
-                  {
-                    selectedSites?.map(data => (
-                      <option value={data?.id}>
-                        {data?.siteName?.siteName}
-                      </option>
-                    ))
-                  }
-                </select>
-              )}
-            </div>
-            {departmentSpecific &&
-              selectedSites?.filter(data => data?.id === selectedSite)?.map(data => (
-                <div>
-                  <select
-                    name="class"
-                    id="Class"
-                    onChange={(e) => onSelectDepartment(e.target.value)}
-                    className={`${style.fullWidth} ${style.marginTop20}`}>
-                    <option value='Select...'>
-                      Select Department...
-                    </option>
-                    {
-                      data?.departmentList?.departments?.map(dept => (
-                        <option value={dept?.id}>
-                          {dept?.departmentName?.name}
-                        </option>
-                      ))
-                    }
-                  </select>
-                </div>
-              )
-              )}
-            {departmentSpecific && (
-              <TagInput
-                placeholder="Selected Departments"
-                values={selectedDepartmentSites?.filter(data => data?.site_id === selectedSite)?.map(data => data?.name) || []}
-                className={`${style.marginTop20}`}
-                onRemove={handleTagSet2Remove}
-                separator={/[\s,]/}
-                addOnBlur={true}
-                addOnPaste={true}
-                tagProps={getTagProps}
-              />
-            )}
-          </div>
-        </div> */}
+              </ThemeProvider>
+              </div>
+              </div>
+              </div>
 
-        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
-          <SiteDepartmentField sites={[]} getSelectedSites={() => { }} selectedSites={[]} isMultiSiteEntity={true} />
-        </div>
+            {
+              departmentSpecific &&
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div></div>
+                <SiteDepartmentField sites={siteSpecific ? selectedSites?.map(data=>data) : sites} getSelectedSites={onSelectDepartment} selectedSites={selectedDepartmentSites} isMultiSiteEntity={isMultiSiteEntity} />
+              </div>
+            }
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <div className={style.extentionLableStyle}>Contract Term Period*</div>
@@ -911,7 +834,7 @@ const ContractIdTermLimitIndividual = (
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
               <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
               <div className={style.contractedTime}>
-              <InputGroup type="number" min="1" value={contractedTimeCommitment?.value} onChange={(e)=>setContractTimeCommitment({...contractedTimeCommitment, value:e.target.value})} />
+              <InputGroup type="tel" maxLength={3} value={contractedTimeCommitment?.value} placeholder="0" onChange={(e)=>e.target.value >= 0 && setContractTimeCommitment({...contractedTimeCommitment, value:e.target.value})} />
               <select
                   name="class"
                   id="Class"
@@ -921,9 +844,6 @@ const ContractIdTermLimitIndividual = (
                     <option value="Select...">
                       Select...
                     </option>
-                      <option value="HOURS_PER_CONTRACTYEAR">
-                        Hours Per Contract Year
-                      </option>
                       <option value="WEEKS_PER_CONTRACTYEAR">
                         Weeks Per Contract Year
                       </option>
@@ -976,7 +896,7 @@ const ContractIdTermLimitIndividual = (
                     <option value="WEEKS" >
                       Weeks
                     </option>
-                    <option value="MONTHS" >
+                    <option disabled={autoRenewal?.renewalTerm > 12} value="MONTHS" >
                       Months
                     </option>
                   </select>
@@ -1016,6 +936,7 @@ const ContractIdTermLimitIndividual = (
       {addNewManagerDialog && (
         <AddNewContractManager getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUserData} contractId={contractIdFromActive} />
       )}
+
     </div>
   )
 }

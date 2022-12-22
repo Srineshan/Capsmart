@@ -47,7 +47,7 @@ const MenuProps = {
   },
 };
 
-const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, getSelectedField }) => {
+const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, getSelectedField, getShowAlert }) => {
   const testContractId = contractId;
   const [user, setUsers] = useState([]);
   const [userName, setUserName] = useState('');
@@ -307,7 +307,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     return value;
   }
 
-  const handleSave = async () => {
+  const handleSave = async (buttonType) => {
     let roles = userProviderData?.roles || [];
     selectedRoles?.map(data => {
       if (!roles?.map(role => role?.id).includes(data?.id)) {
@@ -405,6 +405,12 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         .catch(error => {
           ErrorToaster('Unexpected Error');
         });
+    }
+    if(buttonType==='Continue'){
+      getViewPage3(true);
+      getCurrentPage('Contractor Business Entity')
+    }else{
+      getShowAlert(true);
     }
   }
 
@@ -796,8 +802,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       <div className={`${style.spaceBetween} ${style.marginTop20}`}>
         <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
         <div>
-          <button className={style.newContractOutlinedButton} onClick={() => handleSave()}>SAVE IN-PROGRESS</button>
-          <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleSave(); getViewPage3(true); getCurrentPage('Contractor Business Entity') }}>CONTINUE</button>
+          <button className={style.newContractOutlinedButton} onClick={() => handleSave('Save In Progress')}>SAVE IN-PROGRESS</button>
+          <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('Continue')}}>CONTINUE</button>
         </div>
       </div>
 

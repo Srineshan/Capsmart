@@ -19,12 +19,8 @@ const SiteDepartmentField = ({sites, getSelectedSites, selectedSites}) => {
      )[0]);
 
     useEffect(()=>{
-      setSiteData(selectedSites);
-    },[])
-
-    useEffect(()=>{
-      getSelectedSites(siteData);
-    },[siteData])
+        setSiteData(selectedSites);
+    },[selectedSites])
 
     const onDepartmentSelect = (e) => {
         const {
@@ -68,6 +64,7 @@ const SiteDepartmentField = ({sites, getSelectedSites, selectedSites}) => {
         }
       temp.push(site);
       setSiteData(temp);
+      getSelectedSites(temp);
     }
 
     const onRemoveDept = (siteIndex, deptIndex, deptId) => {
@@ -87,6 +84,7 @@ const SiteDepartmentField = ({sites, getSelectedSites, selectedSites}) => {
         }
       temp.push(site);
       setSiteData(temp);
+      getSelectedSites(temp);
     }
 
 
@@ -133,7 +131,7 @@ const SiteDepartmentField = ({sites, getSelectedSites, selectedSites}) => {
                 </div>
             </div>
             {
-              siteData?.map((site, siteIndex)=>(
+              siteData?.filter(data=>data?.departmentList?.departments?.length !== 0)?.map((site, siteIndex)=>(
                  <div className={`${style.siteDeptFieldCard} ${style.marginTop10}`}>
                  {
                    // <div className={`${style.siteDeptFieldCard} ${style.displayInRow} ${style.marginTop10}`}>

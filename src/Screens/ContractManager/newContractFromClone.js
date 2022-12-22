@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { InputGroup, Icon, Intent, Dialog, Classes } from '@blueprintjs/core';
 import AddNewContractManager from './addNewContractManager';
-import Alert from './alert';
 import FileImg from './../../images/fileImg.png';
 import DeleteExecutedContractDialog from './deleteExecutedContractDialog';
 import NewServiceProvider from './newServiceProvider';
@@ -14,6 +13,7 @@ import ServiceSpecification from './serviceSpecification';
 import { DELETE, TenantID, GET } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import 'react-datalist-input/dist/styles.css';
+import Alert from '../../Components/AlertPopUp';
 import ContractIdTermLimitIndividual from './contractIdTermLimitIndividual';
 import ContractedServicesProviderMultiple from './contractedServicesProviderMultiple';
 import ContractedServicesProviderIndividual from './contractedServiceProviderIndividual';
@@ -30,7 +30,6 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
     const [selectContractInfo, setSelectContractInfo] = useState(contractType);
     const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] = useState(false);
     const [newServiceProviderDialog, setNewServiceProviderDialog] = useState(false);
-    const [showAlertDialog, setShowAlertDialog] = useState(false);
     const [addOn, setAddOn] = useState(false);
     const [viewPage1, setViewPage1] = useState(true);
     const [viewPage2, setViewPage2] = useState(false);
@@ -53,6 +52,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
     const [helpTextData, setHelpTextData] = useState();
     const [selectedField, setSelectedField] = useState('');
     const [selectedFileURL, setSelectedFileURL] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
         getFileData();
@@ -119,16 +119,20 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
         setNewServiceProviderDialog(value);
     }
 
-    const getShowAlertDialog = (value) => {
-        setShowAlertDialog(value);
-    }
-
     const getDeleteExecutedContractDialog = (value) => {
         setDeleteExecutedContractDialog(value);
     }
 
     const getAddOn = (value) => {
         setAddOn(value);
+    }
+
+    const getShowAlert = (value, type='cross') => {
+      setShowAlert(value);
+      if(!value && type === 'ok'){
+        getNewContract(false);
+       getContractIdFromActive('');
+      }
     }
 
     const getViewPage1 = (value) => {
@@ -204,7 +208,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
     return (
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
             <div className={style.spaceBetween}>
-                <p className={style.welcomeStyle}>{selectedContractType === "New Contract" ? 'New Contract With No Prior Contract(s) With Entity' : 'Contracted Services Continuation Renewal Contract'}</p>
+                <p className={style.welcomeStyle}>{selectedContractType === "New Contract" ? 'New Contract With No Prior Contract(s) With Entity' : selectedContractType === 'Existing Contract' ? 'Existing Active Contract' : 'Contracted Services Continuation Renewal Contract'}</p>
                 <div className={style.displayInRow}>
                     <img src={WritingFile} alt="Writing File" className={`${style.smallIcons} ${style.reduceTop10}`} />
                     <InputGroup
@@ -353,7 +357,9 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                                 contractId={contractId}
                                 contracts={contracts}
                                 contractName={contractName}
-                                getSelectedField={getSelectedField} />
+                                getSelectedField={getSelectedField}
+                                getShowAlert={getShowAlert}
+                                />
                         ) : (currentPage === "Contract ID & Term Limit") ? (
                             <ContractIdTermLimitIndividual
                                 getViewPage1={getViewPage1}
@@ -369,6 +375,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                                 fileData={fileFields}
                                 isMultiSiteEntity={isMultiSiteEntity}
                                 getSelectedField={getSelectedField}
+                                getShowAlert={getShowAlert}
                             />
                         ) : (selectContractInfo === "MULTIPLE" && currentPage === "Contracted Services Provider(s)") ? (
                             <ContractedServicesProviderMultiple
@@ -453,8 +460,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
             {newServiceProviderDialog && (
                 <NewServiceProvider getNewServiceProviderDialog={getNewServiceProviderDialog} contractId={contractId} contractType={contractType} contractName={contractName} />
             )}
-            {showAlertDialog && (
-                <Alert getShowAlertDialog={getShowAlertDialog} isMultipleContract={isMultipleContract} contractId={contractId} />
+            {showAlert && (
+              <Alert getShowAlertDialog={getShowAlert} header={'SAVE-IN PROGRESS'} content={'Your contract will be saved in draft, you can edit it later...'} redirectTo={'contracts'}/>
             )}
         </div>
     )

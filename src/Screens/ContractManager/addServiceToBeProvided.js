@@ -59,6 +59,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [selectedUser, setSelectedUser] = useState([]);
   const [helpTool, setHelpTool] = useState({ calculator: false, textArea: false });
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [timeCommitment, setTimeCommitment] = useState({value:0, frequency:''});
   const limit = 3;
   const limit5 = 5;
 
@@ -213,11 +214,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const getSites = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
+    setTimeCommitment(contractDetail?.timeCommitment);
     let sites = contractDetail?.site?.sites;
     if (sites && siteList?.length === 0) {
       setSiteList(sites);
     }
   }
+
+
 
   const handleSave = async (buttonType) => {
     if (serviceType === '') {
@@ -598,7 +602,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
               </div>}
 
               {serviceType === 'Clinic Blocks'
-                ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService} />
+                ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment}/>
                 : serviceType === 'Surgery Session'
                   ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService} />
                   : serviceType === 'On Call Coverage Duty Days'

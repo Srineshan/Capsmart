@@ -28,8 +28,10 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
     const [totalContractedService, setTotalContractedService] = useState(0);
     const [isDedicatedHours, setIsDedicatedHours] = useState(false);
+    const [availableActivities, setAvailableActivities] = useState([]);
 
     const [supplementServiceName, setSupplementServiceName] = useState('');
+
     let specificDedicatedHoursList = [];
     services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
@@ -37,6 +39,19 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
         specificDedicatedHoursList.push(result);
     });
+
+    const getAvailableActivities = () => {
+      let activitType = metadata?.dedicatedHoursActivityType !== '' ? [`${metadata?.dedicatedHoursActivityType}`] : ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days'];
+      let temp = [];
+      services?.filter(data => activitType?.includes(data?.activityType?.activityType))?.map(data => {
+          let activityName = data?.activityType?.activityType;
+          let activities = data?.activities?.map(data => data?.activity);
+          activities?.map(data=>{
+            temp.push(`${activityName} - ${data}`);
+          })
+        });
+      setAvailableActivities(temp);
+    }
 
     const selectedHours = (index) => {
         let temp = services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => data);
@@ -86,6 +101,11 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         weekendsCount: '0'
     })
 
+    useEffect(()=>{
+      getAvailableActivities();
+      setMetadata({...metadata, supplementServiceName:[]});
+    },[metadata?.dedicatedHoursActivityType])
+
     useEffect(() => {
         if (editService) {
             setSelectedValues();
@@ -111,13 +131,11 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         });
     }
 
-
     const limit5 = 5;
 
     useEffect(() => {
         getMetaData(metadata)
     }, [metadata])
-    console.log('metadata', metadata);
 
     const handleValueChange = (name, value) => {
         if (name === 'dedicatedHoursSpecified' && value) {
@@ -127,17 +145,17 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         }
     }
 
-    const getServiceDaysMetadata = (daysCount, serviceDays) => {
-        setMetadata({ ...metadata, serviceDays: serviceDays, weekdaysCount: daysCount?.weekdays, weekendsCount: daysCount?.weekends })
+    const getServiceDaysMetadata = (serviceDays) => {
+        setMetadata({ ...metadata, serviceDays: serviceDays})
     }
 
-    const addSupplementService = () => {
+    const addSupplementService = (value) => {
         let temp = metadata?.supplementServiceName;
-        if (!temp?.includes(supplementServiceName)) {
-            temp?.push(supplementServiceName);
+        if (!temp?.includes(value)) {
+            temp?.push(value);
             setMetadata({ ...metadata, supplementServiceName: temp });
         }
-        setSupplementServiceName('');
+        // setSupplementServiceName('');
     }
 
     const removeSupplementServiceName = (index) => {
@@ -179,20 +197,28 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Supplemental Services To Perform*</div>
-                <div>
-                    <div className={`${style.fullWidth} ${style.addGrid}`}>
-                        <InputGroup className={style.fullWidth} placeholder="Add Supplemental Services specified in contract" value={supplementServiceName} onChange={(e) => setSupplementServiceName(e.target.value)} />
-                        <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={addSupplementService} />
-                        </div>
-                    </div>
-                    {
-                        metadata?.supplementServiceName?.length !== 0 && metadata?.supplementServiceName &&
-                        <MultiSelectDisplay values={metadata?.supplementServiceName} removeItem={removeSupplementServiceName} />
-                    }
-                </div>
+              <div className={style.extentionLableStyle}>Supplemental Services To Perform*</div>
+              <div>
+                <Select
+                  displayEmpty
+                  onChange={(e) => { addSupplementService(e.target.value) }}
+                  SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                  className={`${style.fullWidth}`}
+                >
+                  <MenuItem value="">Select Supplemental Services specified in contract</MenuItem>
+                  {
+                    availableActivities?.map(data => (
+                    <MenuItem value={data}>{data}</MenuItem>
+                  ))
+                }
+                </Select>
+                {
+                    metadata?.supplementServiceName?.length !== 0 && metadata?.supplementServiceName &&
+                    <MultiSelectDisplay values={metadata?.supplementServiceName} removeItem={removeSupplementServiceName} />
+                }
+              </div>
             </div>
+
             {metadata?.dedicatedHoursSpecified && (
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

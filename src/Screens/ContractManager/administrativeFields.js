@@ -112,8 +112,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
     const limit5 = 5;
 
-    const getServiceDaysMetadata = (daysCount, serviceDays) => {
-        setMetadata({ ...metadata, serviceDays: serviceDays, weekdaysCount: daysCount?.weekdays, weekendsCount: daysCount?.weekends })
+    const getServiceDaysMetadata = (serviceDays) => {
+        setMetadata({ ...metadata, serviceDays: serviceDays})
     }
 
     const getAdminActivityList = async () => {
