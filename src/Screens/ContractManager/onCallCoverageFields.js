@@ -24,7 +24,7 @@ const switchTheme = createTheme({
     },
 });
 
-const OnCallCoverageFields = ({ getMetaData, serviceSelected }) => {
+const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) => {
     const [metadata, setMetadata] = useState({
         min: '0',
         max: '0',
@@ -54,7 +54,16 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected }) => {
         },
         weekdaysCount: '0',
         weekendsCount: '0'
-    })
+    });
+
+    const [specified, setSpecified] = useState(0);
+
+    useEffect(()=>{
+      let additionalFreq = metadata?.additionalScheduleFrequency === 'WEEK' ? timeCommitment?.value || 0 : (timeCommitment?.value/2) || 0;
+      let value = (parseInt(metadata?.min || '0') * timeCommitment?.value || 0) + (parseInt(metadata?.additionalScheduleValue || '0')  * additionalFreq);
+      setSpecified(value);
+    }, [metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
+
 
     useEffect(() => {
         setSelectedValues();
@@ -153,9 +162,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected }) => {
                         onChange={(e) => handleValueChange('frequency', e.target.value)}
                     >
                         <MenuItem value="">Select Frequecy</MenuItem>
-                        <MenuItem value={'WEEK'}>Per Week</MenuItem>
-                        <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                        <MenuItem value={'YEAR'}>Per Contract Year</MenuItem>
+                        <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEKS_PER_CONTRACTYEAR'}>Per Week</MenuItem>
+                        <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTHS_PER_CONTRACTYEAR'}>Per Month</MenuItem>
                     </Select>
                 </div>
             </div>
@@ -190,9 +198,10 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected }) => {
                                 onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
                             >
                                 <MenuItem value="">Select Frequecy</MenuItem>
-                                <MenuItem value={'WEEK'}>Every Other Week</MenuItem>
-                                <MenuItem value={'MONTH'}>Every Other Month</MenuItem>
-                                <MenuItem value={'YEAR'}>Every Other Year</MenuItem>
+                                <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEKS_PER_CONTRACTYEAR'}>Every Week</MenuItem>
+                                <MenuItem value={'EVERY_OTHER_WEEK'} disabled={timeCommitment?.frequency !== 'WEEKS_PER_CONTRACTYEAR'}>Every Other Week</MenuItem>
+                                <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTHS_PER_CONTRACTYEAR'}>Every Month</MenuItem>
+                                <MenuItem value={'EVERY_OTHER_MONTH'} disabled={timeCommitment?.frequency !== 'MONTHS_PER_CONTRACTYEAR'}>Every Other Month</MenuItem>
                             </Select>
                         </>
                     }
@@ -270,16 +279,17 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected }) => {
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
                 <div className={style.twoCol}>
-                    <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <EditableText value={metadata?.totalSession} placeholder="" type='number' min="0" onChange={(e) => {
+                <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
+                    <EditableText placeholder='' value={metadata?.totalSession} type='number' min="0"
+                        className={style.editableSessionTextStyle}
+                        onChange={(e) => {
                             let value = e.slice(0, e.slice());
                             handleValueChange('totalSession', value);
-                        }}
-                            className={style.editableSessionTextStyle} />
-                        <div className={`${style.textElement} ${style.greenBase} ${style.redBase}`}>60 Specified</div>
-                    </div>
+                        }} />
+                    <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Specified</div>
+                </div>
                     <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle}`}>For 48 Weeks Per Contract Year</p>
+                        <p className={`${style.extentionLableStyle}`}>For {timeCommitment?.value} {timeCommitment?.frequency === 'WEEKS_PER_CONTRACTYEAR' ? 'Weeks' :'Months'} Per Contract Year</p>
                     </div>
                 </div>
             </div>

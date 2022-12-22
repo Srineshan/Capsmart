@@ -415,7 +415,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Mailing Address*</div>
                 <div>
-                  <InputGroup className={style.fullWidth} value={mailingAddress?.addressLine} placeholder="Enter Address Line 1"
+                  <InputGroup className={style.fullWidth} value={mailingAddress?.addressLine} placeholder="Enter Street"
                     onFocus={() => { getSelectedField('Mailing Address Street') }}
                     onChange={(e) => setMailingAddress({ ...mailingAddress, addressLine: e.target.value })} />
                   <div className={`${style.grid3} ${style.marginTop10}`}>

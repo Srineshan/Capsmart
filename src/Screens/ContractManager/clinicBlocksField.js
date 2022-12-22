@@ -22,7 +22,6 @@ const switchTheme = createTheme({
 });
 
 const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment }) => {
-  console.log(timeCommitment);
     const [metadata, setMetadata] = useState({
         min: '0',
         max: '0',
@@ -61,9 +60,10 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment }) =>
     const [specified, setSpecified] = useState(0);
 
     useEffect(()=>{
-      let value = (parseInt(metadata?.min || '0') * timeCommitment?.value || 0) + (parseInt(metadata?.additionalScheduleValue || '0')  * timeCommitment?.value || 0);
+      let additionalFreq = metadata?.additionalScheduleFrequency === 'WEEK' ? timeCommitment?.value || 0 : (timeCommitment?.value/2) || 0;
+      let value = (parseInt(metadata?.min || '0') * timeCommitment?.value || 0) + (parseInt(metadata?.additionalScheduleValue || '0')  * additionalFreq);
       setSpecified(value);
-    }, [metadata?.min, metadata?.additionalScheduleValue, timeCommitment?.value])
+    }, [metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
 
     useEffect(() => {
         setSelectedValues();

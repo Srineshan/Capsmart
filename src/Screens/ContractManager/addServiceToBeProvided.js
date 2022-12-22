@@ -604,9 +604,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
               {serviceType === 'Clinic Blocks'
                 ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment}/>
                 : serviceType === 'Surgery Session'
-                  ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService} />
+                  ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment}/>
                   : serviceType === 'On Call Coverage Duty Days'
-                    ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} editService={editService} />
+                    ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment}/>
                     : serviceType === 'Supplemental Services'
                       ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />
                       : serviceType === 'Add-On Services'

@@ -21,7 +21,7 @@ const switchTheme = createTheme({
     },
 });
 
-const SurgerySessionFields = ({ getMetaData, serviceSelected }) => {
+const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) => {
     const limit5 = 5;
 
     const [metadata, setMetadata] = useState({
@@ -55,7 +55,15 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected }) => {
         },
         weekdaysCount: '0',
         weekendsCount: '0',
-    })
+    });
+    const [specified, setSpecified] = useState(0);
+
+    useEffect(()=>{
+      let additionalFreq = metadata?.additionalScheduleFrequency === 'WEEK' ? timeCommitment?.value || 0 : (timeCommitment?.value/2) || 0;
+      let value = (parseInt(metadata?.min || '0') * timeCommitment?.value || 0) + (parseInt(metadata?.additionalScheduleValue || '0')  * additionalFreq);
+      setSpecified(value);
+    }, [metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
+
 
     useEffect(() => {
         setSelectedValues();
@@ -123,9 +131,8 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected }) => {
                         value={metadata?.frequency}
                     >
                         <MenuItem value="">Select Frequecy</MenuItem>
-                        <MenuItem value={'WEEK'}>Per Week</MenuItem>
-                        <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                        <MenuItem value={'YEAR'}>Per Contract Year</MenuItem>
+                        <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEKS_PER_CONTRACTYEAR'}>Per Week</MenuItem>
+                        <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTHS_PER_CONTRACTYEAR'}>Per Month</MenuItem>
                     </Select>
                 </div>
             </div>
@@ -169,9 +176,10 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected }) => {
                                     onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
                                 >
                                     <MenuItem value="">Select Frequecy</MenuItem>
-                                    <MenuItem value={'WEEK'}>Every Other Week</MenuItem>
-                                    <MenuItem value={'MONTH'}>Every Other Month</MenuItem>
-                                    <MenuItem value={'YEAR'}>Every Other Year</MenuItem>
+                                    <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEKS_PER_CONTRACTYEAR'}>Every Week</MenuItem>
+                                    <MenuItem value={'EVERY_OTHER_WEEK'} disabled={timeCommitment?.frequency !== 'WEEKS_PER_CONTRACTYEAR'}>Every Other Week</MenuItem>
+                                    <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTHS_PER_CONTRACTYEAR'}>Every Month</MenuItem>
+                                    <MenuItem value={'EVERY_OTHER_MONTH'} disabled={timeCommitment?.frequency !== 'MONTHS_PER_CONTRACTYEAR'}>Every Other Month</MenuItem>
                                 </Select>
                             </>
                         )}
@@ -256,10 +264,10 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected }) => {
                                 let value = e.slice(0, e.slice());
                                 handleValueChange('totalSession', value);
                             }} />
-                        <div className={`${style.textElement} ${style.greenBase} ${style.redBase}`}>60 Specified</div>
+                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle}`}>For 48 Weeks Per Contract Year</p>
+                        <p className={`${style.extentionLableStyle}`}>For {timeCommitment?.value} {timeCommitment?.frequency === 'WEEKS_PER_CONTRACTYEAR' ? 'Weeks' :'Months'} Per Contract Year</p>
                     </div>
                 </div>
             </div>
