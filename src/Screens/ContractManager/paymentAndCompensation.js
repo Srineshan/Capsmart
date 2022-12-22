@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { InputGroup, EditableText } from '@blueprintjs/core';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import { POST, GET, PUT, TenantID } from './../dataSaver';
@@ -198,19 +200,28 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                                 ...rvuQuantityVariance, value: e.target.value.slice(0, limit3)
                                             })} />
                                     </div>
-                                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                         <div className={style.extentionLableStyle}>RVU Quantity Period</div>
-                                        <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                                            <EditableText className={`${style.editableTextStyleDays} ${style.editableTextStyle4DaysWidth}`} value={rvuQuantityPeriod?.days} placeholder="0" type='number'
-                                                min="0" onChange={(e) => setRvuQuantityPeriod({
-                                                    ...rvuQuantityPeriod, days: e.slice(0, limit4)
-                                                })} />
-                                            <div className={style.textElementWithoutBackgroundDays}>Days</div>
-                                        </div>
+                                        <TextField
+                                            size="small"
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+                                            }}
+                                            onChange={(e) => setRvuQuantityPeriod({
+                                                ...rvuQuantityPeriod, days: e.slice(0, limit4)
+                                            })}
+                                            className={style.renewalWidth}
+                                            value={rvuQuantityPeriod?.days}
+                                            inputProps={{
+                                                style: {
+                                                    height: 20,
+                                                },
+                                            }}
+                                        />
                                     </div>
                                 </div>
                             )}
-                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                            {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Dollar Hourly Rate*</div>
                                 <InputGroup className={style.fourFieldWidth} value={dollarRate?.hour}
                                     leftElement={leftElement()} placeholder="0" type='number' min="0"
@@ -268,7 +279,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     min="0" onChange={(e) => setDollarValue({
                                         ...dollarValue, perContractedPeriod: e.target.value.slice(0, limit7), perTimesheetSubmission: dollarValue?.perTimesheetSubmission
                                     })} />
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
