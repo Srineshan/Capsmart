@@ -9,10 +9,10 @@ import style from './index.module.scss';
 
 const useStyles = makeStyles(theme => ({
     popover: {
-      pointerEvents: 'none',
+        pointerEvents: 'none',
     },
     popoverContent: {
-      pointerEvents: 'auto',
+        pointerEvents: 'auto',
     },
 }));
 
@@ -108,7 +108,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
     return (
         <div>
             <div>
-                <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop20}`}>
+                <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
                         <p className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} key={index}>{data}</p>
                     ))}
@@ -121,7 +121,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     tableData?.type === "dot" ? (
                                         <div className={`${style.displayInRow} ${style.marginLeft30} ${style.verticalAlignCenter}`}>
                                             <Tooltip title={tableData?.tooltipValue?.[index]} arrow>
-                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : ''}`}></div>
+                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : ''}`}></div>
                                             </Tooltip>
                                         </div>
                                     ) : tableData?.type === "text" ? (
@@ -129,7 +129,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     ) : tableData?.type === "textWithHover" ? (
                                         <div>
                                             <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`}
-                                            onMouseEnter={(e) => handleClickTextHover(e)} aria-describedby={textHoverId}>{tableData?.value?.[index]}</p>
+                                                onMouseEnter={(e) => handleClickTextHover(e)} aria-describedby={textHoverId}>{tableData?.value?.[index]}</p>
                                             <Popover
                                                 id={textHoverId}
                                                 open={textHoverOpen}
@@ -149,7 +149,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     ) : tableData?.type === "countWithHover" ? (
                                         <div>
                                             <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`}
-                                            onMouseEnter={(e) => handleClickCountHover(e)} aria-describedby={countHoverId}>{tableData?.value?.[index]}</p>
+                                                onMouseEnter={(e) => handleClickCountHover(e)} aria-describedby={countHoverId}>{tableData?.value?.[index]}</p>
                                             <div className={style.popoverStyle}>
                                                 <Popover
                                                     id={countHoverId}
@@ -168,7 +168,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                 </Popover>
                                             </div>
                                         </div>
-                                        ) : tableData?.type === "imgWithCount" ? (
+                                    ) : tableData?.type === "imgWithCount" ? (
                                         <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
                                             <img src={tableData?.img} alt="warning" className={style.colorFileStyle} />
                                             <p className={`${style.tableDataFontStyle} ${style.marginTop10}`}>3</p>
@@ -185,50 +185,16 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     ) : tableData?.type === "site" ? (
                                         tableData?.value?.[index]?.length !== 0 ?
                                             <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} ref={popoverAnchorSite}
-                                            onMouseEnter={(e) => {handleClickSite(e); setSelectedMenuIndex(index)}} onMouseLeave={() => handleCloseSite()} aria-owns={openSite ? 'mouse-over-popover' : undefined}
-                                            aria-haspopup="true">
+                                                onMouseEnter={(e) => { handleClickSite(e); setSelectedMenuIndex(index) }} onMouseLeave={() => handleCloseSite()} aria-owns={openSite ? 'mouse-over-popover' : undefined}
+                                                aria-haspopup="true">
                                                 <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}
                                                 >{tableData?.value?.[index]?.length}</p>
-                                                    {index === selectedMenuIndex && (
-                                                        <Popover
-                                                            id={'mouse-over-popover'}
-                                                            open={openSite}
-                                                            anchorEl={popoverAnchorSite.current}
-                                                            onClose={handleCloseSite}
-                                                            anchorOrigin={{
-                                                                vertical: 'bottom',
-                                                                horizontal: 'left',
-                                                            }}
-                                                            classes={{
-                                                                paper: classes.popoverContent,
-                                                            }}
-                                                            PaperProps={{onMouseEnter: handleClickSite, onMouseLeave: handleCloseSite}}
-                                                        >
-                                                            <div className={style.actionsCard}>
-                                                                {tableData?.value?.[index]?.map((siteData, siteIndex) => (
-                                                                    <div className={`${style.siteCard} ${style.cursorPointer}`} key={siteIndex}>{siteData?.siteName?.siteName}</div>
-                                                                ))}
-                                                            </div>
-                                                        </Popover>
-                                                    )}
-                                            </div>
-                                        :
-                                        <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
-                                            -
-                                        </div>
-                                    ) : tableData?.type === "department" ? (
-                                        tableData?.value?.[index]?.length !== 0 ?
-                                            <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} ref={popoverAnchorDept}
-                                            onMouseEnter={(e) => {handleClickDept(e); setSelectedMenuIndex(index)}} onMouseLeave={() => handleCloseDept()} aria-owns={openDept ? 'mouse-over-popover' : undefined}
-                                            aria-haspopup="true" >
-                                                <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}
-                                                >{tableData?.count?.[index]}
                                                 {index === selectedMenuIndex && (
                                                     <Popover
                                                         id={'mouse-over-popover'}
-                                                        open={openDept}
-                                                        anchorEl={popoverAnchorDept.current}
-                                                        onClose={handleCloseDept}
+                                                        open={openSite}
+                                                        anchorEl={popoverAnchorSite.current}
+                                                        onClose={handleCloseSite}
                                                         anchorOrigin={{
                                                             vertical: 'bottom',
                                                             horizontal: 'left',
@@ -236,29 +202,63 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                         classes={{
                                                             paper: classes.popoverContent,
                                                         }}
-                                                        PaperProps={{onMouseEnter: handleClickDept, onMouseLeave: handleCloseDept}}
+                                                        PaperProps={{ onMouseEnter: handleClickSite, onMouseLeave: handleCloseSite }}
                                                     >
                                                         <div className={style.actionsCard}>
                                                             {tableData?.value?.[index]?.map((siteData, siteIndex) => (
-                                                                <>
-                                                                    <div className={`${style.siteCard} ${style.cursorPointer}`} key={siteIndex}>{siteData?.siteName?.siteName}</div>
-                                                                    {siteData?.departmentList?.departments?.map((deptData, deptIndex) => (
-                                                                        <div className={`${style.deptCard} ${style.cursorPointer}`} key={deptIndex}>{deptData?.departmentName?.name}</div>
-                                                                    ))}
-                                                                </>
+                                                                <div className={`${style.siteCard} ${style.cursorPointer}`} key={siteIndex}>{siteData?.siteName?.siteName}</div>
                                                             ))}
                                                         </div>
                                                     </Popover>
                                                 )}
+                                            </div>
+                                            :
+                                            <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
+                                                -
+                                            </div>
+                                    ) : tableData?.type === "department" ? (
+                                        tableData?.value?.[index]?.length !== 0 ?
+                                            <div className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`} ref={popoverAnchorDept}
+                                                onMouseEnter={(e) => { handleClickDept(e); setSelectedMenuIndex(index) }} onMouseLeave={() => handleCloseDept()} aria-owns={openDept ? 'mouse-over-popover' : undefined}
+                                                aria-haspopup="true" >
+                                                <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}
+                                                >{tableData?.count?.[index]}
+                                                    {index === selectedMenuIndex && (
+                                                        <Popover
+                                                            id={'mouse-over-popover'}
+                                                            open={openDept}
+                                                            anchorEl={popoverAnchorDept.current}
+                                                            onClose={handleCloseDept}
+                                                            anchorOrigin={{
+                                                                vertical: 'bottom',
+                                                                horizontal: 'left',
+                                                            }}
+                                                            classes={{
+                                                                paper: classes.popoverContent,
+                                                            }}
+                                                            PaperProps={{ onMouseEnter: handleClickDept, onMouseLeave: handleCloseDept }}
+                                                        >
+                                                            <div className={style.actionsCard}>
+                                                                {tableData?.value?.[index]?.map((siteData, siteIndex) => (
+                                                                    <>
+                                                                        <div className={`${style.siteCard} ${style.cursorPointer}`} key={siteIndex}>{siteData?.siteName?.siteName}</div>
+                                                                        {siteData?.departmentList?.departments?.map((deptData, deptIndex) => (
+                                                                            <div className={`${style.deptCard} ${style.cursorPointer}`} key={deptIndex}>{deptData?.departmentName?.name}</div>
+                                                                        ))}
+                                                                    </>
+                                                                ))}
+                                                            </div>
+                                                        </Popover>
+                                                    )}
                                                 </p>
                                             </div>
-                                        :
-                                        <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
-                                            -
-                                        </div>
+                                            :
+                                            <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} >
+                                                -
+                                            </div>
                                     ) : tableData?.type === "action" ? (
                                         <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={() => { setShowOptions(true); setSelectedMenuIndex(index) }}>
-                                            <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id}/>
+                                            <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
                                             {showOptions && index === selectedMenuIndex && (
                                                 <Popover
                                                     id={id}
@@ -272,7 +272,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                 >
                                                     <div className={style.actionsCard} ref={menuRef}>
                                                         {actions?.map((actionsData, actionsIndex) => (
-                                                            <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => {actionsData?.onClick(data);handleClose()}} key={actionsIndex}>{actionsData?.data}</div>
+                                                            <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>
                                                         ))}
                                                     </div>
                                                 </Popover>
@@ -284,28 +284,28 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                         </>
                     )) : (
                         <div className={`${style.noContractsBox} ${style.alignCenter}`}>
-                        <div>
-                            <div className={style.noContractsFontStyle}>Bad news!</div>
-                            <div className={`${style.displayInRow} ${style.justifyCenter} ${style.marginTop20}`}>
-                            <div className={style.noContractsSmallFontStyle}>no records found so far...</div>
+                            <div>
+                                <div className={style.noContractsFontStyle}>Bad news!</div>
+                                <div className={`${style.displayInRow} ${style.justifyCenter} ${style.marginTop20}`}>
+                                    <div className={style.noContractsSmallFontStyle}>no records found so far...</div>
+                                </div>
                             </div>
-                        </div>
                         </div>
                     )}
                 </div>
             </div>
             {
-              (totalCount || tableData?.length) > 10 &&
-              <Pagination selectPage={getSelectedPage} totalCount={totalCount||tableData?.length} selectedPage={page||1}/>
+                (totalCount || tableData?.length) > 10 &&
+                <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} />
             }
             {
-              // <div className={style.spaceBetween}>
-              //     <p></p>
-              //     <div className={style.displayInRow}>
-              //         <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-              //         <img src={ChevronRight} className={style.roundChevron} />
-              //     </div>
-              // </div>
+                // <div className={style.spaceBetween}>
+                //     <p></p>
+                //     <div className={style.displayInRow}>
+                //         <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                //         <img src={ChevronRight} className={style.roundChevron} />
+                //     </div>
+                // </div>
             }
 
         </div>
