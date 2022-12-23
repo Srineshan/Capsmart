@@ -38,6 +38,7 @@ const Navbar = () => {
     const [showReportsMenu, setShowReportsMenu] = useState(false);
     const [isContractManager, setIsContractManager] = useState(false);
     const [isEntityLevelAdmin, setIsEntityLevelAdmin] = useState(false);
+    const [currentUserRoles, setCurrentUserRoles] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const popoverAnchor = useRef(null);
@@ -48,6 +49,61 @@ const Navbar = () => {
     const openTools = Boolean(anchorElTools);
     const popoverAnchorTools = useRef(null);
     const [logo,setLogo] = useState(sessionStorage?.getItem('logo'));
+    const [isActivityServiceLogAvailable, setIsActivityServiceLogAvailable] = useState(false);
+    const [isTimesheetsAvailable, setIsTimesheetsAvailable] = useState(false);
+    const [isReviewsAndApprovalsAvailable, setIsReviewsAndApprovalsAvailable] = useState(false);
+    const [isTaskManagementAvailable, setIsTaskManagementAvailable] = useState(false);
+    const [isPaymentsAvailable, setIsPaymentsAvailable] = useState(false);
+    const [isContractManagementAvailable, setIsContractManagementAvailable] = useState(false);
+    const [isContractComplianceAvailable, setIsContractComplianceAvailable] = useState(false);
+    const [isContractPerformanceAvailable, setIsContractPerformanceAvailable] = useState(false);
+    const [isSystemAdministrationAvailable, setIsSystemAdministrationAvailable] = useState(false);
+    const [isSupportAvailable, setIsSupportAvailable] = useState(false);
+
+    useEffect(() => {
+        if(currentUserRoles?.includes('Activity Logger')){
+            setIsActivityServiceLogAvailable(true);
+            setIsContractComplianceAvailable(true);
+            setIsContractPerformanceAvailable(true);
+            setIsPaymentsAvailable(true);
+            setIsTimesheetsAvailable(true);
+            setIsReviewsAndApprovalsAvailable(true);
+        } else if(currentUserRoles?.includes('Reviewer') || currentUserRoles?.includes('Approver')){
+            setIsContractComplianceAvailable(true);
+            setIsContractPerformanceAvailable(true);
+            setIsPaymentsAvailable(true);
+            setIsTimesheetsAvailable(true);
+            setIsReviewsAndApprovalsAvailable(true);
+        } else if(currentUserRoles?.includes('Accounts Payable')){
+            setIsContractComplianceAvailable(true);
+            setIsContractPerformanceAvailable(true);
+            setIsPaymentsAvailable(true);
+            setIsReviewsAndApprovalsAvailable(true);
+        } else if(currentUserRoles?.includes('Contract Manager')){
+            setIsContractManagementAvailable(true);
+            setIsPaymentsAvailable(true);
+        } else if(currentUserRoles?.includes('Super Sys Admin') || currentUserRoles?.includes('Entity Sys Admin') || currentUserRoles?.includes('Entity Sys User')){
+            setIsSystemAdministrationAvailable(true);
+            setIsSupportAvailable(true);
+        } else if(currentUserRoles?.includes('Distributor Admin')){
+            setIsActivityServiceLogAvailable(true);
+            setIsTimesheetsAvailable(true);
+            setIsReviewsAndApprovalsAvailable(true);
+            setIsTaskManagementAvailable(true);
+            setIsPaymentsAvailable(true);
+            setIsContractManagementAvailable(true);
+            setIsContractComplianceAvailable(true);
+            setIsContractPerformanceAvailable(true);
+            setIsSystemAdministrationAvailable(true);
+            setIsSupportAvailable(true);
+        } else if(currentUserRoles?.includes('Contract Business Entity Manager') || currentUserRoles?.includes('Contract Compliance Manager')){
+            setIsContractManagementAvailable(true);
+            setIsContractComplianceAvailable(true);
+            setIsContractPerformanceAvailable(true);
+            setIsPaymentsAvailable(true);
+        }
+
+    }, [currentUserRoles])
 
     // const menuRef = useRef(null);
     // const toolsMenuRef = useRef(null);
@@ -111,6 +167,8 @@ const Navbar = () => {
         var cookie = new Cookies();
         var accessToken = cookie.get('user');
         let roles = jwt(accessToken)?.roles?.split(',');
+        console.log(roles);
+        setCurrentUserRoles(roles);
         setIsContractManager(roles.includes('Contract Manager') ? true : false);
         setIsEntityLevelAdmin((roles.includes('Super Sys Admin') || roles.includes('Entity Sys Admin') || roles.includes('Entity Sys User') || roles.includes('Distributor Admin')) ? true : false);
     }, [])
@@ -128,6 +186,8 @@ const Navbar = () => {
         })
     };
 
+    let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' : '/entitySitePortal';
+
     return(
         <div className={style.navbarStyle}>
             <div className={style.spaceBetween}>
@@ -136,21 +196,23 @@ const Navbar = () => {
                   // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
                 }
                 <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
-                <Link to={'/entitySitePortal'} className={style.noFontStyle}>
-                    <div className={style.menuStyle}>
-                        <p>HOME</p>
+                <Link to={homeLink} className={style.noFontStyle}>
+                    <div className={`${style.menuStyle} ${(window.location.pathname.includes(homeLink)) && style.activeMenuColor}`}>
+                        <p>HOME - {currentUserRoles?.[0]?.toUpperCase()}</p>
                     </div>
                 </Link>
 
-                {isContractManager && (
-                    <Link to={'/contracts'} className={style.noFontStyle}>
-                        <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
-                            <p>CONTRACT MANAGER</p>
-                        </div>
-                    </Link>
-                )}
+                {
+                //   isContractManager && (
+                //     <Link to={'/contracts'} className={style.noFontStyle}>
+                //         <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
+                //             <p>CONTRACT MANAGER</p>
+                //         </div>
+                //     </Link>
+                // )
+              }
                 <div>
-                    <div className={`${style.menuStyle} ${(window.location.pathname.includes("/reports")) && style.activeMenuColor}`} 
+                    <div className={`${style.menuStyle} ${(window.location.pathname.includes("/reports")) && style.activeMenuColor}`}
                     ref={popoverAnchor}
                     onMouseEnter={(e) => handleClick(e)} onMouseLeave={() => handleClose()} aria-owns={open ? 'mouse-over-popover' : undefined}
                     aria-haspopup="true">
@@ -170,9 +232,11 @@ const Navbar = () => {
                             PaperProps={{onMouseEnter: handleClick, onMouseLeave: handleClose}}
                         >
                             <div className={style.optionsCardStyle} onClick={() => handleClose()}>
-                                <Link to={'/reports/servicesOrActivities'} className={style.noFontStyle}>
-                                    <div className={style.options}>Services/ Activities Logs</div>
-                                </Link>
+                                {isActivityServiceLogAvailable && (
+                                    <Link to={'/reports/servicesOrActivities'} className={style.noFontStyle}>
+                                        <div className={style.options}>Services/ Activities Logs</div>
+                                    </Link>
+                                )}
                                 {/* <Link to={'/reports/timesheets'} className={style.noFontStyle}>
                                     <div className={style.options}>Timesheets</div>
                                 </Link>
@@ -185,12 +249,16 @@ const Navbar = () => {
                                 <Link to={'/reports/payments'} className={style.noFontStyle}>
                                     <div className={style.options}>Payments</div>
                                 </Link> */}
-                                <Link to={'/reports/contractManagement'} className={style.noFontStyle}>
-                                    <div className={style.options}>Contract Management</div>
-                                </Link>
-                                <Link to={'/reports/contractCompliance'} className={style.noFontStyle}>
-                                    <div className={style.options}>Contract Compliance</div>
-                                </Link>
+                                {isContractManagementAvailable && (
+                                    <Link to={'/reports/contractManagement'} className={style.noFontStyle}>
+                                        <div className={style.options}>Contract Management</div>
+                                    </Link>
+                                )}
+                                {isContractComplianceAvailable && (
+                                    <Link to={'/reports/contractCompliance'} className={style.noFontStyle}>
+                                        <div className={style.options}>Contract Compliance</div>
+                                    </Link>
+                                )}
                                 {/* <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
                                     <div className={style.options}>Contract Performance</div>
                                 </Link>
@@ -203,7 +271,7 @@ const Navbar = () => {
                 </div>
                 {isEntityLevelAdmin && (
                     <div>
-                        <div className={`${style.menuStyle} ${(window.location.pathname === "/user" || window.location.pathname === "/welcome" || window.location.pathname === "/tasksAndAlerts") && style.activeMenuColor}`} 
+                        <div className={`${style.menuStyle} ${(window.location.pathname === "/user" || window.location.pathname === "/welcome" || window.location.pathname === "/tasksAndAlerts") && style.activeMenuColor}`}
                         ref={popoverAnchorTools}
                         onMouseEnter={(e) => handleClickTools(e)} onMouseLeave={() => handleCloseTools()} aria-owns={openTools ? 'mouse-over-popover' : undefined}
                         aria-haspopup="true">
@@ -235,7 +303,7 @@ const Navbar = () => {
                     </div>
                 )}
                 <div>
-                    <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`} 
+                    <div className={`${style.menuStyle} ${window.location.pathname === "/help" && style.activeMenuColor}`}
                         ref={popoverAnchorHelp}
                         onMouseEnter={(e) => handleClickHelp(e)} onMouseLeave={() => handleCloseHelp()} aria-owns={'mouse-over-popover'}
                         aria-haspopup="true">

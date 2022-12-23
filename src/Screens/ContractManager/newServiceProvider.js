@@ -8,6 +8,8 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SuffixList from './../../Components/SuffixList';
 import ProviderTypeList from './../../Components/ProviderTypeList';
 import FunctionalTitleList from './../../Components/FunctionalTitleList';
+import { FormatPhoneNumber } from './../../utils/formatting';
+
 
 import style from './index.module.scss';
 
@@ -123,9 +125,14 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     });
 
     const getRolesData = async() => {
-      const {data: roles} = await GET(`user-management-service/roles`);
+      const {data: roles} = await GET(`user-management-service/roles?roleType=APP`);
       if(roles){
         setRoles(roles);
+      }
+      let temp = selectedRoles;
+      if(!selectedRoles?.map(data=>data?.roleName)?.includes('Activity Logger')){
+        temp.push(roles?.filter(role=>role?.roleName === 'Activity Logger')?.map(data=>data)[0]);
+        setSelectedRoles(temp);
       }
     }
 
@@ -173,6 +180,30 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
             sites.push(data);
           }
         });
+        if(userDetails?.firstName === ''){
+          ErrorToaster('First Name is Mandatory');
+          return;
+        }
+        if(userDetails?.lastName === ''){
+          ErrorToaster('Last Name is Mandatory');
+          return;
+        }
+        if(!nPin?.missing && !nPin?.na && nPin.npin === ''){
+          ErrorToaster('NPIN is Mandatory if not Missing/NA');
+          return;
+        }
+        if(!userDetails?.email?.includes('@') || !userDetails?.email?.includes('.')){
+          ErrorToaster('Enter a Valid Email');
+          return;
+        }
+        if(userDetails?.phone?.length !== 14){
+          ErrorToaster('Enter Valid Phone Number');
+          return;
+        }
+        if(roles?.length ===0){
+          ErrorToaster('Select User Role');
+          return;
+        }
 
         const data = {
             "name": {
@@ -342,8 +373,6 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
       setUserDetails({...userDetails, suffix:suffix});
     }
 
-    console.log('suffix',userDetails?.suffix);
-
     const getSiteData  = () => {
       let siteData = [];
       sites?.map(data=>{
@@ -408,7 +437,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>NPIN*</div>
                   <div className={style.grid3}>
-                  <InputGroup className={style.fullWidth} value={nPin?.npin} onChange={(e)=>setNpin({...nPin, npin:e.target.value,na:false,missing:false})}/>
+                  <InputGroup className={style.fullWidth} disabled={nPin?.missing || nPin?.na} value={nPin?.npin} onChange={(e)=>setNpin({...nPin, npin:e.target.value,na:false,missing:false})}/>
                   <Checkbox label="Missing"  checked={nPin?.missing} onChange={(e)=>setNpin({...nPin, npin:'',missing:e.target.checked, na:false})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                   <Checkbox label="Not Applicable"  checked={nPin?.na} onChange={(e)=>setNpin({...nPin, npin:'',missing:false, na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                   </div>
@@ -429,7 +458,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Cell Phone*</div>
                     <div className={style.grid2}>
-                    <InputGroup placeholder="Numeric" value={userDetails?.phone} className={style.fullWidth} onChange={(e)=>handleUserData('phone',e.target.value)}/>
+                    <InputGroup placeholder="Numeric" value={userDetails?.phone} className={style.fullWidth} onChange={(e)=>handleUserData('phone',FormatPhoneNumber(e.target.value))}/>
                     </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>

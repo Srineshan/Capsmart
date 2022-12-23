@@ -3,11 +3,11 @@ import { GET } from './../dataSaver';
 import Tile from '../../Components/Tile';
 import Table from '../../Components/TableDesign';
 import LevelTwoHeader from '../../Components/LevelTwoHeader';
-import {format, startOfWeek, endOfWeek} from 'date-fns';
+import { format, startOfWeek, endOfWeek } from 'date-fns';
 
 import style from './index.module.scss';
 
-const DataUpload = ({getSelectedOption}) => {
+const DataUpload = ({ getSelectedOption }) => {
     const [activitiesFileMeta, setActivitiesFileMeta] = useState([]);
     const [selectedContract, setSelectedContract] = useState('FILE PROCESSED');
     const [activitiesFileMetaSummary, setActivitiesFileMetaSummary] = useState({});
@@ -39,7 +39,7 @@ const DataUpload = ({getSelectedOption}) => {
     }
 
     const getReprocessDialog = (data) => {
-        
+
     }
 
     const onCloseLevel2 = () => {
@@ -68,19 +68,18 @@ const DataUpload = ({getSelectedOption}) => {
     let action = [];
 
     const getActiveFilesValues = () => {
-         dot = [];
-         fileId = [];
-         fileName = [];
-         source = [];
-         processingStatus = [];
-         failureReason = [];
-         recordProcessed = [];
-         recordFailed = [];
-         processingDateAndTime = [];
-         action = [];
+        dot = [];
+        fileId = [];
+        fileName = [];
+        source = [];
+        processingStatus = [];
+        failureReason = [];
+        recordProcessed = [];
+        recordFailed = [];
+        processingDateAndTime = [];
+        action = [];
 
-         activitiesFileMeta?.map(data=> 
-        {
+        activitiesFileMeta?.map(data => {
             dot.push('green');
             fileId.push(data?.fileId);
             fileName.push(data?.fileName);
@@ -94,30 +93,30 @@ const DataUpload = ({getSelectedOption}) => {
         })
 
         return [
-            {"type": "dot", "value": dot},
-            {"type": "text", "value": fileId},
-            {"type": "text", "value": fileName},
-            {"type": "text", "value": source},
-            {"type": "text", "value": processingStatus},
-            {"type": "text", "value": failureReason},
-            {"type": "text", "value": recordProcessed},
-            {"type": "text", "value": recordFailed},
-            {"type": "text", "value": processingDateAndTime},
-            {"type": "action", "value": action},
+            { "type": "dot", "value": dot },
+            { "type": "text", "value": fileId },
+            { "type": "text", "value": fileName },
+            { "type": "text", "value": source },
+            { "type": "text", "value": processingStatus },
+            { "type": "text", "value": failureReason },
+            { "type": "text", "value": recordProcessed },
+            { "type": "text", "value": recordFailed },
+            { "type": "text", "value": processingDateAndTime },
+            { "type": "action", "value": action },
         ];
     }
 
-    const actionsData = [{'data': 'DOWNLOAD', 'onClick': getDownloadDialog},
-        {'data': 'REPROCESS', 'onClick': getReprocessDialog}]
+    const actionsData = [{ 'data': 'DOWNLOAD', 'onClick': getDownloadDialog },
+    { 'data': 'REPROCESS', 'onClick': getReprocessDialog }]
 
     return (
         <div>
             <LevelTwoHeader heading={'DATA UPLOAD MANAGER'} updatedTime={'UPDATED ON FEB 16, 2022 16:45 EST'} onCloseLevel2={onCloseLevel2} needDateFilter={true} getFrom={getFrom} getTo={getTo} />
             <div className={`${style.grid4} ${style.marginTop20}`}>
-                <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="FILE PROCESSED" bigNumber={activitiesFileMetaSummary?.fileProcessed?.total} smallNum1={activitiesFileMetaSummary?.fileProcessed?.success} smallNum2={activitiesFileMetaSummary?.fileProcessed?.failure} smallText1="SUCCESSFUL" smallText2="FAIL" currentTile="FILE PROCESSED" topText='' />
-                <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="RECORD PROCESSED" bigNumber={activitiesFileMetaSummary?.recordProcessed?.total} smallNum1={activitiesFileMetaSummary?.recordProcessed?.inProgress} smallNum2={activitiesFileMetaSummary?.recordProcessed?.complete} smallText1="IN PROGRESS" smallText2="COMPLETE" currentTile="RECORD PROCESSED" topText='' />
+                <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="FILE PROCESSED" bigNumber={activitiesFileMetaSummary?.fileProcessed?.total} smallNum1={activitiesFileMetaSummary?.fileProcessed?.success} smallNum2={activitiesFileMetaSummary?.fileProcessed?.failure} smallText1="SUCCESSFUL" smallText2="FAIL" currentTile="FILE PROCESSED" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="RECORD PROCESSED" bigNumber={activitiesFileMetaSummary?.recordProcessed?.total} smallNum1={activitiesFileMetaSummary?.recordProcessed?.inProgress} smallNum2={activitiesFileMetaSummary?.recordProcessed?.complete} smallText1="IN PROGRESS" smallText2="COMPLETE" currentTile="RECORD PROCESSED" topText='' smallNum1Color={style.yellowSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.yellowSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
                 <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="ACTIVE DATA SOURCES" bigNumber={2} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="ACTIVE DATA SOURCES" topText='' />
-                <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="EXPIRED / TERMINATED" bigNumber={0} smallNum1="0" smallNum2="0" smallText1="EXPIRED" smallText2="TERMINATED" currentTile="expired or terminated" topText='LAST 30 DAYS' />
+                <Tile selectedContract={selectedContract} getSelectedContract={getSelectedContract} tileLabel="EXPIRED / TERMINATED" bigNumber={0} smallNum1="0" smallNum2="0" smallText1="EXPIRED" smallText2="TERMINATED" currentTile="expired or terminated" topText='LAST 30 DAYS' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
             </div>
             <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                 <div className={style.buttonGroupUsers}>
@@ -125,7 +124,7 @@ const DataUpload = ({getSelectedOption}) => {
                     <button className={!viewActiveFiles && style.activeButton} onClick={() => setViewActiveFiles(false)}>FILES FAILED TO PROCESS FOR UPLOAD ( 2 )</button>
                 </div>
                 <Table
-                    tableHeaderValues={tableHeaderValues} 
+                    tableHeaderValues={tableHeaderValues}
                     tableDataValues={getActiveFilesValues()}
                     tableData={activitiesFileMeta}
                     gridStyle={style.activeContractGrid}

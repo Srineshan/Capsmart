@@ -5,6 +5,7 @@ import File from './../../images/file.png';
 import GreenPage from './../../images/greenPage.png';
 import ContractTiles from './contractTiles';
 import SearchBar from './../../Components/SearchBar';
+import AddIcon from '@mui/icons-material/Add';
 import {format} from 'date-fns';
 import UserCard from './userCard';
 import Table from '../../Components/TableDesign';
@@ -98,13 +99,18 @@ const ActiveContracts = ({getSelectedContract, getAddContract, getExtensionDialo
                 <div className={style.bigCardStyle}>
                     <div className={style.spaceBetween}>
                         <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                            <p className={`${style.blue} ${style.activeContractsWidth}`}>ACTIVE CONTRACTS</p>
+                            {/* <p className={`${style.blue} ${style.activeContractsWidth}`}>ACTIVE CONTRACTS</p> */}
+                            <button className={style.buttonStyle} >My Active Contracts ( 0 )</button>
+                            <button className={style.otherContractsButton} >Other Contracts ( 150 )</button>
                             <SearchBar />
                             <img src={File} alt="File" className={style.smallIcons} />
                             <img src={PrintIcon} alt="PrintIcon" className={style.smallIcons} />
                             <img src={Filter} alt="Filter" className={style.filterIcon} />
                         </div>
-                        <button className={style.contractButton} onClick={() => {handleAddContract()}} >ADD CONTRACT</button>
+                        {/* <button className={style.contractButton} onClick={() => {handleAddContract()}} >ADD CONTRACT</button> */}
+                        <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`} onClick={() => {handleAddContract()}}>
+                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd}/>
+                        </div>
                     </div>
                     <Table
                         tableHeaderValues={tableHeaderValues}

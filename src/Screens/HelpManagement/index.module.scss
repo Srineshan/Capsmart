@@ -1,49 +1,54 @@
-body{
+body {
     background: #F8FCFF 0% 0% no-repeat padding-box;
     -ms-overflow-style: none !important;
     scrollbar-width: none !important;
+
     ::-webkit-scrollbar {
         display: none !important;
     }
 }
 
-.margin20{
+.margin20 {
     margin: 20px;
 }
 
-.marginTop20{
+.marginTop20 {
     margin-top: 20px !important;
 }
 
-.marginTop{
+.marginTop {
     margin-top: 5px;
 }
 
-.marginTop7{
+.marginTop7 {
     margin-top: 7px;
 }
 
-.paddingTop5{
+.paddingTop5 {
     padding-top: 5px;
 }
 
-.marginTop10{
+.marginTop10 {
     margin-top: 10px !important;
 }
 
-.marginTop40{
+.marginTop40 {
     margin-top: 40px !important;
 }
 
-.marginTop15{
+.marginTop15 {
     margin-top: 15px !important;
 }
 
-.padding10{
+.marginRight30 {
+    margin-right: 30px;
+}
+
+.padding10 {
     padding: 10px;
 }
 
-.cardStyle{
+.cardStyle {
     height: 105px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -52,11 +57,11 @@ body{
     cursor: pointer;
 }
 
-.selectedCardBackground{
+.selectedCardBackground {
     background: #E9ECFC 0% 0% no-repeat padding-box;
 }
 
-.bigCardStyle{
+.bigCardStyle {
     height: calc(100vh - 325px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -66,20 +71,20 @@ body{
     padding: 5px;
 }
 
-.grid5{
+.grid5 {
     display: grid;
     grid-template-columns: 80px 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
 }
 
-.bigCardGrid{
+.bigCardGrid {
     display: grid;
     grid-template-columns: 80px 1fr;
     grid-gap: 20px;
     margin-top: 20px;
 }
 
-.chevronCardStyle{
+.chevronCardStyle {
     height: 40px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -89,54 +94,54 @@ body{
     position: relative;
 }
 
-.openCardStyle{
+.openCardStyle {
     background-color: #ebe9fb;
     width: 100%;
     height: 100%;
 }
 
-.userLogo{
+.userLogo {
     width: 45px;
     height: 45px;
     border-radius: 50%;
     margin-top: 10px;
 }
 
-.userLogoSmall{
+.userLogoSmall {
     width: 35px;
     height: 35px;
     border-radius: 50%;
     margin-top: 10px;
 }
 
-.userLogoVerySmall{
+.userLogoVerySmall {
     width: 25px;
     height: 25px;
     border-radius: 50%;
 }
 
-.userLogoMailStyle{
+.userLogoMailStyle {
     width: 35px;
     height: 35px;
     border-radius: 50%;
     object-fit: contain;
 }
 
-.alignCenter{
+.alignCenter {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
 }
 
-.userNameStyle{
+.userNameStyle {
     text-align: left;
     font: normal normal 600 15px/13px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.loginStatus{
+.loginStatus {
     text-align: left;
     font: normal normal normal 11px/15px Montserrat;
     letter-spacing: 0px;
@@ -145,31 +150,31 @@ body{
     opacity: 1;
 }
 
-.marginLeft20{
+.marginLeft20 {
     margin-left: 10px;
 }
 
-.marginLeft5{
+.marginLeft5 {
     margin-left: 5px;
 }
 
-.marginLeft50{
+.marginLeft50 {
     margin-left: 50px;
 }
 
-.reduce10Left{
+.reduce10Left {
     margin-left: -10px;
 }
 
-.reduce20Left{
+.reduce20Left {
     margin-left: -20px;
 }
 
-.reduce30Left{
+.reduce30Left {
     margin-left: -30px;
 }
 
-.chevronRightStyle{
+.chevronRightStyle {
     width: 30px;
     height: 30px;
     background: #EBF2F7 0% 0% no-repeat padding-box;
@@ -177,7 +182,7 @@ body{
     border-radius: 50%;
 }
 
-.headingForContracts{
+.headingForContracts {
     font: normal normal bold 17px/15px Montserrat;
     letter-spacing: 0px;
     text-align: left;
@@ -188,7 +193,7 @@ body{
     margin-top: 0px;
 }
 
-.headingCountForContracts{
+.headingCountForContracts {
     color: #52575D;
     font-size: 50px;
     margin-top: -20px;
@@ -196,40 +201,40 @@ body{
     margin-left: 20px;
 }
 
-.spaceBetween{
+.spaceBetween {
     display: flex;
     justify-content: space-between;
 }
 
-.displayInCol{
+.displayInCol {
     display: flex;
     flex-direction: column;
 }
 
-.optionsStyle{
+.optionsStyle {
     margin: -3px 15px 0 10px;
     text-align: left;
     font-size: 13px;
     color: #52575D;
 }
 
-.green{
+.green {
     color: #00C07F;
 }
 
-.yellow{
+.yellow {
     color: #FEC106;
 }
 
-.red{
+.red {
     color: #FF6562;
 }
 
-.blue{
+.blue {
     color: #7165E3;
 }
 
-.activeUserDotColor{
+.activeUserDotColor {
     height: 6px;
     width: 6px;
     border-radius: 50%;
@@ -238,65 +243,66 @@ body{
     margin-right: 15px;
 }
 
-.last30Style{
+.last30Style {
     text-align: left;
     font: normal normal normal 10px/18px Montserrat;
     color: #52575D;
     opacity: 1;
-    margin-top: -30px ;
+    margin-top: -30px;
     margin-left: 20px;
 }
 
-.statisticsHeading{
-    border-bottom:2px solid #EBF2F7;
-    padding-bottom:20px;
+.statisticsHeading {
+    border-bottom: 2px solid #EBF2F7;
+    padding-bottom: 20px;
     text-align: center;
 }
 
-.searchBarStyle{
+.searchBarStyle {
     background: #E3E5F1 0% 0% no-repeat padding-box;
     border: 1px solid #A7A7A7;
     height: 35px;
     width: 400px;
     border-radius: 22px;
     opacity: 0.3;
-    p{
+
+    p {
         margin-top: 8px;
         margin-left: 10px;
     }
 }
 
-.envelopeImageStyle{
+.envelopeImageStyle {
     height: 60px;
     width: 60px;
 }
 
-.userMailListGrid{
+.userMailListGrid {
     display: grid;
     grid-template-columns: 20px 50px 1fr 20px;
 }
 
-.mailIdTextColor{
+.mailIdTextColor {
     color: #52575D;
 }
 
-.progressbarStyle{
+.progressbarStyle {
     width: 80%;
     margin-left: 10%;
 }
 
-.progressMargin{
+.progressMargin {
     margin: -5px 0 20px 0;
 }
 
-.viewStyle{
+.viewStyle {
     font: normal normal normal 10px/15px Montserrat;
     letter-spacing: -0.3px;
     color: #52575D;
     opacity: 1;
 }
 
-.statisticsProgress{
+.statisticsProgress {
     font: normal normal normal 9px/13px Montserrat;
     letter-spacing: -0.3px;
     color: #52575D;
@@ -305,27 +311,28 @@ body{
     margin-bottom: 1px !important;
 }
 
-.scrollStyle{
+.scrollStyle {
     height: calc(100vh - 360px);
     overflow: scroll;
 }
 
-.displayInRow{
+.displayInRow {
     display: flex;
     flex-direction: row;
 }
 
-.activeContractsWidth{
+.activeContractsWidth {
     width: 220px;
     margin-top: 30px;
     margin-left: 30px;
     text-align: left;
 }
 
-.buttonGroupUsers{
+.buttonGroupUsers {
     float: left;
-    margin: 20px 20px 20px 28px;
-    button{
+    margin: 10px 20px 10px 28px;
+
+    button {
         height: 40px;
         width: 220px;
         margin-right: 10px;
@@ -336,7 +343,7 @@ body{
     }
 }
 
-.registeredButton{
+.registeredButton {
     background: #7165E3 0% 0% no-repeat padding-box !important;
     border: 0.4000000059604645px solid #7165E3;
     border-radius: 6px;
@@ -345,7 +352,7 @@ body{
     font-weight: 600;
 }
 
-.blockedButton{
+.blockedButton {
     background: #FF6562 0% 0% no-repeat padding-box !important;
     border: 0.4000000059604645px solid #B3B8BD;
     border-radius: 6px;
@@ -354,12 +361,12 @@ body{
     font-weight: 600;
 }
 
-.redText{
+.redText {
     color: red;
     opacity: 0.75;
 }
 
-.normalButton{
+.normalButton {
     color: #52575D;
     background: #F5F5F8 0% 0% no-repeat padding-box !important;
     border: 0.4000000059604645px solid #7165E3;
@@ -368,7 +375,7 @@ body{
     font-weight: 600;
 }
 
-.unblockButton{
+.unblockButton {
     border: 1px solid #7165E3;
     opacity: 1;
     height: 30px;
@@ -378,21 +385,21 @@ body{
     margin-top: 3px;
 }
 
-.smallIcons{
+.smallIcons {
     max-height: 30px;
     max-width: 30px;
     margin-left: 20px;
     margin-top: 5px;
 }
 
-.searchIcon{
+.searchIcon {
     max-height: 20px;
     max-width: 20px;
     margin-left: 20px;
     margin-top: 7px;
 }
 
-.contractButton{
+.contractButton {
     width: 124px;
     height: 40px;
     background: #7165E3 0% 0% no-repeat padding-box;
@@ -406,7 +413,7 @@ body{
     cursor: pointer;
 }
 
-.tutorialButton{
+.tutorialButton {
     width: 200px;
     height: 40px;
     background: #7165E3 0% 0% no-repeat padding-box;
@@ -420,11 +427,11 @@ body{
     cursor: pointer;
 }
 
-.selectedContractBackground{
+.selectedContractBackground {
     background-color: #D8D5FD;
 }
 
-.tableHeader{
+.tableHeader {
     background: #BEB9F2 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
@@ -436,7 +443,7 @@ body{
     grid-template-columns: 5% 15% 15% 10% 10% 17% 15% 13%;
 }
 
-.tableHeader2{
+.tableHeader2 {
     background: #BEB9F2 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
@@ -448,7 +455,7 @@ body{
     grid-template-columns: 5% 15% 15% 20% 17% 15% 13%;
 }
 
-.tableHeader3{
+.tableHeader3 {
     background: #BEB9F2 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
@@ -460,7 +467,7 @@ body{
     grid-template-columns: 5% 15% 20% 10% 10% 10% 20% 10%;
 }
 
-.tableHeader4{
+.tableHeader4 {
     background: #BEB9F2 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
@@ -472,7 +479,7 @@ body{
     grid-template-columns: 5% 15% 20% 10% 10% 10% 10% 10% 10%;
 }
 
-.tableHeader5{
+.tableHeader5 {
     background: #BEB9F2 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
@@ -484,7 +491,7 @@ body{
     grid-template-columns: 20% 40% 15% 15% 10%;
 }
 
-.tableHeaderFAQ{
+.tableHeaderFAQ {
     background: #BEB9F2 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
@@ -496,7 +503,7 @@ body{
     grid-template-columns: 5% 65% 15% 10%;
 }
 
-.tableHeaderFAQSuggestion{
+.tableHeaderFAQSuggestion {
     background: #BEB9F2 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
@@ -508,41 +515,41 @@ body{
     grid-template-columns: 5% 15% 20% 43% 15%;
 }
 
-.tableGridFAQ{
+.tableGridFAQ {
     display: grid;
     grid-template-columns: 5% 65% 15% 10%;
 }
 
-.alternativeBackgroundColor{
+.alternativeBackgroundColor {
     background-color: #ebe9fb !important;
 }
 
-.userInfoGrid{
+.userInfoGrid {
     width: 90%;
     display: grid;
     grid-template-columns: 22% 5px 25% 5px 25% 5px 17%;
     grid-gap: 20px;
 }
 
-.userInfoDivStyle{
+.userInfoDivStyle {
     width: 100%;
 }
 
-.divideStyle{
+.divideStyle {
     background: #ebe9fb 0% 0% no-repeat padding-box;
     height: 3px;
     width: 96%;
     margin: 0 20px;
 }
 
-.sideDivideStyle{
+.sideDivideStyle {
     height: 80%;
     width: 1px;
     background-color: #52575D;
     margin-top: 10px;
 }
 
-.addressTextStyle{
+.addressTextStyle {
     text-align: left;
     font: normal normal normal 11px/15px Montserrat;
     letter-spacing: 0px;
@@ -551,7 +558,7 @@ body{
     line-height: 10px;
 }
 
-.documentPageHeader{
+.documentPageHeader {
     background: #BEB9F2 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
@@ -562,15 +569,15 @@ body{
     grid-template-columns: 30% 20% 20% 30%;
 }
 
-.documentProofInputWidth{
+.documentProofInputWidth {
     width: 96%;
 }
 
-.contractWidth{
+.contractWidth {
     width: 200px;
 }
 
-.tableData{
+.tableData {
     background: #F5F5F8 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 96%;
@@ -581,43 +588,57 @@ body{
     margin-top: 5px;
 }
 
-.tableDataGrid{
-    width: 100%;
+.ticketTableDataGrid {
     display: grid;
-    grid-template-columns: 5% 15% 15% 10% 10% 17% 15% 13%;
+    grid-template-columns: 5% 10% 15% 15% 15% 15% 15% 10%;
 }
 
-.tableDataGrid2{
+.tutorialTableDataGrid {
+    display: grid;
+    grid-template-columns: 5% 10% 20% 15% 10% 10% 20% 10%;
+}
+
+.releaseTableDataGrid {
+    display: grid;
+    grid-template-columns: 5% 10% 20% 15% 10% 13% 10% 10% 5%;
+}
+
+.messageTableDataGrid {
+    display: grid;
+    grid-template-columns: 5% 10% 15% 32% 15% 15% 5%;
+}
+
+.tableDataGrid2 {
     width: 100%;
     display: grid;
     grid-template-columns: 5% 15% 15% 20% 17% 15% 13%;
 }
 
-.tableDataGrid3{
+.tableDataGrid3 {
     width: 100%;
     display: grid;
     grid-template-columns: 5% 15% 20% 10% 10% 10% 20% 10%;
 }
 
-.tableDataGrid4{
+.tableDataGrid4 {
     width: 100%;
     display: grid;
     grid-template-columns: 5% 15% 20% 10% 10% 10% 10% 10% 10%;
 }
 
-.tableDataGrid5{
+.tableDataGrid5 {
     width: 100%;
     display: grid;
     grid-template-columns: 20% 40% 15% 15% 10%;
 }
 
-.tableDataGridFAQSuggestion{
+.tableDataGridFAQSuggestion {
     width: 100%;
     display: grid;
     grid-template-columns: 5% 15% 20% 43% 15%;
 }
 
-.releaseImgStyle{
+.releaseImgStyle {
     height: 130px;
     width: 100px;
     object-fit: cover;
@@ -625,7 +646,7 @@ body{
     border: 3px solid #BEB9F2;
 }
 
-.documentDataProof{
+.documentDataProof {
     background: #F5F5F8 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
@@ -638,7 +659,7 @@ body{
     grid-template-columns: 4% 30% 18% 18% 30%;
 }
 
-.checkBoxHeader{
+.checkBoxHeader {
     background: #E9E9F0 0% 0% no-repeat padding-box;
     border: 1px solid #E9E9F0;
     opacity: 1;
@@ -647,7 +668,7 @@ body{
     margin-left: 20px;
 }
 
-.sendMailConfirmationStyle{
+.sendMailConfirmationStyle {
     text-align: center;
     font: normal normal normal 13px/23px Montserrat;
     letter-spacing: 0px;
@@ -659,7 +680,7 @@ body{
     font-weight: 600;
 }
 
-.checkBoxData{
+.checkBoxData {
     background: #B3B8BD 0% 0% no-repeat padding-box;
     border: 1px solid #E9E9F0;
     opacity: 1;
@@ -668,7 +689,7 @@ body{
     margin: 10px 10px 0 20px;
 }
 
-.tableHeaderFontStyle{
+.tableHeaderFontStyle {
     font: normal normal bold 13px/17px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
@@ -678,7 +699,7 @@ body{
     margin-top: 10px;
 }
 
-.multipleContractorTextWidth{
+.multipleContractorTextWidth {
     font: normal normal bold 13px/17px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
@@ -690,7 +711,7 @@ body{
     margin-top: 10px;
 }
 
-.documentProofTextWidth{
+.documentProofTextWidth {
     font: normal normal bold 13px/17px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
@@ -701,7 +722,7 @@ body{
     margin-top: 15px;
 }
 
-.tableDataFontStyle{
+.tableDataFontStyle {
     font: normal normal normal 13px/17px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
@@ -711,14 +732,14 @@ body{
     margin-top: 10px;
 }
 
-.answerTextStyle{
+.answerTextStyle {
     text-align: left;
     font: normal normal medium 13px/18px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.multipleDataTextWidth{
+.multipleDataTextWidth {
     font: normal normal normal 13px/17px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
@@ -729,7 +750,7 @@ body{
     margin-top: 10px;
 }
 
-.documentProofDataTextWidth{
+.documentProofDataTextWidth {
     font: normal normal normal 13px/17px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
@@ -740,7 +761,7 @@ body{
     margin-top: 10px;
 }
 
-.greenDotStyle{
+.greenDotStyle {
     height: 6px;
     width: 6px;
     border-radius: 50%;
@@ -749,7 +770,7 @@ body{
     margin-left: 30px;
 }
 
-.blueDotStyle{
+.blueDotStyle {
     height: 6px;
     width: 6px;
     border-radius: 50%;
@@ -758,7 +779,7 @@ body{
     margin-left: 30px;
 }
 
-.yellowDotStyle{
+.yellowDotStyle {
     height: 6px;
     width: 6px;
     border-radius: 50%;
@@ -767,7 +788,7 @@ body{
     margin-left: 30px;
 }
 
-.redDotStyle{
+.redDotStyle {
     height: 6px;
     width: 6px;
     border-radius: 50%;
@@ -776,11 +797,11 @@ body{
     margin-left: 30px;
 }
 
-.width10{
+.width10 {
     width: 10%;
 }
 
-.accountActivityStyle{
+.accountActivityStyle {
     font: normal normal normal 15px/22px Montserrat;
     letter-spacing: 0.66px;
     color: #52575D;
@@ -789,7 +810,7 @@ body{
     margin-top: 7px;
 }
 
-.paginationStyle{
+.paginationStyle {
     font: normal normal 600 12px/15px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
@@ -797,7 +818,7 @@ body{
     margin-top: 10px;
 }
 
-.roundChevron{
+.roundChevron {
     width: 15px;
     height: 15px;
     margin-left: 10px;
@@ -805,13 +826,13 @@ body{
     margin-top: 11px;
 }
 
-.actionsIcon{
+.actionsIcon {
     width: 30px;
     height: 30px;
     margin: 5px;
 }
 
-.activateIcon{
+.activateIcon {
     width: 130px;
     height: 30px;
     margin: 5px;
@@ -819,7 +840,7 @@ body{
     margin-left: -90px;
 }
 
-.actionCard{
+.actionCard {
     background: #D8D7EE 0% 0% no-repeat padding-box;
     opacity: 0.99;
     width: 40px;
@@ -829,7 +850,7 @@ body{
     margin-left: 70%;
 }
 
-.poweredBy{
+.poweredBy {
     text-align: left;
     font: normal normal normal 11px/14px Montserrat;
     letter-spacing: 0px;
@@ -838,51 +859,51 @@ body{
     margin: 5px 0 0 10px;
 }
 
-.leftChevronColor{
+.leftChevronColor {
     color: #52575D;
 }
 
-.marginRight{
+.marginRight {
     margin-right: 10px;
 }
 
-.marginRight20{
+.marginRight20 {
     margin-right: 20px;
 }
 
-.welcomeStyle{
+.welcomeStyle {
     text-align: left;
     font: normal normal bold 20px/18px Montserrat;
     letter-spacing: 0px;
     color: #7165E3;
 }
 
-.extensionStyle{
+.extensionStyle {
     text-align: left;
     font: normal normal bold 15px/13px Montserrat;
     letter-spacing: 0px;
     color: #7165E3;
 }
 
-.videoSequenceHeadingStyle{
+.videoSequenceHeadingStyle {
     text-align: left;
     font: normal normal bold 15px/13px Montserrat;
     letter-spacing: 0px;
     color: #E9E9F0;
 }
 
-.extensionBorder{
+.extensionBorder {
     background-color: #EBF2F7;
     height: 3px;
 }
 
-.videoSequenceBorder{
+.videoSequenceBorder {
     background-color: #707070;
     height: 1px;
 }
 
 
-.extensionOptionsStyle{
+.extensionOptionsStyle {
     text-align: left;
     font: normal normal medium 15px/13px Montserrat;
     letter-spacing: 0px;
@@ -892,16 +913,16 @@ body{
     margin-top: 10px;
 }
 
-.terminationFieldWidth{
+.terminationFieldWidth {
     width: 72%;
 }
 
-.entityFieldWidth{
+.entityFieldWidth {
     width: 60%;
 }
 
-.disabledButton{
-    color:rgba(143, 153, 168, 0.5);
+.disabledButton {
+    color: rgba(143, 153, 168, 0.5);
     background-color: #f1f2f3;
     height: 33px;
     width: 100px;
@@ -909,8 +930,8 @@ body{
     border-radius: 6px;
 }
 
-.addMoreButton{
-    color:rgba(143, 153, 168, 0.5);
+.addMoreButton {
+    color: rgba(143, 153, 168, 0.5);
     background-color: #f1f2f3;
     height: 32px;
     width: 130px;
@@ -918,8 +939,8 @@ body{
     border-radius: 6px;
 }
 
-.addCotractorButton{
-    color:rgba(143, 153, 168, 0.5);
+.addCotractorButton {
+    color: rgba(143, 153, 168, 0.5);
     background-color: #f1f2f3;
     height: 32px;
     width: 200px;
@@ -928,7 +949,7 @@ body{
     margin-top: 5px;
 }
 
-.addSymbolStyle{
+.addSymbolStyle {
     background-color: #7165E3;
     color: white;
     font-size: 25px;
@@ -938,20 +959,20 @@ body{
     height: 32px;
 }
 
-.plusSymbolPosition{
+.plusSymbolPosition {
     position: relative;
     top: -2px;
 }
 
-.disabled{
+.disabled {
     cursor: not-allowed;
 }
 
-.disabledColor{
+.disabledColor {
     cursor: rgba(143, 153, 168, 0.5);
 }
 
-.addBoxDescription{
+.addBoxDescription {
     color: #52575D;
     background-color: rgba(143, 153, 168, 0.5);
     width: 260px;
@@ -959,11 +980,11 @@ body{
     border-radius: 10px;
 }
 
-.fullWidth{
+.fullWidth {
     width: 100%;
 }
 
-.contractId{
+.contractId {
     text-align: left;
     font: normal normal medium 15px/13px Montserrat;
     letter-spacing: 0px;
@@ -973,11 +994,11 @@ body{
     margin: 5px 20px 0 20px;
 }
 
-.welcomePadding{
+.welcomePadding {
     padding: 30px 40px;
 }
 
-.welcomeMessage{
+.welcomeMessage {
     background: #BEB9F2 0% 0% no-repeat padding-box;
     opacity: 0.4;
     text-align: left;
@@ -987,58 +1008,58 @@ body{
     padding: 20px;
 }
 
-.addContractBody{
+.addContractBody {
     background-color: white;
     height: 100vh;
     overflow: scroll;
 }
 
-.extensionDialogBackground{
+.extensionDialogBackground {
     background-color: white;
     margin: -20px !important;
     padding: 40px;
     border-radius: 10px;
 }
 
-.deleteEcecutedContractDialogBackground{
+.deleteEcecutedContractDialogBackground {
     background-color: white;
     margin: -20px !important;
     padding: 20px;
     border-radius: 10px;
 }
 
-.addManagerDialogBackground{
+.addManagerDialogBackground {
     background-color: white !important;
     padding: 20px 40px;
     border-radius: 20px !important;
 }
 
-.videoSequenceDialogBackground{
+.videoSequenceDialogBackground {
     background: #52575D 0% 0% no-repeat padding-box !important;
     border: 1px solid #5C5C5C;
     padding: 20px 40px;
     border-radius: 20px !important;
 }
 
-.extentionGrid{
+.extentionGrid {
     display: grid;
     grid-template-columns: 1fr 2.5fr;
     grid-gap: 20px;
 }
 
-.uploadGrid{
+.uploadGrid {
     display: grid;
     grid-template-columns: 60% 38%;
     grid-gap: 20px;
 }
 
-.addManagerGrid{
+.addManagerGrid {
     display: grid;
     grid-template-columns: 1fr 2fr;
     grid-gap: 20px;
 }
 
-.extentionLableStyle{
+.extentionLableStyle {
     text-align: left;
     font: normal normal normal 13px/17px Montserrat;
     letter-spacing: 0px;
@@ -1048,16 +1069,16 @@ body{
     margin-top: 5px;
 }
 
-.nameInput{
-  max-width:220px;
+.nameInput {
+    max-width: 220px;
 }
 
-.toStyle{
+.toStyle {
     color: #52575D;
     margin: 5px 20px 0 20px;
 }
 
-.extentionBoxStyle{
+.extentionBoxStyle {
     border: 1px solid #7165E3;
     border-radius: 8px;
     opacity: 1;
@@ -1067,7 +1088,7 @@ body{
     padding: 20px;
 }
 
-.faqBoxStyle{
+.faqBoxStyle {
     border: 1px solid #7165E3;
     border-radius: 8px;
     opacity: 1;
@@ -1076,12 +1097,12 @@ body{
     padding: 20px;
 }
 
-.mailTemplate{
-  height:80% !important;
-  width:75% !important;
+.mailTemplate {
+    height: 80% !important;
+    width: 75% !important;
 }
 
-.serviceBoxStyle{
+.serviceBoxStyle {
     border: 1px solid #7165E3;
     border-radius: 8px;
     opacity: 1;
@@ -1092,7 +1113,7 @@ body{
     padding: 20px;
 }
 
-.deleteDraftBoxStyle{
+.deleteDraftBoxStyle {
     border: 1px solid #7165E3;
     border-radius: 8px;
     opacity: 1;
@@ -1102,7 +1123,7 @@ body{
     padding: 20px;
 }
 
-.newContractFromCloneBoxStyle{
+.newContractFromCloneBoxStyle {
     border: 1px solid #7165E3;
     border-radius: 8px;
     opacity: 1;
@@ -1113,38 +1134,38 @@ body{
     padding: 20px;
 }
 
-.textAlignLeft{
+.textAlignLeft {
     text-align: left;
 }
 
-.textAlignCenter{
+.textAlignCenter {
     display: flex;
     align-items: center;
 }
 
-.textAlignRight{
+.textAlignRight {
     display: flex;
     align-items: flex-end;
 }
 
-.dialogPaddingBottom{
+.dialogPaddingBottom {
     padding-bottom: 0 !important;
 }
 
-.crossStyle{
+.crossStyle {
     color: linear-gradient(#7165E3, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
 
-.trashStyle{
+.trashStyle {
     color: linear-gradient(#7165E3, #FF6562) !important;
     cursor: pointer;
     position: relative;
     bottom: -20px;
 }
 
-.textFieldWidth{
+.textFieldWidth {
     width: 350px;
 }
 
@@ -1160,37 +1181,39 @@ select {
     appearance: none;
     background-color: #fff;
     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
-      linear-gradient(to bottom, #ffffff 0%, #f5f4f4 100%);
+        linear-gradient(to bottom, #ffffff 0%, #f5f4f4 100%);
     background-repeat: no-repeat, repeat;
     background-position: right 0.7em top 50%, 0 0;
     background-size: 0.65em auto, 100%;
     max-height: 40px;
     margin-top: 6px;
-    &:focus{
-      outline: none;
-    }
-    &.fullwidth {
-      min-width: 250px;
-    }
-  }
 
-  .selectLable{
+    &:focus {
+        outline: none;
+    }
+
+    &.fullwidth {
+        min-width: 250px;
+    }
+}
+
+.selectLable {
     text-align: left;
     font: normal normal normal 17px/16px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
     opacity: 1;
     margin-top: 10px;
-  }
+}
 
-  .contractOptions{
-      height: 350px;
-      width: 60%;
-      margin-left: 20%;
-      margin-top: 3%;
-  }
+.contractOptions {
+    height: 350px;
+    width: 60%;
+    margin-left: 20%;
+    margin-top: 3%;
+}
 
-  .contractCards{
+.contractCards {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 20px;
@@ -1199,56 +1222,56 @@ select {
     height: 150px;
     margin-top: 3%;
     margin-right: 20px;
-  }
+}
 
-  .contractCards:hover{
+.contractCards:hover {
     background:
-    linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, #7165E3, #FF6562) border-box;
+        linear-gradient(white, white) padding-box,
+        linear-gradient(to bottom, #7165E3, #FF6562) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
-  }
+}
 
-  .alignCenter{
+.alignCenter {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
-  }
+}
 
-  .alertValidationInputStyle{
+.alertValidationInputStyle {
     border: 1px solid red !important;
     border-radius: 4px !important;
     box-shadow: none !important;
     height: 32px;
-  }
+}
 
-  .contractCardData{
+.contractCardData {
     text-align: center;
     font: normal normal 600 12px/14px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
     opacity: 1;
     width: 150px;
-  }
+}
 
-  .selectedContractCard{
+.selectedContractCard {
     background:
         linear-gradient(white, white) padding-box,
         linear-gradient(to bottom, #7165E3, #FF6562) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
-  }
+}
 
-  .contractCardImage{
-      height: 70px;
-      width: 100px;
-      background-color: #B3B8BD;
-      margin-left: 25px;
-      margin-bottom: 10px;
-  }
+.contractCardImage {
+    height: 70px;
+    width: 100px;
+    background-color: #B3B8BD;
+    margin-left: 25px;
+    margin-bottom: 10px;
+}
 
-  .nextButton{
+.nextButton {
     border-radius: 12px;
     opacity: 1;
     background-color: #7165E3;
@@ -1257,81 +1280,81 @@ select {
     height: 40px;
     width: 180px;
     cursor: pointer;
-  }
+}
 
-  .nextButtonPosition{
-      display: flex;
-      float: right;
-  }
+.nextButtonPosition {
+    display: flex;
+    float: right;
+}
 
-  .positionCenter{
+.positionCenter {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+}
 
-  .welcomeBorder{
+.welcomeBorder {
     background: #EBF2F7 0% 0% no-repeat padding-box;
     opacity: 1;
     height: 4px;
     width: 100%;
     margin-bottom: 10px;
-  }
+}
 
-  .activeContractText{
-    color:#52575D;
-  }
+.activeContractText {
+    color: #52575D;
+}
 
-  .dialogStyle{
-      height: 80%;
-      width: 60% !important;
-      border-radius: 20px;
-  }
+.dialogStyle {
+    height: 80%;
+    width: 60% !important;
+    border-radius: 20px;
+}
 
-    .addManagerDialogStyle{
-        height: 50%;
-        width: 40%;
-        border-radius: 20px;
-    }
+.addManagerDialogStyle {
+    height: 50%;
+    width: 40%;
+    border-radius: 20px;
+}
 
-    .videoOptionsDialogStyle{
-        height: 40%;
-        width: 25% !important;
-        border-radius: 20px;
-    }
+.videoOptionsDialogStyle {
+    height: 40%;
+    width: 25% !important;
+    border-radius: 20px;
+}
 
-  .outlinedButton{
-      background-color: white;
-      color: #7165E3;
-      border: 1px solid #7165E3;
-      height: 40px;
-      width: 140px;
-      border-radius: 10px;
-      margin-bottom: -20px;
-      box-shadow: 0px 3px 11px #7165E3;
-  }
+.outlinedButton {
+    background-color: white;
+    color: #7165E3;
+    border: 1px solid #7165E3;
+    height: 40px;
+    width: 140px;
+    border-radius: 10px;
+    margin-bottom: -20px;
+    box-shadow: 0px 3px 11px #7165E3;
+}
 
-  .outlinedTransparentButton{
-        background-color: transparent;
-        color: #fff;
-        border: 1px solid #fff;
-        height: 40px;
-        width: 140px;
-        border-radius: 10px;
-        margin-bottom: -20px;
-    }
+.outlinedTransparentButton {
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+    height: 40px;
+    width: 140px;
+    border-radius: 10px;
+    margin-bottom: -20px;
+}
 
-    .whiteButton{
-        background-color: #fff;
-        color: #52575D;
-        border: 1px solid #fff;
-        height: 40px;
-        width: 140px;
-        border-radius: 10px;
-        margin-bottom: -20px;
-    }
+.whiteButton {
+    background-color: #fff;
+    color: #52575D;
+    border: 1px solid #fff;
+    height: 40px;
+    width: 140px;
+    border-radius: 10px;
+    margin-bottom: -20px;
+}
 
-  .cloneOutlinedButton{
+.cloneOutlinedButton {
     background-color: white;
     color: #7165E3;
     border: 1px solid #7165E3;
@@ -1341,7 +1364,7 @@ select {
     border-radius: 6px;
 }
 
-  .buttonStyle{
+.buttonStyle {
     background-color: #7165E3;
     color: white;
     border: 1px solid #7165E3;
@@ -1350,9 +1373,9 @@ select {
     border-radius: 10px;
     margin-bottom: -20px;
     box-shadow: 0px 3px 11px #7165E3;
-  }
+}
 
-  .videoButtonStyle{
+.videoButtonStyle {
     background-color: #7165E3;
     color: white;
     border: 1px solid #7165E3;
@@ -1360,9 +1383,9 @@ select {
     width: 200px;
     border-radius: 20px;
     font: normal normal medium 15px/24px Montserrat;
-  }
+}
 
-  .videoButtonOutlinedStyle{
+.videoButtonOutlinedStyle {
     color: #7165E3;
     background-color: white;
     border: 1px solid #7165E3;
@@ -1370,9 +1393,9 @@ select {
     width: 200px;
     border-radius: 20px;
     font: normal normal medium 15px/24px Montserrat;
-  }
+}
 
-  .cloneButtonStyle{
+.cloneButtonStyle {
     background-color: #7165E3;
     color: white;
     border: 1px solid #7165E3;
@@ -1380,64 +1403,64 @@ select {
     height: 30px;
     width: 80px;
     border-radius: 6px;
-  }
+}
 
-  .floatRight{
-      float: right;
-  }
+.floatRight {
+    float: right;
+}
 
-  .cloneContent{
+.cloneContent {
     text-align: left;
     font: normal normal medium 18px/28px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
-  }
+}
 
-.cloneDialog{
+.cloneDialog {
     height: 40%;
     width: 30% !important;
 }
 
-.sendMailUserDialog{
+.sendMailUserDialog {
     height: 40%;
     width: 40% !important;
 }
 
-.cloneDialogBackground{
+.cloneDialogBackground {
     background-color: white;
     margin: -20px !important;
     padding: 20px;
     border-radius: 10px;
 }
 
-.cursorPointer{
+.cursorPointer {
     cursor: pointer;
 }
 
-.calendarStyle{
+.calendarStyle {
     margin: 7px;
 }
 
-.newContractFromCloneGrid{
+.newContractFromCloneGrid {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
     grid-gap: 20px;
 }
 
-.reduceTop10{
+.reduceTop10 {
     margin-top: -10px;
 }
 
-.weekSelectStyle{
+.weekSelectStyle {
     margin-top: 0px;
     height: 30px;
 }
 
-.marginBottom{
+.marginBottom {
     margin-bottom: 10px;
 }
 
-.cloneBlockStyle{
+.cloneBlockStyle {
     height: calc(100vh - 80px);
     overflow: scroll;
     border-right: 4px solid #EBF2F7;
@@ -1446,7 +1469,7 @@ select {
     padding: 20px;
 }
 
-.contractEntityCardStyle{
+.contractEntityCardStyle {
     background: #EBF2F7 0% 0% no-repeat padding-box;
     border-radius: 10px;
     opacity: 1;
@@ -1454,7 +1477,7 @@ select {
     min-width: 100%;
 }
 
-.completedEntityCardStyle{
+.completedEntityCardStyle {
     background-color: #BEB9F2;
     color: black;
     font-weight: 600 !important;
@@ -1463,7 +1486,7 @@ select {
     grid-gap: 10px;
 }
 
-.contractEntityFontStyle{
+.contractEntityFontStyle {
     text-align: left;
     font: normal normal normal 17px/21px Montserrat;
     letter-spacing: 0px;
@@ -1472,21 +1495,21 @@ select {
     padding: 20px;
 }
 
-.tableHeight{
+.tableHeight {
     height: calc(100vh - 170px);
     overflow: scroll;
 }
 
-.selectedContractEntityStyle{
+.selectedContractEntityStyle {
     border: 1px solid #7165E3;
     color: #7165E3;
 }
 
-.selectedColor{
+.selectedColor {
     color: #7165E3;
 }
 
-.smallHeadingStyle{
+.smallHeadingStyle {
     text-align: left;
     font: normal normal 600 17px/16px Montserrat;
     letter-spacing: 0px;
@@ -1495,7 +1518,7 @@ select {
     opacity: 1;
 }
 
-.descriptionStyle{
+.descriptionStyle {
     text-align: left;
     font: normal normal normal 15px/30px Montserrat;
     letter-spacing: 0px;
@@ -1503,7 +1526,7 @@ select {
     color: #52575D;
 }
 
-.deleteDescriptionStyle{
+.deleteDescriptionStyle {
     text-align: left;
     font: normal normal normal 13px/23px Montserrat;
     letter-spacing: 0px;
@@ -1512,7 +1535,7 @@ select {
     line-height: 20px;
 }
 
-.descriptionBoxStyle{
+.descriptionBoxStyle {
     border: 1px solid #B3B8BD;
     border-radius: 8px;
     opacity: 1;
@@ -1522,7 +1545,7 @@ select {
     background-color: white;
 }
 
-.roleBoxStyle{
+.roleBoxStyle {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 11px #52575D4D;
     border-radius: 6px;
@@ -1533,30 +1556,30 @@ select {
     margin-top: -60px;
 }
 
-.blueColor{
+.blueColor {
     color: #7165E3;
 }
 
-.selectFieldWidth{
+.selectFieldWidth {
     min-width: 260px;
     max-width: 260px;
 }
 
-.tutorialFieldWidth{
+.tutorialFieldWidth {
     min-width: 160px;
     max-width: 160px;
 }
 
-.selectFieldSwitchWidth{
+.selectFieldSwitchWidth {
     min-width: 240px;
     max-width: 240px;
 }
 
-.fieldWidth2InARow{
+.fieldWidth2InARow {
     width: 50%;
 }
 
-.uploadButtonStyle{
+.uploadButtonStyle {
     background-color: #f1f2f3;
     color: #7165E3;
     border: none;
@@ -1565,7 +1588,7 @@ select {
     width: 100px;
 }
 
-.chooseFileStyle{
+.chooseFileStyle {
     background-color: #f1f2f3;
     color: #7165E3;
     border: none;
@@ -1574,66 +1597,66 @@ select {
     width: 100px;
 }
 
-.leftAlign{
+.leftAlign {
     text-align: left;
 }
 
-.validationAlert{
+.validationAlert {
     background: #ffcdcc 0% 0% no-repeat padding-box;
     border-radius: 10px;
     padding: 10px 10px 0 10px;
     color: black !important;
 }
 
-.blackText{
+.blackText {
     color: black !important;
 }
 
-.bold{
+.bold {
     font-weight: bold;
 }
 
-.documentCard{
+.documentCard {
     background-color: #D3D0F7;
     padding: 10px 10px 0 10px;
     border-radius: 10px;
     padding-bottom: -20px;
 }
 
-.proofBorder{
-  border: 1px solid #7165E3;
-  border-radius: 8px;
-  opacity: 1;
-  overflow: scroll;
-  border-radius: 8px;
-  opacity: 1;
-  overflow: scroll;
-  margin-top: 10px;
-  padding: 20px;
-}
-
-.addProofDialog{
-  height:75%;
-  width:55% !important;
-}
-
-.feedbackDialog{
-    height:100vh;
+.proofBorder {
+    border: 1px solid #7165E3;
+    border-radius: 8px;
+    opacity: 1;
     overflow: scroll;
-    width:100% !important;
+    border-radius: 8px;
+    opacity: 1;
+    overflow: scroll;
+    margin-top: 10px;
+    padding: 20px;
+}
+
+.addProofDialog {
+    height: 75%;
+    width: 55% !important;
+}
+
+.feedbackDialog {
+    height: 100vh;
+    overflow: scroll;
+    width: 100% !important;
     margin-top: 0px !important;
     border-radius: 8px !important;
-  }
+}
 
-  .videoSequenceDialog{
-    height:100vh;
+.videoSequenceDialog {
+    height: 100vh;
     overflow: scroll;
-    width:100% !important;
+    width: 100% !important;
     margin-top: 0px !important;
     border-radius: 0px !important;
-  }
+}
 
-.renewalBoxStyle{
+.renewalBoxStyle {
     background-color: #EBECED;
     color: #52575D;
     text-align: left;
@@ -1645,7 +1668,7 @@ select {
     padding: 15px;
 }
 
-.siteLevelBoxStyle{
+.siteLevelBoxStyle {
     background-color: #EBECED;
     color: #52575D;
     text-align: left;
@@ -1657,7 +1680,7 @@ select {
     padding: 15px;
 }
 
-.renewalRemainderBoxStyle{
+.renewalRemainderBoxStyle {
     color: #52575D;
     text-align: left;
     border: 1px solid #B3B8BD;
@@ -1668,7 +1691,7 @@ select {
     padding: 15px;
 }
 
-.inputRenewalStyle{
+.inputRenewalStyle {
     background: #EBECED !important;
     border: 1px solid #B3B8BD;
     height: 30px !important;
@@ -1677,7 +1700,7 @@ select {
     color: black;
 }
 
-.inputRenewalRemainderStyle{
+.inputRenewalRemainderStyle {
     background: #EBECED !important;
     border: 1px solid #B3B8BD;
     height: 30px !important;
@@ -1687,56 +1710,56 @@ select {
     width: 80%;
 }
 
-.renewalBoxGrid{
+.renewalBoxGrid {
     display: grid;
     grid-template-columns: 45% 20% 35%;
 }
 
-.siteLevelGrid{
+.siteLevelGrid {
     display: grid;
     grid-template-columns: 35% 65%;
 }
 
-.renewalRemainderBoxGrid{
+.renewalRemainderBoxGrid {
     display: grid;
     grid-template-columns: 50% 40% 10%;
 }
 
-.grid3{
+.grid3 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 20px;
 }
 
-.grid2{
+.grid2 {
     display: grid;
     grid-template-columns: 1fr 2fr;
     grid-gap: 20px;
 }
 
-.twoCol{
+.twoCol {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 20px;
 }
 
-.mailLeftElement{
-  margin-top:6px;
-  margin-left: 10px;
+.mailLeftElement {
+    margin-top: 6px;
+    margin-left: 10px;
 }
 
-.sendNotificationsButtonWidth{
+.sendNotificationsButtonWidth {
     width: 200px;
 }
 
-.filterIcon{
+.filterIcon {
     height: 20px;
     width: 20px;
     margin-left: 20px;
     margin-top: 10px;
 }
 
-.uploadIcon{
+.uploadIcon {
     height: 25px;
     width: 25px;
     margin-left: 20px;
@@ -1747,50 +1770,50 @@ select {
     width: 0 !important;
     height: 0 !important;
     display: none !important;
-  }
+}
 
-  .tagStyle {
+.tagStyle {
     margin: 0 5px 10px 0;
-  }
+}
 
-  .feedbackGrid{
+.feedbackGrid {
     display: grid;
     grid-template-columns: 60% 40%;
     grid-gap: 30px;
-  }
+}
 
-  .feedbackContentGrid{
+.feedbackContentGrid {
     display: grid;
     grid-template-columns: 40% 60%;
     grid-gap: 20px;
-  }
+}
 
-  .feedbackFontStyle{
+.feedbackFontStyle {
     text-align: left;
     font: normal normal normal 15px/21px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
-  }
+}
 
-  .dashedBorder{
+.dashedBorder {
     border: 3px dashed #948BEA;
-  }
+}
 
-  .imageDisplayStyle{
+.imageDisplayStyle {
     background: #F0EFFC 0% 0% no-repeat padding-box;
     height: 400px;
-  }
+}
 
-  .imageNameStyle{
+.imageNameStyle {
     text-align: left;
     font: normal normal normal 80px/100px Roboto;
     letter-spacing: 5.4px;
     color: #CECAF5;
     text-transform: uppercase;
     opacity: 0.39;
-  }
+}
 
-  .collapseHeader{
+.collapseHeader {
     background: #C3BFF3 0% 0% no-repeat padding-box;
     border: 1px solid #9B95E3;
     width: 100%;
@@ -1800,9 +1823,9 @@ select {
     border-radius: 4px;
     padding: 15px;
     padding-top: 25px;
-  }
+}
 
-  .collapseBody{
+.collapseBody {
     border: 1px solid var(--unnamed-color-7165e3);
     background: #EBECED 0% 0% no-repeat padding-box;
     border: 1px solid #7165E3;
@@ -1811,9 +1834,9 @@ select {
     border-radius: 4px;
     margin-top: 5px;
     padding: 15px;
-  }
+}
 
-  .collapseBody2{
+.collapseBody2 {
     border: 1px solid var(--unnamed-color-7165e3);
     background: #EBECED 0% 0% no-repeat padding-box;
     border: 1px solid #7165E3;
@@ -1822,59 +1845,59 @@ select {
     border-radius: 4px;
     margin-top: 5px;
     padding: 15px;
-  }
+}
 
-  .collapseHeaderText{
+.collapseHeaderText {
     text-align: left;
     font: normal normal bold 17px/13px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
     text-transform: capitalize;
-  }
+}
 
-  .greenDotFeedbackStyle{
+.greenDotFeedbackStyle {
     background: #7FC900 0% 0% no-repeat padding-box;
     box-shadow: inset 0px 3px 6px #FFFFFF29, 0px 3px 6px #00000045;
     border: 1px solid #242424;
     height: 12px;
     width: 12px;
     border-radius: 50%;
-  }
+}
 
-  .orageDotFeedbackStyle{
+.orageDotFeedbackStyle {
     background: #FFA30E 0% 0% no-repeat padding-box;
     box-shadow: inset 0px 3px 6px #FFFFFF29, 0px 3px 6px #00000045;
     border: 1px solid #242424;
     height: 12px;
     width: 12px;
     border-radius: 50%;
-  }
+}
 
-  .transparentBackground{
+.transparentBackground {
     background-color: transparent !important;
-  }
+}
 
-  .logFileBlueDot{
+.logFileBlueDot {
     background: #7165E3 0% 0% no-repeat padding-box;
     border: 1px solid #CFCFCF;
     height: 12px;
     width: 12px;
     border-radius: 50%;
     margin-top: 5px;
-  }
+}
 
-  .greyText{
+.greyText {
     color: #C3C3C3;
-  }
+}
 
-  .leftBorder{
+.leftBorder {
     border-left: 1px solid #E9E9F0;
     background-color: black;
     width: 1px;
     height: 50px;
-  }
+}
 
-  .sendButton{
+.sendButton {
     width: 80px;
     height: 30px;
     background: #7165E3 0% 0% no-repeat padding-box;
@@ -1887,7 +1910,7 @@ select {
     cursor: pointer;
 }
 
-.doneButton{
+.doneButton {
     width: 120px;
     height: 40px;
     background: #7165E3 0% 0% no-repeat padding-box;
@@ -1900,45 +1923,45 @@ select {
     cursor: pointer;
 }
 
-.videoPageLabel{
+.videoPageLabel {
     text-align: left;
     font: normal normal normal 15px/18px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.videoPageValue{
+.videoPageValue {
     text-align: left;
     font: normal normal medium 16px/34px Montserrat;
     letter-spacing: 0px;
     color: #E9E9F0;
 }
 
-.grid4{
+.grid4 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
 }
 
-.grid211{
+.grid211 {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
     grid-gap: 20px;
 }
 
-.lightColorBorder{
+.lightColorBorder {
     border: 1px solid #FFFFFF;
     height: 1px;
     width: 100%;
 }
 
-.videoSequenceGrid{
+.videoSequenceGrid {
     display: grid;
     grid-template-columns: 70% 30%;
     grid-gap: 20px;
 }
 
-.commentButton{
+.commentButton {
     background: #7165E3 0% 0% no-repeat padding-box;
     box-shadow: 0px 0px 6px #00000029;
     border: 0.6000000238418579px solid #575757;
@@ -1948,56 +1971,56 @@ select {
     height: 30px;
 }
 
-.verticalCenter{
+.verticalCenter {
     display: flex;
     align-items: center;
     height: 100%;
 }
 
-.padding1{
+.padding1 {
     padding: 15px 0;
 }
 
-.padding2{
+.padding2 {
     padding: 0 15px;
 }
 
-.padding15{
+.padding15 {
     padding: 15px;
 }
 
-.smallGreyText{
+.smallGreyText {
     text-align: left;
     font: normal normal normal 10px/18px Montserrat;
     color: #52575D;
 }
 
-.reduceTop{
+.reduceTop {
     margin-top: 0px;
 }
 
-.reduceTop2{
+.reduceTop2 {
     margin-top: -2px;
 }
 
-.faqAnswerGrid{
+.faqAnswerGrid {
     display: flex;
     grid-template-columns: 85% 15%;
     grid-gap: 20px;
 }
 
-.transparentDashedStyle{
+.transparentDashedStyle {
     background-color: transparent;
     border: 2px dashed #d7d4f7 !important;
 }
 
-.suggestionDetailsGrid{
+.suggestionDetailsGrid {
     display: grid;
     grid-template-columns: 2% 15% 60% 20%;
     grid-gap: 20px;
 }
 
-.suggestionWhiteButton{
+.suggestionWhiteButton {
     background-color: white;
     color: #7165E3;
     width: 80px;
@@ -2006,7 +2029,7 @@ select {
     border-radius: 8px;
 }
 
-.suggestionBlueButton{
+.suggestionBlueButton {
     background-color: #7165E3;
     color: #fff;
     width: 80px;
@@ -2015,12 +2038,12 @@ select {
     border-radius: 8px;
 }
 
-.textAreaIconPositions{
+.textAreaIconPositions {
     position: relative;
     top: -25px;
 }
 
-.colorFileStyle{
+.colorFileStyle {
     height: 15px !important;
     width: 15px !important;
     margin-right: 5px;
@@ -2028,7 +2051,7 @@ select {
     object-fit: contain;
 }
 
-.blueCircle{
+.blueCircle {
     background: #7165E3 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #0000004D;
     height: 50px;
@@ -2042,13 +2065,13 @@ select {
     cursor: pointer;
 }
 
-.blueCircleContainer{
+.blueCircleContainer {
     position: absolute;
     bottom: 20px;
     right: 20px;
 }
 
-.chatContainer{
+.chatContainer {
     height: 75vh;
     width: 20vw;
     position: absolute;
@@ -2056,7 +2079,7 @@ select {
     right: 100px;
 }
 
-.blueChatPart{
+.blueChatPart {
     height: 30%;
     background: #7165E3 0% 0% no-repeat padding-box;
     box-shadow: 0px 1px 4px #00000024;
@@ -2065,7 +2088,7 @@ select {
     padding: 20px;
 }
 
-.whiteChatPart{
+.whiteChatPart {
     background: #FBF9F8 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #0000002E;
     height: 70%;
@@ -2074,49 +2097,49 @@ select {
     padding: 10px;
 }
 
-.justifyCenter{
+.justifyCenter {
     display: flex;
     justify-content: center;
 }
 
-.encryptionBox{
+.encryptionBox {
     background: #EFF3F6 0% 0% no-repeat padding-box;
     padding: 10px;
 }
 
-.encryptionIconStyle{
+.encryptionIconStyle {
     background-color: #B1B1B1;
     height: 25px !important;
     width: 25px !important;
     border-radius: 50%;
 }
 
-.encryptionFontSize{
+.encryptionFontSize {
     font-size: 12px;
 }
 
-.encryptionGrid{
+.encryptionGrid {
     display: grid;
     grid-template-columns: 30px 1fr;
 }
 
-.whiteIcon{
+.whiteIcon {
     color: white;
 }
 
-.messageSection{
+.messageSection {
     height: 90%;
     overflow: scroll;
 }
 
-.replySection{
+.replySection {
     height: 15%;
     margin: 0 -10px -20px -10px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     padding: 20px;
 }
 
-.messageContainer{
+.messageContainer {
     background: #EFF3F6 0% 0% no-repeat padding-box;
     padding: 20px 10px;
     text-align: left;
@@ -2125,20 +2148,20 @@ select {
     color: #7A8593;
 }
 
-.messageAlignment{
+.messageAlignment {
     display: flex;
     flex-direction: column-reverse;
     height: 75%;
     overflow: scroll;
 }
 
-.messageGrid{
+.messageGrid {
     display: grid;
     grid-template-columns: 50px 1fr;
 }
 
 
-.chatLogo{
+.chatLogo {
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -2146,66 +2169,66 @@ select {
     z-index: 99;
 }
 
-.colRev{
+.colRev {
     display: flex;
     flex-direction: column-reverse;
 }
 
-.chatLogo2Pos{
+.chatLogo2Pos {
     position: relative;
     top: 20px;
     left: 12px;
     z-index: 1 !important;
 }
 
-.chatLogo3Pos{
+.chatLogo3Pos {
     position: relative;
     top: 27px;
     left: 5px;
     z-index: 9 !important;
 }
 
-.statusResolvedTextarea{
+.statusResolvedTextarea {
     box-shadow: 0px 3px 6px #0000003D !important;
     border: 1px solid #DFDFDF;
     border-radius: 4px;
     background-color: transparent !important;
 }
 
-.tutorialPostCard{
+.tutorialPostCard {
     background: #F5F5F8 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid #ebe9fb;
     padding: 5px;
 }
 
-.postImage{
+.postImage {
     width: 100%;
     height: 217px;
     object-fit: cover;
 }
 
-.postTitle{
+.postTitle {
     text-align: left;
     font: normal normal bold 15px/30px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.postContent{
+.postContent {
     text-align: left;
     font: normal normal normal 12px/20px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.postDateStyle{
+.postDateStyle {
     text-align: left;
     font: normal normal normal 12px/22px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.tutorialPostBackgroundCard{
+.tutorialPostBackgroundCard {
     background: #F6F7FA 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid #ebe9fb;
     border-radius: 6px;
@@ -2214,7 +2237,7 @@ select {
 
 }
 
-.newBadge{
+.newBadge {
     background: #7165E3 0% 0% no-repeat padding-box;
     opacity: 0.79;
     color: white;
@@ -2226,6 +2249,20 @@ select {
     border-radius: 0 0 10px 0;
 }
 
-.reduceTop20{
+.reduceTop20 {
     margin-top: -20px;
+}
+
+.activeButton {
+    background: #7165E3 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid #7165E3;
+    border-radius: 6px;
+    opacity: 0.75;
+    color: white;
+    font-weight: 600;
+}
+
+.helpScrollStyle {
+    height: calc(100vh - 535px);
+    overflow: scroll;
 }

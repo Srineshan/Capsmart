@@ -6,18 +6,15 @@ import ToolBar from './toolbar';
 import {POST, GET, PUT} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ReviewerApproverField from './reviewerApproverField';
+import LoadingScreen from '../../Components/LoadingScreen';
+import RedirectingPopUp from './redirectingPopUp';
 
 import style from './index.module.scss';
 
 const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName }) => {
-    const [addOn, setAddOn] = useState({id:'', reviewer:'', approver:''});
-    const [absence, setAbsence] = useState({id:'', reviewer:'', approver:''});
     const [timesheet, setTimesheet] = useState({id:'', reviewer:'', approver:''});
     const [workFlowList,setWorkFlowList] = useState([]);
-    // const [applyWorkflowToAll, setApplyWorkflowToAll] = useState(true);
-    // const [viewWorkflowDialog, setViewWorkflowDialog] = useState(false);
-    // const [workflowName, setWorkflowName] = useState('');
-    // const [workflowDescription, setWorkflowDescription] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('');
     const [selectTimesheetToDefineProcess, setSelectTimesheetToDefineProcess] = useState('');
     const [customWorkFlow, setCustomWorkFlow] = useState(false);
@@ -32,21 +29,14 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     useEffect(()=>{
         setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
         setWorkflowTemplateToUse(timesheetProcessingWorkflow[0]?.workFlowTemplate?.name?.name);
-        // setWorkflowDescription(timesheetProcessingWorkflow[0]?.workFlowDescription?.value);
-        // setWorkflowName(timesheetProcessingWorkflow[0]?.workFlow?.workFlowName?.name);
         setCustomWorkFlow(timesheetProcessingWorkflow[0]?.customWorkFlow);
         setWorkFlowList(timesheetProcessingWorkflow?.map(data=>data?.workFlow?.id));
     },[timesheetProcessingWorkflow]);
 
     useEffect(()=>{
-      if(activeTab === 'requests'){
-        getAddOnRequestWorkFlow();
-        getAbsenceRequestWorkFlow();
-      }else{
         setTimesheet({id:'',approver:'',reviewer:''});
         getTimeSheetSubmissionTerms();
-    }
-    setTabIndex(timeSheetTabs?.indexOf(activeTab));
+        setTabIndex(timeSheetTabs?.indexOf(activeTab));
   },[activeTab])
 
     useEffect(()=>{
@@ -56,8 +46,6 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     },[])
 
    useEffect(()=>{
-     getAddOnRequestWorkFlow();
-     getAbsenceRequestWorkFlow();
      getTimeSheetSubmissionTerms();
    }, [timesheetWorkFlow])
 
@@ -65,12 +53,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
       getTimeSheetWorkFlow();
     }
 
-    console.log('timesheet', timesheet, users);
     const getUserData = async() => {
       const {data:userList} = await GET(`contract-managment-service/contracts/workFlowUser`)
       if(userList){
         setUsers(userList);
-        console.log('userData',userList);
       }
     }
 
@@ -81,47 +67,20 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
       }
     }
 
-    const getAddOnRequestWorkFlow = async() => {
-      const {data:addOnWorkflow} = await GET(`contract-managment-service/contracts/${contractId}/addOnRequestWorkFlow`);
-      if(addOnWorkflow){
-        let workflowData = timesheetWorkFlow?.filter(data=>data?.id === addOnWorkflow?.workFlow?.id)?.map(data=>data?.workFlowMap?.workflow)[0];
-        let workFlowValues = Object.values(workflowData);
-        let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
-        let approver = workFlowValues?.[1]?.workFlowUser?.id;
-        setAddOn({...addOn, id:addOnWorkflow?.workFlow?.id, reviewer: reviewer, approver: approver});
-      }
-    }
-
-    const getAbsenceRequestWorkFlow = async() => {
-      const {data:absenceWorkFlow} = await GET(`contract-managment-service/contracts/${contractId}/absenceRequestWorkFlow`);
-      if(absenceWorkFlow){
-        let workflowData = timesheetWorkFlow?.filter(data=>data?.id === absenceWorkFlow?.workFlow?.id)?.map(data=>data?.workFlowMap?.workflow)[0];
-        let workFlowValues = Object.values(workflowData);
-        let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
-        let approver = workFlowValues?.[1]?.workFlowUser?.id;
-        setAbsence({...absence, id:absenceWorkFlow?.workFlow?.id, reviewer: reviewer, approver: approver});
-      }
-    }
-
     const getTimeSheetValues = async() => {
+      setIsLoading(true);
       const {data: timesheetSubmissionTerms} = await GET(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`);
       setTimeSheetTabs(timesheetSubmissionTerms?.timesheetActivitiesPeriods?.map(data=>data.timesheetLabel?.label) || []);
-      setActiveTab(timesheetSubmissionTerms?.timesheetActivitiesPeriods?.map(data=>data.timesheetLabel?.label)?.[0] || '')
+      setActiveTab(timesheetSubmissionTerms?.timesheetActivitiesPeriods?.map(data=>data.timesheetLabel?.label)?.[0] || '');
+      setIsLoading(false);
     }
 
     const updateTimeSheetWorkflow = async(data, workFlowName, type) => {
-      let id = type === 'AddOn' ? addOn?.id : type === 'Absence' ? absence?.id : timesheet?.id;
+      let id = timesheet?.id;
       if(id === ''){
         await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
          .then(response=>{
-           console.log('response', response, response?.data, type);
-           if(type === 'AddOn' || type === 'Absence'){
-             console.log('inside If', type);
-             updateWorkflow(response?.data, workFlowName, type);
-           }else{
-             handleContinue(response?.data)
-           }
-           SuccessToaster('Workflow Updated Successfully');
+           handleContinue(response?.data);
          })
          .catch(error=>{
            ErrorToaster('Unexpected Error');
@@ -139,73 +98,42 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
      refresh();
     }
 
-    const updateWorkflow = async(workflowId, workFlowName, type) => {
-      let data = {
-        "workFlow": {
-          "id": workflowId,
-          "workFlowName": {
-            "name": workFlowName,
-          }
-        }
-      }
-      if(type === 'AddOn'){
-        await PUT(`contract-managment-service/contracts/${contractId}/addOnRequestWorkFlow`, data)
-         .then(response=>{
-          SuccessToaster('AddOn Request Workflow Updated Successfully');
-         })
-         .catch(error=>{
-           ErrorToaster('Unexpected Error');
-         })
-       }else{
-         await PUT(`contract-managment-service/contracts/${contractId}/absenceRequestWorkFlow`, data)
-          .then(response=>{
-           SuccessToaster('Absence Request Workflow Updated Successfully');
-          })
-          .catch(error=>{
-            ErrorToaster('Unexpected Error');
-          })
-      }
-    }
-
     const getSelectedUserDetails = (id) => {
-      let user = users?.filter(user=>user?.id === id)?.map(data=>data)[0];
+      let user = users?.filter(user=>user?.userId === id)?.map(data=>data)[0];
       return user;
     }
 
 
     const handleTimeSheetWorkFlow = (name, reviewer, approver, activeTab) => {
-      let data = {};
-      if(activeTab === 'requests'){
-         data =   {
-            "name": {
-              "name": name
-            },
-            "workFlowMap": {
-              "workflow": {
-                "1": {
-                  "workFlowUser": {
-                    "id": reviewer,
-                    "title":{
-                      "title":getSelectedUserDetails(reviewer)?.title?.title || '',
-                      "id":null,
-                    },
-                    "name":{
-                      "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
-                    },
-                    "suffix":{
-                      "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
-                      "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
-                    }
+      let data;
+      if(reviewer === approver){
+        data = {
+          "name": {
+            "name": name
+          },
+          "workFlowMap": {
+            "workflow": {
+              "1": {
+                "workFlowUser": {
+                  "id": reviewer,
+                  "title":{
+                    "title":getSelectedUserDetails(reviewer)?.title?.title || '',
+                    "id":null,
                   },
-                  "workFlowStatus": {
-                    "status": "APPROVED"
+                  "name":{
+                    "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                  },
+                  "suffix":{
+                    "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                    "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
                   }
                 },
-              }
-            }
-          }
+                "workFlowStatus": {
+                  "status": "APPROVED"
+                }
+              }}}}
       }else{
-       data = {
+        data = {
           "name": {
             "name": name
           },
@@ -257,44 +185,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     }
 
     const submit = async() => {
-      if(activeTab === 'requests'){
-        let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`,addOn.reviewer, addOn.approver, activeTab);
-        let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, activeTab);
-        await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
-        await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
-      }else{
         let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, activeTab );
         updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
-      }
     }
 
-    console.log('index', tabIndex, timeSheetTabs, timeSheetTabs?.length);
-
     const handleContinue = async (workflowId) => {
-    //     let data = {
-    //       "workFlowDetails": [{
-    //         "timesheetLabel": {
-    //             "label": selectTimesheetToDefineProcess
-    //         },
-    //         "workFlowTemplate": {
-    //             "id": "",
-    //             "name": {
-    //                 "name": workflowTemplateToUse
-    //             }
-    //         },
-    //         "workFlowDescription": {
-    //             "value": workflowDescription
-    //         },
-    //         "workFlow": {
-    //             "id": "",
-    //             "workFlowName": {
-    //                 "name": workflowName
-    //             }
-    //         },
-    //         "customWorkFlow": customWorkFlow
-    //     }]
-    // }
-
           let temp = timesheetProcessingWorkflow;
           temp?.push({
                     "timesheetLabel": {
@@ -327,21 +222,33 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
         if(timesheetFlow){
           let workflowData = timesheetWorkFlow?.filter(data=>data?.id === id)?.map(data=>data?.workFlowMap?.workflow)[0];
           let workFlowValues = Object.values(workflowData);
-          let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
-          let approver = workFlowValues?.[1]?.workFlowUser?.id;
-          setTimesheet({...timesheet, id:id, reviewer: reviewer, approver: approver});
+          if(workFlowValues?.length === 1){
+            let approver = workFlowValues?.[0]?.workFlowUser?.id;
+            setTimesheet({...timesheet, id:id, reviewer: approver, approver: approver});
+          }else{
+            let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
+            let approver = workFlowValues?.[1]?.workFlowUser?.id;
+            setTimesheet({...timesheet, id:id, reviewer: reviewer, approver: approver});
+          }
+
         }
     };
 
     const getNextTab = () => {
       let tabIndexValue = timeSheetTabs?.indexOf(activeTab);
       setActiveTab(timeSheetTabs[tabIndexValue+1]);
-      console.log('tab', tabIndexValue);
       setTabIndex(tabIndexValue+1);
+    }
+
+    if(isLoading){
+      return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
     }
 
 
     return (
+      <>
+      {
+        timeSheetTabs?.length !== 0 ?
         <div className={style.cloneBlockStyle}>
             <div className={`${style.flexLeft} ${style.reduce10Left} ${style.horizontalScroll} ${style.fullWidth}`}>
             {
@@ -368,130 +275,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                   <button className={`${style.timesheetNextButtonStyle} ${style.floatRight}`} onClick={()=> {submit();getNextTab();}}>NEXT</button>
                 </div>
               }
-
-
             </div>
-                {
-                  /////        Do Not DELETE THIS CODE      ////////
-              //     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //         <div className={style.extentionLableStyle}>Workflow Template To Use*</div>
-              //         <div className={style.twoCol}>
-              //             <div className={style.reduce10Left}>
-              //                 <select
-              //                     name="class"
-              //                     id="Class"
-              //                     value={workflowTemplateToUse}
-              //                     onChange={(e) => setWorkflowTemplateToUse(e.target.value)}
-              //                     className={`${style.fullWidth} ${style.marginLeft20} `}>
-              //                     <option value="Template 1" >
-              //                     Template 1
-              //                     </option>
-              //                     <option value="Template 2" >
-              //                     Template 2
-              //                     </option>
-              //                 </select>
-              //             </div>
-              //             <Checkbox label="Custom Creation" className={`${style.marginTop10}`} checked={customWorkFlow} onChange={() => setCustomWorkFlow(!customWorkFlow)} />
-              //         </div>
-              //     </div>
-              //     {selectContractInfo === "Multiple Contractor" && (
-              //         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //             <div className={style.extentionLableStyle}>Apply Workflow To All Contractor*</div>
-              //             <div className={style.displayInRow}>
-              //                 <FormControlLabel
-              //                     control={
-              //                         <Switch checked={applyWorkflowToAll} className={` ${style.textAlignLeft} ${style.fourFieldWidth}`} onChange={() => setApplyWorkflowToAll(!applyWorkflowToAll)} />
-              //                     }
-              //                     className={`${style.switchFontStyle}`}
-              //                     label={applyWorkflowToAll ? 'YES' : "NO"}
-              //                 />
-              //                 {!applyWorkflowToAll && (
-              //                     <div className={`${style.displayInRow} ${style.fullWidth}`}>
-              //                         <div className={style.threeFieldWidth}>
-              //                             <select
-              //                                 name="class"
-              //                                 id="Class"
-              //                                 className={`${style.fullWidth} `}>
-              //                                 <option value="2" >
-              //                                     2
-              //                                 </option>
-              //                             </select>
-              //                         </div>
-              //                         <div className={`${style.extentionLableStyle} ${style.marginLeft20} ${style.fullWidth} ${style.marginTop15}`}>Workflow Template To Use*</div>
-              //                     </div>
-              //                 )}
-              //             </div>
-              //         </div>
-              //     )}
-              //     {applyWorkflowToAll && (
-              //         <div className={style.fullWidth}>
-              //             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //                 <div className={style.extentionLableStyle}>Workflow Name</div>
-              //                 <div className={style.displayInRow}>
-              //                     <InputGroup className={style.twoFieldWidth} placeholder="Enter Workflow name"
-              //                         value={workflowName} onChange={(e) => setWorkflowName(e.target.value)} />
-              //                 </div>
-              //             </div>
-              //             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //                 <div className={style.extentionLableStyle}>Workflow Description</div>
-              //                 <TextArea className={style.fullWidth} placeholder="Enter Workflow Description"
-              //                     value={workflowDescription} onChange={(e) => setWorkflowDescription(e.target.value)} />
-              //             </div>
-              //             {/* <div className={`${style.flowChartBoxStyle} ${style.marginTop20}`}>
-              //                             <ToolBar />
-              //                         </div> */}
-              //             <div className={`${style.floatRight} ${style.marginTop20}`}>
-              //                 <button className={style.newContractOutlinedButton} onClick={() => setViewWorkflowDialog(true)}>View / Create Workflow</button>
-              //             </div>
-              //         </div>
-              //     )}
-              //     {!applyWorkflowToAll && (
-              //         <div className={style.marginTop20}>
-              //             <div className={`${style.floatLeft} ${style.reduce10Left} ${style.displayInRow}`}>
-              //                 <div className={`${style.workFlowButtonStyle} ${style.selectedWorkFlowButton}`}>
-              //                     Workflow em
-              //                     <Icon icon="trash" size={10} color="#7165E3" />
-              //                 </div>
-              //                 <div className={style.workFlowButtonStyle}>
-              //                     Workflow 2
-              //                     <Icon icon="trash" size={10} color="#52575D" />
-              //                 </div>
-              //             </div>
-              //             <div className={`${style.workflowBoxStyle}`}>
-              //                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //                     <div className={style.extentionLableStyle}>Workflow Variant 1</div>
-              //                     <div className={style.displayInRow}>
-              //                         <InputGroup className={style.twoFieldWidth} placeholder="Workflow em" />
-              //                     </div>
-              //                 </div>
-              //                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              //                     <div className={style.extentionLableStyle}>Workflow Description</div>
-              //                     <TextArea className={style.fullWidth} placeholder="Description" />
-              //                 </div>
-              //                 {/* <div className={`${style.flowChartBoxStyle} ${style.marginTop20}`}>
-              //                                 <ToolBar />
-              //                             </div> */}
-              //                 <div className={`${style.floatRight} ${style.marginTop20}`}>
-              //                     <button className={style.newContractOutlinedButton} onClick={() => setViewWorkflowDialog(true)}>View / Create Workflow</button>
-              //                 </div>
-              //             </div>
-              //         </div>
-              //     )}
-              // </div>
-                }
 
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Timesheet Submission Terms')}}>BACK</button>
+                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Payment & Compensation')}}>BACK</button>
                 <div>
-                {
-                  // <button className={style.newContractOutlinedButton}
-                  // onClick={() =>{
-                  //   submit();
-                  // }
-                  // }
-                  // >SAVE IN-PROGRESS</button>
-                }
-
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
                     onClick={() => {
                       submit();
@@ -518,6 +306,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             }
 
         </div>
+        :
+        <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Timesheet Submission Terms'} title={'NO TIMESHEET FOUND'} description={'No Timesheet Is Found.'} buttonText={'ADD TIMESHEET'}/>
+      }
+      </>
     )
 }
 

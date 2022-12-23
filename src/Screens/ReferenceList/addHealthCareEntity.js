@@ -1,11 +1,68 @@
-import React, { useState } from 'react';
-import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import style from './index.module.scss';
+/* eslint-disable no-const-assign */
+import React, { useState, useRef } from 'react';
+import { Dialog, Classes, Icon, Intent, InputGroup } from '@blueprintjs/core';
 import AddHealthcareGroup from './../../images/addGroupBlue.png';
+import { POST, PUT } from '../dataSaver'
+import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
+import { useEffect } from 'react';
+import style from './index.module.scss';
 
-const AddHealthCareEntity = ({ getAddHcEntityDialog }) => {
+const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, seletedEntity, isEdit, getEntityData, tableEntityData, }) => {
+
+    const [entityId, setEntityId] = useState('')
+    const [entityName, setEntityName] = useState('')
+
+    const entityNameRef = useRef(null);
+
+    const saveSubmitHandler = async () => {
+        const isPresent = tableEntityData.find((p) => p.type === entityName);
+        if (isPresent) {
+            ErrorToaster("Already This Name Exists");
+            document.getElementById("entityName").focus();
+            setEntityName("")
+            getAddHcEntityDialog(true)
+            return false;
+        }
+
+        const data = {
+            ...(isEdit && { 'id': entityId }),
+            "type": entityName,
+            "industryId": {
+                "id": IndustryId
+            }
+        }
+
+        if (!isEdit ?
+            await POST('entity-service/entityTypeMaster', JSON.stringify(data))
+                .then(response => {
+                    SuccessToaster('Event Added Successfully');
+                    getAddHcEntityDialog(false)
+                    getEntityData()
+                })
+                .catch(error => {
+                    ErrorToaster(error);
+                })
+            :
+            await PUT(`entity-service/entityTypeMaster/${entityId}`, JSON.stringify(data))
+                .then(response => {
+                    SuccessToaster('Event Updated Successfully');
+                    getAddHcEntityDialog(false)
+                    getEntityData()
+                })
+                .catch(error => {
+                    ErrorToaster(error);
+                })
+        )
+            getAddHcEntityDialog(false)
+    }
+
+
+    useEffect(() => {
+        if (isEdit) {
+            setEntityName(seletedEntity?.type)
+            setEntityId(seletedEntity?.id)
+        }
+    }, [isEdit, seletedEntity])
 
     return (
         <Dialog isOpen={getAddHcEntityDialog} onClose={() => getAddHcEntityDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
@@ -19,8 +76,8 @@ const AddHealthCareEntity = ({ getAddHcEntityDialog }) => {
                     <div className={`${style.editHealthCareGrid1} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>Industry Name*</div>
                         <div className={style.displayInRow}>
-                            <InputGroup value="Healthcare" className={style.halfWidth} />
-                            <img src={AddHealthcareGroup} className={`${style.colorFileStyle} ${style.marginLeft20}`} />
+                            <InputGroup value={selectedTitle} className={style.halfWidth} />
+                            <img src={AddHealthcareGroup} className={`${style.colorFileStyle} ${style.marginLeft20}`} alt="" />
                             <p className={`${style.marginTop} ${style.marginLeft5}`}>ADD ENTITY</p>
                         </div>
                     </div>
@@ -29,20 +86,22 @@ const AddHealthCareEntity = ({ getAddHcEntityDialog }) => {
                         <div className={`${style.editHealthCareGrid2} ${style.marginTop20}`}>
                             <div className={style.entityLableStyle}>Entity Name*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value="Veterinary Clinic" className={style.fullWidth} />
+                                <InputGroup value={entityName} ref={entityNameRef} id="entityName" className={style.fullWidth} onChange={(e) => setEntityName(e.target.value)} />
                             </div>
                         </div>
                     </div>
-                    <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                        <div>
+                    {!isEdit &&
+                        <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                            <div>
+                            </div>
+                            <div className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}>ADD MORE</div>
                         </div>
-                        <div className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}>ADD MORE</div>
-                    </div>
+                    }
                 </div>
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
-                        <button className={style.outlinedButton}>CANCEL</button>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE</button>
+                        <button className={style.outlinedButton} onClick={() => getAddHcEntityDialog(false)}>CANCEL</button>
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={saveSubmitHandler} >SAVE</button>
                     </div>
                 </div>
             </div>

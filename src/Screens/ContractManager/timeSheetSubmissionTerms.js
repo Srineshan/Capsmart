@@ -4,12 +4,15 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import RedirectingPopUp from './redirectingPopUp';
+import LoadingScreen from '../../Components/LoadingScreen';
 import style from './index.module.scss';
 
 const VALUES3 = ['Activity Reviewer'];
 
-const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) => {
+const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) => {
     const [timeSheetCount, setTimeSheetCount] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
     const [contractedTimeCommitment, setContractedTimeCommitment] = useState(false);
     const [activityTags, setActivityTags] = useState(VALUES3);
     const [contractedActivityTags, setContractedActivityTags] = useState([]);
@@ -36,8 +39,10 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
     }]);
 
     const getContractedServices = async () => {
+        setIsLoading(true);
         const { data: contractedServices } = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
-        setContractedServices(contractedServices?.contractedServices)
+        setContractedServices(contractedServices?.contractedServices);
+        setIsLoading(false);
     }
 
     useEffect(()=>{
@@ -128,19 +133,15 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
     });
 
     const handleTimesheetValue = (i, name, value) => {
-      console.log('data', i, name, value);
       let temp = timeSheetLabelData;
       if(name === 'label'){
         temp[i] = {label:value, value:temp[i]?.value}
       }else{
         temp[i] = {label: temp[i]?.label, value:value}
       }
-      console.log('entered', temp)
       setTimeSheetLabelData(temp);
       formatActivities();
     }
-
-    console.log('data',timeSheetLabelData)
 
     const handleContractedActivityTagsRemove = (tags,index) => {
       setContractedActivityTags(contractedActivityTags?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data));
@@ -242,8 +243,6 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
         }
     };
 
-    console.log(timesheetValues)
-
     const handleContinue = async() => {
         let data = {
             "timesheetSubmissionServicesCount": {
@@ -301,87 +300,97 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
         setTimesheetValues(timesheetSubmissionTerms?.timesheetActivitiesPeriods);
     },[timesheetSubmissionTerms]);
 
+    if(isLoading){
+      return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
+    }
+
 
     return (
+      <>
+      {
+        contractedServices?.length !== 0 ?
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Number of Timesheets to Submit for Services Performed</div>
-                    <InputGroup className={style.fourFieldWidth} type="number" value={timeSheetCount} onChange={(e) => setTimeSheetCount(parseInt(e.target.value))} />
+                    <InputGroup className={style.fourFieldWidth} type="number" min="0" value={timeSheetCount} onChange={(e) => setTimeSheetCount(parseInt(e.target.value))} />
                 </div>
                 <div>
                     {timesheetFields}
                 </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
-                    <div className={`${style.displayInRow}  `}>
-                        <FormControlLabel
-                            control={
-                                <Switch checked={contractedTimeCommitment} className={`${style.textAlignLeft}`} onChange={() => setContractedTimeCommitment(!contractedTimeCommitment)} />
-                            }
-                            className={`${style.switchFontStyle}`}
-                            label={contractedTimeCommitment ? 'YES' : 'NO'}
-                        />
-                        {timeSheetCount === 1 && (
-                            <div className={style.displayInRow}>
-                                <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20} ${style.marginTop15}`}  placeholder="HH" type='number'
-                                value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e.target.value.slice(0, limit))} />
-                                <select
-                                    name="class"
-                                    id="Class"
-                                    value={contractedTimeCommitmentFrequency}
-                                    onChange={(e) => setContractedTimeCommitmentFrequency(e.target.value)}
-                                    className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop} `}>
-                                    <option value="WEEK" >
-                                        Week
-                                    </option>
-                                    <option value="MONTH" >
-                                        Month
-                                    </option>
-                                    <option value="YEAR" >
-                                        Year
-                                    </option>
-                                </select>
-                            </div>
-                        )}
-                        {timeSheetCount > 1 && (
-                            <div className={style.displayInRow}>
-                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} ${style.marginTop10}`}>
-                                    <EditableText  placeholder="HH" type='number' className={style.editableTextSpecifiedStyle}
-                                    value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e.slice(0, limit))} />
-                                    <div className={style.textElementWithNurse}>Specified: 160</div>
-                                </div>
-                                <select
-                                    name="class"
-                                    id="Class"
-                                    value={contractedTimeCommitmentFrequency}
-                                    onChange={(e) => setContractedTimeCommitmentFrequency(e.target.value)}
-                                    className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop10} `}>
-                                    <option value="WEEK" >
-                                        Week
-                                    </option>
-                                    <option value="MONTH" >
-                                        Month
-                                    </option>
-                                    <option value="YEAR" >
-                                        Year
-                                    </option>
-                                </select>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                {
+                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  //     <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
+                  //     <div className={`${style.displayInRow}  `}>
+                  //         <FormControlLabel
+                  //             control={
+                  //                 <Switch checked={contractedTimeCommitment} className={`${style.textAlignLeft}`} onChange={() => setContractedTimeCommitment(!contractedTimeCommitment)} />
+                  //             }
+                  //             className={`${style.switchFontStyle}`}
+                  //             label={contractedTimeCommitment ? 'YES' : 'NO'}
+                  //         />
+                  //         {timeSheetCount === 1 && (
+                  //             <div className={style.displayInRow}>
+                  //                 <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20} ${style.marginTop15}`}  placeholder="HH" type='number' min="0"
+                  //                 value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e.target.value.slice(0, limit))} />
+                  //                 <select
+                  //                     name="class"
+                  //                     id="Class"
+                  //                     value={contractedTimeCommitmentFrequency}
+                  //                     onChange={(e) => setContractedTimeCommitmentFrequency(e.target.value)}
+                  //                     className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop} `}>
+                  //                     <option value="WEEK" >
+                  //                         Week
+                  //                     </option>
+                  //                     <option value="MONTH" >
+                  //                         Month
+                  //                     </option>
+                  //                     <option value="YEAR" >
+                  //                         Year
+                  //                     </option>
+                  //                 </select>
+                  //             </div>
+                  //         )}
+                  //         {timeSheetCount > 1 && (
+                  //             <div className={style.displayInRow}>
+                  //                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} ${style.marginTop10}`}>
+                  //                     <EditableText  placeholder="HH" type='number' min="0" className={style.editableTextSpecifiedStyle}
+                  //                     value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e.slice(0, limit))} />
+                  //                     <div className={style.textElementWithNurse}>Specified: 160</div>
+                  //                 </div>
+                  //                 <select
+                  //                     name="class"
+                  //                     id="Class"
+                  //                     value={contractedTimeCommitmentFrequency}
+                  //                     onChange={(e) => setContractedTimeCommitmentFrequency(e.target.value)}
+                  //                     className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop10} `}>
+                  //                     <option value="WEEK" >
+                  //                         Week
+                  //                     </option>
+                  //                     <option value="MONTH" >
+                  //                         Month
+                  //                     </option>
+                  //                     <option value="YEAR" >
+                  //                         Year
+                  //                     </option>
+                  //                 </select>
+                  //             </div>
+                  //         )}
+                  //     </div>
+                  // </div>
+                }
+
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Planned Absence Notification Days limit*</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value={plannedAbsence}  placeholder="0" type='number' onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
+                        <EditableText value={plannedAbsence}  placeholder="0" type='number' min="0" onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed *</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value={maxUnplannedAbsence}  placeholder="0" type='number' onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
+                        <EditableText value={maxUnplannedAbsence}  placeholder="0" type='number' min="0" onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>
@@ -389,42 +398,47 @@ const TimeSheetSubmissionTerms = ({getViewPage8, getCurrentPage, contractId}) =>
                     <div className={style.extentionLableStyle}>Invoice Processing Day Range Goal*</div>
                     <div className={style.displayInRow}>
                         <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                            <EditableText value={invoiceProcessingDay}  placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
+                            <EditableText value={invoiceProcessingDay}  placeholder="0" type='number' min="0" onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
                             <div className={style.textElementWithoutBackgroundDays}>Days</div>
                         </div>
                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} `}>
                             <div className={style.textElementWithNurse}>Threshold</div>
-                            <EditableText value={invoiceProcessingDayThreshold}  placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayThreshold(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
+                            <EditableText value={invoiceProcessingDayThreshold}  placeholder="0" type='number' min="0" onChange={(e) => setInvoiceProcessingDayThreshold(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
                         </div>
                         <div className={`${style.displayInRow} ${style.editableTextOuterBorder}`}>
                             <div className={style.textElementWithNurse}>Goal</div>
-                            <EditableText value={invoiceProcessingDayGoal}  placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayGoal(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
+                            <EditableText value={invoiceProcessingDayGoal}  placeholder="0" type='number' min="0" onChange={(e) => setInvoiceProcessingDayGoal(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
                         </div>
                     </div>
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on activity service date *</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate}  placeholder="0" type='number' onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
+                        <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate}  placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on contract end date</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value={dayLimitForSubmissionBasedOnContractEndDate}  placeholder="0" type='number' onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
+                        <EditableText value={dayLimitForSubmissionBasedOnContractEndDate}  placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
                     </div>
                 </div>
             </div>
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Payment & Compensation')}}>BACK</button>
+                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contracted Services Specification')}}>BACK</button>
                 <div>
                     <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
-                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleContinue(); getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') }}>CONTINUE</button>
+                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleContinue(); getViewPage7(true); getCurrentPage('Payment & Compensation') }}>CONTINUE</button>
                 </div>
             </div>
-        </div>
+        </div>:
+        (
+          <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Contracted Services Specification'} title={'NO SERVICES FOUND'} description={'No Contracted Services Specification Is Found.'} buttonText={'ADD SERVICES'}/>
+        )
+      }
+      </>
     )
 }
 

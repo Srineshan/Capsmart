@@ -7,9 +7,11 @@ import LoadingScreen from '../../Components/LoadingScreen';
 import RedWarning from './../../images/redWarning.png';
 import FileImg from './../../images/fileImg.png';
 import AddProofOfDocumentation from './addProofOfDocumentation';
+import RedirectingPopUp from './redirectingPopUp';
 
 import style from './index.module.scss';
 import EditProofOfDocumentation from './editProofOfDocumentation';
+import NoProofOfDocumentationDialog from './noProofOfDocumentationDialog';
 
 const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, isMultipleContract, isMultiSiteEntity}) => {
   const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] = useState(false);
@@ -20,6 +22,7 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
   const [users, setUsers] = useState([]);
   const [userLength, setUserLength] = useState(0);
   const [selectedProof, setSelectedProof] = useState({});
+  const [noProofOfDocumentationPlan, setNoProofOfDocumentationPlan] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(()=>{
@@ -58,6 +61,10 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
       setDeleteExecutedContractDialog(value);
   }
 
+  const getNoProofOfDocumentationDialog = (value) => {
+    setNoProofOfDocumentationPlan(value);
+  }
+
   const handleFileDeletion = async() => {
     await DELETE(`contract-managment-service/contracts/DocumentationProof/${fileToDelete}`)
     .then(response=>{
@@ -77,8 +84,8 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
       {userLength !== 0 ? (
         <div className={style.cloneBlockStyle}>
             <div className={style.tableHeight}>
-                <div>
-                    <InputGroup className={`${style.documentProofInputWidth} ${style.marginLeft20}`} placeholder="For this contract to be activated, data on specific POD items listed below are needed." />
+                <div className={style.activationDescriptionBoxStyle}>
+                For contract <span className={style.green}>ACTIVATION</span>, compliance with Proof of Documentation is required for items below.
                 </div>
                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                     <div className={`${style.extentionLableStyle} ${style.marginTop20} ${style.marginLeft20} ${style.blackText}`}>DOCUMENT DATA STATUS</div>
@@ -126,32 +133,6 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
                     </div>
                   </Dialog>
                   )}
-
-                {
-                  // <div className={`${style.documentDataProof} ${style.displayInRow}`}>
-                  //     <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
-                  //     <p className={style.documentProofDataTextWidth}>Medical license Certificate</p>
-                  //     <p className={style.documentProofDataTextWidth}>entity </p>
-                  //     <p className={style.documentProofDataTextWidth}>name</p>
-                  //     <div className={style.displayInRow}>
-                  //         <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />
-                  //         <p className={style.documentProofDataTextWidth}>Missing</p>
-                  //     </div>
-                  //     <Icon icon="trash" size={20} color="#52575D"/>
-                  // </div>
-                  // <div className={`${style.documentDataProof} ${style.displayInRow}`}>
-                  //     <img src={RedWarning} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
-                  //     <p className={style.documentProofDataTextWidth}>Medical license Certificate</p>
-                  //     <p className={style.documentProofDataTextWidth}>sample </p>
-                  //     <p className={style.documentProofDataTextWidth}>name</p>
-                  //     <div className={style.displayInRow}>
-                  //         <img src={FileImg} alt="file" className={`${style.fileIcon} ${style.marginLeft20}`} />
-                  //         <p className={style.documentProofDataTextWidth}>ss.png</p>
-                  //     </div>
-                  //     <Icon icon="trash" size={20}  color="#52575D"/>
-                  // </div>
-                }
-
             </div>
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contractor Business Entity')}}>BACK</button>
@@ -170,26 +151,15 @@ const DocumentationProofRequired = ({ getViewPage5, getCurrentPage, contractId, 
               showEditProofDialog &&
               <EditProofOfDocumentation getShowEditProofDialog={getShowEditProofDialog} isMultipleContract={isMultipleContract} contractId={contractId} selectedProof={selectedProof} />
             }
+            {
+              noProofOfDocumentationPlan && 
+              <NoProofOfDocumentationDialog getNoProofOfDocumentationDialog={getNoProofOfDocumentationDialog} />
+            }
         </div>
         ) : (
-          <>
-            <div className={style.cloneBlockStyle}></div>
-            <Dialog isOpen={true} className={`${style.cloneDialog}`} canOutsideClickClose={false}>
-              <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
-                <div className={style.spaceBetween}>
-                  <p className={style.extensionStyle}>NO USERS FOUND</p>
-                </div>
-                <div className={style.extensionBorder}></div>
-                <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
-                No Contracted Service Provider Is Found.
-                </p>
-                <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                  <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => getCurrentPage('Contracted Services Provider(s)')}>ADD CONTRACTOR</button>
-                </div>
-                <br />
-              </div>
-            </Dialog>
-          </>
+          (
+            <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Contracted Services Provider(s)'} title={'NO USERS FOUND'} description={'No Contracted Service Provider Is Found.'} buttonText={'ADD CONTRACTOR'}/>
+          )
         )}
       </>
     )

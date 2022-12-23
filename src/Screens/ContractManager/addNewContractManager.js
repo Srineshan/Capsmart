@@ -12,8 +12,6 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
     const [roles,setRoles] = useState();
     const id = contractId;
 
-    console.log('contract type',contractType);
-
     useEffect(()=>{
       getRolesData();
     },[])
@@ -33,7 +31,22 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
         rolesData = roles?.filter(data=>selectedRoles.includes(data.roleName))?.map(data=>data);
       }
 
-      if(userData?.firstName !== '' && userData?.lastName !== '' && userData?.email !== '' && userData?.phone !== '' && rolesData?.length !== 0){
+      if(userData?.firstName === ''){
+        ErrorToaster('First Name is Mandaory');
+        return;
+      }
+      if(userData?.lastName === ''){
+        ErrorToaster('Last Name is Mandaory');
+        return;
+      }
+      if(userData?.email === ''){
+        ErrorToaster('Email is Mandaory');
+        return;
+      }
+      if(userData?.phone?.length !== 14){
+        ErrorToaster('Enter a Valid Mobile Number');
+        return;
+      }
         await POST('user-management-service/user/register',JSON.stringify({
           "name": {
             "firstName": userData.firstName,
@@ -71,10 +84,8 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
       })
       getAddNewManagerDialog(false);
       getUserData();
-    }else{
-      ErrorToaster('All Fields are Mandatory');
     }
-  }
+
 
 
 
