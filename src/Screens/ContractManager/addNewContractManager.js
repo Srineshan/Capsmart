@@ -43,8 +43,8 @@ const AddNewContractManager = ({getAddNewManagerDialog, contractType, getUserDat
         ErrorToaster('Email is Mandaory');
         return;
       }
-      if(userData?.phone === ''){
-        ErrorToaster('Mobile Number is Mandaory');
+      if(userData?.phone?.length !== 14){
+        ErrorToaster('Enter a Valid Mobile Number');
         return;
       }
         await POST('user-management-service/user/register',JSON.stringify({

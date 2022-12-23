@@ -87,6 +87,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const [sites, setSites] = useState([]);
   const [selectedSitesDept, setSelectedSitesDepartment] = useState([]);
   const [contracts, setContracts] = useState([]);
+  const [allowPersonalMail, setAllowPersonalMail] = useState(false);
+  const [mobileNA, setMobileNA] = useState(false);
 
   useEffect(() => {
     getRoles();
@@ -109,7 +111,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       setContractorFirstName(userProviderData?.name?.firstName);
       setContractorLastName(userProviderData?.name?.lastName);
       setContractorNameSuffix(userProviderData?.name?.suffix);
-      setContractorMiddleName('');
+      setContractorMiddleName(userProviderData?.name?.middleName);
       setContractorPhone(userProviderData?.communication?.mobileNumber);
       setContractorEmail(userProviderData?.email?.officialEmail);
       setCity(userProviderData?.address?.city);
@@ -122,6 +124,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       setSiteLevel(contractData?.siteLevelResponsible);
       setDepartmentLevel(contractData?.departmentLevelResponsible);
       setSites(contractData?.sites?.sites || []);
+      setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
+      setMobileNA(userProviderData?.communication?.mobileNumberNotApplicable);
     } else {
       getSites();
     }
@@ -337,7 +341,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       ErrorToaster('Enter a Valid Email');
       return;
     }
-    if (contractorPhone?.length !== 14) {
+    if (!mobileNA && contractorPhone?.length !== 14) {
       ErrorToaster('Enter Valid Phone Number');
       return;
     }
@@ -350,6 +354,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       "name": {
         "firstName": contractorFirstName,
         "lastName": contractorLastName,
+        "middleName": contractorMiddleName,
         "suffix": contractorNameSuffix
       },
       "userType": "CONTRACTED_SERVICE_PROVIDER_USER",
@@ -367,7 +372,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         "personalEmail": contractorEmail,
         "mobileNumber": contractorPhone,
         "landlineNumber": "string",
-        "mobileNumberNotApplicable": true
+        "mobileNumberNotApplicable": mobileNA,
       },
       "roles": roles,
       "address": {
@@ -386,7 +391,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         "missing": npinMissing,
         "notApplicable": npinNotApplicable,
         "npin": npin
-      }
+      },
+      "personalEmailAddressAllowed":allowPersonalMail,
     }
     if (!isUserPresent) {
       await POST('user-management-service/user/register', JSON.stringify(data))
@@ -509,6 +515,11 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     setContractorPhone(formattedPhoneNumber);
   };
 
+  const changePersonalMail = () => {
+    setAllowPersonalMail(!allowPersonalMail);
+    setContractorEmail('')
+  }
+
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -525,15 +536,15 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               <InputGroup className={style.fullWidth}
                 placeholder="NPIN"
                 value={npin}
-                type="Number"
+                type="tel"
                 maxLength={10}
                 disabled={npinMissing || npinNotApplicable}
-                onChange={(e) => setNpin(e.target.value)} />
+                onChange={(e) =>e.target.value >= 0 && setNpin(e.target.value)} />
               <FormGroup>
-                <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => setNpinMissing(e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
+                <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => {setNpinMissing(e.target.checked);setNpin('');setNpinNotApplicable(false);}} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
               </FormGroup>
               <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => setNpinNotApplicable(e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => {setNpinNotApplicable(e.target.checked);setNpin('');setNpinMissing(false);}} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
               </FormGroup>
             </div>
           </div>
@@ -571,34 +582,33 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch className={`${style.flexLeft}`} color='primary' />
+                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={changePersonalMail}/>
                   }
                   className={`${style.switchFontStyle}`}
-                  label={'YES'}
+                  label={allowPersonalMail ? 'YES' : 'NO'}
                 />
               </ThemeProvider>
-              <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
-                <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} />
+              {allowPersonalMail &&
+                <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
+                  <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={contractorEmail} onChange={(e)=>setContractorEmail(e.target.value)}/>
+                </div>
+              }
+
+            </div>
+          </div>
+          {
+            !allowPersonalMail && <div className={`${style.extentionGrid} ${style.marginTop20}`}
+              onFocus={() => { getSelectedField('Email Contractor id') }}>
+              <div className={style.extentionLableStyle}>Email Contractor id*</div>
+              <div className={style.displayInRow}>
+                <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
+                  value={contractorEmail}
+                  maxLength={30}
+                  onChange={(e) => setContractorEmail(e.target.value)} />
               </div>
             </div>
-          </div>
+          }
 
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}
-            onFocus={() => { getSelectedField('Email Contractor id') }}>
-            <div className={style.extentionLableStyle}>Email Contractor id*</div>
-            <div className={style.displayInRow}>
-              <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
-                value={contractorEmail}
-                maxLength={30}
-                onChange={(e) => setContractorEmail(e.target.value)} />
-              <FormGroup className={style.marginLeft20}>
-                <FormControlLabel control={<Checkbox value="Missing" />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
-              </FormGroup>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
-              </FormGroup>
-            </div>
-          </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
             onFocus={() => { getSelectedField('Cell Phone') }}>
@@ -606,11 +616,11 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
             <div className={style.twoCol}>
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                 <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
-                <InputGroup placeholder="Numeric" value={contractorPhone} maxLength={15}
-                  onChange={(e) => setContractorPhone(FormatPhoneNumber(e.target.value))} className={`${style.fullWidth}`} />
+                <InputGroup placeholder="Numeric" value={contractorPhone} disabled={mobileNA} maxLength={15}
+                  onChange={(e) => {setContractorPhone(FormatPhoneNumber(e.target.value)); setMobileNA(false);}} className={`${style.fullWidth}`} />
               </div>
               <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                <FormControlLabel control={<Checkbox value="NA" checked={mobileNA} onChange={(e)=>{setMobileNA(e.target.checked);if(e.target.checked){setContractorPhone('')}}}/>} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
               </FormGroup>
             </div>
           </div>

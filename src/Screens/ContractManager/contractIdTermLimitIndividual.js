@@ -863,10 +863,10 @@ const ContractIdTermLimitIndividual = (
                     <option value="Select...">
                       Select...
                     </option>
-                      <option value="WEEKS_PER_CONTRACTYEAR">
+                      <option value="WEEK">
                         Weeks Per Contract Year
                       </option>
-                      <option value="MONTHS_PER_CONTRACTYEAR">
+                      <option value="MONTH">
                         Months Per Contract Year
                       </option>
               </select>

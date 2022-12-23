@@ -431,49 +431,52 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   </div>
                 </div>
               </div>
-              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Register Business POC with App User Role*</div>
-                <div className={style.displayInRow}>
-                  <div>
-                    <ThemeProvider theme={switchTheme}>
-                      <FormControlLabel
-                        control={
-                          <Switch className={`${style.textAlignLeft}`} />
-                        }
-                        color='primary'
-                        className={`${style.switchFontStyle} ${style.marginTop}`}
-                        label={'YES'}
-                      />
-                    </ThemeProvider>
-                  </div>
-                  <div>
-                    <InputGroup value="Business Contract Manager" className={style.fullWidth} />
-                    <div className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}>
-                      The Business Contract Manager role allows the registered user to access
-                      contract related information and reports only for the contract associated
-                      with their business entity.
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {
+                // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                //   <div className={style.extentionLableStyle}>Register Business POC with App User Role*</div>
+                //   <div className={style.displayInRow}>
+                //     <div>
+                //       <ThemeProvider theme={switchTheme}>
+                //         <FormControlLabel
+                //           control={
+                //             <Switch className={`${style.textAlignLeft}`} />
+                //           }
+                //           color='primary'
+                //           className={`${style.switchFontStyle} ${style.marginTop}`}
+                //           label={'YES'}
+                //         />
+                //       </ThemeProvider>
+                //     </div>
+                //     <div>
+                //       <InputGroup value="Business Contract Manager" className={style.fullWidth} />
+                //       <div className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}>
+                //         The Business Contract Manager role allows the registered user to access
+                //         contract related information and reports only for the contract associated
+                //         with their business entity.
+                //       </div>
+                //     </div>
+                //   </div>
+                // </div>
+              }
+
 
               {
-                selectContractInfo !== 'INDIVIDUAL' &&
-                (
-                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Keep Contract Payment Data Confidential*</div>
-                    <ThemeProvider theme={switchTheme}>
-                      <FormControlLabel
-                        control={
-                          <Switch checked={keepConfidential} className={`${style.textAlignLeft}`} onChange={() => setKeepConfidential(!keepConfidential)} />
-                        }
-                        color='primary'
-                        className={`${style.switchFontStyle} ${style.marginTop}`}
-                        label={keepConfidential ? 'YES' : 'NO'}
-                      />
-                    </ThemeProvider>
-                  </div>
-                )
+                // selectContractInfo !== 'INDIVIDUAL' &&
+                // (
+                //   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                //     <div className={style.extentionLableStyle}>Keep Contract Payment Data Confidential*</div>
+                //     <ThemeProvider theme={switchTheme}>
+                //       <FormControlLabel
+                //         control={
+                //           <Switch checked={keepConfidential} className={`${style.textAlignLeft}`} onChange={() => setKeepConfidential(!keepConfidential)} />
+                //         }
+                //         color='primary'
+                //         className={`${style.switchFontStyle} ${style.marginTop}`}
+                //         label={keepConfidential ? 'YES' : 'NO'}
+                //       />
+                //     </ThemeProvider>
+                //   </div>
+                // )
               }
             </div>
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>

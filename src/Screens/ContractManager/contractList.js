@@ -24,8 +24,17 @@ import LeftStatsCard from '../../Components/LeftStatsCard';
 import style from './index.module.scss';
 
 const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page }) => {
-  const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID", "", "NAME", "CONTRACTORS", "EFFECTIVE DATE", "POD STATUS", "LAST UPDATED"];
-  const draftHeaderValues = ["", "CONTRACT TYPE", "ID", "", "NAME", "ACTIVATION STATUS", "LAST UPDATED", "REF DOCS", "LAST UPDATED BY", "MANAGER", "ACTION"];
+  const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID",
+  // "",
+  "NAME", "CONTRACTORS",
+  "EFFECTIVE DATE",
+   // "POD STATUS",
+   "LAST UPDATED"];
+  const draftHeaderValues = ["", "CONTRACT TYPE", "ID",
+  // "",
+   "NAME", "ACTIVATION STATUS", "LAST UPDATED",
+   // "REF DOCS",
+    "LAST UPDATED BY", "MANAGER", "ACTION"];
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
   const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
@@ -99,6 +108,15 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     getContractsMetadata();
   }, [])
 
+  const getContractors = (id) => {
+    let contractedUsers = [];
+    users?.filter(user=>user?.contracts?.map(contract=> contract?.roles?.map(role=>role?.roleName)?.includes('Activity Logger') && contract?.id)?.includes(id))?.map(data=>{
+      let name = `${data?.name?.firstName} ${data?.name?.lastName || ''}`
+      contractedUsers.push(name);
+    });
+    return contractedUsers;
+  }
+
   const onClickFunction = (data) => {
     getNewContract(true);
     getContractType(data?.contractType);
@@ -149,6 +167,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     action = [];
 
     contracts?.map(data => {
+      let contractorList = getContractors(data?.id);
       dot.push('green');
       notification.push(<WarningAmberIcon style={{ color: '#FF6562' }} />);
       contractType.push(data?.contractType);
@@ -156,12 +175,12 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
       lockHoverText.push('Contract available for other contract managers to access & work on');
       podHoverText.push(['Medical Lic Cer { Contrname}', 'Medical Lic Cer { Contrname}']);
-      contractorHoverText.push(['Contractor 1', 'Contractor 2'])
+      contractorHoverText.push(contractorList)
       notification.push(<WarningAmberIcon style={{ color: '#FF6562' }} />);
       name.push(data?.contractName?.contractName);
-      contractors.push("2");
+      contractors.push(contractorList?.length?.toString() || '');
       effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
-      podStatus.push("3");
+      // podStatus.push("3");
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
       lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MM-dd-yyyy'))
       action.push(true);
@@ -172,11 +191,11 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       { "type": "icon", "icon": notification },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
-      { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
+      // { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
       { "type": "iconWithCount", "value": contractors, "hoverText": contractorHoverText, 'isShowHoverText': true, "icon": <GroupOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} /> },
       { "type": "text", "value": effectiveDate, "onClickFunction": onClickFunction },
-      { "type": "iconWithCount", "value": podStatus, "hoverText": podHoverText, 'isShowHoverText': true, "icon": <TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#14B15A' }} /> },
+      // { "type": "iconWithCount", "value": podStatus, "hoverText": podHoverText, 'isShowHoverText': true, "icon": <TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#14B15A' }} /> },
       // {"type": "text", "value": manager, "onClickFunction": onClickFunction},
       { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
       // {"type": "action", "value": action},
@@ -221,11 +240,11 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       { "type": "dot", "value": dot },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
-      { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
+      // { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
       { "type": "text", "value": activationStatus, "onClickFunction": onClickFunction },
       { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
-      { "type": "icon", "icon": icon, "hoverText": iconHoverText, 'isShowHoverText': true },
+      // { "type": "icon", "icon": icon, "hoverText": iconHoverText, 'isShowHoverText': true },
       { "type": "text", "value": lastUpdatedBy, "onClickFunction": onClickFunction },
       { "type": "text", "value": manager, "onClickFunction": onClickFunction },
       { "type": "action", "value": action },
@@ -328,21 +347,26 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
             <div className={`${style.displayInRow} ${style.marginTop20}`}>
               {selectedContract === 'activecontracts' ? (
                 <>
-                  <button className={isMyContract ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsMyContract(true)}>My Active Contracts ( 0 )</button>
-                  <button className={`${!isMyContract ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsMyContract(false)}>Other Contracts ( 150 )</button>
+                  <button className={isMyContract ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsMyContract(true)}>My Active Contracts ( {metadata?.activeContract?.activeContractCount} )</button>
+                  {
+                    // <button className={`${!isMyContract ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsMyContract(false)}>Other Contracts ( 150 )</button>
+                  }
                 </>
               ) : selectedContract === 'draft' ? (
                 <>
-                  <button className={isDraft ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsDraft(true)}>Draft Contracts ( 2 )</button>
-                  <button className={`${!isDraft ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsDraft(false)}>Activation Pending ( 2 )</button>
+                  <button className={isDraft ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsDraft(true)}>Draft Contracts ( {metadata?.draft?.draftCount} )</button>
+
+                  {
+                    // <button className={`${!isDraft ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsDraft(false)}>Activation Pending ( 2 )</button>
+                  }
                 </>
               ) : selectedContract === 'upcomingrenewals' ? (
                 <>
-                  <button className={style.myActiveContractsButton} >Upcoming Renewals ( 2 )</button>
+                  <button className={style.myActiveContractsButton} >Upcoming Renewals ( - )</button>
                 </>
               ) : (
                 <>
-                  <button className={style.myActiveContractsButton} >Expired / Terminated ( 3 )</button>
+                  <button className={style.myActiveContractsButton} >Expired / Terminated ( - )</button>
                 </>
               )}
             </div>
@@ -350,33 +374,36 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
               <div className={style.marginLeft}>
                 <SearchBar getSearchKey={getSearchKey} />
               </div>
-              <div className={`${isDownloadClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => setIsDownloadClicked(!isDownloadClicked)}>
-                <DownloadIcon sx={{ fontSize: isDownloadClicked ? 20 : 25, color: isDownloadClicked ? '#fff' : '#857AEF' }} />
-              </div>
-              <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => setIsPrintClicked(!isPrintClicked)}>
-                <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} onClick={(e) => handleClick(e)} aria-describedby={id} />
-                <Popover
-                  id={id}
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                  }}
-                >
-                  <div className={style.actionsCard}>
-                    <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contract Master List</div>
-                    <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>One Time Contracts With Termination Date</div>
-                    <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts With Written Continuation Policy</div>
-                    <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts In Auto-Renewal Mode</div>
-                  </div>
-                </Popover>
-              </div>
+              {
+              //   <div className={`${isDownloadClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => setIsDownloadClicked(!isDownloadClicked)}>
+              //     <DownloadIcon sx={{ fontSize: isDownloadClicked ? 20 : 25, color: isDownloadClicked ? '#fff' : '#857AEF' }} />
+              //   </div>
+              //   <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => setIsPrintClicked(!isPrintClicked)}>
+              //     <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#857AEF' }} onClick={(e) => handleClick(e)} aria-describedby={id} />
+              //     <Popover
+              //       id={id}
+              //       open={open}
+              //       anchorEl={anchorEl}
+              //       onClose={handleClose}
+              //       anchorOrigin={{
+              //         vertical: 'bottom',
+              //         horizontal: 'left',
+              //       }}
+              //     >
+              //       <div className={style.actionsCard}>
+              //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contract Master List</div>
+              //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>One Time Contracts With Termination Date</div>
+              //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts With Written Continuation Policy</div>
+              //         <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { handleClose() }}>Contracts In Auto-Renewal Mode</div>
+              //       </div>
+              //     </Popover>
+              //   </div>
+              //
+              }
               <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => { handleAddContract() }}>
-                <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+                  <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+                </div>
               </div>
-            </div>
           </div>
 
           <Table
