@@ -277,7 +277,7 @@ const FunctionalTitles = ({
                   <p className={style.tableDataFontStyle}>{data?.title}</p>
                   <p className={style.tableDataFontStyle}>{data?.alias1}</p>
                   <p className={style.tableDataFontStyle}>{data?.alias2}</p>
-                  <p className={style.tableDataFontStyle}>03-29-2022</p>
+                  <p className={style.tableDataFontStyle}>{data.lastModifiedDate.split("T")[0].split("-").reverse().join("-")}</p>
                   <img
                     src={EditHcRow}
                     className={style.colorFileStyle}
@@ -302,7 +302,7 @@ const FunctionalTitles = ({
       </div>
 
       {showAddEntityDialog && (
-        <AddFunctionalTitles getAddEntityDialog={getAddEntityDialog} getFuntionalTitleData={getFuntionalTitleData} selectedEntity={selectedEntity} isEdit={isEdit} selectedFunctional={selectedFunctional} IndustryData={industryData} EntityData={entityData} />
+        <AddFunctionalTitles getAddEntityDialog={getAddEntityDialog} getFuntionalTitleData={getFuntionalTitleData} selectedEntity={selectedEntity} isEdit={isEdit} selectedFunctional={selectedFunctional} IndustryData={industryData} EntityData={entityData} getEntityDataList={getEntityDataList} />
       )}
 
       {

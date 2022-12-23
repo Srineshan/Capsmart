@@ -5,7 +5,7 @@ import style from './index.module.scss';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { POST, GET, PUT } from './../dataSaver'
 
-const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData, selectedEntity, selectedFunctional, IndustryData, EntityData }) => {
+const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData, selectedEntity, selectedFunctional, IndustryData, EntityData, getEntityDataList }) => {
     const [functionalId, setFunctionalId] = useState('');
     const [title, setTitle] = useState('');
     const [alias1, setalias1] = useState('');
@@ -33,6 +33,15 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
     }
 
     const AddFunctionalTitlesData = async () => {
+        const isPresent = getEntityDataList.find((p) => p.title === title);
+        if (isPresent) {
+            ErrorToaster("Already This Name Exists");
+            document.getElementById("functionalTitle").focus();
+            setTitle("")
+            getAddEntityDialog(true)
+            return false;
+        }
+
         const data = {
             ...(isEdit && { 'id': functionalId }),
             "title": title,
@@ -71,6 +80,15 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
     }
 
     const AddMoreFunctionalData = async () => {
+        const isPresent = getEntityDataList.find((p) => p.title === title);
+        if (isPresent) {
+            ErrorToaster("Already This Name Exists");
+            document.getElementById("functionalTitle").focus();
+            setTitle("")
+            getAddEntityDialog(true)
+            return false;
+        }
+
         const data = {
             "title": title,
             "alias1": alias1,
@@ -177,7 +195,7 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
                     <div className={`${style.addHealthCareBoxStyle}`}>
                         <div className={`${style.editHealthCareGrid2}`}>
                             <div className={style.entityLableStyle}>Functional Title*</div>
-                            <InputGroup value={title} className={style.fullWidth} onChange={e => setTitle(e.target.value)} />
+                            <InputGroup value={title} id="functionalTitle" className={style.fullWidth} onChange={e => setTitle(e.target.value)} />
                         </div>
                         <div className={`${style.editFunctionalTitlesGrid} ${style.marginTop20}`}>
                             <div className={style.entityLableStyle}>ALias Name</div>
