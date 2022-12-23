@@ -32,11 +32,11 @@ const BoardCertification = () => {
   };
 
   const getAllData = async () => {
-    const { data: data } = await GET(`/industryMaster`);
+    const { data: data } = await GET(`entity-service/industryMaster`);
     setAllData([]);
     data.forEach(async (industry) => {
       const { data: entities } = await GET(
-        `/entityTypeMaster?industryId=${industry.id}`
+        `entity-service/entityTypeMaster?industryId=${industry.id}`
       );
       setAllData((prev) => [...prev, { industry, entities }]);
     });
@@ -45,14 +45,14 @@ const BoardCertification = () => {
 
   const getTerminationReasonData = async (siteTypeId) => {
     const { data: data1 } = await GET(
-      `/terminationReasonMaster?siteTypeId=${siteTypeId}`
+      `entity-service/terminationReasonMaster?siteTypeId=${siteTypeId}`
     );
     setTerminationData(data1);
     console.log("this is the data I need", data1);
   };
 
   const handleTerminationReasonDeletion = async (id) => {
-    await DELETE(`/terminationReasonMaster/${id}`)
+    await DELETE(`entity-service/terminationReasonMaster/${id}`)
       .then((response) => {
         SuccessToaster("Document Deleted Successfully");
         window.location.reload()

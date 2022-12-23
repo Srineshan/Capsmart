@@ -21,6 +21,7 @@ const IndustriesWithEntityTypes = ({ getAddEntityDialog, showAddEntityDialog }) 
     const [seletedEntity, setSelectedEntity] = useState({});
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteEntityId, setDeleteEntityId] = useState("");
+    const [count, setCount] = useState(0)
 
     const getAddHcEntityDialog = (value) => {
         setShowAddHcEntityDialog(value);
@@ -80,6 +81,7 @@ const IndustriesWithEntityTypes = ({ getAddEntityDialog, showAddEntityDialog }) 
     useEffect(() => {
         setSelectedTitle(sideMenu?.[0]?.industry);
         setIndustryId(sideMenu?.[0]?.id);
+        setCount(0)
     }, [sideMenu]);
 
     return (
@@ -97,7 +99,7 @@ const IndustriesWithEntityTypes = ({ getAddEntityDialog, showAddEntityDialog }) 
                         >
                             <div className={style.spaceBetween}>
                                 <p className={style.industriesCardTextStyle1}>{data.industry}</p>
-                                {/* <p className={style.industriesCardTextStyle1}>7</p> */}
+                                <p className={style.industriesCardTextStyle1}>{count}</p>
                             </div>
                         </div>
                     ))}
@@ -140,8 +142,8 @@ const IndustriesWithEntityTypes = ({ getAddEntityDialog, showAddEntityDialog }) 
                                 }
                             >
                                 <p className={style.tableDataFontStyle}>{data.type}</p>
-                                <p className={style.tableDataFontStyle}></p>
-                                <p className={style.tableDataFontStyle}></p>
+                                <p className={style.tableDataFontStyle}>{data.createdDate.split("T")[0].split("-").reverse().join("-")}</p>
+                                <p className={style.tableDataFontStyle}>{data.lastModifiedDate.split("T")[0].split("-").reverse().join("-")}</p>
                                 <img
                                     src={EditHcRow}
                                     className={style.colorFileStyle}
@@ -177,6 +179,8 @@ const IndustriesWithEntityTypes = ({ getAddEntityDialog, showAddEntityDialog }) 
                         seletedEntity={seletedEntity}
                         selectedTitle={selectedTitle}
                         getEntityData={getEntityData}
+                        tableEntityData={tableEntityData}
+                        setTableEntityData={setTableEntityData}
                     />
                 )
             }

@@ -232,6 +232,7 @@ const AbsenseReasonsByIndustries = ({
                     isEdit={isEdit}
                     selectedAbsence={selectedAbsence}
                     getEntityData={getEntityData}
+                    tableEntityData={tableEntityData}
                 />
             )}
 
