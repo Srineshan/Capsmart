@@ -6,12 +6,20 @@ import { POST, PUT } from '../dataSaver'
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 import { useEffect } from 'react';
 
-const AddSuffixEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, seletedEntity, isEdit, getEntityData }) => {
+const AddSuffixEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, seletedEntity, isEdit, getEntityData, tableEntityData }) => {
 
     const [entityId, setEntityId] = useState('')
     const [entityName, setEntityName] = useState('')
 
     const saveSubmitHandler = async () => {
+        const isPresent = tableEntityData.find((p) => p.suffix === entityName);
+        if (isPresent) {
+            ErrorToaster("Already This Name Exists");
+            document.getElementById("entityName").focus();
+            setEntityName("")
+            getAddHcEntityDialog(true)
+            return false;
+        }
         const data = {
             ...(isEdit && { 'id': entityId }),
             "suffix": entityName,
@@ -75,7 +83,7 @@ const AddSuffixEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, sele
                         <div className={`${style.editHealthCareGrid2} ${style.marginTop20}`}>
                             <div className={style.entityLableStyle}>Entity Name*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value={entityName} className={style.fullWidth} onChange={(e) => setEntityName(e.target.value)} />
+                                <InputGroup value={entityName} id="entityName" className={style.fullWidth} onChange={(e) => setEntityName(e.target.value)} />
                             </div>
                         </div>
                     </div>

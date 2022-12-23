@@ -12,6 +12,7 @@ import BoardCertification from "./boardCertification";
 import TerminationReasons from "./terminationReasons";
 import ProofOfDocumentationByEntity from "./proofOfDocumentationByEntity";
 import HolidayListByIndustries from "./holidayListByIndustries";
+import CountriesSupportedWithStates from "./countriesSupportedWithStates";
 import style from './index.module.scss';
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 
@@ -91,6 +92,12 @@ const ReferenceListMainPage = () => {
             status: "UPDATED ON FEB 16, 2022 16:45 EST",
             pathName: "/referenceList/contractDoumentTypeForUpload",
             tableComponent: industriesWithEntityTypes,
+        },
+        {
+            name: "COUNTRY",
+            status: "UPDATED ON FEB 16, 2022 16:45 EST",
+            pathName: "/referenceList/countriesSupportedWithStates",
+            tableComponent: CountriesSupportedWithStates,
         },
     ];
 

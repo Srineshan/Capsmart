@@ -6,7 +6,7 @@ import AddHealthcareGroup from './../../images/addGroupBlue.png';
 import { POST, PUT } from '../dataSaver'
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 
-const AddContractedServiceForHealthcare = ({ getAddEntityDialog, siteTypeData, getEntityData, seletedEntity, isEdit }) => {
+const AddContractedServiceForHealthcare = ({ getAddEntityDialog, siteTypeData, getEntityData, seletedEntity, isEdit, siteTypeTableData }) => {
 
     const [entityType, setEntityType] = useState('')
     const [csProviderTypeId, setCsProviderTypeId] = useState('')
@@ -19,6 +19,14 @@ const AddContractedServiceForHealthcare = ({ getAddEntityDialog, siteTypeData, g
     }
 
     const saveSubmitHandler = async () => {
+        const isAvailable = siteTypeTableData.filter((e) => e.id === entityType)[0].items.map(i => i.contractedServiceProviderType).includes(csProviderType);
+        if (isAvailable) {
+            ErrorToaster("Already This CSPType Exists");
+            document.getElementById("cspType").focus();
+            setCsProviderType("")
+            getAddEntityDialog(true)
+            return false;
+        }
         const data = {
             ...(isEdit && { 'id': csProviderTypeId }),
             "contractedServiceProviderType": csProviderType,
@@ -26,6 +34,8 @@ const AddContractedServiceForHealthcare = ({ getAddEntityDialog, siteTypeData, g
                 "id": entityType
             }
         }
+
+        console.log(data);
 
         if (!isEdit ?
             await POST("entity-service/contractedServiceProviderMaster", JSON.stringify(data))
@@ -98,7 +108,7 @@ const AddContractedServiceForHealthcare = ({ getAddEntityDialog, siteTypeData, g
                         <div className={`${style.absenseCareGrid2}`}>
                             <div className={style.entityLableStyle}>Contracted Service Provider Type*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value={csProviderType} className={style.fullWidth} onChange={(e) => setCsProviderType(e.target.value)} />
+                                <InputGroup value={csProviderType} id="cspType" className={style.fullWidth} onChange={(e) => setCsProviderType(e.target.value)} />
                             </div>
                         </div>
                     </div>

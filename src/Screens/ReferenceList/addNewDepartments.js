@@ -4,12 +4,21 @@ import style from './index.module.scss';
 import { POST, PUT } from './../dataSaver'
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 
-const AddNewDepartments = ({ getAddEntityDialog, selectedEntity, isEdit, getEntityData, selectedDepart }) => {
+const AddNewDepartments = ({ getAddEntityDialog, selectedEntity, isEdit, getEntityData, selectedDepart, departmentList }) => {
 
     const [departId, setDepartId] = useState("")
     const [departName, setDepartName] = useState("")
 
     const saveSubmitHandler = async () => {
+        const isPresent = departmentList.find((p) => p.departmentName.name === departName);
+        if (isPresent) {
+            ErrorToaster("Already This Name Exists");
+            document.getElementById("departName").focus();
+            setDepartName("")
+            getAddEntityDialog(true)
+            return false;
+        }
+
         const data = {
             ...(isEdit && { 'id': departId }),
             "departmentName": {
@@ -62,7 +71,7 @@ const AddNewDepartments = ({ getAddEntityDialog, selectedEntity, isEdit, getEnti
                     <div className={`${style.extentionGrid}`}>
                         <div className={style.entityLableStyle}>Department Name*</div>
                         <div className={style.twoCol}>
-                            <InputGroup placeholder='Enter Department Name' value={departName} className={style.fullWidth} onChange={(e) => setDepartName(e.target.value)} />
+                            <InputGroup placeholder='Enter Department Name' id="departName" value={departName} className={style.fullWidth} onChange={(e) => setDepartName(e.target.value)} />
                             <RadioGroup
                                 inline={true}
                                 className={` ${style.marginLeft20} ${style.marginTop}`}

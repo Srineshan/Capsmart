@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable no-const-assign */
+import React, { useState, useRef } from 'react';
 import { Dialog, Classes, Icon, Intent, InputGroup } from '@blueprintjs/core';
 import AddHealthcareGroup from './../../images/addGroupBlue.png';
 import { POST, PUT } from '../dataSaver'
@@ -6,12 +7,23 @@ import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 import { useEffect } from 'react';
 import style from './index.module.scss';
 
-const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, seletedEntity, isEdit, getEntityData }) => {
+const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, seletedEntity, isEdit, getEntityData, tableEntityData, }) => {
 
     const [entityId, setEntityId] = useState('')
     const [entityName, setEntityName] = useState('')
 
+    const entityNameRef = useRef(null);
+
     const saveSubmitHandler = async () => {
+        const isPresent = tableEntityData.find((p) => p.type === entityName);
+        if (isPresent) {
+            ErrorToaster("Already This Name Exists");
+            document.getElementById("entityName").focus();
+            setEntityName("")
+            getAddHcEntityDialog(true)
+            return false;
+        }
+
         const data = {
             ...(isEdit && { 'id': entityId }),
             "type": entityName,
@@ -44,6 +56,7 @@ const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, 
             getAddHcEntityDialog(false)
     }
 
+
     useEffect(() => {
         if (isEdit) {
             setEntityName(seletedEntity?.type)
@@ -73,7 +86,7 @@ const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, 
                         <div className={`${style.editHealthCareGrid2} ${style.marginTop20}`}>
                             <div className={style.entityLableStyle}>Entity Name*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value={entityName} className={style.fullWidth} onChange={(e) => setEntityName(e.target.value)} />
+                                <InputGroup value={entityName} ref={entityNameRef} id="entityName" className={style.fullWidth} onChange={(e) => setEntityName(e.target.value)} />
                             </div>
                         </div>
                     </div>

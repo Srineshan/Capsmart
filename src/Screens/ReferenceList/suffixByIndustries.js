@@ -188,6 +188,7 @@ const SuffixByIndustries = ({ getAddEntityDialog, showAddEntityDialog }) => {
                     seletedEntity={seletedEntity}
                     selectedTitle={selectedTitle}
                     getEntityData={getEntityData}
+                    tableEntityData={tableEntityData}
                 />
             )}
 
