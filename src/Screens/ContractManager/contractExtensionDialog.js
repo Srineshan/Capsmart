@@ -96,7 +96,7 @@ const ContractExtension = ({getExtensionDialog, contractId, contracts}) => {
                 <p className={style.extensionOptionsStyle}>{`EXPIRING IN ${expiringIn} DAYS`}</p>
             </div>
             <div className={style.extensionBorder}></div>
-            <div className={`${style.extentionBoxStyle}`}>
+            <div className={`${style.extentionBoxStyle} ${style.marginTop20}`}>
                 <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>Contract Extension*</div>
                     <div className={style.displayInRow}>

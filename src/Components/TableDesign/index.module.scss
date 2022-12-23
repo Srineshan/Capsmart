@@ -61,10 +61,6 @@
     color: #FEC106;
 }
 
-.grey {
-    color: #948BEA;
-}
-
 .greenDotStyle {
     height: 12px;
     width: 12px;
@@ -77,13 +73,6 @@
     width: 12px;
     border-radius: 50%;
     background-color: #FEC106;
-}
-
-.greyDotStyle {
-    height: 12px;
-    width: 12px;
-    border-radius: 50%;
-    background-color: #948BEA;
 }
 
 .tableDataFontStyle {
@@ -167,6 +156,11 @@
     background: #857AEF 0% 0% no-repeat padding-box;
     border: none;
     border-radius: 4px;
+}
+
+.multipleOptionsCard {
+    background: #857AEF 0% 0% no-repeat padding-box;
+    border: none;
 }
 
 .specificActionCard {

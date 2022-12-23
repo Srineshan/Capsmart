@@ -17,18 +17,30 @@ const CloneAlert = ({getCloneDialog, getNewContract}) => {
     }
 
     return(
-        <Dialog isOpen={getCloneDialog} onClose={() => getCloneDialog(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
+        <Dialog isOpen={getCloneDialog} onClose={() => getCloneDialog(false)} className={`${style.newCloneDialog} ${style.dialogPaddingBottom}`}>
           <div className={`${Classes.DIALOG_BODY} ${style.cloneDialogBackground}`}>
             <div className={style.spaceBetween}>
-                <p className={style.extensionStyle}>Clone Alert</p>
+                <p className={style.extensionStyle}>Contract Clone Alert</p>
                 <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getCloneDialog(false)}  />
             </div>
             <div className={style.extensionBorder}></div>
+            <div className={`${style.dialogAdditionalDetailBoxStyle}`}>
+                <div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle}`}>New Contract with No Prior Contract(s) with Entity</div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>SITE NAME ONLY IF MULTISITE</div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>{`contract manager { name}`}</div>
+                </div>
+                <div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle}`}>PAMF CONTRACT (0043245)</div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>MULTIPLE CONTRACTORS (23)</div>
+                    <div className={`${style.dialogAdditionalDetailTextStyle} ${style.marginTop10}`}>DRAFT CREATED ON 23-5-2022</div>
+                </div>
+            </div>
             <p className={`${style.cloneContent} ${style.marginTop20}`}>You are creating a new contract by cloning the selected active contract?</p>
             <div>
-                <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                    <button className={`${style.cloneOutlinedButton} ${style.cursorPointer} ${style.paddingTop5}`}>NO</button>
-                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${style.paddingTop5}`} onClick={() => getNewContract(true)}>YES</button>
+                <div className={`${style.floatRight} ${style.marginTop20}`}>
+                    <button className={`${style.cloneOutlinedButton} ${style.cursorPointer}`}>CANCEL</button>
+                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => getNewContract(true)}>CONFIRM</button>
                 </div>
             </div>
           </div>

@@ -318,65 +318,68 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
                 <div>
                     {timesheetFields}
                 </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
-                    <div className={`${style.displayInRow}  `}>
-                        <FormControlLabel
-                            control={
-                                <Switch checked={contractedTimeCommitment} className={`${style.textAlignLeft}`} onChange={() => setContractedTimeCommitment(!contractedTimeCommitment)} />
-                            }
-                            className={`${style.switchFontStyle}`}
-                            label={contractedTimeCommitment ? 'YES' : 'NO'}
-                        />
-                        {timeSheetCount === 1 && (
-                            <div className={style.displayInRow}>
-                                <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20} ${style.marginTop15}`}  placeholder="HH" type='number' min="0"
-                                value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e.target.value.slice(0, limit))} />
-                                <select
-                                    name="class"
-                                    id="Class"
-                                    value={contractedTimeCommitmentFrequency}
-                                    onChange={(e) => setContractedTimeCommitmentFrequency(e.target.value)}
-                                    className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop} `}>
-                                    <option value="WEEK" >
-                                        Week
-                                    </option>
-                                    <option value="MONTH" >
-                                        Month
-                                    </option>
-                                    <option value="YEAR" >
-                                        Year
-                                    </option>
-                                </select>
-                            </div>
-                        )}
-                        {timeSheetCount > 1 && (
-                            <div className={style.displayInRow}>
-                                <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} ${style.marginTop10}`}>
-                                    <EditableText  placeholder="HH" type='number' min="0" className={style.editableTextSpecifiedStyle}
-                                    value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e.slice(0, limit))} />
-                                    <div className={style.textElementWithNurse}>Specified: 160</div>
-                                </div>
-                                <select
-                                    name="class"
-                                    id="Class"
-                                    value={contractedTimeCommitmentFrequency}
-                                    onChange={(e) => setContractedTimeCommitmentFrequency(e.target.value)}
-                                    className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop10} `}>
-                                    <option value="WEEK" >
-                                        Week
-                                    </option>
-                                    <option value="MONTH" >
-                                        Month
-                                    </option>
-                                    <option value="YEAR" >
-                                        Year
-                                    </option>
-                                </select>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                {
+                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  //     <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
+                  //     <div className={`${style.displayInRow}  `}>
+                  //         <FormControlLabel
+                  //             control={
+                  //                 <Switch checked={contractedTimeCommitment} className={`${style.textAlignLeft}`} onChange={() => setContractedTimeCommitment(!contractedTimeCommitment)} />
+                  //             }
+                  //             className={`${style.switchFontStyle}`}
+                  //             label={contractedTimeCommitment ? 'YES' : 'NO'}
+                  //         />
+                  //         {timeSheetCount === 1 && (
+                  //             <div className={style.displayInRow}>
+                  //                 <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20} ${style.marginTop15}`}  placeholder="HH" type='number' min="0"
+                  //                 value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e.target.value.slice(0, limit))} />
+                  //                 <select
+                  //                     name="class"
+                  //                     id="Class"
+                  //                     value={contractedTimeCommitmentFrequency}
+                  //                     onChange={(e) => setContractedTimeCommitmentFrequency(e.target.value)}
+                  //                     className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop} `}>
+                  //                     <option value="WEEK" >
+                  //                         Week
+                  //                     </option>
+                  //                     <option value="MONTH" >
+                  //                         Month
+                  //                     </option>
+                  //                     <option value="YEAR" >
+                  //                         Year
+                  //                     </option>
+                  //                 </select>
+                  //             </div>
+                  //         )}
+                  //         {timeSheetCount > 1 && (
+                  //             <div className={style.displayInRow}>
+                  //                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} ${style.marginTop10}`}>
+                  //                     <EditableText  placeholder="HH" type='number' min="0" className={style.editableTextSpecifiedStyle}
+                  //                     value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e.slice(0, limit))} />
+                  //                     <div className={style.textElementWithNurse}>Specified: 160</div>
+                  //                 </div>
+                  //                 <select
+                  //                     name="class"
+                  //                     id="Class"
+                  //                     value={contractedTimeCommitmentFrequency}
+                  //                     onChange={(e) => setContractedTimeCommitmentFrequency(e.target.value)}
+                  //                     className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop10} `}>
+                  //                     <option value="WEEK" >
+                  //                         Week
+                  //                     </option>
+                  //                     <option value="MONTH" >
+                  //                         Month
+                  //                     </option>
+                  //                     <option value="YEAR" >
+                  //                         Year
+                  //                     </option>
+                  //                 </select>
+                  //             </div>
+                  //         )}
+                  //     </div>
+                  // </div>
+                }
+
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Planned Absence Notification Days limit*</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>

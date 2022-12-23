@@ -9,7 +9,6 @@ import Checkbox from '@mui/material/Checkbox';
 import style from './index.module.scss';
 
 const ServiceDays = ({setMetaData, selectedService}) => {
-    const [daysCount, setDaysCount] = useState({weekdays:'', weekends:''});
     const [serviceDays, setServiceDays] = useState({
       tuesday: false,
       wednesday: false,
@@ -27,8 +26,8 @@ const ServiceDays = ({setMetaData, selectedService}) => {
     },[selectedService])
 
     useEffect(()=>{
-      setMetaData(daysCount, serviceDays);
-    }, [daysCount, serviceDays])
+      setMetaData(serviceDays);
+    }, [serviceDays])
 
     useEffect(()=>{
       let weekDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
@@ -79,37 +78,16 @@ const ServiceDays = ({setMetaData, selectedService}) => {
 
     return(
         <div>
-            <div className={style.displayInRow}>
+            <div className={`${style.twoCol}`}>
                 <div className={`${style.displayInRow} ${style.fullWidth}`}>
-                    <FormGroup className={`${style.threeFieldWidth}`}>
+                    <FormGroup >
                         <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekDays} onChange={(e)=>onWeekDaysCheck(e.target.checked)}/>} label={<Typography variant="body2" color="textSecondary">Weekdays</Typography>} />
                     </FormGroup>
-                    <TextField
-                        size="small"
-                        value={daysCount?.weekdays}
-                        onChange={(e)=> setDaysCount({...daysCount, weekdays:e.target.value})}
-                        sx={{ fontSize: 15 }}
-                        InputProps={{
-                            endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
-                        }}
-                        />
                 </div>
                 <div className={`${style.displayInRow} ${style.fullWidth}`}>
-                    <FormGroup className={`${style.marginLeft10} ${style.threeFieldWidth}`}>
+                    <FormGroup className={`${style.marginLeft10}`}>
                         <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekEnds} onChange={(e)=>onWeekEndsCheck(e.target.checked)}/>}  label={<Typography variant="body2" color="textSecondary">Weekends</Typography>} />
                     </FormGroup>
-                    <TextField
-                        size="small"
-                        value={daysCount?.weekends}
-                        onChange={(e)=> setDaysCount({...daysCount, weekends:e.target.value})}
-                        InputProps={{
-                            endAdornment: <InputAdornment position="end">Day</InputAdornment>,
-                        }}
-                    />
-                </div>
-                <div className={style.marginLeft10}>
-                    <div className={`${style.greenBase} ${style.alignCenter}`}>{parseInt(daysCount?.weekdays) + parseInt(daysCount?.weekends)}</div>
-                    <div className={style.totalTextStyle}>TOTAL</div>
                 </div>
             </div>
             <div className={`${style.twoCol} ${style.marginTop10}`}>

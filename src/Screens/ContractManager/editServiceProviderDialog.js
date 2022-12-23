@@ -135,6 +135,11 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
       if(roles){
         setRoles(roles);
       }
+      let temp = selectedRoles;
+      if(!selectedRoles?.map(data=>data?.roleName)?.includes('Activity Logger')){
+        temp.push(roles?.filter(role=>role?.roleName === 'Activity Logger')?.map(data=>data)[0]);
+        setSelectedRoles(temp);
+      }
     }
 
     const handleUserData = (name,value) => {
