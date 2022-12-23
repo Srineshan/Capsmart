@@ -46,9 +46,7 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
             }
         }
 
-        console.log(data);
-
-        if (isEdit ? await POST('entity-service/functionalTitlesForCSPTypeMaster', JSON.stringify(data))
+        if (!isEdit ? await POST('entity-service/functionalTitlesForCSPTypeMaster', JSON.stringify(data))
             .then(response => {
                 SuccessToaster('FunctionlTitle Added Successfully');
                 getAddEntityDialog(false)
@@ -74,7 +72,6 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
 
     const AddMoreFunctionalData = async () => {
         const data = {
-            ...(isEdit && { 'id': functionalId }),
             "title": title,
             "alias1": alias1,
             "alias2": alias2,
@@ -96,7 +93,7 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
         setalias2("")
         await POST('entity-service/functionalTitlesForCSPTypeMaster', JSON.stringify(data))
             .then(response => {
-                SuccessToaster('User Added Successfully');
+                SuccessToaster('FunctionlTitle Added Successfully');
                 getAddEntityDialog(true)
                 getFuntionalTitleData()
             })

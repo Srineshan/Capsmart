@@ -17,6 +17,7 @@ const AddAbsenseReasonsForHealthcare = ({
     IndustryId,
     selectedAbsence,
     getEntityData,
+    tableEntityData
 }) => {
     const [absenseId, setAbsenseId] = useState("");
     const [absenseType, setAbsenseType] = useState("Planned");
@@ -34,6 +35,15 @@ const AddAbsenseReasonsForHealthcare = ({
     };
 
     const saveSubmitHandler = async () => {
+        const isPresent = tableEntityData.filter((e) => e.absenceType === absenseType.toUpperCase()).find((p) => p.absenceReason === absenceReason);
+        if (isPresent) {
+            ErrorToaster("Already This Absence Reason Exists");
+            document.getElementById("absences").focus();
+            setAbsenseReason("")
+            getAddEntityDialog(true)
+            return false;
+        }
+
         const data = {
             ...(isEdit && { 'id': absenseId }),
             "absenceType": absenseType.toUpperCase(),
@@ -138,6 +148,7 @@ const AddAbsenseReasonsForHealthcare = ({
                                 <InputGroup
                                     value={absenceReason}
                                     placeholder="Reason"
+                                    id="absences"
                                     className={style.fullWidth}
                                     onChange={(e) => setAbsenseReason(e.target.value)}
                                 />

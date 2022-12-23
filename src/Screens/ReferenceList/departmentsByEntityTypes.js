@@ -157,8 +157,8 @@ const DepartmentsByEntityTypes = ({ getAddEntityDialog, showAddEntityDialog, isE
                                     <div className={index % 2 === 0 ? `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}` : `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
                                         <p></p>
                                         <p className={style.tableDataFontStyle}>{data?.departmentName?.name}</p>
-                                        <p className={style.tableDataFontStyle}>{data?.created_date}</p>
-                                        <p className={style.tableDataFontStyle}>{data?.last_updated}</p>
+                                        <p className={style.tableDataFontStyle}>{data.createdDate.split("T")[0].split("-").reverse().join("-")}</p>
+                                        <p className={style.tableDataFontStyle}>{data.lastModifiedDate.split("T")[0].split("-").reverse().join("-")}</p>
                                         <img src={EditHcRow} className={style.colorFileStyle} onClick={() => {
                                             setIsEdit(true);
                                             getAddEntityDialog(true);
@@ -173,11 +173,11 @@ const DepartmentsByEntityTypes = ({ getAddEntityDialog, showAddEntityDialog, isE
                     </div>
                 }
             </div>
-            <div className={`${style.floatRight} ${style.marginTop20}`}>
+            {/* <div className={`${style.floatRight} ${style.marginTop20}`}>
                 <button className={`${style.buttonStyle} ${style.marginLeft20}`}>CLICK TO SETUP</button>
-            </div>
+            </div> */}
 
-            {showAddEntityDialog && <AddNewDepartments getAddEntityDialog={getAddEntityDialog} selectedEntity={selectedEntity} isEdit={isEdit} getEntityData={getDepartmentData} selectedDepart={selectedDepart} />}
+            {showAddEntityDialog && <AddNewDepartments getAddEntityDialog={getAddEntityDialog} selectedEntity={selectedEntity} isEdit={isEdit} getEntityData={getDepartmentData} selectedDepart={selectedDepart} departmentList={departmentList} />}
 
             {
                 showDeleteConfirmation && (

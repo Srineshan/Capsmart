@@ -272,7 +272,7 @@ const FunctionalTitles = ({
           {getEntityDataList?.map((data, index) => {
             return (
               <>
-                <div className={index % 2 === 0 ? `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}` : `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`} key={index}>
+                <div className={index % 2 === 0 ? `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}` : `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`} key={index}>
                   <p></p>
                   <p className={style.tableDataFontStyle}>{data?.title}</p>
                   <p className={style.tableDataFontStyle}>{data?.alias1}</p>
