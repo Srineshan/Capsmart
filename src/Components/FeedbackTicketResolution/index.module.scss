@@ -34,6 +34,10 @@
     margin-left: 10px;
 }
 
+.marginLeft {
+    margin-left: 20px;
+}
+
 .selectFontStyle{
     color: #52575D !important;
     font-size: 15px;
@@ -58,7 +62,7 @@
 .feedbackContentGrid {
     display: grid;
     grid-template-columns: 40% 60%;
-    grid-gap: 20px;
+    // grid-gap: 20px;
 }
 
 .marginTop5{
@@ -220,6 +224,19 @@
 .doneButton {
     width: 120px;
     height: 40px;
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px #7165E3;
+    border-radius: 8px;
+    opacity: 1;
+    border: none;
+    color: white;
+    font: normal normal 400 16px/15px Montserrat;
+    cursor: pointer;
+}
+
+.uploadButton {
+    width: 120px;
+    min-height: 40px;
     background: #7165E3 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 5px #7165E3;
     border-radius: 8px;

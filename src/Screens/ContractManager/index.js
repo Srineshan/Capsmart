@@ -1,19 +1,14 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from './../../Components/Navbar';
-import ActiveContracts from './activeContracts';
 import AddContract from './addContract';
 import ContractExtension from './contractExtensionDialog';
 import ContractTermination from './contractTerminationDialog';
-import Draft from './draft';
 import CloneAlert from './cloneAlert';
-import ExpiredOrTerminated from './expiredOrTerminated';
-import UpcomingRenewals from './upcomingRenewals';
 import './../../index.scss';
 import NewContractFromClone from './newContractFromClone';
 import DeleteDraftContract from './deleteDraftContract';
 import ContractActivationRequest from './contractActivationRequest';
 import {GET, PUT, POST, TenantID} from './../dataSaver';
-import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ContractList from './contractList';
 
 const Contracts = () => {
@@ -28,10 +23,6 @@ const Contracts = () => {
     const [contractType, setContractType] = useState('');
     const [selectedContractType,setSelectedContractType] = useState('');
     const [contracts, setContracts] = useState([]);
-    const [draftContracts, setDraftContracts] = useState([]);
-    const [activeContracts, setActiveContracts] = useState([]);
-    const [upcomingContracts, setUpcomingContracts] = useState([]);
-    const [expiredContracts, setExpiredContracts] = useState([]);
     const [contractId, setContractId] = useState('');
     const [method,setMethod] = useState('');
     const [users, setUsers] = useState([]);

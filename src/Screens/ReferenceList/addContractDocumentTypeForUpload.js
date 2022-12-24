@@ -3,13 +3,13 @@ import { Dialog, Classes, Icon, Intent, TextArea, InputGroup, Button, RadioGroup
 import style from './index.module.scss';
 
 
-const AddContractDocumentTypeForUpload = ({getAddContractDocumentDialog}) => {
+const AddContractDocumentTypeForUpload = ({ getAddEntityDialog }) => {
     return (
-        <Dialog isOpen={getAddContractDocumentDialog} onClose={() => getAddContractDocumentDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
+        <Dialog isOpen={getAddEntityDialog} onClose={() => getAddEntityDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
                 <div className={style.spaceBetween}>
                     <p className={style.extensionStyle}> Add / Edit Contract Document Type Upload</p>
-                    <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.dialogCrossStyle} onClick={() => getAddContractDocumentDialog(false)} />
+                    <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.dialogCrossStyle} onClick={() => getAddEntityDialog(false)} />
                 </div>
                 <div className={style.ReferenceListEntityBorder}></div>
                 <div className={`${style.addHealthCareBoxStyle}`}>
@@ -22,8 +22,8 @@ const AddContractDocumentTypeForUpload = ({getAddContractDocumentDialog}) => {
 
                 </div>
                 <div className={`${style.floatRight} ${style.marginTop150}`}>
-                    <button className={style.outlinedButton} onClick={() => getAddContractDocumentDialog(false)}>CANCEL</button>
-                    <button onClick={() => getAddContractDocumentDialog(false)} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE</button>
+                    <button className={style.outlinedButton} onClick={() => getAddEntityDialog(false)}>CANCEL</button>
+                    <button onClick={() => getAddEntityDialog(false)} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE</button>
                 </div>
             </div>
         </Dialog>

@@ -13,7 +13,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { POST, PUT } from './../dataSaver'
 import { useEffect } from 'react';
 
-const AddCompanyHoliday = ({ getAddCompanyHolidayDialog, selectedIndustry, isEdit, selectedHoliday }) => {
+const AddCompanyHoliday = ({ getAddEntityDialog, selectedIndustry, isEdit, selectedHoliday }) => {
     const [eventTypeList, setEventTypeList] = useState(['FEDERAL', 'STATE'])
     const [eventType, setEventType] = useState('')
     const [eventName, setEventName] = useState("")
@@ -25,8 +25,8 @@ const AddCompanyHoliday = ({ getAddCompanyHolidayDialog, selectedIndustry, isEdi
     const [entityTypes, setEntityTypes] = useState([])
     const [holidayId, setHolidayId] = useState('');
 
-    useEffect(()=> {
-        if(isEdit){
+    useEffect(() => {
+        if (isEdit) {
             setEventType(selectedHoliday?.eventType)
             setEventName(selectedHoliday?.eventName)
             setEventDate(selectedHoliday?.eventDate)
@@ -36,12 +36,10 @@ const AddCompanyHoliday = ({ getAddCompanyHolidayDialog, selectedIndustry, isEdi
         }
     }, [isEdit, selectedHoliday])
 
-    console.log(selectedHoliday)
-
     const handleSave = async () => {
         let data = {
-            ...( isEdit &&
-            {'id': holidayId}),
+            ...(isEdit &&
+                { 'id': holidayId }),
             "eventType": eventType,
             "stateName": stateName,
             "eventName": eventName,
@@ -51,35 +49,35 @@ const AddCompanyHoliday = ({ getAddCompanyHolidayDialog, selectedIndustry, isEdi
                 "id": selectedIndustry?.[0]?.id
             }
         }
-        if(!isEdit ? 
+        if (!isEdit ?
             await POST('entity-service/holidayMaster', JSON.stringify(data))
-            .then(response => {
-                SuccessToaster('Event Added Successfully');
-                getAddCompanyHolidayDialog(false)
-            })
-            .catch(error => {
-                ErrorToaster(error);
-            })
-        : 
+                .then(response => {
+                    SuccessToaster('Event Added Successfully');
+                    getAddEntityDialog(false)
+                })
+                .catch(error => {
+                    ErrorToaster(error);
+                })
+            :
             await PUT(`entity-service/holidayMaster/${holidayId}`, JSON.stringify(data))
-            .then(response => {
-                SuccessToaster('Event Updated Successfully');
-                getAddCompanyHolidayDialog(false)
-            })
-            .catch(error => {
-                ErrorToaster(error);
-            }) 
+                .then(response => {
+                    SuccessToaster('Event Updated Successfully');
+                    getAddEntityDialog(false)
+                })
+                .catch(error => {
+                    ErrorToaster(error);
+                })
         )
-        getAddCompanyHolidayDialog(false)
+            getAddEntityDialog(false)
 
     }
 
     return (
-        <Dialog isOpen={getAddCompanyHolidayDialog} onClose={() => getAddCompanyHolidayDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
+        <Dialog isOpen={getAddEntityDialog} onClose={() => getAddEntityDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
                 <div className={style.spaceBetween}>
                     <p className={style.extensionStyle}>{isEdit ? 'Edit' : 'Add'} Company Holiday</p>
-                    <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.dialogCrossStyle} onClick={() => getAddCompanyHolidayDialog(false)} />
+                    <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.dialogCrossStyle} onClick={() => getAddEntityDialog(false)} />
                 </div>
                 <div className={style.ReferenceListEntityBorder}></div>
                 <div className={`${style.addHealthCareBoxStyle}`}>
@@ -133,10 +131,10 @@ const AddCompanyHoliday = ({ getAddCompanyHolidayDialog, selectedIndustry, isEdi
                                             }
                                         }}
                                         value={eventDate}
-                                        onChange={(e) => {setEventDate(e)}}
+                                        onChange={(e) => { setEventDate(e) }}
                                         renderInput={(params) => <TextField {...params} inputProps={{
-                                        ...params.inputProps,
-                                        placeholder: "MM/DD/YYYY"
+                                            ...params.inputProps,
+                                            placeholder: "MM/DD/YYYY"
                                         }}
                                         />}
                                     />
@@ -149,7 +147,7 @@ const AddCompanyHoliday = ({ getAddCompanyHolidayDialog, selectedIndustry, isEdi
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
                         <button className={style.outlinedButton}>CANCEL</button>
-                        <button onClick={() => {handleSave()}} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE</button>
+                        <button onClick={() => { handleSave() }} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE</button>
                     </div>
                 </div>
             </div>

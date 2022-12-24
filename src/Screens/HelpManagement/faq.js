@@ -11,9 +11,10 @@ import AddTutorial from './addTutorialDialog';
 import VideoSequencePlayerDialog from './videoSequencePlayer';
 import NewFAQPost from './newFAQPost';
 import RequestFAQPost from './requestFaqPost';
+import { formatInTimeZone } from 'date-fns-tz';
 import SearchBar from './../../Components/SearchBar';
 
-const FAQ = ({getSelectedHelp}) => {
+const FAQ = ({ getSelectedHelp }) => {
     const [selectedRow, setSelectedRow] = useState('');
     const [isSelected, setIsSelected] = useState(false);
     const [viewTickets, setViewTickets] = useState(true);
@@ -22,11 +23,11 @@ const FAQ = ({getSelectedHelp}) => {
     const [sendEMail, setSendEMail] = useState(false);
     const [userDetails, setUserDetails] = useState();
     const [sendEmailUserListDialog, setSendEmailUserListDialog] = useState(false);
-    const [newFAQPostDialog,setNewFAQPostDialog] = useState(false);
+    const [newFAQPostDialog, setNewFAQPostDialog] = useState(false);
     const [requestFAQPostDialog, setRequestFAQPostDialog] = useState(false)
-    const [showEditUserDialog,setShowEditUserDialog] = useState(false);
-    const [showFeedbackPage,setShowFeedbackPage] = useState(false);
-    const [showVideoSequenceDialog,setShowVideoSequenceDialog] = useState(false);
+    const [showEditUserDialog, setShowEditUserDialog] = useState(false);
+    const [showFeedbackPage, setShowFeedbackPage] = useState(false);
+    const [showVideoSequenceDialog, setShowVideoSequenceDialog] = useState(false);
     const [faqName, setFaqName] = useState('Frequently Asked Question');
     const [faqPage2, setFaqPage2] = useState(false);
 
@@ -53,11 +54,11 @@ const FAQ = ({getSelectedHelp}) => {
     const getShowVideoSequenceDialog = (value) => {
         setShowVideoSequenceDialog(value);
     }
-    return(
+    return (
         <>
             {!faqPage2 ? (
-            <div className={style.margin20}>
-                <div className={style.bigCardGrid}>
+                <div>
+                    {/* <div className={style.bigCardGrid}>
                     <div className={style.chevronCardStyle}>
                         <div className={`${style.alignCenter}`}>
                             <img src={ChevronRight} className={style.chevronRightStyle}/>
@@ -114,15 +115,15 @@ const FAQ = ({getSelectedHelp}) => {
                         </div>
                     </div>
 
-                </div>
-                <div className={style.bigCardGrid}>
+                </div> */}
+                    {/* <div className={style.bigCardGrid}>
                     <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
                         <div className={style.openCardStyle}>
                         </div>
-                    </div>
-                    <div className={style.bigCardStyle}>
+                    </div> */}
+                    <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                         <div className={style.spaceBetween}>
-                            <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
+                            <p className={`${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yyyy H:m zzz')}</p>
                             <div className={`${style.displayInRow} ${style.marginTop20}`}>
                                 <SearchBar />
                                 {/* <img src={UploadUser} alt="UploadUser" className={style.uploadIcon} onClick={()=> getMailTemplate(true)} />
@@ -136,103 +137,103 @@ const FAQ = ({getSelectedHelp}) => {
                         <div className={style.spaceBetween}>
                             <div className={style.buttonGroupUsers}>
                                 <button className={faqName === "Frequently Asked Question" ? style.registeredButton : style.normalButton} onClick={() => setFaqName('Frequently Asked Question')}>Frequently Asked Question ( 2 )</button>
-                                <button className={faqName === "New Faq Suggestion"  ? style.registeredButton : style.normalButton} onClick={() => setFaqName('New Faq Suggestion')}>New Faq Suggestion ( 1 )</button>
+                                <button className={faqName === "New Faq Suggestion" ? style.registeredButton : style.normalButton} onClick={() => setFaqName('New Faq Suggestion')}>New Faq Suggestion ( 1 )</button>
                             </div>
                             <div>
-                                <Icon icon="trash" size={20} color="#D0DBE5" className={`${style.marginRight20} ${style.marginTop40}`} onClick={() => setFaqPage2(!faqPage2)} />
+                                <Icon icon="trash" size={20} color="#D0DBE5" className={`${style.marginRight20} ${style.marginTop20}`} onClick={() => setFaqPage2(!faqPage2)} />
                             </div>
                         </div>
                         {faqName === "Frequently Asked Question" ? (
-                        <div>
-                            <div className={`${style.tableHeaderFAQ} ${style.reduceTop10}`}>
-                                <Checkbox large className={style.marginTop7} />
-                                <p className={style.tableHeaderFontStyle}>FREQUENTLY ASKED QUESTION</p>
-                                <p className={style.tableHeaderFontStyle}>USER NAME</p>
-                                <p className={style.tableHeaderFontStyle}>DATE / TIME</p>
-                            </div>
-                            <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1')}}>
-                                <div className={`${style.fullWidth} ${style.marginTop7} ${style.verticalCenter} ${style.spaceBetween} ${style.padding2}`}>
-                                    <div className={style.displayInRow}>
-                                        <Checkbox large className={style.marginTop7} />
-                                        <p className={style.tableDataFontStyle}><strong>Question 1Hjhslj; Kljd;Ljok;Lm ?</strong></p>
-                                    </div>
-                                    <Icon icon={isSelected && selectedRow === '1' ? "chevron-up" : "chevron-down"} color='#7165E3' size={20} />
+                            <div>
+                                <div className={`${style.tableHeaderFAQ}`}>
+                                    <Checkbox large className={style.marginTop7} />
+                                    <p className={style.tableHeaderFontStyle}>FREQUENTLY ASKED QUESTION</p>
+                                    <p className={style.tableHeaderFontStyle}>USER NAME</p>
+                                    <p className={style.tableHeaderFontStyle}>DATE / TIME</p>
                                 </div>
-                            </div>
-                            {isSelected && selectedRow === '1' && (
-                                <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`}>
-                                    <p className={`${style.answerTextStyle} ${style.padding15}`}>
-                                    Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
-                                    varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
-                                    Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
-                                    sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
-                                    ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
-                                    malesuada dui sed dui sagittis consectetur.
-                                    </p>
-                                    <div className={`${style.tableGridFAQ} ${style.fullWidth}`}>
-                                        <p></p>
-                                        <p></p>
+                                <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => { setIsSelected(!isSelected); setSelectedRow('1') }}>
+                                    <div className={`${style.fullWidth} ${style.marginTop7} ${style.verticalCenter} ${style.spaceBetween} ${style.padding2}`}>
                                         <div className={style.displayInRow}>
-                                            <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
-                                            <p className={`${style.tableDataFontStyle} ${style.reduceTop} ${style.marginLeft20}`}>
-                                            Lorem Ipsum
-                                            </p>
+                                            <Checkbox large className={style.marginTop7} />
+                                            <p className={style.tableDataFontStyle}><strong>Question 1Hjhslj; Kljd;Ljok;Lm ?</strong></p>
                                         </div>
-                                        <p className={style.smallGreyText}>3 days ago</p>
-                                    </div>
-                                    <br />
-                                    <div className={`${style.faqAnswerGrid} ${style.fullWidth} ${style.padding15} ${style.reduceTop10}`}>
-                                        <TextArea className={`${style.fullWidth} ${style.transparentDashedStyle}`} fill={true} placeholder="type to comment..." />
-                                        <button className={`${style.commentButton} ${style.floatRight} ${style.marginTop20}`}>COMMENT</button>
+                                        <Icon icon={isSelected && selectedRow === '1' ? "chevron-up" : "chevron-down"} color='#7165E3' size={20} />
                                     </div>
                                 </div>
-                            )}
-                            <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('2')}}>
-                                <div className={`${style.fullWidth} ${style.marginTop7} ${style.verticalCenter} ${style.spaceBetween} ${style.padding2}`}>
-                                    <div className={style.displayInRow}>
-                                        <Checkbox large className={style.marginTop7} />
-                                        <p className={style.tableDataFontStyle}><strong>Question B ??</strong></p>
+                                {isSelected && selectedRow === '1' && (
+                                    <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`}>
+                                        <p className={`${style.answerTextStyle} ${style.padding15}`}>
+                                            Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
+                                            varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
+                                            Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
+                                            sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
+                                            ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
+                                            malesuada dui sed dui sagittis consectetur.
+                                        </p>
+                                        <div className={`${style.tableGridFAQ} ${style.fullWidth}`}>
+                                            <p></p>
+                                            <p></p>
+                                            <div className={style.displayInRow}>
+                                                <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`} />
+                                                <p className={`${style.tableDataFontStyle} ${style.reduceTop} ${style.marginLeft20}`}>
+                                                    Lorem Ipsum
+                                                </p>
+                                            </div>
+                                            <p className={style.smallGreyText}>3 days ago</p>
+                                        </div>
+                                        <br />
+                                        <div className={`${style.faqAnswerGrid} ${style.fullWidth} ${style.padding15} ${style.reduceTop10}`}>
+                                            <TextArea className={`${style.fullWidth} ${style.transparentDashedStyle}`} fill={true} placeholder="type to comment..." />
+                                            <button className={`${style.commentButton} ${style.floatRight} ${style.marginTop20}`}>COMMENT</button>
+                                        </div>
                                     </div>
-                                    <Icon icon={isSelected && selectedRow === '2' ? "chevron-up" : "chevron-down"} color='#7165E3' size={20} />
-                                </div>
-                            </div>
-                            {isSelected && selectedRow === '2' && (
-                                <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`}>
-                                    <p className={`${style.answerTextStyle} ${style.padding15}`}>
-                                    Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
-                                    varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
-                                    Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
-                                    sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
-                                    ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
-                                    malesuada dui sed dui sagittis consectetur.
-                                    </p>
-                                    <div className={`${style.tableGridFAQ} ${style.fullWidth}`}>
-                                        <p></p>
-                                        <p></p>
+                                )}
+                                <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => { setIsSelected(!isSelected); setSelectedRow('2') }}>
+                                    <div className={`${style.fullWidth} ${style.marginTop7} ${style.verticalCenter} ${style.spaceBetween} ${style.padding2}`}>
                                         <div className={style.displayInRow}>
-                                            <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
-                                            <p className={`${style.tableDataFontStyle} ${style.reduceTop} ${style.marginLeft20}`}>
-                                            Lorem Ipsum
-                                            </p>
+                                            <Checkbox large className={style.marginTop7} />
+                                            <p className={style.tableDataFontStyle}><strong>Question B ??</strong></p>
                                         </div>
-                                        <p className={style.smallGreyText}>3 days ago</p>
-                                    </div>
-                                    <br />
-                                    <div className={`${style.faqAnswerGrid} ${style.fullWidth} ${style.padding15} ${style.reduceTop10}`}>
-                                        <TextArea className={`${style.fullWidth} ${style.transparentDashedStyle}`} fill={true} placeholder="type to comment..." />
-                                        <button className={`${style.commentButton} ${style.floatRight} ${style.marginTop20}`}>COMMENT</button>
+                                        <Icon icon={isSelected && selectedRow === '2' ? "chevron-up" : "chevron-down"} color='#7165E3' size={20} />
                                     </div>
                                 </div>
-                            )}
-                            <div className={style.spaceBetween}>
-                                <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
-                                <div className={style.displayInRow}>
-                                <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                                <img src={ChevronRight} className={style.roundChevron} />
+                                {isSelected && selectedRow === '2' && (
+                                    <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`}>
+                                        <p className={`${style.answerTextStyle} ${style.padding15}`}>
+                                            Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
+                                            varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
+                                            Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
+                                            sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
+                                            ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
+                                            malesuada dui sed dui sagittis consectetur.
+                                        </p>
+                                        <div className={`${style.tableGridFAQ} ${style.fullWidth}`}>
+                                            <p></p>
+                                            <p></p>
+                                            <div className={style.displayInRow}>
+                                                <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`} />
+                                                <p className={`${style.tableDataFontStyle} ${style.reduceTop} ${style.marginLeft20}`}>
+                                                    Lorem Ipsum
+                                                </p>
+                                            </div>
+                                            <p className={style.smallGreyText}>3 days ago</p>
+                                        </div>
+                                        <br />
+                                        <div className={`${style.faqAnswerGrid} ${style.fullWidth} ${style.padding15} ${style.reduceTop10}`}>
+                                            <TextArea className={`${style.fullWidth} ${style.transparentDashedStyle}`} fill={true} placeholder="type to comment..." />
+                                            <button className={`${style.commentButton} ${style.floatRight} ${style.marginTop20}`}>COMMENT</button>
+                                        </div>
+                                    </div>
+                                )}
+                                <div className={style.spaceBetween}>
+                                    <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
+                                    <div className={style.displayInRow}>
+                                        <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                                        <img src={ChevronRight} className={style.roundChevron} />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        ) : faqName === "New Faq Suggestion"  ?  (
+                        ) : faqName === "New Faq Suggestion" ? (
                             <div>
                                 <div className={`${style.tableHeaderFAQSuggestion} ${style.marginTop20}`}>
                                     <Checkbox large className={style.marginTop7} />
@@ -241,7 +242,7 @@ const FAQ = ({getSelectedHelp}) => {
                                     <p className={style.tableHeaderFontStyle}>REASON TO REQUEST</p>
                                     <p className={style.tableHeaderFontStyle}>REQUESTED DATE / TIME</p>
                                 </div>
-                                <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1');setShowFeedbackPage(true)}}>
+                                <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => { setIsSelected(!isSelected); setSelectedRow('1'); setShowFeedbackPage(true) }}>
                                     <div className={`${style.tableDataGridFAQSuggestion} ${style.fullWidth} ${style.marginTop7}`}>
                                         <Checkbox large className={style.marginTop7} />
                                         <p className={style.tableDataFontStyle}><strong>Philipp Stevens</strong></p>
@@ -267,23 +268,23 @@ const FAQ = ({getSelectedHelp}) => {
                                 <div className={style.spaceBetween}>
                                     <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
                                     <div className={style.displayInRow}>
-                                    <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                                    <img src={ChevronRight} className={style.roundChevron} />
+                                        <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                                        <img src={ChevronRight} className={style.roundChevron} />
                                     </div>
                                 </div>
                             </div>
                         ) : ''}
                     </div>
+                    {/* </div> */}
+                    <div className={style.spaceBetween}>
+                        <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
+                        <p className={style.poweredBy}>© TimeSmart.AI</p>
+                    </div>
+                    {newFAQPostDialog && <NewFAQPost getNewFAQPostDialog={getNewFAQPostDialog} />}
                 </div>
-                <div className={style.spaceBetween}>
-                    <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                    <p className={style.poweredBy}>© TimeSmart.AI</p>
-                </div>
-                {newFAQPostDialog && <NewFAQPost getNewFAQPostDialog={getNewFAQPostDialog} />}
-            </div>
             ) : (
-                <div className={style.margin20}>
-                    <div className={style.bigCardGrid}>
+                <div>
+                    {/* <div className={style.bigCardGrid}>
                         <div className={style.chevronCardStyle}>
                             <div className={`${style.alignCenter}`}>
                                 <img src={ChevronRight} className={style.chevronRightStyle}/>
@@ -340,13 +341,13 @@ const FAQ = ({getSelectedHelp}) => {
                             </div>
                         </div>
 
-                    </div>
-                    <div className={style.bigCardGrid}>
-                        <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
+                    </div> */}
+                    <div>
+                        {/* <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
                             <div className={style.openCardStyle}>
                             </div>
-                        </div>
-                        <div className={style.bigCardStyle}>
+                        </div> */}
+                        <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                             <div className={style.spaceBetween}>
                                 <p className={`${style.activeContractsWidth}`}>FEB 16, 2022 16:45 EST</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
@@ -377,7 +378,7 @@ const FAQ = ({getSelectedHelp}) => {
                                     <p className={style.tableHeaderFontStyle}>USER NAME</p>
                                     <p className={style.tableHeaderFontStyle}>DATE / TIME</p>
                                 </div>
-                                <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('1')}}>
+                                <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => { setIsSelected(!isSelected); setSelectedRow('1') }}>
                                     <div className={`${style.fullWidth} ${style.marginTop7} ${style.verticalCenter} ${style.spaceBetween} ${style.padding2}`}>
                                         <div className={style.displayInRow}>
                                             <Checkbox large className={style.marginTop7} />
@@ -389,20 +390,20 @@ const FAQ = ({getSelectedHelp}) => {
                                 {isSelected && selectedRow === '1' && (
                                     <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`}>
                                         <p className={`${style.answerTextStyle} ${style.padding15}`}>
-                                        Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
-                                        varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
-                                        Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
-                                        sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
-                                        ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
-                                        malesuada dui sed dui sagittis consectetur.
+                                            Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
+                                            varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
+                                            Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
+                                            sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
+                                            ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
+                                            malesuada dui sed dui sagittis consectetur.
                                         </p>
                                         <div className={`${style.tableGridFAQ} ${style.fullWidth}`}>
                                             <p></p>
                                             <p></p>
                                             <div className={style.displayInRow}>
-                                                <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
+                                                <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`} />
                                                 <p className={`${style.tableDataFontStyle} ${style.reduceTop} ${style.marginLeft20}`}>
-                                                Lorem Ipsum
+                                                    Lorem Ipsum
                                                 </p>
                                             </div>
                                             <p className={style.smallGreyText}>3 days ago</p>
@@ -414,7 +415,7 @@ const FAQ = ({getSelectedHelp}) => {
                                         </div>
                                     </div>
                                 )}
-                                <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => {setIsSelected(!isSelected);setSelectedRow('2')}}>
+                                <div className={`${style.tableData} ${style.displayInCol}`} onClick={() => { setIsSelected(!isSelected); setSelectedRow('2') }}>
                                     <div className={`${style.fullWidth} ${style.marginTop7} ${style.verticalCenter} ${style.spaceBetween} ${style.padding2}`}>
                                         <div className={style.displayInRow}>
                                             <Checkbox large className={style.marginTop7} />
@@ -426,20 +427,20 @@ const FAQ = ({getSelectedHelp}) => {
                                 {isSelected && selectedRow === '2' && (
                                     <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`}>
                                         <p className={`${style.answerTextStyle} ${style.padding15}`}>
-                                        Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
-                                        varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
-                                        Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
-                                        sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
-                                        ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
-                                        malesuada dui sed dui sagittis consectetur.
+                                            Answer B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc mollis magna leo, a
+                                            varius risus vestibulum sit amet. Pellentesque vel leo sit amet metus dictum ullamcorper.
+                                            Proin eget tellus aliquet, lobortis massa a, tempus eros. Aliquam euismod sed purus egestas
+                                            sagittis. Nam consequat mollis nunc non viverra. Fusce finibus libero ante, ut hendrerit
+                                            ipsum euismod quis. In sit amet consectetur sapien. Quisque eget euismod sem. Mauris
+                                            malesuada dui sed dui sagittis consectetur.
                                         </p>
                                         <div className={`${style.tableGridFAQ} ${style.fullWidth}`}>
                                             <p></p>
                                             <p></p>
                                             <div className={style.displayInRow}>
-                                                <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`}  />
+                                                <img src={DoctorAnime} className={`${style.userLogoVerySmall} ${style.reduceTop2}`} />
                                                 <p className={`${style.tableDataFontStyle} ${style.reduceTop} ${style.marginLeft20}`}>
-                                                Lorem Ipsum
+                                                    Lorem Ipsum
                                                 </p>
                                             </div>
                                             <p className={style.smallGreyText}>3 days ago</p>
@@ -454,8 +455,8 @@ const FAQ = ({getSelectedHelp}) => {
                                 <div className={style.spaceBetween}>
                                     <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
                                     <div className={style.displayInRow}>
-                                    <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                                    <img src={ChevronRight} className={style.roundChevron} />
+                                        <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                                        <img src={ChevronRight} className={style.roundChevron} />
                                     </div>
                                 </div>
                             </div>

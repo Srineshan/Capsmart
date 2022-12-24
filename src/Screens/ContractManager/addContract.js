@@ -55,6 +55,9 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
                             <option value="Renewal Contract">
                             Contracted Services Continuation Renewal Contract
                             </option>
+                            <option value="Existing Contract">
+                            Existing Active Contract
+                            </option>
                         </select>
                 </div>
                 <div className={`${style.displayInRow} ${style.marginLeft20}`}>
@@ -73,7 +76,7 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
                             <div>
                                 <img src={DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract' ? '' : style.reducedOpacity}`} />
                                 <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
-                                Multiple Contractor Contract
+                                Multiple Contractors Contract
                                 </div>
                             </div>
                         </div>

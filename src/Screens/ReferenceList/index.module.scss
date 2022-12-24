@@ -1,1993 +1,2115 @@
 .adminRectangleBox {
-    width: 100%;
-    height: 150px;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    border: 1px solid #707070;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  width: 100%;
+  height: 150px;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  border: 1px solid #707070;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .top30 {
-    top: 30%;
+  top: 30%;
 }
 
 .top70 {
-    top: 70%;
+  top: 70%;
 }
 
 .headingStyle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font: normal normal 900 55px/55px Roboto;
-    letter-spacing: 0px;
-    color: #000000;
-    text-transform: uppercase;
-    padding: 50px 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: normal normal 900 55px/55px Roboto;
+  letter-spacing: 0px;
+  color: #000000;
+  text-transform: uppercase;
+  padding: 50px 150px;
 }
 
 .footerIconStyle {
-    height: calc(100vh - 325px);
-    width: 40px;
-    object-fit: contain;
-    margin-top: 5px;
+  height: calc(100vh - 325px);
+  width: 40px;
+  object-fit: contain;
+  margin-top: 5px;
 }
 
 .margin10 {
-    margin: 10px;
+  margin: 10px;
 }
 
 .margin20 {
-    margin: 20px;
+  margin: 20px;
 }
 
 .marginTop20 {
-    margin-top: 20px !important;
+  margin-top: 20px !important;
 }
 
 .marginTop30 {
-    margin-top: 30px !important;
+  margin-top: 30px !important;
 }
 
 .marginTop {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .marginTop7 {
-    margin-top: 7px;
+  margin-top: 7px;
 }
 
 .marginTop10 {
-    margin-top: 10px !important;
+  margin-top: 10px !important;
 }
 
 .marginTop40 {
-    margin-top: 40px !important;
+  margin-top: 40px !important;
 }
 
-
 .marginTop35 {
-    margin-top: 35px !important;
+  margin-top: 35px !important;
 }
 
 .marginTop15 {
-    margin-top: 15px !important;
+  margin-top: 15px !important;
 }
 
 .marginTop150 {
-    margin-top: 150px !important;
+  margin-top: 150px !important;
 }
 
 .padding10 {
-    padding: 10px;
+  padding: 10px;
 }
 
 .paddingTop5 {
-    padding-top: 5px;
+  padding-top: 5px;
 }
 
 .marginLeft20 {
-    margin-left: 20px;
+  margin-left: 20px;
 }
 
 .marginLeft15 {
-    margin-left: 15px;
+  margin-left: 15px;
 }
 
 .marginLeft10 {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
 .marginLeft5 {
-    margin-left: 5px;
+  margin-left: 5px;
 }
 
 .marginLeft50 {
-    margin-left: 50px;
+  margin-left: 50px;
 }
 
 .marginLeft150 {
-    margin-left: 150px;
+  margin-left: 150px;
 }
 
 .marginLeft250 {
-    margin-left: 250px;
+  margin-left: 250px;
 }
 
 .marginRight {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .marginRight20 {
-    margin-right: 20px;
+  margin-right: 20px;
 }
 
 .marginRight30 {
-    margin-right: 30px;
+  margin-right: 30px;
 }
 
 .marginRight60 {
-    margin-right: 60px;
+  margin-right: 60px;
 }
 
 .marginBottom {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .marginBottom20 {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .marginBottom50 {
-    margin-bottom: 50px;
+  margin-bottom: 50px;
 }
 
-
 .marginBottom5 {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .chevronCardStyle {
-    height: 40px;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 10px 20px #C4C8D066;
-    border-radius: 6px;
-    opacity: 1;
-    cursor: pointer;
-    position: relative;
+  height: 40px;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #c4c8d066;
+  border-radius: 6px;
+  opacity: 1;
+  cursor: pointer;
+  position: relative;
 }
 
 .alignCenter {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .referenceListCoverPageAlignCenter {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
 .verticalAlignCenter {
-    display: flex;
-    align-items: center;
-    height: 100%;
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 .chevronRightStyle {
-    width: 30px;
-    height: 30px;
-    background: #EBF2F7 0% 0% no-repeat padding-box;
-    opacity: 1;
-    border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  background: #ebf2f7 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border-radius: 50%;
 }
 
 .displayInRow {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
 .displayInCol {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .displayInColRev {
-    display: flex;
-    flex-direction: column-reverse !important;
-    height: 100%;
+  display: flex;
+  flex-direction: column-reverse !important;
+  height: 100%;
 }
 
 .userLogo {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    margin-top: 10px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  margin-top: 10px;
 }
 
-
 .userNameStyle {
-    text-align: left;
-    font: normal normal 600 15px/13px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
+  text-align: left;
+  font: normal normal 600 15px/13px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
 }
 
 .reduce10Left {
-    margin-left: -10px;
+  margin-left: -10px;
 }
 
 .reduce20Left {
-    margin-left: -20px;
+  margin-left: -20px;
 }
 
 .reduce30Left {
-    margin-left: -30px;
+  margin-left: -30px;
 }
 
 .marginTop3 {
-    margin-top: 3px !important;
+  margin-top: 3px !important;
 }
 
 .marginTop2 {
-    margin-top: 2px !important;
+  margin-top: 2px !important;
 }
 
 .loginStatus {
-    text-align: left;
-    font: normal normal normal 11px/15px Montserrat;
-    letter-spacing: 0px;
-    color: #B3B8BD;
-    text-transform: uppercase;
-    opacity: 1;
+  text-align: left;
+  font: normal normal normal 11px/15px Montserrat;
+  letter-spacing: 0px;
+  color: #b3b8bd;
+  text-transform: uppercase;
+  opacity: 1;
 }
 
 .crossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
-    margin-bottom: 15px;
-    cursor: pointer;
-    position: absolute;
-    right: 30px;
+  color: linear-gradient(#7165e3, #ff6562) !important;
+  margin-bottom: 15px;
+  cursor: pointer;
+  position: absolute;
+  right: 30px;
 }
 
 .grid5 {
-    display: grid;
-    grid-template-columns: 80px 1fr 1fr 1fr 1fr;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr 1fr 1fr;
+  grid-gap: 20px;
 }
 
 .grid4 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 20px;
+  align-items: center;
+  justify-content: space-evenly;
 }
 
 .cardStyle {
-    height: 105px;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 10px 20px #C4C8D066;
-    border-radius: 6px;
-    opacity: 1;
-    cursor: pointer;
+  height: 105px;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #c4c8d066;
+  border-radius: 6px;
+  opacity: 1;
+  cursor: pointer;
 }
 
 .bigCardGrid {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    grid-gap: 20px;
-    margin-top: 20px;
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  grid-gap: 20px;
+  margin-top: 20px;
 }
 
 .bigCardStyle {
-    height: calc(100vh - 325px);
-    overflow: scroll;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 10px 20px #C4C8D066;
-    border-radius: 6px;
-    opacity: 1;
-    padding: 5px;
+  height: calc(100vh - 325px);
+  overflow: scroll;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #c4c8d066;
+  border-radius: 6px;
+  opacity: 1;
+  padding: 5px;
 }
 
 .centreCardStyle {
-    height: calc(100vh - 200px);
-    overflow: scroll;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 10px 20px #C4C8D066;
-    border-radius: 6px;
-    opacity: 1;
-    padding: 5px;
+  height: calc(100vh - 200px);
+  overflow: scroll;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #c4c8d066;
+  border-radius: 6px;
+  opacity: 1;
+  padding: 5px;
 }
 
 .openCardStyle {
-    background-color: #ebe9fb;
-    width: 100%;
-    height: 100%;
+  background-color: #ebe9fb;
+  width: 100%;
+  height: 100%;
 }
 
 .spaceBetween {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .dashboardCardStyle {
-    background-color: #000000;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 10px 20px #C4C8D066;
-    border-radius: 8px;
-    border: 0.20000000298023224px solid #C4C8D066;
-    opacity: 1;
-    cursor: pointer;
-    padding: 15px;
+  background-color: #000000;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #c4c8d066;
+  border-radius: 8px;
+  border: 0.20000000298023224px solid #c4c8d066;
+  opacity: 1;
+  cursor: pointer;
+  padding: 15px;
+  height: 15vh;
 }
 
 .dashboardInsideCardStyle {
-    box-shadow: 0px 3px 6px #00000029;
-    border: 1px solid #F59393;
-    border-radius: 3px;
-    opacity: 1;
-    cursor: pointer;
-    padding: 5px;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 1px solid #f59393;
+  border-radius: 3px;
+  opacity: 1;
+  cursor: pointer;
+  padding: 5px;
 }
 
 .headingForReferenceList {
-    font: normal normal bold 17px/20px Montserrat;
-    letter-spacing: 0px;
-    text-align: left;
-    color: #52575D;
-    text-transform: uppercase;
-    margin-top: 5px !important;
-    height: calc(100% - 60px);
+  font: normal normal bolder 17px/20px Montserrat;
+  letter-spacing: 0px;
+  text-align: left;
+  color: #000000;
+  text-transform: uppercase;
+  margin-top: 5px !important;
+  height: calc(100% - 80px);
 }
 
 .optionsStyle {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    font: normal normal normal 12px/15px Montserrat;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  font: normal normal normal 12px/15px Montserrat;
 }
 
 .dashboardCardColorOption1 {
-    color: #88D5A6;
+  color: #88d5a6;
 }
 
 .dashboardCardColorOption2 {
-    color: #C2C2C2;
+  color: #c2c2c2;
 }
 
 .centreCardColumnsGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
 }
 
 .centreCardRowsGrid {
-    display: grid;
-    grid-template-rows: 1fr 1fr 1fr;
-    height: 98px;
-    width: 19vw;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  height: 98px;
+  width: 19vw;
+  grid-gap: 20px;
 }
 
 .industriesCardStyle {
-    background: #EFEEFC 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 6px #00000045;
-    border: 0.4000000059604645px solid #beb8f9;
-    border-radius: 6px;
-    cursor: pointer;
-    height: 70px;
-    padding: 20px;
-    margin-right: 40px;
+  background: #efeefc 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000045;
+  border: 0.4000000059604645px solid #beb8f9;
+  border-radius: 6px;
+  cursor: pointer;
+  height: 70px;
+  padding: 20px;
+  margin-right: 40px;
 }
 
 .selectedIndustriesBackground {
-    background-color: #D3D0F6 !important;
-    color: black !important;
+  background-color: #d3d0f6 !important;
+  color: black !important;
 }
 
 .twoCol {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 .industriesCardTextStyle1 {
-    font: normal normal bold 20px/30px Montserrat;
-    color: #52575D;
-    letter-spacing: 0px;
-    text-transform: uppercase;
+  font: normal normal bold 20px/30px Montserrat;
+  color: #52575d;
+  letter-spacing: 0px;
+  text-transform: uppercase;
 }
 
 .industriesCardTextStyle2 {
-    background: #EFEEFC 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 6px #00000029;
-    border: 0.4000000059604645px solid #beb8f9;
-    border-radius: 6px;
-    font: normal normal bold 27px/55px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    text-transform: uppercase;
+  background: #efeefc 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.4000000059604645px solid #beb8f9;
+  border-radius: 6px;
+  font: normal normal bold 27px/55px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  text-transform: uppercase;
 }
 
 .addAndRefreshCardStyle {
-    background: #E5E6E7 0% 0% no-repeat padding-box;
-    border: 1px solid #E9E9F0;
-    border-radius: 4px;
-    padding: 10px 20px;
-    width: 200px !important;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    position: absolute;
-    right: 100px;
+  background: #e5e6e7 0% 0% no-repeat padding-box;
+  border: 1px solid #e9e9f0;
+  border-radius: 4px;
+  padding: 10px 20px;
+  width: 200px !important;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: absolute;
+  right: 100px;
 }
 
 .addMoreCardStyle {
-    background: #E5E6E7 0% 0% no-repeat padding-box;
-    border: 1px solid #E9E9F0;
-    border-radius: 4px;
-    padding: 10px 20px;
-    width: 150px !important;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  background: #e5e6e7 0% 0% no-repeat padding-box;
+  border: 1px solid #e9e9f0;
+  border-radius: 4px;
+  padding: 10px 20px;
+  width: 150px !important;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .addMoreTextStyle {
-    font: normal normal medium 20px/34px Montserrat;
-    letter-spacing: 0px;
-    color: #7165E3;
-    text-transform: uppercase;
+  font: normal normal medium 20px/34px Montserrat;
+  letter-spacing: 0px;
+  color: #7165e3;
+  text-transform: uppercase;
 }
 
 .colorFileStyle {
-    height: 25px !important;
-    width: 25px !important;
-    margin-right: 5px;
-    object-fit: contain;
-    cursor: pointer;
+  height: 25px !important;
+  width: 25px !important;
+  margin-right: 5px;
+  object-fit: contain;
+  cursor: pointer;
 }
 
-
-
 .colorFileStyle2 {
-    height: 20px !important;
-    width: 20px !important;
-    object-fit: contain;
-    cursor: pointer;
+  height: 20px !important;
+  width: 20px !important;
+  object-fit: contain;
+  cursor: pointer;
 }
 
 .colorFileStyle3 {
-    margin-top: 5px;
-    height: 17px !important;
-    width: 17px !important;
-    object-fit: contain;
-    cursor: pointer;
+  margin-top: 5px;
+  height: 17px !important;
+  width: 17px !important;
+  object-fit: contain;
+  cursor: pointer;
 }
 
 .colorFileStyle4 {
-    height: 17px !important;
-    width: 17px !important;
-    object-fit: contain;
-    cursor: pointer;
+  height: 17px !important;
+  width: 17px !important;
+  object-fit: contain;
+  cursor: pointer;
 }
 
 .colorFileStyle5 {
-    height: 22px !important;
-    width: 22px !important;
-    margin-right: 5px;
-    object-fit: contain;
-    cursor: pointer;
+  height: 22px !important;
+  width: 22px !important;
+  margin-right: 5px;
+  object-fit: contain;
+  cursor: pointer;
 }
 
 .colorFileStyle6 {
-    height: 20px !important;
-    width: 12px !important;
-    object-fit: contain;
-    cursor: pointer;
-
+  height: 20px !important;
+  width: 12px !important;
+  object-fit: contain;
+  cursor: pointer;
 }
 
-
 .industriesEntityCardStyle {
-    max-height: calc(100vh - 250px);
-    width: 65vw;
-    overflow: scroll;
-    box-shadow: 0px 3px 6px #00000029;
-    border: 0.20000000298023224px solid #d9d9d9;
-    border-radius: 10px;
-    padding: 5px;
+  max-height: calc(100vh - 250px);
+  width: 65vw;
+  overflow: scroll;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.20000000298023224px solid #d9d9d9;
+  border-radius: 10px;
+  padding: 5px;
 }
 
 .tableHeaderIndustriesEntity {
-    background: #afa9ef 0% 0% no-repeat padding-box;
-    font-weight: medium;
-    //margin-left: 50px;
-    height: 55px;
-    width: 100%;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 59% 15% 15% 10% 10%;
+  background: #afa9ef 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  //margin-left: 50px;
+  height: 55px;
+  width: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 59% 15% 15% 10% 10%;
 }
 
 .tableHeaderIndustriesFontStyle {
-    font: normal normal bold 13px/25px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    opacity: 1;
-    text-align: left;
-    margin-top: 10px;
-    margin-left: 10px;
+  font: normal normal bold 13px/25px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  opacity: 1;
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 10px;
 }
 
 .tableHeaderIndustriesFontStyle2 {
-    font: normal normal bold 14px/20px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    opacity: 1;
-    text-align: left;
-    margin-top: 10px;
-    margin-left: 30px;
+  font: normal normal bold 14px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  opacity: 1;
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 30px;
 }
 
-
 .tableHeaderIndustriesFontStyle3 {
-    font: normal normal bold 14px/20px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    opacity: 1;
-    text-align: left;
-    margin-top: 10px;
-    margin-left: 20px;
+  font: normal normal bold 14px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  opacity: 1;
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 20px;
 }
 
 .tableHeaderIndustriesFontStyle4 {
-    font: normal normal bold 13px/20px Montserrat;
-    letter-spacing: 0px;
-    color: rgb(22, 22, 22);
-    opacity: 1;
-    text-align: left;
-    margin-top: 10px;
-    margin-left: 20px;
+  font: normal normal bold 13px/20px Montserrat;
+  letter-spacing: 0px;
+  color: rgb(22, 22, 22);
+  opacity: 1;
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 20px;
 }
 
 .tableSubHeaderIndustriesFontStyle {
-    font: normal 15px/20px Montserrat;
-    letter-spacing: 0px;
-    color: #494A51;
-    opacity: 1;
-    text-align: left;
-    margin-top: 10px;
-    margin-left: 10px;
+  font: normal 15px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #494a51;
+  opacity: 1;
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 10px;
 }
 
-
 .healthCareIndustriesHeader {
-    background: #d3d0f6 0% 0% no-repeat padding-box;
-    font-weight: normal;
-    height: 50px;
-    width: 100%;
-    border-radius: 6px;
-    margin-top: 2px;
-    align-items: center;
-    display: flex;
-    display: grid;
-    grid-template-columns: 3% 88% 5% 5%;
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 50px;
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 2px;
+  align-items: center;
+  display: flex;
+  display: grid;
+  grid-template-columns: 3% 88% 5% 5%;
 }
 
 .holidayFolderHeader {
-    background: #d3d0f6 0% 0% no-repeat padding-box;
-    font-weight: normal;
-    height: 45px;
-    width: 99.5%;
-    border-radius: 6px;
-    margin-top: 2px;
-    align-items: center;
-    display: flex;
-    display: grid;
-    grid-template-columns: 3% 88% 5% 5%;
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 45px;
+  width: 99.5%;
+  border-radius: 6px;
+  margin-top: 2px;
+  align-items: center;
+  display: flex;
+  display: grid;
+  grid-template-columns: 3% 88% 5% 5%;
 }
 
 .contractedServiceHeader {
-    background: #afa9ef 0% 0% no-repeat padding-box;
-    font-weight: medium;
-    height: 55px;
-    width: 65vw;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 3% 47% 20% 20% 10%;
+  background: #afa9ef 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  height: 55px;
+  width: 65vw;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 3% 47% 20% 20% 10%;
 }
 
 .terminationHeader {
-    background: #d3d0f6 0% 0% no-repeat padding-box;
-    font-weight: normal;
-    height: 45px;
-    width: 100%;
-    border-radius: 6px;
-    margin-top: 5px;
-    align-items: center;
-    display: flex;
-    display: grid;
-    grid-template-columns: 3% 88% 5% 5%;
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 45px;
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 5px;
+  align-items: center;
+  display: flex;
+  display: grid;
+  grid-template-columns: 3% 88% 5% 5%;
 }
 
 .terminationHeader2 {
-    background: #d3d0f6 0% 0% no-repeat padding-box;
-    font-weight: normal;
-    height: 45px;
-    width: 98%;
-    border-radius: 6px;
-    margin-top: 1.5px;
-    align-items: center;
-    display: flex;
-    display: grid;
-    grid-template-columns: 3% 88% 5% 5%;
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 45px;
+  width: 98%;
+  border-radius: 6px;
+  margin-top: 1.5px;
+  align-items: center;
+  display: flex;
+  display: grid;
+  grid-template-columns: 3% 88% 5% 5%;
 }
 
-
 .healthCareTableData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 5px;
-    grid-template-columns: 61% 15% 15% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 96%;
+  margin-left: 2%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 61% 15% 15% 5% 5%;
 }
 
 .departmentTableData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    border: 0.20000000298023224px solid #d7d4f7;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 4px;
-    grid-template-columns: 3% 58% 15% 15% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 96%;
+  margin-left: 2%;
+  border: 0.20000000298023224px solid #d7d4f7;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 4px;
+  grid-template-columns: 3% 58% 15% 15% 5% 5%;
 }
 
 .terminationLayer3Card {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 98%;
-    margin-left: 2%;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 5px;
-    grid-template-columns: 3% 58% 15% 15% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 98%;
+  margin-left: 2%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 3% 58% 15% 15% 5% 5%;
 }
 
 .absenseLayer3Card {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 98%;
-    margin-left: 2%;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 5px;
-    grid-template-columns: 3% 40% 47% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 98%;
+  margin-left: 2%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 3% 40% 47% 5% 5%;
 }
 
 .proofLayer3Card {
-    background: #d3d0f6 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 100%;
-    border-radius: 10px;
-    border: 1px solid #d3d0f6;
-    display: grid;
-    margin-top: 5px;
-    align-items: center;
-    grid-template-columns: 1% 40% 45% 5% 5% 5%;
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #d3d0f6;
+  display: grid;
+  margin-top: 5px;
+  align-items: center;
+  grid-template-columns: 1% 40% 45% 5% 5% 5%;
 }
 
 .contractedServiceLayer3Card {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 98%;
-    margin-left: 2%;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 5px;
-    grid-template-columns: 50% 20% 20% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 98%;
+  margin-left: 2%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 50% 20% 20% 5% 5%;
 }
 
 .DocumentUploadLayer3Card {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    margin-right: 2%;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 5px;
-    grid-template-columns: 60% 15% 15% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 96%;
+  margin-left: 2%;
+  margin-right: 2%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 60% 15% 15% 5% 5%;
 }
 
 .contractdocumentLayer3Card {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    margin-right: 2%;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 5px;
-    grid-template-columns: 50% 20% 20% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 96%;
+  margin-left: 2%;
+  margin-right: 2%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 50% 20% 20% 5% 5%;
 }
-
 
 .tableHeaderDocumentUpload {
-    background: #afa9ef 0% 0% no-repeat padding-box;
-    font-weight: medium;
-    //margin-left: 50px;
-    height: 55px;
-    width: 100%;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 56% 15% 15% 10% 10%;
+  background: #afa9ef 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  //margin-left: 50px;
+  height: 55px;
+  width: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 56% 15% 15% 10% 10%;
 }
-
 
 .width75Percent {
-    width: 75%;
+  width: 75%;
 }
-
 
 .departmentTableInnerFolderData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 93%;
-    margin-left: 5%;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 5px;
-    grid-template-columns: 2% 58% 15% 16% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 93%;
+  margin-left: 5%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 2% 58% 15% 16% 5% 5%;
 }
 
-
 .terminationInnerFolderData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 95%;
-    margin-left: 5%;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 5px;
-    grid-template-columns: 2% 58% 15% 16% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 95%;
+  margin-left: 5%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 2% 58% 15% 16% 5% 5%;
 }
 
 .healthCareTableDataColor1 {
-    background-color: #ebe9fb;
+  background-color: #ebe9fb;
 }
 
 .healthCareTableDataColor2 {
-    background-color: #F5F5F8;
+  background-color: #f5f5f8;
 }
 
 .healthCareTableDataColor3 {
-    background-color: #D3D0F6;
+  background-color: #d3d0f6;
 }
 
-
 .tableDataFontStyle {
-    font: normal normal normal 15px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #484c51;
-    opacity: 1;
-    margin-left: 15px;
-    text-align: left;
-    margin-top: 10px;
+  font: normal normal normal 15px/17px Montserrat;
+  letter-spacing: 0px;
+  color: #484c51;
+  opacity: 1;
+  margin-left: 15px;
+  text-align: left;
+  margin-top: 10px;
 }
 
 .tableDataFontStyle1 {
-    font: normal normal normal 15px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #484c51;
-    opacity: 1;
-    margin-top: 10px;
-    text-align: left;
-    margin-left: 10px;
+  font: normal normal normal 15px/17px Montserrat;
+  letter-spacing: 0px;
+  color: #484c51;
+  opacity: 1;
+  margin-top: 10px;
+  text-align: left;
+  margin-left: 10px;
 }
 
-
 .poweredBy {
-    text-align: left;
-    font: normal normal normal 11px/14px Montserrat;
-    letter-spacing: 0px;
-    color: #7165E3;
-    opacity: 1;
-    margin: 5px 0 0 10px;
+  text-align: left;
+  font: normal normal normal 11px/14px Montserrat;
+  letter-spacing: 0px;
+  color: #7165e3;
+  opacity: 1;
+  margin: 5px 0 0 10px;
 }
 
 .healthCareDialogStyle {
-    height: 80%;
-    width: 50% !important;
-    border-radius: 20px;
+  height: 80%;
+  width: 50% !important;
+  border-radius: 20px;
 }
 
 .healthCarePodDialogStyle {
-    width: 80% !important;
-    border-radius: 20px;
+  width: 80% !important;
+  border-radius: 20px;
 }
 
 .dialogPaddingBottom {
-    padding-bottom: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .extensionDialogBackground {
-    background-color: white;
-    margin: -20px !important;
-    padding: 40px;
-    border-radius: 10px;
+  background-color: white;
+  margin: -20px !important;
+  padding: 40px;
+  border-radius: 10px;
 }
 
 .extensionStyle {
-    text-align: left;
-    font: normal normal bold 18px/20px Montserrat;
-    letter-spacing: 0px;
-    color: #7165E3;
-    text-transform: capitalize;
-    opacity: 1;
+  text-align: left;
+  font: normal normal bold 18px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #7165e3;
+  text-transform: capitalize;
+  opacity: 1;
 }
 
 .dialogTitleStyle {
-    text-align: left;
-    font: normal normal bold 20px/18px Montserrat;
-    letter-spacing: 0px;
-    color: #7165E3;
-    text-transform: capitalize;
+  text-align: left;
+  font: normal normal bold 20px/18px Montserrat;
+  letter-spacing: 0px;
+  color: #7165e3;
+  text-transform: capitalize;
 }
 
 .extentionGrid {
-    display: grid;
-    grid-template-columns: 1fr 2.5fr;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr 2.5fr;
+  grid-gap: 20px;
 }
 
 .podGrid {
-    display: grid;
-    grid-template-columns: 100px 1fr;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  grid-gap: 20px;
 }
 
 .extentionLableStyle {
-    text-align: left;
-    font: normal normal normal 13px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #B3B8BD;
-    text-transform: capitalize;
-    opacity: 1;
-    margin-top: 5px;
+  text-align: left;
+  font: normal normal normal 13px/17px Montserrat;
+  letter-spacing: 0px;
+  color: #b3b8bd;
+  text-transform: capitalize;
+  opacity: 1;
+  margin-top: 5px;
 }
 
 .peachCard {
-    background-color: #fde7e7;
+  background-color: #fde7e7;
 }
 
 .peachDataStyle {
-    text-align: center;
-    font: normal normal medium 17px/21px Montserrat;
-    letter-spacing: 2.04px;
-    color: #BC666E;
-    text-transform: lowercase;
-    padding: 5px;
+  text-align: center;
+  font: normal normal medium 17px/21px Montserrat;
+  letter-spacing: 2.04px;
+  color: #bc666e;
+  text-transform: lowercase;
+  padding: 5px;
 }
 
 .dialogCrossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
-    margin-bottom: 15px;
-    cursor: pointer;
+  color: linear-gradient(#7165e3, #ff6562) !important;
+  margin-bottom: 15px;
+  cursor: pointer;
 }
 
 .crossStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
-    margin-bottom: 25px;
-    cursor: pointer;
-    position: absolute;
-    right: 30px;
+  color: linear-gradient(#7165e3, #ff6562) !important;
+  margin-bottom: 25px;
+  cursor: pointer;
+  position: absolute;
+  right: 30px;
 }
 
 .crossColor {
-    font-size: 32px;
-    color: #9c47fc;
-    display: block;
-    background: -webkit-linear-gradient(#9c47fc, #FF6562);
-    background-clip: text;
+  font-size: 32px;
+  color: #9c47fc;
+  display: block;
+  background: -webkit-linear-gradient(#9c47fc, #ff6562);
+  background-clip: text;
 }
 
-
-
 .ReferenceListEntityBorder {
-    background-color: #EBF2F7;
-    height: 3px;
+  background-color: #ebf2f7;
+  height: 3px;
 }
 
 .addHealthCareBoxStyle {
-    border: 1px solid #d4d0fb;
-    border-radius: 8px;
-    width: 100%;
-    margin-top: 20px;
-    padding: 20px;
+  border: 1px solid #d4d0fb;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 20px;
 }
 
 .addHealthCareBoxStyle1 {
-    border: 1px solid #d4d0fb;
-    border-radius: 8px;
-    width: 100%;
-    margin-top: 20px;
-    padding: 10px;
+  border: 1px solid #d4d0fb;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px;
 }
 
-
-
-
 .addIndustryBoxStyle {
-    border: 1px solid #d4d0fb;
-    border-radius: 8px;
-    width: 100%;
-    padding: 20px;
-    height: 200px;
+  border: 1px solid #d4d0fb;
+  border-radius: 8px;
+  width: 100%;
+  padding: 20px;
+  height: 200px;
 }
 
 .podHealthCareBoxStyle {
-    border: 1px solid #d4d0fb;
-    border-radius: 8px;
-    width: 100%;
+  border: 1px solid #d4d0fb;
+  border-radius: 8px;
+  width: 100%;
 }
 
 .podHeader {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #7165E3;
-    border-radius: 6px;
-    height: 40px;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 30% 15% 15% 20% 15%;
+  background: #beb9f2 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #7165e3;
+  border-radius: 6px;
+  height: 40px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 30% 15% 15% 20% 15%;
 }
 
 .podInnerBoxGrid {
-    display: grid;
-    grid-template-columns: 30% 15% 15% 15% 15%;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 30% 15% 15% 15% 15%;
+  grid-gap: 20px;
 }
 
 .podInnerBoxBody {
-    box-shadow: 0px 3px 6px #00000029;
-    border: 0.4000000059604645px solid #CAC6EC;
-    border-radius: 0 0 8px 8px;
-    margin: 0 5px;
-    padding: 20px;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.4000000059604645px solid #cac6ec;
+  border-radius: 0 0 8px 8px;
+  margin: 0 5px;
+  padding: 20px;
 }
 
 .radioStyle {
-    background: #BCB3B1 0% 0% no-repeat padding-box;
-    box-shadow: 0px 1px 3px #11111112;
-    border-radius: 50%;
-    height: 17px;
-    width: 17px;
-    cursor: pointer;
+  background: #bcb3b1 0% 0% no-repeat padding-box;
+  box-shadow: 0px 1px 3px #11111112;
+  border-radius: 50%;
+  height: 17px;
+  width: 17px;
+  cursor: pointer;
 }
 
 .activeRadioStyle {
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 1px 3px #11111112;
-    border-radius: 50%;
-    height: 17px;
-    width: 17px;
-    cursor: pointer;
+  background: #7165e3 0% 0% no-repeat padding-box;
+  box-shadow: 0px 1px 3px #11111112;
+  border-radius: 50%;
+  height: 17px;
+  width: 17px;
+  cursor: pointer;
 }
 
 .radioTextStyle {
-    text-align: left;
-    font: normal normal medium 18px/20px Montserrat;
-    letter-spacing: 0px;
-    color: #656565;
+  text-align: left;
+  font: normal normal medium 18px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #656565;
 }
 
 .podInnerBoxHeader {
-    background: #F0EEEE 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #CAC6EC;
-    border-radius: 0px 6px 0px 0px;
-    margin: 5px 5px 0 0;
-    padding: 5px 0;
+  background: #f0eeee 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #cac6ec;
+  border-radius: 0px 6px 0px 0px;
+  margin: 5px 5px 0 0;
+  padding: 5px 0;
 }
 
 .podCountStyle {
-    text-align: center;
-    font: normal normal 600 28px/34px Montserrat;
-    width: 50px;
-    color: #7165E3;
-    text-transform: uppercase;
+  text-align: center;
+  font: normal normal 600 28px/34px Montserrat;
+  width: 50px;
+  color: #7165e3;
+  text-transform: uppercase;
 }
 
 .podHeaderTextStyle {
-    text-align: center;
-    font: normal normal bold 15px/17px Montserrat;
-    letter-spacing: 2.4px;
-    color: #52575D;
-    text-transform: uppercase;
+  text-align: center;
+  font: normal normal bold 15px/17px Montserrat;
+  letter-spacing: 2.4px;
+  color: #52575d;
+  text-transform: uppercase;
 }
 
 .fieldBoxStyle {
-    border: 0.800000011920929px solid #CECAF5;
-    padding: 10px;
+  border: 0.800000011920929px solid #cecaf5;
+  padding: 10px;
 }
 
 .podFieldWidth {
-    width: 210px;
+  width: 210px;
 }
 
 .podIconStyle {
-    height: 17px;
-    width: 17px;
+  height: 17px;
+  width: 17px;
 }
 
 .podPreviewIconStyle {
-    height: 25px;
-    width: 25px;
-    object-fit: contain;
+  height: 25px;
+  width: 25px;
+  object-fit: contain;
 }
 
 .podTextGrid {
-    display: grid;
-    grid-template-columns: 90px 1fr;
+  display: grid;
+  grid-template-columns: 90px 1fr;
 }
 
 .podToggleGrid {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
 }
 
 .chooseFileButton {
-    background: #E5E6E7 0% 0% no-repeat padding-box;
-    border: 1px solid #E9E9F0;
-    border-radius: 4px;
-    padding: 7px 10px;
-    color: #7165E3;
+  background: #e5e6e7 0% 0% no-repeat padding-box;
+  border: 1px solid #e9e9f0;
+  border-radius: 4px;
+  padding: 7px 10px;
+  color: #7165e3;
 }
 
 .addNewDataButton {
-    background: #F0EEEE 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #CECAF5;
-    border-radius: 6px;
-    color: #7165E3;
-    width: 100%;
-    padding: 10px 0;
-    text-align: center;
+  background: #f0eeee 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #cecaf5;
+  border-radius: 6px;
+  color: #7165e3;
+  width: 100%;
+  padding: 10px 0;
+  text-align: center;
 }
 
 .nestedDataCard {
-    background: #F2F1FC 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 6px #00000029;
-    border-radius: 5px;
-    padding: 10px;
-    width: 150px;
-    position: absolute;
-    right: 15%;
-    z-index: 99;
-    margin-top: -20px;
+  background: #f2f1fc 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 5px;
+  padding: 10px;
+  width: 150px;
+  position: absolute;
+  right: 15%;
+  z-index: 99;
+  margin-top: -20px;
 }
 
 .nestedDataTextStyle {
-    text-align: left;
-    font: normal normal medium 16px/16px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    text-transform: capitalize;
-    cursor: pointer;
+  text-align: left;
+  font: normal normal medium 16px/16px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  text-transform: capitalize;
+  cursor: pointer;
 }
 
 .nestedDataTextStyle:hover {
-    color: #7165E3;
+  color: #7165e3;
 }
 
 .nestedCardReducedPadding {
-    margin: 0 -20px;
+  margin: 0 -20px;
 }
 
 .cursorPointer {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .editHealthCareGrid1 {
-    display: grid;
-    width: 950px;
-    grid-template-columns: 5fr 15fr 7fr 2fr;
-    grid-gap: 20px;
+  display: grid;
+  width: 950px;
+  grid-template-columns: 5fr 15fr 7fr 2fr;
+  grid-gap: 20px;
 }
 
 .editHealthCareGrid2 {
-    display: grid;
-    grid-template-columns: 170px 1fr;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  grid-gap: 20px;
 }
 
 .absenseCareGrid2 {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  grid-gap: 20px;
 }
 
 .editHealthCareGrid3 {
-    display: grid;
-    grid-template-columns: 14% 50%;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 14% 50%;
+  grid-gap: 20px;
 }
 
 .editFunctionalTitlesGrid {
-    display: grid;
-    grid-template-columns: 100px 1fr 1fr;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr;
+  grid-gap: 20px;
 }
 
 .entityLableStyle {
-    text-align: left;
-    font: normal normal normal 13px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #B3B8BD;
-    margin-top: 5px;
+  text-align: left;
+  font: normal normal normal 13px/17px Montserrat;
+  letter-spacing: 0px;
+  color: #b3b8bd;
+  margin-top: 5px;
 }
 
 .entityLableStyle1 {
-    text-align: left;
-    font: normal normal medium 20px/24px Proxima Nova;
-    letter-spacing: 0px;
-    color: #52575D;
-    opacity: 0.5;
+  text-align: left;
+  font: normal normal medium 20px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575d;
+  opacity: 0.5;
 }
 
 .fullWidth {
-    width: 100% !important;
+  width: 100% !important;
 }
 
-
-
 .halfWidth {
-    width: 70%;
+  width: 70%;
 }
 
 .width50 {
-    width: 50%;
+  width: 50%;
 }
 
 .width150 {
-    width: 120%;
+  width: 120%;
 }
 
 .width25 {
-    width: 20%;
+  width: 20%;
 }
 
 .width34 {
-    width: 34%;
+  width: 34%;
 }
 
 .floatRight {
-    float: right;
+  float: right;
 }
 
-
-
 .outlinedButton {
-    background-color: white;
-    color: #7165E3;
-    border: 1px solid #9c93eb;
-    height: 40px;
-    width: 140px;
-    border-radius: 10px;
-    margin-bottom: -20px;
+  background-color: white;
+  color: #7165e3;
+  border: 1px solid #9c93eb;
+  height: 40px;
+  width: 140px;
+  border-radius: 10px;
+  margin-bottom: -20px;
+  cursor: pointer;
 }
 
 .buttonStyle {
-    background-color: #7165E3;
-    color: white;
-    border: 1px solid #7165E3;
-    height: 40px;
-    width: 140px;
-    border-radius: 10px;
-    margin-bottom: -20px;
+  background-color: #7165e3;
+  color: white;
+  border: 1px solid #7165e3;
+  height: 40px;
+  width: 140px;
+  border-radius: 10px;
+  margin-bottom: -20px;
+  cursor: pointer;
 }
 
 .buttonStyle2 {
-    background-color: #7165E3;
-    color: white;
-    border: 1px solid #7165E3;
-    font: normal normal bold 16px/17px Montserrat;
-    letter-spacing: 1.5px;
-    height: 40px;
-    width: 150px;
-    border-radius: 5px;
-    margin-top: 10px;
-    margin-bottom: -20px;
-    padding: 2px;
+  background-color: #7165e3;
+  color: white;
+  border: 1px solid #7165e3;
+  font: normal normal bold 16px/17px Montserrat;
+  letter-spacing: 1.5px;
+  height: 40px;
+  width: 150px;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: -20px;
+  padding: 2px;
 }
 
 .healthCareListData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 20%;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 5px;
-    grid-template-columns: 80% 20%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 20%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 80% 20%;
 }
 
 .healthCareListFontStyle {
-    font: normal normal medium 13px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    opacity: 1;
-    margin-left: 20px;
-    text-align: left;
-    margin-top: 10px;
+  font: normal normal medium 13px/17px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  opacity: 1;
+  margin-left: 20px;
+  text-align: left;
+  margin-top: 10px;
 }
 
 .departmentWarningCardStyle {
-    height: calc(100vh - 450px);
-    width: 65vw;
-    overflow: scroll;
-    box-shadow: 0px 3px 6px #00000029;
-    border: 1px solid #ff9996;
-    border-radius: 10px;
-    padding: 5px;
+  height: calc(100vh - 450px);
+  width: 65vw;
+  overflow: scroll;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 1px solid #ff9996;
+  border-radius: 10px;
+  padding: 5px;
 }
 
 .departmentCardColumnsGrid {
-    display: grid;
-    grid-template-columns: 1fr 3fr;
-    grid-gap: 20px;
-    margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-gap: 20px;
+  margin-top: 20px;
 }
 
 .healthCardRowsGrid {
-    display: grid;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    grid-gap: 5px;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-gap: 5px;
 }
 
 .healthCareListHeader {
-    background: #ffffff 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 6px #00000045;
-    border: 1px solid #c4bef3;
-    font-weight: normal;
-    height: 60px;
-    width: 23vw;
-    border-radius: 4px;
-    margin-top: 1%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 7% 80% 10%;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000045;
+  border: 1px solid #c4bef3;
+  font-weight: normal;
+  height: 60px;
+  width: 23vw;
+  border-radius: 4px;
+  margin-top: 1%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 7% 80% 10%;
 }
 
 .HealthCareListBackground1 {
-    background: #ffffff 0% 0% no-repeat padding-box;
-    display: grid;
-    grid-template-columns: 12% 78% 10% 5%;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  display: grid;
+  grid-template-columns: 12% 78% 10% 5%;
 }
 
 .healthCareHeaderTextStyle {
-    font: normal normal 600 20px/30px Montserrat;
-    letter-spacing: 3.05px;
-    color: #6D6D6D;
-    text-align: left;
-    margin-top: 10px;
-    margin-left: 10px;
-    text-transform: uppercase;
+  font: normal normal 600 20px/22px Montserrat;
+  letter-spacing: 3.05px;
+  color: #6d6d6d;
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 10px;
+  text-transform: uppercase;
 }
 
 .healthCareHeaderTextStyle2 {
-    font: normal normal 600 15px/20px Montserrat;
-    letter-spacing: 0px;
-    color: #6D6D6D;
-    text-align: left;
-    text-transform: uppercase;
-    margin-top: 10px;
-    margin-left: 10px;
+  font: normal normal 600 15px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #6d6d6d;
+  text-align: left;
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-left: 10px;
 }
 
 .healthCareListCardStyle {
-    background: #EFEEFC 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 6px #bfbfbf;
-    border: 0.4000000059604645px solid #beb8f9;
-    border-radius: 3px;
-    height: 60px;
-    padding: 0 20px;
-    text-align: left;
+  background: #efeefc 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #bfbfbf;
+  border: 0.4000000059604645px solid #beb8f9;
+  border-radius: 3px;
+  height: 60px;
+  padding: 0 20px;
+  text-align: left;
 }
 
 .healthCareLeftCardFontStyle {
-    font: normal normal normal 18px/25px Montserrat;
-    letter-spacing: 0px;
+  font: normal normal normal 18px/25px Montserrat;
+  letter-spacing: 0px;
 }
 
 .HealthCareListBackground2 {
-    background: #D3D0F6 0% 0% no-repeat padding-box;
-    font: normal normal bold 18px/25px Montserrat;
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  font: normal normal bold 18px/25px Montserrat;
 }
 
 .DepartmentEntityCardStyle {
-    box-shadow: 0px 3px 6px #00000029;
-    border: 0.20000000298023224px solid #d7d4f7;
-    border-radius: 10px;
-    padding: 5px;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.20000000298023224px solid #d7d4f7;
+  border-radius: 10px;
+  padding: 5px;
 }
 
 .warningImage {
-    margin-top: 20px;
-    height: 80px;
-    width: 80px;
+  margin-top: 20px;
+  height: 80px;
+  width: 80px;
 }
 
 .warningFontContainer {
-    margin-top: 50px;
-    display: flex;
-    align-items: center;
-    width: 400px;
+  margin-top: 50px;
+  display: flex;
+  align-items: center;
+  width: 400px;
 }
 
 .warningFont {
-    font-size: 20px;
-    text-align: left;
+  font-size: 20px;
+  text-align: left;
 }
 
 .emptyCradStyle {
-    border: 0.20000000298023224px solid #FFA4A4;
-    padding: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  border: 0.20000000298023224px solid #ffa4a4;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .justifyCenter {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .holidayRightCardStyle {
-    box-shadow: 0px 3px 6px #00000029;
-    border: 0.20000000298023224px solid #d7d4f7;
-    border-radius: 10px;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.20000000298023224px solid #d7d4f7;
+  border-radius: 10px;
 }
 
 .boardCertificationSideRows2 {
-    background: #a097f5  0% 0% no-repeat padding-box;
-    font-weight: normal;
-    height: 50px;
-    width: 92.5%;
-    border-radius: 6px;
-    margin-top: 1%;
-    margin-left: 2%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 7% 84% 5%;
+  background: #a097f5 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 50px;
+  width: 92.5%;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 2%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 7% 84% 5%;
 }
 
-
 .boardCertificationSideRows1 {
-    background: #a097f5  0% 0% no-repeat padding-box;
-    font-weight: normal;
-    height: 50px;
-    width: 90%;
-    border-radius: 6px;
-    margin-top: 1%;
-    margin-left: 2%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 7% 84% 5%;
+  background: #a097f5 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 50px;
+  width: 90%;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 2%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 7% 84% 5%;
 }
 
 .boardCertificationSideRows {
-    background: #CECAF5 0% 0% no-repeat padding-box;
-    font-weight: normal;
-    height: 50px;
-    width: 90%;
-    border-radius: 6px;
-    margin-top: 1%;
-    margin-left: 2%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 7% 84% 5%;
+  background: #cecaf5 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 50px;
+  width: 90%;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 2%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 7% 84% 5%;
 }
 
 .boardCertificationInnerFolderRows {
-    font-weight: normal;
-    min-height: 50px;
-    height: 50px;
-    width: 83%;
-    border: 0.4000000059604645px solid #887ee7af;
-    opacity: 1;
-    border-radius: 6px;
-    margin-top: 1%;
-    margin-left: 8%;
-    align-items: center;
+  font-weight: normal;
+  min-height: 50px;
+  height: 50px;
+  width: 83%;
+  border: 0.4000000059604645px solid #887ee7af;
+  opacity: 1;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 8%;
+  align-items: center;
 }
 
 .HolidayListInnerFolderRows {
-    font-weight: normal;
-    min-height: 50px;
-    height: 50px;
-    width: 82%;
-    border: 0.4000000059604645px solid #d7d4f7;
-    opacity: 1;
-    border-radius: 6px;
-    margin-top: 1%;
-    margin-left: 10%;
-    align-items: center;
+  font-weight: normal;
+  min-height: 50px;
+  height: 50px;
+  width: 82%;
+  border: 0.4000000059604645px solid #d7d4f7;
+  opacity: 1;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 10%;
+  align-items: center;
 }
 
 .boardCertificationBackground1 {
-    background: #d3d0f6 0% 0% no-repeat padding-box;
-    display: grid;
-    grid-template-columns: 7% 80% 10%;
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  display: grid;
+  grid-template-columns: 7% 80% 10%;
 }
 
 .boardCertificationTextStyle1 {
-    text-align: left;
-    font: normal normal bold 18px/21px Montserrat;
-    letter-spacing: 0px;
-    color: #333131;
-    text-transform: uppercase;
-    margin-top: 10px;
+  text-align: left;
+  font: normal normal bold 18px/21px Montserrat;
+  letter-spacing: 0px;
+  color: #333131;
+  text-transform: uppercase;
+  margin-top: 10px;
 }
 
 .boardCertificationTextStyle2 {
-    text-align: left;
-    font: normal normal normal 16px/20px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-
+  text-align: left;
+  font: normal normal normal 16px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
 }
 
 .TextStyle1 {
-    text-align: left;
-    font: normal normal normal 14px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    margin-top: 5px;
+  text-align: left;
+  font: normal normal normal 14px/17px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  margin-top: 5px;
 }
 
-
 .TextStyle2 {
-    text-align: left;
-    font: normal normal normal 14px/17px Proxima Nova;
-    letter-spacing: 0px;
-    color: #050505;
-    margin-top: 5px;
+  text-align: left;
+  font: normal normal normal 14px/17px Proxima Nova;
+  letter-spacing: 0px;
+  color: #050505;
+  margin-top: 5px;
 }
 
 .TextStyle3 {
-    text-align: left;
-    font: normal normal bold 12px/15px Montserrat;
-    letter-spacing: 0.7px;
-    color: white;
-    margin-top: 5px;
+  text-align: left;
+  font: normal normal bold 12px/15px Montserrat;
+  letter-spacing: 0.7px;
+  color: white;
+  margin-top: 5px;
 }
 
 .TextStyle4 {
-    text-align: left;
-    font: normal normal normal 14px/28px Proxima Nova;
-    letter-spacing: 0px;
-    color: #050505;
-    margin-top: 5px;
-    width: 352px;
-    height: 24px;
+  text-align: left;
+  font: normal normal normal 14px/28px Proxima Nova;
+  letter-spacing: 0px;
+  color: #050505;
+  margin-top: 5px;
+  width: 352px;
+  height: 24px;
 }
 
-
 .holidayScheduleLeftCardTextStyle {
-    text-align: left;
-    font: normal normal normal 12px/15px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    margin-top: 5px;
+  text-align: left;
+  font: normal normal normal 12px/15px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  margin-top: 5px;
 }
 
 .holidayScheduleLeftCardTextStyle1 {
-    text-align: left;
-    font: normal normal normal 15px/28px Proxima Nova;
-    letter-spacing: 0px;
-    color: #050505;
-    opacity: 1;
+  text-align: left;
+  font: normal normal normal 15px/28px Proxima Nova;
+  letter-spacing: 0px;
+  color: #050505;
+  opacity: 1;
 }
 
 .dialogInputTextValue {
-    text-align: left;
-    font: normal normal medium 20px/24px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
+  text-align: left;
+  font: normal normal medium 20px/24px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
 }
 
 .tableHeaderFuntionalTitles {
-    background: #afa9ef 0% 0% no-repeat padding-box;
-    font-weight: medium;
-    height: 45px;
-    width: 100%;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 5% 35% 20% 18% 20% 10%;
+  background: #afa9ef 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  height: 45px;
+  width: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 5% 35% 20% 18% 20% 10%;
 }
 
 .FuntionalTitlesTableData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 5px;
-    grid-template-columns: 2% 30% 25% 22% 12% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 96%;
+  margin-left: 2%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 2% 30% 25% 22% 12% 5% 5%;
 }
 
 .textColorBlue {
-    color: #7968e3;
+  color: #7968e3;
 }
 
 .tableHeaderTwoColumnsfrontRear {
-    background: #afa9ef 0% 0% no-repeat padding-box;
-    font-weight: medium;
-    height: 55px;
-    width: 100%;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 95% 5%;
+  background: #afa9ef 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  height: 55px;
+  width: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 95% 5%;
 }
 
 .holidayScheduleTableData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #C4C8D066;
-    min-height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    border-radius: 4px;
-    display: grid;
-    align-items: center;
-    margin-top: 4px;
-    grid-template-columns: 3% 30% 15% 10% 15% 18% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #c4c8d066;
+  min-height: 50px;
+  width: 96%;
+  margin-left: 2%;
+  border-radius: 4px;
+  display: grid;
+  align-items: center;
+  margin-top: 4px;
+  grid-template-columns: 3% 30% 15% 10% 15% 18% 5% 5%;
 }
 
 .holidayScheduleTableData1 {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #C4C8D066;
-    min-height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    border-radius: 4px;
-    display: grid;
-    align-items: center;
-    margin-top: 4px;
-    grid-template-columns: 20% 30% 20% 20% 5% 5%;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #c4c8d066;
+  min-height: 50px;
+  width: 96%;
+  margin-left: 2%;
+  border-radius: 4px;
+  display: grid;
+  align-items: center;
+  margin-top: 4px;
+  grid-template-columns: 20% 30% 20% 20% 5% 5%;
 }
 
 .holidayScheduleTableData2 {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #C4C8D066;
-    min-height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    border-radius: 4px;
-    display: grid;
-    align-items: center;
-    margin-top: 4px;
-    grid-template-columns: 3%  20% 35% 15% 23% 5% ;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #c4c8d066;
+  min-height: 50px;
+  width: 96%;
+  margin-left: 2%;
+  border-radius: 4px;
+  display: grid;
+  align-items: center;
+  margin-top: 4px;
+  grid-template-columns: 3% 20% 35% 15% 23% 5%;
 }
 
 .AddCompanyHolidayGrid1 {
-    display: grid;
-    grid-template-columns: 170px 1fr 1fr;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 170px 1fr 1fr;
+  grid-gap: 20px;
 }
 
 .entityLableStyle2 {
-    text-align: left;
-    font: normal normal normal 13px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #B3B8BD;
-    opacity: 1;
+  text-align: left;
+  font: normal normal normal 13px/17px Montserrat;
+  letter-spacing: 0px;
+  color: #b3b8bd;
+  opacity: 1;
 }
 
 .holidayScheduleHeadertextStyle1 {
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-    font: normal normal bold 18px/24px Proxima Nova;
-    letter-spacing: 2.4px;
-    color: #303236;
-    text-transform: uppercase;
-    opacity: 1;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  font: normal normal bold 18px/24px Proxima Nova;
+  letter-spacing: 2.4px;
+  color: #303236;
+  text-transform: uppercase;
+  opacity: 1;
 }
 
 .holidayScheduleHeader1 {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #7165E3;
-    border-radius: 6px;
-    opacity: 0.75;
-    height: 50px;
-    width: 100%;
+  background: #beb9f2 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #7165e3;
+  border-radius: 6px;
+  opacity: 0.75;
+  height: 50px;
+  width: 100%;
 }
 
 .holidayScheduleCardtextStyle1 {
-    padding: 50px;
-    font: normal normal normal 20px/24px Montserrat;
-    letter-spacing: 0px;
-    color: #D8D8D8;
-    opacity: 1;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-
+  padding: 50px;
+  font: normal normal normal 20px/24px Montserrat;
+  letter-spacing: 0px;
+  color: #d8d8d8;
+  opacity: 1;
+  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .customersAdminCardStyle1 {
-    height: calc(100vh - 300px);
-    width: 100%;
-    overflow: auto;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 6px #00000029;
-    border: 0.20000000298023224px solid #d7d4f7;
-    border-radius: 10px;
-    opacity: 1;
-    margin-top: 10px;
-    padding: 5px;
+  height: calc(100vh - 300px);
+  width: 100%;
+  overflow: auto;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.20000000298023224px solid #d7d4f7;
+  border-radius: 10px;
+  opacity: 1;
+  margin-top: 10px;
+  padding: 5px;
 }
 
 .customersAdminCardStyle2 {
-    height: 70px;
-    width: 100px;
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 11px #7165E3;
-    border-radius: 8px;
-    opacity: 1;
-    margin-top: 200px;
-    padding: 5px;
+  height: 70px;
+  width: 100px;
+  background: #7165e3 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 11px #7165e3;
+  border-radius: 8px;
+  opacity: 1;
+  margin-top: 200px;
+  padding: 5px;
 }
 
 .customersAdminCardStyle3 {
-    height: calc(100vh - 300px);
-    width: 100%;
-    overflow: scroll;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 6px #00000029;
-    border: 0.20000000298023224px solid #d7d4f7;
-    border-radius: 10px;
-    opacity: 1;
-    margin-top: 10px;
-    padding: 5px;
+  height: calc(100vh - 300px);
+  width: 100%;
+  overflow: scroll;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.20000000298023224px solid #d7d4f7;
+  border-radius: 10px;
+  opacity: 1;
+  margin-top: 10px;
+  padding: 5px;
 }
 
 .colorWhite {
-    color: #FFFFFF;
+  color: #ffffff;
 }
 
 .customersAdminOuterRowsStyle1 {
-    background: #CECAF5 0% 0% no-repeat padding-box;
-    font-weight: normal;
-    min-height: 50px;
-    height: 50px;
-    width: 87%;
-    border: 0.4000000059604645px solid #887ee7af;
-    border-radius: 6px;
-    opacity: 0.75;
-    margin-top: 3px;
-    margin-left: 5%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 10% 83% 7%;
-    padding: 10px;
+  background: #cecaf5 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  min-height: 50px;
+  height: 50px;
+  width: 87%;
+  border: 0.4000000059604645px solid #887ee7af;
+  border-radius: 6px;
+  opacity: 0.75;
+  margin-top: 3px;
+  margin-left: 5%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 10% 83% 7%;
+  padding: 10px;
 }
 
 .customersAdminInnerRowsStyle1 {
-    font-weight: normal;
-    min-height: 50px;
-    height: 50px;
-    width: 87%;
-    border: 0.4000000059604645px solid #887ee7af;
-    border-radius: 6px;
-    opacity: 0.75;
-    border-radius: 6px;
-    margin-top: 3px;
-    margin-left: 5%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 10% 50% 40%;
-    padding: 10px;
+  font-weight: normal;
+  min-height: 50px;
+  height: 50px;
+  width: 87%;
+  border: 0.4000000059604645px solid #887ee7af;
+  border-radius: 6px;
+  opacity: 0.75;
+  border-radius: 6px;
+  margin-top: 3px;
+  margin-left: 5%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 10% 50% 40%;
+  padding: 10px;
 }
 
 .customersAdminInnerRowsStyle2 {
-    font-weight: normal;
-    min-height: 50px;
-    height: 50px;
-    width: 95%;
-    border: 0.4000000059604645px solid #887ee7af;
-    border-radius: 6px;
-    opacity: 0.75;
-    border-radius: 6px;
-    margin-top: 3px;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 10% 50% 40%;
-    padding: 10px;
+  font-weight: normal;
+  min-height: 50px;
+  height: 50px;
+  width: 95%;
+  border: 0.4000000059604645px solid #887ee7af;
+  border-radius: 6px;
+  opacity: 0.75;
+  border-radius: 6px;
+  margin-top: 3px;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 10% 50% 40%;
+  padding: 10px;
 }
 
 .customersAdminInnerRowsStyle3 {
-    font-weight: normal;
-    min-height: 50px;
-    height: 50px;
-    width: 87%;
-    border: 0.4000000059604645px solid #887ee7af;
-    border-radius: 6px;
-    opacity: 0.75;
-    border-radius: 6px;
-    margin-top: 3px;
-    margin-left: 8%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 10% 50% 40%;
-    padding: 10px;
+  font-weight: normal;
+  min-height: 50px;
+  height: 50px;
+  width: 87%;
+  border: 0.4000000059604645px solid #887ee7af;
+  border-radius: 6px;
+  opacity: 0.75;
+  border-radius: 6px;
+  margin-top: 3px;
+  margin-left: 8%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 10% 50% 40%;
+  padding: 10px;
 }
 
-
-
 .holidayInnerRowsStyle1 {
-    font-weight: normal;
-    min-height: 50px;
-    height: 50px;
-    width: 87%;
-    border: 0.4000000059604645px solid #887ee7af;
-    border-radius: 6px;
-    opacity: 0.75;
-    border-radius: 6px;
-    margin-top: 3px;
-    margin-left: 5%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 5% 95% 5% ;
-    padding: 10px;
+  font-weight: normal;
+  min-height: 50px;
+  height: 50px;
+  width: 87%;
+  border: 0.4000000059604645px solid #887ee7af;
+  border-radius: 6px;
+  opacity: 0.75;
+  border-radius: 6px;
+  margin-top: 3px;
+  margin-left: 5%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 5% 95% 5%;
+  padding: 10px;
 }
 
 .customersAdminInnerRowsStyleLightColor {
-    font-weight: normal;
-    min-height: 50px;
-    height: 50px;
-    width: 87%;
-    border: 0.4000000059604645px solid #887ee7af;
-    border-radius: 6px;
-    opacity: 0.75;
-    border-radius: 6px;
-    margin-top: 3px;
-    margin-left: 5%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 10% 50% 40%;
+  font-weight: normal;
+  min-height: 50px;
+  height: 50px;
+  width: 87%;
+  border: 0.4000000059604645px solid #887ee7af;
+  border-radius: 6px;
+  opacity: 0.75;
+  border-radius: 6px;
+  margin-top: 3px;
+  margin-left: 5%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 10% 50% 40%;
 }
 
 .customersAdminSideRows1 {
-    background: #CECAF5 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #c3bff3;
-    opacity: 0.88;
-    font-weight: normal;
-    height: 50px;
-    width: 87%;
-    border-radius: 6px;
-    margin-top: 1%;
-    margin-left: 5%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 7% 85% 8%;
+  background: #cecaf5 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #c3bff3;
+  opacity: 0.88;
+  font-weight: normal;
+  height: 50px;
+  width: 87%;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 5%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 7% 85% 8%;
 }
 
 .customersAdminSideRows2 {
-    background: #CECAF5 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #c3bff3;
-    opacity: 0.88;
-    font-weight: normal;
-    height: 50px;
-    width: 90%;
-    border-radius: 6px;
-    margin-top: 1%;
-    margin-left: 5%;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 7% 85% 8%;
+  background: #cecaf5 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #c3bff3;
+  opacity: 0.88;
+  font-weight: normal;
+  height: 50px;
+  width: 90%;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 5%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 7% 85% 8%;
 }
 
 .customersAdminBackground1 {
-    background: #c3bff3 0% 0% no-repeat padding-box;
+  background: #c3bff3 0% 0% no-repeat padding-box;
 }
 
 .customersAdminBackground2 {
-    background: #EFEEFC 0% 0% no-repeat padding-box;
+  background: #efeefc 0% 0% no-repeat padding-box;
 }
 
 .customersAdminBackground3 {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+  background: #f5f5f8 0% 0% no-repeat padding-box;
 }
 
-
-
 .customersAdminTableFontStyle {
-    text-align: left;
-    font: normal normal normal 18px/25px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    opacity: 1;
-    margin-top: 5px;
-    margin-left: 5px;
+  text-align: left;
+  font: normal normal normal 18px/25px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  opacity: 1;
+  margin-top: 5px;
+  margin-left: 5px;
 }
 
 .customersAdminTableFontStyle1 {
-    text-align: left;
-    font: normal normal normal 18px/25px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    opacity: 1;
-    margin-top: 5px;
-    margin-left: 25px;
+  text-align: left;
+  font: normal normal normal 18px/25px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  opacity: 1;
+  margin-top: 5px;
+  margin-left: 25px;
 }
 
-
 .customersAdminTableHeader1 {
-    background: #d3d0f6 0% 0% no-repeat padding-box;
-    font-weight: normal;
-    height: 47px;
-    width: 100%;
-    border-radius: 6px;
-    margin-top: 2px;
-    align-items: center;
-    display: flex;
-    display: grid;
-    grid-template-columns: 4% 87% 5% 5%;
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 47px;
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 2px;
+  align-items: center;
+  display: flex;
+  display: grid;
+  grid-template-columns: 4% 87% 5% 5%;
 }
 
 .customerAdminEntityHeader {
-    background: #a097f5 0% 0% no-repeat padding-box;
-    font-weight: medium;
-    height: 55px;
-    width: 100%;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    display: grid;
-    grid-template-columns: 5% 90%;
+  background: #a097f5 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  height: 55px;
+  width: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 5% 90%;
 }
 
 .customerAdminTableData3 {
-    min-height: 50px;
-    width: 90%;
-    margin-left: 10%;
-    border: 0.20000000298023224px solid #d7d4f7;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 4px;
-    grid-template-columns: 3% 58% 15% 15% 5% 5%;
+  min-height: 50px;
+  width: 90%;
+  margin-left: 10%;
+  border: 0.20000000298023224px solid #d7d4f7;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 4px;
+  grid-template-columns: 3% 58% 15% 15% 5% 5%;
 }
 
 .customerAdminTableHeader2 {
-    background: #d3d0f6 0% 0% no-repeat padding-box;
-    font-weight: normal;
-    height: 50px;
-    width: 93%;
-    border-radius: 6px;
-    margin-top: 2px;
-    margin-left: 4%;
-    align-items: center;
-    display: flex;
-    display: grid;
-    grid-template-columns: 3% 88% 5% 5%;
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 50px;
+  width: 93%;
+  border-radius: 6px;
+  margin-top: 2px;
+  margin-left: 4%;
+  align-items: center;
+  display: flex;
+  display: grid;
+  grid-template-columns: 3% 88% 5% 5%;
 }
 
 .customerAdminTableData {
-    min-height: 50px;
-    width: 87%;
-    margin-left: 10%;
-    border: 0.20000000298023224px solid #d7d4f7;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    margin-top: 4px;
-    grid-template-columns: 3% 58% 15% 15% 5% 5%;
+  min-height: 50px;
+  width: 87%;
+  margin-left: 10%;
+  border: 0.20000000298023224px solid #d7d4f7;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 4px;
+  grid-template-columns: 3% 58% 15% 15% 5% 5%;
 }
 
 .holidayScheduletabledataForCustomer {
-    min-height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    border-radius: 6px;
-    border: 0.20000000298023224px solid #d7d4f7;
-    display: grid;
-    align-items: center;
-    margin-top: 4px;
-    grid-template-columns: 3% 25% 30% 15% 18% 4% 4%;
+  min-height: 50px;
+  width: 96%;
+  margin-left: 2%;
+  border-radius: 6px;
+  border: 0.20000000298023224px solid #d7d4f7;
+  display: grid;
+  align-items: center;
+  margin-top: 4px;
+  grid-template-columns: 3% 25% 30% 15% 18% 4% 4%;
 }
 
 .customersAdminColumngrid1 {
-    display: grid;
-    grid-template-columns: 35% 8% 54%;
-    grid-gap: 20px;
-    margin-top: 20px;
+  display: grid;
+  grid-template-columns: 35% 8% 54%;
+  grid-gap: 20px;
+  margin-top: 20px;
 }
 
 .holidayScheduleHeader2 {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #9c93eb;
-    border-radius: 6px;
-    display: grid;
-    align-items: center;
-    opacity: 0.75;
-    height: 50px;
-    width: 100%;
-    grid-template-columns: 25% 45% 10%;
+  background: #beb9f2 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #9c93eb;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  opacity: 0.75;
+  height: 50px;
+  width: 100%;
+  grid-template-columns: 25% 45% 10%;
 }
 
 .linkStyle {
-    text-decoration: none !important;
+  text-decoration: none !important;
 }
-
 
 .shadowBox {
-    background-color: white;
-    padding-left: 10px;
-    padding-top: 3px;
-    padding-bottom: 10px;
-    margin-left: 15px;
-    margin-right: 15px;
-    border-radius: 10px;
+  background-color: white;
+  padding-left: 10px;
+  padding-top: 3px;
+  padding-bottom: 10px;
+  margin-left: 15px;
+  margin-right: 15px;
+  border-radius: 10px;
 }
 
-
 .DocumentUploadByHealth {
-    border: 1px solid #D8D8D8;
-    border-radius: 6px;
+  border: 1px solid #d8d8d8;
+  border-radius: 6px;
 }
 
 .specifyOtherBox {
-    background: white 0% 0% no-repeat padding-box;
-    box-shadow: #000000;
-    border: 1px solid #d7d4f7;
-    border-radius: 1px;
-    padding: 6px;
-
+  background: white 0% 0% no-repeat padding-box;
+  box-shadow: #000000;
+  border: 1px solid #d7d4f7;
+  border-radius: 1px;
+  padding: 6px;
 }
 
 .fontStyle {
-    font: normal normal bold 11px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    text-transform: uppercase;
-
+  font: normal normal bold 11px/17px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  text-transform: uppercase;
 }
 
-.transparentBackground{
-    background-color: transparent !important;
+.transparentBackground {
+  background-color: transparent !important;
+}
+
+.ArrowUp {
+  transform: rotate(180deg);
+}
+
+.listWrapper {
+  height: 0;
+  overflow: hidden;
+}
+
+.open {
+  height: auto;
+}
+
+.healthCareHeaderTextStyle3 {
+  font: normal normal 600 16px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #6d6d6d;
+  text-align: left;
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.countryGridStyle {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 16px;
+  padding: 16px;
+}
+
+.countryGridCol {
+  position: relative;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px rgb(196 200 208 / 40%);
+  border-radius: 8px;
+  border: 0.200000003px solid rgba(196, 200, 208, 0.4);
+  opacity: 1;
+  cursor: pointer;
+  height: 18vh;
+}
+
+.countryImgStyle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 40%;
+  width: 35%;
+  border-top-left-radius: 40px;
+}
+
+.countryTextStyle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stateTextStyle {
+  position: absolute;
+  top: 120px;
+}
+
+.positionAbsolute {
+  position: absolute;
+}
+
+.countryDollerTextStyle {
+  position: absolute;
+  top: 32px;
+  right: 30px;
+  font-size: 32px;
+  font-weight: 900;
+  font-family: sans-serif;
+  color: #a79ff3;
+}
+
+.boardCertificationSideRows3 {
+  background: #8e86e1 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 50px;
+  width: 90%;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 2%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 7% 84% 5%;
+}
+
+.HealthCareListBackground3 {
+  background: #afa9ef 0% 0% no-repeat padding-box;
+  display: grid;
+  grid-template-columns: 12% 78% 10% 5%;
+}
+
+.HealthCareListBackground4 {
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  display: grid;
+  grid-template-columns: 12% 78% 10% 5%;
+}
+
+.healthCareHeaderTextStyle4 {
+  font: normal normal 600 20px/22px Montserrat;
+  letter-spacing: 3.05px;
+  color: #333131;
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 10px;
+  text-transform: uppercase;
+}
+
+.healthCareHeaderTextStyle5 {
+  font: normal normal 600 16px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #333131;
+  text-align: left;
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.HealthCareListBackground5 {
+  background: #ebe9fb 0% 0% no-repeat padding-box;
+  font: normal normal bold 18px/25px Montserrat;
+}
+
+.healthCareListCardStyle2 {
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #bfbfbf;
+  border: 0.4000000059604645px solid #beb8f9;
+  border-radius: 3px;
+  height: 60px;
+  padding: 0 20px;
+  text-align: left;
+}
+
+.colorFileStyle7 {
+  height: 25px !important;
+  width: 25px !important;
+  margin-right: 5px;
+  object-fit: contain;
+  cursor: pointer;
+  margin-top: inherit;
+}
+
+.healthCareHeaderTextStyle6 {
+  font: normal normal 600 15px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #6d6d6d;
+  text-align: left;
+  text-transform: uppercase;
+  margin-left: 10px;
+  margin-right: auto;
 }

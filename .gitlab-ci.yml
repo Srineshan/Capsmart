@@ -16,4 +16,4 @@ deploy-job:
     - ssh-keyscan 18.205.5.49 >> ~/.ssh/known_hosts
   script:
     - scp -i ci/react.pem admin_tsai.zip ubuntu@18.205.5.49:/home/ubuntu/TSAI_DEV
-    - ssh -i ci/react.pem ubuntu@18.205.5.49 "cd TSAI_DEV && unzip -o admin_tsai.zip -d admin_tsai && cd admin_tsai && pm2 stop DEV && pm2 delete DEV && yarn && pm2 start yarn --name DEV -- start:next"
+    - ssh -i ci/react.pem ubuntu@18.205.5.49 "cd TSAI_DEV && unzip admin_tsai.zip && cd admin_tsai && pm2 reload all"
