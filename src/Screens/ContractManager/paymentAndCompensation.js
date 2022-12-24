@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, EditableText } from '@blueprintjs/core';
+import { InputGroup } from '@blueprintjs/core';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
+import MenuItem from '@mui/material/MenuItem';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
+import Switch from '@mui/material/Switch';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import { POST, GET, PUT, TenantID } from './../dataSaver';
+import { GET, PUT } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
 
 import style from './index.module.scss';
+
+const switchTheme = createTheme({
+    palette: {
+        primary: {
+            main: '#7165E3',
+        },
+    },
+});
 
 const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPage, contractId, getSelectedField }) => {
     const [compensation, setCompensation] = useState('RVUBASED');
@@ -221,7 +233,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     </div>
                                 </div>
                             )}
-                            {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <div className={style.extentionLableStyle}>Dollar Hourly Rate*</div>
                                 <InputGroup className={style.fourFieldWidth} value={dollarRate?.hour}
                                     leftElement={leftElement()} placeholder="0" type='number' min="0"
@@ -279,7 +291,75 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     min="0" onChange={(e) => setDollarValue({
                                         ...dollarValue, perContractedPeriod: e.target.value.slice(0, limit7), perTimesheetSubmission: dollarValue?.perTimesheetSubmission
                                     })} />
-                            </div> */}
+                            </div>
+                            <div className={`${style.paymentTimesheetDetailsHeading} ${style.marginTop20}`}>
+                                INDIVIDUAL TIMESHEET DETAILS
+                            </div>
+                            <div className={`${style.contractedBorderStyle} ${style.marginTop10}`}>
+                                <div className={`${style.extentionGrid}`}>
+                                    <div className={style.extentionLableStyle}>First Timesheet Name*</div>
+                                    <InputGroup className={style.fullWidth} placeholder="Enter Timesheet Name" />
+                                </div>
+                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                    <div className={style.extentionLableStyle}>Payment Processing Criteria*</div>
+                                    <FormControl size="small">
+                                        <Select
+                                            labelId="demo-select-small"
+                                            id="demo-select-small"
+                                            value={'WEEK'}
+                                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                        >
+                                            <MenuItem value={'WEEK'}>Per Week</MenuItem>
+                                            <MenuItem value={'MONTH'}>Per Month</MenuItem>
+                                            <MenuItem value={'YEAR'}>Per Year</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                    <div className={`${style.extentionLableStyle} ${style.marginTop40}`}>Payment Based On Fixed Hours Vs Actual *</div>
+                                    <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
+                                        <ThemeProvider theme={switchTheme}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch className={`${style.textAlignLeft}`} />
+                                                }
+                                                color='primary'
+                                                className={`${style.switchFontStyle} ${style.marginTop20}`}
+                                                label={'YES'}
+                                            />
+                                        </ThemeProvider>
+                                        <div className={`${style.twoFieldWidth} ${style.marginLeft20}`}>
+                                            <div className={style.helperTextPayment}>Max. Compensation Value Per Timesheet Submission*</div>
+                                            <TextField
+                                                size="small"
+                                                InputProps={{
+                                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                                }}
+                                                value={rvuQuantityPeriod?.days}
+                                                inputProps={{
+                                                    style: {
+                                                        height: 15,
+                                                    },
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                    <div className={style.extentionLableStyle}>Compensation Offset Criteria For Over/ Under Payment *</div>
+                                    <FormControl size="small">
+                                        <Select
+                                            labelId="demo-select-small"
+                                            id="demo-select-small"
+                                            value={'Per Timesheet Period'}
+                                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                        >
+                                            <MenuItem value={'Per Timesheet Period'}>Per Timesheet</MenuItem>
+                                            <MenuItem value={'On Last Invoice For Contract Year'}>On Last Invoice For Contract Year</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                            </div>
                         </div>
 
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
