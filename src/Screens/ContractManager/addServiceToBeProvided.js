@@ -6,6 +6,9 @@ import DatalistInput from 'react-datalist-input';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+import CalculateIcon from '@mui/icons-material/Calculate';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -59,7 +62,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [selectedUser, setSelectedUser] = useState([]);
   const [helpTool, setHelpTool] = useState({ calculator: false, textArea: false });
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [timeCommitment, setTimeCommitment] = useState({value:0, frequency:''});
+  const [timeCommitment, setTimeCommitment] = useState({ value: 0, frequency: '' });
+  const [isShowPDF, setIsShowPDF] = useState(false);
   const limit = 3;
   const limit5 = 5;
 
@@ -469,156 +473,180 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }
 
+  const handleClose = () => {
+    if (!isShowPDF) {
+      getAddServiceDialog(false);
+      getEditServiceDialog(false);
+      console.log('false')
+    } else {
+      setIsShowPDF(!isShowPDF);
+      console.log('true')
+    }
+  }
+
   return (
     <div>
       <Dialog isOpen={getAddServiceDialog} onClose={() => { getAddServiceDialog(false); getEditServiceDialog(false); }} className={rightHelpArea ? `${style.addServiceDialog} ${style.addManagerDialogBackground}` : `${style.manageServiceDialog} ${style.addManagerDialogBackground}`}>
         <div className={`${Classes.DIALOG_BODY} `}>
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
-            <div>
-              <Icon icon="edit" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })} />
-              <Icon icon="calculator" size={20} className={`${style.crossStyle} ${style.calculatorIconColor} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator })} />
-              <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => { getAddServiceDialog(false); getEditServiceDialog(false); }} />
+            <div className={style.displayInRow}>
+              <div className={`${style.cursorPointer} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>
+                <StickyNote2Icon style={{ fontSize: 30, color: '#bfbfbf' }} />
+              </div>
+              <div className={`${style.cursorPointer} ${style.marginRight}`} onClick={() => setIsShowPDF(!isShowPDF)}>
+                <TextSnippetIcon style={{ fontSize: 30, color: '#bfbfbf' }} />
+              </div>
+              <div className={`${style.cursorPointer} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator })}>
+                <CalculateIcon style={{ fontSize: 30, color: '#bfbfbf' }} />
+              </div>
+              <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => handleClose()} />
             </div>
           </div>
           <div className={style.extensionBorder}></div>
-          <div className={rightHelpArea ? style.addServiceGrid : ''}>
-            <div className={style.proofBorder}>
-              <div className={`${style.addManagerGrid} `}>
-                <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
-                <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData} isMultiSiteEntity={isMultiSiteEntity} />
-              </div>
-              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
-                <div>
-                  <Select
-                    displayEmpty
-                    value={serviceType}
-                    onChange={(e) => { setServiceType(e.target.value) }}
-                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                    className={`${style.fullWidth}`}
-                  >
-                    <MenuItem value="">Select Activity /Service Type</MenuItem>
-                    {serviceTypeList?.map(data => (
-                      <MenuItem value={data}>{data}</MenuItem>
-                    ))}
-                  </Select>
+          {!isShowPDF ? (
+            <div className={rightHelpArea ? style.addServiceGrid : ''}>
+              <div className={style.proofBorder}>
+                <div className={`${style.addManagerGrid} `}>
+                  <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
+                  <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData} isMultiSiteEntity={isMultiSiteEntity} />
                 </div>
-              </div>
-              {selectContractInfo !== "INDIVIDUAL" && (
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>
+                  <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
                   <div>
-                    <div className={`${style.displayInRow} `}>
-                      <ThemeProvider theme={switchTheme}>
-                        <FormControlLabel
-                          control={
-                            <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => handleDesignateContractor()} />
-                          }
-                          color='primary'
-                          className={`${style.switchFontStyle} ${style.flexLeft} `}
-                          label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
-                        />
-                      </ThemeProvider>
-
-                      {isDesignatedSpecificContractor ? (
-                        <Select
-                          displayEmpty
-                          onChange={(e) => handleUsers(e.target.value)}
-                          SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                          className={`${style.fullWidth}`}
-                        >
-                          <MenuItem value="">Select Contractors for Services to be Provided</MenuItem>
-                          {users?.map((data, index) => (
-                            <MenuItem value={data?.id} key={index}> {data?.name?.firstName} {data?.name?.lastName}</MenuItem>
-                          ))}
-                        </Select>
-                      ) : <p className={` ${style.marginTop10}`}>Any Contractor</p>
-                      }
-                    </div>
-                    {usersTags?.length !== 0 && (
-                      <div className={`${style.marginTop20} ${style.marginLeft20}`}>
-                        {usersTags}
-                      </div>
-                    )}
+                    <Select
+                      displayEmpty
+                      value={serviceType}
+                      onChange={(e) => { setServiceType(e.target.value) }}
+                      SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                      className={`${style.fullWidth}`}
+                    >
+                      <MenuItem value="">Select Activity /Service Type</MenuItem>
+                      {serviceTypeList?.map(data => (
+                        <MenuItem value={data}>{data}</MenuItem>
+                      ))}
+                    </Select>
                   </div>
                 </div>
-              )}
-              {
-                serviceType !== 'Administrative / Miscellaneous Services' && serviceType !== 'Add-On Services' && serviceType !== 'Supplemental Services' &&
-                <div>
+                {selectContractInfo !== "INDIVIDUAL" && (
                   <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
+                    <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>
                     <div>
-                      <div className={style.addGrid}>
-                        <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e) => setNewActivity(e.target.value)} />
-                        <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                          <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
-                        </div>
+                      <div className={`${style.displayInRow} `}>
+                        <ThemeProvider theme={switchTheme}>
+                          <FormControlLabel
+                            control={
+                              <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => handleDesignateContractor()} />
+                            }
+                            color='primary'
+                            className={`${style.switchFontStyle} ${style.flexLeft} `}
+                            label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
+                          />
+                        </ThemeProvider>
+
+                        {isDesignatedSpecificContractor ? (
+                          <Select
+                            displayEmpty
+                            onChange={(e) => handleUsers(e.target.value)}
+                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                            className={`${style.fullWidth}`}
+                          >
+                            <MenuItem value="">Select Contractors for Services to be Provided</MenuItem>
+                            {users?.map((data, index) => (
+                              <MenuItem value={data?.id} key={index}> {data?.name?.firstName} {data?.name?.lastName}</MenuItem>
+                            ))}
+                          </Select>
+                        ) : <p className={` ${style.marginTop10}`}>Any Contractor</p>
+                        }
                       </div>
-                      {
-                        selectedActivity?.length !== 0 &&
-                        <MultiSelectDisplay values={selectedActivity?.map(data => data?.activity?.activity)} removeItem={removeFriendlyName} />
-                      }
+                      {usersTags?.length !== 0 && (
+                        <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                          {usersTags}
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              }
-
-
-              {serviceType !== 'Add-On Services' && <div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
+                )}
+                {
+                  serviceType !== 'Administrative / Miscellaneous Services' && serviceType !== 'Add-On Services' && serviceType !== 'Supplemental Services' &&
                   <div>
-                    <div className={`${style.displayInRow} `}>
-                      <ThemeProvider theme={switchTheme}>
-                        <FormControlLabel
-                          control={
-                            <Switch className={`${style.textAlignLeft}`} />
-                          }
-                          color='primary'
-                          checked={showLocation}
-                          onChange={() => setShowLocation(!showLocation)}
-                          className={`${style.switchFontStyle} ${style.flexLeft} `}
-                          label={showLocation ? 'YES' : 'NO'}
-                        />
-                      </ThemeProvider>
-                      {showLocation &&
-                        <div className={`${style.addGrid} ${style.fullWidth}`}>
-                          <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
+                      <div>
+                        <div className={style.addGrid}>
+                          <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e) => setNewActivity(e.target.value)} />
                           <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
+                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
                           </div>
                         </div>
-                      }
-
+                        {
+                          selectedActivity?.length !== 0 &&
+                          <MultiSelectDisplay values={selectedActivity?.map(data => data?.activity?.activity)} removeItem={removeFriendlyName} />
+                        }
+                      </div>
                     </div>
-                    {
-                      showLocation && selectedLocation?.length !== 0 &&
-                      <MultiSelectDisplay values={selectedLocation?.map(data => data?.location)} removeItem={removeLocation} />
-                    }
                   </div>
-                </div>
-              </div>}
+                }
 
-              {serviceType === 'Clinic Blocks'
-                ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment}/>
-                : serviceType === 'Surgery Session'
-                  ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment}/>
-                  : serviceType === 'On Call Coverage Duty Days'
-                    ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment}/>
-                    : serviceType === 'Supplemental Services'
-                      ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />
-                      : serviceType === 'Add-On Services'
-                        ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} />
-                        : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
+
+                {serviceType !== 'Add-On Services' && <div>
+                  <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
+                    <div>
+                      <div className={`${style.displayInRow} `}>
+                        <ThemeProvider theme={switchTheme}>
+                          <FormControlLabel
+                            control={
+                              <Switch className={`${style.textAlignLeft}`} />
+                            }
+                            color='primary'
+                            checked={showLocation}
+                            onChange={() => setShowLocation(!showLocation)}
+                            className={`${style.switchFontStyle} ${style.flexLeft} `}
+                            label={showLocation ? 'YES' : 'NO'}
+                          />
+                        </ThemeProvider>
+                        {showLocation &&
+                          <div className={`${style.addGrid} ${style.fullWidth}`}>
+                            <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
+                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                              <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
+                            </div>
+                          </div>
+                        }
+
+                      </div>
+                      {
+                        showLocation && selectedLocation?.length !== 0 &&
+                        <MultiSelectDisplay values={selectedLocation?.map(data => data?.location)} removeItem={removeLocation} />
+                      }
+                    </div>
+                  </div>
+                </div>}
+
+                {serviceType === 'Clinic Blocks'
+                  ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
+                  : serviceType === 'Surgery Session'
+                    ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment}/>
+                    : serviceType === 'On Call Coverage Duty Days'
+                      ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
+                      : serviceType === 'Supplemental Services'
+                        ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />
+                        : serviceType === 'Add-On Services'
+                          ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} />
+                          : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
+              </div>
+              {helpTool?.calculator ? (
+                <Calculator />
+              ) : helpTool?.textArea ? (
+                <Calculator />
+              ) : ''}
             </div>
-            {helpTool?.calculator ? (
-              <Calculator />
-            ) : helpTool?.textArea ? (
-              <Calculator />
-            ) : ''}
-          </div>
+          ) : (
+            <div className={`${style.pdfViewStyle} ${style.marginTop}`}>
+              <iframe src='https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' allowfullscreen height="500px" width="100%" title='Document' />
+            </div>
+          )}
         </div>
         <div>
           <div className={`${style.floatRight}`}>

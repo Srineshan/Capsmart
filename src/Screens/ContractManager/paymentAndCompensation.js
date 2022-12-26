@@ -1,13 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, RadioGroup, Radio, EditableText } from '@blueprintjs/core';
-import {POST, GET, PUT, TenantID} from './../dataSaver';
+import { InputGroup } from '@blueprintjs/core';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import MenuItem from '@mui/material/MenuItem';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Switch from '@mui/material/Switch';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import { GET, PUT } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
 
 import style from './index.module.scss';
 
-const PaymentAndCompensation = ({selectContractInfo, getViewPage8, getCurrentPage, contractId, getSelectedField}) => {
+const switchTheme = createTheme({
+    palette: {
+        primary: {
+            main: '#7165E3',
+        },
+    },
+});
+
+const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPage, contractId, getSelectedField }) => {
     const [compensation, setCompensation] = useState('RVUBASED');
     const [paymentAndCompensation, setPaymentAndCompensation] = useState({});
     const [rvuQuantity, setRvuQuantity] =useState({
@@ -124,19 +142,107 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage8, getCurrentPag
                             <Radio label="RVU Based" value="RVUBASED" />
                             <Radio label="Dollar Based Rate" value="DOLLARBASEDRATE" />
                         </RadioGroup>
-                    </div>
-                </div>
-                {compensation === "RVUBASED" && (
-                    <div>
-                        <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={()=>{getSelectedField('RVU Quantity')}}>
-                            <div className={style.extentionLableStyle}>RVU Quantity*</div>
-                            <div className={style.displayInRow}>
-                                <InputGroup className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0"
-                                type = 'number'
-                                min="0"
-                                onChange={(e) => e.target.value >= 0 && setRvuQuantity({
-                                    ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
-                                })} />
+                    </div> */}
+                                <FormControl>
+                                    <RadioGroup
+                                        row className={`${style.leftAlign}`}
+                                        value={compensation}
+                                        onChange={(e) => setCompensation(e.target.value)}
+                                        sx={{ color: '#52575D' }}
+                                    >
+                                        <FormControlLabel value="RVUBASED"
+                                            control={<Radio sx={{ color: '#B3B8BD', '&.Mui-checked': { color: '#7165E3' } }} size='small' />}
+                                            label="RVU Based" componentsProps={{ typography: { variant: 'subtitle2' } }} />
+                                        <FormControlLabel
+                                            value="DOLLARBASEDRATE"
+                                            control={<Radio sx={{ color: '#B3B8BD', '&.Mui-checked': { color: '#7165E3' } }} size='small' />}
+                                            label="Dollar Based Rate" componentsProps={{ typography: { variant: 'subtitle2' } }} />
+                                    </RadioGroup>
+                                </FormControl>
+                            </div>
+                            {compensation === "RVUBASED" && (
+                                <div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('RVU Quantity') }}>
+                                        <div className={style.extentionLableStyle}>RVU Quantity*</div>
+                                        <div className={style.displayInRow}>
+                                            <InputGroup className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0"
+                                                type='number'
+                                                min="0"
+                                                onChange={(e) => e.target.value >= 0 && setRvuQuantity({
+                                                    ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
+                                                })} />
+                                            <select
+                                                name="class"
+                                                id="Class"
+                                                value={frequency}
+                                                onChange={(e) => setFrequency(e.target.value)}
+                                                className={`${style.twoFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
+                                                <option value="WEEK" >
+                                                    Per Week
+                                                </option>
+                                                <option value="MONTH" >
+                                                    Per Month
+                                                </option>
+                                                <option value="YEAR" >
+                                                    Per Contract Year
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('FTE Equivalent') }} >
+                                        <div className={style.extentionLableStyle}>FTE Equivalent</div>
+                                        <InputGroup className={style.twoFieldWidth} value={fteEquivalent?.value} placeholder="0" type="number"
+                                            min="0"
+                                            onChange={(e) => setFteEquivalent({
+                                                ...fteEquivalent, value: parseFloat(e.target.value.slice(0, limit4))
+                                            })} />
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('RVU Reference Used') }}>
+                                        <div className={style.extentionLableStyle}>RVU Reference Used</div>
+                                        <InputGroup className={style.fullWidth} value={rvuReferenceUsed?.value} placeholder="Enter RVU Reference Used"
+                                            min="0"
+                                            onChange={(e) => setRvuReferenceUsed({
+                                                ...rvuReferenceUsed, value: e.target.value
+                                            })} />
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('RVU Quantity Variance (+/-)') }}>
+                                        <div className={style.extentionLableStyle}>RVU Quantity Variance (+/-)</div>
+                                        <InputGroup className={style.twoFieldWidth} value={rvuQuantityVariance?.value} placeholder="0" type='number'
+                                            min="0" onChange={(e) => setRvuQuantityVariance({
+                                                ...rvuQuantityVariance, value: e.target.value.slice(0, limit3)
+                                            })} />
+                                    </div>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                        <div className={style.extentionLableStyle}>RVU Quantity Period</div>
+                                        <TextField
+                                            size="small"
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+                                            }}
+                                            onChange={(e) => setRvuQuantityPeriod({
+                                                ...rvuQuantityPeriod, days: e.slice(0, limit4)
+                                            })}
+                                            className={style.renewalWidth}
+                                            value={rvuQuantityPeriod?.days}
+                                            inputProps={{
+                                                style: {
+                                                    height: 20,
+                                                },
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Dollar Hourly Rate*</div>
+                                <InputGroup className={style.fourFieldWidth} value={dollarRate?.hour}
+                                    leftElement={leftElement()} placeholder="0" type='number' min="0"
+                                    onChange={(e) => setDollarRate({
+                                        ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7))
+                                    })} />
+                            </div>
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Compensation Offset Criteria for Reduced Number of Agreed to Services*</div>
                                 <select
                                     name="class"
                                     id="Class"
@@ -153,6 +259,82 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage8, getCurrentPag
                                         Per Contract Year
                                     </option>
                                 </select>
+                            </div>
+
+                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Dollar Value for per Contracted Year*</div>
+                                <InputGroup className={style.fourFieldWidth} leftElement={leftElement()} value={dollarValue?.perContractedPeriod} placeholder="0" type='number'
+                                    min="0" onChange={(e) => setDollarValue({
+                                        ...dollarValue, perContractedPeriod: e.target.value.slice(0, limit7), perTimesheetSubmission: dollarValue?.perTimesheetSubmission
+                                    })} />
+                            </div>
+                            <div className={`${style.paymentTimesheetDetailsHeading} ${style.marginTop20}`}>
+                                INDIVIDUAL TIMESHEET DETAILS
+                            </div>
+                            <div className={`${style.contractedBorderStyle} ${style.marginTop10}`}>
+                                <div className={`${style.extentionGrid}`}>
+                                    <div className={style.extentionLableStyle}>First Timesheet Name*</div>
+                                    <InputGroup className={style.fullWidth} placeholder="Enter Timesheet Name" />
+                                </div>
+                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                    <div className={style.extentionLableStyle}>Payment Processing Criteria*</div>
+                                    <FormControl size="small">
+                                        <Select
+                                            labelId="demo-select-small"
+                                            id="demo-select-small"
+                                            value={'WEEK'}
+                                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                        >
+                                            <MenuItem value={'WEEK'}>Per Week</MenuItem>
+                                            <MenuItem value={'MONTH'}>Per Month</MenuItem>
+                                            <MenuItem value={'YEAR'}>Per Year</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                    <div className={`${style.extentionLableStyle} ${style.marginTop40}`}>Payment Based On Fixed Hours Vs Actual *</div>
+                                    <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
+                                        <ThemeProvider theme={switchTheme}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch className={`${style.textAlignLeft}`} />
+                                                }
+                                                color='primary'
+                                                className={`${style.switchFontStyle} ${style.marginTop20}`}
+                                                label={'YES'}
+                                            />
+                                        </ThemeProvider>
+                                        <div className={`${style.twoFieldWidth} ${style.marginLeft20}`}>
+                                            <div className={style.helperTextPayment}>Max. Compensation Value Per Timesheet Submission*</div>
+                                            <TextField
+                                                size="small"
+                                                InputProps={{
+                                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                                }}
+                                                value={rvuQuantityPeriod?.days}
+                                                inputProps={{
+                                                    style: {
+                                                        height: 15,
+                                                    },
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                    <div className={style.extentionLableStyle}>Compensation Offset Criteria For Over/ Under Payment *</div>
+                                    <FormControl size="small">
+                                        <Select
+                                            labelId="demo-select-small"
+                                            id="demo-select-small"
+                                            value={'Per Timesheet Period'}
+                                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                        >
+                                            <MenuItem value={'Per Timesheet Period'}>Per Timesheet</MenuItem>
+                                            <MenuItem value={'On Last Invoice For Contract Year'}>On Last Invoice For Contract Year</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </div>
                             </div>
                         </div>
                         <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={()=>{getSelectedField('FTE Equivalent')}} >
