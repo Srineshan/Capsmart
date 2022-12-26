@@ -4,12 +4,12 @@ import TimeSmartLogo from './../../images/timeSmartAI-logo.png';
 import style from './index.module.scss';
 
 const ReportFooter = () => {
-    return(
+    return (
         <div>
             <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
             <div className={style.spaceBetween}>
                 <div>
-                    <div className={style.poweredByTextStyle}>powered by</div>
+                    <div className={style.poweredByTextStyle}>Powered By</div>
                     <img src={TimeSmartLogo} alt="poweredBy" className={style.reportFooterLogo} />
                 </div>
                 <div className={style.marginTop20}>

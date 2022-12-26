@@ -245,10 +245,10 @@ const Navbar = () => {
                                 </Link>
                                 <Link to={'/reports/taskManagement'} className={style.noFontStyle}>
                                     <div className={style.options}>Task Management</div>
-                                </Link>
+                                </Link> */}
                                 <Link to={'/reports/payments'} className={style.noFontStyle}>
                                     <div className={style.options}>Payments</div>
-                                </Link> */}
+                                </Link>
                                 {isContractManagementAvailable && (
                                     <Link to={'/reports/contractManagement'} className={style.noFontStyle}>
                                         <div className={style.options}>Contract Management</div>
