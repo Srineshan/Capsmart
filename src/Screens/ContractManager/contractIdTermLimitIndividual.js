@@ -218,14 +218,18 @@ const ContractIdTermLimitIndividual = (
     } else if (siteSpecific && !departmentSpecific) {
       siteData = selectedSites;
     } else {
+      console.log('selectedDepartmentSites', selectedDepartmentSites)
       siteData = selectedDepartmentSites;
     }
 
     return siteData;
   }
 
+  console.log('data', selectedDepartmentSites);
+
   const addContract = async (buttonType) => {
     let sites = getSiteData();
+    console.log('stes', sites);
     if(departmentSpecific && sites?.some(data=>data?.departmentList?.departments?.length === 0)){
       ErrorToaster('Select Departments for all the selected Sites');
       return;

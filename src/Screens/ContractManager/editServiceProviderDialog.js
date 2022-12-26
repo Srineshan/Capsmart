@@ -20,7 +20,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
     const [npin,setNpin] = useState({npin:'',missing:false,na:false});
     const [userDetails,setUserDetails] = useState({firstName:'',middleName:'',lastName:'',suffix:{suffix:'',id:''},email:'',phone:''});
     const [providerType,setProviderType] = useState({contractedServiceProviderType:'',id:''});
-    const [address,setAddress] = useState({city:'',state:'',zipcode:''});
+    const [address,setAddress] = useState({addressLine:'', city:'',state:'',zipcode:''});
     const [contractName, setContractName] = useState('');
     const [siteLevel,setSiteLevel] = useState(false);
     const [departmentLevel,setDepartmentLevel] = useState(false);
@@ -54,7 +54,7 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
         setSelectedRoles(userProviderData?.roles || []);
         setUserDetails({...userDetails, firstName:userProviderData?.name?.firstName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || ''});
         setProviderType(userProviderData?.serviceProviderType || {});
-        setAddress({city:userProviderData?.address?.city || '',state:userProviderData?.address?.state || '',zipcode:userProviderData?.address?.zipcode || ''});
+        setAddress({addressLine: userProviderData?.address?.addressLine || '' , city:userProviderData?.address?.city || '', state:userProviderData?.address?.state || '', zipcode:userProviderData?.address?.zipcode || ''});
         let contractData = userProviderData?.contracts?.filter(data=>data?.id === contractId)?.map(data=>data)[0];
         setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : [] );
         setSiteLevel(contractData?.siteLevelResponsible);
@@ -473,11 +473,16 @@ const EditServiceProvider = ({getEditServiceDialog, userProviderData, contractId
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Address*</div>
-                    <div className={style.grid3}>
+                    <div>
+                    <InputGroup className={style.fullWidth} placeholder="Street"
+                      value={address?.addressLine}
+                      onChange={(e)=>setAddress({...address, addressLine:e.target.value})}/>
+                    <div className={`${style.grid3} ${style.marginTop20}`}>
                     <InputGroup className={style.fullWidth} placeholder="City" value={address.city} onChange={(e)=>handleAddress('city',e.target.value)}/>
                     <InputGroup className={style.fullWidth} placeholder="State" value={address.state} onChange={(e)=>handleAddress('state',e.target.value)}/>
                     <InputGroup className={style.fullWidth} placeholder="Zipcode" value={address.zipcode} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
                     </div>
+                  </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Site Level Responsibility*</div>

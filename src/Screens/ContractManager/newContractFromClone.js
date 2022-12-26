@@ -320,7 +320,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                     <TimeSheetSubmissionTerms
                         getViewPage7={getViewPage7}
                         getCurrentPage={getCurrentPage}
-                        contractId={contractId} />
+                        contractId={contractId}
+                        isMultiSiteEntity={isMultiSiteEntity}/>
                 ) : currentPage === "Payment & Compensation" ? (
                     <PaymentAndCompensation
                         selectContractInfo={selectContractInfo}

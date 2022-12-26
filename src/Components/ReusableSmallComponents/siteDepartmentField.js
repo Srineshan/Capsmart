@@ -14,13 +14,20 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
   const [departmentsSelected, setDepartmentsSelected] = useState([]);
   const [selectedSite, setSelectedSite] = useState(undefined);
   const [siteData, setSiteData] = useState([]);
+  const [defaultSelected, setDefaultSelected] = useState({site:'', dept:''});
   const [departmentList, setDepartmentList] = useState(sites?.filter(site => selectedSite === site?.id)?.map(data =>
     data?.departmentList?.departments
   )[0]);
 
     useEffect(()=>{
         setSiteData(selectedSites);
+        setDepartmentsSelected(selectedSites);
+        if(selectedSites?.length === 1){
+          setDefaultSelected({...defaultSelected, site:selectedSites?.[0]?.id});
+        }
     },[selectedSites])
+
+    console.log('selected',defaultSelected);
 
   const onDepartmentSelect = (e) => {
     const {
@@ -64,12 +71,14 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     }
     temp.push(site);
     setSiteData(temp);
+    getSelectedSites(temp);
   }
+
 
   const onRemoveDept = (siteIndex, deptIndex, deptId) => {
     setDepartmentsSelected(departmentsSelected?.filter(dept => dept !== deptId)?.map(data => data));
-    let temp = siteData?.filter(site => site?.id !== selectedSite)?.map(data => data);
-    let currentSite = siteData?.filter(site => site?.id === selectedSite)?.map(data => data)[0];
+    let temp = siteData?.filter((site,index) => index !== siteIndex)?.map(data => data);
+    let currentSite = siteData?.filter((site,index) => index === siteIndex)?.map(data => data)[0];
     let departments = currentSite?.departmentList?.departments?.filter((dept, index) => index !== deptIndex)?.map(data => data);
     let site =
     {
@@ -83,8 +92,8 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     }
     temp.push(site);
     setSiteData(temp);
+    getSelectedSites(temp);
   }
-
 
   return (
     <div>
@@ -94,13 +103,12 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
           <Select
             labelId="demo-select-small"
             id="demo-select-small"
-            displayEmpty
             input={<OutlinedInput label="Select Site" />}
             onChange={(e) => onSiteSelected(e)}
             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
           >
             {sites?.map(data => (
-              <MenuItem value={data?.id}>{data?.siteName?.siteName}</MenuItem>
+              <MenuItem value={data?.id} selected={defaultSelected?.site === data?.id}>{data?.siteName?.siteName}</MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -129,22 +137,17 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
         </div>
       </div>
       {
-        siteData?.map((site, siteIndex) => (
+        siteData?.filter(site=>site?.departmentList?.departments?.length !== 0)?.map((site, siteIndex) => (
           <div className={`${style.siteDeptFieldCard} ${style.marginTop10}`}>
             {
-              // <div className={`${style.siteDeptFieldCard} ${style.displayInRow} ${style.marginTop10}`}>
-              //     <div className={`${style.siteCard} ${style.siteDeptTextStyle} ${style.verticalAlignCenter} ${style.marginRight10}`}>{site?.siteName?.siteName}</div>
 
-            }
-            {
-
-              site?.departmentList?.departments?.map((dept, deptIndex) => (
+            site?.departmentList?.departments?.filter(dept=>dept?.departmentName?.name !== undefined)?.map((dept, deptIndex) => (
                 <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
                   <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{dept?.departmentName?.name}-{site?.siteName?.siteName}</div>
                   <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => { onRemoveDept(siteIndex, deptIndex, dept?.id) }} />
                 </div>
-              ))
-            }
+            ))
+          }
           </div>
         ))
       }

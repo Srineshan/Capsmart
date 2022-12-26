@@ -3,6 +3,8 @@ import { Dialog, Classes, Icon, Intent, Tag, InputGroup, Button, RadioGroup, Rad
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
+import FormGroup from '@mui/material/FormGroup';
+import Typography from '@mui/material/Typography';
 import {GET, PUT, POST, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SuffixList from './../../Components/SuffixList';
@@ -25,7 +27,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
     const [nPin,setNpin] = useState({npin:'',missing:false,na:false});
     const [userDetails,setUserDetails] = useState({firstName:'',middleName:'',lastName:'',suffix:{suffix:'',id:''},email:'',phone:''});
     const [providerType,setProviderType] = useState({contractedServiceProviderType:'',id:''});
-    const [address,setAddress] = useState({city:'',state:'',zipcode:''});
+    const [address,setAddress] = useState({addressLine:'', city:'', state:'', zipcode:''});
     const [siteLevel,setSiteLevel] = useState(false);
     const [departmentLevel,setDepartmentLevel] = useState(false);
     const [siteList,setSiteList] = useState([]);
@@ -203,6 +205,7 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
         const data = {
             "name": {
                 "firstName": userDetails?.firstName,
+                "middleName": userDetails?.middleName,
                 "lastName": userDetails?.lastName,
                 "suffix": userDetails?.suffix
               },
@@ -432,7 +435,8 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>NPIN*</div>
                   <div className={style.grid3}>
-                  <InputGroup className={style.fullWidth} disabled={nPin?.missing || nPin?.na} value={nPin?.npin} onChange={(e)=>setNpin({...nPin, npin:e.target.value,na:false,missing:false})}/>
+                  <InputGroup type="tel" maxLength={10} className={style.fullWidth}
+                  disabled={nPin?.missing || nPin?.na} value={nPin?.npin} onChange={(e)=> e.target.value >= 0 && setNpin({...nPin, npin:e.target.value,na:false,missing:false})}/>
                   <Checkbox label="Missing"  checked={nPin?.missing} onChange={(e)=>setNpin({...nPin, npin:'',missing:e.target.checked, na:false})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                   <Checkbox label="Not Applicable"  checked={nPin?.na} onChange={(e)=>setNpin({...nPin, npin:'',missing:false, na:e.target.checked})} className={`${style.marginTop10} ${style.marginLeft20}`}/>
                   </div>
@@ -450,19 +454,42 @@ const NewServiceProvider = ({getNewServiceProviderDialog, contractId, contractTy
                         <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e)=>handleUserData('email',e.target.value)}/>
                     </div>
                 </div>
+                {
+                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  //   <div className={style.extentionLableStyle}>Cell Phone*</div>
+                  //   <div className={style.twoCol}>
+                  //     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                  //       <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
+                  //       <InputGroup placeholder="Numeric" maxLength={15}
+                  //          className={`${style.fullWidth}`} />
+                  //     </div>
+                  //     <FormGroup>
+                  //       <FormControlLabel control={<Checkbox value="NA" />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                  //     </FormGroup>
+                  //   </div>
+                  // </div>
+                }
+
+
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Cell Phone*</div>
                     <div className={style.grid2}>
                     <InputGroup placeholder="Numeric" value={userDetails?.phone} className={style.fullWidth} onChange={(e)=>handleUserData('phone',FormatPhoneNumber(e.target.value))}/>
                     </div>
+
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Address*</div>
-                    <div className={style.grid3}>
+                    <div>
+                    <InputGroup className={style.fullWidth} placeholder="Street"
+                      value={address?.addressLine}
+                      onChange={(e)=>setAddress({...address, addressLine:e.target.value})}/>
+                    <div className={`${style.grid3} ${style.marginTop20}`}>
                     <InputGroup className={style.fullWidth} placeholder="City" value={address.city} onChange={(e)=>handleAddress('city',e.target.value)}/>
                     <InputGroup className={style.fullWidth} placeholder="State" value={address.state} onChange={(e)=>handleAddress('state',e.target.value)}/>
                     <InputGroup className={style.fullWidth} placeholder="Zipcode" value={address.zipcode} onChange={(e)=>handleAddress('zipcode',e.target.value)}/>
                     </div>
+                  </div>
                 </div>
 
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>

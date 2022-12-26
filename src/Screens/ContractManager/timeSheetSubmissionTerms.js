@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { InputGroup, TagInput, EditableText } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
+import ArrowDown from './../../images/arrowDown.png';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
+import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
+import Typography from '@mui/material/Typography';
 import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import RedirectingPopUp from './redirectingPopUp';
-import LoadingScreen from '../../Components/LoadingScreen';
 import style from './index.module.scss';
 
 const VALUES3 = ['Activity Reviewer'];
 
-const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) => {
+const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isMultiSiteEntity}) => {
     const [timeSheetCount, setTimeSheetCount] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
+    const [showSelectBox, setShowSelectBox] = useState(false);
+    const [selectBoxIndex, setSelectBoxIndex] = useState(-1);
     const [contractedTimeCommitment, setContractedTimeCommitment] = useState(false);
     const [activityTags, setActivityTags] = useState(VALUES3);
     const [contractedActivityTags, setContractedActivityTags] = useState([]);
@@ -30,6 +34,7 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
     const [timesheetSubmissionTerms, setTimesheetSubmissionTerms] = useState({});
     const [timesheetFields, setTimesheetFields] = useState([]);
     const [contractedServices, setContractedServices] = useState([]);
+    const [activityTypes, setActivityTypes] = useState([]);
     const [selectedItems, setSelectedItems] = useState();
     const limit = 3;
     const [timeSheetLabelData,setTimeSheetLabelData] = useState([]);
@@ -37,18 +42,30 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
     const [timesheetActivity, setTimesheetActivity] = useState([{
         activityType: '', performingActivity: ''
     }]);
+    const [sites, setSites] = useState([]);
+    const [selectedSites, setSelectedSites] = useState([]);
+    const [selectedIndex, setSelectedIndex] = useState();
+    const [paymentSource, setPaymentSource] = useState();
+
+    const menuRef = useRef(null);
+    useOptionsHide(menuRef);
 
     const getContractedServices = async () => {
-        setIsLoading(true);
         const { data: contractedServices } = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
         setContractedServices(contractedServices?.contractedServices);
-        setIsLoading(false);
+        setActivityTypes(Array.from(new Set(contractedServices?.contractedServices?.map(data=>data?.activityType?.activityType))));
+    }
+
+    const getContractSites = async() => {
+      const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
+      setSites(contractData?.contractDetail?.site?.sites);
     }
 
     useEffect(()=>{
         getContractedServices();
         getTimeSheetSubmissionTerms();
         getTimesheetFields();
+        getContractSites();
     },[])
 
     useEffect(()=>{
@@ -60,17 +77,59 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
     useEffect(()=>{
       formatActivities();
       getTimesheetFields();
-    },[contractedActivityTags?.length, timeSheetLabelData, contractedServices])
+    },[contractedActivityTags?.length, timeSheetLabelData, contractedServices, showSelectBox, sites])
+
+    useEffect(()=>{
+      if(selectedIndex !== undefined){
+        let temp = paymentSource;
+        temp[selectedIndex] = selectedSites;
+        setPaymentSource(temp);
+        formatActivities();
+      }
+    },[selectedSites])
+
+    function useOptionsHide(ref) {
+        useEffect(() => {
+            function handleClickOutside(event) {
+                if (ref.current && !ref.current.contains(event.target)) {
+                    setShowSelectBox(false)
+                }
+            }
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [ref]);
+    }
 
 
-    const handleContractedActivityTagsAdd = (values, i) => {
-        setSelectedItems(values);
-        let temp = contractedActivityTags;
-        temp.push({index: i,type: contractedServices?.filter(data => data?.performingActivity?.activity === values)?.map(data => data?.activityType?.activityType)[0], activity: values});
+    const handleContractedActivityTagsAdd = (type, values, i) => {
+      if(values === 'all' && type === 'all'){
+        let temp = [];
+        contractedServices?.map(data=>{
+          temp?.push({index: i, type: data?.activityType?.activityType, activity: data?.performingActivity?.activity});
+        });
         setContractedActivityTags(temp);
-
+      }else if(values==='all'){
+        let temp = contractedActivityTags?.filter(data=>data?.type !== type)?.map(data=>data);
+        contractedServices?.filter(data=>data?.activityType?.activityType === type)?.map(data=>{
+          temp?.push({index: i, type: type, activity: data?.performingActivity?.activity});
+        });
+        setContractedActivityTags(temp);
+      }else{
+        let temp = contractedActivityTags;
+        setSelectedItems(values);
+        temp.push({index: i,type: type, activity: values});
+        setContractedActivityTags(temp);
+      }
     };
 
+    console.log('check check check', contractedActivityTags);
+
+    const handleClick = (index) => {
+        setSelectBoxIndex(index);
+        setShowSelectBox(!showSelectBox);
+    };
 
     const formatActivities = () => {
         let timeSheetValueData = [];
@@ -89,6 +148,9 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
                         }
                       }
                     ],
+                    "paymentSource" : {
+                      "site":{}
+                    },
                     "servicePeriod": {
                       "value": ""
                     }
@@ -115,12 +177,16 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
                     }
                 })
             })
+            let value = Array.isArray(paymentSource?.[index]) ? paymentSource?.[index]?.[0] : paymentSource?.[index];
+            let site = value !== null ? { "site" : value} : undefined;
             if(timeSheetCount > 1){
                 data.activities = temp;
+                data.paymentSource = site;
                 data.timesheetLabel = timeSheetLabelData?.[index]?.label;
                 data.servicePeriod = timeSheetLabelData?.[index]?.value;
             } else {
                 data.activities = tempFor1TimeSheet;
+                data.paymentSource = site;
                 data.timesheetLabel = timeSheetLabelData?.[index]?.label;
                 data.servicePeriod = timeSheetLabelData?.[index]?.value;
             }
@@ -147,6 +213,25 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
       setContractedActivityTags(contractedActivityTags?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data));
     }
 
+    const isGroupChecked = (type) => {
+      let originalArrayLength = contractedServices?.filter(service=>service?.activityType?.activityType === type)?.map(data=>data)?.length;
+      let selectedArrayLength = contractedActivityTags?.filter(data=>data?.type === type)?.map(data=>data)?.length;
+      if(originalArrayLength === selectedArrayLength){
+        return true;
+      }else{
+        return false;
+            }
+    }
+
+    console.log('data', paymentSource);
+
+    const onSelectSite = (value) => {
+      setSelectedSites(value);
+
+    }
+
+    // contractedServices?.filter(service=>service?.activityType?.activityType === data)?.map(service=>service)?.length ==== contractedActivityTags?.filter(tag=>tag?.type === data)?.map(tag=>tag)?.length
+
     const getTimesheetFields = () => {
         let temp = [];
         for(let i=0;i<timeSheetCount;i++){
@@ -158,23 +243,58 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
                 </div>
                 {timeSheetCount > 1 && (
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Site Specific Contract*</div>
+                        <div className={style.extentionLableStyle}>{`Contracted Activity to include for timesheet ${i+1}*`}</div>
                         <div>
-                            <select
-                                name="class"
-                                id="Class"
-                                onChange={(e) => {handleContractedActivityTagsAdd(e.target.value, i)}}
-                                className={`${style.fullWidth} `}>
-                                <option value="0" >
-                                    Select Contracted Services Provided
-                                </option>
-                                {contractedServices?.map((data, index) => (
-                                    <option value={data?.performingActivity?.activity} key={index}
-                                    disabled={contractedActivityTags?.map(data => data?.activity)?.includes(data?.performingActivity?.activity)} >
-                                        {`${data?.activityType?.activityType} - ${data?.performingActivity?.activity}`}
-                                    </option>
-                                ))}
-                            </select>
+                        {
+                          // <select
+                          //     name="class"
+                          //     id="Class"
+                          //     onChange={(e) => {handleContractedActivityTagsAdd(e.target.value, i)}}
+                          //     className={`${style.fullWidth} `}>
+                          //     <option value="0" >
+                          //         Select Contracted Services Provided
+                          //     </option>
+                          //     {contractedServices?.map((data, index) => (
+                          //         <option value={data?.performingActivity?.activity} key={index}
+                          //         disabled={contractedActivityTags?.map(data => data?.activity)?.includes(data?.performingActivity?.activity)} >
+                          //             {`${data?.activityType?.activityType} - ${data?.performingActivity?.activity}`}
+                          //         </option>
+                          //     ))}
+                          // </select>
+                        }
+                            <div className={`${style.selectBoxStyle} ${style.fullWidth} ${style.verticalAlignCenter} ${style.spaceBetween}`}
+                             onClick={() => handleClick(i)}>
+                                <div></div>
+                                <img src={ArrowDown} className={`${style.marginRight} ${style.arrowDownStyle}`} />
+                            </div>
+                            {(showSelectBox && i === selectBoxIndex) && (
+                                <div className={style.selectOptionsBox} ref={menuRef}>
+                                    <div className={`${style.selectOptionsMenuStyle}`}>
+                                        <FormGroup>
+                                            <FormControlLabel control={<Checkbox disabled={contractedServices?.length  === contractedActivityTags?.length} checked={contractedServices?.length  === contractedActivityTags?.length} onChange={()=>handleContractedActivityTagsAdd('all', 'all', i)}/>}  label={<Typography variant="body2">All Activities</Typography>} />
+                                        </FormGroup>
+                                    </div>
+                                    {activityTypes?.map(data=>(
+                                      <>
+                                      <div className={`${style.selectOptionsMenuStyle} ${style.selectedOptionstyle}`}>
+                                          <FormGroup>
+                                              <FormControlLabel control={<Checkbox onChange={()=>handleContractedActivityTagsAdd(data, 'all', i)} disabled={isGroupChecked(data)} checked={isGroupChecked(data)}/>}  label={<Typography variant="body2" color="#7165E3">{data}</Typography>} />
+                                          </FormGroup>
+                                      </div>
+                                      {
+                                        contractedServices?.filter(service=>service?.activityType?.activityType === data)?.map(service=>(
+                                          <div className={`${style.selectOptionsMenuStyle} ${style.marginLeft30}`}>
+                                              <FormGroup>
+                                                  <FormControlLabel control={<Checkbox onChange={()=>handleContractedActivityTagsAdd(data, service?.performingActivity?.activity, i)} disabled={contractedActivityTags?.map(data=>data?.activity)?.includes(service?.performingActivity?.activity)} checked={contractedActivityTags?.map(data=>data?.activity)?.includes(service?.performingActivity?.activity)} />}  label={<Typography variant="body2" className={style.disabledView}>{service?.performingActivity?.activity}</Typography>} />
+                                              </FormGroup>
+                                          </div>
+                                        ))
+                                      }
+                                      </>
+                                    ))
+                                    }
+                                </div>
+                            )}
                             <TagInput
                                 placeholder="Contracted Activity to include for timesheet 1*"
                                 values={contractedActivityTags?.filter((data,index)=>data?.index === i)?.map(data=>`${data?.type}-${data?.activity}`) || []}
@@ -189,31 +309,41 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
                     </div>
                 )}
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Payment Source*</div>
+                    <div className={style.displayInRow}>
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onClick={()=>setSelectedIndex(i)}>
+                      <div></div>
+                      <SiteDepartmentField sites={sites} getSelectedSites={onSelectSite} selectedSites={paymentSource?.[i] ? new Array(1).fill(paymentSource?.[i]) : []} isMultiSiteEntity={isMultiSiteEntity} />
+                    </div>
+                        <p className={style.threeFieldWidth}></p>
+                    </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Service log Period for timesheet submission*</div>
                     <div className={style.displayInRow}>
                         <select
                             name="class"
                             id="Class"
-                            value={timeSheetLabelData?.[i]?.value}
+                            defaultValue={timeSheetLabelData?.[i]?.value}
                             key={`logPeriod${i}`}
                             onChange={(e) => handleTimesheetValue(i, 'value', e.target.value)}
                             className={`${style.fullWidth}`}>
                             <option value="0" >
                                 Select Service Log Period...
                             </option>
-                            <option value="ENDOFMONTH" >
+                            <option value="ENDOFMONTH" selected={timeSheetLabelData?.[i]?.value === "ENDOFMONTH"}>
                                 End of the month
                             </option>
-                            <option value="ENDOFEVERYWEEK" >
+                            <option value="ENDOFEVERYWEEK" selected={timeSheetLabelData?.[i]?.value === "ENDOFEVERYWEEK"}>
                                 End of Every Week
                             </option>
-                            <option value="EVERY2WEEKS" >
+                            <option value="EVERY2WEEKS" selected={timeSheetLabelData?.[i]?.value === "EVERY2WEEKS"}>
                                 Every 2 Weeks
                             </option>
-                            <option value="EVERY4WEEKS" >
+                            <option value="EVERY4WEEKS" selected={timeSheetLabelData?.[i]?.value === "EVERY4WEEKS"}>
                                 Every 4 Weeks
                             </option>
-                            <option value="ONDAYOFSERVICE" >
+                            <option value="ONDAYOFSERVICE" selected={timeSheetLabelData?.[i]?.value === "ONDAYOFSERVICE"}>
                                 On Day of Service
                             </option>
                         </select>
@@ -232,16 +362,22 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
           setTimesheetSubmissionTerms(timesheetSubmissionTerms);
           let labelTemp = [];
           let temp = [];
+          let paymentSourceTemp = [];
           timesheetSubmissionTerms?.timesheetActivitiesPeriods?.map((data,index)=>{
             labelTemp.push({label:data?.timesheetLabel?.label, value:data?.servicePeriod?.value});
             data?.activities?.map(activityData=>{
               temp.push({index:index,type:activityData?.activityType?.activityType,activity:activityData?.performingActivity?.activity});
             })
+            paymentSourceTemp?.push(data?.paymentSource?.site !== null ? data?.paymentSource?.site : undefined);
           });
           setTimeSheetLabelData(labelTemp);
           setContractedActivityTags(temp);
+          setPaymentSource(paymentSourceTemp);
         }
     };
+
+
+    console.log('selected value', paymentSource);
 
     const handleContinue = async() => {
         let data = {
@@ -300,116 +436,20 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
         setTimesheetValues(timesheetSubmissionTerms?.timesheetActivitiesPeriods);
     },[timesheetSubmissionTerms]);
 
-    if(isLoading){
-      return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
-    }
-
 
     return (
-      <>
-      {
-        contractedServices?.length !== 0 ?
         <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={`${style.extentionGrid}`}>
                     <div className={style.extentionLableStyle}>Number of Timesheets to Submit for Services Performed</div>
                     <InputGroup className={style.fourFieldWidth} type="number" min="0" value={timeSheetCount} onChange={(e) => setTimeSheetCount(parseInt(e.target.value))} />
                 </div>
                 <div>
                     {timesheetFields}
                 </div>
-                {
-                  // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                  //     <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
-                  //     <div className={`${style.displayInRow}  `}>
-                  //         <FormControlLabel
-                  //             control={
-                  //                 <Switch checked={contractedTimeCommitment} className={`${style.textAlignLeft}`} onChange={() => setContractedTimeCommitment(!contractedTimeCommitment)} />
-                  //             }
-                  //             className={`${style.switchFontStyle}`}
-                  //             label={contractedTimeCommitment ? 'YES' : 'NO'}
-                  //         />
-                  //         {timeSheetCount === 1 && (
-                  //             <div className={style.displayInRow}>
-                  //                 <InputGroup className={`${style.fourFieldWidth} ${style.marginLeft20} ${style.marginTop15}`}  placeholder="HH" type='number' min="0"
-                  //                 value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e.target.value.slice(0, limit))} />
-                  //                 <select
-                  //                     name="class"
-                  //                     id="Class"
-                  //                     value={contractedTimeCommitmentFrequency}
-                  //                     onChange={(e) => setContractedTimeCommitmentFrequency(e.target.value)}
-                  //                     className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop} `}>
-                  //                     <option value="WEEK" >
-                  //                         Week
-                  //                     </option>
-                  //                     <option value="MONTH" >
-                  //                         Month
-                  //                     </option>
-                  //                     <option value="YEAR" >
-                  //                         Year
-                  //                     </option>
-                  //                 </select>
-                  //             </div>
-                  //         )}
-                  //         {timeSheetCount > 1 && (
-                  //             <div className={style.displayInRow}>
-                  //                 <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} ${style.marginTop10}`}>
-                  //                     <EditableText  placeholder="HH" type='number' min="0" className={style.editableTextSpecifiedStyle}
-                  //                     value={contractedTimeCommitmentHour} onChange={(e) => setContractedTimeCommitmentHour(e.slice(0, limit))} />
-                  //                     <div className={style.textElementWithNurse}>Specified: 160</div>
-                  //                 </div>
-                  //                 <select
-                  //                     name="class"
-                  //                     id="Class"
-                  //                     value={contractedTimeCommitmentFrequency}
-                  //                     onChange={(e) => setContractedTimeCommitmentFrequency(e.target.value)}
-                  //                     className={`${style.threeFieldWidth} ${style.marginLeft20} ${style.marginTop10} `}>
-                  //                     <option value="WEEK" >
-                  //                         Week
-                  //                     </option>
-                  //                     <option value="MONTH" >
-                  //                         Month
-                  //                     </option>
-                  //                     <option value="YEAR" >
-                  //                         Year
-                  //                     </option>
-                  //                 </select>
-                  //             </div>
-                  //         )}
-                  //     </div>
-                  // </div>
-                }
-
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Planned Absence Notification Days limit*</div>
-                    <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value={plannedAbsence}  placeholder="0" type='number' min="0" onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
-                        <div className={style.textElementWithoutBackgroundDays}>Days</div>
-                    </div>
-                </div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed *</div>
-                    <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                        <EditableText value={maxUnplannedAbsence}  placeholder="0" type='number' min="0" onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
-                        <div className={style.textElementWithoutBackgroundDays}>Days</div>
-                    </div>
-                </div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Invoice Processing Day Range Goal*</div>
-                    <div className={style.displayInRow}>
-                        <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
-                            <EditableText value={invoiceProcessingDay}  placeholder="0" type='number' min="0" onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
-                            <div className={style.textElementWithoutBackgroundDays}>Days</div>
-                        </div>
-                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} `}>
-                            <div className={style.textElementWithNurse}>Threshold</div>
-                            <EditableText value={invoiceProcessingDayThreshold}  placeholder="0" type='number' min="0" onChange={(e) => setInvoiceProcessingDayThreshold(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
-                        </div>
-                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder}`}>
-                            <div className={style.textElementWithNurse}>Goal</div>
-                            <EditableText value={invoiceProcessingDayGoal}  placeholder="0" type='number' min="0" onChange={(e) => setInvoiceProcessingDayGoal(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
-                        </div>
-                    </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Contracted Activity to include for timesheet*</div>
+                    <InputGroup placeholder="All Activities" className={style.fullWidth} readOnly />
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on activity service date *</div>
@@ -419,7 +459,7 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
                     </div>
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on contract end date</div>
+                    <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on contract end date *</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
                         <EditableText value={dayLimitForSubmissionBasedOnContractEndDate}  placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
                         <div className={style.textElementWithoutBackgroundDays}>Days</div>
@@ -433,12 +473,7 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId}) =>
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleContinue(); getViewPage7(true); getCurrentPage('Payment & Compensation') }}>CONTINUE</button>
                 </div>
             </div>
-        </div>:
-        (
-          <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Contracted Services Specification'} title={'NO SERVICES FOUND'} description={'No Contracted Services Specification Is Found.'} buttonText={'ADD SERVICES'}/>
-        )
-      }
-      </>
+        </div>
     )
 }
 

@@ -67,9 +67,12 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const [contractorNameSuffix, setContractorNameSuffix] = useState({ id: '', suffix: '' });
   const [contractorEmail, setContractorEmail] = useState('');
   const [contractorPhone, setContractorPhone] = useState(0);
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [zipCode, setZipCode] = useState('');
+  const [address, setAddress] = useState({
+    addressLine: '',
+    city: '',
+    state: '',
+    zipcode:''
+  })
   const [siteLevelTitle, setSiteLevelTitle] = useState({ title: '', id: '' });
   const [departmentLevelDepartment, setDepartmentLevelDepartment] = useState('');
   const [departmentLevelTitle, setDepartmentLevelTitle] = useState({ title: '', id: '' });
@@ -114,9 +117,10 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       setContractorMiddleName(userProviderData?.name?.middleName);
       setContractorPhone(userProviderData?.communication?.mobileNumber);
       setContractorEmail(userProviderData?.email?.officialEmail);
-      setCity(userProviderData?.address?.city);
-      setState(userProviderData?.address?.state);
-      setZipCode(userProviderData?.address?.zipcode);
+      setAddress(userProviderData?.address);
+      // setCity(userProviderData?.address?.city);
+      // setState(userProviderData?.address?.state);
+      // setZipCode(userProviderData?.address?.zipcode);
       setSelectedRoles(userProviderData?.roles || []);
       setContracts(userProviderData?.contracts);
       let contractData = userProviderData?.contracts?.filter(data => data?.id === contractId)?.map(data => data)[0];
@@ -376,9 +380,9 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       },
       "roles": roles,
       "address": {
-        "city": city,
-        "state": state,
-        "zipcode": zipCode
+        "city": address?.city,
+        "state": address?.state,
+        "zipcode": address?.zipcode
       },
       "tenant": {
         "tenantId": TenantID
@@ -626,22 +630,28 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>Address*</div>
-            <div className={style.grid3}>
+            <div>
+            <InputGroup className={style.fullWidth} placeholder="Street"
+              value={address?.addressLine}
+              onChange={(e)=>setAddress({...address, addressLine:e.target.value})}
+              onFocus={() => { getSelectedField('Address Street') }}/>
+            <div className={`${style.grid3} ${style.marginTop20}`}>
               <InputGroup className={style.fullWidth} placeholder="City"
-                value={city}
+                value={address?.city}
                 maxLength={50}
                 onFocus={() => { getSelectedField('Address City') }}
-                onChange={(e) => setCity(e.target.value)} />
+                onChange={(e) => setAddress({...address, city:e.target.value})} />
               <InputGroup className={style.fullWidth} placeholder="State"
-                value={state}
+                value={address?.state}
                 maxLength={20}
                 onFocus={() => { getSelectedField('Address State') }}
-                onChange={(e) => setState(e.target.value)} />
+                onChange={(e) => setAddress({...address, state:e.target.value})} />
               <InputGroup className={style.fullWidth} placeholder="Zipcode"
-                value={zipCode}
+                value={address?.zipcode}
                 maxLength={5}
                 onFocus={() => { getSelectedField('Address Zip Code') }}
-                onChange={(e) => setZipCode(e.target.value)} />
+                onChange={(e) => setAddress({...address, zipcode:e.target.value})} />
+            </div>
             </div>
           </div>
         </div>

@@ -40,7 +40,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   });
   const [contractorEntityTaxId, setContractorEntityTaxId] = useState({
     taxId: "",
-    missing: false
+    missing: false,
+    na: false,
   });
   const [businessEntity, setBusinessEntity] = useState({
     name: ''
@@ -263,11 +264,15 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   }
 
   const updatePhone = (e) => {
-    if (e.target.value?.length < 16) {
+    if (e.target.value?.length < 15) {
       let number = FormatPhoneNumber(e.target.value)
-      setBusinessEntityUser({ ...businessEntityUser, contactNumber: { number: number, missing: businessEntityUser?.contactNumber?.missing } });
+      setBusinessEntityUser({ ...businessEntityUser, contactNumber: { number: number, missing: false } });
       setIsUserUpdated(true);
     }
+  }
+
+  const handleNumberMissing = (value) => {
+    setBusinessEntityUser({ ...businessEntityUser, contactNumber: { number: '', missing: value } });
   }
 
   const handleSameContact = () => {
@@ -306,15 +311,17 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 <div className={style.extentionLableStyle}>Vendor NPIN*</div>
                 <div className={style.twoCol}>
                   <InputGroup className={style.fullWidth}
+                    type="tel"
+                    maxLength={10}
                     disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
-                    value={contractorNPIN?.npin} placeholder="Enter Contractor NPIN"
-                    onChange={(e) => setContractorNPIN({ ...contractorNPIN, npin: e.target.value })} />
+                    value={contractorNPIN?.npin} placeholder="Enter Vendor NPIN"
+                    onChange={(e) =>e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value })} />
                   <div className={`${style.displayInRow}`}>
                     <FormGroup className={style.marginLeft20}>
-                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
+                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked, notApplicable: false, npin:'' })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
                     </FormGroup>
                     <FormGroup>
-                      <FormControlLabel control={<Checkbox value="NA" checked={contractorNPIN?.notApplicable} onChange={(e) => setContractorNPIN({ ...contractorNPIN, notApplicable: e.target.checked })} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                      <FormControlLabel control={<Checkbox value="NA" checked={contractorNPIN?.notApplicable} onChange={(e) => setContractorNPIN({ ...contractorNPIN, notApplicable: e.target.checked, missing:false, npin:'' })} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
                     </FormGroup>
 
                   </div>
@@ -324,14 +331,14 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 onFocus={() => { getSelectedField('Contractor Entity Tax ID') }}>
                 <div className={style.extentionLableStyle}>Vendor Tax ID*</div>
                 <div className={style.twoCol}>
-                  <InputGroup className={style.fullWidth} disabled={contractorEntityTaxId?.missing} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
-                    onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, taxId: e.target.value })} />
+                  <InputGroup className={style.fullWidth} disabled={contractorEntityTaxId?.missing || contractorEntityTaxId?.na} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
+                    onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, taxId: e.target.value, missing: false, na: false })} />
                   <div className={`${style.displayInRow}`}>
                     <FormGroup className={style.marginLeft20}>
-                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorEntityTaxId?.missing} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, missing: e.target.checked })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
+                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorEntityTaxId?.missing} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, missing: e.target.checked, na:false, taxId: ''  })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
                     </FormGroup>
                     <FormGroup>
-                      <FormControlLabel control={<Checkbox value="NA" />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                      <FormControlLabel control={<Checkbox value="NA" checked={contractorEntityTaxId?.na} onChange={(e)=>setContractorEntityTaxId({ ...contractorEntityTaxId, na: e.target.checked, missing:false, taxId: ''  })}/>} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
                     </FormGroup>
                   </div>
                 </div>
@@ -375,11 +382,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   />
                   <FormGroup className={style.marginLeft20}>
                     <FormControlLabel control={<Checkbox value="Missing"
-                    // checked={businessEntityUser?.contactNumber?.missing} onChange={(e) =>
-                    // {
-                    //   setBusinessEntityUser({...businessEntityUser, contactNumber: {missing: e.target.checked, number: businessEntityUser?.contactNumber?.number}});
-                    //   setIsUserUpdated(true);
-                    // }}
                     />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
                   </FormGroup>
                 </div>
@@ -393,7 +395,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                     <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
                     <InputGroup placeholder="Numeric"
                       value={businessEntityUser?.contactNumber?.number}
-                      maxLength={15}
                       disabled={businessEntityUser?.contactNumber?.missing}
                       onChange={(e) => {
                         handleInput(e);
@@ -403,11 +404,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   </div>
                   <FormGroup className={style.marginLeft20}>
                     <FormControlLabel control={<Checkbox value="NA"
-                    // checked={businessEntityUser?.contactNumber?.missing} onChange={(e) =>
-                    // {
-                    //   setBusinessEntityUser({...businessEntityUser, contactNumber: {missing: e.target.checked, number: businessEntityUser?.contactNumber?.number}});
-                    //   setIsUserUpdated(true);
-                    // }}
+                    checked={businessEntityUser?.contactNumber?.missing}
+                    onChange={(e)=>handleNumberMissing(e.target.checked)}
                     />} label={<Typography variant="body2" color="textSecondary">Not Available</Typography>} />
                   </FormGroup>
                 </div>
