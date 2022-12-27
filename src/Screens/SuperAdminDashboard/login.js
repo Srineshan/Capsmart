@@ -21,11 +21,12 @@ const Login = (props) => {
     getLogo();
   }, [])
 
-  const getEntityId = async() => {
-    await axios(`https://rest.timesmart.io/entity-service/entityID`,{
-        method: 'GET'
-    }).then(response=>{
-      cookie.set('entityId',response?.data?.id);
+  const getEntityId = async () => {
+    await axios(`https://rest.timesmart.io/entity-service/entityID`, {
+      method: 'GET',
+      headers: { 'X-subdomain': 'demoidn' },
+    }).then(response => {
+      cookie.set('entityId', response?.data?.id);
       setEntityId(response?.data?.id);
     }).catch(error => {
       console.log('error', error);
