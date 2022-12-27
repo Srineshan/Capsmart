@@ -18,7 +18,7 @@ const SideBar = () => {
             <div className={`${style.cardStyle} ${style.marginTop20}`}>
                 <div className={`${style.displayInCol} ${style.alignCenter}`}>
                     <div className={`${style.userNameStyle} `}>
-                        {currentUserData?.firstName}
+                        {currentUserData?.firstName} {currentUserData?.lastName}
                     </div>
                     <img src={DoctorAnime} className={style.userLogo} />
                 </div>

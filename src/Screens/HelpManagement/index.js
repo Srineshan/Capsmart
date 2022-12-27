@@ -52,8 +52,6 @@ const HelpHome = () => {
     let customerName = sessionStorage.getItem('title');
     const currentUserData = currentUser();
 
-    console.log(currentUserData)
-
     useEffect(() => {
         getTicket();
     }, [showFeedbackTicketResolution, from, to]);

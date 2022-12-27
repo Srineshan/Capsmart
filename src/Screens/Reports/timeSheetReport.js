@@ -338,7 +338,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                             <Run />
                                         </Link>
                                     </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                    {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
                                         <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Time and Payment Log for Contracted Services</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>
@@ -350,7 +350,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <Link to={"/reportTypeOverview/addOnActivities"} className={style.linkStyle}>
                                             <Run />
                                         </Link>
-                                    </div>
+                                    </div> */}
                                 </div>
                             ) : (
                                 <div className={style.scrollStyle}>
