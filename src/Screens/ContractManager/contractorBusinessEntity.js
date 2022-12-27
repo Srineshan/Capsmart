@@ -306,7 +306,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   </ThemeProvider>
                 </div>
               )}
-              <div className={`${style.extentionGrid} ${style.marginTop20}`}
+              <div className={`${style.extentionGrid} ${selectContractInfo === "INDIVIDUAL" && style.marginTop20}`}
                 onFocus={() => { getSelectedField('Contractor NPIN') }}>
                 <div className={style.extentionLableStyle}>Vendor NPIN*</div>
                 <div className={style.twoCol}>
@@ -315,13 +315,13 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                     maxLength={10}
                     disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
                     value={contractorNPIN?.npin} placeholder="Enter Vendor NPIN"
-                    onChange={(e) =>e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value })} />
+                    onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value })} />
                   <div className={`${style.displayInRow}`}>
                     <FormGroup className={style.marginLeft20}>
-                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked, notApplicable: false, npin:'' })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
+                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked, notApplicable: false, npin: '' })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
                     </FormGroup>
                     <FormGroup>
-                      <FormControlLabel control={<Checkbox value="NA" checked={contractorNPIN?.notApplicable} onChange={(e) => setContractorNPIN({ ...contractorNPIN, notApplicable: e.target.checked, missing:false, npin:'' })} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                      <FormControlLabel control={<Checkbox value="NA" checked={contractorNPIN?.notApplicable} onChange={(e) => setContractorNPIN({ ...contractorNPIN, notApplicable: e.target.checked, missing: false, npin: '' })} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
                     </FormGroup>
 
                   </div>
@@ -335,10 +335,10 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                     onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, taxId: e.target.value, missing: false, na: false })} />
                   <div className={`${style.displayInRow}`}>
                     <FormGroup className={style.marginLeft20}>
-                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorEntityTaxId?.missing} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, missing: e.target.checked, na:false, taxId: ''  })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
+                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorEntityTaxId?.missing} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, missing: e.target.checked, na: false, taxId: '' })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
                     </FormGroup>
                     <FormGroup>
-                      <FormControlLabel control={<Checkbox value="NA" checked={contractorEntityTaxId?.na} onChange={(e)=>setContractorEntityTaxId({ ...contractorEntityTaxId, na: e.target.checked, missing:false, taxId: ''  })}/>} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                      <FormControlLabel control={<Checkbox value="NA" checked={contractorEntityTaxId?.na} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, na: e.target.checked, missing: false, taxId: '' })} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
                     </FormGroup>
                   </div>
                 </div>
@@ -404,8 +404,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   </div>
                   <FormGroup className={style.marginLeft20}>
                     <FormControlLabel control={<Checkbox value="NA"
-                    checked={businessEntityUser?.contactNumber?.missing}
-                    onChange={(e)=>handleNumberMissing(e.target.checked)}
+                      checked={businessEntityUser?.contactNumber?.missing}
+                      onChange={(e) => handleNumberMissing(e.target.checked)}
                     />} label={<Typography variant="body2" color="textSecondary">Not Available</Typography>} />
                   </FormGroup>
                 </div>

@@ -18,6 +18,10 @@ body {
     margin: 0 20px !important;
 }
 
+.marginLeft10 {
+    margin-left: 10px !important;
+}
+
 .marginTop20 {
     margin-top: 20px !important;
 }
@@ -445,7 +449,7 @@ body {
 
 .activeContractGridWithoutAction {
     display: grid;
-    grid-template-columns: 6% 6% 16% 11%  18% 11% 11% 11%;
+    grid-template-columns: 6% 6% 16% 11% 18% 11% 11% 11%;
     grid-gap: 10px;
 }
 
@@ -691,6 +695,10 @@ body {
 
 .marginRight {
     margin-right: 10px;
+}
+
+.marginRight5 {
+    margin-right: 5px !important;
 }
 
 .marginRight20 {
@@ -2489,4 +2497,34 @@ input[type=number] {
 
 .pdfViewStyle {
     margin: 0 -55px;
+}
+
+.siteDeptFieldCard {
+    background: #DBD8FA 0% 0% no-repeat padding-box;
+    border: 1px solid #E9E9F0;
+    border-radius: 4px;
+    width: 100%;
+    padding: 5px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: 10px;
+}
+
+.deptCard {
+    background: #F6F5F5 0% 0% no-repeat padding-box;
+    border-radius: 3px;
+    min-height: 23px;
+    min-width: 70px;
+    padding: 5px;
+}
+
+.siteDeptTextStyle {
+    text-align: left;
+    font: normal normal medium 15px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.siteDeptCrossStyle {
+    color: #707070 !important;
 }
