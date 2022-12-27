@@ -171,7 +171,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                                 onChange={(e) => e.target.value >= 0 && setRvuQuantity({
                                                     ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
                                                 })} />
-                                            <select
+                                            {/* <select
                                                 name="class"
                                                 id="Class"
                                                 value={frequency}
@@ -186,7 +186,20 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                                 <option value="YEAR" >
                                                     Per Contract Year
                                                 </option>
-                                            </select>
+                                            </select> */}
+                                            <FormControl className={`${style.twoFieldWidth} ${style.marginLeft} ${style.reduceTop}`} size="small">
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                    value={frequency}
+                                                    onChange={(e) => setFrequency(e.target.value)}
+                                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                >
+                                                    <MenuItem value={'WEEK'}>Per Week</MenuItem>
+                                                    <MenuItem value={'MONTH'}>Per Month</MenuItem>
+                                                    <MenuItem value={'YEAR'}>Per Contract Year</MenuItem>
+                                                </Select>
+                                            </FormControl>
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('FTE Equivalent') }} >

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import TextField from '@mui/material/TextField';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import AddIcon from '@mui/icons-material/Add';
 import InputLabel from '@mui/material/InputLabel';
@@ -14,20 +15,20 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
   const [departmentsSelected, setDepartmentsSelected] = useState([]);
   const [selectedSite, setSelectedSite] = useState(undefined);
   const [siteData, setSiteData] = useState([]);
-  const [defaultSelected, setDefaultSelected] = useState({site:'', dept:''});
+  const [defaultSelected, setDefaultSelected] = useState({ site: '', dept: '' });
   const [departmentList, setDepartmentList] = useState(sites?.filter(site => selectedSite === site?.id)?.map(data =>
     data?.departmentList?.departments
   )[0]);
 
-    useEffect(()=>{
-        setSiteData(selectedSites);
-        setDepartmentsSelected(selectedSites);
-        if(selectedSites?.length === 1){
-          setDefaultSelected({...defaultSelected, site:selectedSites?.[0]?.id});
-        }
-    },[selectedSites])
+  useEffect(() => {
+    setSiteData(selectedSites);
+    setDepartmentsSelected(selectedSites);
+    if (selectedSites?.length === 1) {
+      setDefaultSelected({ ...defaultSelected, site: selectedSites?.[0]?.id });
+    }
+  }, [selectedSites])
 
-    console.log('selected',defaultSelected);
+  console.log('selected', defaultSelected);
 
   const onDepartmentSelect = (e) => {
     const {
@@ -77,8 +78,8 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
 
   const onRemoveDept = (siteIndex, deptIndex, deptId) => {
     setDepartmentsSelected(departmentsSelected?.filter(dept => dept !== deptId)?.map(data => data));
-    let temp = siteData?.filter((site,index) => index !== siteIndex)?.map(data => data);
-    let currentSite = siteData?.filter((site,index) => index === siteIndex)?.map(data => data)[0];
+    let temp = siteData?.filter((site, index) => index !== siteIndex)?.map(data => data);
+    let currentSite = siteData?.filter((site, index) => index === siteIndex)?.map(data => data)[0];
     let departments = currentSite?.departmentList?.departments?.filter((dept, index) => index !== deptIndex)?.map(data => data);
     let site =
     {
@@ -112,6 +113,15 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
             ))}
           </Select>
         </FormControl>
+        {/* <FormControl sx={{ minWidth: 120 }} size="small">
+          <TextField id="outlined-basic" label="Site" variant="outlined" size='small'
+            inputProps={{
+              style: {
+                height: 15,
+              },
+            }}
+          />
+        </FormControl> */}
         <FormControl sx={{ minWidth: 120 }} size="small">
           <InputLabel id="demo-multiple-checkbox-label">Select Dept</InputLabel>
           <Select
@@ -132,22 +142,31 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
             }
           </Select>
         </FormControl>
+        {/* <FormControl sx={{ minWidth: 120 }} size="small">
+          <TextField id="outlined-basic" label="Dept" variant="outlined" size='small'
+            inputProps={{
+              style: {
+                height: 15,
+              },
+            }}
+          />
+        </FormControl> */}
         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
           <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={onAdd} />
         </div>
       </div>
       {
-        siteData?.filter(site=>site?.departmentList?.departments?.length !== 0)?.map((site, siteIndex) => (
+        siteData?.filter(site => site?.departmentList?.departments?.length !== 0)?.map((site, siteIndex) => (
           <div className={`${style.siteDeptFieldCard} ${style.marginTop10}`}>
             {
 
-            site?.departmentList?.departments?.filter(dept=>dept?.departmentName?.name !== undefined)?.map((dept, deptIndex) => (
+              site?.departmentList?.departments?.filter(dept => dept?.departmentName?.name !== undefined)?.map((dept, deptIndex) => (
                 <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
                   <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{dept?.departmentName?.name}-{site?.siteName?.siteName}</div>
                   <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => { onRemoveDept(siteIndex, deptIndex, dept?.id) }} />
                 </div>
-            ))
-          }
+              ))
+            }
           </div>
         ))
       }
