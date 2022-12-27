@@ -335,7 +335,7 @@ const ReportTypeOverview = () => {
     }
 
     const getPayments = async () => {
-        const { data: chartData } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
+        const { data: chartData } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
         setPaymentsReportLog(chartData);
         if (chartData) {
             let temp = [];
@@ -405,12 +405,12 @@ const ReportTypeOverview = () => {
     }
 
     const getPaymentStatus = (value) => {
-        if(value === 'PAYMENT')
-        return 'Payment';
-        else if(value === 'REJECTED_BY_APPROVER')
-        return 'Rejected By Approver';
-        else if(value === 'COMPLETED')
-        return 'Completed';
+        if (value === 'PAYMENT')
+            return 'Payment';
+        else if (value === 'REJECTED_BY_APPROVER')
+            return 'Rejected By Approver';
+        else if (value === 'COMPLETED')
+            return 'Completed';
     }
 
     let activityPerformed = [];
