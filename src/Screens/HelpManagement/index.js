@@ -77,7 +77,7 @@ const HelpHome = () => {
     const getShowFeedbackTicketResolution = (value) => {
         setShowFeedbackTicketResolution(value);
     }
-    console.log(currentUserData?.roles?.includes('Entity Sys Admin'))
+
     const getTicket = async () => {
         if (currentUserData?.roles?.includes('Entity Sys Admin')) {
             const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
