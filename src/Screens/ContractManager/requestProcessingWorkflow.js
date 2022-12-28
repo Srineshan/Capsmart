@@ -208,12 +208,6 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Timesheet Processing Workflow') }}>BACK</button>
                 <div>
-                    <button className={style.newContractOutlinedButton}
-                        onClick={() => {
-                            submit();
-                        }
-                        }
-                    >SAVE IN-PROGRESS</button>
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
                         onClick={() => {
                             submit();

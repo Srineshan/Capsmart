@@ -13,7 +13,7 @@ import style from './index.module.scss';
 
 const VALUES3 = ['Activity Reviewer'];
 
-const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isMultiSiteEntity}) => {
+const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert}) => {
     const [timeSheetCount, setTimeSheetCount] = useState(0);
     const [showSelectBox, setShowSelectBox] = useState(false);
     const [selectBoxIndex, setSelectBoxIndex] = useState(-1);
@@ -379,7 +379,7 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
 
     console.log('selected value', paymentSource);
 
-    const handleContinue = async() => {
+    const handleContinue = async(buttonType) => {
         let data = {
             "timesheetSubmissionServicesCount": {
               "count": timeSheetCount
@@ -418,6 +418,9 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
         else {
             ErrorToaster('Unexpected Error');
         }
+      if(buttonType !== 'Continue'){
+        getShowAlert(true);
+      }
     }
 
 
@@ -469,8 +472,8 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contracted Services Specification')}}>BACK</button>
                 <div>
-                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
-                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleContinue(); getViewPage7(true); getCurrentPage('Payment & Compensation') }}>CONTINUE</button>
+                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
+                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleContinue('Continue'); getViewPage7(true); getCurrentPage('Payment & Compensation') }}>CONTINUE</button>
                 </div>
             </div>
         </div>

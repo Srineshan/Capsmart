@@ -436,8 +436,8 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
         </div>
       </div>
       <div className={style.spaceBetween}>
-        <p className={style.poweredBy}>Powered by - TimeSmart.AI</p>
-        <p className={style.poweredBy}>© TimeSmart.AI</p>
+        <p className={style.poweredBy}>Powered by - TimeSmartAI</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI</p>
       </div>
     </div>
   )

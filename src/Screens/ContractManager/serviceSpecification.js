@@ -128,7 +128,6 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
           <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contractor Business Entity') }}>BACK</button>
             <div>
-              <button className={style.newContractOutlinedButton}>SAVE IN-PROGRESS</button>
               <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => {getViewPage6(true); getCurrentPage('Timesheet Submission Terms');}}>CONTINUE</button>
             </div>
           </div>

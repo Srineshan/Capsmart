@@ -321,7 +321,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         getViewPage7={getViewPage7}
                         getCurrentPage={getCurrentPage}
                         contractId={contractId}
-                        isMultiSiteEntity={isMultiSiteEntity}/>
+                        isMultiSiteEntity={isMultiSiteEntity}
+                        getShowAlert={getShowAlert}/>
                 ) : currentPage === "Payment & Compensation" ? (
                     <PaymentAndCompensation
                         selectContractInfo={selectContractInfo}
@@ -329,6 +330,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         getCurrentPage={getCurrentPage}
                         contractId={contractId}
                         getSelectedField={getSelectedField}
+                        getShowAlert={getShowAlert}
                     />
                 ) : (currentPage === "Contracted Add on service specification" || currentPage === "Contracted Services Specification") ?
                     <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId={contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo} isMultiSiteEntity={isMultiSiteEntity} />
@@ -348,6 +350,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             contractId={contractId}
                             contractName={contractName}
                             getSelectedField={getSelectedField}
+                            getShowAlert={getShowAlert}
                         />
                     )
                         : selectContractInfo === "INDIVIDUAL" && currentPage === "Contracted Services Provider(s)" ? (

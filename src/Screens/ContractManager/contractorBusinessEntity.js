@@ -25,7 +25,7 @@ const switchTheme = createTheme({
 });
 
 
-const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField }) => {
+const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField, getShowAlert }) => {
   const [isUserUpdated, setIsUserUpdated] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -187,6 +187,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     if (buttonType === 'Continue') {
       getViewPage5(true);
       getCurrentPage('Contracted Services Specification');
+    }else{
+      getShowAlert(true);
     }
   }
 
