@@ -1,27 +1,27 @@
-.siteDeptFieldCard{
+.siteDeptFieldCard {
     background: #DBD8FA 0% 0% no-repeat padding-box;
     border: 1px solid #E9E9F0;
     border-radius: 4px;
     width: 100%;
     padding: 5px 10px;
     display: flex;
-    flex-wrap:wrap;
+    flex-wrap: wrap;
     grid-gap: 10px;
 }
 
-.siteDeptGrid{
+.siteDeptGrid {
     display: grid;
     grid-template-columns: 1fr 1fr 35px;
     grid-gap: 10px;
 }
 
-.twoCol{
+.twoCol {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 10px;
 }
 
-.siteCard{
+.siteCard {
     background: #F6F5F5 0% 0% no-repeat padding-box;
     border-radius: 3px;
     max-height: 23px;
@@ -29,78 +29,78 @@
     padding: 5px;
 }
 
-.deptCard{
+.deptCard {
     background: #F6F5F5 0% 0% no-repeat padding-box;
     border-radius: 3px;
-    max-height: 23px;
+    min-height: 23px;
     min-width: 70px;
     padding: 5px;
 }
 
-.displayInRow{
+.displayInRow {
     display: flex;
     flex-direction: row;
 }
 
-.siteDeptTextStyle{
+.siteDeptTextStyle {
     text-align: left;
     font: normal normal medium 15px/17px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
 }
 
-.alignCenter{
+.alignCenter {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
 }
 
-.verticalAlignCenter{
+.verticalAlignCenter {
     display: flex;
     align-items: center;
     height: 100%;
 }
 
-.marginLeft10{
+.marginLeft10 {
     margin-left: 10px !important;
 }
 
-.marginRight10{
+.marginRight10 {
     margin-right: 10px !important;
 }
 
-.marginRight5{
+.marginRight5 {
     margin-right: 5px !important;
 }
 
-.marginTop40{
+.marginTop40 {
     margin-top: 40px;
 }
 
-.marginTop20{
+.marginTop20 {
     margin-top: 20px;
 }
 
-.marginTop10{
+.marginTop10 {
     margin-top: 10px;
 }
 
-.siteDeptCrossStyle{
+.siteDeptCrossStyle {
     color: #707070 !important;
 }
 
-.cursorPointer{
+.cursorPointer {
     cursor: pointer;
 }
 
-.addStyle{
+.addStyle {
     background: #7165E3 0% 0% no-repeat padding-box;
     box-shadow: 0px 0px 6px #00000029;
     border-radius: 8px;
 }
 
-.dayStyle{
+.dayStyle {
     background: #F1F3F4 0% 0% no-repeat padding-box;
     font: normal normal 600 13px/20px Montserrat;
     color: #94979A;
@@ -110,12 +110,12 @@
     margin-right: 8px;
 }
 
-.selectedDay{
+.selectedDay {
     background: #7165E3 0% 0% no-repeat padding-box;
     color: white;
 }
 
-.greenBase{
+.greenBase {
     background-color: #75f0ac;
     color: #52575D;
     font: normal normal medium 20px/27px Montserrat;
@@ -125,14 +125,14 @@
     line-height: 15px;
 }
 
-.totalTextStyle{
+.totalTextStyle {
     font: normal normal medium 14px/15px Montserrat;
     letter-spacing: 0px;
     color: #7165E3;
     text-align: center;
 }
 
-.daysWarningText{
+.daysWarningText {
     background: #FAE2E2 0% 0% no-repeat padding-box;
     border: 2px solid #EBF2F7;
     border-radius: 2px;
@@ -142,25 +142,25 @@
     padding: 5px 15px;
 }
 
-.noContractsBox{
+.noContractsBox {
     border: 2px dashed #c4bef3;
     padding: 60px;
     margin: 50px 20px;
 }
 
-.noContractsFontStyle{
+.noContractsFontStyle {
     font: normal normal bolder 28px/35px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
     text-align: center;
 }
 
-.linkStyle{
+.linkStyle {
     text-decoration: underline;
     color: #8080ff;
 }
 
-.justifyCenter{
+.justifyCenter {
     display: flex;
     justify-content: center !important;
 }

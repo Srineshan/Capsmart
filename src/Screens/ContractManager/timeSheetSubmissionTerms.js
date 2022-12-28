@@ -5,20 +5,21 @@ import ArrowDown from './../../images/arrowDown.png';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
+import MenuItem from '@mui/material/MenuItem';
+import CloseIcon from '@mui/icons-material/Close';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
 import Typography from '@mui/material/Typography';
 import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
-const VALUES3 = ['Activity Reviewer'];
-
 const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert}) => {
     const [timeSheetCount, setTimeSheetCount] = useState(0);
     const [showSelectBox, setShowSelectBox] = useState(false);
     const [selectBoxIndex, setSelectBoxIndex] = useState(-1);
     const [contractedTimeCommitment, setContractedTimeCommitment] = useState(false);
-    const [activityTags, setActivityTags] = useState(VALUES3);
     const [contractedActivityTags, setContractedActivityTags] = useState([]);
     const [timeSheetLabelOne, setTimeSheetLabelOne] = useState('');
     const [servicePeriod, setServicePeriod] = useState('');
@@ -194,10 +195,6 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
         setTimesheetValues(timeSheetValueData);
     }
 
-      const getTagProps = (_v, index) => ({
-        minimal: true,
-    });
-
     const handleTimesheetValue = (i, name, value) => {
       let temp = timeSheetLabelData;
       if(name === 'label'){
@@ -207,9 +204,10 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
       }
       setTimeSheetLabelData(temp);
       formatActivities();
+      getTimesheetFields();
     }
 
-    const handleContractedActivityTagsRemove = (tags,index) => {
+    const handleContractedActivityTagsRemove = (index) => {
       setContractedActivityTags(contractedActivityTags?.filter((data,indexValue)=>index !== indexValue)?.map(data=>data));
     }
 
@@ -295,66 +293,54 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
                                     }
                                 </div>
                             )}
-                            <TagInput
-                                placeholder="Contracted Activity to include for timesheet 1*"
-                                values={contractedActivityTags?.filter((data,index)=>data?.index === i)?.map(data=>`${data?.type}-${data?.activity}`) || []}
-                                onRemove={handleContractedActivityTagsRemove}
-                                separator={/[\s,]/}
-                                addOnBlur={true}
-                                addOnPaste={true}
-                                tagProps={getTagProps}
-                                className={style.marginTop20}
-                            />
+                            {contractedActivityTags?.filter((data, index) => data?.index === i)?.map(data=>data)?.length !== 0 &&
+                              <div className={`${style.siteDeptFieldCard} ${style.marginTop10}`}>
+                            {
+                              contractedActivityTags?.filter((data, index) => data?.index === i)?.map((data, index) => (
+                                  <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
+                                    <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{data?.type}-{data?.activity}</div>
+                                    <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => handleContractedActivityTagsRemove(index)} />
+                                  </div>
+                              ))
+                            }
+                            </div>
+                          }
                         </div>
                     </div>
                 )}
+              <div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Payment Source*</div>
-                    <div className={style.displayInRow}>
-                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onClick={()=>setSelectedIndex(i)}>
-                      <div></div>
                       <SiteDepartmentField sites={sites} getSelectedSites={onSelectSite} selectedSites={paymentSource?.[i] ? new Array(1).fill(paymentSource?.[i]) : []} isMultiSiteEntity={isMultiSiteEntity} />
                     </div>
-                        <p className={style.threeFieldWidth}></p>
-                    </div>
                 </div>
+
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Service log Period for timesheet submission*</div>
-                    <div className={style.displayInRow}>
-                        <select
-                            name="class"
-                            id="Class"
-                            defaultValue={timeSheetLabelData?.[i]?.value}
-                            key={`logPeriod${i}`}
-                            onChange={(e) => handleTimesheetValue(i, 'value', e.target.value)}
-                            className={`${style.fullWidth}`}>
-                            <option value="0" >
-                                Select Service Log Period...
-                            </option>
-                            <option value="ENDOFMONTH" selected={timeSheetLabelData?.[i]?.value === "ENDOFMONTH"}>
-                                End of the month
-                            </option>
-                            <option value="ENDOFEVERYWEEK" selected={timeSheetLabelData?.[i]?.value === "ENDOFEVERYWEEK"}>
-                                End of Every Week
-                            </option>
-                            <option value="EVERY2WEEKS" selected={timeSheetLabelData?.[i]?.value === "EVERY2WEEKS"}>
-                                Every 2 Weeks
-                            </option>
-                            <option value="EVERY4WEEKS" selected={timeSheetLabelData?.[i]?.value === "EVERY4WEEKS"}>
-                                Every 4 Weeks
-                            </option>
-                            <option value="ONDAYOFSERVICE" selected={timeSheetLabelData?.[i]?.value === "ONDAYOFSERVICE"}>
-                                On Day of Service
-                            </option>
-                        </select>
-                        <p className={style.threeFieldWidth}></p>
-                    </div>
+                    <FormControl size="small">
+                        <Select
+                            labelId="demo-select-small"
+                            id="demo-select-small"
+                            key={`timesheetlabeldata ${timeSheetLabelData?.[i]?.value}`}
+                            value={timeSheetLabelData?.[i]?.value}
+                            onChange={(e)=> handleTimesheetValue(i, 'value', e.target.value)}
+                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                        >
+                          <MenuItem value={'ENDOFMONTH'}>End of the month</MenuItem>
+                          <MenuItem value={'ENDOFEVERYWEEK'}>End of Every Week</MenuItem>
+                          <MenuItem value={'EVERY2WEEKS'}>End of Every Week</MenuItem>
+                          <MenuItem value={'EVERY4WEEKS'}>End of Every Week</MenuItem>
+                          <MenuItem value={'ONDAYOFSERVICE'}>On Day of Service</MenuItem>
+                        </Select>
+                    </FormControl>
                 </div>
             </div>
           )
         }
         setTimesheetFields(temp);
       }
+
+    console.log('data', timeSheetLabelData?.[0]?.value);
 
     const getTimeSheetSubmissionTerms = async() => {
         const {data: timesheetSubmissionTerms} = await GET(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`);
@@ -375,9 +361,6 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
           setPaymentSource(paymentSourceTemp);
         }
     };
-
-
-    console.log('selected value', paymentSource);
 
     const handleContinue = async(buttonType) => {
         let data = {
