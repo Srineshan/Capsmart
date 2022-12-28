@@ -460,9 +460,11 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
             {newServiceProviderDialog && (
                 <NewServiceProvider getNewServiceProviderDialog={getNewServiceProviderDialog} contractId={contractId} contractType={contractType} contractName={contractName} />
             )}
-            {showAlert && (
-              <Alert getShowAlertDialog={getShowAlert} header={'SAVE-IN PROGRESS'} content={'Your contract will be saved in draft, you can edit it later...'} redirectTo={'contracts'}/>
-            )}
+            {
+            //   showAlert && (
+            //   <Alert getShowAlertDialog={getShowAlert} header={'SAVE-IN PROGRESS'} content={'Your contract will be saved in draft, you can edit it later...'} redirectTo={'contracts'}/>
+            // )
+          }
         </div>
     )
 }
