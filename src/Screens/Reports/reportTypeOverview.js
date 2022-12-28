@@ -13,6 +13,7 @@ import { toPDF } from '../../Components/ConvertToPdf';
 import Pie from './d3-chart/pieGraph';
 import Watermark from 'react-awesome-watermark';
 import styled from 'styled-components';
+import SideBar from '../../Components/Sidebar';
 import StackedBarChartBaseLayout2 from './d3-chart/BarChart/stackedBarChartBaseLayout2';
 import StackedBarChartBaseLayout3 from './d3-chart/BarChart/stackedBarChartBaseLayout3';
 import ApexPieChart from './chart-data/pie-chart';
@@ -77,6 +78,7 @@ const ReportTypeOverview = () => {
     const [stackedSeries, setStackedSeries] = useState([]);
     const [stackedCategories, setStackedCategories] = useState([]);
     const [isDownloadClicked, setIsDownloadClicked] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
     const [isNonCompliantReportTileClicked, setIsNonCompliantReportTileClicked] = useState(false);
     const podTypes = ['Medical Staff Membership & Privileges',
         'Primary Speciality Board Certification',
@@ -188,6 +190,10 @@ const ReportTypeOverview = () => {
 
     const getIsUpdated = (value) => {
         setIsUpdated(value);
+    }
+
+    const getIsExpanded = (value) => {
+        setIsExpanded(value);
     }
 
     const getIsDownloadClicked = (value) => {
@@ -623,8 +629,12 @@ const ReportTypeOverview = () => {
     return (
         <Fragment>
             <Navbar />
-            <div className={`${style.bigCardGrid} ${style.margin20WithoutTop} ${style.marginTop10}`}>
-                <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} getIsUpdated={getIsUpdated} />
+            <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20WithoutTop} ${style.marginTop10}`}>
+                <div>
+                    <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+                        <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} getIsUpdated={getIsUpdated} />
+                    </SideBar>
+                </div>
                 <div>
                     <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isUpdated={isUpdated} isLoading={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} />
                     <FullScreen handle={handle}>
@@ -841,11 +851,11 @@ const ReportTypeOverview = () => {
                                                             <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
                                                         </div>
                                                     </div> */}
-                                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                                    {/* <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div> */}
                                                     {paymentsReportLog?.paymentPastDue?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableHeading2={'Contract Name 1'}
+                                                                tableHeading2={paymentsReportLog?.paymentPastDue?.[0]?.timesheet?.contract?.name}
                                                                 tableType={'Timesheet Payment Past Due'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Current Status', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.paymentPastDue}
@@ -857,7 +867,7 @@ const ReportTypeOverview = () => {
                                                     {paymentsReportLog?.paymentDelayed?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableHeading2={'Contract Name 1'}
+                                                                tableHeading2={paymentsReportLog?.paymentDelayed?.[0]?.timesheet?.contract?.name}
                                                                 tableType={'Delayed Timesheet Payments'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Current Status', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.paymentDelayed}
@@ -869,7 +879,7 @@ const ReportTypeOverview = () => {
                                                     {paymentsReportLog?.rejected?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableHeading2={'Contract Name 1'}
+                                                                tableHeading2={paymentsReportLog?.rejected?.[0]?.timesheet?.contract?.name}
                                                                 tableType={'Rejected Timesheet Payments'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Current Status', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.rejected}
@@ -881,7 +891,7 @@ const ReportTypeOverview = () => {
                                                     {paymentsReportLog?.paymentNotDone?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableHeading2={'Contract Name 1'}
+                                                                tableHeading2={paymentsReportLog?.paymentNotDone?.[0]?.timesheet?.contract?.name}
                                                                 tableType={'Timesheet Not Paid'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Current Status', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.paymentNotDone}
@@ -893,7 +903,7 @@ const ReportTypeOverview = () => {
                                                     {paymentsReportLog?.paidOnTime?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableHeading2={'Contract Name 1'}
+                                                                tableHeading2={paymentsReportLog?.paidOnTime?.[0]?.timesheet?.contract?.name}
                                                                 tableType={'Timesheet Paid On Time'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Current Status', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.paidOnTime}

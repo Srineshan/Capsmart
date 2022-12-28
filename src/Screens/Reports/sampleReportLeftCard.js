@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { InputGroup } from '@blueprintjs/core';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -13,8 +12,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear } from 'date-fns';
 import SaveReport from './saveReport';
-import DoctorAnime from './../../images/doctorAnime.png';
-import ChevronRight from './../../images/chevronRight.png';
 import { useParams } from 'react-router-dom';
 
 import style from './index.module.scss';
@@ -51,7 +48,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
     const [selectedContractedServiceProvider, setSelectedContractedServiceProvider] = useState([]);
     const [selectedContractedServiceProviderToSend, setSelectedContractedServiceProviderToSend] = useState([]);
     const [user, setUsers] = useState([]);
-    const [showCustomRangeSelection, setShowCustomRangeSelection] = useState(false);
     const [from, setFrom] = useState(startOfWeek(new Date()));
     const [to, setTo] = useState(endOfWeek(new Date()));
     let reportFilter = JSON.parse(sessionStorage.getItem('reportFilter'));
@@ -273,22 +269,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
 
     return (
         <div>
-            <div className={style.cardStyle}>
-                <div className={`${style.spaceBetween} ${style.alignCenter}`}>
-                    <div className={style.displayInRow}>
-                        <img src={DoctorAnime} className={style.userLogo} />
-                        <div className={`${style.marginLeft10} ${style.marginTop}`}>
-                            <div className={style.userNameStyle}>
-                                Hi, {userDetail?.userName}
-                            </div>
-                            <div className={style.loginStatus}>
-                                last login {format(new Date(currentUserDetails?.lastLogin || new Date()), 'MMM d,yy h:mm a')}
-                            </div>
-                        </div>
-                    </div>
-                    <img src={ChevronRight} className={style.roundChevronForUser} />
-                </div>
-            </div>
             <div className={`${style.leftCard} ${style.marginTop20}`}>
                 <div className={style.reportTypeTextStyle}>Reporting Parameter Selection For This Report</div>
                 {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
