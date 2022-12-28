@@ -130,7 +130,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
     return (
         <div>
             <div>
-                <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop20}`}>
+                <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
                         <p className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} key={index}>{data}</p>
                     ))}
@@ -143,7 +143,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                     tableData?.type === "dot" ? (
                                         <div className={`${style.displayInRow} ${style.marginLeft30} ${style.verticalAlignCenter}`}>
                                             <Tooltip title={tableData?.tooltipValue?.[index]} arrow>
-                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : ''}`}></div>
+                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : ''}`}></div>
                                             </Tooltip>
                                         </div>
                                     ) : tableData?.type === "text" ? (

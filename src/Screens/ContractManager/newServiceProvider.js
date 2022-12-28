@@ -139,12 +139,17 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
       );
     });
 
-  const getRolesData = async () => {
-    const { data: roles } = await GET(`user-management-service/roles?roleType=APP`);
-    if (roles) {
-      setRoles(roles);
+    const getRolesData = async() => {
+      const {data: roles} = await GET(`user-management-service/roles?roleType=APP`);
+      if(roles){
+        setRoles(roles);
+      }
+      let temp = selectedRoles;
+      if(!selectedRoles?.map(data=>data?.roleName)?.includes('Activity Logger')){
+        temp.push(roles?.filter(role=>role?.roleName === 'Activity Logger')?.map(data=>data)[0]);
+        setSelectedRoles(temp);
+      }
     }
-  }
 
   const getContractDetail = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);

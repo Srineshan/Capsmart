@@ -173,6 +173,7 @@ const App = ({ props }) => {
               "/referenceList/proofOfDocumentByEntity",
               "/referenceList/holidayListByIndustries",
               "/referenceList/contractDoumentTypeForUpload",
+              "/referenceList/countriesSupportedWithStates",
             ].map((path) => (
               <Route
                 key={path}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Dialog, Classes, Icon, Intent, TextArea, Radio, RadioGroup, InputGroup } from '@blueprintjs/core';
 import { TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -8,6 +8,7 @@ import { DateInput } from "@blueprintjs/datetime";
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import Typography from '@mui/material/Typography';
 import UserLogo1 from './../../images/userLogo3.png';
 import UserLogo2 from './../../images/userLogo4.png';
@@ -16,6 +17,10 @@ import UserLogo4 from './../../images/userLogo6.png';
 import Search from './../../images/search.png';
 import BlueChevronLeft from './../../images/blueChevronLeft.png';
 import style from './index.module.scss';
+import { TenantID, POST, GET } from '../dataSaver';
+import { format } from 'date-fns';
+import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { currentUser } from '../../utils/auth';
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
     width: 28,
@@ -59,11 +64,87 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
     },
   }));
 
-const SaveReport = ({getSaveReportDialog}) => {
+const SaveReport = ({getSaveReportDialog, dataToUseInReport, reportType}) => {
+    const currentUserData = currentUser();
     const [isPrivate, setIsPrivate] = useState(false);
-    const [schedule, setSchedule] = useState('Only Myself');
+    const [isDeliveryScheduled, setIsDeliveryScheduled] = useState(false);  
+    const [reportName, setReportName] = useState('');
+    const [reportDescription, setReportDescription] = useState('');
+    const [deliverySchedule, setDeliverySchedule] = useState('');
+    const [startDate, setStartDate] = useState(new Date());
+    const [deliveryTime, setDeliveryTime] = useState(new Date());
+    const [scheduledFor, setScheduledFor] = useState('MYSELF');
     const [showDeliveryDialog, setShowDeliveryDialog] = useState(false);
     const [isAddRecipients, setIsAddRecipients] = useState(false);
+    const [userDetails, setUserDetails] = useState({});
+    const category = (reportType === 'activitiesOrServices' || reportType === 'addOnActivities' || reportType === 'scheduledActivity') ? 
+    'SERVICES_ACTIVITIES' :
+    (reportType === 'upcomingContractRenewals' || reportType === 'oneTimeContract') ?    
+    'CONTRACT_MANAGEMENT' :
+    (reportType === 'complianceStatus' || reportType === 'nonCompliant') ? 
+    'CONTRACT_COMPLIANCE' : 
+    (reportType === 'complianceStatus' || reportType === 'scheduledActivityByContract') ? 
+    'CONTRACT_PERFORMANCE' : '';
+
+    const type = (reportType === 'activitiesOrServices' ? 
+    'ACTIVITES_SERVICES_LOG_SUMMARY' : 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY');
+
+    const filters = {
+        reportingTimePeriod: dataToUseInReport?.reportingTimePeriod,
+        startDate: dataToUseInReport?.from,
+        endDate: dataToUseInReport?.to,
+        contracts: dataToUseInReport?.selectedContracts,
+        users: dataToUseInReport?.selectedContractedServiceProvider,
+        sites: dataToUseInReport?.selectedSites,
+        departments: dataToUseInReport?.selectedDepartments
+    }
+
+    useEffect(() => {
+        getUserDetail()
+    }, [currentUserData?.id])
+
+    const getUserDetail = async() => {
+        const {data: user} = await GET(`user-management-service/user/${currentUserData?.id}`);
+        setUserDetails(user);
+    }
+
+    const handleSave = async() => {
+        let data = {
+            "tenant": {
+              "id": TenantID
+            },
+            "report": {
+              "category": category,
+              "type": type,
+              "title": reportName,
+              "description": reportDescription,
+              "schedule": {
+                "isdeliveryScheduled": isDeliveryScheduled,
+                "schedule": deliverySchedule,
+                "startDate": format(new Date(startDate), 'yyyy-MM-dd'),
+                "deliveryTime": format(new Date(deliveryTime), 'HH:mm:ss'),
+                "scheduledFor": scheduledFor
+              },
+              "owner": {
+                "id": currentUserData?.id,
+                "name": userDetails?.name
+              },
+              "lastUpdated": format(new Date(), 'yyyy-MM-dd'),
+              "filters": {
+                "dataMap": filters
+              },
+              "private": isPrivate
+            }
+        }
+        await POST('timesheet-management-service/report/myReport/', JSON.stringify(data))
+        .then(response=>{
+            SuccessToaster('Report Saved Successfully');
+        })
+        .catch(error=>{
+            ErrorToaster('Unexpected Error');
+        })
+        getSaveReportDialog(false);
+    }
     return(
         <div>
             <Dialog isOpen={getSaveReportDialog} onClose={() => getSaveReportDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
@@ -77,11 +158,11 @@ const SaveReport = ({getSaveReportDialog}) => {
                     <div className={style.saveLeftPart}>
                         <div>
                             <label for="standard-basic" className={style.saveReportLabelStyle}>Title (name of the report)</label>
-                            <TextField id="standard-basic" variant="standard" value="Report Name - ABC" className={`${style.fullWidth} ${style.saveReportFieldStyle}`} />
+                            <TextField id="standard-basic" variant="standard" value={reportName} onChange={(e) => setReportName(e.target.value)} className={`${style.fullWidth} ${style.saveReportFieldStyle}`} />
                         </div>
                         <div className={style.marginTop20}>
                             <label for="description" className={`${style.saveReportLabelStyle}`}>Description</label>
-                            <TextArea id="description" rows={9} placeholder="Enter Notes" className={`${style.fullWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} />
+                            <TextArea id="description" rows={9} placeholder="Enter Notes" value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} className={`${style.fullWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} />
                         </div>
                     </div>
                     <div className={`${style.marginTop20} ${style.marginLeft20}`}>
@@ -89,32 +170,37 @@ const SaveReport = ({getSaveReportDialog}) => {
                         <div className={`${style.marginTop20} ${style.spaceBetween}`}>
                             <label className={`${style.saveReportLabelStyle}`}>Create Delivery Schedule</label>
                             <Stack direction="row" spacing={1} alignItems="center">
-                                <Typography>No</Typography>
-                                <AntSwitch defaultChecked inputProps={{ 'aria-label': 'ant design' }} />
-                                <Typography className={style.typographyStyle}>Yes</Typography>
+                                <Typography className={!isDeliveryScheduled && style.typographyStyle}>No</Typography>
+                                <AntSwitch checked={isDeliveryScheduled} onChange={(e) => setIsDeliveryScheduled(e.target.checked)}  inputProps={{ 'aria-label': 'ant design' }} />
+                                <Typography className={isDeliveryScheduled && style.typographyStyle}>Yes</Typography>
                             </Stack>                    
                         </div>
                         <div className={`${style.saveReportLabelStyle} ${style.marginTop20}`}>Delivery Schedule</div>
                         <select
                             name="action"
                             id="action"
+                            value={deliverySchedule}
+                            onChange={(e) => setDeliverySchedule(e.target.value)}
                             className={`${style.fullWidth} ${style.marginTop10}`}>
-                            <option value="One Time (Does Not Repeat)" >
+                            <option value="" >
+                            Select Delivery Schedule
+                            </option>
+                            <option value="ONETIME" >
                             One Time (Does Not Repeat)
                             </option>
-                            <option value="Every Weekday" >
+                            <option value="EVERYWEEKDAY" >
                             Every Weekday
                             </option>
-                            <option value="Weekly" >
+                            <option value="WEEKLY" >
                             Weekly
                             </option>
-                            <option value="Monthly" >
+                            <option value="MONTHLY" >
                             Monthly
                             </option>
-                            <option value="Quarterly" >
+                            <option value="QUARTELY" >
                             Quarterly
                             </option>
-                            <option value="Annually" >
+                            <option value="ANNUALY" >
                             Annually
                             </option>
                         </select>
@@ -122,11 +208,6 @@ const SaveReport = ({getSaveReportDialog}) => {
                             <div className={`${style.displayInCol} ${style.marginTop5}`}>
                                 <label className={`${style.saveReportLabelStyle}`}>Start Date</label>
                                 <div className={style.marginTop10}>
-                                    {/* <DateInput
-                                        formatDate={date => date.toLocaleDateString()}
-                                        parseDate={str => new Date(str)}
-                                        placeholder={"MM-DD-YYYY"}
-                                    /> */}
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         <DatePicker
                                             InputProps={{
@@ -135,6 +216,8 @@ const SaveReport = ({getSaveReportDialog}) => {
                                                 height: 30,
                                             }
                                             }}
+                                            value={startDate}
+                                            onChange={(e) => setStartDate(e)}
                                             renderInput={(params) => <TextField  {...params} />}
                                         />
                                     </LocalizationProvider>
@@ -142,14 +225,21 @@ const SaveReport = ({getSaveReportDialog}) => {
                             </div>
                             <div className={style.marginLeft20}>
                                 <label className={`${style.saveReportLabelStyle}`}>Delivery Time</label>
-                                <select
-                                    name="action"
-                                    id="action"
-                                    className={`${style.fullWidth} ${style.marginTop3}`}>
-                                    <option value="One Time (Does Not Repeat)" >
-                                    12:00 PM
-                                    </option>
-                                </select>
+                                <div className={style.marginTop5}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <TimePicker
+                                            InputProps={{
+                                                style: {
+                                                    fontSize: 14,
+                                                    height: 30,
+                                                }
+                                            }}
+                                            value={deliveryTime}
+                                            onChange={(e) => setDeliveryTime(e)}
+                                            renderInput={(params) => <TextField {...params} />}
+                                        />
+                                    </LocalizationProvider>
+                                </div>
                             </div>
                             <div className={style.marginTop20}>
 
@@ -158,14 +248,13 @@ const SaveReport = ({getSaveReportDialog}) => {
                         <div className={style.marginTop20}>
                             <RadioGroup
                                 label="Schedule this Report for"
-                                selectedValue={schedule}
-                                onChange={(e) => setSchedule(e.target.value)}
-                                intent="success"
+                                selectedValue={scheduledFor}
+                                onChange={(e) => setScheduledFor(e.target.value)}
                                 inline={true}
                             >
-                                <Radio label="Only Myself" value="Only Myself" intent={Intent.SUCCESS} />
-                                <Radio label="Myself & Others" value="Myself & Others" />
-                                <Radio label="Others Only" value="Others Only" />
+                                <Radio label="Only Myself" value="MYSELF" intent={Intent.SUCCESS} />
+                                <Radio label="Myself & Others" value="MYSELFANDOTHERS" />
+                                <Radio label="Others Only" value="OTHERS" />
                             </RadioGroup>
                         </div>
                     </div>
@@ -174,14 +263,14 @@ const SaveReport = ({getSaveReportDialog}) => {
                     <div className={`${style.marginTop20} ${style.spaceBetween}`}>
                         <label className={`${style.privateLabelStyle}`}>Private</label>
                         <Stack direction="row" spacing={1} alignItems="center">
-                            <Typography className={style.typographyStyle}>No</Typography>
-                            <AntSwitch defaultChecked inputProps={{ 'aria-label': 'ant design' }} />
-                            <Typography>Yes</Typography>
+                            <Typography className={!isPrivate && style.typographyStyle}>No</Typography>
+                            <AntSwitch checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} inputProps={{ 'aria-label': 'ant design' }} />
+                            <Typography className={isPrivate && style.typographyStyle}>Yes</Typography>
                         </Stack>                    
                     </div>
                 </div>
                 <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                    <button className={style.saveStyle} onClick={() => schedule !== "Only Myself" && setShowDeliveryDialog(true)}>{schedule === "Only Myself" ? "SAVE" : "NEXT"}</button>
+                    <button className={`${style.saveStyle} ${style.cursorPointer}`} onClick={() => {scheduledFor !== "MYSELF" && setShowDeliveryDialog(true);handleSave()}}>{scheduledFor === "MYSELF" ? "SAVE" : "NEXT"}</button>
                 </div>
             </div>
             </Dialog>

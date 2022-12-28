@@ -145,16 +145,23 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       );
     });
 
-  const getRolesData = async () => {
-    const { data: roles } = await GET(`user-management-service/roles?roleType=APP`);
-    if (roles) {
-      setRoles(roles);
+    const getRolesData = async() => {
+      const {data: roles} = await GET(`user-management-service/roles?roleType=APP`);
+      if(roles){
+        setRoles(roles);
+      }
+      let temp = selectedRoles;
+      if(!selectedRoles?.map(data=>data?.roleName)?.includes('Activity Logger')){
+        temp.push(roles?.filter(role=>role?.roleName === 'Activity Logger')?.map(data=>data)[0]);
+        setSelectedRoles(temp);
+      }
     }
-  }
 
-  const handleUserData = (name, value) => {
-    setUserDetails({ ...userDetails, [name]: value });
-  }
+    const handleUserData = (name,value) => {
+      setUserDetails({...userDetails, [name]:value});
+    }
+
+
 
   const handleAddress = (name, value) => {
     setAddress({ ...address, [name]: value });
