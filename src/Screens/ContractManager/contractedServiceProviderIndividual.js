@@ -379,11 +379,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         "mobileNumberNotApplicable": mobileNA,
       },
       "roles": roles,
-      "address": {
-        "city": address?.city,
-        "state": address?.state,
-        "zipcode": address?.zipcode
-      },
+      "address": address,
       "tenant": {
         "tenantId": TenantID
       },

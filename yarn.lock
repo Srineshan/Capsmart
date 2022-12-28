@@ -4655,9 +4655,9 @@ dom-serializer@^1.0.1:
     domhandler "^4.2.0"
     entities "^2.0.0"
 
-"dom-to-image@git+https://github.com/dmapper/dom-to-image.git":
+"dom-to-image@https://github.com/dmapper/dom-to-image":
   version "2.6.0"
-  resolved "git+https://github.com/dmapper/dom-to-image.git#a7c386a8ea813930f05449ac71ab4be0c262dff3"
+  resolved "https://github.com/dmapper/dom-to-image#a7c386a8ea813930f05449ac71ab4be0c262dff3"
 
 dom-to-pdf@^0.3.1:
   version "0.3.1"

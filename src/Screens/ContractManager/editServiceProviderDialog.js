@@ -46,6 +46,8 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   const [departmentLevelSite, setDepartmentLevelSite] = useState({ id: '', name: '' });
   const [siteTitleValues, setSiteTitleValues] = useState([]);
   const [departmentTitleValues, setDepartmentTitleValues] = useState([]);
+  const [allowPersonalMail, setAllowPersonalMail] = useState(false);
+  const [phoneNA, setPhoneNA] = useState(false);
 
   useEffect(() => {
     getRolesData();
@@ -64,7 +66,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   useEffect(() => {
     setNpin({ npin: userProviderData?.npin?.npin, missing: userProviderData?.npin?.missing, notApplicable: userProviderData?.npin?.notApplicable });
     setSelectedRoles(userProviderData?.roles || []);
-    setUserDetails({ ...userDetails, firstName: userProviderData?.name?.firstName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '' });
+    setUserDetails({ ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '' });
     setProviderType(userProviderData?.serviceProviderType || {});
     setAddress({ addressLine: userProviderData?.address?.addressLine || '', city: userProviderData?.address?.city || '', state: userProviderData?.address?.state || '', zipcode: userProviderData?.address?.zipcode || '' });
     let contractData = userProviderData?.contracts?.filter(data => data?.id === contractId)?.map(data => data)[0];
@@ -158,6 +160,8 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   const handleUserData = (name, value) => {
     setUserDetails({ ...userDetails, [name]: value });
   }
+
+
 
   const handleAddress = (name, value) => {
     setAddress({ ...address, [name]: value });
@@ -346,6 +350,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       "id": userProviderData?.id,
       "name": {
         "firstName": userDetails?.firstName,
+        "middleName": userDetails?.middleName,
         "lastName": userDetails?.lastName,
         "suffix": userDetails?.suffix
       },
@@ -361,7 +366,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
         "personalEmail": userDetails?.email,
         "mobileNumber": userDetails?.phone,
         "landlineNumber": "",
-        "mobileNumberNotApplicable": true
+        "mobileNumberNotApplicable": phoneNA,
       },
       "roles": roles,
       "address": {
@@ -409,7 +414,8 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
         "missing": npin?.missing,
         "notApplicable": npin?.na,
         "npin": npin?.npin
-      }
+      },
+      "personalEmailAddressAllowed": allowPersonalMail,
     }
 
     await PUT('user-management-service/user', JSON.stringify(data))
@@ -433,6 +439,14 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
         <div className={style.extensionBorder}></div>
         <div className={`${style.serviceBoxStyle}`}>
           <div className={`${style.extentionGrid}`}>
+            <div className={style.extentionLableStyle}>Contractor Name*</div>
+            <div className={style.grid3}>
+              <InputGroup className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e) => handleUserData('firstName', e.target.value)} />
+              <InputGroup className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e) => handleUserData('middleName', e.target.value)} />
+              <InputGroup className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e) => handleUserData('lastName', e.target.value)} />
+            </div>
+          </div>
+          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>NPIN*</div>
             <div className={style.grid3}>
               <InputGroup disabled={npin?.missing || npin?.na} className={style.fullWidth} value={npin?.npin} onChange={(e) => setNpin({ npin: e.target.value, na: false, missing: false })} />
@@ -446,14 +460,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
               <Checkbox label="Not Applicable" checked={npin?.na} onChange={(e) => setNpin({ npin: '', missing: false, na: e.target.checked })} className={`${style.marginTop10} ${style.marginLeft20}`} /> */}
             </div>
           </div>
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Contractor Name*</div>
-            <div className={style.grid3}>
-              <InputGroup className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e) => handleUserData('firstName', e.target.value)} />
-              <InputGroup className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e) => handleUserData('middleName', e.target.value)} />
-              <InputGroup className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e) => handleUserData('lastName', e.target.value)} />
-            </div>
-          </div>
+
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>Suffix*</div>
             <div className={style.grid3}>
@@ -467,63 +474,44 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
               <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch className={`${style.flexLeft}`} color='primary' />
+                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={(e) => setAllowPersonalMail(!allowPersonalMail)} />
                   }
                   className={`${style.switchFontStyle}`}
-                  label={'YES'}
+                  label={allowPersonalMail ? 'YES' : 'NO'}
                 />
               </ThemeProvider>
-              <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
-                <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} />
-              </div>
-
+              {allowPersonalMail &&
+                <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
+                  <InputGroup placeholder="Enter Personal email" value={userDetails?.email} className={`${style.fullWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
+                </div>
+              }
             </div>
           </div>
+          {!allowPersonalMail &&
+            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              <div className={style.extentionLableStyle}>Email Contractor id*</div>
+              <div className={style.displayInRow}>
+                <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
+              </div>
+            </div>
+          }
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>Service Provider Type*</div>
             <div className={style.grid3}>
               <ProviderTypeList value={providerType?.id} onChangeFunc={(id, value) => setProviderType({ id: id, contractedServiceProviderType: value })} className={[style.fullWidth]} />
             </div>
           </div>
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Email Contractor id*</div>
-            <div className={style.displayInRow}>
-              <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
-              {
-                // <RadioGroup
-                //     inline={true}
-                //     className={`${style.marginTop} ${style.marginLeft20}`}
-                // >
-                //     <Radio label="Not Available" value="Not Available" />
-                // </RadioGroup>
-              }
-            </div>
-          </div>
-          {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Cell Phone*</div>
-            <div className={style.grid2}>
-              <InputGroup placeholder="Numeric" value={userDetails?.phone} className={style.fullWidth} onChange={(e) => handleUserData('phone', FormatPhoneNumber(e.target.value))} />
-              {
-                // <RadioGroup
-                //     inline={true}
-                //     className={`${style.marginTop} ${style.leftAlign}`}
-                //     selectedValue={"Missing"}
-                // >
-                //     <Radio label="Not Available" value="Not Available" />
-                // </RadioGroup>
-              }
-            </div>
-          </div> */}
+
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>Cell Phone*</div>
             <div className={style.twoCol}>
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                 <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
                 <InputGroup placeholder="Numeric" maxLength={15}
-                  className={`${style.fullWidth}`} value={userDetails?.phone} onChange={(e) => handleUserData('phone', FormatPhoneNumber(e.target.value))} />
+                  className={`${style.fullWidth}`} value={userDetails?.phone} disabled={phoneNA} onChange={(e) => handleUserData('phone', FormatPhoneNumber(e.target.value))} />
               </div>
               <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                <FormControlLabel control={<Checkbox value="NA" checked={phoneNA} onChange={(e) => { setPhoneNA(e.target.checked); if (e.target.checked) { handleUserData('phone', '') } }} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
               </FormGroup>
             </div>
           </div>

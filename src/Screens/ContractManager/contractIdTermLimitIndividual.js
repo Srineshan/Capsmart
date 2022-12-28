@@ -909,13 +909,16 @@ const ContractIdTermLimitIndividual = (
               <div className={`${style.renewalBoxStyle}`}>
                 <div className={`${style.renewalBoxGrid}`} onFocus={() => { getSelectedField('Auto Renewal - Auto Renewal Term') }}>
                   <div className={style.marginTop}>Auto Renewal Term*</div>
-                  <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e) => (e <= 52 && setAutoRenewal({ ...autoRenewal, renewalTerm: e }))} type="tel" />
+                  <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e) => (e <= 52 && setAutoRenewal({ ...autoRenewal, renewalTerm: e, calendar: '' }))} type="tel" />
                   <select
                     name="class"
                     id="Class"
                     value={autoRenewal.calendar}
                     onChange={(e) => setAutoRenewal({ ...autoRenewal, calendar: e.target.value })}
                     className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
+                    <option value="" >
+                      Select Frequecy
+                    </option>
                     <option value="WEEKS" >
                       Weeks
                     </option>

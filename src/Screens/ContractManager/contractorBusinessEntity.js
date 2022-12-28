@@ -25,7 +25,7 @@ const switchTheme = createTheme({
 });
 
 
-const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField }) => {
+const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField, getShowAlert }) => {
   const [isUserUpdated, setIsUserUpdated] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +41,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   const [contractorEntityTaxId, setContractorEntityTaxId] = useState({
     taxId: "",
     missing: false,
-    na: false,
+    notApplicable: false,
   });
   const [businessEntity, setBusinessEntity] = useState({
     name: ''
@@ -99,7 +99,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   const handleContinue = async (buttonType) => {
     if (EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory') ||
       !contractorNPIN?.notApplicable && !contractorNPIN?.missing && EmptyStringCheck(contractorNPIN?.npin, 'NPIN is Mandatory') ||
-      !contractorEntityTaxId?.missing && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory') ||
+      !contractorEntityTaxId?.missing && !contractorEntityTaxId?.notApplicable && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory') ||
       EmptyStringCheck(businessEntityUser?.name?.firstName, 'First Name is Mandatory') ||
       EmptyStringCheck(businessEntityUser?.name?.lastName, 'Last Name is Mandatory') ||
       EmailValidator(businessEntityUser?.email?.officialEmail) ||
@@ -115,7 +115,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       roles: roles?.filter(data => data?.id === '6344d59a45ca246bd12dd77b')?.map(data => data),
       mailingAddress: mailingAddress,
       contractorContact: sameAsContractor,
-      appRoleRequired: appRoleRequired
+      appRoleRequired: appRoleRequired,
+      accessAllowedForBusinessEntity: allowBEM,
+      paymentDataConfidential: keepConfidential,
     }
     const response = await PUT(`contract-managment-service/contracts/${contractId}/contractorBusinessEntity`, JSON.stringify(data));
     if (response) {
@@ -187,6 +189,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     if (buttonType === 'Continue') {
       getViewPage5(true);
       getCurrentPage('Contracted Services Specification');
+    }else{
+      getShowAlert(true);
     }
   }
 
@@ -232,6 +236,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     setAppRoleRequired(contractorBusinessEntity?.appRoleRequired);
     setSelectedRoles(contractorBusinessEntity?.roles || []);
     setMailingAddress(contractorBusinessEntity?.mailingAddress || {});
+    setAllowBEM(contractorBusinessEntity?.accessAllowedForBusinessEntityUser);
+    setKeepConfidential(contractorBusinessEntity?.paymentDataConfidential);
   }, [contractorBusinessEntity])
 
   useEffect(() => {
@@ -331,14 +337,14 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 onFocus={() => { getSelectedField('Contractor Entity Tax ID') }}>
                 <div className={style.extentionLableStyle}>Vendor Tax ID*</div>
                 <div className={style.twoCol}>
-                  <InputGroup className={style.fullWidth} disabled={contractorEntityTaxId?.missing || contractorEntityTaxId?.na} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
-                    onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, taxId: e.target.value, missing: false, na: false })} />
+                  <InputGroup className={style.fullWidth} disabled={contractorEntityTaxId?.missing || contractorEntityTaxId?.notApplicable} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
+                    onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, taxId: e.target.value, missing: false, notApplicable: false })} />
                   <div className={`${style.displayInRow}`}>
                     <FormGroup className={style.marginLeft20}>
-                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorEntityTaxId?.missing} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, missing: e.target.checked, na: false, taxId: '' })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
+                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorEntityTaxId?.missing} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, missing: e.target.checked, notApplicable: false, taxId: '' })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
                     </FormGroup>
                     <FormGroup>
-                      <FormControlLabel control={<Checkbox value="NA" checked={contractorEntityTaxId?.na} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, na: e.target.checked, missing: false, taxId: '' })} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                      <FormControlLabel control={<Checkbox value="NA" checked={contractorEntityTaxId?.notApplicable} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, notApplicable: e.target.checked, missing: false, taxId: '' })} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
                     </FormGroup>
                   </div>
                 </div>
@@ -429,52 +435,51 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   </div>
                 </div>
               </div>
-              {
-                // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                //   <div className={style.extentionLableStyle}>Register Business POC with App User Role*</div>
-                //   <div className={style.displayInRow}>
-                //     <div>
-                //       <ThemeProvider theme={switchTheme}>
-                //         <FormControlLabel
-                //           control={
-                //             <Switch className={`${style.textAlignLeft}`} />
-                //           }
-                //           color='primary'
-                //           className={`${style.switchFontStyle} ${style.marginTop}`}
-                //           label={'YES'}
-                //         />
-                //       </ThemeProvider>
-                //     </div>
-                //     <div>
-                //       <InputGroup value="Business Contract Manager" className={style.fullWidth} />
-                //       <div className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}>
-                //         The Business Contract Manager role allows the registered user to access
-                //         contract related information and reports only for the contract associated
-                //         with their business entity.
-                //       </div>
-                //     </div>
-                //   </div>
-                // </div>
-              }
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={style.extentionLableStyle}>Register Business POC with App User Role*</div>
+                  <div className={style.displayInRow}>
+                    <div>
+                      <ThemeProvider theme={switchTheme}>
+                        <FormControlLabel
+                          control={
+                            <Switch className={`${style.textAlignLeft}`} checked={allowBEM} onChange={(e)=>setAllowBEM(!allowBEM)}/>
+                          }
+                          color='primary'
+                          className={`${style.switchFontStyle} ${style.marginTop}`}
+                          label={allowBEM ? 'YES' : 'NO'}
+                        />
+                      </ThemeProvider>
+                    </div>
+                    {allowBEM &&
+                      <div>
+                        <InputGroup value="Business Contract Manager" className={style.fullWidth} readOnly/>
+                        <div className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}>
+                          The Business Contract Manager role allows the registered user to access
+                          contract related information and reports only for the contract associated
+                          with their business entity.
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
 
-
               {
-                // selectContractInfo !== 'INDIVIDUAL' &&
-                // (
-                //   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                //     <div className={style.extentionLableStyle}>Keep Contract Payment Data Confidential*</div>
-                //     <ThemeProvider theme={switchTheme}>
-                //       <FormControlLabel
-                //         control={
-                //           <Switch checked={keepConfidential} className={`${style.textAlignLeft}`} onChange={() => setKeepConfidential(!keepConfidential)} />
-                //         }
-                //         color='primary'
-                //         className={`${style.switchFontStyle} ${style.marginTop}`}
-                //         label={keepConfidential ? 'YES' : 'NO'}
-                //       />
-                //     </ThemeProvider>
-                //   </div>
-                // )
+                selectContractInfo !== 'INDIVIDUAL' &&
+                (
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Keep Contract Payment Data Confidential*</div>
+                    <ThemeProvider theme={switchTheme}>
+                      <FormControlLabel
+                        control={
+                          <Switch checked={keepConfidential} className={`${style.textAlignLeft}`} onChange={() => setKeepConfidential(!keepConfidential)} />
+                        }
+                        color='primary'
+                        className={`${style.switchFontStyle} ${style.marginTop}`}
+                        label={keepConfidential ? 'YES' : 'NO'}
+                      />
+                    </ThemeProvider>
+                  </div>
+                )
               }
             </div>
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>

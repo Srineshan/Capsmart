@@ -52,6 +52,8 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
   const [departmentTitleValues, setDepartmentTitleValues] = useState([]);
   const [contractName, setContractName] = useState('');
   const [contracts, setContracts] = useState([]);
+  const [allowPersonalMail, setAllowPersonalMail] = useState(false);
+  const [phoneNA, setPhoneNA] = useState(false);
 
   const leftElement = () => {
     return (
@@ -209,7 +211,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
       ErrorToaster('Enter a Valid Email');
       return;
     }
-    if (userDetails?.phone?.length !== 14) {
+    if (!phoneNA && userDetails?.phone?.length !== 14) {
       ErrorToaster('Enter Valid Phone Number');
       return;
     }
@@ -241,14 +243,10 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
         "personalEmail": userDetails?.email,
         "mobileNumber": userDetails?.phone,
         "landlineNumber": "string",
-        "mobileNumberNotApplicable": true
+        "mobileNumberNotApplicable": userDetails?.phoneNA
       },
       "roles": roles,
-      "address": {
-        "city": address?.city,
-        "state": address?.state,
-        "zipcode": address?.zipcode
-      },
+      "address": address,
       "tenant": {
         "tenantId": TenantID
       },
@@ -423,7 +421,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
     return siteData;
   }
 
-
+  console.log(userDetails);
 
   return (
     <Dialog isOpen={getNewServiceProviderDialog} onClose={() => getNewServiceProviderDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
@@ -459,8 +457,6 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
               <FormGroup>
                 <FormControlLabel control={<Checkbox value={nPin?.na} checked={nPin?.na} onChange={(e) => setNpin({ ...nPin, npin: '', missing: false, na: e.target.checked })} />} label={<Typography variant="body2" color="textSecondary">Not Applicable</Typography>} />
               </FormGroup>
-              {/* <Checkbox label="Missing" checked={nPin?.missing} onChange={(e) => setNpin({ ...nPin, npin: '', missing: e.target.checked, na: false })} className={`${style.marginTop10} ${style.marginLeft20}`} />
-              <Checkbox label="Not Applicable" checked={nPin?.na} onChange={(e) => setNpin({ ...nPin, npin: '', missing: false, na: e.target.checked })} className={`${style.marginTop10} ${style.marginLeft20}`} /> */}
             </div>
           </div>
 
@@ -476,44 +472,46 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
               <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch className={`${style.flexLeft}`} color='primary' />
+                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={(e) => setAllowPersonalMail(!allowPersonalMail)} />
                   }
                   className={`${style.switchFontStyle}`}
-                  label={'YES'}
+                  label={allowPersonalMail ? 'YES' : 'NO'}
                 />
               </ThemeProvider>
-              <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
-                <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} />
-              </div>
+              {
+                allowPersonalMail &&
+                <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
+                  <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={userDetails?.email} onChange={(e) => handleUserData('email', e.target.value)} />
+                </div>
+              }
 
             </div>
           </div>
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Email Contractor id*</div>
-            <div className={style.displayInRow}>
-              <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
+          {!allowPersonalMail &&
+            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              <div className={style.extentionLableStyle}>Email Contractor id*</div>
+              <div className={style.displayInRow}>
+                <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
+              </div>
             </div>
-          </div>
+          }
+
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>Cell Phone*</div>
             <div className={style.twoCol}>
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                 <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
-                <InputGroup placeholder="Numeric" maxLength={15}
-                  className={`${style.fullWidth}`} />
+                <InputGroup placeholder="Numeric" maxLength={15} disabled={phoneNA} value={userDetails?.phone}
+                  onChange={(e) => { handleUserData('phone', FormatPhoneNumber(e.target.value)); }} className={`${style.fullWidth}`} />
               </div>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
-              </FormGroup>
+              {
+                <FormGroup>
+                  <FormControlLabel control={<Checkbox value="NA" checked={phoneNA} onChange={(e) => { setPhoneNA(e.target.checked); if (e.target.checked) { handleUserData('phone', ''); } }} checked={userDetails?.phoneNA} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                </FormGroup>
+              }
             </div>
           </div>
-          {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Cell Phone*</div>
-            <div className={style.grid2}>
-              <InputGroup placeholder="Numeric" value={userDetails?.phone} className={style.fullWidth} onChange={(e) => handleUserData('phone', FormatPhoneNumber(e.target.value))} />
-            </div>
 
-          </div> */}
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>Address*</div>
             <div>
