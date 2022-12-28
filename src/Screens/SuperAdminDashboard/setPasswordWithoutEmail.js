@@ -30,7 +30,7 @@ const SetPasswordWithoutPassword = () => {
 
 
     const getEntityId = async() => {
-      await axios(`https://rest.timesmart.live/entity-service/entityID`,{
+      await axios(`https://timesmartai.com/entity-service/entityID`,{
           method: 'GET',
       }).then(response=>{
         var cookie = new Cookie();
@@ -47,7 +47,7 @@ const SetPasswordWithoutPassword = () => {
      }
 
     const getUser = async() => {
-        await axios('https://rest.timesmart.live/user-management-service/user',{
+        await axios('https://timesmartai.com/user-management-service/user',{
           method: 'GET',
           headers: headers,
         }).then(response=>{
@@ -80,7 +80,7 @@ const SetPasswordWithoutPassword = () => {
               "password": password,
             }
           }
-        axios('https://rest.timesmart.live/user-management-service/user/setpassword',{
+        axios('https://timesmartai.com/user-management-service/user/setpassword',{
           method: 'POST',
           headers: headers,
           data: JSON.stringify(data),

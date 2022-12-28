@@ -42,7 +42,7 @@ const EntitySystemAdmin = ({getActiveStep}) => {
   }
 
   const getUserData = async() => {
-    await axios(`https://rest.timesmart.live/user-management-service/user`,{
+    await axios(`https://timesmartai.com/user-management-service/user`,{
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

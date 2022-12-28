@@ -4,7 +4,7 @@ import SelectField from './../SelectField';
 
 const SuffixList = ({onChangeFunc, value, className}) => {
   const [suffixList, setSuffixList] = useState([]);
-  const industryId = "62ec0da4b188025da38b9d5e";
+  const industryId = "63ab2b92bc9089d77c9232a9";
 
   useEffect(()=>{
     getSuffix();

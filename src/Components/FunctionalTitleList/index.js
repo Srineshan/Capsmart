@@ -7,7 +7,7 @@ const FunctionalTitleList = ({onChangeFunc, value, className, providerId}) => {
   const [provider, setProvider] = useState([]);
   const defaultProviderId = provider?.filter(data=>data?.contractedServiceProviderType === 'Physician / Doctor')?.map(data=>data?.id)[0] || '';
   const selectedProvider = providerId !== '' ? providerId : defaultProviderId;
-  const siteTypeId = sessionStorage.getItem('entityTypeId') || '6335e452bb13e2088b208b99'
+  const siteTypeId = sessionStorage.getItem('entityTypeId') || '63ab2c90bc9089d77c9232ac'
 
   useEffect(()=>{
     getFunctionalTitle();

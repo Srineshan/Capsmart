@@ -22,7 +22,7 @@ const Login = (props) => {
   }, [])
 
   const getEntityId = async() => {
-    await axios(`https://rest.timesmart.live/entity-service/entityID`,{
+    await axios(`https://timesmartai.com/entity-service/entityID`,{
         method: 'GET',
     }).then(response=>{
       cookie.set('entityId',response?.data?.id);
@@ -46,7 +46,7 @@ const Login = (props) => {
       },
       body: JSON.stringify(user)
     };
-    fetch('https://rest.timesmart.live/user-management-service/auth/login', requestOptions)
+    fetch('https://timesmartai.com/user-management-service/auth/login', requestOptions)
       .then(response => response.json())
       .then(data => {
         cookie.set('user', data?.accessToken);
