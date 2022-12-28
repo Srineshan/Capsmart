@@ -449,6 +449,11 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const getRoles = async () => {
     const { data: roles } = await GET('user-management-service/roles?roleType=APP');
     setRoles(roles);
+    let temp = selectedRoles;
+    if(!selectedRoles?.map(data=>data?.roleName)?.includes('Activity Logger')){
+      temp.push(roles?.filter(role=>role?.roleName === 'Activity Logger')?.map(data=>data)[0]);
+      setSelectedRoles(temp);
+    }
   };
 
   const onSelectDepartment = (deptId) => {

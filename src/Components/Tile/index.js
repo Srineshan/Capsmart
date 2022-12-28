@@ -8,10 +8,12 @@ const Tile = ({ selectedContract, getSelectedContract, tileLabel, bigNumber, big
         topText !== '' && <p className={style.next30Style}>{topText}</p>
       }
       <div className={style.spaceBetweenColumn}>
-        <h5 className={`${style.headingForContracts}`}>{tileLabel}</h5>
-        {
-          bottomText !== '' && <p className={style.bottomTextStyle}>{bottomText}</p>
-        }
+        <div>
+          <div className={`${style.headingForContracts}`}>{tileLabel}</div>
+          {
+            bottomText !== '' && <div className={style.bottomTextStyle}>{bottomText}</div>
+          }
+        </div>
         <div className={`${style.spaceBetween}`}>
           <div className={style.displayInColRev}>
             {bigNumber2 && (

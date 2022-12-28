@@ -351,7 +351,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                         <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => setShowAddUserDialog(true)} />
                     </div>
                 </div>
-                <div className={style.reduceMarginTop20}>
+                <div className={style.reduceMarginTop10}>
                     <Table
                         tableHeaderValues={tableHeaderValues}
                         tableDataValues={getValues()}

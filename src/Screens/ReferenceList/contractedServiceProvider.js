@@ -1,22 +1,11 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import Navbar from '../../Components/Navbar';
-import SideBar from './../../Components/Sidebar';
-import { Icon, Intent } from "@blueprintjs/core";
 import style from './index.module.scss';
-import AddTerminationReasons from './addTerminationReasons';
-import AddNewEntity from './../../images/addEntity.png';
-import AddRefresh from './../../images/refreshEntity.png';
-import OpenFolder from './../../images/openFolder.png';
-import BlackBorderFolder from './../../images/blackBorderFolder.png';
 import IndustriesEntityFolder from './../../images/industriesEntityFolder.png';
 import DeleteHcFolder from './../../images/deleteHcFolder.png';
 import EditHcFolder from './../../images/editHcFolder.png';
 import DeleteHcRow from './../../images/deleteHcRow.png';
 import EditBlue from './../../images/editBlue.png';
-import AddAbsenseReasonsForHealthcare from './addAbsenseReasonsForHealthcare';
 import AddContractedServiceForHealthcare from './addContractedServiceProvider';
-import Titlebar from '../../Components/titlemenu';
-import { Link } from 'react-router-dom';
 import { GET, DELETE } from '../dataSaver'
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 import DeleteConfirmation from '../../Components/DeleteConfirmation';
@@ -133,10 +122,10 @@ const ContractedServiceProvidedByIndustries = ({ getAddEntityDialog, showAddEnti
                                 </div>
                                 {
                                     data?.items?.map((i, innerIndex) => (
-                                        <div className={innerIndex % 2 !== 0 ? `${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}` : `${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
+                                        <div className={innerIndex % 2 !== 0 ? `${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}` : `${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
                                             <p className={style.tableDataFontStyle}>{i.contractedServiceProviderType}</p>
-                                            <p className={style.tableDataFontStyle}>03-29-2022</p>
-                                            <p className={style.tableDataFontStyle}>03-29-2022</p>
+                                            <p className={style.tableDataFontStyle}>{i.createdDate.split("T")[0].split("-").reverse().join("-")}</p>
+                                            <p className={style.tableDataFontStyle}>{i.lastModifiedDate.split("T")[0].split("-").reverse().join("-")}</p>
                                             <img src={EditBlue} className={style.colorFileStyle} onClick={() => {
                                                 setIsEdit(true);
                                                 setSelectedEntity(i);
@@ -154,7 +143,7 @@ const ContractedServiceProvidedByIndustries = ({ getAddEntityDialog, showAddEnti
                 </div>
             </div>
 
-            {showAddEntityDialog && <AddContractedServiceForHealthcare getAddEntityDialog={getAddEntityDialog} siteTypeData={siteTypeData} getEntityData={getEntityData} seletedEntity={seletedEntity} isEdit={isEdit} />}
+            {showAddEntityDialog && <AddContractedServiceForHealthcare getAddEntityDialog={getAddEntityDialog} siteTypeData={siteTypeData} getEntityData={getEntityData} seletedEntity={seletedEntity} isEdit={isEdit} siteTypeTableData={siteTypeTableData} />}
 
             {
                 showDeleteConfirmation && (
