@@ -8,8 +8,9 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ReviewerApproverField from './reviewerApproverField';
 
 import style from './index.module.scss';
+import ContractValidationCheckSummary from './contractValidationCheckSummary';
 
-const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName }) => {
+const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName }) => {
     const [addOn, setAddOn] = useState({ id: '', reviewer: '', approver: '' });
     const [absence, setAbsence] = useState({ id: '', reviewer: '', approver: '' });
     const [timesheet, setTimesheet] = useState({ id: '', reviewer: '', approver: '' });
@@ -17,6 +18,7 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
     const [activeTab, setActiveTab] = useState('requests');
     const [selectTimesheetToDefineProcess, setSelectTimesheetToDefineProcess] = useState('');
     const [customWorkFlow, setCustomWorkFlow] = useState(false);
+    const [isShowValidationCheck, setIsShowValidationCheck] = useState(false);
     const [workflowTemplateToUse, setWorkflowTemplateToUse] = useState('');
     const [timesheetProcessingWorkflow, setTimesheetProcessingWorkflow] = useState([]);
     const [timeSheetTabs, setTimeSheetTabs] = useState([]);
@@ -90,8 +92,12 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
         }
     }
 
+    const getContractValidationDialog = (value) => {
+        setIsShowValidationCheck(value);
+    }
+
     const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
-        let id = type === 'AddOn' ? addOn?.id : type === 'Absence' ? absence?.id :'';
+        let id = type === 'AddOn' ? addOn?.id : type === 'Absence' ? absence?.id : '';
         if (id === '') {
             await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
                 .then(response => {
@@ -125,7 +131,7 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
         if (type === 'AddOn') {
             await PUT(`contract-managment-service/contracts/${contractId}/addOnRequestWorkFlow`, data)
                 .then(response => {
-                  console.log('Workflow Updated Successfully');
+                    console.log('Workflow Updated Successfully');
                 })
                 .catch(error => {
                     ErrorToaster('Unexpected Error');
@@ -148,43 +154,43 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
 
 
     const handleTimeSheetWorkFlow = (name, reviewer, approver, activeTab) => {
-            let data = {
-                "name": {
-                    "name": name
-                },
-                "workFlowMap": {
-                    "workflow": {
-                        "1": {
-                            "workFlowUser": {
-                                "id": reviewer,
-                                "title": {
-                                    "title": getSelectedUserDetails(reviewer)?.title?.title || '',
-                                    "id": null,
-                                },
-                                "name": {
-                                    "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
-                                },
-                                "suffix": {
-                                    "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
-                                    "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
-                                }
+        let data = {
+            "name": {
+                "name": name
+            },
+            "workFlowMap": {
+                "workflow": {
+                    "1": {
+                        "workFlowUser": {
+                            "id": reviewer,
+                            "title": {
+                                "title": getSelectedUserDetails(reviewer)?.title?.title || '',
+                                "id": null,
                             },
-                            "workFlowStatus": {
-                                "status": "APPROVED"
+                            "name": {
+                                "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                            },
+                            "suffix": {
+                                "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                                "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
                             }
                         },
-                    }
+                        "workFlowStatus": {
+                            "status": "APPROVED"
+                        }
+                    },
                 }
             }
+        }
         return data;
     }
 
     const submit = async () => {
-            let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`, addOn.reviewer, addOn.approver, activeTab);
-            let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, activeTab);
-            await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
-            await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
-            SuccessToaster('Workflow Updated Successfully');
+        let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`, addOn.reviewer, addOn.approver, activeTab);
+        let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, activeTab);
+        await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
+        await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
+        SuccessToaster('Workflow Updated Successfully');
     }
 
     return (
@@ -210,14 +216,17 @@ const RequestProcessingWorkflow = ({getViewPage9, getCurrentPage, selectContract
                 <div>
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
                         onClick={() => {
-                            submit();
-                            getViewPage9(true);
+                            // submit();
+                            // getViewPage9(true);
                             getCurrentPage('Request Processing Workflow')
+                            setIsShowValidationCheck(true);
                         }}
                     >CONTINUE</button>
                 </div>
             </div>
-
+            {isShowValidationCheck && (
+                <ContractValidationCheckSummary getContractValidationDialog={getContractValidationDialog} />
+            )}
         </div>
     )
 }

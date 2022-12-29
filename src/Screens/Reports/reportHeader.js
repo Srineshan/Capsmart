@@ -23,34 +23,6 @@ const ReportHeader = () => {
         setLogo({ logo: data?.logo?.file?.fileURL, title: data?.entityName?.entityName });
     }
 
-    const testImage = (url) => {
-
-        // Define the promise
-        const imgPromise = new Promise(function imgPromise(resolve, reject) {
-
-            // Create the image
-            const imgElement = new Image();
-
-            // When image is loaded, resolve the promise
-            imgElement.addEventListener('load', function imgOnLoad() {
-                resolve(this);
-            });
-
-            // When there's an error during load, reject the promise
-            imgElement.addEventListener('error', function imgOnError() {
-                reject();
-            })
-
-            // Assign URL
-            imgElement.src = url;
-
-        });
-
-        return imgPromise;
-    }
-
-    console.log(testImage(logo.logo))
-
     return (
         <div className={style.headerBackground}>
             <div className={`${style.spaceBetween} ${style.alignCenter}`}>
@@ -61,9 +33,9 @@ const ReportHeader = () => {
                     </div>
                 </div>
                 <div>
-                    {logo.logo && (
+                    {/* {logo.logo && (
                         <img src={logo.logo} alt="" className={style.headerLogo} />
-                    )}
+                    )} */}
                     <div className={style.entityNameBolderStyle}>{logo.title}</div>
                 </div>
                 <div>
