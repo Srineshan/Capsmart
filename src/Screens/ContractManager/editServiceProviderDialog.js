@@ -66,7 +66,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   useEffect(() => {
     setNpin({ npin: userProviderData?.npin?.npin, missing: userProviderData?.npin?.missing, notApplicable: userProviderData?.npin?.notApplicable });
     setSelectedRoles(userProviderData?.roles || []);
-    setUserDetails({ ...userDetails, firstName: userProviderData?.name?.firstName || '',middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '' });
+    setUserDetails({ ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '' });
     setProviderType(userProviderData?.serviceProviderType || {});
     setAddress({ addressLine: userProviderData?.address?.addressLine || '', city: userProviderData?.address?.city || '', state: userProviderData?.address?.state || '', zipcode: userProviderData?.address?.zipcode || '' });
     let contractData = userProviderData?.contracts?.filter(data => data?.id === contractId)?.map(data => data)[0];
@@ -145,21 +145,21 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       );
     });
 
-    const getRolesData = async() => {
-      const {data: roles} = await GET(`user-management-service/roles?roleType=APP`);
-      if(roles){
-        setRoles(roles);
-      }
-      let temp = selectedRoles;
-      if(!selectedRoles?.map(data=>data?.roleName)?.includes('Activity Logger')){
-        temp.push(roles?.filter(role=>role?.roleName === 'Activity Logger')?.map(data=>data)[0]);
-        setSelectedRoles(temp);
-      }
+  const getRolesData = async () => {
+    const { data: roles } = await GET(`user-management-service/roles?roleType=APP`);
+    if (roles) {
+      setRoles(roles);
     }
+    let temp = selectedRoles;
+    if (!selectedRoles?.map(data => data?.roleName)?.includes('Activity Logger')) {
+      temp.push(roles?.filter(role => role?.roleName === 'Activity Logger')?.map(data => data)[0]);
+      setSelectedRoles(temp);
+    }
+  }
 
-    const handleUserData = (name,value) => {
-      setUserDetails({...userDetails, [name]:value});
-    }
+  const handleUserData = (name, value) => {
+    setUserDetails({ ...userDetails, [name]: value });
+  }
 
 
 
@@ -415,7 +415,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
         "notApplicable": npin?.na,
         "npin": npin?.npin
       },
-      "personalEmailAddressAllowed":allowPersonalMail,
+      "personalEmailAddressAllowed": allowPersonalMail,
     }
 
     await PUT('user-management-service/user', JSON.stringify(data))
@@ -438,14 +438,14 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
         </div>
         <div className={style.extensionBorder}></div>
         <div className={`${style.serviceBoxStyle}`}>
-        <div className={`${style.extentionGrid}`}>
-          <div className={style.extentionLableStyle}>Contractor Name*</div>
-          <div className={style.grid3}>
-            <InputGroup className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e) => handleUserData('firstName', e.target.value)} />
-            <InputGroup className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e) => handleUserData('middleName', e.target.value)} />
-            <InputGroup className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e) => handleUserData('lastName', e.target.value)} />
+          <div className={`${style.extentionGrid}`}>
+            <div className={style.extentionLableStyle}>Contractor Name*</div>
+            <div className={style.grid3}>
+              <InputGroup className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e) => handleUserData('firstName', e.target.value)} />
+              <InputGroup className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e) => handleUserData('middleName', e.target.value)} />
+              <InputGroup className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e) => handleUserData('lastName', e.target.value)} />
+            </div>
           </div>
-        </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>NPIN*</div>
             <div className={style.grid3}>
@@ -474,7 +474,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
               <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={(e)=>setAllowPersonalMail(!allowPersonalMail)}/>
+                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={(e) => setAllowPersonalMail(!allowPersonalMail)} />
                   }
                   className={`${style.switchFontStyle}`}
                   label={allowPersonalMail ? 'YES' : 'NO'}
@@ -482,7 +482,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
               </ThemeProvider>
               {allowPersonalMail &&
                 <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
-                  <InputGroup placeholder="Enter Personal email" value={userDetails?.email} className={`${style.fullWidth}`} onChange={(e) => handleUserData('email', e.target.value)}/>
+                  <InputGroup placeholder="Enter Personal email" value={userDetails?.email} className={`${style.fullWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
                 </div>
               }
             </div>
@@ -511,7 +511,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
                   className={`${style.fullWidth}`} value={userDetails?.phone} disabled={phoneNA} onChange={(e) => handleUserData('phone', FormatPhoneNumber(e.target.value))} />
               </div>
               <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={phoneNA} onChange={(e)=>{setPhoneNA(e.target.checked);if(e.target.checked){handleUserData('phone', '')}}}/>} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                <FormControlLabel control={<Checkbox value="NA" checked={phoneNA} onChange={(e) => { setPhoneNA(e.target.checked); if (e.target.checked) { handleUserData('phone', '') } }} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
               </FormGroup>
             </div>
           </div>

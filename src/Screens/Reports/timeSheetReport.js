@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DoctorAnime from './../../images/doctorAnime.png';
-import ChevronRight from './../../images/chevronRight.png';
 import Reject from './../../images/reject-report.png';
-import Cookie from 'universal-cookie';
-import jwt from 'jwt-decode';
-import Request from './../../images/request-report.png';
+import SideBar from '../../Components/Sidebar';
 import Popover from '@mui/material/Popover';
 import TemplateIcon from './../../images/templateIcon.png';
 import style from './index.module.scss';
 import { Link, useParams } from 'react-router-dom';
 import { GET } from '../dataSaver';
 import { format } from 'date-fns';
+import { currentUser } from '../../utils/auth';
 
 export const Run = ({ link }) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -53,13 +50,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const navigate = useNavigate();
     const [tabName, setTabName] = useState('Standard Report Templates');
     const { reportType } = useParams();
-    let cookie = new Cookie();
-    let userDetails = cookie.get('user');
-    const user = jwt(userDetails);
-    const [currentUserDetails, setCurrentUserDetails] = useState();
-    const [userId, setUserId] = useState(user?.id);
     const [myReports, setMyReports] = useState([]);
-
+    const currentUserDetails = currentUser();
+    const [isExpanded, setIsExpanded] = useState(true);
     const category = (reportType === 'servicesOrActivities') ?
         'SERVICES_ACTIVITIES' :
         (reportType === 'contractManagement') ?
@@ -90,19 +83,16 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     useEffect(() => {
-        setUserId(user?.id);
-        setUserDetails();
         getMyReports();
     }, [])
 
-    const setUserDetails = async () => {
-        const { data: user } = await GET(`user-management-service/user/${userId}`);
-        setCurrentUserDetails(user);
+    const getMyReports = async () => {
+        const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${category}`);
+        setMyReports(myReport);
     }
 
-    const getMyReports = async () => {
-        const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${userId}&category=${category}`);
-        setMyReports(myReport);
+    const getIsExpanded = (value) => {
+        setIsExpanded(value);
     }
 
     const getScheduleValue = (value) => {
@@ -124,24 +114,11 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
     return (
         <div className={style.margin20}>
-            <div className={style.bigCardGrid}>
+            <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
                 <div>
-                    <div className={style.cardStyle}>
-                        <div className={`${style.spaceBetween} ${style.alignCenter}`}>
-                            <div className={style.displayInRow}>
-                                <img src={DoctorAnime} className={style.userLogo} />
-                                <div className={`${style.marginLeft10} ${style.marginTop}`}>
-                                    <div className={style.userNameStyle}>
-                                        Hi, {user?.userName}
-                                    </div>
-                                    <div className={style.loginStatus}>
-                                        last login {format(new Date(currentUserDetails?.lastLogin || new Date()), 'MMM d,yy h:mm a')}
-                                    </div>
-                                </div>
-                            </div>
-                            <img src={ChevronRight} className={style.roundChevronForUser} />
-                        </div>
-                    </div>
+                    <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+                        <div></div>
+                    </SideBar>
                 </div>
                 <div className={style.bigCardStyle}>
                     <div className={style.paginationCol}>
