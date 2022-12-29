@@ -8,20 +8,23 @@ const LeftStatsCard = ({metadata}) => {
     let individualCount = metadata?.metaData?.individualContractCount;
     let multipleCount = metadata?.metaData?.multipleContractCount;
     let expiringDoc = metadata?.metaData?.contractWithExpiringDocCount;
+    const month = new Date(Date.now());
+    const year = new Date().getFullYear();
+
     return(
         <div className={`${style.bigCardStyle} ${style.bigCalendarLeftCardWidth}`}>
-            <h5 className={style.statisticsHeading}>September 2022 Summary Statistics</h5>
+            <h5 className={style.statisticsHeading}>{month.toLocaleString('en-US', {month: 'long'})} {year} Summary</h5>
             <div className={style.scrollStyle}>
                 <div className={style.progressbarStyle}>
                     <div className={style.spaceBetween}>
-                        <p className={style.statisticsProgress}><strong>{individualCount}</strong> <span className={style.marginLeft20}>INDIVIDUAL</span></p>
+                        <p className={style.statisticsProgress}><strong>{individualCount}</strong> <span className={style.marginLeft20}>INDIVIDUAL CONTRACTOR</span></p>
                         <p className={style.viewStyle}>View</p>
                     </div>
                     <ProgressBar completed={individualCount} isLabelVisible={false} height='5px' bgColor='#00C07F' baseBgColor="#ccffee" className={style.progressMargin} />
                 </div>
                 <div className={style.progressbarStyle}>
                     <div className={style.spaceBetween}>
-                        <p className={style.statisticsProgress}><strong>{multipleCount}</strong> <span className={style.marginLeft20}>MULTIPLE</span></p>
+                        <p className={style.statisticsProgress}><strong>{multipleCount}</strong> <span className={style.marginLeft20}>MULTIPLE PROVIDER CONTRACT</span></p>
                         <p className={style.viewStyle}>View</p>
                     </div>
                     <ProgressBar completed={multipleCount} isLabelVisible={false} height='5px' bgColor='#FEC106' baseBgColor="#fff2cc" className={style.progressMargin} />

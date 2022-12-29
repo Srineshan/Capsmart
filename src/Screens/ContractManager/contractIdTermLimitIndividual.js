@@ -230,15 +230,15 @@ const ContractIdTermLimitIndividual = (
   const addContract = async (buttonType) => {
     let sites = getSiteData();
     console.log('stes', sites);
-    if(departmentSpecific && sites?.some(data=>data?.departmentList?.departments?.length === 0)){
-      ErrorToaster('Select Departments for all the selected Sites');
-      return;
-    }
-
-    if (selectedContractContinuationPolicy === 'Select Value') {
-      ErrorToaster('Select Contract Continuation Policy');
-      return;
-    }
+    // if(departmentSpecific && sites?.some(data=>data?.departmentList?.departments?.length === 0)){
+    //   ErrorToaster('Select Departments for all the selected Sites');
+    //   return;
+    // }
+    //
+    // if (selectedContractContinuationPolicy === 'Select Value') {
+    //   ErrorToaster('Select Contract Continuation Policy');
+    //   return;
+    // }
     let contractFiles = [];
     fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
       contractFiles?.push({

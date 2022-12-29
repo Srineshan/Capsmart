@@ -116,7 +116,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       mailingAddress: mailingAddress,
       contractorContact: sameAsContractor,
       appRoleRequired: appRoleRequired,
-      accessAllowedForBusinessEntity: allowBEM,
+      accessAllowedForBusinessEntityUser: allowBEM,
       paymentDataConfidential: keepConfidential,
     }
     const response = await PUT(`contract-managment-service/contracts/${contractId}/contractorBusinessEntity`, JSON.stringify(data));

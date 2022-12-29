@@ -167,7 +167,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         }
     }
 
-    console.log('date', metadata?.totalSession);
+    console.log('date', metadata);
 
     return (
         <div>

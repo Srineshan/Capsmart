@@ -225,7 +225,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }
 
-
+  console.log('metadata', metadata?.selectedActivities);
 
   const handleSave = async (buttonType) => {
     if (serviceType === '') {
@@ -234,7 +234,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     let performingActivity = '';
     let activities = [];
-    if (serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services') {
+    if (serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services' && serviceType !== 'Administrative / Miscellaneous Services') {
       performingActivity = selectedActivity?.map(data => data?.activity?.activity)?.join('-')
       selectedActivity?.map(data => {
         activities?.push({ "activity": data?.activity?.activity })

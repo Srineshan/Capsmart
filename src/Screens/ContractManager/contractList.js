@@ -21,6 +21,8 @@ import UserCard from './userCard';
 import Table from '../../Components/TableDesign';
 import LeftStatsCard from '../../Components/LeftStatsCard';
 
+import {validateServices} from './contractValidation';
+
 import style from './index.module.scss';
 
 const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page }) => {
@@ -215,6 +217,8 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     lastUpdated = [];
     lastUpdatedBy = [];
     action = [];
+
+    console.log('validateContractIDTermLimit', validateServices(contracts?.[0]))
 
     contracts?.map(data => {
       dot.push('yellow');
