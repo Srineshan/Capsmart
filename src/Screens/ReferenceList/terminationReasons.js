@@ -17,375 +17,440 @@ import DeleteHcRow from "./../../images/deleteHcRow.png";
 import EditHcRow from "./../../images/editHcRow.png";
 import { GET, DELETE, PUT } from "./../dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
+import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import { index } from "d3";
 
-const BoardCertification = () => {
-  const [showAddTerminationReasonsDialog, setAddTerminationReasonsDialog] =
-    useState(false);
+const BoardCertification = ({ getAddEntityDialog,
+  showAddEntityDialog,
+  isEdit,
+  setIsEdit,
+}) => {
   const [allData, setAllData] = useState([]);
+  const [clicked, setClicked] = useState(0);
+  const [industryData, setIndustryData] = useState({});
+  const [selectedEntity, setSelectedEntity] = useState({});
+  const [selectedTitle, setSelectedTitle] = useState("");
+  const [isSecondary, setIsSecondary] = useState(false);
+  const [selectedTermination, setSelectedTermination] = useState({})
   const [terminationData, setTerminationData] = useState([]);
-  const [editTermination, setEditTermination] = useState("")
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deleteEntityId, setDeleteEntityId] = useState("");
 
-  //const [currentEntityId, setCurrentEntityId] = useState("");
-
-  const getAddTerminationReasonsDialog = (value) => {
-    setAddTerminationReasonsDialog(value);
+  const entityAllData = async (industry) => {
+    const { data: entities } = await GET(
+      `entity-service/entityTypeMaster?industryId=${industry.id}`
+    );
+    return await { ...industry, entities };
   };
 
   const getAllData = async () => {
-    const { data: data } = await GET(`entity-service/industryMaster`);
-    setAllData([]);
-    data.forEach(async (industry) => {
-      const { data: entities } = await GET(
-        `entity-service/entityTypeMaster?industryId=${industry.id}`
-      );
-      setAllData((prev) => [...prev, { industry, entities }]);
-    });
-    console.log(allData.length);
+    const { data: Entitydata } = await GET(`entity-service/industryMaster`);
+    let allEntries = await Promise.all(Entitydata.map(entityAllData));
+    setAllData(allEntries);
   };
 
-  const getTerminationReasonData = async (siteTypeId) => {
-    const { data: data1 } = await GET(
-      `entity-service/terminationReasonMaster?siteTypeId=${siteTypeId}`
+  const handleToggle = (index, data) => {
+    if (clicked === index) {
+      return setClicked("0");
+    }
+    setSelectedTitle(data?.entities?.[0].type)
+    setSelectedEntity(data.entities[0])
+    setClicked(index);
+    setIndustryData(data);
+  };
+
+  const getTerminationReasonData = async () => {
+    const { data: reasonData } = await GET(
+      `entity-service/terminationReasonMaster?siteTypeId=${selectedEntity?.id}`
     );
-    setTerminationData(data1);
-    console.log("this is the data I need", data1);
+    setTerminationData(reasonData);
   };
 
-  const handleTerminationReasonDeletion = async (id) => {
+  const deleteHandler = (data) => {
+    setDeleteEntityId(data?.id);
+    setShowDeleteConfirmation(true);
+  };
+
+  const getShowDeleteConfirmation = (value) => {
+    setShowDeleteConfirmation(value);
+  };
+
+  const getDeleteConfirmation = (value) => {
+    if (value) {
+      deleteEntity(deleteEntityId);
+    }
+  };
+
+  const deleteEntity = async (id) => {
     await DELETE(`entity-service/terminationReasonMaster/${id}`)
       .then((response) => {
-        SuccessToaster("Document Deleted Successfully");
-        window.location.reload()
+        SuccessToaster("Termination Deleted Successfully");
+        getTerminationReasonData();
       })
-      .then((error) => {
+      .catch((error) => {
         ErrorToaster(error);
       });
   };
+
+  const EntityDefaultSet = (Data) => {
+    let updatedData = [...Data]
+    updatedData.some((list, index) => {
+      if (list.entities.length > 0) {
+        setClicked(index)
+        setSelectedTitle(list.entities[0]?.type);
+        setSelectedEntity(list.entities[0])
+        return true
+      }
+    })
+  }
 
   useEffect(() => {
     getAllData();
   }, []);
 
+  useEffect(() => {
+    EntityDefaultSet(allData)
+  }, [allData])
+
+  useEffect(() => {
+    getTerminationReasonData()
+  }, [selectedTitle])
+
   return (
     <Fragment>
       <div className={style.departmentCardColumnsGrid}>
         <div>
-          {console.log(allData)}
-          {allData.map((industryType) => (
-            <>
-              <div
-                className={`${style.boardCertificationSideRows} ${style.displayInRow}`}
-              >
-                <img
-                  src={BlackBorderFolder}
-                  alt="HealthCareFolder"
-                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                />
-                <p
-                  className={`${style.boardCertificationTextStyle1} ${style.marginLeft20}`}
-                >
-                  {industryType.industry.industry}
-                </p>
-                <p
-                  className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}
-                >
-                  +
-                </p>
-              </div>
-              {industryType.entities.map((entityType) => (
+          {
+            allData?.map((data, index) => {
+              return data?.entities.length !== 0 ? (
                 <>
                   <div
-                    className={`${style.boardCertificationInnerFolderRows} ${style.boardCertificationBackground1} ${style.displayInRow}`}
-                    onClick={() => {
-                      getTerminationReasonData(entityType.id);
-                    }}
+                    className={`${style.boardCertificationSideRows} ${style.displayInRow}`} key={index} onClick={() => handleToggle(index, data)}
                   >
                     <img
-                      src={IndustriesEntityFolder}
-                      alt="IndustriesEntityFolder"
+                      src={BlackBorderFolder}
+                      alt="HealthCareFolder"
                       className={`${style.colorFileStyle} ${style.marginLeft5}`}
-
                     />
                     <p
-                      className={`${style.boardCertificationTextStyle2} ${style.marginLeft20}`}
+                      className={`${style.boardCertificationTextStyle1} ${style.marginLeft20}`}
                     >
-                      {entityType.type}
+                      {data.industry}
+                    </p>
+                    <p
+                      className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}
+                    >
+                      {clicked === index ? "—" : "+"}
                     </p>
                   </div>
+                  <div className={clicked === index ? `${style.listWrapper} ${style.open}` : `${style.listWrapper}`}>
+                    {
+                      data?.entities?.map((entity) => (
+                        <div className={entity?.type === selectedTitle ? `${style.boardCertificationInnerFolderRows} ${style.boardCertificationBackground1} ${style.displayInRow} ` : `${style.boardCertificationInnerFolderRows} ${style.displayInRow} `} onClick={() => { setSelectedTitle(entity.type); setIsEdit(false); setSelectedEntity(entity) }}>
+                          <img
+                            src={IndustriesEntityFolder}
+                            alt="IndustriesEntityFolder"
+                            className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                          />
+                          <p
+                            className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft20}`}
+                          >
+                            {entity.type}
+                          </p>
+                        </div>
+                      ))
+                    }
+                  </div>
                 </>
-              ))}
-            </>
-          ))}
+              ) : (<></>)
+            })
+          }
         </div>
-        <div>
+
+        <div className={style.industriesEntityCardStyle}>
           <div className={style.tableHeaderIndustriesEntity}>
             <p className={style.tableHeaderIndustriesFontStyle}>
               TERMINATION REASONS
             </p>
-          </div>
-          <div className={style.terminationHeader}>
-            <img
-              src={IndustriesEntityFolder}
-              alt="IndustriesEntityFolder"
-              className={`${style.colorFileStyle} ${style.marginLeft5}`}
-            />
             <p className={style.tableHeaderIndustriesFontStyle}>
-              For Cause By Contractor
+              NOTICE PERIOD
+            </p>
+            <p className={style.tableHeaderIndustriesFontStyle}>
+              CURE PERIOD
             </p>
           </div>
-          {terminationData.map((reasonList) => (
-            <>
-              <div
-                className={`${style.terminationLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-              >
-                <p></p>
-                <p className={style.tableDataFontStyle}>
-                  {reasonList.secondary_reasons}
-                </p>
-                <p></p>
-                <p></p>
-                <img
-                  src={EditHcRow}
-                  alt="EditHcRow"
-                  className={style.colorFileStyle}
-                  onClick={() => setEditTermination()}
-                />
-                <img
-                  src={DeleteHcRow}
-                  alt="DeleteHcRow"
-                  className={style.colorFileStyle}
-                  onClick={handleTerminationReasonDeletion.bind(this, reasonList.id)}
-                />
-              </div>
-            </>
-          ))}
 
-          <div
-            className={`${style.terminationLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              xxxxxxxxxxxxxxx
-            </p>
-            <p></p>
-            <p></p>
-            <img
-              src={EditHcRow}
-              alt="EditHcRow"
-              className={style.colorFileStyle}
-            />
-            <img
-              src={DeleteHcRow}
-              alt="DeleteHcRow"
-              className={style.colorFileStyle}
-            />
-          </div>
-          <div
-            className={`${style.terminationLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              xxxxxxxxxxxxxxxxxxxxxxx
-            </p>
-            <p></p>
-            <p></p>
-            <img
-              src={EditHcRow}
-              alt="EditHcRow"
-              className={style.colorFileStyle}
-            />
-            <img
-              src={DeleteHcRow}
-              alt="DeleteHcRow"
-              className={style.colorFileStyle}
-            />
-          </div>
-          <div className={style.terminationHeader}>
-            <img
-              src={IndustriesEntityFolder}
-              alt="IndustriesEntityFolder"
-              className={`${style.colorFileStyle} ${style.marginLeft5}`}
-            />
-            <p className={style.tableHeaderIndustriesFontStyle}>
-              For Cause By Entity
-            </p>
-          </div>
-          <div
-            className={`${style.terminationLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-          >
-            <img
-              src={SemiTransparentFolder}
-              alt="SemiTransparentFolder"
-              className={`${style.colorFileStyle} ${style.marginLeft10}`}
-            />
-            <p className={style.tableDataFontStyle}>
-              Detrimental Professional Competence / Conduct Reports
-            </p>
-            <p></p>
-            <p></p>
-            <img
-              src={EditHcFolder}
-              alt="EditHcFolder"
-              onClick={() => getAddTerminationReasonsDialog(true)}
-              className={style.colorFileStyle}
-            />
-            <img
-              src={DeleteHcFolder}
-              alt="DeleteHcFolder"
-              className={style.colorFileStyle}
-            />
-          </div>
-          <div
-            className={`${style.terminationInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Complaint or Report Concerning Contractor's Competance
-            </p>
-            <p></p>
-            <p></p>
-            <img
-              src={EditHcRow}
-              alt="EditHcRow"
-              className={style.colorFileStyle}
-            />
-            <img
-              src={DeleteHcRow}
-              alt="DeleteHcRow"
-              className={style.colorFileStyle}
-            />
-          </div>
-          <div
-            className={`${style.terminationInnerFolderData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Complaint or Report Concerning Contractor's Conduct
-            </p>
-            <p></p>
-            <p></p>
-            <img
-              src={EditHcRow}
-              alt="EditHcRow"
-              className={style.colorFileStyle}
-            />
-            <img
-              src={DeleteHcRow}
-              alt="DeleteHcRow"
-              className={style.colorFileStyle}
-            />
-          </div>
-          <div
-            className={`${style.terminationInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Sexual Misconduct or Sexual Abuse Allegation(s)
-            </p>
-            <p></p>
-            <p></p>
-            <img
-              src={EditHcRow}
-              alt="EditHcRow"
-              className={style.colorFileStyle}
-            />
-            <img
-              src={DeleteHcRow}
-              alt="DeleteHcRow"
-              className={style.colorFileStyle}
-            />
-          </div>
-          <div
-            className={`${style.terminationInnerFolderData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Discrimination and/or Harassment Allegation(s)
-            </p>
-            <p></p>
-            <p></p>
-            <img
-              src={EditHcRow}
-              alt="EditHcFolder"
-              className={style.colorFileStyle}
-            />
-            <img
-              src={DeleteHcRow}
-              alt="DeleteHcRow"
-              className={style.colorFileStyle}
-            />
-          </div>
-          <div
-            className={`${style.terminationLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-          >
-            <img
-              src={SemiTransparentFolder}
-              alt="SemiTransparentFolder"
-              className={`${style.colorFileStyle} ${style.marginLeft10}`}
-            />
-            <p className={style.tableDataFontStyle}>
-              Violation of Contract Rules and / or Policies
-            </p>
-            <p></p>
-            <p></p>
-            <img
-              src={EditHcFolder}
-              alt="EditHcFolder"
-              onClick={() => getAddTerminationReasonsDialog(true)}
-              className={style.colorFileStyle}
-            />
-            <img
-              src={DeleteHcFolder}
-              alt="DeleteHcFolder"
-              className={style.colorFileStyle}
-            />
-          </div>
-          <div
-            className={`${style.terminationInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Contractor's License to Practice is Suspended
-            </p>
-            <p></p>
-            <p></p>
-            <img
-              src={EditHcRow}
-              alt="EditHcRow"
-              className={style.colorFileStyle}
-            />
-            <img
-              src={DeleteHcRow}
-              alt="DeleteHcRow"
-              className={style.colorFileStyle}
-            />
-          </div>
-          <div
-            className={`${style.terminationInnerFolderData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Contractor's License to Practice is Revoked
-            </p>
-            <p></p>
-            <p></p>
-            <img
-              src={EditHcRow}
-              alt="EditHcRow"
-              className={style.colorFileStyle}
-            />
-            <img
-              src={DeleteHcRow}
-              alt="DeleteHcRow"
-              className={style.colorFileStyle}
-            />
-          </div>
+          {/* Contrator */}
+          {terminationData?.filter((data) => data.terminationBy === "CONTRACTOR")
+            .length !== 0 ? (
+            <div className={style.terminationHeader}>
+              <img
+                src={IndustriesEntityFolder}
+                alt="IndustriesEntityFolder"
+                className={`${style.colorFileStyle} ${style.marginLeft5}`}
+              />
+              <p className={style.tableHeaderIndustriesFontStyle}>For Cause By Contractor</p>
+            </div>
+          ) : (
+            <></>
+          )}
+
+          {terminationData?.filter((data) => data.terminationBy === "CONTRACTOR").map((data, innerIndex) => {
+            if (data?.secondary_reasons.length !== 0) {
+              return (
+                <>
+                  <div
+                    className={`${style.terminationLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
+                  >
+                    <img
+                      src={SemiTransparentFolder}
+                      alt="SemiTransparentFolder"
+                      className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                    />
+                    <p className={style.tableDataFontStyle}>
+                      {data.primary_reason}
+                    </p>
+                    <p></p>
+                    <p></p>
+                    <img
+                      src={EditHcFolder}
+                      alt="EditHcFolder"
+                      onClick={() => {
+                        getAddEntityDialog(true);
+                        setIsEdit(true);
+                        setIsSecondary(false);
+                        setSelectedTermination(data)
+                      }}
+                      className={style.colorFileStyle}
+                    />
+                    <img
+                      src={DeleteHcFolder}
+                      alt="DeleteHcFolder"
+                      className={style.colorFileStyle}
+                      onClick={() => {
+                        deleteHandler(data);
+                      }}
+                    />
+                  </div>
+                  {
+                    data?.secondary_reasons?.map((secondary, idx) => {
+                      return (
+                        <>
+                          <div
+                            className={`${style.terminationInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+                          >
+                            <p></p>
+                            <p className={style.tableDataFontStyle}>
+                              {secondary}
+                            </p>
+                            <p></p>
+                            <p></p>
+                            <img
+                              src={EditHcRow}
+                              alt="EditHcRow"
+                              className={style.colorFileStyle}
+                              onClick={() => {
+                                getAddEntityDialog(true);
+                                setIsEdit(true);
+                                setIsSecondary(true);
+                                setSelectedTermination(data)
+                              }}
+                            />
+                            <img
+                              src={DeleteHcRow}
+                              alt="DeleteHcRow"
+                              className={style.colorFileStyle}
+                              onClick={() => {
+                                deleteHandler(data);
+                              }}
+                            />
+                          </div>
+                        </>
+                      )
+                    })
+                  }
+                </>
+              )
+            } else {
+              return (
+                <>
+                  <div
+                    className={`${style.terminationLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+                  >
+                    <p></p>
+                    <p className={style.tableDataFontStyle}>
+                      {data.primary_reason}
+                    </p>
+                    <p></p>
+                    <p></p>
+                    <img
+                      src={EditHcRow}
+                      alt="EditHcRow"
+                      className={style.colorFileStyle}
+                      onClick={() => {
+                        setIsEdit(true)
+                        getAddEntityDialog(true)
+                        setSelectedTermination(data)
+                      }}
+                    />
+                    <img
+                      src={DeleteHcRow}
+                      alt="DeleteHcRow"
+                      className={style.colorFileStyle}
+                      onClick={() => { deleteHandler(data) }}
+                    />
+                  </div>
+                </>
+              )
+            }
+          })}
+
+          {/* Entity */}
+          {terminationData?.filter((data) => data.terminationBy === "ENTITY")
+            .length !== 0 ? (
+            <div className={style.terminationHeader}>
+              <img
+                src={IndustriesEntityFolder}
+                alt="IndustriesEntityFolder"
+                className={`${style.colorFileStyle} ${style.marginLeft5}`}
+              />
+              <p className={style.tableHeaderIndustriesFontStyle}>For Cause By Entity</p>
+            </div>
+          ) : (
+            <></>
+          )}
+
+          {terminationData?.filter((data) => data.terminationBy === "ENTITY").map((data, innerIndex) => {
+            if (data?.secondary_reasons.length !== 0) {
+              return (
+                <>
+                  <div
+                    className={`${style.terminationLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
+                  >
+                    <img
+                      src={SemiTransparentFolder}
+                      alt="SemiTransparentFolder"
+                      className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                    />
+                    <p className={style.tableDataFontStyle}>
+                      {data.primary_reason}
+                    </p>
+                    <p></p>
+                    <p></p>
+                    <img
+                      src={EditHcFolder}
+                      alt="EditHcFolder"
+                      onClick={() => {
+                        getAddEntityDialog(true);
+                        setIsEdit(true);
+                        setIsSecondary(false);
+                        setSelectedTermination(data)
+                      }}
+                      className={style.colorFileStyle}
+                    />
+                    <img
+                      src={DeleteHcFolder}
+                      alt="DeleteHcFolder"
+                      className={style.colorFileStyle}
+                      onClick={() => {
+                        deleteHandler(data);
+                      }}
+                    />
+                  </div>
+                  {
+                    data?.secondary_reasons?.map((secondary, idx) => {
+                      return (
+                        <>
+                          <div
+                            className={`${style.terminationInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+                          >
+                            <p></p>
+                            <p className={style.tableDataFontStyle}>
+                              {secondary}
+                            </p>
+                            <p></p>
+                            <p></p>
+                            <img
+                              src={EditHcRow}
+                              alt="EditHcRow"
+                              className={style.colorFileStyle}
+                              onClick={() => {
+                                getAddEntityDialog(true);
+                                setIsEdit(true);
+                                setIsSecondary(true);
+                                setSelectedTermination(data)
+                              }}
+                            />
+                            <img
+                              src={DeleteHcRow}
+                              alt="DeleteHcRow"
+                              className={style.colorFileStyle}
+                              onClick={() => {
+                                deleteHandler(data);
+                              }}
+                            />
+                          </div>
+                        </>
+                      )
+                    })
+                  }
+                </>
+              )
+            } else {
+              return (
+                <>
+                  <div
+                    className={`${style.terminationLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+                  >
+                    <p></p>
+                    <p className={style.tableDataFontStyle}>
+                      {data.primary_reason}
+                    </p>
+                    <p></p>
+                    <p></p>
+                    <img
+                      src={EditHcRow}
+                      alt="EditHcRow"
+                      className={style.colorFileStyle}
+                      onClick={() => {
+                        setIsEdit(true)
+                        getAddEntityDialog(true)
+                        setSelectedTermination(data)
+                      }}
+                    />
+                    <img
+                      src={DeleteHcRow}
+                      alt="DeleteHcRow"
+                      className={style.colorFileStyle}
+                      onClick={() => { deleteHandler(data) }}
+                    />
+                  </div>
+                </>
+              )
+            }
+          })}
+
         </div>
       </div>
-      {showAddTerminationReasonsDialog && (
+
+      {showAddEntityDialog && (
         <AddTerminationReasons
-          getAddTerminationReasonsDialog={getAddTerminationReasonsDialog}
-          TerminationReasonData={getAddTerminationReasonsDialog}
+          getAddEntityDialog={getAddEntityDialog}
+          selectedEntity={selectedEntity}
+          isEdit={isEdit}
+          IndustryData={industryData}
+          selectedTermination={selectedTermination}
+          isSecondary={isSecondary}
+          terminationData={terminationData}
+          getTerminationReasonData={getTerminationReasonData}
+        />
+      )}
+
+      {showDeleteConfirmation && (
+        <DeleteConfirmation
+          getShowDeleteConfirmation={getShowDeleteConfirmation}
+          getDeleteConfirmation={getDeleteConfirmation}
+          confirmationText="Do you want to delete this Termination?"
         />
       )}
     </Fragment>

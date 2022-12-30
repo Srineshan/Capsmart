@@ -11,6 +11,7 @@ const AddContractedServiceForHealthcare = ({ getAddEntityDialog, siteTypeData, g
     const [entityType, setEntityType] = useState('')
     const [csProviderTypeId, setCsProviderTypeId] = useState('')
     const [csProviderType, setCsProviderType] = useState('')
+    const [createdDate, setCreatedDate] = useState("")
 
     const arrowDown = () => {
         return (
@@ -22,20 +23,24 @@ const AddContractedServiceForHealthcare = ({ getAddEntityDialog, siteTypeData, g
         const isAvailable = siteTypeTableData.filter((e) => e.id === entityType)[0].items.map(i => i.contractedServiceProviderType).includes(csProviderType);
         if (isAvailable) {
             ErrorToaster("Already This CSPType Exists");
-            document.getElementById("cspType").focus();
-            setCsProviderType("")
+            document.getElementById("cspTypeEl").focus();
             getAddEntityDialog(true)
             return false;
         }
+
+        if (!csProviderType && csProviderType === "") {
+            document.getElementById("cspTypeEl").focus()
+            return false
+        }
+
         const data = {
             ...(isEdit && { 'id': csProviderTypeId }),
+            ...(isEdit && { 'createdDate': createdDate }),
             "contractedServiceProviderType": csProviderType,
             "siteTypeId": {
                 "id": entityType
             }
         }
-
-        console.log(data);
 
         if (!isEdit ?
             await POST("entity-service/contractedServiceProviderMaster", JSON.stringify(data))
@@ -70,6 +75,7 @@ const AddContractedServiceForHealthcare = ({ getAddEntityDialog, siteTypeData, g
             setEntityType(seletedEntity?.siteTypeId.id)
             setCsProviderType(seletedEntity?.contractedServiceProviderType)
             setCsProviderTypeId(seletedEntity?.id)
+            setCreatedDate(seletedEntity?.createdDate)
         } else {
             setEntityType(seletedEntity?.id)
         }
@@ -108,7 +114,7 @@ const AddContractedServiceForHealthcare = ({ getAddEntityDialog, siteTypeData, g
                         <div className={`${style.absenseCareGrid2}`}>
                             <div className={style.entityLableStyle}>Contracted Service Provider Type*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value={csProviderType} id="cspType" className={style.fullWidth} onChange={(e) => setCsProviderType(e.target.value)} />
+                                <InputGroup value={csProviderType} id="cspTypeEl" className={style.fullWidth} onChange={(e) => setCsProviderType(e.target.value)} />
                             </div>
                         </div>
                     </div>

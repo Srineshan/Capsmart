@@ -8,19 +8,25 @@ const AddNewDepartments = ({ getAddEntityDialog, selectedEntity, isEdit, getEnti
 
     const [departId, setDepartId] = useState("")
     const [departName, setDepartName] = useState("")
+    const [createdDate, setCreatedDate] = useState("")
 
     const saveSubmitHandler = async () => {
         const isPresent = departmentList.find((p) => p.departmentName.name === departName);
         if (isPresent) {
             ErrorToaster("Already This Name Exists");
-            document.getElementById("departName").focus();
-            setDepartName("")
+            document.getElementById("departmentEl").focus();
             getAddEntityDialog(true)
             return false;
         }
 
+        if (!departName && departName === "") {
+            document.getElementById("departmentEl").focus()
+            return false
+        }
+
         const data = {
             ...(isEdit && { 'id': departId }),
+            ...(isEdit && { 'createdDate': createdDate }),
             "departmentName": {
                 "name": departName
             },
@@ -56,6 +62,7 @@ const AddNewDepartments = ({ getAddEntityDialog, selectedEntity, isEdit, getEnti
         if (isEdit) {
             setDepartId(selectedDepart?.id);
             setDepartName(selectedDepart?.departmentName?.name)
+            setCreatedDate(selectedDepart?.createdDate)
         }
     }, [selectedDepart])
 
@@ -71,7 +78,7 @@ const AddNewDepartments = ({ getAddEntityDialog, selectedEntity, isEdit, getEnti
                     <div className={`${style.extentionGrid}`}>
                         <div className={style.entityLableStyle}>Department Name*</div>
                         <div className={style.twoCol}>
-                            <InputGroup placeholder='Enter Department Name' id="departName" value={departName} className={style.fullWidth} onChange={(e) => setDepartName(e.target.value)} />
+                            <InputGroup placeholder='Enter Department Name' id="departmentEl" value={departName} className={style.fullWidth} onChange={(e) => setDepartName(e.target.value)} />
                             <RadioGroup
                                 inline={true}
                                 className={` ${style.marginLeft20} ${style.marginTop}`}
@@ -82,14 +89,6 @@ const AddNewDepartments = ({ getAddEntityDialog, selectedEntity, isEdit, getEnti
                         </div>
                     </div>
                     <div className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}></div>
-                    {/* <div className={`${style.addHealthCareBoxStyle}`}>
-                        <div className={`${style.editHealthCareGrid2}`}>
-                            <div className={style.entityLableStyle}>Service Area*</div>
-                            <div className={style.displayInRow}>
-                                <InputGroup value="Cardiothoracic Surgery" className={style.fullWidth} />
-                            </div>
-                        </div>
-                    </div> */}
                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                         <div>
                         </div>

@@ -23,6 +23,7 @@ const AddAbsenseReasonsForHealthcare = ({
     const [absenseType, setAbsenseType] = useState("Planned");
     const [absenceReason, setAbsenseReason] = useState("");
     const [notificationPeriod, setNotificationPeriod] = useState("14");
+    const [createdDate, setCreatedDate] = useState("")
 
     const arrowDown = () => {
         return (
@@ -38,14 +39,18 @@ const AddAbsenseReasonsForHealthcare = ({
         const isPresent = tableEntityData.filter((e) => e.absenceType === absenseType.toUpperCase()).find((p) => p.absenceReason === absenceReason);
         if (isPresent) {
             ErrorToaster("Already This Absence Reason Exists");
-            document.getElementById("absences").focus();
-            setAbsenseReason("")
+            document.getElementById("absenceEl").focus();
             getAddEntityDialog(true)
             return false;
         }
 
+        if (!absenceReason && absenceReason === "") {
+            document.getElementById("absenceEl").focus()
+            return false
+        }
         const data = {
             ...(isEdit && { 'id': absenseId }),
+            ...(isEdit && { 'createdDate': createdDate }),
             "absenceType": absenseType.toUpperCase(),
             "absenceReason": absenceReason,
             "notificationPeriod": {
@@ -88,6 +93,7 @@ const AddAbsenseReasonsForHealthcare = ({
             setAbsenseType(selectedAbsence?.absenceType.charAt(0).toUpperCase() + selectedAbsence?.absenceType.slice(1).toLowerCase())
             setAbsenseReason(selectedAbsence?.absenceReason)
             setNotificationPeriod(selectedAbsence?.notificationPeriod?.numberOfDays)
+            setCreatedDate(selectedAbsence?.createdDate)
         }
     }, [isEdit, selectedAbsence])
 
@@ -148,7 +154,7 @@ const AddAbsenseReasonsForHealthcare = ({
                                 <InputGroup
                                     value={absenceReason}
                                     placeholder="Reason"
-                                    id="absences"
+                                    id="absenceEl"
                                     className={style.fullWidth}
                                     onChange={(e) => setAbsenseReason(e.target.value)}
                                 />

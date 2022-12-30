@@ -10,9 +10,14 @@ const AddIndustryTypeEntity = ({ getAddEntityDialog, getIndustryData }) => {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
+        if (!industryName && industryName === "") {
+            document.getElementById("industryEl").focus();
+            return false;
+        }
         let data = {
             "industry": industryName
         };
+
         await POST('entity-service/industryMaster', JSON.stringify(data))
             .then(response => {
                 SuccessToaster('Industry Added Successfully');
@@ -36,7 +41,7 @@ const AddIndustryTypeEntity = ({ getAddEntityDialog, getIndustryData }) => {
                     <div className={`${style.extentionGrid}`}>
                         <div className={style.entityLableStyle}>Industry Name*</div>
                         <div className={style.twoCol}>
-                            <InputGroup value={industryName} className={style.fullWidth} onChange={(e) => setIndustryName(e.target.value)} placeholder="Enter Name" />
+                            <InputGroup value={industryName} id="industryEl" className={style.fullWidth} onChange={(e) => setIndustryName(e.target.value)} placeholder="Enter Name" />
                             <RadioGroup
                                 inline={true}
                                 className={` ${style.marginLeft20} ${style.marginTop}`}

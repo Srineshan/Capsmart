@@ -16,6 +16,7 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
     const [industryTypes, setIndustryTypes] = useState([])
     const [entityTypes, setEntityTypes] = useState([])
     const [contarctedServiceProviderType, setContarctedServiceProviderType] = useState([])
+    const [createdDate, setCreatedDate] = useState("")
 
     const getAllIndustries = async () => {
         const { data: data } = await GET(`entity-service/industryMaster`);
@@ -36,14 +37,19 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
         const isPresent = getEntityDataList.find((p) => p.title === title);
         if (isPresent) {
             ErrorToaster("Already This Name Exists");
-            document.getElementById("functionalTitle").focus();
-            setTitle("")
+            document.getElementById("functionalTitleEl").focus();
             getAddEntityDialog(true)
             return false;
         }
 
+        if (!title && title === "") {
+            document.getElementById("functionalTitleEl").focus()
+            return false
+        }
+
         const data = {
             ...(isEdit && { 'id': functionalId }),
+            ...(isEdit && { 'createdDate': createdDate }),
             "title": title,
             "alias1": alias1,
             "alias2": alias2,
@@ -84,9 +90,13 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
         if (isPresent) {
             ErrorToaster("Already This Name Exists");
             document.getElementById("functionalTitle").focus();
-            setTitle("")
             getAddEntityDialog(true)
             return false;
+        }
+
+        if (!title && title === "") {
+            document.getElementById("functionalTitleEl").focus()
+            return false
         }
 
         const data = {
@@ -101,11 +111,11 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
             }
         }
         getAddEntityDialog(true)
-        setEntityTypes([])
-        setContarctedServiceProviderType([])
-        setCurrentIndustryType("")
-        setCurrentEntityType("")
-        setCurrentCSPType("")
+        // setEntityTypes([])
+        // setContarctedServiceProviderType([])
+        // setCurrentIndustryType("")
+        // setCurrentEntityType("")
+        // setCurrentCSPType("")
         setTitle("")
         setalias1("")
         setalias2("")
@@ -143,6 +153,7 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
             setTitle(selectedFunctional?.title);
             setalias1(selectedFunctional?.alias1)
             setalias2(selectedFunctional?.alias2)
+            setCreatedDate(selectedFunctional?.createdDate)
         }
     }, [selectedFunctional])
 
@@ -195,7 +206,7 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
                     <div className={`${style.addHealthCareBoxStyle}`}>
                         <div className={`${style.editHealthCareGrid2}`}>
                             <div className={style.entityLableStyle}>Functional Title*</div>
-                            <InputGroup value={title} id="functionalTitle" className={style.fullWidth} onChange={e => setTitle(e.target.value)} />
+                            <InputGroup value={title} id="functionalTitleEl" className={style.fullWidth} onChange={e => setTitle(e.target.value)} />
                         </div>
                         <div className={`${style.editFunctionalTitlesGrid} ${style.marginTop20}`}>
                             <div className={style.entityLableStyle}>ALias Name</div>

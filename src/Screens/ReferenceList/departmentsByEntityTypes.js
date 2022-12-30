@@ -128,19 +128,6 @@ const DepartmentsByEntityTypes = ({ getAddEntityDialog, showAddEntityDialog, isE
                     }
                 </div>
                 {
-                    // departmentList?.length === 0 ?
-
-                    //     <div className={style.emptyCradStyle}>
-                    //         <div className={style.displayInCol}>
-                    //             <div className={style.justifyCenter}>
-                    //                 <img src={Warning} alt="warning" className={style.warningImage} />
-                    //             </div>
-                    //             <div className={style.warningFontContainer}>
-                    //                 <p className={style.warningFont}>Departments / Services Area reference list by entity needs to be created and setup in order to be made available as a default list for customer accounts that are created.</p>
-                    //             </div>
-                    //         </div>
-                    //     </div>
-                    //     :
                     <div className={style.DepartmentEntityCardStyle}>
                         <div className={style.tableHeaderIndustriesEntity}>
                             <p className={style.tableHeaderIndustriesFontStyle}>DEPARTMENTS / SERVICE AREAS</p>

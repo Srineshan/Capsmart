@@ -10,18 +10,24 @@ const AddSuffixEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, sele
 
     const [entityId, setEntityId] = useState('')
     const [entityName, setEntityName] = useState('')
+    const [createdDate, setCreatedDate] = useState("")
 
     const saveSubmitHandler = async () => {
         const isPresent = tableEntityData.find((p) => p.suffix === entityName);
         if (isPresent) {
             ErrorToaster("Already This Name Exists");
-            document.getElementById("entityName").focus();
-            setEntityName("")
+            document.getElementById("entityNameEl").focus();
             getAddHcEntityDialog(true)
             return false;
         }
+        if (!entityName && entityName === "") {
+            document.getElementById("entityNameEl").focus()
+            return false
+        }
+
         const data = {
             ...(isEdit && { 'id': entityId }),
+            ...(isEdit && { 'createdDate': createdDate }),
             "suffix": entityName,
             "industryId": {
                 "id": IndustryId
@@ -58,6 +64,7 @@ const AddSuffixEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, sele
         if (isEdit) {
             setEntityName(seletedEntity?.suffix)
             setEntityId(seletedEntity?.id)
+            setCreatedDate(seletedEntity?.createdDate)
         }
     }, [isEdit, seletedEntity])
 
@@ -83,7 +90,7 @@ const AddSuffixEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, sele
                         <div className={`${style.editHealthCareGrid2} ${style.marginTop20}`}>
                             <div className={style.entityLableStyle}>Entity Name*</div>
                             <div className={style.displayInRow}>
-                                <InputGroup value={entityName} id="entityName" className={style.fullWidth} onChange={(e) => setEntityName(e.target.value)} />
+                                <InputGroup value={entityName} id="entityNameEl" className={style.fullWidth} onChange={(e) => setEntityName(e.target.value)} />
                             </div>
                         </div>
                     </div>
