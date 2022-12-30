@@ -213,7 +213,7 @@ const EditUser = ({getEditUserDialog, selectedUsers}) => {
                               <option value="Select Role-multi select" >
                                 Select Role-multi select
                               </option>
-                              {roles?.map((data, index) => (
+                              {roles?.filter(data=>data?.roleName !== 'Activity Logger')?.map((data, index) => (
                                 <option key={`${data}-${index}`} value={data?.roleName} >
                                   {data?.roleName}
                                 </option>

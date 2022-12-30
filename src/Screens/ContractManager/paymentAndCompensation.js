@@ -7,7 +7,7 @@ import RedirectingPopUp from './redirectingPopUp';
 
 import style from './index.module.scss';
 
-const PaymentAndCompensation = ({selectContractInfo, getViewPage8, getCurrentPage, contractId, getSelectedField}) => {
+const PaymentAndCompensation = ({selectContractInfo, getViewPage8, getCurrentPage, contractId, getSelectedField, getShowAlert}) => {
     const [compensation, setCompensation] = useState('RVUBASED');
     const [paymentAndCompensation, setPaymentAndCompensation] = useState({});
     const [rvuQuantity, setRvuQuantity] =useState({
@@ -44,7 +44,7 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage8, getCurrentPag
     const limit5 = 5;
     const limit7 = 7;
 
-    const handleContinue = async() => {
+    const handleContinue = async(buttonType) => {
         const data = {
             compensationBasis: compensation,
             rvuQuantity: rvuQuantity,
@@ -64,6 +64,9 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage8, getCurrentPag
             else {
                 ErrorToaster('Unexpected Error');
             }
+            if(buttonType !== 'Continue'){
+          getShowAlert(true);
+        }
     }
 
     const getPaymentAndCompensation = async() => {
@@ -254,9 +257,9 @@ const PaymentAndCompensation = ({selectContractInfo, getViewPage8, getCurrentPag
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Timesheet Submission Terms')}}>BACK</button>
                 <div>
-                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue()}>SAVE IN-PROGRESS</button>
+                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
                     <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                    onClick={() => { handleContinue(); getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') }}
+                    onClick={() => { handleContinue('Continue'); getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') }}
                     >CONTINUE</button>
                 </div>
             </div>

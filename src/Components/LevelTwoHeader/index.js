@@ -16,7 +16,7 @@ import { Icon, Intent } from "@blueprintjs/core";
 
 import style from './index.module.scss';
 
-const LevelTwoHeader = ({ heading, updatedTime, onCloseLevel2, needDateFilter, getFrom, getTo, getAddEntityDialog, setIsEdit, needHeader }) => {
+const LevelTwoHeader = ({ heading, updatedTime, onCloseLevel2, needDateFilter, getFrom, getTo, getAddEntityDialog, setIsEdit, needHeader, hideClose }) => {
     const [timeFrame, setTimeFrame] = useState('This Week');
     const [showCustomRangeSelection, setShowCustomRangeSelection] = useState(true);
     const [from, setFrom] = useState(startOfWeek(new Date()));
@@ -58,7 +58,7 @@ const LevelTwoHeader = ({ heading, updatedTime, onCloseLevel2, needDateFilter, g
         }
     };
 
-    return(
+    return (
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <div className={`${style.displayInRow}`}>
                 <div className={`${style.userNameStyle} ${style.alignCenter} `}>
@@ -142,7 +142,7 @@ const LevelTwoHeader = ({ heading, updatedTime, onCloseLevel2, needDateFilter, g
                     </>
                 )}
 
-                {!needHeader && (<img src={CrossPink} alt="cross" className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => onCloseLevel2()} />)}
+                {!needHeader && !hideClose && (<img src={CrossPink} alt="cross" className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => onCloseLevel2()} />)}
 
                 {needHeader && (
                     <>

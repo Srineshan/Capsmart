@@ -77,7 +77,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
             console.log('error',error);
         })
     }
-    
+
     const handleTitle = (value) => {
         setAddUser({...addUser, title:{id:value,title:functionalTitle?.filter(data => data?.id === value)?.map(data => data?.title)[0]}});
     }
@@ -97,20 +97,20 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
 
     const getRoles = async() => {
         const {data: roles} = await GET('user-management-service/roles');
-        setRoles(roles);
+        setRoles(roles?.filter(data=>data?.roleName !== 'Activity Logger')?.map(data=>data));
     };
 
     const getUserById = async() => {
         const {data: user} = await GET(`user-management-service/user/${userId}`);
         setUserDataById(user);
         if(user){
-            setAddUser({...addUser, 
-                firstName: user?.name?.firstName, 
-                lastName: user?.name?.lastName, 
-                email: user?.email?.officialEmail, 
+            setAddUser({...addUser,
+                firstName: user?.name?.firstName,
+                lastName: user?.name?.lastName,
+                email: user?.email?.officialEmail,
                 phone: user?.communication?.mobileNumber,
-                roles: user?.roles, 
-                sites: {sites: user?.sites?.sites}, 
+                roles: user?.roles,
+                sites: {sites: user?.sites?.sites},
                 title: user?.title
             });
             let rolesToShow = [];
@@ -261,7 +261,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                                     value={selectedRolesToShow}
                                     onChange={(e) => handleRolesChange(e.target.value)}
                                 >
-                                    {roles?.map((data, index)=> 
+                                    {roles?.map((data, index)=>
                                         <MenuItem value={data?.id} key={index}>{data?.roleName}</MenuItem>
                                     )}
                                 </Select>
@@ -277,7 +277,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                                     className={style.selectFontStyle}
                                     onChange={(e) => handleTitle(e.target.value)}
                                 >
-                                    {functionalTitle?.map((data, index)=> 
+                                    {functionalTitle?.map((data, index)=>
                                         <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
                                     )}
                                 </Select>
@@ -296,7 +296,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                                     onChange={(e) => handleSitesChange(e.target.value)}
                                     className={style.selectFontStyle}
                                 >
-                                    {sites?.map((data, index)=> 
+                                    {sites?.map((data, index)=>
                                         <MenuItem value={data?.id} key={index}>{data?.siteName?.siteName}</MenuItem>
                                     )}
                                 </Select>
@@ -313,7 +313,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                                     onChange={(e) => handleDepartmentsChange(e.target.value)}
                                     className={style.selectFontStyle}
                                 >
-                                    {sites?.filter(data => selectedSites?.includes(data?.id))?.map((data, index)=> 
+                                    {sites?.filter(data => selectedSites?.includes(data?.id))?.map((data, index)=>
                                         data?.departmentList?.departments?.map((deptData, deptIndex) => (
                                             <MenuItem value={`${deptData?.id}-${data?.id}`} key={`${index}${deptIndex}`}>{`${deptData?.departmentName?.name} - ${data?.siteName?.siteName}`}</MenuItem>
                                     )))}

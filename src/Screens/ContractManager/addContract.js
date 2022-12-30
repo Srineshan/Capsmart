@@ -55,6 +55,9 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
                             <option value="Renewal Contract">
                             Contracted Services Continuation Renewal Contract
                             </option>
+                            <option value="Existing Contract">
+                            Existing Active Contract
+                            </option>
                         </select>
                 </div>
                 <div className={`${style.displayInRow} ${style.marginLeft20}`}>

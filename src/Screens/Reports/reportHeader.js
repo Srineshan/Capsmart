@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react';
-import {format} from 'date-fns';
+import React, { useState, useEffect } from 'react';
+import { format } from 'date-fns';
 import Cookie from 'universal-cookie';
-import {TenantID, GET} from './../../Screens/dataSaver';
+import { TenantID, GET } from './../../Screens/dataSaver';
 import jwt from 'jwt-decode';
 
 import style from './index.module.scss';
@@ -11,21 +11,19 @@ const ReportHeader = () => {
     let userDetails = cookie.get('user');
     const userDetail = jwt(userDetails);
 
-    const [logo,setLogo] = useState({logo:sessionStorage?.getItem('logo'),title:sessionStorage.getItem('title')});
+    const [logo, setLogo] = useState({ logo: sessionStorage?.getItem('logo'), title: sessionStorage.getItem('title') });
     const [currentTime] = useState(format(new Date(), 'MMM d yyyy, H:mm'));
 
-    useEffect(()=>{
-      getLogo();
+    useEffect(() => {
+        getLogo();
     }, [])
 
-    const getLogo = async() => {
-      const {data: data} = await GET(`entity-service/entity/${TenantID}`);
-      setLogo({logo:data?.logo?.file?.fileURL, title:data?.entityName?.entityName});
+    const getLogo = async () => {
+        const { data: data } = await GET(`entity-service/entity/${TenantID}`);
+        setLogo({ logo: data?.logo?.file?.fileURL, title: data?.entityName?.entityName });
     }
 
-    console.log(logo)
-
-    return(
+    return (
         <div className={style.headerBackground}>
             <div className={`${style.spaceBetween} ${style.alignCenter}`}>
                 <div>

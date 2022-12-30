@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import Reject from './../../images/reject-report.png';
@@ -12,65 +13,116 @@ import { Link, useParams } from 'react-router-dom';
 import { GET } from '../dataSaver';
 import { format } from 'date-fns';
 
-export const Run = ({link}) => {
+export const Run = ({ link }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
     const handleClick = (event) => {
-        console.log('entered')
         setAnchorEl(event.currentTarget);
     };
 
     const handleClose = () => {
-        console.log('leave')
         setAnchorEl(null);
     };
 
-    return(
+    return (
         <div onMouseEnter={(e) => handleClick(e)} onMouseLeave={() => handleClose()} aria-owns={open ? 'mouse-over-popover' : undefined}
-        aria-haspopup="true">
-            <Link to={link} className={style.linkStyle}>
-                <div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div>
-                <Popover
-                    id={'mouse-over-popover'}
-                    sx={{
-                        pointerEvents: 'none',
-                      }}
-                    open={open}
-                    anchorEl={anchorEl}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    disableRestoreFocus
-                >
-                    <div className={style.popoverStyle}>Click to Generate this Report</div>
-                </Popover>
-            </Link>
+            aria-haspopup="true">
+            <div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div>
+            <Popover
+                id={'mouse-over-popover'}
+                sx={{
+                    pointerEvents: 'none',
+                }}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                disableRestoreFocus
+            >
+                <div className={style.popoverStyle}>Click to Generate this Report</div>
+            </Popover>
         </div>
     )
 }
 
-const TimeSheetReports = ({getShowSampleReport}) => {
+const TimeSheetReports = ({ getShowSampleReport }) => {
+    const navigate = useNavigate();
     const [tabName, setTabName] = useState('Standard Report Templates');
-    const {reportType} = useParams();
+    const { reportType } = useParams();
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
     const [currentUserDetails, setCurrentUserDetails] = useState();
     const [userId, setUserId] = useState(user?.id);
+    const [myReports, setMyReports] = useState([]);
+
+    const category = (reportType === 'servicesOrActivities') ?
+        'SERVICES_ACTIVITIES' :
+        (reportType === 'contractManagement') ?
+            'CONTRACT_MANAGEMENT' :
+            (reportType === 'contractCompliance') ?
+                'CONTRACT_COMPLIANCE' :
+                (reportType === 'contractPerformance') ?
+                    'CONTRACT_PERFORMANCE' : '';
+
+    useEffect(() => {
+        sessionStorage.removeItem('reportFilter');
+    }, [])
+
+    const showMyReport = (data) => {
+        let reportURL = getMyReportURL(data?.report?.type);
+        sessionStorage.setItem('reportFilter', JSON.stringify(data?.report?.filters?.dataMap));
+        navigate(`/reportTypeOverview/${reportURL}`);
+    };
+
+    const getMyReportURL = (value) => {
+        if (value === 'ACTIVITES_SERVICES_LOG_SUMMARY') {
+            return 'activitiesOrServices';
+        } else if (value === 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY ') {
+            return 'addOnActivities';
+        } else {
+            return '';
+        }
+    }
 
     useEffect(() => {
         setUserId(user?.id);
         setUserDetails();
+        getMyReports();
     }, [])
 
-    const setUserDetails = async() => {
-        const {data: user} = await GET(`user-management-service/user/${userId}`);
+    const setUserDetails = async () => {
+        const { data: user } = await GET(`user-management-service/user/${userId}`);
         setCurrentUserDetails(user);
     }
-    return(
+
+    const getMyReports = async () => {
+        const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${userId}&category=${category}`);
+        setMyReports(myReport);
+    }
+
+    const getScheduleValue = (value) => {
+        if (value === 'ONETIME') {
+            return 'One Time';
+        } else if (value === 'EVERYWEEKDAY') {
+            return 'Every Weekday';
+        } else if (value === 'WEEKLY') {
+            return 'Weekly';
+        } else if (value === 'MONTHLY') {
+            return 'Monthly';
+        } else if (value === 'QUARTELY') {
+            return 'Quaterly';
+        } else if (value === 'ANNUALY') {
+            return 'Annualy';
+        } else {
+            return '';
+        }
+    }
+    return (
         <div className={style.margin20}>
             <div className={style.bigCardGrid}>
                 <div>
@@ -94,16 +146,16 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                 <div className={style.bigCardStyle}>
                     <div className={style.paginationCol}>
                         <div className={` ${style.titleStyle} ${style.margin20}`}>
-                        {reportType === 'servicesOrActivities' ? 'Services / Activities Log Reports'
-                        : reportType === 'timesheets' ? 'Timesheets'
-                        : reportType === 'reviewsAndApprovals' ? 'Reviews & Approval'
-                        : reportType === 'taskManagement' ? 'Task Management'
-                        : reportType === 'payments' ? 'Payments'
-                        : reportType === 'contractManagement' ? 'Contract Management'
-                        : reportType === 'contractCompliance' ? 'Contract Compliance'
-                        : reportType === 'contractPerformance' ? 'Contract Performance'
-                        : reportType === 'systemAdministration' ? 'System Administration'
-                        : ""}
+                            {reportType === 'servicesOrActivities' ? 'Services / Activities Log Reports'
+                                : reportType === 'timesheets' ? 'Timesheets'
+                                    : reportType === 'reviewsAndApprovals' ? 'Reviews & Approval'
+                                        : reportType === 'taskManagement' ? 'Task Management'
+                                            : reportType === 'payments' ? 'Payments'
+                                                : reportType === 'contractManagement' ? 'Contract Management'
+                                                    : reportType === 'contractCompliance' ? 'Contract Compliance'
+                                                        : reportType === 'contractPerformance' ? 'Contract Performance'
+                                                            : reportType === 'systemAdministration' ? 'System Administration'
+                                                                : ""}
                         </div>
                         {/* <div className={`${style.spaceBetween} ${style.margin20}`}>
                             <div className={style.displayInRow}>
@@ -175,7 +227,9 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Run link={"/reportTypeOverview/activitiesOrServices"} />
+                                        <Link to={"/reportTypeOverview/activitiesOrServices"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
                                     </div>
                                     {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
@@ -205,7 +259,9 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Run link={"/reportTypeOverview/upcomingContractRenewals"} />
+                                        <Link to={"/reportTypeOverview/upcomingContractRenewals"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
                                     </div>
                                     <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
@@ -214,7 +270,9 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Run link={"/reportTypeOverview/oneTimeContract"} />
+                                        <Link to={"/reportTypeOverview/oneTimeContract"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
                                     </div>
                                 </div>
                             ) : reportType === 'contractCompliance' ? (
@@ -235,7 +293,9 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                         <div className={style.tableDataReportsFontStyle}>Feb 11 2022, 18:09 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
-                                        <Run link={"/reportTypeOverview/nonCompliant"} />
+                                        <Link to={"/reportTypeOverview/nonCompliant"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
                                     </div>
                                 </div>
                             ) : reportType === 'contractPerformance' ? (
@@ -243,13 +303,15 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                     <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>1</div>
                                         {/* <Link to="/reportTypeOverview/complianceStatus" className={style.linkStyle}> */}
-                                            <div className={style.tableDataReportsFontStyle}>Paid Consulting Hours & Billing Productivity Index by Contractor</div>
+                                        <div className={style.tableDataReportsFontStyle}>Paid Consulting Hours & Billing Productivity Index by Contractor</div>
                                         {/* </Link> */}
                                         <div className={style.tableDataReportsFontStyle}>Paid Consulting Hours & Billing Productivity Index by Contractor</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Run link={"/reportTypeOverview/complianceStatus"} />
+                                        <Link to={"/reportTypeOverview/complianceStatus"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
                                     </div>
                                     <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
@@ -258,8 +320,37 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20  </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Run link={"/reportTypeOverview/scheduledActivityByContract"} />
+                                        <Link to={"/reportTypeOverview/scheduledActivityByContract"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
                                     </div>
+                                </div>
+                            ) : reportType === 'payments' ? (
+                                <div className={style.scrollStyle}>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>1</div>
+                                        <Link to="/reportTypeOverview/paymentsProcessingSummary" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Payments Processing Summary</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>This report provides a comprehensive summary of statistics with regards to status of payemnts being made to contracted service providers</div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
+                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
+                                        <Link to={"/reportTypeOverview/paymentsProcessingSummary"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
+                                    </div>
+                                    {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>2</div>
+                                        <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Time and Payment Log for Contracted Services</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>
+                                            This report provides a log of the time spent and status of payments to contracted service provider
+                                        </div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022, 18:09 </div>
+                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
+                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
+                                        <Link to={"/reportTypeOverview/addOnActivities"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
+                                    </div> */}
                                 </div>
                             ) : (
                                 <div className={style.scrollStyle}>
@@ -270,7 +361,9 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Run link={"/reportTypeOverview/activitiesOrServices"} />
+                                        <Link to={"/reportTypeOverview/activitiesOrServices"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
                                     </div>
                                     <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
@@ -279,7 +372,9 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                         <div className={style.tableDataReportsFontStyle}>Feb 11 2022, 18:09 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
-                                        <Run link={"/reportTypeOverview/addOnActivities"} />
+                                        <Link to={"/reportTypeOverview/addOnActivities"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
                                     </div>
                                     <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>3</div>
@@ -288,7 +383,9 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                         <div className={style.tableDataReportsFontStyle}>Feb 15 2022, 03:40 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Feb 15 2022</div>
-                                        <Run link={"/reportTypeOverview/scheduledActivity"} />
+                                        <Link to={"/reportTypeOverview/scheduledActivity"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
                                     </div>
                                 </div>
                             )}
@@ -305,16 +402,21 @@ const TimeSheetReports = ({getShowSampleReport}) => {
                                 <p className={style.headingStyle}>Last Updated</p>
                             </div>
                             <div className={style.scrollStyle}>
-                                <div className={`${style.timeSheetTableGrid} ${style.marginTop20}`}>
-                                    <div className={style.tableDataReportsFontStyle}>1</div>
-                                    <div className={style.tableDataReportsFontStyle}>Report Title 1</div>
-                                    <div className={style.tableDataReportsFontStyle}>Description</div>
-                                    <div className={style.tableDataReportsFontStyle}>Jan 1 - Jan 31 </div>
-                                    <div className={style.tableDataReportsFontStyle}>Schedule</div>
-                                    <div className={style.tableDataReportsFontStyle}>Martin Tindale, MD</div>
-                                    <div className={style.tableDataReportsFontStyle}>30 Dec 2021</div>
-                                    <div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`} onClick={() => getShowSampleReport(true)}>Run</div>
-                                </div>
+                                {myReports?.map((data, index) => (
+                                    <div className={`${style.timeSheetTableGrid} ${style.marginTop20}`} key={index}>
+                                        <div className={style.tableDataReportsFontStyle}>{index + 1}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{data?.report?.title}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{data?.report?.description}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(data?.report?.lastUpdated), 'd MMM yyyy')} </div>
+                                        <div className={style.tableDataReportsFontStyle}>{getScheduleValue(data?.report?.schedule?.schedule)}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{`${data?.report?.owner?.name?.firstName} ${data?.report?.owner?.name?.lastName}`}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(data?.report?.lastUpdated), 'd MMM yyyy')}</div>
+                                        <div onClick={() => showMyReport(data)}>
+                                            <Run />
+                                        </div>
+                                        {/* <div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div> */}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     ) : tabName === "Saved Report Outputs" ? (
