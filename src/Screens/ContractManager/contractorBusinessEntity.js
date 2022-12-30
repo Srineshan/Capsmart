@@ -25,7 +25,7 @@ const switchTheme = createTheme({
 });
 
 
-const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField, getShowAlert }) => {
+const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField, getShowAlert, isEditable }) => {
   const [isUserUpdated, setIsUserUpdated] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -482,15 +482,18 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 )
               }
             </div>
-            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-              <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contracted Services Provider(s)') }}>BACK</button>
-              <div>
-                <button className={style.newContractOutlinedButton} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                  onClick={() => { handleContinue('Continue'); }}
-                >CONTINUE</button>
+            {isEditable && 
+              <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contracted Services Provider(s)') }}>BACK</button>
+                <div>
+                  <button className={style.newContractOutlinedButton} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
+                  <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
+                    onClick={() => { handleContinue('Continue'); }}
+                  >CONTINUE</button>
+                </div>
               </div>
-            </div>
+            }
+
           </div>
           :
           (

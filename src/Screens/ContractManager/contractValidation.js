@@ -84,6 +84,30 @@ export const validateServices = (contract) => {
   return emptyFields;
 }
 
+export const validateTimesheetSubmission = (contract) => {
+  let timesheets = contract?.timesheetSubmissionTerms;
+  let isEmptyField = [];
+  let fieldData = [];
+  if(timesheets === null || timesheets?.timesheetSubmissionServicesCount?.count === 0){
+    isEmptyField = ['Number Of Timesheet', 'Timesheet Label', 'Payment Source', 'Service Log Period For Timesheet Submission', 'Contracted Activity To Include', 'Day Limit For Submission Of Timesheet Based On Activity Service Date', 'Day Limit For Submission Of Timesheet Based On Contract End Date'];
+  }
+  timesheets?.timesheetActivitiesPeriods?.map((data,index)=>{
+    let fieldData = [{field:'Number Of Timesheet', value:timesheets?.timesheetSubmissionServicesCount?.count},
+                    {field: `Timesheet Label ${index+1}`, value: data?.timesheetLabel?.label},
+                    {field: `Payment Source ${index+1}`, value:data?.paymentSource},
+                    {field: `Service Log Period For Timesheet Submission ${index+1}`, value:data?.servicePeriod?.value},
+                    {field: `Contracted Activity To Include ${index+1}`, value:data?.activities?.length},
+                    {field: 'Day Limit For Submission Of Timesheet Based On Activity Service Date', value:timesheets?.dayLimit?.activityServiceDate?.days},
+                    {field: 'Day Limit For Submission Of Timesheet Based On Contract End Date', value:timesheets?.dayLimit?.contractEndDate?.days},
+                    ];
+    let temp = fieldData?.filter(data=>data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data=> data?.field);
+    isEmptyField.push(...temp);
+  })
+console.log('ssdfsdf',contract?.contractName?.contractName,isEmptyField);
+return isEmptyField;
+}
+
+
 export const validateTimesheetProcessingWorkflow = (contract) => {
   let isEmptyField = false;
   if(contract?.workFlowDetails?.length === 0){

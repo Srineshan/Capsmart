@@ -37,7 +37,7 @@ const switchTheme = createTheme({
   },
 });
 
-const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex }) => {
+const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex, isEditable }) => {
   const serviceTypeList = ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days', 'Supplemental Services', 'Add-On Services', 'Administrative / Miscellaneous Services'];
   const siteTypeId = sessionStorage.getItem('entityTypeId');
   const [serviceType, setServiceType] = useState('Clinic Blocks');
@@ -649,10 +649,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           )}
         </div>
         <div>
+        {isEditable && 
           <div className={`${style.floatRight}`}>
             <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('ADD MORE'); reset() }}>ADD MORE</button>
             <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('SAVE AND EXIT'); reset() }}>SAVE & EXIT</button>
           </div>
+        }
+
         </div>
       </Dialog>
 

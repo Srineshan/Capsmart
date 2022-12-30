@@ -10,7 +10,7 @@ import ReviewerApproverField from './reviewerApproverField';
 import style from './index.module.scss';
 import ContractValidationCheckSummary from './contractValidationCheckSummary';
 
-const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName }) => {
+const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable }) => {
     const [addOn, setAddOn] = useState({ id: '', reviewer: '', approver: '' });
     const [absence, setAbsence] = useState({ id: '', reviewer: '', approver: '' });
     const [timesheet, setTimesheet] = useState({ id: '', reviewer: '', approver: '' });
@@ -211,19 +211,21 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
                     </div>
                 </div>
             </div>
-            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Timesheet Processing Workflow') }}>BACK</button>
-                <div>
-                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                        onClick={() => {
-                            // submit();
-                            // getViewPage9(true);
-                            getCurrentPage('Request Processing Workflow')
-                            setIsShowValidationCheck(true);
-                        }}
-                    >CONTINUE</button>
-                </div>
-            </div>
+            {isEditable &&
+              <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                  <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Timesheet Processing Workflow') }}>BACK</button>
+                  <div>
+                      <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
+                          onClick={() => {
+                              // submit();
+                              // getViewPage9(true);
+                              getCurrentPage('Request Processing Workflow')
+                              setIsShowValidationCheck(true);
+                          }}
+                      >CONTINUE</button>
+                  </div>
+              </div>
+            }
             {isShowValidationCheck && (
                 <ContractValidationCheckSummary getContractValidationDialog={getContractValidationDialog} />
             )}

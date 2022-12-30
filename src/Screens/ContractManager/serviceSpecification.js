@@ -9,7 +9,7 @@ import style from './index.module.scss';
 import AddServiceProvided from './addServiceToBeProvided';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
-const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPage, selectContractInfo, isMultiSiteEntity }) => {
+const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPage, selectContractInfo, isMultiSiteEntity, isEditable }) => {
   const [addService, setAddService] = useState(false);
   const [editService, setEditService] = useState(false);
   const [addOn, setAddOn] = useState(false);
@@ -93,7 +93,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       {userLength !== 0 ? (
         <div className={style.cloneBlockStyle}>
           <div className={style.tableHeight}>
-            <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} ${style.floatRight} ${style.marginBottom}`} onClick={() => getAddServiceDialog(true)}>ADD SERVICE</button>
+            {isEditable && <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} ${style.floatRight} ${style.marginBottom}`} onClick={() => getAddServiceDialog(true)}>ADD SERVICE</button>}
             <div className={`${style.serviceSpecificationTableHeader} ${style.marginTop20}`}>
               <p className={style.documentProofTextWidth}></p>
               <p className={`${style.documentProofTextWidth}`}>ACTIVITIES TYPE</p>
@@ -125,15 +125,18 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
             <Icon icon="trash" size={20} className={style.marginRight20} color="#52575D" />
         </div> */}
           </div>
-          <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-            <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contractor Business Entity') }}>BACK</button>
-            <div>
-              <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => {getViewPage6(true); getCurrentPage('Timesheet Submission Terms');}}>CONTINUE</button>
+          {isEditable &&
+            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+              <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contractor Business Entity') }}>BACK</button>
+              <div>
+                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => {getViewPage6(true); getCurrentPage('Timesheet Submission Terms');}}>CONTINUE</button>
+              </div>
             </div>
-          </div>
+          }
+
           {
             (addService || editService) &&
-            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog} isMultiSiteEntity={isMultiSiteEntity} selectedIndex={selectedContractServiceIndex}/>
+            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog} isMultiSiteEntity={isMultiSiteEntity} selectedIndex={selectedContractServiceIndex} isEditable={isEditable}/>
           }
           <Dialog isOpen={showDeleteConfirmation} onClose={() => setShowDeleteConfirmation(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>

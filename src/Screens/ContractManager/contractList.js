@@ -21,7 +21,7 @@ import UserCard from './userCard';
 import Table from '../../Components/TableDesign';
 import LeftStatsCard from '../../Components/LeftStatsCard';
 
-import {validateServices} from './contractValidation';
+import {validateTimesheetSubmission} from './contractValidation';
 
 import style from './index.module.scss';
 import SideBar from '../../Components/Sidebar';
@@ -220,7 +220,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     lastUpdatedBy = [];
     action = [];
 
-    console.log('validateContractIDTermLimit', validateServices(contracts?.[0]))
+    console.log('validateContractIDTermLimit', validateTimesheetSubmission(contracts?.[0]))
 
     contracts?.map(data => {
       dot.push('yellow');

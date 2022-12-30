@@ -26,7 +26,7 @@ import TimesheetProcessingWorkflow from './timesheetProcessingWorkflow';
 import style from './index.module.scss';
 import RequestProcessingWorkflow from './requestProcessingWorkflow';
 
-const NewContractFromClone = ({ contracts, getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method }) => {
+const NewContractFromClone = ({ contracts, getNewContract, contractType, selectedContract, selectedContractType, contractIdFromActive, getContractIdFromActive, method, isEditable }) => {
     const [selectContractInfo, setSelectContractInfo] = useState(contractType);
     const [deleteExecutedContractDialog, setDeleteExecutedContractDialog] = useState(false);
     const [newServiceProviderDialog, setNewServiceProviderDialog] = useState(false);
@@ -307,6 +307,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         selectContractInfo={selectContractInfo}
                         contractId={contractId}
                         contractName={contractName}
+                        isEditable={isEditable}
                     />
                 ) : currentPage === "Timesheet Processing Workflow" ? (
                     <TimesheetProcessingWorkflow
@@ -315,6 +316,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         selectContractInfo={selectContractInfo}
                         contractId={contractId}
                         contractName={contractName}
+                        isEditable={isEditable}
                     />
                 ) : currentPage === "Timesheet Submission Terms" ? (
                     <TimeSheetSubmissionTerms
@@ -322,7 +324,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         getCurrentPage={getCurrentPage}
                         contractId={contractId}
                         isMultiSiteEntity={isMultiSiteEntity}
-                        getShowAlert={getShowAlert}/>
+                        getShowAlert={getShowAlert}
+                        isEditable={isEditable}/>
                 ) : currentPage === "Payment & Compensation" ? (
                     <PaymentAndCompensation
                         selectContractInfo={selectContractInfo}
@@ -331,6 +334,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         contractId={contractId}
                         getSelectedField={getSelectedField}
                         getShowAlert={getShowAlert}
+                        isEditable={isEditable}
                     />
                 ) : (currentPage === "Contracted Add on service specification" || currentPage === "Contracted Services Specification") ?
                     <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId={contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo} isMultiSiteEntity={isMultiSiteEntity} />
@@ -341,6 +345,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             contractId={contractId}
                             isMultipleContract={isMultipleContract}
                             isMultiSiteEntity={isMultiSiteEntity}
+                            isEditable={isEditable}
                         />
                     ) : currentPage === "Contractor Business Entity" ? (
                         <ContractorBusinessEntity
@@ -351,6 +356,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             contractName={contractName}
                             getSelectedField={getSelectedField}
                             getShowAlert={getShowAlert}
+                            isEditable={isEditable}
                         />
                     )
                         : selectContractInfo === "INDIVIDUAL" && currentPage === "Contracted Services Provider(s)" ? (
@@ -363,6 +369,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                                 contractName={contractName}
                                 getSelectedField={getSelectedField}
                                 getShowAlert={getShowAlert}
+                                isEditable={isEditable}
                                 />
                         ) : (currentPage === "Contract ID & Term Limit") ? (
                             <ContractIdTermLimitIndividual
@@ -380,6 +387,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                                 isMultiSiteEntity={isMultiSiteEntity}
                                 getSelectedField={getSelectedField}
                                 getShowAlert={getShowAlert}
+                                isEditable={isEditable}
                             />
                         ) : (selectContractInfo === "MULTIPLE" && currentPage === "Contracted Services Provider(s)") ? (
                             <ContractedServicesProviderMultiple
@@ -390,7 +398,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                                 getViewPage3={getViewPage3}
                                 getCurrentPage={getCurrentPage}
                                 contractId={contractId}
-                                contractName={contractName} />
+                                contractName={contractName}
+                                isEditable={isEditable} />
 
                         ) : ''}
                 <div className={style.cloneBlockStyle}>
@@ -409,19 +418,21 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         }
                     </div>
 
-                    {
-                        // <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Activity Performed</p>
-                        // <div className={style.welcomeBorder}></div>
-                        // {viewPage1 && !viewPage2 && (
-                        //     <div className={style.validationAlert}>
-                        //         <div className={style.displayInRow}>
-                        //             <div>
-                        //                 <p className={`${style.blackText} ${style.leftAlign}`}><strong>Text to Alert User</strong></p>
-                        //                 <p className={`${style.blackText} ${style.leftAlign}`}>This area will display specific alerts for the users</p>
-                        //             </div>
-                        //         </div>
-                        //     </div>
-                        // )}
+                    {helpTextData?.[selectedField]?.skipDataAlerts !== '' && helpTextData?.[selectedField]?.skipDataAlerts &&
+                      <>
+                        <p className={`${style.smallHeadingStyle} ${style.marginTop20}`}>Activity Performed</p>
+                        <div className={style.welcomeBorder}></div>
+                        {viewPage1 && !viewPage2 && (
+                            <div className={style.validationAlert}>
+                                <div className={style.displayInRow}>
+                                    <div>
+                                        <p className={`${style.blackText} ${style.leftAlign}`}><strong>Text to Alert User</strong></p>
+                                        <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[selectedField]?.skipDataAlerts}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        </>
                     }
 
                     {fileItems?.length !== 0 ?
@@ -462,7 +473,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                 </Dialog>
             )}
             {newServiceProviderDialog && (
-                <NewServiceProvider getNewServiceProviderDialog={getNewServiceProviderDialog} contractId={contractId} contractType={contractType} contractName={contractName} />
+                <NewServiceProvider getNewServiceProviderDialog={getNewServiceProviderDialog} contractId={contractId} contractType={contractType} contractName={contractName}/>
             )}
             {showAlert && (
               <Alert getShowAlertDialog={getShowAlert} header={'SAVE-IN PROGRESS'} content={'Your contract will be saved in draft, you can edit it later...'} redirectTo={'contracts'}/>

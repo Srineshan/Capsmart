@@ -29,6 +29,7 @@ const Contracts = () => {
     const [searchKey, setSearchKey] = useState('');
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+    const [isEditable, setIsEditable] = useState(false);
 
     useEffect(()=>{
       getContracts();
@@ -39,6 +40,13 @@ const Contracts = () => {
       getContracts();
     },[selectedContract, searchKey, page])
 
+    useEffect(()=>{
+      sessionStorage.setItem('isEditable', selectedContract === 'draft')
+    },[selectedContract])
+
+    useEffect(()=>{
+      setIsEditable(sessionStorage.getItem('isEditable') === 'true' ? true : false);
+    },[sessionStorage?.getItem('isEditable')])
 
     const getSelectedContract = (value) => {
         setSelectedContract(value);
@@ -51,6 +59,9 @@ const Contracts = () => {
 
     const getAddContract = (value) => {
         setAddContract(value);
+        if(value === true){
+          sessionStorage.setItem('isEditable', value);
+        }
     }
 
     const getExtensionDialog = (value) => {
@@ -110,11 +121,13 @@ const Contracts = () => {
       setPage(value);
     }
 
+    console.log('check', addContract || selectedContract === 'draft', addContract);
+
     return(
         addContract ? (
             <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType} getMethod={getMethod}/>
         ) : newContractFromClone ? (
-            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType} contractIdFromActive={contractId} getContractIdFromActive={getContractIdFromActive} method={method} contracts={contracts}/>
+            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType} contractIdFromActive={contractId} getContractIdFromActive={getContractIdFromActive} method={method} contracts={contracts} isEditable={isEditable}/>
         ) : (
             <Fragment>
                 <Navbar />

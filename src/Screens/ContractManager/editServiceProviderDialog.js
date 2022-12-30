@@ -23,7 +23,7 @@ const switchTheme = createTheme({
   },
 });
 
-const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractId }) => {
+const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractId, isEditable }) => {
   const [selectedContract, setSelectedContract] = useState('Written Contract Extension For Fixed Term');
   const [startDate, setStartDate] = useState(new Date);
   const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration');
@@ -681,11 +681,12 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
             </div>
           </div>
         </div>
-        <div>
+        {isEditable && 
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave(); }}>SAVE & EXIT</button>
           </div>
-        </div>
+        }
+
       </div>
     </Dialog>
   )

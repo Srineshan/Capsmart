@@ -52,7 +52,9 @@ const ContractIdTermLimitIndividual = (
    method,
    isMultiSiteEntity,
    getSelectedField,
-   getShowAlert}) => {
+   getShowAlert,
+   isEditable
+  }) => {
     const [contractAccessPrivilege, setContractAccessPrivilege] = useState(false);
     const [calendarStart, setCalendarStart] = useState(false);
     const [calendarEnd, setCalendarEnd] = useState(false);
@@ -229,16 +231,15 @@ const ContractIdTermLimitIndividual = (
 
   const addContract = async (buttonType) => {
     let sites = getSiteData();
-    console.log('stes', sites);
-    // if(departmentSpecific && sites?.some(data=>data?.departmentList?.departments?.length === 0)){
-    //   ErrorToaster('Select Departments for all the selected Sites');
-    //   return;
-    // }
-    //
-    // if (selectedContractContinuationPolicy === 'Select Value') {
-    //   ErrorToaster('Select Contract Continuation Policy');
-    //   return;
-    // }
+    if(departmentSpecific && sites?.some(data=>data?.departmentList?.departments?.length === 0)){
+      ErrorToaster('Select Departments for all the selected Sites');
+      return;
+    }
+
+    if (selectedContractContinuationPolicy === 'Select Value') {
+      ErrorToaster('Select Contract Continuation Policy');
+      return;
+    }
     let contractFiles = [];
     fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
       contractFiles?.push({
@@ -955,10 +956,13 @@ const ContractIdTermLimitIndividual = (
           </div>
         </div>
       </div>
-      <div className={`${style.floatRight} ${style.marginTop20}`}>
-        <button className={style.newContractOutlinedButton} onClick={() => addContract('Save In Progress')}>SAVE IN-PROGRESS</button>
-        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { addContract('Continue'); getViewPage2(true); getViewPage1(false); getCurrentPage('Contracted Services Provider(s)') }}>CONTINUE</button>
-      </div>
+        {isEditable &&
+        (  <div className={`${style.floatRight} ${style.marginTop20}`}>
+            <button className={style.newContractOutlinedButton} onClick={() => addContract('Save In Progress')}>SAVE IN-PROGRESS</button>
+            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { addContract('Continue'); getViewPage2(true); getViewPage1(false); getCurrentPage('Contracted Services Provider(s)') }}>CONTINUE</button>
+          </div>)
+      }
+
       {addNewManagerDialog && (
         <AddNewContractManager getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUserData} contractId={contractIdFromActive} />
       )}

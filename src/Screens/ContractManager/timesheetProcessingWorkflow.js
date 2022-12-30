@@ -11,7 +11,7 @@ import RedirectingPopUp from './redirectingPopUp';
 
 import style from './index.module.scss';
 
-const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName }) => {
+const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable }) => {
     const [timesheet, setTimesheet] = useState({id:'', reviewer:'', approver:''});
     const [workFlowList,setWorkFlowList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -270,24 +270,26 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                   <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value)=>{setTimesheet({...timesheet, approver:value})}} selectLabel="Select Approver" value={timesheet?.approver || '0'}/>
               </div>
               {
-                tabIndex < timeSheetTabs?.length-1 &&
+                tabIndex < timeSheetTabs?.length-1 && isEditable &&
                 <div>
                   <button className={`${style.timesheetNextButtonStyle} ${style.floatRight}`} onClick={()=> {submit();getNextTab();}}>NEXT</button>
                 </div>
               }
             </div>
+            {isEditable &&
+              <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                  <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Payment & Compensation')}}>BACK</button>
+                  <div>
+                      <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
+                      onClick={() => {
+                        submit();
+                        getViewPage9(true);
+                         getCurrentPage('Request Processing Workflow') }}
+                         >CONTINUE</button>
+                  </div>
+              </div>
+            }
 
-            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Payment & Compensation')}}>BACK</button>
-                <div>
-                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                    onClick={() => {
-                      submit();
-                      getViewPage9(true);
-                       getCurrentPage('Request Processing Workflow') }}
-                       >CONTINUE</button>
-                </div>
-            </div>
             {
               // <Dialog isOpen={viewWorkflowDialog} onClose={() => setViewWorkflowDialog(false)} className={`${style.toolbarDialogStyle} ${style.dialogPaddingBottom}`}>
               //     <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
