@@ -370,6 +370,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       },
       "roles": roles,
       "address": {
+        "addressLine": address?.addressLine,
         "city": address?.city,
         "state": address?.state,
         "zipcode": address?.zipcode
@@ -681,7 +682,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
             </div>
           </div>
         </div>
-        {isEditable && 
+        {isEditable &&
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave(); }}>SAVE & EXIT</button>
           </div>

@@ -15,6 +15,7 @@ export const validateContractIDTermLimit = (contract) => {
                   {field: 'contract Effective date', value:contract?.contractDetail?.contractTerm?.effectiveDate},
                 ];
   const emptyFields = fieldData?.filter(data=>data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data=> data?.field);
+  console.log('value tab 1', emptyFields);
   return emptyFields;
 }
 
@@ -100,7 +101,7 @@ export const validateTimesheetSubmission = (contract) => {
     'Contracted Activity To Include',
     'Day Limit For Submission Of Timesheet Based On Activity Service Date',
     'Day Limit For Submission Of Timesheet Based On Contract End Date',
-    'Invoice Processing Days', 'Invoice Processing Goal',
+    'Invoice Processing Days','Planned Absence Limit', 'Maximum Absence Allowed', 'Invoice Processing Goal',
     'Invoice Processing Threshold'];
   }
   timesheets?.timesheetActivitiesPeriods?.map((data,index)=>{
@@ -120,7 +121,6 @@ export const validateTimesheetSubmission = (contract) => {
     let temp = fieldData?.filter(data=>data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data=> data?.field);
     isEmptyField.push(...temp);
   })
-console.log('ssdfsdf',contract?.contractName?.contractName,isEmptyField);
 return isEmptyField;
 }
 

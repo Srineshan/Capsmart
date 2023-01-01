@@ -11,7 +11,7 @@ import RedirectingPopUp from './redirectingPopUp';
 
 import style from './index.module.scss';
 
-const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable }) => {
+const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus }) => {
     const [timesheet, setTimesheet] = useState({id:'', reviewer:'', approver:''});
     const [workFlowList,setWorkFlowList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -95,6 +95,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
              ErrorToaster('Unexpected Error');
            })
      }
+     getTabDataStatus();
      refresh();
     }
 
@@ -184,9 +185,19 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
       return data;
     }
 
-    const submit = async() => {
+    const submit = async(buttontext) => {
+      if(timesheet?.reviewer === '0' || timesheet?.approver === '0'){
+        ErrorToaster('Select both Approver and Reviewer to save');
+        return;
+      }
         let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, activeTab );
         updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
+        if(buttontext === 'Continue'){
+          getViewPage9(true);
+          getCurrentPage('Request Processing Workflow')
+        }else{
+          getNextTab();
+        }
     }
 
     const handleContinue = async (workflowId) => {
@@ -272,7 +283,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
               {
                 tabIndex < timeSheetTabs?.length-1 && isEditable &&
                 <div>
-                  <button className={`${style.timesheetNextButtonStyle} ${style.floatRight}`} onClick={()=> {submit();getNextTab();}}>NEXT</button>
+                  <button className={`${style.timesheetNextButtonStyle} ${style.floatRight}`} onClick={()=> {submit('Next')}}>NEXT</button>
                 </div>
               }
             </div>
@@ -282,9 +293,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                   <div>
                       <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
                       onClick={() => {
-                        submit();
-                        getViewPage9(true);
-                         getCurrentPage('Request Processing Workflow') }}
+                        submit('Continue')}}
                          >CONTINUE</button>
                   </div>
               </div>

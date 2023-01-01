@@ -15,7 +15,7 @@ import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
-const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert, isEditable}) => {
+const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert, isEditable, getTabDataStatus}) => {
     const [timeSheetCount, setTimeSheetCount] = useState(0);
     const [showSelectBox, setShowSelectBox] = useState(false);
     const [selectBoxIndex, setSelectBoxIndex] = useState(-1);
@@ -400,6 +400,7 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
       if(buttonType !== 'Continue'){
         getShowAlert(true);
       }
+      getTabDataStatus();
     }
 
 

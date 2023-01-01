@@ -56,16 +56,10 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
     const [showAlert, setShowAlert] = useState(false);
     const [isTabsValid, setIsTabsValid] = useState([]);
     const [contractSelected, setContractSelected] = useState(contracts?.filter(contract=>contract?.id === contractId)?.map(data=>data)[0]);
-
+    const [providerDetails, setProviderDetails] = useState();
     useEffect(()=>{
-      let temp = validateTabs(contractSelected?.id);
-      temp.then(value=>{
-        setIsTabsValid(value);
-        console.log('fetching from promise', value);
-      })
-    }, [])
-
-    console.log('validated', isTabsValid);
+      getTabDataStatus();
+    }, []);
 
     useEffect(() => {
         getFileData();
@@ -81,6 +75,17 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
         getFileData();
     }, [fileFields])
 
+    const getTabDataStatus = () => {
+      let temp = validateTabs(contractSelected?.id);
+      temp.then(value=>{
+        setIsTabsValid(value);
+        let temp = value?.value2;
+        temp.then(response=>{
+          console.log('value testing', response);
+          setProviderDetails(response);
+        })
+      });
+    }
     const getSelectedField = (value) => {
         setSelectedField(value)
     }
@@ -248,7 +253,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         onClick={() => { setCurrentPage('Contracted Services Provider(s)'); setSelectedField(''); }}>
                         Contracted Services Provider(s)
                         {contractId !== '' && (
-                            <img src={isTabsValid?.tab2 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
+                            <img src={providerDetails?.filter(data=>data?.[1]?.length !== 0)?.map(data=>data)?.length === 0 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Contractor Business Entity" && style.selectedContractEntityStyle}`}
@@ -321,6 +326,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         contractName={contractName}
                         isEditable={isEditable}
                         contract={contractSelected}
+                        getTabDataStatus={getTabDataStatus}
                     />
                 ) : currentPage === "Timesheet Processing Workflow" ? (
                     <TimesheetProcessingWorkflow
@@ -330,6 +336,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         contractId={contractId}
                         contractName={contractName}
                         isEditable={isEditable}
+                        getTabDataStatus={getTabDataStatus}
                     />
                 ) : currentPage === "Timesheet Submission Terms" ? (
                     <TimeSheetSubmissionTerms
@@ -338,7 +345,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         contractId={contractId}
                         isMultiSiteEntity={isMultiSiteEntity}
                         getShowAlert={getShowAlert}
-                        isEditable={isEditable}/>
+                        isEditable={isEditable}
+                        getTabDataStatus={getTabDataStatus}/>
                 ) : currentPage === "Payment & Compensation" ? (
                     <PaymentAndCompensation
                         selectContractInfo={selectContractInfo}
@@ -348,9 +356,10 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         getSelectedField={getSelectedField}
                         getShowAlert={getShowAlert}
                         isEditable={isEditable}
+                        getTabDataStatus={getTabDataStatus}
                     />
                 ) : (currentPage === "Contracted Add on service specification" || currentPage === "Contracted Services Specification") ?
-                    <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId={contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo} isMultiSiteEntity={isMultiSiteEntity} />
+                    <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId={contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo} isMultiSiteEntity={isMultiSiteEntity} isEditable={isEditable}/>
                     : currentPage === "Documentation Proof Required" ? (
                         <DocumentationProofRequired
                             getViewPage5={getViewPage5}
@@ -359,6 +368,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             isMultipleContract={isMultipleContract}
                             isMultiSiteEntity={isMultiSiteEntity}
                             isEditable={isEditable}
+                            getTabDataStatus={getTabDataStatus}
                         />
                     ) : currentPage === "Contractor Business Entity" ? (
                         <ContractorBusinessEntity
@@ -370,6 +380,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             getSelectedField={getSelectedField}
                             getShowAlert={getShowAlert}
                             isEditable={isEditable}
+                            getTabDataStatus={getTabDataStatus}
                         />
                     )
                         : selectContractInfo === "INDIVIDUAL" && currentPage === "Contracted Services Provider(s)" ? (
@@ -383,6 +394,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                                 getSelectedField={getSelectedField}
                                 getShowAlert={getShowAlert}
                                 isEditable={isEditable}
+                                getTabDataStatus={getTabDataStatus}
                                 />
                         ) : (currentPage === "Contract ID & Term Limit") ? (
                             <ContractIdTermLimitIndividual
@@ -401,6 +413,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                                 getSelectedField={getSelectedField}
                                 getShowAlert={getShowAlert}
                                 isEditable={isEditable}
+                                getTabDataStatus={getTabDataStatus}
                             />
                         ) : (selectContractInfo === "MULTIPLE" && currentPage === "Contracted Services Provider(s)") ? (
                             <ContractedServicesProviderMultiple
@@ -412,7 +425,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                                 getCurrentPage={getCurrentPage}
                                 contractId={contractId}
                                 contractName={contractName}
-                                isEditable={isEditable} />
+                                isEditable={isEditable}
+                                getTabDataStatus={getTabDataStatus} />
 
                         ) : ''}
                 <div className={style.cloneBlockStyle}>

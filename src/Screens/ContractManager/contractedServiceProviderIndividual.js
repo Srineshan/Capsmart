@@ -47,7 +47,7 @@ const MenuProps = {
   },
 };
 
-const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, getSelectedField, getShowAlert, isEditable }) => {
+const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, getSelectedField, getShowAlert, isEditable, getTabDataStatus }) => {
   const testContractId = contractId;
   const [user, setUsers] = useState([]);
   const [userName, setUserName] = useState('');
@@ -118,9 +118,6 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       setContractorPhone(userProviderData?.communication?.mobileNumber);
       setContractorEmail(userProviderData?.email?.officialEmail);
       setAddress(userProviderData?.address);
-      // setCity(userProviderData?.address?.city);
-      // setState(userProviderData?.address?.state);
-      // setZipCode(userProviderData?.address?.zipcode);
       setSelectedRoles(userProviderData?.roles || []);
       setContracts(userProviderData?.contracts);
       let contractData = userProviderData?.contracts?.filter(data => data?.id === contractId)?.map(data => data)[0];
@@ -418,6 +415,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     }else{
       getShowAlert(true);
     }
+    getTabDataStatus();
   }
 
   const handleRoles = (value) => {

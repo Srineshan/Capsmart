@@ -53,7 +53,8 @@ const ContractIdTermLimitIndividual = (
    isMultiSiteEntity,
    getSelectedField,
    getShowAlert,
-   isEditable
+   isEditable,
+   getTabDataStatus
   }) => {
     const [contractAccessPrivilege, setContractAccessPrivilege] = useState(false);
     const [calendarStart, setCalendarStart] = useState(false);
@@ -343,6 +344,7 @@ const ContractIdTermLimitIndividual = (
     }else{
       getShowAlert(true);
     }
+    getTabDataStatus();
   }
 
   const onSelect = (selectedItem) => {

@@ -25,7 +25,7 @@ const switchTheme = createTheme({
 });
 
 
-const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField, getShowAlert, isEditable }) => {
+const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField, getShowAlert, isEditable, getTabDataStatus }) => {
   const [isUserUpdated, setIsUserUpdated] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -192,6 +192,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     }else{
       getShowAlert(true);
     }
+    getTabDataStatus();
   }
 
   const handleRoles = (value) => {
@@ -482,7 +483,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 )
               }
             </div>
-            {isEditable && 
+            {isEditable &&
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contracted Services Provider(s)') }}>BACK</button>
                 <div>

@@ -190,7 +190,17 @@ const Navbar = () => {
         })
     };
 
-    let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' : '/entitySitePortal';
+    let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' :currentUserRoles?.includes('Activity Logger') ? `/dashboardRoute` : '/entitySitePortal';
+
+    const homeRoute = () => {
+      let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' :currentUserRoles?.includes('Activity Logger') ? `/` : '/entitySitePortal';
+      if(homeLink === '/'){
+        window.location.href = '/dashboardRoute';
+      }else{
+        navigate(homeLink);
+      }
+     }
+
 
     return(
         <div className={style.navbarStyle}>
@@ -200,11 +210,9 @@ const Navbar = () => {
                   // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
                 }
                 <img src={logo} alt="Hospital Logo" className={style.sanmateoLogo} />
-                <Link to={homeLink} className={style.noFontStyle}>
-                    <div className={`${style.menuStyle} ${(window.location.pathname.includes(homeLink)) && style.activeMenuColor}`}>
+                    <div className={`${style.menuStyle} ${(window.location.pathname.includes(homeLink)) && style.activeMenuColor}`} onClick={homeRoute}>
                         <p>HOME - {currentUserRoles?.[0]?.toUpperCase()}</p>
                     </div>
-                </Link>
 
                 {
                 //   isContractManager && (

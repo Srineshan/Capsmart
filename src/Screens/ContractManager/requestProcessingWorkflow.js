@@ -10,7 +10,7 @@ import ReviewerApproverField from './reviewerApproverField';
 import style from './index.module.scss';
 import ContractValidationCheckSummary from './contractValidationCheckSummary';
 
-const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, contract }) => {
+const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, contract, getTabDataStatus }) => {
     const [addOn, setAddOn] = useState({ id: '', reviewer: '', approver: '' });
     const [absence, setAbsence] = useState({ id: '', reviewer: '', approver: '' });
     const [timesheet, setTimesheet] = useState({ id: '', reviewer: '', approver: '' });
@@ -118,6 +118,7 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
                     ErrorToaster('Unexpected Error');
                 })
         }
+        getTabDataStatus();
         refresh();
     }
 
@@ -187,7 +188,13 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
         return data;
     }
 
+    console.log('reviewer', addOn?.reviewer, absence?.reviewer);
+
     const submit = async () => {
+      if(addOn?.reviewer === null || absence?.reviewer === null || addOn?.reviewer === '0' || absence?.reviewer === '0'){
+        ErrorToaster('Select Approver for Add-On and Absence Request');
+        return;
+      }
         let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`, addOn.reviewer, addOn.approver, activeTab);
         let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, activeTab);
         await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
@@ -214,7 +221,7 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
                     </div>
                 </div>
             </div>
-            {!isEditable &&
+            {isEditable &&
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                   <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Timesheet Processing Workflow') }}>BACK</button>
                   <div>

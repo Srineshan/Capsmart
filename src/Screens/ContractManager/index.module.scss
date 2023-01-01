@@ -2584,3 +2584,23 @@ input[type=number] {
     grid-template-columns: 70% 15% 15%;
     grid-gap: 10px;
 }
+
+.footerIconStyle {
+    height: 20px;
+    width: 100px;
+    object-fit: contain;
+}
+
+.multipleServiceProviderGrid {
+    display: grid;
+    grid-template-columns: 15% 20% 20% 20% 15%;
+    grid-gap: 10px;
+    padding-left: 10px;
+}
+
+.serviceSpecificationGrid {
+    display: grid;
+    grid-template-columns: 8% 20% 20% 20% 15% 8%;
+    grid-gap: 10px;
+    padding-left: 10px;
+}
