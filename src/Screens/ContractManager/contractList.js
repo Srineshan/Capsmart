@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Download from './../../images/downloadLightColor.png';
 import PrintIcon from './../../images/printIcon.png';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -9,6 +10,7 @@ import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import Popover from '@mui/material/Popover';
 import GreenPage from './../../images/greenPage.png';
+import TimeSmartLogo from './../../images/timeSmartAI-logo-withoutbg.png';
 import ContractTiles from './contractTiles';
 import SearchBar from './../../Components/SearchBar';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -21,7 +23,7 @@ import UserCard from './userCard';
 import Table from '../../Components/TableDesign';
 import LeftStatsCard from '../../Components/LeftStatsCard';
 
-import {validateTimesheetSubmission} from './contractValidation';
+import { validateTimesheetSubmission } from './contractValidation';
 
 import style from './index.module.scss';
 import SideBar from '../../Components/Sidebar';
@@ -152,6 +154,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   let activationStatus = [];
   let lastUpdatedBy = [];
   let contractorHoverText = [];
+  let contractorsIcon = [];
 
   const getActiveContractsValues = () => {
     dot = [];
@@ -162,6 +165,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     lockHoverText = [];
     podHoverText = [];
     contractorHoverText = [];
+    contractorsIcon = [];
     name = [];
     contractors = [];
     effectiveDate = [];
@@ -182,7 +186,8 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       contractorHoverText.push(contractorList)
       notification.push(<WarningAmberIcon style={{ color: '#FF6562' }} />);
       name.push(data?.contractName?.contractName);
-      contractors.push(contractorList?.length?.toString() || '');
+      contractors.push(contractorList?.length || '-');
+      contractorsIcon.push(contractorList?.length > 1 ? <GroupOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} /> : contractorList?.length === 0 ? '' : <PersonOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} />);
       effectiveDate.push(format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy'));
       // podStatus.push("3");
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
@@ -197,7 +202,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
       // { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
-      { "type": "iconWithCount", "value": contractors, "hoverText": contractorHoverText, 'isShowHoverText': true, "icon": <GroupOutlinedIcon style={{ fontSize: 20, color: '#857AEF' }} /> },
+      { "type": "iconWithCount", "value": contractors, "hoverText": contractorHoverText, 'isShowHoverText': true, "icon": contractorsIcon },
       { "type": "text", "value": effectiveDate, "onClickFunction": onClickFunction },
       // { "type": "iconWithCount", "value": podStatus, "hoverText": podHoverText, 'isShowHoverText': true, "icon": <TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#14B15A' }} /> },
       // {"type": "text", "value": manager, "onClickFunction": onClickFunction},
@@ -449,7 +454,10 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
         </div>
       </div>
       <div className={style.spaceBetween}>
-        <p className={style.poweredBy}>Powered by - TimeSmartAI</p>
+        <div className={`${style.displayInRow}`}>
+          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by -</p>
+          <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
+        </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI</p>
       </div>
     </div>

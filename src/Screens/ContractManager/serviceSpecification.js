@@ -4,6 +4,9 @@ import CompletedIcon from './../../images/completedIcon.png';
 import { GET, PUT } from './../dataSaver';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
+import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import Table from '../../Components/TableDesign';
 
 import style from './index.module.scss';
 import AddServiceProvided from './addServiceToBeProvided';
@@ -20,6 +23,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [selectedContractServiceIndex, setSelectedContractServiceIndex] = useState();
   const [userLength, setUserLength] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const tableHeaderValues = ['', 'ACTIVITIES TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
 
   useEffect(() => {
     getContractedServices();
@@ -40,7 +44,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const getAddServiceDialog = (value) => {
     setAddService(value);
     setSelectedService({});
-    if(value === false){
+    if (value === false) {
       getContractedServices();
     }
   }
@@ -84,7 +88,58 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     setSelectedContractServiceIndex();
   }
 
-  if(isLoading){
+  const onClickFunction = (data, index) => {
+    getEditServiceDialog(true);
+    setSelectedService(data);
+    setSelectedContractServiceIndex(index);
+  }
+
+  const onClickCrossFunction = (data, index) => {
+    setShowDeleteConfirmation(true);
+    setSelectedContractServiceIndex(index);
+  }
+
+  let dataStatus = [];
+  let activityType = [];
+  let specificActivity = [];
+  let specificActivityHoverText = [];
+  let appliesTo = [];
+  let appliesToHoverText = [];
+  let billable = [];
+  let deleteIcon = [];
+
+  const getServiceProviderValues = () => {
+    dataStatus = [];
+    activityType = [];
+    specificActivity = [];
+    specificActivityHoverText = [];
+    appliesTo = [];
+    appliesToHoverText = [];
+    billable = [];
+    deleteIcon = [];
+
+    contractedServices?.map(data => {
+      dataStatus.push(<TaskAltOutlinedIcon style={{ color: "#14B15A" }} />);
+      activityType.push(data?.activityType?.activityType);
+      specificActivity.push(data?.performingActivity?.activity);
+      specificActivityHoverText.push('Patient Consult Patient Follow-Up');
+      appliesTo.push(data?.users?.[0]?.name?.firstName);
+      appliesToHoverText.push('Facture Clinic, General Surgery Clinic');
+      billable.push('-');
+      deleteIcon.push(<CloseOutlinedIcon style={{ color: "#F94848" }} />);
+    })
+
+    return [
+      { "type": "icon", "icon": dataStatus },
+      { "type": "text", "value": activityType, "onClickFunction": onClickFunction },
+      { "type": "textWithHover", "value": specificActivity, "hoverText": specificActivityHoverText, "onClickFunction": onClickFunction },
+      { "type": "textWithHover", "value": appliesTo, "hoverText": appliesToHoverText, "onClickFunction": onClickFunction },
+      { "type": "text", "value": billable, "onClickFunction": onClickFunction },
+      { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+    ];
+  }
+
+  if (isLoading) {
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
 
@@ -94,13 +149,14 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
         <div className={style.cloneBlockStyle}>
           <div className={style.tableHeight}>
             {isEditable && <button className={`${style.addCotractorButton} ${style.selectedColor} ${style.cursorPointer} ${style.floatRight} ${style.marginBottom}`} onClick={() => getAddServiceDialog(true)}>ADD SERVICE</button>}
-            <div className={`${style.serviceSpecificationTableHeader} ${style.marginTop20}`}>
+            {/* <div className={`${style.serviceSpecificationTableHeader} ${style.marginTop20}`}>
               <p className={style.documentProofTextWidth}></p>
               <p className={`${style.documentProofTextWidth}`}>ACTIVITIES TYPE</p>
               <p className={style.documentProofTextWidth}>SPECIFIC ACTIVITY</p>
               <p className={style.documentProofTextWidth}>APPLIES TO</p>
               <p className={style.documentProofTextWidth}></p>
             </div>
+
             {contractedServices?.map((data, index) => (
               <div className={`${style.serviceSpecificationTableData} ${style.displayInRow}`} key={index}>
                 <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
@@ -109,34 +165,28 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
                 <p className={style.documentProofDataTextWidth}>{data?.users?.[0]?.name?.firstName}</p>
                 <Icon icon="cross" size={20} className={`${style.marginRight20} ${style.cursorPointer}`} intent={Intent.DANGER} onClick={() => { setShowDeleteConfirmation(true); setSelectedContractServiceIndex(index) }} />
               </div>
-            ))}
-            {/* <div className={`${style.serviceSpecificationTableData} ${style.displayInRow}`}>
-            <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
-            <p className={style.documentProofDataTextWidth}>Demo data</p>
-            <p className={style.documentProofDataTextWidth}>Demo data</p>
-            <p className={style.documentProofDataTextWidth}>Demo data</p>
-            <Icon icon="trash" size={20} className={style.marginRight20} color="#52575D"/>
-        </div>
-        <div className={`${style.serviceSpecificationTableData} ${style.displayInRow}`}>
-            <img src={CompletedIcon} alt="completed" className={`${style.completedIconTableStyle} ${style.marginLeft20}`} />
-            <p className={style.documentProofDataTextWidth}>Demo data </p>
-            <p className={style.documentProofDataTextWidth}>Demo data</p>
-            <p className={style.documentProofDataTextWidth}>Demo data</p>
-            <Icon icon="trash" size={20} className={style.marginRight20} color="#52575D" />
-        </div> */}
+            ))} */}
+            <div className={style.marginTop20}>
+              <Table
+                tableHeaderValues={tableHeaderValues}
+                tableDataValues={getServiceProviderValues()}
+                tableData={contractedServices}
+                gridStyle={style.serviceSpecificationGrid}
+              />
+            </div>
           </div>
           {isEditable &&
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
               <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contractor Business Entity') }}>BACK</button>
               <div>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => {getViewPage6(true); getCurrentPage('Timesheet Submission Terms');}}>CONTINUE</button>
+                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { getViewPage6(true); getCurrentPage('Timesheet Submission Terms'); }}>CONTINUE</button>
               </div>
             </div>
           }
 
           {
             (addService || editService) &&
-            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog} isMultiSiteEntity={isMultiSiteEntity} selectedIndex={selectedContractServiceIndex} isEditable={isEditable}/>
+            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog} isMultiSiteEntity={isMultiSiteEntity} selectedIndex={selectedContractServiceIndex} isEditable={isEditable} />
           }
           <Dialog isOpen={showDeleteConfirmation} onClose={() => setShowDeleteConfirmation(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
@@ -159,7 +209,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
         </div>
       ) : (
         (
-          <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Contracted Services Provider(s)'} title={'NO USERS FOUND'} description={'No Contracted Service Provider Is Found.'} buttonText={'ADD CONTRACTOR'}/>
+          <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Contracted Services Provider(s)'} title={'NO USERS FOUND'} description={'No Contracted Service Provider Is Found.'} buttonText={'ADD CONTRACTOR'} />
         )
       )}
     </>
