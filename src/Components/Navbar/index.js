@@ -105,6 +105,10 @@ const Navbar = () => {
 
     }, [currentUserRoles])
 
+    useEffect(()=>{
+      setLogo(sessionStorage?.getItem('logo'))
+    },[sessionStorage?.getItem('logo')])
+
     // const menuRef = useRef(null);
     // const toolsMenuRef = useRef(null);
     // const reportsMenuRef = useRef(null);

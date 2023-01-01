@@ -161,7 +161,7 @@ const ContractIdTermLimitIndividual = (
       setContractData(contractData?.contractDetail);
       setName(contractData?.contractName?.contractName || '');
       setContractName(contractData?.contractName?.contractName);
-      setContractId({ id: contractDetail?.contractId?.id, missing: contractData?.contractIdMissing });
+      setContractId({ id: contractDetail?.contractId?.id, missing: contractDetail?.contractIdMissing });
       setDepartmentSpecific(contractDetail?.departmentSpecificContract);
       setSiteSpecific(contractDetail?.siteSpecificContract);
       setContractTimeCommitment(contractDetail?.timeCommitment || {});

@@ -41,7 +41,7 @@ const Contracts = () => {
     },[selectedContract, searchKey, page])
 
     useEffect(()=>{
-      sessionStorage.setItem('isEditable', selectedContract === 'draft')
+      sessionStorage.setItem('isEditable', selectedContract === 'draft' ? true : false)
     },[selectedContract])
 
     useEffect(()=>{
@@ -59,9 +59,8 @@ const Contracts = () => {
 
     const getAddContract = (value) => {
         setAddContract(value);
-        if(value === true){
-          sessionStorage.setItem('isEditable', value);
-        }
+        sessionStorage.setItem('isEditable', value);
+
     }
 
     const getExtensionDialog = (value) => {
@@ -120,8 +119,6 @@ const Contracts = () => {
     const getSelectedPage = (value) => {
       setPage(value);
     }
-
-    console.log('check', addContract || selectedContract === 'draft', addContract);
 
     return(
         addContract ? (

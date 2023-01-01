@@ -436,6 +436,39 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
                   </div>
                 }
 
+
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Planned Absence Notification Days limit*</div>
+                    <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                        <EditableText value={plannedAbsence}  placeholder="0" type='number' onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
+                        <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                    </div>
+                </div>
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed *</div>
+                    <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                        <EditableText value={maxUnplannedAbsence}  placeholder="0" type='number' onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
+                        <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                    </div>
+                </div>
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Invoice Processing Day Range Goal*</div>
+                    <div className={style.displayInRow}>
+                        <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                            <EditableText value={invoiceProcessingDay}  placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
+                            <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} `}>
+                            <div className={style.textElementWithNurse}>Threshold</div>
+                            <EditableText value={invoiceProcessingDayThreshold}  placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayThreshold(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
+                        </div>
+                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder}`}>
+                            <div className={style.textElementWithNurse}>Goal</div>
+                            <EditableText value={invoiceProcessingDayGoal}  placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayGoal(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
+                        </div>
+                    </div>
+                </div>
+
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on activity service date *</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>

@@ -10,7 +10,7 @@ import ReviewerApproverField from './reviewerApproverField';
 import style from './index.module.scss';
 import ContractValidationCheckSummary from './contractValidationCheckSummary';
 
-const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable }) => {
+const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, contract }) => {
     const [addOn, setAddOn] = useState({ id: '', reviewer: '', approver: '' });
     const [absence, setAbsence] = useState({ id: '', reviewer: '', approver: '' });
     const [timesheet, setTimesheet] = useState({ id: '', reviewer: '', approver: '' });
@@ -25,6 +25,8 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
     const [timesheetWorkFlow, setTimeSheetWorkFlow] = useState([]);
     const [users, setUsers] = useState([]);
     const [selectedTimeSheet, setSelectedTimeSheet] = useState({ id: '', reviewer: '', approver: '' });
+
+    console.log('contractDta', contract);
 
     useEffect(() => {
         setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
@@ -191,6 +193,7 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
         await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
         await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
         SuccessToaster('Workflow Updated Successfully');
+        setIsShowValidationCheck(true);
     }
 
     return (
@@ -211,23 +214,20 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
                     </div>
                 </div>
             </div>
-            {isEditable &&
+            {!isEditable &&
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                   <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Timesheet Processing Workflow') }}>BACK</button>
                   <div>
                       <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
                           onClick={() => {
-                              // submit();
-                              // getViewPage9(true);
-                              getCurrentPage('Request Processing Workflow')
-                              setIsShowValidationCheck(true);
+                              submit();
                           }}
                       >CONTINUE</button>
                   </div>
               </div>
             }
             {isShowValidationCheck && (
-                <ContractValidationCheckSummary getContractValidationDialog={getContractValidationDialog} />
+                <ContractValidationCheckSummary getContractValidationDialog={getContractValidationDialog} contract={contract} />
             )}
         </div>
     )
