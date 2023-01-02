@@ -155,7 +155,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                 onMouseLeave={() => handleCloseTextWithHover()}
                                                 aria-owns={openTextWithHover ? 'mouse-over-popover' : undefined}
                                                 aria-haspopup="true">{tableData?.value?.[index]}</p>
-                                            {index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && (
+                                            {index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
                                                 <Popover
                                                     id={'mouse-over-popover'}
                                                     sx={{
@@ -170,9 +170,11 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                     }}
                                                     disableRestoreFocus
                                                 >
-                                                    <div className={style.actionsCard}>
-                                                        <div className={`${style.specificActionCard} ${style.cursorPointer}`}>{tableData?.hoverText?.[index]}</div>
-                                                    </div>
+                                                    {tableData?.hoverText?.[index]?.map((data, innerIndex) => (
+                                                        <div className={style.multipleOptionsCard}>
+                                                            <div className={`${style.specificActionCard} ${style.cursorPointer}`}>{data}</div>
+                                                        </div>
+                                                    ))}
                                                 </Popover>
                                             )}
                                         </div>
