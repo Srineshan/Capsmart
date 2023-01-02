@@ -1559,7 +1559,7 @@ select {
 
 .greenBase {
     font: normal normal medium 20px/27px Montserrat;
-    background-color: #75f0ac;
+    background-color: #8cf2ba;
     color: #52575D;
 }
 
@@ -1785,6 +1785,10 @@ select {
 .manageServiceDialog {
     height: 75%;
     width: 70% !important;
+}
+
+.moveDialogPosition {
+    margin-left: -20% !important;
 }
 
 .renewalBoxStyle {
@@ -2607,4 +2611,9 @@ input[type=number] {
     grid-template-columns: 8% 20% 20% 20% 15% 8%;
     grid-gap: 10px;
     padding-left: 10px;
+}
+
+.calculatorDisplayStyle {
+    position: absolute;
+    right: 20px;
 }

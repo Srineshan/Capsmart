@@ -487,7 +487,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   return (
     <div>
-      <Dialog isOpen={getAddServiceDialog} onClose={() => { getAddServiceDialog(false); getEditServiceDialog(false); }} className={rightHelpArea ? `${style.addServiceDialog} ${style.addManagerDialogBackground}` : `${style.manageServiceDialog} ${style.addManagerDialogBackground}`}>
+      <Dialog isOpen={getAddServiceDialog} onClose={() => { getAddServiceDialog(false); getEditServiceDialog(false); }} className={`${style.manageServiceDialog} ${style.addManagerDialogBackground} ${rightHelpArea && style.moveDialogPosition}`}>
         <div className={`${Classes.DIALOG_BODY} `}>
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
@@ -506,7 +506,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           </div>
           <div className={style.extensionBorder}></div>
           {!isShowPDF ? (
-            <div className={rightHelpArea ? style.addServiceGrid : ''}>
+            <div className={style.displayInRow}>
               <div className={style.proofBorder}>
                 <div className={`${style.addManagerGrid} `}>
                   <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
@@ -628,7 +628,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 {serviceType === 'Clinic Blocks'
                   ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
                   : serviceType === 'Surgery Session'
-                    ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment}/>
+                    ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
                     : serviceType === 'On Call Coverage Duty Days'
                       ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
                       : serviceType === 'Supplemental Services'
@@ -638,9 +638,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                           : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
               </div>
               {helpTool?.calculator ? (
-                <Calculator />
+                <div className={style.calculatorDisplayStyle}>
+                  <Calculator />
+                </div>
               ) : helpTool?.textArea ? (
-                <Calculator />
+                <div className={style.calculatorDisplayStyle}>
+                  <Calculator />
+                </div>
               ) : ''}
             </div>
           ) : (
@@ -650,12 +654,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           )}
         </div>
         <div>
-        {isEditable &&
-          <div className={`${style.floatRight}`}>
-            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('ADD MORE'); reset() }}>ADD MORE</button>
-            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('SAVE AND EXIT'); reset() }}>SAVE & EXIT</button>
-          </div>
-        }
+          {isEditable &&
+            <div className={`${style.floatRight}`}>
+              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('ADD MORE'); reset() }}>ADD MORE</button>
+              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('SAVE AND EXIT'); reset() }}>SAVE & EXIT</button>
+            </div>
+          }
 
         </div>
       </Dialog>
