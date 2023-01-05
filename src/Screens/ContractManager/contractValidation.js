@@ -78,7 +78,7 @@ export const validateBusinessEntity = (contract) => {
 
 export const validateServices = (contract) => {
   let services = contract?.contractedServices;
-  let emptyFields = [];
+  let emptyFields = ['Sites', 'Activities', 'Service Schedule', 'Service Schedule Frequecy','Duration', 'Service Days', 'Total Session', 'Working Hours - From', 'Working Hours - To'];
   services?.map((service,index)=>{
     if(service?.activityType?.activityType !== 'Administrative / Miscellaneous Services'){
       let fieldData = [{field:'sites', value:service?.sites?.length},
