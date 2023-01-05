@@ -1,36 +1,42 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import Navbar from '../../Components/Navbar';
-import SideBar from './../../Components/Sidebar';
+import React, { Fragment, useState, useEffect } from "react";
+import Navbar from "../../Components/Navbar";
+import SideBar from "./../../Components/Sidebar";
 import { Icon, Intent } from "@blueprintjs/core";
-import style from './index.module.scss';
-import AddBoardCertifcation from './addBoardCertifcation';
-import AddNewEntity from './../../images/addEntity.png';
-import AddRefresh from './../../images/refreshEntity.png';
-import OpenFolder from './../../images/openFolder.png';
-import BlackBorderFolder from './../../images/blackBorderFolder.png';
-import BlueFolder from './../../images/blueFolder.png';
-import IndustriesEntityFolder from './../../images/industriesEntityFolder.png';
-import SemiTransparentFolder from './../../images/semiTransparentFolder.png';
-import EditHcFolder from './../../images/editHcFolder.png';
-import DeleteHcFolder from './../../images/deleteHcFolder.png';
-import DeleteHcRow from './../../images/deleteHcRow.png';
-import EditHcRow from './../../images/editHcRow.png';
-import { GET } from '../dataSaver'
-import { index } from 'd3';
+import style from "./index.module.scss";
+import AddBoardCertifcation from "./addBoardCertifcation";
+import AddNewEntity from "./../../images/addEntity.png";
+import AddRefresh from "./../../images/refreshEntity.png";
+import OpenFolder from "./../../images/openFolder.png";
+import BlackBorderFolder from "./../../images/blackBorderFolder.png";
+import BlueFolder from "./../../images/blueFolder.png";
+import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
+import SemiTransparentFolder from "./../../images/semiTransparentFolder.png";
+import EditHcFolder from "./../../images/editHcFolder.png";
+import DeleteHcFolder from "./../../images/deleteHcFolder.png";
+import DeleteHcRow from "./../../images/deleteHcRow.png";
+import EditHcRow from "./../../images/editHcRow.png";
+import { GET, DELETE } from "../dataSaver";
+import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
+import DeleteConfirmation from "../../Components/DeleteConfirmation";
 
-const BoardCertification = ({ getAddEntityDialog, showAddEntityDialog, isEdit, setIsEdit }) => {
-    const [showBoardCertificationDialog, setShowBoardCertificationDialog] = useState(false);
+const BoardCertification = ({
+    getAddEntityDialog,
+    showAddEntityDialog,
+    isEdit,
+    setIsEdit,
+}) => {
     const [allData, setAllData] = useState([]);
+    const [isSecondary, setIsSecondary] = useState(false);
     const [clicked, setClicked] = useState(0);
     const [isClicked, setIsClicked] = useState(0);
     const [selectedTitle, setSelectedTitle] = useState("");
     const [selectedEntity, setSelectedEntity] = useState({});
-    const [industryData, setIndustryData] = useState({})
-    const [entityData, setEntityData] = useState({})
-
-    const getAddBoardCertificationDialog = (value) => {
-        setShowBoardCertificationDialog(value);
-    }
+    const [industryData, setIndustryData] = useState({});
+    const [entityData, setEntityData] = useState({});
+    const [boardCerticationTable, setBoardCertificationTable] = useState([]);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [deleteEntityId, setDeleteEntityId] = useState("");
+    const [selectedBoard, setSelectedBoard] = useState({});
 
     const entityAllData = async (industry) => {
         const { data: entities } = await GET(
@@ -50,8 +56,8 @@ const BoardCertification = ({ getAddEntityDialog, showAddEntityDialog, isEdit, s
     };
 
     const getAllData = async () => {
-        const { data: data } = await GET(`entity-service/industryMaster`);
-        let allEntries = await Promise.all(data.map(entityAllData));
+        const { data: Entitydata } = await GET(`entity-service/industryMaster`);
+        let allEntries = await Promise.all(Entitydata.map(entityAllData));
         setAllData(allEntries);
     };
 
@@ -60,7 +66,7 @@ const BoardCertification = ({ getAddEntityDialog, showAddEntityDialog, isEdit, s
             return setClicked("0");
         }
         setClicked(index);
-        setIndustryData(data)
+        setIndustryData(data);
     };
 
     const handleToggleCsp = (index, data) => {
@@ -68,10 +74,47 @@ const BoardCertification = ({ getAddEntityDialog, showAddEntityDialog, isEdit, s
             return setIsClicked("0");
         }
         setIsClicked(index);
+        setEntityData(data);
         setSelectedTitle(data?.CSP?.[0].contractedServiceProviderType);
-        setSelectedEntity(data.CSP[0])
-        setEntityData(data)
+        setSelectedEntity(data.CSP[0]);
     };
+
+    const getBoardCertificationData = async (industryId, contractPID) => {
+        const { data: boardData } = await GET(
+            `entity-service/boardCertificateSpecialtiesMaster?industry=${industryId}&contractedServiceProviderType=${contractPID}`
+        );
+        setBoardCertificationTable(boardData);
+    };
+
+    const deleteHandler = (data) => {
+        setDeleteEntityId(data?.id);
+        setShowDeleteConfirmation(true);
+    };
+
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    };
+
+    const getDeleteConfirmation = (value) => {
+        if (value) {
+            deleteEntity(deleteEntityId);
+        }
+    };
+
+    const deleteEntity = async (id) => {
+        await DELETE(`entity-service/boardCertificateSpecialtiesMaster/${id}`)
+            .then((response) => {
+                SuccessToaster("Board Certification Deleted Successfully");
+                getBoardCertificationData();
+            })
+            .catch((error) => {
+                ErrorToaster(error);
+            });
+    };
+
+    useEffect(() => {
+        getBoardCertificationData(industryData?.id, selectedEntity?.id);
+    }, [selectedEntity, industryData]);
 
     useEffect(() => {
         getAllData();
@@ -79,13 +122,13 @@ const BoardCertification = ({ getAddEntityDialog, showAddEntityDialog, isEdit, s
 
     const EntityDefaultSet = (Data) => {
         let updatedData = [...Data];
-        setIndustryData(updatedData?.[0])
+        setIndustryData(updatedData?.[0]);
         updatedData?.[0]?.entities.some((list, index) => {
-            setEntityData(list?.type)
+            setEntityData(list?.type);
             if (list.CSP.length > 0) {
                 setIsClicked(index);
                 setSelectedTitle(list.CSP[0]?.contractedServiceProviderType);
-                setSelectedEntity(list.CSP[0])
+                setSelectedEntity(list.CSP[0]);
                 return true;
             }
         });
@@ -115,11 +158,19 @@ const BoardCertification = ({ getAddEntityDialog, showAddEntityDialog, isEdit, s
                                     <p className={style.healthCareHeaderTextStyle4}>
                                         {data.industry}
                                     </p>
-                                    {clicked === index ?
-                                        <p className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}>-</p>
-                                        :
-                                        <img src={OpenFolder} alt="OpenFolder" className={`${style.colorFileStyle} ${style.reduce10Left}`} />
-                                    }
+                                    {clicked === index ? (
+                                        <p
+                                            className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}
+                                        >
+                                            -
+                                        </p>
+                                    ) : (
+                                        <img
+                                            src={OpenFolder}
+                                            alt="OpenFolder"
+                                            className={`${style.colorFileStyle} ${style.reduce10Left}`}
+                                        />
+                                    )}
                                 </div>
                                 <div
                                     className={
@@ -144,11 +195,19 @@ const BoardCertification = ({ getAddEntityDialog, showAddEntityDialog, isEdit, s
                                                         {" "}
                                                         {entity.type}
                                                     </p>
-                                                    {isClicked === indx ?
-                                                        <p className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}>-</p>
-                                                        :
-                                                        <img src={OpenFolder} alt="OpenFolder" className={`${style.colorFileStyle} ${style.reduce10Left}`} />
-                                                    }
+                                                    {isClicked === indx ? (
+                                                        <p
+                                                            className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}
+                                                        >
+                                                            -
+                                                        </p>
+                                                    ) : (
+                                                        <img
+                                                            src={OpenFolder}
+                                                            alt="OpenFolder"
+                                                            className={`${style.colorFileStyle} ${style.reduce10Left}`}
+                                                        />
+                                                    )}
                                                 </div>
                                                 <div
                                                     className={
@@ -174,9 +233,19 @@ const BoardCertification = ({ getAddEntityDialog, showAddEntityDialog, isEdit, s
                                                                     setSelectedEntity(siteType);
                                                                 }}
                                                             >
-                                                                <img src={siteType?.contractedServiceProviderType ===
-                                                                    selectedTitle ? BlueFolder : IndustriesEntityFolder} className={`${style.colorFileStyle7} ${style.marginLeft5}`} alt="" />
-                                                                <p className={`${style.healthCareHeaderTextStyle6} ${style.marginTop10}`}>
+                                                                <img
+                                                                    src={
+                                                                        siteType?.contractedServiceProviderType ===
+                                                                            selectedTitle
+                                                                            ? BlueFolder
+                                                                            : IndustriesEntityFolder
+                                                                    }
+                                                                    className={`${style.colorFileStyle7} ${style.marginLeft5}`}
+                                                                    alt=""
+                                                                />
+                                                                <p
+                                                                    className={`${style.healthCareHeaderTextStyle6} ${style.marginTop10}`}
+                                                                >
                                                                     {siteType.contractedServiceProviderType}
                                                                 </p>
                                                                 {/* <p className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}>
@@ -197,96 +266,179 @@ const BoardCertification = ({ getAddEntityDialog, showAddEntityDialog, isEdit, s
                             <></>
                         );
                     })}
-
-                    {/* <div className={`${style.boardCertificationSideRows} ${style.displayInRow}`}>
-                        <img src={BlackBorderFolder} alt="HealthCareFolder" className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                        <p className={`${style.boardCertificationTextStyle1} ${style.marginLeft20}`}>HEALTHCARE</p>
-                        <p className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}>-</p>
-                    </div>
-                    <div className={`${style.boardCertificationInnerFolderRows} ${style.boardCertificationBackground1} ${style.displayInRow}`}>
-                        <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} alt="" />
-                        <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft20}`}>Physician / Doctor</p>
-                    </div>
-                    <div className={`${style.boardCertificationInnerFolderRows} ${style.boardCertificationBackground1} ${style.displayInRow}`}>
-                        <img src={BlueFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} alt="" />
-                        <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft20}`}>Dental Professional</p>
-                    </div>
-                    <div className={`${style.boardCertificationSideRows} ${style.displayInRow}`}>
-                        <img src={BlackBorderFolder} alt="FinanceFolder" className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                        <p className={`${style.boardCertificationTextStyle1} ${style.marginLeft20}`}>FINANCE</p>
-                        <img src={OpenFolder} alt="OpenFolder" className={`${style.colorFileStyle} ${style.reduce10Left}`} />
-                    </div>
-                    <div className={`${style.boardCertificationSideRows} ${style.displayInRow}`}>
-                        <img src={BlackBorderFolder} alt="GovernmentFolder" className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                        <p className={`${style.boardCertificationTextStyle1} ${style.marginLeft20}`}>GOVERNMENT</p>
-                        <img src={OpenFolder} alt="OpenFolder" className={`${style.colorFileStyle} ${style.reduce10Left}`} />
-                    </div> */}
                 </div>
 
                 <div className={style.DepartmentEntityCardStyle}>
                     <div className={style.tableHeaderIndustriesEntity}>
-                        <p className={style.tableHeaderIndustriesFontStyle}>BOARD CERTIFICATION SPECIALTIES BY INDUSTRIES</p>
+                        <p className={style.tableHeaderIndustriesFontStyle}>
+                            BOARD CERTIFICATION SPECIALTIES BY INDUSTRIES
+                        </p>
                         <p className={style.tableHeaderIndustriesFontStyle}>CREATED DATE</p>
                         <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
                     </div>
                     <div className={style.healthCareIndustriesHeader}>
-                        <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                        <p className={style.tableHeaderIndustriesFontStyle}>Physician / Doctor</p>
+                        <img
+                            src={IndustriesEntityFolder}
+                            alt="IndustriesEntityFolder"
+                            className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                        />
+                        <p className={style.tableHeaderIndustriesFontStyle}>
+                            {selectedEntity.contractedServiceProviderType}
+                        </p>
                     </div>
-                    <div className={`${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>American Board of Allergy and Immunology</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <img src={EditHcRow} className={style.colorFileStyle} alt="" />
-                        <img src={DeleteHcRow} className={style.colorFileStyle} alt="" />
-                    </div>
-                    <div className={`${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>American Board of Colon and Rectal Surgery</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <img src={EditHcRow} className={style.colorFileStyle} alt="" />
-                        <img src={DeleteHcRow} className={style.colorFileStyle} alt="" />
-                    </div>
-                    <div className={`${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                        <img src={SemiTransparentFolder} alt="SemiTransparentFolder" className={`${style.colorFileStyle} ${style.marginLeft10}`} />
-                        <p className={style.tableDataFontStyle}>American Board of Anesthesiology</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <img src={EditHcFolder} onClick={() => getAddBoardCertificationDialog(true)} className={style.colorFileStyle} alt="" />
-                        <img src={DeleteHcFolder} className={style.colorFileStyle} alt="" />
-                    </div>
-                    <div className={`${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>Adult cardiac Anesthesiology</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <img src={EditHcRow} className={style.colorFileStyle} alt="" />
-                        <img src={DeleteHcRow} className={style.colorFileStyle} alt="" />
-                    </div>
-                    <div className={`${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>Critical Care Medicine</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <img src={EditHcRow} className={style.colorFileStyle} alt="" />
-                        <img src={DeleteHcRow} className={style.colorFileStyle} alt="" />
-                    </div>
-                    <div className={`${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                        <p></p>
-                        <p className={style.tableDataFontStyle}>American Board of Orthopaedic Surgery</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <p className={style.tableDataFontStyle}>03-29-2022</p>
-                        <img src={EditHcRow} className={style.colorFileStyle} alt="" />
-                        <img src={DeleteHcRow} className={style.colorFileStyle} alt="" />
-                    </div>
+
+                    {boardCerticationTable?.map((data, index) => {
+                        if (data?.secondaryBoards.length !== 0) {
+                            return (
+                                <>
+                                    <div
+                                        className={
+                                            index % 2 === 0
+                                                ? `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                                : `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                        }
+                                    >
+                                        <img
+                                            src={SemiTransparentFolder}
+                                            alt="SemiTransparentFolder"
+                                            className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                                        />
+                                        <p className={style.tableDataFontStyle}>
+                                            {data?.primaryBoard.name}
+                                        </p>
+                                        <p className={style.tableDataFontStyle}>
+                                            {data.createdDate.split("T")[0].split("-").reverse().join("-")}
+                                        </p>
+                                        <p className={style.tableDataFontStyle}>
+                                            {data.lastModifiedDate.split("T")[0].split("-").reverse().join("-")}
+                                        </p>
+                                        <img
+                                            src={EditHcFolder}
+                                            onClick={() => {
+                                                getAddEntityDialog(true);
+                                                setIsEdit(true);
+                                                setIsSecondary(false);
+                                                setSelectedBoard(data);
+                                            }}
+                                            className={style.colorFileStyle}
+                                            alt=""
+                                        />
+                                        <img
+                                            src={DeleteHcFolder}
+                                            className={style.colorFileStyle}
+                                            alt=""
+                                            onClick={() => {
+                                                deleteHandler(data);
+                                            }}
+                                        />
+                                    </div>
+                                    {data?.secondaryBoards?.map((secondary, idx) => {
+                                        return (
+                                            <div
+                                                className={
+                                                    idx % 2 === 0
+                                                        ? `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                                        : `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                                }
+                                            >
+                                                <p></p>
+                                                <p className={style.tableDataFontStyle}>
+                                                    {secondary?.name}
+                                                </p>
+                                                <p className={style.tableDataFontStyle}>
+                                                    {data.createdDate.split("T")[0].split("-").reverse().join("-")}
+                                                </p>
+                                                <p className={style.tableDataFontStyle}>
+                                                    {data.lastModifiedDate.split("T")[0].split("-").reverse().join("-")}</p>
+                                                <img
+                                                    src={EditHcRow}
+                                                    className={style.colorFileStyle}
+                                                    onClick={() => {
+                                                        setIsEdit(true);
+                                                        setIsSecondary(true);
+                                                        getAddEntityDialog(true);
+                                                        setSelectedBoard(data);
+                                                    }}
+                                                    alt=""
+                                                />
+                                                <img
+                                                    src={DeleteHcRow}
+                                                    className={style.colorFileStyle}
+                                                    alt=""
+                                                    onClick={() => {
+                                                        deleteHandler(data);
+                                                    }}
+                                                />
+                                            </div>
+                                        );
+                                    })}
+                                </>
+                            );
+                        } else {
+                            return (
+                                <>
+                                    <div
+                                        className={
+                                            index % 2 === 0
+                                                ? `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                                : `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                        }                                    >
+                                        <p></p>
+                                        <p className={style.tableDataFontStyle}>
+                                            {data?.primaryBoard.name}
+                                        </p>
+                                        <p className={style.tableDataFontStyle}>
+                                            {data.createdDate.split("T")[0].split("-").reverse().join("-")}
+                                        </p>
+                                        <p className={style.tableDataFontStyle}>
+                                            {data.lastModifiedDate.split("T")[0].split("-").reverse().join("-")}</p>
+                                        <img
+                                            src={EditHcRow}
+                                            className={style.colorFileStyle}
+                                            onClick={() => {
+                                                setIsEdit(true);
+                                                getAddEntityDialog(true);
+                                                setSelectedBoard(data);
+                                            }}
+                                            alt=""
+                                        />
+                                        <img
+                                            src={DeleteHcRow}
+                                            className={style.colorFileStyle}
+                                            onClick={() => {
+                                                deleteHandler(data);
+                                            }}
+                                            alt=""
+                                        />
+                                    </div>
+                                </>
+                            );
+                        }
+                    })}
                 </div>
             </div>
-            {showAddEntityDialog && <AddBoardCertifcation getAddEntityDialog={getAddEntityDialog} selectedEntity={selectedEntity} isEdit={isEdit} />}
-        </Fragment>
+            {showAddEntityDialog && (
+                <AddBoardCertifcation
+                    getAddEntityDialog={getAddEntityDialog}
+                    selectedEntity={selectedEntity}
+                    isEdit={isEdit}
+                    IndustryData={industryData}
+                    EntityData={entityData}
+                    selectedBoard={selectedBoard}
+                    isSecondary={isSecondary}
+                    getBoardCertificationData={getBoardCertificationData}
+                />
+            )}
 
-    )
-}
+            {showDeleteConfirmation && (
+                <DeleteConfirmation
+                    getShowDeleteConfirmation={getShowDeleteConfirmation}
+                    getDeleteConfirmation={getDeleteConfirmation}
+                    confirmationText="Do you want to delete this Board Certification?"
+                />
+            )}
+        </Fragment>
+    );
+};
 
 export default BoardCertification;

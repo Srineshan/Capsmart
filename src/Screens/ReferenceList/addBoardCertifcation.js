@@ -6,7 +6,7 @@ import AddHealthcareGroup from './../../images/addGroupBlue.png';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { POST, GET, PUT } from '../dataSaver'
 
-const AddBoardCertifcation = ({ getAddEntityDialog, isEdit, selectedEntity }) => {
+const AddBoardCertifcation = ({ getAddEntityDialog, isEdit, selectedEntity, IndustryData, EntityData, selectedBoard, getBoardCertificationData, isSecondary }) => {
     const arrowDown = () => {
         return (
             <img src={ArrowDown} className={`${style.colorFileStyle3} ${style.marginRight}`} />
@@ -24,6 +24,7 @@ const AddBoardCertifcation = ({ getAddEntityDialog, isEdit, selectedEntity }) =>
     const [primaryBoardUrl, setPrimaryBoardUrl] = useState('')
     const [secondaryBoardName, setSecondaryBoardName] = useState('')
     const [secondaryBoardUrl, setSecondaryBoardUrl] = useState('')
+    const [createdDate, setCreatedDate] = useState("")
 
     const getAllIndustries = async () => {
         const { data: data } = await GET(`entity-service/industryMaster`);
@@ -40,6 +41,13 @@ const AddBoardCertifcation = ({ getAddEntityDialog, isEdit, selectedEntity }) =>
         setContarctedServiceProviderType(csptypes)
     }
 
+    // const getBoardCertificationData = async (industryId, contractPID) => {
+    //     const { data: boardData } = await GET(
+    //         `entity-service/boardCertificateSpecialtiesMaster?industry=${industryId}&contractedServiceProviderType=${contractPID}`
+    //     );
+    //     return boardData;
+    // };
+
     useEffect(() => {
         getAllIndustries()
     }, [])
@@ -51,32 +59,42 @@ const AddBoardCertifcation = ({ getAddEntityDialog, isEdit, selectedEntity }) =>
     }, [currentEntityType, contarctedServiceProviderType])
 
     const AddSaveBoardCertification = async () => {
-        const date = new Date()
-        console.log(date);
+        let SecondaryBoardData = []
+        if (selectedBoard?.secondaryBoards) {
+            SecondaryBoardData = [...selectedBoard.secondaryBoards]
+        } else {
+            SecondaryBoardData = []
+        }
+
+        if (secondaryBoardName !== "" && secondaryBoardUrl !== "") {
+            SecondaryBoardData.push({
+                "name": secondaryBoardName,
+                "url": secondaryBoardUrl
+            })
+        }
+
+        if (!primaryBoardName && primaryBoardName === "") {
+            document.getElementById("primaryBoardNameEl").focus()
+            return false
+        }
 
         const data = {
+            ...(isEdit && { 'id': boardId }),
+            ...(isEdit && { 'createdDate': createdDate }),
             "primaryBoard": {
                 "name": primaryBoardName,
                 "url": primaryBoardUrl
             },
-            "secondaryBoards": [
-                {
-                    "name": secondaryBoardName,
-                    "url": secondaryBoardUrl
-                }
-            ],
+            "secondaryBoards": SecondaryBoardData,
             "contractedServiceProviderType": currentCSPType,
-            "industry": currentindustryType,
-            "createdDate": `${date.toISOString()}`,
-            "lastModifiedDate": `${date.toISOString()}`
+            "industry": currentindustryType
         }
-
-        console.log(data);
 
         if (!isEdit ? await POST('entity-service/boardCertificateSpecialtiesMaster', JSON.stringify(data))
             .then(response => {
                 SuccessToaster('BoardCertificateSpecialties Added Successfully');
                 getAddEntityDialog(false)
+                getBoardCertificationData()
             })
             .catch(error => {
                 ErrorToaster(error);
@@ -86,44 +104,72 @@ const AddBoardCertifcation = ({ getAddEntityDialog, isEdit, selectedEntity }) =>
                 .then(response => {
                     SuccessToaster('BoardCertificateSpecialties Updated Successfully');
                     getAddEntityDialog(false)
+                    getBoardCertificationData()
                 })
                 .catch(error => {
                     ErrorToaster(error);
                 })
         )
-
             getAddEntityDialog(false)
     }
 
-    // const AddMoreFunctionalData = async () => {
-    //     const data = {
-    //         "title": title,
-    //         "alias1": alias1,
-    //         "alias2": alias2,
-    //         "contractedServiceProviderTypeId": {
-    //             "id": currentCSPType
-    //         },
-    //         "entityId": {
-    //             "id": currentEntityType
-    //         }
-    //     }
-    //     getAddEntityDialog(true)
-    //     setEntityTypes([])
-    //     setContarctedServiceProviderType([])
-    //     setCurrentIndustryType("")
-    //     setCurrentEntityType("")
-    //     setCurrentCSPType("")
-    //     await POST('entity-service/functionalTitlesForCSPTypeMaster', JSON.stringify(data))
-    //         .then(response => {
-    //             SuccessToaster('User Added Successfully');
-    //             getAddEntityDialog(true)
-    //             getFuntionalTitleData()
-    //         })
-    //         .catch(error => {
-    //             ErrorToaster(error);
-    //         })
-    //     getAddEntityDialog(true)
-    // }
+    const AddMoreBoardCertification = async () => {
+        let SecondaryBoardData = []
+        if (secondaryBoardName !== "" && secondaryBoardUrl !== "") {
+            SecondaryBoardData.push({
+                "name": secondaryBoardName,
+                "url": secondaryBoardUrl
+            })
+        }
+
+        const data = {
+            "primaryBoard": {
+                "name": primaryBoardName,
+                "url": primaryBoardUrl
+            },
+            "secondaryBoards": SecondaryBoardData,
+            "contractedServiceProviderType": currentCSPType,
+            "industry": currentindustryType
+        }
+        getAddEntityDialog(true)
+        setEntityTypes([])
+        setContarctedServiceProviderType([])
+        setCurrentIndustryType("")
+        setCurrentEntityType("")
+        setCurrentCSPType("")
+        setPrimaryBoardName("")
+        setPrimaryBoardUrl("")
+        setSecondaryBoardName("")
+        setSecondaryBoardUrl("")
+        await POST('entity-service/boardCertificateSpecialtiesMaster', JSON.stringify(data))
+            .then(response => {
+                SuccessToaster('BoardCertificateSpecialties Added Successfully');
+                getAddEntityDialog(true)
+            })
+            .catch(error => {
+                ErrorToaster(error);
+            })
+        getAddEntityDialog(true)
+    }
+
+    useEffect(() => {
+        if (isEdit) {
+            setCurrentIndustryType(IndustryData?.id);
+            setEntityTypes([{ ...EntityData }])
+            setContarctedServiceProviderType([{ ...selectedEntity }])
+            setCurrentEntityType(EntityData?.id)
+            setCurrentCSPType(selectedEntity?.id)
+            setBoardId(selectedBoard?.id)
+            setCreatedDate(selectedBoard?.createdDate)
+            setPrimaryBoardName(selectedBoard?.primaryBoard.name)
+            setPrimaryBoardUrl(selectedBoard?.primaryBoard.url)
+            if (isSecondary) {
+                setSecondaryBoardName(selectedBoard?.secondaryBoards[0]?.name)
+                setSecondaryBoardUrl(selectedBoard?.secondaryBoards[0]?.url)
+            }
+        }
+    }, [selectedBoard])
+
 
     return (
         <Dialog isOpen={getAddEntityDialog} onClose={() => getAddEntityDialog(false)} className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}>
@@ -162,7 +208,7 @@ const AddBoardCertifcation = ({ getAddEntityDialog, isEdit, selectedEntity }) =>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>Primary Specialty Board*</div>
                         <div className={style.displayInRow}>
-                            <InputGroup value={primaryBoardName} className={style.fullWidth} onChange={e => setPrimaryBoardName(e.target.value)} />
+                            <InputGroup value={primaryBoardName} id="primaryBoardNameEl" className={style.fullWidth} onChange={e => setPrimaryBoardName(e.target.value)} />
                             <RadioGroup
                                 inline={true}
                                 className={` ${style.marginLeft20} ${style.marginTop}`}
@@ -196,7 +242,7 @@ const AddBoardCertifcation = ({ getAddEntityDialog, isEdit, selectedEntity }) =>
                 </div>
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
-                        <button className={style.outlinedButton}>SAVE & ADDMORE</button>
+                        <button onClick={AddMoreBoardCertification} className={style.outlinedButton}>SAVE & ADDMORE</button>
                         <button onClick={AddSaveBoardCertification} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & CLOSE</button>
                     </div>
                 </div>

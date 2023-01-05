@@ -11,6 +11,7 @@ const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, 
 
     const [entityId, setEntityId] = useState('')
     const [entityName, setEntityName] = useState('')
+    const [createdDate, setCreatedDate] = useState("")
 
     const entityNameRef = useRef(null);
 
@@ -19,13 +20,18 @@ const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, 
         if (isPresent) {
             ErrorToaster("Already This Name Exists");
             document.getElementById("entityName").focus();
-            setEntityName("")
             getAddHcEntityDialog(true)
+            return false;
+        }
+
+        if (!entityName && entityName === "") {
+            document.getElementById("entityName").focus();
             return false;
         }
 
         const data = {
             ...(isEdit && { 'id': entityId }),
+            ...(isEdit && { 'createdDate': createdDate }),
             "type": entityName,
             "industryId": {
                 "id": IndustryId
@@ -61,6 +67,7 @@ const AddHealthCareEntity = ({ getAddHcEntityDialog, selectedTitle, IndustryId, 
         if (isEdit) {
             setEntityName(seletedEntity?.type)
             setEntityId(seletedEntity?.id)
+            setCreatedDate(seletedEntity?.createdDate)
         }
     }, [isEdit, seletedEntity])
 
