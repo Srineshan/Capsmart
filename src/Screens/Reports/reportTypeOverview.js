@@ -842,7 +842,6 @@ const ReportTypeOverview = () => {
                                                     {paymentsReportLog?.paymentPastDue?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableHeading2={paymentsReportLog?.paymentPastDue?.[0]?.timesheet?.contract?.name}
                                                                 tableType={'Timesheets With Payment Past Due'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.paymentPastDue}
@@ -854,7 +853,6 @@ const ReportTypeOverview = () => {
                                                     {paymentsReportLog?.paymentDelayed?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableHeading2={paymentsReportLog?.paymentDelayed?.[0]?.timesheet?.contract?.name}
                                                                 tableType={'Timesheets With Delayed Payments'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.paymentDelayed}
@@ -866,7 +864,6 @@ const ReportTypeOverview = () => {
                                                     {paymentsReportLog?.rejected?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableHeading2={paymentsReportLog?.rejected?.[0]?.timesheet?.contract?.name}
                                                                 tableType={'Timesheets With Rejected Payments'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.rejected}
@@ -878,7 +875,6 @@ const ReportTypeOverview = () => {
                                                     {paymentsReportLog?.paymentNotDone?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableHeading2={paymentsReportLog?.paymentNotDone?.[0]?.timesheet?.contract?.name}
                                                                 tableType={'Timesheets With Not Paid'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.paymentNotDone}
@@ -890,7 +886,6 @@ const ReportTypeOverview = () => {
                                                     {paymentsReportLog?.paidOnTime?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableHeading2={paymentsReportLog?.paidOnTime?.[0]?.timesheet?.contract?.name}
                                                                 tableType={'Timesheets With Paid On Time'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.paidOnTime}
