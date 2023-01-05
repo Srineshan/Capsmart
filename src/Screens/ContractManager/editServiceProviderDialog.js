@@ -64,15 +64,17 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   }, [departmentLevelSite])
 
   useEffect(() => {
-    setNpin({ npin: userProviderData?.npin?.npin, missing: userProviderData?.npin?.missing, notApplicable: userProviderData?.npin?.notApplicable });
+    setNpin({ npin: userProviderData?.npin?.npin, missing: userProviderData?.npin?.missing, na: userProviderData?.npin?.notApplicable });
     setSelectedRoles(userProviderData?.roles || []);
     setUserDetails({ ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '' });
     setProviderType(userProviderData?.serviceProviderType || {});
+    setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
     setAddress({ addressLine: userProviderData?.address?.addressLine || '', city: userProviderData?.address?.city || '', state: userProviderData?.address?.state || '', zipcode: userProviderData?.address?.zipcode || '' });
     let contractData = userProviderData?.contracts?.filter(data => data?.id === contractId)?.map(data => data)[0];
     setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : []);
     setSiteLevel(contractData?.siteLevelResponsible);
     setDepartmentLevel(contractData?.departmentLevelResponsible);
+    setPhoneNA(userProviderData?.communication?.mobileNumberNotApplicable);
   }, [])
 
   const getTitleData = () => {
@@ -337,7 +339,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       ErrorToaster('Enter a Valid Email');
       return;
     }
-    if (userDetails?.phone?.length !== 14) {
+    if (!phoneNA && userDetails?.phone?.length !== 14) {
       ErrorToaster('Enter Valid Phone Number');
       return;
     }
@@ -450,7 +452,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>NPIN*</div>
             <div className={style.grid3}>
-              <InputGroup disabled={npin?.missing || npin?.na} className={style.fullWidth} value={npin?.npin} onChange={(e) => setNpin({ npin: e.target.value, na: false, missing: false })} />
+              <InputGroup disabled={npin?.missing || npin?.na} type="tel" maxLength={10} className={style.fullWidth} value={npin?.npin} onChange={(e) =>setNpin({ npin: e.target.value, na: false, missing: false })} />
               <FormGroup>
                 <FormControlLabel control={<Checkbox value={npin?.missing} checked={npin?.missing} onChange={(e) => setNpin({ npin: '', missing: e.target.checked, na: false })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
               </FormGroup>
@@ -475,7 +477,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
               <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={(e) => setAllowPersonalMail(!allowPersonalMail)} />
+                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={(e) => {setAllowPersonalMail(!allowPersonalMail);handleUserData('email', '');}} />
                   }
                   className={`${style.switchFontStyle}`}
                   label={allowPersonalMail ? 'YES' : 'NO'}

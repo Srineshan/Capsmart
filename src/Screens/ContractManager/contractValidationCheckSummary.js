@@ -7,7 +7,7 @@ import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 import DraftsOutlinedIcon from '@mui/icons-material/DraftsOutlined';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 
-import { validateTabs, validateContractIDTermLimit, validateContractProvider, validateBusinessEntity, validateServices, validateTimesheetSubmission, validateTimesheetProcessingWorkflow, validateRequestProcessingWorkflow } from './contractValidation';
+import { validateTabs} from './contractValidation';
 
 import style from './index.module.scss';
 
@@ -91,32 +91,29 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                 <div className={style.marginTop20}>
                     <ValidationHeader heading={'CONTRACT IDENTIFICATION & TERM LIMIT'} result={isTabsValid?.tab1?.length === 0 ? 'PASS' : 'FAIL'} />
                     <div className={style.validationPadding}>
+                    {
+                      isTabsValid?.value1?.map(data=>(
                         <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>Mandatory data element have required data mandatory data missing</div>
-                            <div className={style.statusText}>{isTabsValid?.tab1?.length === 0 ? 'PASS' : 'FAIL'}</div>
+                            <div className={style.validationTopicText}>{data}</div>
+                            <div className={style.statusText}>FAIL</div>
                         </div>
-                    </div>
-                    <div className={style.validationPadding}>
-                        <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>Contract id missing or available</div>
-                            <div className={style.statusText}>{isTabsValid?.value1?.includes('Contract Id') ? 'FAIL' : 'PASS'}</div>
-                        </div>
-                    </div>
-                    <div className={style.validationPadding}>
-                        <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>Fully executed copy not on file</div>
-                            <div className={style.statusText}>{isTabsValid?.value1?.includes('Contract Files') ? 'FAIL' : 'PASS'}</div>
-                        </div>
+                      ))
+                    }
                     </div>
                 </div>
                 {providerDetails?.length === 1 &&
                     <div className={style.marginTop20}>
-                        <ValidationHeader heading={'CONTRACTED SERVICES PROVIDER(S)'} result={providerDetails?.[0]?.[1]?.length !== 0 ? 'PASS' : 'FAIL'} />
+                        <ValidationHeader heading={'CONTRACTED SERVICES PROVIDER(S)'} result={providerDetails?.[0]?.[1]?.length === 0 ? 'PASS' : 'FAIL'} />
                         <div className={style.validationPadding}>
+                        {
+                          providerDetails?.[0]?.[1]?.map(data=>(
                             <div className={style.spaceBetween}>
-                                <div className={style.validationTopicText}>Mandatory data element have required data mandatory data missing</div>
-                                <div className={style.statusText}>{providerDetails?.[0]?.[1]?.length !== 0 ? 'PASS' : 'FAIL'}</div>
+                                <div className={style.validationTopicText}>{data}</div>
+                                <div className={style.statusText}>FAIL</div>
                             </div>
+                          ))
+                        }
+
                         </div>
                     </div>
                 }
@@ -152,10 +149,15 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                 <div className={style.marginTop20}>
                     <ValidationHeader heading={'CONTRACTOR BUSINESS ENTITY'} result={isTabsValid?.tab3 ? 'PASS' : 'FAIL'} />
                     <div className={style.validationPadding}>
+                    {
+                      isTabsValid?.value3?.map(data=>(
                         <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>Mandatory data element have required data mandatory data missing</div>
-                            <div className={style.statusText}>{isTabsValid?.tab3 ? 'PASS' : 'FAIL'}</div>
+                            <div className={style.validationTopicText}>{data}</div>
+                            <div className={style.statusText}>FAIL</div>
                         </div>
+                      ))
+                    }
+
                     </div>
                 </div>
                 <div className={style.marginTop20}>
@@ -215,26 +217,35 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                 <div className={style.marginTop20}>
                     <ValidationHeader heading={'TIMESHEET SUBMISSION TERMS'} result={isTabsValid?.tab5 ? "PASS" : "FAIL"} />
                     <div className={style.validationPadding}>
+                    {
+                      isTabsValid?.value5?.map(data=>(
                         <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>Mandatory data element have required data mandatory data missing</div>
-                            <div className={style.statusText}>{isTabsValid?.tab5 ? "PASS" : "FAIL"}</div>
+                            <div className={style.validationTopicText}>{data}</div>
+                            <div className={style.statusText}>FAIL</div>
                         </div>
+                      ))
+                    }
                     </div>
                 </div>
                 <div className={style.marginTop20}>
                     <ValidationHeader heading={'PAYMENT & COMPENSATION'} result={'PASS'} />
                     <div className={style.validationPadding}>
+                    {
+                      isTabsValid?.value6?.map(data=>(
                         <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>Mandatory data element have required data mandatory data missing</div>
-                            <div className={style.statusText}>PASS</div>
+                            <div className={style.validationTopicText}>{data}</div>
+                            <div className={style.statusText}>FAIL</div>
                         </div>
+                      ))
+                    }
+
                     </div>
                 </div>
                 <div className={style.marginTop20}>
                     <ValidationHeader heading={'TIMESHEET PROCESSING WORKFLOW'} result={isTabsValid?.tab7 ? "PASS" : "FAIL"} />
                     <div className={style.validationPadding}>
                         <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>Mandatory data element have required data mandatory data missing</div>
+                            <div className={style.validationTopicText}>Mandatory data element</div>
                             <div className={style.statusText}>{isTabsValid?.tab7 ? "PASS" : "FAIL"}</div>
                         </div>
                     </div>
@@ -243,14 +254,14 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                     <ValidationHeader heading={'REQUEST PROCESSING WORKFLOW'} result={isTabsValid?.tab8 ? "PASS" : "FAIL"} />
                     <div className={style.validationPadding}>
                         <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>Mandatory data element have required data mandatory data missing</div>
+                            <div className={style.validationTopicText}>Mandatory data element</div>
                             <div className={style.statusText}>{isTabsValid?.tab8 ? "PASS" : "FAIL"}</div>
                         </div>
                     </div>
                 </div>
                 <div className={`${style.floatRight} ${style.marginTop20}`}>
-                    <button className={`${style.cloneOutlinedButton} ${style.buttonHeight40}`}>CANCEL</button>
-                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.buttonHeight40}`}>READY FOR ACTIVATION</button>
+                    <button className={`${style.cloneOutlinedButton} ${style.buttonHeight40}`} onClick={() => getContractValidationDialog(false)}>CANCEL</button>
+                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.buttonHeight40}`} onClick={() => getContractValidationDialog(false)}>OK</button>
                 </div>
             </div>
         </Dialog>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, Tag, Dialog, Classes } from '@blueprintjs/core';
+import { InputGroup, Tag, Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
@@ -71,14 +71,15 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   const [appRoleRequired, setAppRoleRequired] = useState(true);
   const [contractorBusinessEntity, setContractorBusinessEntity] = useState({});
   const [userId, setUserId] = useState('0');
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     getUserData();
   }, [])
 
-  useEffect(() => {
-    getContractorData();
-  }, [sameAsContractor])
+  // useEffect(() => {
+  //   getContractorData();
+  // }, [sameAsContractor])
 
   const getUserData = async () => {
     setIsLoading(true);
@@ -228,7 +229,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     setContractorBusinessEntity(contractorBusinessEntity);
   };
 
-  useEffect(() => {
+const setBusinessEntityData = () => {
     setSameAsContractor(contractorBusinessEntity?.contractorContact);
     setBusinessEntity(contractorBusinessEntity?.businessEntity || {});
     setContractorNPIN(contractorBusinessEntity?.contractorNPIN || {});
@@ -239,12 +240,20 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     setMailingAddress(contractorBusinessEntity?.mailingAddress || {});
     setAllowBEM(contractorBusinessEntity?.accessAllowedForBusinessEntityUser);
     setKeepConfidential(contractorBusinessEntity?.paymentDataConfidential);
-  }, [contractorBusinessEntity])
+  }
+
+  console.log('npin', contractorNPIN);
 
   useEffect(() => {
     getRoles();
     getContractorBusinessEntity();
+    setBusinessEntityData();
   }, [])
+
+  useEffect(() => {
+  setBusinessEntityData();
+  }, [contractorBusinessEntity])
+
 
   const handleInput = (e) => {
     const formattedPhoneNumber = FormatPhoneNumber(e.target.value);
@@ -258,14 +267,44 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
         email: contractUser?.email,
         contactNumber: {
           number: contractUser?.communication?.mobileNumber,
+          missing: contractUser?.communication?.missing,
+        }
+      });
+      setMailingAddress({
+        addressLine: contractUser?.address?.addressLine,
+        city: contractUser?.address?.city,
+        state: contractUser?.address?.state,
+        zipcode: contractUser?.address?.zipcode
+      });
+      setContractorNPIN({
+        notApplicable: contractUser?.npin?.notApplicable,
+        npin: contractUser?.npin?.npin || '',
+        missing: contractUser?.npin?.missing,
+      });
+    }else{
+      setBusinessEntityUser({
+        name: {
+          firstName:'',
+          lastName : '',
+          middleName: '',
+          suffix: {},
+        },
+        email: {officialEmail:''},
+        contactNumber: {
+          number: '',
           missing: false
         }
       });
       setMailingAddress({
-        addressLine: "",
-        city: contractUser?.address?.city,
-        state: contractUser?.address?.state,
-        zipcode: contractUser?.address?.zipcode
+        addressLine: '',
+        city: '',
+        state: '',
+        zipcode: ''
+      });
+      setContractorNPIN({
+        notApplicable:'',
+        npin: '',
+        missing: false,
       });
     }
   }
@@ -291,8 +330,26 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
 
+  console.log('name', contractorNPIN);
+
   return (
     <>
+    <Dialog isOpen={showAlert} className={`${style.cloneDialog}`} canOutsideClickClose={false}>
+      <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
+        <div className={style.spaceBetween}>
+          <p className={style.extensionStyle}>Alert</p>
+          <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowAlert(false)} />
+        </div>
+        <div className={style.extensionBorder}></div>
+        <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
+        Business Contact Change Alert
+        </p>
+        <div className={`${style.positionCenter} ${style.marginTop20}`}>
+          <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => {setShowAlert(false); handleSameContact();}}>OK</button>
+        </div>
+        <br />
+      </div>
+    </Dialog>
       {
         userCount !== 0 ?
           <div className={style.cloneBlockStyle}>
@@ -304,7 +361,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   <ThemeProvider theme={switchTheme}>
                     <FormControlLabel
                       control={
-                        <Switch checked={sameAsContractor} className={`${style.textAlignLeft}`} onChange={() => handleSameContact()} />
+                        <Switch checked={sameAsContractor} className={`${style.textAlignLeft}`} onChange={() => setShowAlert(true)} />
                       }
                       color='primary'
                       className={`${style.switchFontStyle} ${style.marginTop}`}
@@ -322,7 +379,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                     maxLength={10}
                     disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
                     value={contractorNPIN?.npin} placeholder="Enter Vendor NPIN"
-                    onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value })} />
+                    onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value, missing:false, notApplicable:false })} />
                   <div className={`${style.displayInRow}`}>
                     <FormGroup className={style.marginLeft20}>
                       <FormControlLabel control={<Checkbox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked, notApplicable: false, npin: '' })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
@@ -379,7 +436,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Business Contact Email Address*</div>
-                <div className={style.twoCol}>
                   <InputGroup className={style.fullWidth} value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
                     onFocus={() => { getSelectedField('Business Contact Email Address') }}
                     onChange={(e) => {
@@ -387,11 +443,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                       setIsUserUpdated(true);
                     }}
                   />
-                  <FormGroup className={style.marginLeft20}>
-                    <FormControlLabel control={<Checkbox value="Missing"
-                    />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
-                  </FormGroup>
-                </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
                 onFocus={() => { getSelectedField('Cell Phone') }}

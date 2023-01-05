@@ -2,7 +2,6 @@ import React from 'react';
 import { GET } from './../dataSaver';
 
 export const validateContractIDTermLimit = (contract) => {
-  console.log('contract id', contract?.contractDetail?.contractFiles);
   let fieldData = [{field:'Contract Name', value:contract?.contractName?.contractName},
                   {field: 'Contract Id', value: contract?.contractDetail?.contractId?.id},
                   {field: 'Contract Manager', value:contract?.contractDetail?.contractManager?.userID},
@@ -13,9 +12,19 @@ export const validateContractIDTermLimit = (contract) => {
                   {field: 'Time Commitment - value', value:contract?.contractDetail?.timeCommitment?.value},
                   {field: 'Time Commitment - frequency', value:contract?.contractDetail?.timeCommitment?.frequency},
                   {field: 'contract Effective date', value:contract?.contractDetail?.contractTerm?.effectiveDate},
+                  {field: 'Contract Continuation Policy' , value:contract?.contractDetail?.continuationPolicy?.contractPolicyType},
                 ];
+  let temp = fieldData;
+  temp?.filter(data=>data?.field === 'Contract Continuation Policy')?.map(data=>{
+    if(data.value === 'AUTORENEWAL'){
+      temp.push({field:'Auto Renewal Term', value:contract?.contractDetail?.continuationPolicy?.autoRenewalPeriod?.autoRenewalTerm?.term});
+      temp.push({field:'Allowable Auto Renewal Terms', value:contract?.contractDetail?.continuationPolicy?.autoRenewalPeriod?.allowableAutoRenewalTerm?.term});
+    }else{
+      temp.push({field:'Renewal Reminder List', value:contract?.contractDetail?.continuationPolicy?.reminderList?.renewalReminderList?.filter(data=>data?.days === 0)?.map(data=>data)?.length});
+    }
+  })
   const emptyFields = fieldData?.filter(data=>data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data=> data?.field);
-  console.log('value tab 1', emptyFields);
+  console.log('tab 1', emptyFields);
   return emptyFields;
 }
 
@@ -75,6 +84,7 @@ export const validateServices = (contract) => {
       let fieldData = [{field:'sites', value:service?.sites?.length},
                       {field: 'Activities', value: service?.activities?.length},
                       {field: 'Service Schedule', value:service?.contractedSchedule?.minimum?.value},
+                      {field: 'Service Schedule Frequency', value:service?.contractedSchedule?.frequency},
                       {field: 'Duration', value:service?.duration?.hours},
                       {field: 'Service Days', value:service?.serviceDays},
                       {field: 'Total Sessions', value:service?.totalSessions?.value},
@@ -85,9 +95,56 @@ export const validateServices = (contract) => {
       emptyFields[index] = temp;
     }
   } );
-  console.log('check check', contract?.contractName?.contractName, emptyFields);
   return emptyFields;
 }
+
+export const validatePaymentsAndCompensation = (contract) => {
+  let payments = contract?.paymentAndCompensation;
+  let isEmptyField = [];
+  let fieldData = [];
+  if(payments?.compensationBasis === null){
+    isEmptyField = ['Compensation Basis',
+    'RVU Quantity',
+    'FTE Equivalent',
+    'RVU Reference Used',
+    'RVU Quantity variance (+/-)',
+    'RVU Quantity Period',
+    'Dollar Hourly Rate',
+    'Individual Timesheet Details'];
+  }
+
+ fieldData = [{field:'Compensation Basis', value:payments?.compensationBasis},
+              {field: `Dollar Rate`, value: payments?.dollarRate?.hour},
+             ];
+  if(payments?.compensationBasis === 'RVUBASED'){
+    fieldData.push(...[
+      {field:'RVU Quantity', value:payments?.rvuQuantity?.quantity},
+      {field:'Frequecy', value:payments?.frequency},
+      {field:'FTE Equivalent', value:payments?.fteEquivalent?.value},
+      {field:'RVU Reference Used', value:payments?.rvuQuantityVariance?.value},
+      {field:'RVU Quantity Variance', value:payments?.rvuQuantityVariance?.value},
+      {field:'RVU Quantity Period', value:payments?.rvuQuantityPeriod?.days},
+    ])
+  }
+    payments?.timesheetPayments?.map((data,index)=>{
+      fieldData?.push(...[{field: `Timesheet Label ${index+1}`, value:data?.timesheetLabel?.label},
+      {field: `Payment Frequecy ${index+1}`, value:data?.paymentFrequency},
+      {field: `Max Payment Per Timesheet Submission ${index+1}`, value:data?.maxPaymentPerTimesheetSubmission},
+      {field: `Max Payment Per Contract ${index+1}`, value:data?.maxPaymentPerContract},
+      {field: `Reduced Number Of Services ${index+1}`, value:data?.reducedNumberOfServices},
+      {field: `Providing Additional Services ${index+1}`, value:data?.providingAdditionalServices},
+      {field: `OverUnderPayment ${index+1}`, value:data?.overUnderPayment},
+      {field: `Payment Based on Fixed Hours Vs Actual ${index+1}`, value:data?.paymentBasedonFixedHoursVsActual}]
+    );
+  } )
+
+  console.log('payment', fieldData);
+    let temp = fieldData?.filter(data=>data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data=> data?.field);
+    isEmptyField = temp;
+  console.log('empty', isEmptyField);
+return isEmptyField;
+}
+
 
 export const validateTimesheetSubmission = (contract) => {
   let timesheets = contract?.timesheetSubmissionTerms;
@@ -152,14 +209,16 @@ export const validateTabs = async(contractId) => {
   let tab3 = validateBusinessEntity(contract);
   let tab4 = validateServices(contract);
   let tab5 = validateTimesheetSubmission(contract);
+  let tab6 = validatePaymentsAndCompensation(contract);
   let tab7 = validateTimesheetProcessingWorkflow(contract);
   let tab8 = validateRequestProcessingWorkflow(contract);
   let isTabsValid = {
     tab1: tab1?.length === 0, value1:tab1,
     tab2: tab2?.length === 0, value2: tab2,
     tab3: tab3?.length === 0, value3: tab3,
-    tab4: tab4?.length === 0, value4: tab4,
+    tab4: tab4?.length !== 0 && tab4?.filter(data=>data?.length !==0)?.map(data=>data)?.length === 0 ? true : false, value4: tab4,
     tab5: tab5?.length === 0, value5: tab5,
+    tab6: tab6?.length === 0, value6: tab6,
     tab7: tab7, value7: tab7,
     tab8: tab8?.length === 0, value8: tab8,
   };

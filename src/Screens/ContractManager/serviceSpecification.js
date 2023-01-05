@@ -132,10 +132,10 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     contractedServices?.map((data,index) => {
       dataStatus.push(servicesValid?.[index]?.length === 0 ? <TaskAltOutlinedIcon style={{ color: "#14B15A" }} /> : <WarningAmberIcon style={{color : "#FF6562"}} />);
       activityType.push(data?.activityType?.activityType);
-      specificActivity.push(data?.activities?.length  > 1 ? `${data?.activities?.[0]?.activity}...` : data?.activities?.[0]?.activity);
-      specificActivityHoverText.push(data?.activities?.map(data=>data?.activity));
-      appliesTo.push(data?.users?.[0]?.name?.firstName);
-      appliesToHoverText.push(data?.users?.map(user=>user?.name?.firstName));
+      specificActivity.push(data?.activities?.length  > 1 ? `${data?.activities?.[0]?.activity}...` : data?.activities?.[0]?.activity || '-');
+      specificActivityHoverText.push(data?.activities?.map(data=>data?.activity) || '-');
+      appliesTo.push(data?.users?.[0]?.name?.firstName || '-');
+      appliesToHoverText.push(data?.users?.map(user=>user?.name?.firstName) || '-');
       billable.push(data?.billableService ? 'YES' : 'NO');
       deleteIcon.push(<CloseOutlinedIcon style={{ color: "#F94848" }} />);
     })

@@ -79,7 +79,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         temp.push({ activity: data })
       });
       setSelectedActivity(temp);
-      setShowLocation(selectedService?.locations?.length !== 0 ? true : false);
+      setShowLocation(selectedService?.locationSpecified);
       setSelectedLocation(selectedService?.locations?.map(data => data));
       removeSelectedLocationFromList();
     }
@@ -224,12 +224,28 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setSiteList(sites);
     }
   }
-
   console.log('metadata', metadata?.selectedActivities);
 
   const handleSave = async (buttonType) => {
     if (serviceType === '') {
       ErrorToaster('Activity Type Selection is Mandatory');
+      return;
+    }
+    if(showLocation && selectedLocation?.length === 0){
+      ErrorToaster('Atleast one location has to be selected if yes');
+      return;
+    }
+    if(selectContractInfo !== "INDIVIDUAL" && isDesignatedSpecificContractor && selectedUsers?.length === 0){
+      ErrorToaster('Atleast one User has to be selected if Specific Contractor is Yes');
+      return;
+    }
+    if(metadata?.additionalScheduleRequired && (parseInt(metadata?.additionalScheduleValue) === 0 || metadata?.additionalScheduleFrequency === null)){
+      ErrorToaster('Additional Schedule value and frequency required');
+      return;
+    }
+    if(metadata?.billableService && parseInt(metadata?.sessionAmount) === 0)
+    {
+      ErrorToaster('Payment Amount field is mandatory if the service is Billable');
       return;
     }
     let performingActivity = '';
@@ -478,10 +494,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     if (!isShowPDF) {
       getAddServiceDialog(false);
       getEditServiceDialog(false);
-      console.log('false')
     } else {
       setIsShowPDF(!isShowPDF);
-      console.log('true')
+    }
+  }
+
+  const onShowLocationChange = (value) => {
+    setShowLocation(value);
+    if(!value){
+      setSelectedLocation([]);
     }
   }
 
@@ -602,7 +623,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             }
                             color='primary'
                             checked={showLocation}
-                            onChange={() => setShowLocation(!showLocation)}
+                            onChange={() => onShowLocationChange(!showLocation)}
                             className={`${style.switchFontStyle} ${style.flexLeft} `}
                             label={showLocation ? 'YES' : 'NO'}
                           />

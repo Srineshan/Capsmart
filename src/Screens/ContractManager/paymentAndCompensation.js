@@ -28,7 +28,7 @@ const switchTheme = createTheme({
     },
 });
 
-const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPage, contractId, getSelectedField, getShowAlert, isEditable }) => {
+const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPage, contractId, getSelectedField, getShowAlert, isEditable, getTabDataStatus }) => {
     const [compensation, setCompensation] = useState('RVUBASED');
     const [paymentAndCompensation, setPaymentAndCompensation] = useState({});
     const [rvuQuantity, setRvuQuantity] = useState({
@@ -48,7 +48,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         days: 0
     })
     const [dollarRate, setDollarRate] = useState({
-        hour: parseFloat(0)
+        hour: parseFloat(0),
+        notApplicable: false,
     })
     const [dollarValue, setDollarValue] = useState({
         perTimesheetSubmission: 0,
@@ -91,6 +92,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         if(buttonType !== 'Continue'){
           getShowAlert(true);
         }
+        getTabDataStatus();
     }
 
     const getPaymentAndCompensation = async () => {
@@ -106,7 +108,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setRvuReferenceUsed(paymentAndCompensation?.rvuReferenceUsed);
         setRvuQuantityPeriod(paymentAndCompensation?.rvuQuantityPeriod);
         setRvuQuantityVariance(paymentAndCompensation?.rvuQuantityVariance);
-        setDollarRate(paymentAndCompensation?.dollarRate);
+        console.log('asdasdad',paymentAndCompensation?.rvuQuantityPeriod);
+        setDollarRate({...dollarRate, hour:paymentAndCompensation?.dollarRate?.hour, notApplicable:paymentAndCompensation?.dollarRate?.notApplicable});
         setDollarValue(paymentAndCompensation?.dollarValue);
         setCompensationOffsetCriteria(paymentAndCompensation?.compensationOffsetCriteria);
         setTimesheetPayments(paymentAndCompensation?.timesheetPayments || []);
@@ -129,9 +132,12 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
             label: data?.timesheetLabel?.label
           },
           paymentFrequency: "",
-          maxPayment: parseFloat(0),
-          compensationOffsetCriteria: "",
-          fixedPayment: true
+          maxPaymentPerTimesheetSubmission: parseFloat(0),
+          maxPaymentPerContract: parseFloat(0),
+          reducedNumberOfServices: "",
+          providingAdditionalServices: "",
+          overUnderPayment: "",
+          paymentBasedonFixedHoursVsActual: true
         });
       });
         setTimesheetPayments(temp)
@@ -152,8 +158,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
       let temp = timesheetPayments;
       temp?.filter((data,indexVal)=>index === indexVal)?.map(data=>{
         data[name] = value;
-        if(name === 'fixedPayment' && !value){
-          data['maxPayment'] = parseFloat(0);
+        if(name === 'paymentBasedonFixedHoursVsActual' && !value){
+          data['maxPaymentPerTimesheetSubmission'] = parseFloat(0);
+          data['maxPaymentPerContract'] = parseFloat(0);
         }
       });
       setTimesheetPayments(temp);
@@ -192,15 +199,15 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                       <ThemeProvider theme={switchTheme}>
                           <FormControlLabel
                               control={
-                                  <Switch className={`${style.textAlignLeft}`} checked={timesheetPayments?.[i]?.fixedPayment} onChange={(e)=>updateTimesheetPayment(e.target.checked, 'fixedPayment', i)}/>
+                                  <Switch className={`${style.textAlignLeft}`} checked={timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual} onChange={(e)=>updateTimesheetPayment(e.target.checked, 'paymentBasedonFixedHoursVsActual', i)}/>
                               }
                               color='primary'
                               className={`${style.switchFontStyle} ${style.marginTop20}`}
-                              label={timesheetPayments?.[i]?.fixedPayment ? 'YES' : 'NO'}
+                              label={timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual ? 'YES' : 'NO'}
                           />
                       </ThemeProvider>
                       {
-                      //   timesheetPayments?.[i]?.fixedPayment &&
+                      //   timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual &&
                       //   <div className={`${style.twoFieldWidth} ${style.marginLeft20}`}>
                       //     <div className={style.helperTextPayment}>Max. Compensation Value Per Timesheet Submission*</div>
                       //     <TextField
@@ -210,8 +217,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                       //         InputProps={{
                       //             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                       //         }}
-                      //         onChange={(e)=>updateTimesheetPayment(parseFloat(e.target.value), 'maxPayment', i)}
-                      //         value={timesheetPayments?.[i]?.maxPayment}
+                      //         onChange={(e)=>updateTimesheetPayment(parseFloat(e.target.value), 'maxPaymentPerTimesheetSubmission', i)}
+                      //         value={timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission}
                       //         inputProps={{
                       //             style: {
                       //                 height: 15,
@@ -222,7 +229,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                   }
                   </div>
               </div>
-            {  timesheetPayments?.[i]?.fixedPayment &&
+          { timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual &&
               <>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>Max. Compensation Value Per Timesheet Submission*</div>
@@ -234,8 +241,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                       InputProps={{
                           startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                       }}
-                      onChange={(e)=>updateTimesheetPayment(parseFloat(e.target.value), 'maxPayment', i)}
-                      value={timesheetPayments?.[i]?.maxPayment}
+                      onChange={(e)=>updateTimesheetPayment(parseFloat(e.target.value), 'maxPaymentPerTimesheetSubmission', i)}
+                      value={timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission}
                       inputProps={{
                           style: {
                               height: 15,
@@ -249,8 +256,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                       <Select
                           labelId="demo-select-small"
                           id="demo-select-small"
-                          value={timesheetPayments?.[i]?.compensationOffsetCriteria}
-                          onChange={(e)=> updateTimesheetPayment(e.target.value, 'compensationOffsetCriteria', i)}
+                          value={timesheetPayments?.[i]?.reducedNumberOfServices}
+                          onChange={(e)=> updateTimesheetPayment(e.target.value, 'reducedNumberOfServices', i)}
                           SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                       >
                           <MenuItem value={'TIMESHEET'}>Per Timesheet Period</MenuItem>
@@ -259,7 +266,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                   </FormControl>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                  <div className={style.extentionLableStyle}>Max. Compensation Value Per Timesheet Submission*</div>
+                  <div className={style.extentionLableStyle}>Max. Compensation Value Per Contract*</div>
                   <TextField
                       className={style.twoFieldWidth}
                       type="number"
@@ -268,8 +275,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                       InputProps={{
                           startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                       }}
-                      onChange={(e)=>updateTimesheetPayment(parseFloat(e.target.value), 'maxPayment', i)}
-                      value={timesheetPayments?.[i]?.maxPayment}
+                      onChange={(e)=>updateTimesheetPayment(parseFloat(e.target.value), 'maxPaymentPerContract', i)}
+                      value={timesheetPayments?.[i]?.maxPaymentPerContract}
                       inputProps={{
                           style: {
                               height: 15,
@@ -284,8 +291,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                       <Select
                           labelId="demo-select-small"
                           id="demo-select-small"
-                          value={timesheetPayments?.[i]?.compensationOffsetCriteria}
-                          onChange={(e)=> updateTimesheetPayment(e.target.value, 'compensationOffsetCriteria', i)}
+                          value={timesheetPayments?.[i]?.providingAdditionalServices}
+                          onChange={(e)=> updateTimesheetPayment(e.target.value, 'providingAdditionalServices', i)}
                           SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                       >
                           <MenuItem value={'TIMESHEET'}>Per Timesheet Period</MenuItem>
@@ -301,8 +308,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                       <Select
                           labelId="demo-select-small"
                           id="demo-select-small"
-                          value={timesheetPayments?.[i]?.compensationOffsetCriteria}
-                          onChange={(e)=> updateTimesheetPayment(e.target.value, 'compensationOffsetCriteria', i)}
+                          value={timesheetPayments?.[i]?.overUnderPayment}
+                          onChange={(e)=> updateTimesheetPayment(e.target.value, 'overUnderPayment', i)}
                           SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                       >
                           <MenuItem value={'TIMESHEET'}>Per Timesheet</MenuItem>
@@ -333,11 +340,20 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         )
     }
 
+    const onCompensationUpdate = (value) => {
+      setCompensation(value);
+      if(value !== 'RVUBASED'){
+        setRvuQuantity(null);
+        setFteEquivalent(null);
+        setRvuReferenceUsed(null);
+        setRvuQuantityPeriod(null);
+        setRvuQuantityVariance(null);
+      }
+    }
+
     if (isLoading) {
         return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
     }
-
-
 
     return (
         <>
@@ -362,7 +378,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     <RadioGroup
                                         row className={`${style.leftAlign}`}
                                         value={compensation}
-                                        onChange={(e) => setCompensation(e.target.value)}
+                                        onChange={(e) => onCompensationUpdate(e.target.value)}
                                         sx={{ color: '#52575D' }}
                                     >
                                         <FormControlLabel value="RVUBASED"
@@ -448,7 +464,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                                 endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
                                             }}
                                             onChange={(e) => setRvuQuantityPeriod({
-                                                ...rvuQuantityPeriod, days: e.slice(0, limit4)
+                                                ...rvuQuantityPeriod, days: e.target.value.slice(0, limit4)
                                             })}
                                             className={style.renewalWidth}
                                             value={rvuQuantityPeriod?.days}
@@ -468,12 +484,13 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     type="number"
                                     min="0"
                                     size="small"
-
+                                    disabled={dollarRate?.notApplicable}
+                                    value={dollarRate?.hour}
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
                                     onChange={(e) => setDollarRate({
-                                        ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7))})}
+                                        ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7)), notApplicable:false})}
                                     inputProps={{
                                         style: {
                                             height: 15,
@@ -481,37 +498,10 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     }}
                                 />
                                 <FormGroup>
-                                  <FormControlLabel control={<Checkbox value="NA"  />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                                  <FormControlLabel control={<Checkbox value="NA" checked={dollarRate?.notApplicable} onChange={(e)=>setDollarRate({...dollarRate, notApplicable:e.target.checked, hour:parseFloat(0)})}/>} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
                                 </FormGroup>
                               </div>
                             </div>
-                            {
-                              // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                              //     <div className={style.extentionLableStyle}>Compensation Offset Criteria for Reduced Number of Agreed to Services*</div>
-                              //     <FormControl fullWidth size="small">
-                              //         <Select
-                              //             labelId="demo-simple-select-label"
-                              //             id="demo-simple-select"
-                              //             value={compensationOffsetCriteria?.providingAdditionalServices}
-                              //             onChange={(e) => setCompensationOffsetCriteria({
-                              //                 ...compensationOffsetCriteria, providingAdditionalServices: e.target.value, reducedNumberOfServices: compensationOffsetCriteria?.reducedNumberOfServices
-                              //             })}
-                              //             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                              //         >
-                              //             <MenuItem value={'Per Timesheet Period'}>Per Timesheet Period</MenuItem>
-                              //             <MenuItem value={'On Last Invoice For Contract Year'}>On Last Invoice For Contract Year</MenuItem>
-                              //         </Select>
-                              //     </FormControl>
-                              // </div>
-                              //
-                              // <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                              //     <div className={style.extentionLableStyle}>Dollar Value for per Contracted Year*</div>
-                              //     <InputGroup className={style.fourFieldWidth} leftElement={leftElement()} value={dollarValue?.perContractedPeriod} placeholder="0" type='number'
-                              //         min="0" onChange={(e) => setDollarValue({
-                              //             ...dollarValue, perContractedPeriod: e.target.value.slice(0, limit7), perTimesheetSubmission: dollarValue?.perTimesheetSubmission
-                              //         })} />
-                              // </div>
-                            }
 
                             <div className={`${style.paymentTimesheetDetailsHeading} ${style.marginTop20}`}>
                                 INDIVIDUAL TIMESHEET DETAILS

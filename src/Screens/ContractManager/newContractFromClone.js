@@ -81,11 +81,13 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
         setIsTabsValid(value);
         let temp = value?.value2;
         temp.then(response=>{
-          console.log('value testing', response);
           setProviderDetails(response);
         })
       });
     }
+
+    console.log('valid',isTabsValid);
+
     const getSelectedField = (value) => {
         setSelectedField(value)
     }
@@ -294,11 +296,11 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             <img src={isTabsValid?.tab5 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${viewPage7 ? style.completedEntityCardStyle : ''} ${currentPage === "Payment & Compensation" && style.selectedContractEntityStyle}`}
+                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Payment & Compensation" && style.selectedContractEntityStyle}`}
                         onClick={() => { setCurrentPage('Payment & Compensation'); setSelectedField(''); }}>
                         Payment & Compensation
-                        {viewPage8 && (
-                            <img src={CompletedIcon} alt="completed" className={`${style.completedIconStyle}`} />
+                        {contractId !== '' && (
+                            <img src={isTabsValid?.tab6 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Timesheet Processing Workflow" && style.selectedContractEntityStyle}`}

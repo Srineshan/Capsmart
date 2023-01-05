@@ -3,6 +3,7 @@ import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import FormGroup from '@mui/material/FormGroup';
@@ -37,6 +38,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         schedule: 'WEEK',
         billable: false,
     });
+    const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
 
     let specificDedicatedHoursList = [];
     services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => {
@@ -126,6 +128,14 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const activityToAdd = async () => {
+      if(adminActivity?.activity === ''){
+        ErrorToaster('Administrative Service Name is Mandatory');
+        return;
+      }
+      if(activity?.map(data=>data?.activity).includes(adminActivity?.activity)){
+        ErrorToaster('Administrative Service Name Already Exists');
+        return;
+      }
         let data = {
             "activity": adminActivity?.activity,
             "tenant": {
@@ -143,6 +153,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             .catch(error => {
                 ErrorToaster('Adding Activity To List Failed');
             })
+        setAdminActivity({...adminActivity, activity:''})
     }
 
     const selectedHours = (index) => {
@@ -167,7 +178,26 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         }
     }
 
-    console.log('date', metadata);
+    const editActivitySelected = () => {
+      let editableData = metadata?.selectedActivities?.filter(data=>data?.activity === adminActivity?.activity)?.map(data=>data)[0];
+      let temp = metadata?.selectedActivities?.filter(data=>data?.activity !== adminActivity?.activity)?.map(data=>data);
+      temp.push({activity: adminActivity?.activity, billable: adminActivity?.billable, podRequired: adminActivity?.podRequired, id:editableData?.id, tenant:editableData?.tenant, schedule: adminActivity?.schedule});
+      setMetadata({...metadata, selectedActivities: temp});
+    }
+
+    const submit = () => {
+      if(showAdminActivity){
+        activityToAdd();
+      }else{
+        editActivitySelected();
+      }
+    }
+
+    console.log('date', metadata.selectedActivities);
+    const updateWorkingPeriod = (e) => {
+      let minTime= new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
+      setMetadata({...metadata, workingTimeFrom:e, workingTimeTo:minTime});
+    }
 
     return (
         <div>
@@ -221,14 +251,22 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                 <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
                                 {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                 {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                {metadata?.selectedActivities?.map(selectedActivity=>selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={()=>{setEditAdminActivitySelected(true);
+                                  setAdminActivity({
+                                    activity: data?.activity,
+                                    podRequired: data?.podRequired,
+                                    schedule: data?.schedule,
+                                    billable: data?.billable,
+                                });}} />}
                             </div>
+
                         ))
                     }
                 </div>
             </div>
 
             {
-                showAdminActivity &&
+                showAdminActivity || editAdminActivitySelected &&
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
                         <div className={style.extentionLableStyle}>Additional Administrative Services Name</div>
@@ -241,7 +279,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                             <ThemeProvider theme={switchTheme}>
                                 <FormControlLabel
                                     control={
-                                        <Switch className={`${style.textAlignLeft}`} onChange={(e) => handleAdminActivity('billable', !adminActivity?.billable)} />
+                                        <Switch className={`${style.textAlignLeft}`} checked={adminActivity?.billable} onChange={(e) => handleAdminActivity('billable', !adminActivity?.billable)} />
                                     }
                                     color='primary'
                                     className={`${style.switchFontStyle} ${style.flexLeft} `}
@@ -258,7 +296,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                 <ThemeProvider theme={switchTheme}>
                                     <FormControlLabel
                                         control={
-                                            <Switch className={`${style.textAlignLeft}`} onChange={(e) => handleAdminActivity('podRequired', !adminActivity?.podRequired)} />
+                                            <Switch className={`${style.textAlignLeft}`} checked={adminActivity?.podRequired} onChange={(e) => handleAdminActivity('podRequired', !adminActivity?.podRequired)} />
                                         }
                                         color='primary'
                                         className={`${style.switchFontStyle} ${style.flexLeft} `}
@@ -286,8 +324,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
                     <div>
                         <div className={`${style.twoCol} ${style.marginTop20}`}>
-                            <button className={`${style.outlinedButton} ${style.fullWidth}`} onClick={(e) => setShowAdminActivity(false)}>CANCEL</button>
-                            <button className={`${style.buttonStyle} ${style.fullWidth}`} onClick={(e) => { activityToAdd() }}>SAVE</button>
+                            <button className={`${style.outlinedButton} ${style.fullWidth}`} onClick={(e) => {setShowAdminActivity(false); setEditAdminActivitySelected(false);}}>CANCEL</button>
+                            <button className={`${style.buttonStyle} ${style.fullWidth}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
                         <br />
                     </div>
@@ -354,10 +392,12 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 <div className={`${style.threeFieldWidth}`}>
                     <TextField
                         size="small"
+                        type="tel"
+                        maxLength="3"
                         InputProps={{
                             endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                         }}
-                        onChange={(e) => handleValueChange('totalSession', e.target.value)}
+                        onChange={(e) =>e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
                         value={metadata?.totalSession}
                     />
                 </div>
@@ -370,10 +410,12 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         <div className={`${style.threeFieldWidth}`}>
                             <TextField
                                 size="small"
+                                type="tel"
+                                maxLength="5"
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                 }}
-                                onChange={(e) => handleValueChange('sessionAmount', e.target.value)}
+                                onChange={(e) =>e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
                                 value={metadata?.sessionAmount}
                             />
                         </div>
@@ -395,7 +437,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     <TimePicker
                         useAmPm={false}
                         onChange={(e) => {
-                            handleValueChange('workingTimeFrom', e);
+                          updateWorkingPeriod(e);
                         }}
                         value={new Date(metadata?.workingTimeFrom)}
                     />
