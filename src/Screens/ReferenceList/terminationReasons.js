@@ -47,6 +47,8 @@ const BoardCertification = ({ getAddEntityDialog,
     const { data: Entitydata } = await GET(`entity-service/industryMaster`);
     let allEntries = await Promise.all(Entitydata.map(entityAllData));
     setAllData(allEntries);
+    console.log(allEntries);
+
   };
 
   const handleToggle = (index, data) => {

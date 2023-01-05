@@ -40,7 +40,7 @@ const SuperAdminDashboard = () => {
                                                 <h5 className={`${style.headingForReferenceList}`}>INDUSTRIES SUPPORTED WITH ENTITY TYPES</h5>
                                                 <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                     <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
-                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
+                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON {localStorage.getItem("industries")}</span>
                                                 </div>
                                             </div>
                                         </Link>
@@ -49,7 +49,7 @@ const SuperAdminDashboard = () => {
                                                 <h5 className={`${style.headingForReferenceList}`}>DEPARTMENTS / SERVICE AREAS BY ENTITY TYPES</h5>
                                                 <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                     <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
-                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
+                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON {localStorage.getItem("department")}</span>
                                                 </div>
                                             </div>
                                         </Link>
@@ -58,7 +58,7 @@ const SuperAdminDashboard = () => {
                                                 <h5 className={`${style.headingForReferenceList}`}>ABSENCE REASONS BY INDUSTRY TYPE</h5>
                                                 <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                     <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
-                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
+                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON {localStorage.getItem("absenceReason")}</span>
                                                 </div>
                                             </div>
                                         </Link>
@@ -67,7 +67,7 @@ const SuperAdminDashboard = () => {
                                                 <h5 className={`${style.headingForReferenceList}`}>NAME SUFFIX BY INDUSTRY TYPE</h5>
                                                 <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                     <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
-                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
+                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON {localStorage.getItem("nameSuffix")}</span>
                                                 </div>
                                             </div>
                                         </Link>
@@ -76,7 +76,7 @@ const SuperAdminDashboard = () => {
                                                 <h5 className={`${style.headingForReferenceList}`}>CONTRACTED SERVICE PROVIDERS BY INDUSTRY & ENTITY TYPES</h5>
                                                 <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                     <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
-                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
+                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON {localStorage.getItem("contractedServiceProvider")}</span>
                                                 </div>
                                             </div>
                                         </Link>
@@ -85,7 +85,7 @@ const SuperAdminDashboard = () => {
                                                 <h5 className={`${style.headingForReferenceList}`}>FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS</h5>
                                                 <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                     <span className={style.dashboardCardColorOption1}>DEFAULT LIST IS CREATED</span>
-                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
+                                                    <span className={style.dashboardCardColorOption2}>LAST UPDATED ON {localStorage.getItem("functionalTitle")}</span>
                                                 </div>
                                             </div>
                                         </Link>

@@ -22,10 +22,17 @@ const ReferenceListMainPage = () => {
     const [headerName, setHeaderName] = useState([]);
     const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
+    const [lastDate, setLastDate] = useState("")
+    const [rotate, setRotate] = useState(false)
 
     const getAddEntityDialog = (value) => {
         setShowAddEntityDialog(value);
     }
+
+    const getLastDate = (data) => {
+        setLastDate(data)
+    }
+
     const headerArray = [
         {
             name: "INDUSTRIES WITH ENTITY TYPES",
@@ -118,9 +125,7 @@ const ReferenceListMainPage = () => {
                 <div>
                     {
                         headerName?.map((data) => (
-                            <>
-                                <LevelTwoHeader heading={data.name} updatedTime={data.status} getAddEntityDialog={getAddEntityDialog} isEdit={isEdit} setIsEdit={setIsEdit} needHeader={true} />
-                            </>
+                            <LevelTwoHeader heading={data.name} updatedTime={`UPDATED ON ${lastDate}`} getAddEntityDialog={getAddEntityDialog} isEdit={isEdit} setIsEdit={setIsEdit} needHeader={true} rotate={rotate} setRotate={setRotate} />
                         ))
                     }
 
@@ -129,7 +134,7 @@ const ReferenceListMainPage = () => {
                             <div className={style.margin20}>
                                 {headerName.map((data) => {
                                     return (
-                                        <data.tableComponent showAddEntityDialog={showAddEntityDialog} getAddEntityDialog={getAddEntityDialog} isEdit={isEdit} setIsEdit={setIsEdit} />
+                                        <data.tableComponent showAddEntityDialog={showAddEntityDialog} getAddEntityDialog={getAddEntityDialog} isEdit={isEdit} setIsEdit={setIsEdit} sendLastDate={getLastDate} rotate={rotate} setRotate={setRotate} />
                                     )
                                 })}
                             </div>

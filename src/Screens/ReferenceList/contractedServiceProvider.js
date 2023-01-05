@@ -10,7 +10,7 @@ import { GET, DELETE } from '../dataSaver'
 import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
 import DeleteConfirmation from '../../Components/DeleteConfirmation';
 
-const ContractedServiceProvidedByIndustries = ({ getAddEntityDialog, showAddEntityDialog, isEdit, setIsEdit }) => {
+const ContractedServiceProvidedByIndustries = ({ getAddEntityDialog, showAddEntityDialog, isEdit, setIsEdit, sendLastDate, rotate }) => {
     const [sideMenu, setSideMenu] = useState([]);
     const [selectedTitle, setSelectedTitle] = useState(`${sideMenu?.[0]?.id}`);
     const [industryId, setIndustryId] = useState("");
@@ -20,19 +20,50 @@ const ContractedServiceProvidedByIndustries = ({ getAddEntityDialog, showAddEnti
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteEntityId, setDeleteEntityId] = useState("");
 
+    const moment = require('moment-timezone');
+
+    const siteTypeAllData = async (siteTypeId) => {
+        const { data: CSPType } = await GET(
+            `entity-service/contractedServiceProviderMaster?siteTypeId=${siteTypeId.id}`
+        );
+        return await { ...siteTypeId, CSP: CSPType };
+    };
+
+    const entityAllData = async (industry) => {
+        const { data: entities } = await GET(`entity-service/entityTypeMaster?industryId=${industry.id}`)
+        const reconstructedEntities = await Promise.all(
+            entities.map(siteTypeAllData)
+        );
+        return await { ...industry, entities: reconstructedEntities }
+    }
+
     const getIndustryData = async () => {
-        const { data: data } = await GET(`entity-service/industryMaster`);
-        setSideMenu(data);
+        const { data: industryData } = await GET(`entity-service/industryMaster`);
+        setSideMenu([])
+        let allEntries = await Promise.all(industryData.map(entityAllData))
+        setSideMenu(allEntries)
+        let allDates = []
+        allEntries.forEach(e => {
+            e.entities.forEach(d => {
+                let dates = d.CSP.map(row =>
+                    new Date(row.lastModifiedDate)
+                )
+                allDates.push(...dates);
+            })
+        });
+        let sorted = allDates.sort((a, b) => a - b).reverse();
+        let lastModifiedDate = sorted[0].toString().split('+')[0];
+        sendLastDate(moment.tz(lastModifiedDate, "America/New_York").format('MMM D, YYYY hh:mm z'))
+        localStorage.setItem("contractedServiceProvider", moment(lastModifiedDate).format('MMMM YYYY').toUpperCase())
     };
 
     const getEntityData = async () => {
-        const { data: data } = await GET(
+        const { data: entities } = await GET(
             `entity-service/entityTypeMaster?industryId=${industryId}`
         );
-        setSiteTypeData(data);
-
+        setSiteTypeData(entities);
         setSiteTypeTableData([]);
-        data.forEach(async d => {
+        entities.forEach(async d => {
             const val = await GET(`entity-service/contractedServiceProviderMaster?siteTypeId=${d.id}`);
             let inter = { ...d, items: val.data }
             setSiteTypeTableData((p) => [...p, inter]);
@@ -83,12 +114,17 @@ const ContractedServiceProvidedByIndustries = ({ getAddEntityDialog, showAddEnti
         setIndustryId(sideMenu?.[0]?.id);
     }, [sideMenu]);
 
+    useEffect(() => {
+        if (rotate) {
+            getIndustryData()
+        }
+    }, [rotate])
 
     return (
         <Fragment>
             <div className={style.centreCardColumnsGrid}>
                 <div className={style.displayInCol}>
-                    {sideMenu?.map((data, index) => (
+                    {!rotate && sideMenu?.map((data, index) => (
                         <div
                             className={
                                 data?.industry === selectedTitle
@@ -99,7 +135,7 @@ const ContractedServiceProvidedByIndustries = ({ getAddEntityDialog, showAddEnti
                         >
                             <div className={style.spaceBetween}>
                                 <p className={style.industriesCardTextStyle1}>{data.industry}</p>
-                                {/* <p className={style.industriesCardTextStyle1}>7</p> */}
+                                <p className={style.industriesCardTextStyle1}>{data.entities.length}</p>
                             </div>
                         </div>
                     ))}
@@ -112,7 +148,7 @@ const ContractedServiceProvidedByIndustries = ({ getAddEntityDialog, showAddEnti
                         <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
                     </div>
                     {
-                        siteTypeTableData?.map((data) => (
+                        !rotate && siteTypeTableData?.map((data) => (
                             data.items.length !== 0 ? (<>
                                 <div className={style.terminationHeader}>
                                     <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft5}`} />

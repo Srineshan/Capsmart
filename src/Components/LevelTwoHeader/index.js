@@ -13,10 +13,11 @@ import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, su
 import AddNewEntity from '../../images/addEntity.png'
 import AddRefresh from '../../images/refreshEntity.png'
 import { Icon, Intent } from "@blueprintjs/core";
+import ArrowDown from './../../images/arrowDown.png'
 
 import style from './index.module.scss';
 
-const LevelTwoHeader = ({ heading, updatedTime, onCloseLevel2, needDateFilter, getFrom, getTo, getAddEntityDialog, setIsEdit, needHeader, hideClose }) => {
+const LevelTwoHeader = ({ heading, updatedTime, onCloseLevel2, needDateFilter, getFrom, getTo, getAddEntityDialog, setIsEdit, needHeader, hideClose, rotate, setRotate }) => {
     const [timeFrame, setTimeFrame] = useState('This Week');
     const [showCustomRangeSelection, setShowCustomRangeSelection] = useState(true);
     const [from, setFrom] = useState(startOfWeek(new Date()));
@@ -57,6 +58,13 @@ const LevelTwoHeader = ({ heading, updatedTime, onCloseLevel2, needDateFilter, g
             setShowCustomRangeSelection(true)
         }
     };
+
+    const handleRotateHandler = () => {
+        setRotate(true)
+        setTimeout(() => {
+            setRotate(false)
+        }, 1000)
+    }
 
     return (
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
@@ -146,7 +154,11 @@ const LevelTwoHeader = ({ heading, updatedTime, onCloseLevel2, needDateFilter, g
 
                 {needHeader && (
                     <>
-                        <img src={AddRefresh} className={`${style.colorFileStyle} ${style.marginLeft20}`} alt='' />
+                        <img src={'https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png'} alt='refresh' className={`${style.headerFlag} ${style.marginRight15}  `} />
+                        <span className={`${style.headerCountryName}`}>USA</span>
+                        <img src={ArrowDown} className={`${style.colorFileStyle2} ${style.headerArrow} ${style.ArrowUp} ${style.marginLeft20}  ${style.marginTop10}`} alt="" />
+
+                        <img src={AddRefresh} className={rotate ? `${style.colorFileStyle} ${style.marginLeft20} ${style.refreshRotate} ${style.rotateOpen}` : `${style.colorFileStyle} ${style.marginLeft20} ${style.refreshRotate}`} onClick={handleRotateHandler} alt='' />
                         <img src={AddNewEntity} onClick={() => { getAddEntityDialog(true); setIsEdit(false) }} className={`${style.colorFileStyle} ${style.marginLeft20}`} alt='' />
                         <Link to={"/Screens/ReferenceList/superAdminDashboard"}> <Icon icon="cross" size={25} intent={Intent.DANGER} className={`${style.marginLeft20} ${style.marginBottom5}`} /> </Link>
                     </>

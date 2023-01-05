@@ -24,6 +24,8 @@ const BoardCertification = ({
     showAddEntityDialog,
     isEdit,
     setIsEdit,
+    sendLastDate,
+    rotate
 }) => {
     const [allData, setAllData] = useState([]);
     const [isSecondary, setIsSecondary] = useState(false);
@@ -37,6 +39,8 @@ const BoardCertification = ({
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteEntityId, setDeleteEntityId] = useState("");
     const [selectedBoard, setSelectedBoard] = useState({});
+
+    const moment = require('moment-timezone');
 
     const entityAllData = async (industry) => {
         const { data: entities } = await GET(
@@ -59,6 +63,30 @@ const BoardCertification = ({
         const { data: Entitydata } = await GET(`entity-service/industryMaster`);
         let allEntries = await Promise.all(Entitydata.map(entityAllData));
         setAllData(allEntries);
+        console.log(allEntries);
+        let allDates = []
+        allEntries.forEach(e => {
+            e.entities.forEach(d => {
+                d.CSP.forEach(async (s) => {
+                    const { data: boardData } = await GET(
+                        `entity-service/boardCertificateSpecialtiesMaster?industry=${e.id}&contractedServiceProviderType=${s.id}`
+                    );
+                    let dates = boardData.map(row =>
+                        new Date(row.lastModifiedDate)
+                    )
+                    allDates.push(...dates);
+                    let sorted = allDates.sort((a, b) => a - b).reverse();
+                    console.log("allDates", sorted);
+                    let lastModifiedDate = sorted[0].toString().split('+')[0];
+                    console.log("last mod date", lastModifiedDate)
+                    sendLastDate(moment.tz(lastModifiedDate, "America/New_York").format('MMM D, YYYY hh:mm z'))
+                })
+
+
+            })
+        });
+
+        // localStorage.setItem("contractedServiceProvider", moment(lastModifiedDate).format('MMMM YYYY').toUpperCase())
     };
 
     const handleToggle = (index, data) => {
@@ -138,11 +166,17 @@ const BoardCertification = ({
         EntityDefaultSet(allData);
     }, [allData]);
 
+    useEffect(() => {
+        if (rotate) {
+            getAllData()
+        }
+    }, [rotate])
+
     return (
         <Fragment>
             <div className={style.departmentCardColumnsGrid}>
                 <div>
-                    {allData?.map((data, index) => {
+                    {!rotate && allData?.map((data, index) => {
                         return data?.entities.length !== 0 ? (
                             <>
                                 <div
@@ -276,18 +310,20 @@ const BoardCertification = ({
                         <p className={style.tableHeaderIndustriesFontStyle}>CREATED DATE</p>
                         <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
                     </div>
-                    <div className={style.healthCareIndustriesHeader}>
-                        <img
-                            src={IndustriesEntityFolder}
-                            alt="IndustriesEntityFolder"
-                            className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                        />
-                        <p className={style.tableHeaderIndustriesFontStyle}>
-                            {selectedEntity.contractedServiceProviderType}
-                        </p>
-                    </div>
+                    {!rotate &&
+                        <div className={style.healthCareIndustriesHeader}>
+                            <img
+                                src={IndustriesEntityFolder}
+                                alt="IndustriesEntityFolder"
+                                className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                            />
+                            <p className={style.tableHeaderIndustriesFontStyle}>
+                                {selectedEntity.contractedServiceProviderType}
+                            </p>
+                        </div>
+                    }
 
-                    {boardCerticationTable?.map((data, index) => {
+                    {!rotate && boardCerticationTable?.map((data, index) => {
                         if (data?.secondaryBoards.length !== 0) {
                             return (
                                 <>

@@ -1,100 +1,155 @@
-
-.spaceBetween{
-    display: flex;
-    justify-content: space-between;
+.spaceBetween {
+  display: flex;
+  justify-content: space-between;
 }
 
-.displayInRow{
-    display: flex;
-    flex-direction: row;
+.displayInRow {
+  display: flex;
+  flex-direction: row;
 }
 
-.userNameStyle{
-    text-align: left;
-    font: normal normal 600 15px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
+.userNameStyle {
+  text-align: left;
+  font: normal normal 600 15px/17px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
 }
 
-.alignCenter{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+.alignCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
-.marginTop10{
-    margin-top: 10px;
+.marginTop5 {
+  margin-top: 5px;
 }
 
-.marginTop20{
-    margin-top: 22px;
+.marginTop10 {
+  margin-top: 10px;
 }
 
-.loginStatus{
-    text-align: left;
-    font: normal normal normal 11px/15px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    max-width: 200px;
-    opacity: 1;
-    margin-top: 5px;
+.marginTop20 {
+  margin-top: 22px;
 }
 
-.marginLeft10{
-    margin-left: 10px;
+.loginStatus {
+  text-align: left;
+  font: normal normal normal 11px/15px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  max-width: 210px;
+  opacity: 1;
+  margin-top: 5px;
 }
 
-.marginLeft20{
-    margin-left: 20px !important;
+.marginLeft10 {
+  margin-left: 10px;
 }
 
-.crossStyle{
-    height: 18px;
-    width: 18px;
+.marginLeft20 {
+  margin-left: 20px !important;
 }
 
-.cursorPointer{
-    cursor: pointer;
+.crossStyle {
+  height: 18px;
+  width: 18px;
 }
 
-.reduceMarginTop{
-    margin-top: -20px !important;
+.cursorPointer {
+  cursor: pointer;
 }
 
-.customTimeFrameCard{
-    position: absolute;
-    top: 150px;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 11px #52575D4D;
-    border-radius: 5px;
-    width: 180px;
-    padding: 10px;
+.reduceMarginTop {
+  margin-top: -20px !important;
 }
 
-.customTimeFrameHeading{
-    text-align: left;
-    font: normal normal 600 13px/18px Montserrat;
-    letter-spacing: 0px;
-    color: #7165E3;
-    text-transform: uppercase;
+.customTimeFrameCard {
+  position: absolute;
+  top: 150px;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 11px #52575d4d;
+  border-radius: 5px;
+  width: 180px;
+  padding: 10px;
 }
 
-.dividerStyle{
-    height: 1px;
-    background-color: #e6e5e5;
-    width: 100%;
+.customTimeFrameHeading {
+  text-align: left;
+  font: normal normal 600 13px/18px Montserrat;
+  letter-spacing: 0px;
+  color: #7165e3;
+  text-transform: uppercase;
 }
 
-.customRangeHelpStyle{
-    text-align: left;
-    font: normal normal medium 14px/16px Montserrat;
-    letter-spacing: 0px;
-    color: #C5C5C6;
+.dividerStyle {
+  height: 1px;
+  background-color: #e6e5e5;
+  width: 100%;
 }
 
-.dateRangeTextStyle{
-    font: normal normal normal 14px/16px Montserrat !important;
-    letter-spacing: 0px;
-    color: #52575D;
+.customRangeHelpStyle {
+  text-align: left;
+  font: normal normal medium 14px/16px Montserrat;
+  letter-spacing: 0px;
+  color: #c5c5c6;
+}
+
+.dateRangeTextStyle {
+  font: normal normal normal 14px/16px Montserrat !important;
+  letter-spacing: 0px;
+  color: #52575d;
+}
+
+.headerFlag {
+  width: 50px;
+  height: 30px;
+  background: transparent 0% 0% no-repeat padding-box;
+  border: 1px solid #7165e3;
+  opacity: 1;
+}
+
+.headerCountryName {
+  width: 45px;
+  height: 20px;
+  text-align: left;
+  font: normal normal 600 20px/41px Proxima Nova;
+  letter-spacing: 2.3px;
+  color: #52575d;
+  text-transform: uppercase;
+  opacity: 1;
+  margin-top: -2px;
+}
+
+.headerArrow {
+  width: 25px;
+  height: 15px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.marginRight15 {
+  margin-right: 15px;
+}
+
+.marginBottom5 {
+  margin-bottom: 5px;
+}
+
+.refreshRotate {
+  cursor: pointer;
+}
+
+.rotateOpen {
+  animation: spin 1s 1;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

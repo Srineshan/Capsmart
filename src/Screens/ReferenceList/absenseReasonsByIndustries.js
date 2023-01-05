@@ -13,6 +13,8 @@ const AbsenseReasonsByIndustries = ({
     showAddEntityDialog,
     isEdit,
     setIsEdit,
+    sendLastDate,
+    rotate
 }) => {
     const [sideMenu, setSideMenu] = useState([]);
     const [selectedTitle, setSelectedTitle] = useState(`${sideMenu?.[0]?.id}`);
@@ -22,16 +24,37 @@ const AbsenseReasonsByIndustries = ({
     const [selectedAbsence, setSelectedAbsence] = useState({});
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
+    const moment = require('moment-timezone');
+
+    const entityAllData = async (industry) => {
+        const { data: entities } = await GET(`entity-service/entityTypeMaster?industryId=${industry.id}`)
+        const { data: absenceReason } = await GET(`entity-service/absenceReasonMaster?industryId=${industry.id}`)
+        return await { ...industry, entities, absenceReason }
+    }
+
     const getIndustryData = async () => {
-        const { data: data } = await GET(`entity-service/industryMaster`);
-        setSideMenu(data);
+        const { data: industryData } = await GET(`entity-service/industryMaster`);
+        setSideMenu([])
+        let allEntries = await Promise.all(industryData.map(entityAllData))
+        setSideMenu(allEntries)
+        let allDates = []
+        allEntries.forEach(e => {
+            let dates = e.absenceReason.map(row =>
+                new Date(row.lastModifiedDate)
+            )
+            allDates.push(...dates);
+        });
+        let sorted = allDates.sort((a, b) => a - b).reverse();
+        let lastModifiedDate = sorted[0].toString().split('+')[0];
+        sendLastDate(moment.tz(lastModifiedDate, "America/New_York").format('MMM D, YYYY hh:mm z'))
+        localStorage.setItem("absenceReason", moment(lastModifiedDate).format('MMMM YYYY').toUpperCase())
     };
 
     const getEntityData = async () => {
-        const { data: data } = await GET(
+        const { data: entities } = await GET(
             `entity-service/absenceReasonMaster?industryId=${industryId}`
         );
-        setTableEntityData(data);
+        setTableEntityData(entities);
     };
 
     const SelectedHandler = (data) => {
@@ -78,11 +101,17 @@ const AbsenseReasonsByIndustries = ({
         setIndustryId(sideMenu?.[0]?.id);
     }, [sideMenu]);
 
+    useEffect(() => {
+        if (rotate) {
+            getIndustryData()
+        }
+    }, [rotate])
+
     return (
         <Fragment>
             <div className={style.departmentCardColumnsGrid}>
                 <div className={style.displayInCol}>
-                    {sideMenu?.map((data) => {
+                    {!rotate && sideMenu?.map((data) => {
                         return (
                             <div
                                 className={
@@ -98,7 +127,7 @@ const AbsenseReasonsByIndustries = ({
                                     <p className={style.industriesCardTextStyle1}>
                                         {data.industry}
                                     </p>
-                                    {/* <p className={style.industriesCardTextStyle1}>7</p> */}
+                                    <p className={style.industriesCardTextStyle1}>{data.entities.length}</p>
                                 </div>
                             </div>
                         );
@@ -111,7 +140,7 @@ const AbsenseReasonsByIndustries = ({
                             ABSENCE REASONS FOR HEALTHCARE
                         </p>
                     </div>
-                    {tableEntityData?.filter((data) => data.absenceType === "PLANNED")
+                    {!rotate && tableEntityData?.filter((data) => data.absenceType === "PLANNED")
                         .length !== 0 ? (
                         <div className={style.terminationHeader}>
                             <img
@@ -125,7 +154,7 @@ const AbsenseReasonsByIndustries = ({
                         <></>
                     )}
 
-                    {tableEntityData
+                    {!rotate && tableEntityData
                         ?.filter((data) => data.absenceType === "PLANNED")
                         .map((data, innerIndex) => {
                             return (
@@ -167,7 +196,7 @@ const AbsenseReasonsByIndustries = ({
                             );
                         })}
 
-                    {tableEntityData?.filter((data) => data.absenceType === "UNPLANNED")
+                    {!rotate && tableEntityData?.filter((data) => data.absenceType === "UNPLANNED")
                         .length !== 0 ? (
                         <div className={style.terminationHeader}>
                             <img
@@ -181,7 +210,7 @@ const AbsenseReasonsByIndustries = ({
                         <></>
                     )}
 
-                    {tableEntityData
+                    {!rotate && tableEntityData
                         ?.filter((data) => data.absenceType === "UNPLANNED")
                         .map((data, innerIndex) => {
                             return (

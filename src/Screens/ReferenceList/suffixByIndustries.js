@@ -11,7 +11,7 @@ import { GET, DELETE } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
 
-const SuffixByIndustries = ({ getAddEntityDialog, showAddEntityDialog }) => {
+const SuffixByIndustries = ({ getAddEntityDialog, showAddEntityDialog, sendLastDate, rotate }) => {
     const [showAddHcEntityDialog, setShowAddHcEntityDialog] = useState(false);
     const [sideMenu, setSideMenu] = useState([]);
     const [seletedEntity, setSelectedEntity] = useState({});
@@ -20,16 +20,39 @@ const SuffixByIndustries = ({ getAddEntityDialog, showAddEntityDialog }) => {
     const [tableEntityData, setTableEntityData] = useState([]);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteEntityId, setDeleteEntityId] = useState("");
-
     const [isEdit, setIsEdit] = useState(false);
+
+    const moment = require('moment-timezone');
 
     const getAddHcEntityDialog = (value) => {
         setShowAddHcEntityDialog(value);
+        if (!value) {
+            getIndustryData();
+        }
     };
 
+    const entityAllData = async (industry) => {
+        const { data: entities } = await GET(`entity-service/entityTypeMaster?industryId=${industry.id}`)
+        const { data: nameSuffix } = await GET(`entity-service/nameSuffixMaster?industryId=${industry.id}`)
+        return await { ...industry, entities, nameSuffix }
+    }
+
     const getIndustryData = async () => {
-        const { data: data } = await GET(`entity-service/industryMaster`);
-        setSideMenu(data);
+        const { data: industryData } = await GET(`entity-service/industryMaster`);
+        setSideMenu([])
+        let allEntries = await Promise.all(industryData.map(entityAllData))
+        setSideMenu(allEntries)
+        let allDates = []
+        allEntries.forEach(e => {
+            let dates = e.nameSuffix.map(row =>
+                new Date(row.lastModifiedDate)
+            )
+            allDates.push(...dates);
+        });
+        let sorted = allDates.sort((a, b) => a - b).reverse();
+        let lastModifiedDate = sorted[0].toString().split('+')[0];
+        sendLastDate(moment.tz(lastModifiedDate, "America/New_York").format('MMM D, YYYY hh:mm z'))
+        localStorage.setItem("nameSuffix", moment(lastModifiedDate).format('MMMM YYYY').toUpperCase())
     };
 
     const getEntityData = async () => {
@@ -83,11 +106,16 @@ const SuffixByIndustries = ({ getAddEntityDialog, showAddEntityDialog }) => {
         setIndustryId(sideMenu?.[0]?.id);
     }, [sideMenu]);
 
+    useEffect(() => {
+        if (rotate) {
+            getIndustryData()
+        }
+    }, [rotate])
     return (
         <Fragment>
             <div className={style.departmentCardColumnsGrid}>
                 <div className={style.displayInCol}>
-                    {sideMenu?.map((data, index) => (
+                    {!rotate && sideMenu?.map((data, index) => (
                         <div
                             className={
                                 data?.industry === selectedTitle
@@ -100,7 +128,7 @@ const SuffixByIndustries = ({ getAddEntityDialog, showAddEntityDialog }) => {
                                 <p className={style.industriesCardTextStyle1}>
                                     {data.industry}
                                 </p>
-                                {/* <p className={style.industriesCardTextStyle1}>7</p> */}
+                                <p className={style.industriesCardTextStyle1}>{data.entities.length}</p>
                             </div>
                         </div>
                     ))}
@@ -113,31 +141,33 @@ const SuffixByIndustries = ({ getAddEntityDialog, showAddEntityDialog }) => {
                             SUFFIX FOR HEALTHCARE
                         </p>
                     </div>
-                    <div className={style.healthCareIndustriesHeader}>
-                        <img
-                            src={IndustriesEntityFolder}
-                            alt="IndustriesEntityFolder"
-                            className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                        />
-                        <p className={style.tableHeaderIndustriesFontStyle}>
-                            {selectedTitle}
-                        </p>
-                        <img
-                            src={EditHcFolder}
-                            className={style.colorFileStyle}
-                            onClick={() => {
-                                setIsEdit(false);
-                                getAddHcEntityDialog(true);
-                            }}
-                            alt=""
-                        />
-                        <img
-                            src={DeleteHcFolder}
-                            className={style.colorFileStyle}
-                            alt=""
-                        />
-                    </div>
-                    {tableEntityData?.map((data, innerIndex) => {
+                    {!rotate &&
+                        <div className={style.healthCareIndustriesHeader}>
+                            <img
+                                src={IndustriesEntityFolder}
+                                alt="IndustriesEntityFolder"
+                                className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                            />
+                            <p className={style.tableHeaderIndustriesFontStyle}>
+                                {selectedTitle}
+                            </p>
+                            <img
+                                src={EditHcFolder}
+                                className={style.colorFileStyle}
+                                onClick={() => {
+                                    setIsEdit(false);
+                                    getAddHcEntityDialog(true);
+                                }}
+                                alt=""
+                            />
+                            <img
+                                src={DeleteHcFolder}
+                                className={style.colorFileStyle}
+                                alt=""
+                            />
+                        </div>
+                    }
+                    {!rotate && tableEntityData?.map((data, innerIndex) => {
                         return (
                             <div
                                 className={

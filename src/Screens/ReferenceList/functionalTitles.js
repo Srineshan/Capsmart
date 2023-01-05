@@ -23,6 +23,8 @@ const FunctionalTitles = ({
   showAddEntityDialog,
   isEdit,
   setIsEdit,
+  sendLastDate,
+  rotate
 }) => {
   const [allData, setAllData] = useState([]);
   const [clicked, setClicked] = useState(0);
@@ -35,6 +37,8 @@ const FunctionalTitles = ({
   const [entityData, setEntityData] = useState({})
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
+
+  const moment = require('moment-timezone');
 
   const entityAllData = async (industry) => {
     const { data: entities } = await GET(
@@ -50,13 +54,33 @@ const FunctionalTitles = ({
     const { data: CSPType } = await GET(
       `entity-service/contractedServiceProviderMaster?siteTypeId=${siteTypeId.id}`
     );
-    return await { ...siteTypeId, CSP: CSPType };
+    const functionalData = await Promise.all(CSPType.map(getFunctionalData))
+    return await { ...siteTypeId, CSP: functionalData, };
   };
 
+  const getFunctionalData = async (contractPID) => {
+    const { data: functionalData } = await GET(
+      `entity-service/functionalTitlesForCSPTypeMaster?contractedServiceProviderTypeId=${contractPID.id}`);
+    return await { ...contractPID, functionalData: functionalData, };
+  }
+
   const getAllData = async () => {
-    const { data: data } = await GET(`entity-service/industryMaster`);
-    let allEntries = await Promise.all(data.map(entityAllData));
+    const { data: industryData } = await GET(`entity-service/industryMaster`);
+    let allEntries = await Promise.all(industryData.map(entityAllData));
     setAllData(allEntries);
+    let allDates = []
+    allEntries.forEach(i => {
+      i.entities.forEach(e => {
+        e.CSP.forEach(s => {
+          let dates = s.functionalData.map(row => new Date(row.lastModifiedDate))
+          allDates.push(...dates)
+        })
+      })
+    })
+    let sorted = allDates.sort((a, b) => a - b).reverse();
+    let lastModifiedDate = sorted[0].toString().split('+')[0];
+    sendLastDate(moment.tz(lastModifiedDate, "America/New_York").format('MMM D, YYYY hh:mm z'))
+    localStorage.setItem("functionalTitle", moment(lastModifiedDate).format('MMMM YYYY').toUpperCase())
   };
 
   const handleToggle = (index, data) => {
@@ -136,11 +160,17 @@ const FunctionalTitles = ({
     getFuntionalTitleData(selectedEntity?.id);
   }, [selectedEntity]);
 
+  useEffect(() => {
+    if (rotate) {
+      getAllData()
+    }
+  }, [rotate])
+
   return (
     <Fragment>
       <div className={style.departmentCardColumnsGrid}>
         <div>
-          {allData?.map((data, index) => {
+          {!rotate && allData?.map((data, index) => {
             return data?.entities.length !== 0 ? (
               <>
                 <div
@@ -220,9 +250,9 @@ const FunctionalTitles = ({
                                 >
                                   {siteType.contractedServiceProviderType}
                                 </p>
-                                {/* <p className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}>
-                                            5
-                                          </p> */}
+                                <p className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}>
+                                  {siteType?.functionalData.length}
+                                </p>
                               </div>
                             );
                           })}
@@ -251,25 +281,27 @@ const FunctionalTitles = ({
             <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
             <p></p>
           </div>
-          <div className={style.healthCareIndustriesHeader}>
-            <img
-              src={IndustriesEntityFolder}
-              alt="IndustriesEntityFolder"
-              className={`${style.colorFileStyle} ${style.marginLeft5}`}
-            />
-            <p className={style.tableHeaderIndustriesFontStyle}>
-              {selectedEntity.contractedServiceProviderType}
-            </p>
-            <img
-              src={EditHcFolder}
-              onClick={() => { getAddEntityDialog(true); setIsEdit(false) }}
-              className={style.colorFileStyle}
-              alt=""
-            />
-            <img src={DeleteHcFolder} className={style.colorFileStyle} alt="" />
-          </div>
+          {!rotate &&
+            <div className={style.healthCareIndustriesHeader}>
+              <img
+                src={IndustriesEntityFolder}
+                alt="IndustriesEntityFolder"
+                className={`${style.colorFileStyle} ${style.marginLeft5}`}
+              />
+              <p className={style.tableHeaderIndustriesFontStyle}>
+                {selectedEntity.contractedServiceProviderType}
+              </p>
+              <img
+                src={EditHcFolder}
+                onClick={() => { getAddEntityDialog(true); setIsEdit(false) }}
+                className={style.colorFileStyle}
+                alt=""
+              />
+              <img src={DeleteHcFolder} className={style.colorFileStyle} alt="" />
+            </div>
+          }
 
-          {getEntityDataList?.map((data, index) => {
+          {!rotate && getEntityDataList?.map((data, index) => {
             return (
               <>
                 <div className={index % 2 === 0 ? `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}` : `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`} key={index}>
