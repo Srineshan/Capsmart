@@ -33,9 +33,9 @@ const ReportHeader = () => {
                     </div>
                 </div>
                 <div>
-                    {/* {logo.logo && (
+                    {logo.logo && (
                         <img src={logo.logo} alt="" className={style.headerLogo} />
-                    )} */}
+                    )}
                     <div className={style.entityNameBolderStyle}>{logo.title}</div>
                 </div>
                 <div>
