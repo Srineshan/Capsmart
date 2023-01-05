@@ -269,7 +269,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
 
     return (
         <div>
-            <div className={`${style.leftCard} ${style.marginTop20}`}>
+            <div className={`${style.leftCard} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
                 <div className={style.reportTypeTextStyle}>Reporting Parameter Selection For This Report</div>
                 {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
                     <>
