@@ -53,14 +53,19 @@ const Contracts = () => {
         setPage(1);
     }
 
+    console.log('contractId', contractId);
+
     const getContractIdFromActive = (value) => {
         setContractId(value);
     }
 
-    const getAddContract = (value) => {
+    const getAddContract = (value, isNext=false) => {
         setAddContract(value);
-        sessionStorage.setItem('isEditable', value);
-
+        console.log('next', isNext, typeof isNext);
+        if(!isNext){
+          console.log('inside', isNext);
+          sessionStorage.setItem('isEditable', value);
+        }
     }
 
     const getExtensionDialog = (value) => {
@@ -124,7 +129,7 @@ const Contracts = () => {
         addContract ? (
             <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType} getMethod={getMethod}/>
         ) : newContractFromClone ? (
-            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType} contractIdFromActive={contractId} getContractIdFromActive={getContractIdFromActive} method={method} contracts={contracts} isEditable={isEditable}/>
+            <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType} contractIdFromActive={contractId} getContractIdFromActive={getContractIdFromActive} method={method} contracts={contracts} isEditable={isEditable} selectedContract={selectedContract}/>
         ) : (
             <Fragment>
                 <Navbar />

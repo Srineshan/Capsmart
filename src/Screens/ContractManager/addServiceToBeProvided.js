@@ -332,11 +332,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           },
           "noTargetApplicable": dataValues?.targetNoTargetApplicable
         },
-        "additionalSchedule": {
+        ...(serviceType === 'Supplemental Services' && {"additionalSchedule": {
           "value": parseInt(dataValues?.additionalScheduleValue),
           "frequency": dataValues?.additionalScheduleFrequency,
           "scheduleRequired": dataValues?.additionalScheduleRequired
-        },
+        }}),
         "rateType": dataValues?.rateType,
         "activityResponse": {
           "dataMap": {

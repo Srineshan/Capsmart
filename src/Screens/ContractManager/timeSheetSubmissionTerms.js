@@ -324,8 +324,8 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
                         >
                           <MenuItem value={'ENDOFMONTH'}>End of the month</MenuItem>
                           <MenuItem value={'ENDOFEVERYWEEK'}>End of Every Week</MenuItem>
-                          <MenuItem value={'EVERY2WEEKS'}>End of Every Week</MenuItem>
-                          <MenuItem value={'EVERY4WEEKS'}>End of Every Week</MenuItem>
+                          <MenuItem value={'EVERY2WEEKS'}>Every 2 Weeks</MenuItem>
+                          <MenuItem value={'EVERY4WEEKS'}>Every 4 Weeks</MenuItem>
                           <MenuItem value={'ONDAYOFSERVICE'}>On Day of Service</MenuItem>
                         </Select>
                     </FormControl>
