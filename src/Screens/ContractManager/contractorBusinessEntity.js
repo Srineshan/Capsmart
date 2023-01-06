@@ -260,8 +260,8 @@ const setBusinessEntityData = () => {
     setBusinessEntityUser({ ...businessEntityUser, contactNumber: { number: formattedPhoneNumber, missing: businessEntityUser?.contactNumber?.missing } });
   };
 
-  const getContractorData = () => {
-    if (sameAsContractor && selectContractInfo === 'INDIVIDUAL') {
+  const getContractorData = (value) => {
+    if (value && selectContractInfo === 'INDIVIDUAL') {
       setBusinessEntityUser({
         name: contractUser?.name,
         email: contractUser?.email,
@@ -321,9 +321,9 @@ const setBusinessEntityData = () => {
     setBusinessEntityUser({ ...businessEntityUser, contactNumber: { number: '', missing: value } });
   }
 
-  const handleSameContact = () => {
-    setSameAsContractor(!sameAsContractor);
-    getContractorData();
+  const handleSameContact = (value) => {
+    setSameAsContractor(value);
+    getContractorData(value);
   }
 
   if (isLoading) {
@@ -345,7 +345,7 @@ const setBusinessEntityData = () => {
         Business Contact Change Alert
         </p>
         <div className={`${style.positionCenter} ${style.marginTop20}`}>
-          <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => {setShowAlert(false); handleSameContact();}}>OK</button>
+          <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => {setShowAlert(false); handleSameContact(!sameAsContractor);}}>OK</button>
         </div>
         <br />
       </div>

@@ -25,7 +25,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [userLength, setUserLength] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [servicesValid, setServicesValid] = useState([]);
-  const tableHeaderValues = ['', 'ACTIVITIES TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
+  let tableHeaderValues = ['', 'ACTIVITIES TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
 
   useEffect(() => {
     getContractedServices();

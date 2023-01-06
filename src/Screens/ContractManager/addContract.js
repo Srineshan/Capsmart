@@ -19,7 +19,7 @@ const AddContract = ({getAddContract, getNewContract, getContractType, getSelect
       else{
         getMethod('POST')
         getNewContract(true);
-        getAddContract(false);
+        getAddContract(false, true);
         getContractType(contractType);
         getSelectedContractType(selectedContract);
       }

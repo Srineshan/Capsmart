@@ -224,6 +224,12 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
         setFileDeletionIndex();
     }
 
+    const onClose = () => {
+      getNewContract(false);
+      getContractIdFromActive('');
+      sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true);
+    }
+
     return (
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
             <div className={style.spaceBetween}>
@@ -234,7 +240,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         value={selectContractInfo === 'INDIVIDUAL' ? 'INDIVIDUAL CONTRACTOR' : 'MULTIPLE CONTRACTORS'}
                         readOnly
                         className={`${style.contractWidth} ${style.marginLeft20} ${style.reduceTop10} ${style.marginBottom}`} />
-                    <Icon icon="cross" size={25} intent={Intent.DANGER} className={style.newContractCrossStyle} onClick={() => { getNewContract(false); getContractIdFromActive(''); }} />
+                    <Icon icon="cross" size={25} intent={Intent.DANGER} className={style.newContractCrossStyle} onClick={() => onClose()} />
                 </div>
             </div>
             <div className={style.welcomeBorder}></div>
