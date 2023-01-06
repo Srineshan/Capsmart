@@ -15,7 +15,7 @@ import {POST, GET, PUT, TenantID} from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
-const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert}) => {
+const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert, isEditable, getTabDataStatus}) => {
     const [timeSheetCount, setTimeSheetCount] = useState(0);
     const [showSelectBox, setShowSelectBox] = useState(false);
     const [selectBoxIndex, setSelectBoxIndex] = useState(-1);
@@ -221,14 +221,10 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
             }
     }
 
-    console.log('data', paymentSource);
-
     const onSelectSite = (value) => {
       setSelectedSites(value);
 
     }
-
-    // contractedServices?.filter(service=>service?.activityType?.activityType === data)?.map(service=>service)?.length ==== contractedActivityTags?.filter(tag=>tag?.type === data)?.map(tag=>tag)?.length
 
     const getTimesheetFields = () => {
         let temp = [];
@@ -404,6 +400,7 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
       if(buttonType !== 'Continue'){
         getShowAlert(true);
       }
+      getTabDataStatus();
     }
 
 
@@ -433,10 +430,46 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
                 <div>
                     {timesheetFields}
                 </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Contracted Activity to include for timesheet*</div>
-                    <InputGroup placeholder="All Activities" className={style.fullWidth} readOnly />
+                {timeSheetCount <= 1 &&
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Contracted Activity to include for timesheet*</div>
+                      <InputGroup placeholder="All Activities" className={style.fullWidth} readOnly />
+                  </div>
+                }
+
+
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Planned Absence Notification Days limit*</div>
+                    <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                        <EditableText value={plannedAbsence}  placeholder="0" type='number' onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
+                        <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                    </div>
                 </div>
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed *</div>
+                    <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                        <EditableText value={maxUnplannedAbsence}  placeholder="0" type='number' onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
+                        <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                    </div>
+                </div>
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Invoice Processing Day Range Goal*</div>
+                    <div className={style.displayInRow}>
+                        <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+                            <EditableText value={invoiceProcessingDay}  placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
+                            <div className={style.textElementWithoutBackgroundDays}>Days</div>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder}  ${style.marginLeft20} `}>
+                            <div className={style.textElementWithNurse}>Threshold</div>
+                            <EditableText value={invoiceProcessingDayThreshold}  placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayThreshold(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
+                        </div>
+                        <div className={`${style.displayInRow} ${style.editableTextOuterBorder}`}>
+                            <div className={style.textElementWithNurse}>Goal</div>
+                            <EditableText value={invoiceProcessingDayGoal}  placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDayGoal(e.slice(0, limit))} className={style.editableTextThresholdStyle} />
+                        </div>
+                    </div>
+                </div>
+
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on activity service date *</div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
@@ -452,13 +485,15 @@ const TimeSheetSubmissionTerms = ({getViewPage7, getCurrentPage, contractId, isM
                     </div>
                 </div>
             </div>
-            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contracted Services Specification')}}>BACK</button>
-                <div>
-                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
-                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleContinue('Continue'); getViewPage7(true); getCurrentPage('Payment & Compensation') }}>CONTINUE</button>
-                </div>
-            </div>
+            {isEditable &&
+              <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                  <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Contracted Services Specification')}}>BACK</button>
+                  <div>
+                      <button className={style.newContractOutlinedButton} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
+                      <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleContinue('Continue'); getViewPage7(true); getCurrentPage('Payment & Compensation') }}>CONTINUE</button>
+                  </div>
+              </div>
+            }
         </div>
     )
 }

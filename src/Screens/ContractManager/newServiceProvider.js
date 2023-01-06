@@ -139,17 +139,17 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
       );
     });
 
-    const getRolesData = async() => {
-      const {data: roles} = await GET(`user-management-service/roles?roleType=APP`);
-      if(roles){
-        setRoles(roles);
-      }
-      let temp = selectedRoles;
-      if(!selectedRoles?.map(data=>data?.roleName)?.includes('Activity Logger')){
-        temp.push(roles?.filter(role=>role?.roleName === 'Activity Logger')?.map(data=>data)[0]);
-        setSelectedRoles(temp);
-      }
+  const getRolesData = async () => {
+    const { data: roles } = await GET(`user-management-service/roles?roleType=APP`);
+    if (roles) {
+      setRoles(roles);
     }
+    let temp = selectedRoles;
+    if (!selectedRoles?.map(data => data?.roleName)?.includes('Activity Logger')) {
+      temp.push(roles?.filter(role => role?.roleName === 'Activity Logger')?.map(data => data)[0]);
+      setSelectedRoles(temp);
+    }
+  }
 
   const getContractDetail = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
@@ -421,7 +421,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
     return siteData;
   }
 
-console.log(userDetails);
+  console.log(userDetails);
 
   return (
     <Dialog isOpen={getNewServiceProviderDialog} onClose={() => getNewServiceProviderDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
@@ -472,7 +472,7 @@ console.log(userDetails);
               <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={(e)=>setAllowPersonalMail(!allowPersonalMail)}/>
+                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={(e) => setAllowPersonalMail(!allowPersonalMail)} />
                   }
                   className={`${style.switchFontStyle}`}
                   label={allowPersonalMail ? 'YES' : 'NO'}
@@ -481,7 +481,7 @@ console.log(userDetails);
               {
                 allowPersonalMail &&
                 <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
-                  <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={userDetails?.email} onChange={(e) => handleUserData('email', e.target.value)}/>
+                  <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={userDetails?.email} onChange={(e) => handleUserData('email', e.target.value)} />
                 </div>
               }
 
@@ -502,12 +502,12 @@ console.log(userDetails);
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                 <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
                 <InputGroup placeholder="Numeric" maxLength={15} disabled={phoneNA} value={userDetails?.phone}
-                  onChange={(e) => {handleUserData('phone', FormatPhoneNumber(e.target.value));}} className={`${style.fullWidth}`} />
+                  onChange={(e) => { handleUserData('phone', FormatPhoneNumber(e.target.value)); }} className={`${style.fullWidth}`} />
               </div>
               {
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={phoneNA} onChange={(e)=>{setPhoneNA(e.target.checked); if(e.target.checked){handleUserData('phone', '');}}} checked={userDetails?.phoneNA}/>} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
-              </FormGroup>
+                <FormGroup>
+                  <FormControlLabel control={<Checkbox value="NA" checked={phoneNA} onChange={(e) => { setPhoneNA(e.target.checked); if (e.target.checked) { handleUserData('phone', ''); } }} checked={userDetails?.phoneNA} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                </FormGroup>
               }
             </div>
           </div>

@@ -37,7 +37,7 @@ const switchTheme = createTheme({
   },
 });
 
-const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex }) => {
+const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex, isEditable, getTabDataStatus }) => {
   const serviceTypeList = ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days', 'Supplemental Services', 'Add-On Services', 'Administrative / Miscellaneous Services'];
   const siteTypeId = sessionStorage.getItem('entityTypeId');
   const [serviceType, setServiceType] = useState('Clinic Blocks');
@@ -79,7 +79,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         temp.push({ activity: data })
       });
       setSelectedActivity(temp);
-      setShowLocation(selectedService?.locations?.length !== 0 ? true : false);
+      setShowLocation(selectedService?.locationSpecified);
       setSelectedLocation(selectedService?.locations?.map(data => data));
       removeSelectedLocationFromList();
     }
@@ -224,17 +224,33 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setSiteList(sites);
     }
   }
-
-
+  console.log('metadata', metadata?.selectedActivities);
 
   const handleSave = async (buttonType) => {
     if (serviceType === '') {
       ErrorToaster('Activity Type Selection is Mandatory');
       return;
     }
+    if(showLocation && selectedLocation?.length === 0){
+      ErrorToaster('Atleast one location has to be selected if yes');
+      return;
+    }
+    if(selectContractInfo !== "INDIVIDUAL" && isDesignatedSpecificContractor && selectedUsers?.length === 0){
+      ErrorToaster('Atleast one User has to be selected if Specific Contractor is Yes');
+      return;
+    }
+    if(metadata?.additionalScheduleRequired && (parseInt(metadata?.additionalScheduleValue) === 0 || metadata?.additionalScheduleFrequency === null)){
+      ErrorToaster('Additional Schedule value and frequency required');
+      return;
+    }
+    if(metadata?.billableService && parseInt(metadata?.sessionAmount) === 0)
+    {
+      ErrorToaster('Payment Amount field is mandatory if the service is Billable');
+      return;
+    }
     let performingActivity = '';
     let activities = [];
-    if (serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services') {
+    if (serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services' && serviceType !== 'Administrative / Miscellaneous Services') {
       performingActivity = selectedActivity?.map(data => data?.activity?.activity)?.join('-')
       selectedActivity?.map(data => {
         activities?.push({ "activity": data?.activity?.activity })
@@ -386,6 +402,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       getAddServiceDialog(false);
       getEditServiceDialog(false);
     }
+    getTabDataStatus();
     reset();
   }
 
@@ -477,16 +494,21 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     if (!isShowPDF) {
       getAddServiceDialog(false);
       getEditServiceDialog(false);
-      console.log('false')
     } else {
       setIsShowPDF(!isShowPDF);
-      console.log('true')
+    }
+  }
+
+  const onShowLocationChange = (value) => {
+    setShowLocation(value);
+    if(!value){
+      setSelectedLocation([]);
     }
   }
 
   return (
     <div>
-      <Dialog isOpen={getAddServiceDialog} onClose={() => { getAddServiceDialog(false); getEditServiceDialog(false); }} className={rightHelpArea ? `${style.addServiceDialog} ${style.addManagerDialogBackground}` : `${style.manageServiceDialog} ${style.addManagerDialogBackground}`}>
+      <Dialog isOpen={getAddServiceDialog} onClose={() => { getAddServiceDialog(false); getEditServiceDialog(false); }} className={`${style.manageServiceDialog} ${style.addManagerDialogBackground} ${rightHelpArea && style.moveDialogPosition}`}>
         <div className={`${Classes.DIALOG_BODY} `}>
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
@@ -505,7 +527,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           </div>
           <div className={style.extensionBorder}></div>
           {!isShowPDF ? (
-            <div className={rightHelpArea ? style.addServiceGrid : ''}>
+            <div className={style.displayInRow}>
               <div className={style.proofBorder}>
                 <div className={`${style.addManagerGrid} `}>
                   <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
@@ -601,7 +623,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             }
                             color='primary'
                             checked={showLocation}
-                            onChange={() => setShowLocation(!showLocation)}
+                            onChange={() => onShowLocationChange(!showLocation)}
                             className={`${style.switchFontStyle} ${style.flexLeft} `}
                             label={showLocation ? 'YES' : 'NO'}
                           />
@@ -627,7 +649,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 {serviceType === 'Clinic Blocks'
                   ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
                   : serviceType === 'Surgery Session'
-                    ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment}/>
+                    ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
                     : serviceType === 'On Call Coverage Duty Days'
                       ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
                       : serviceType === 'Supplemental Services'
@@ -637,9 +659,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                           : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
               </div>
               {helpTool?.calculator ? (
-                <Calculator />
+                <div className={style.calculatorDisplayStyle}>
+                  <Calculator />
+                </div>
               ) : helpTool?.textArea ? (
-                <Calculator />
+                <div className={style.calculatorDisplayStyle}>
+                  <Calculator />
+                </div>
               ) : ''}
             </div>
           ) : (
@@ -649,10 +675,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           )}
         </div>
         <div>
-          <div className={`${style.floatRight}`}>
-            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('ADD MORE'); reset() }}>ADD MORE</button>
-            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('SAVE AND EXIT'); reset() }}>SAVE & EXIT</button>
-          </div>
+          {isEditable &&
+            <div className={`${style.floatRight}`}>
+              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('ADD MORE'); reset() }}>ADD MORE</button>
+              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('SAVE AND EXIT'); reset() }}>SAVE & EXIT</button>
+            </div>
+          }
+
         </div>
       </Dialog>
 

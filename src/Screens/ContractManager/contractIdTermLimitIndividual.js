@@ -52,7 +52,10 @@ const ContractIdTermLimitIndividual = (
    method,
    isMultiSiteEntity,
    getSelectedField,
-   getShowAlert}) => {
+   getShowAlert,
+   isEditable,
+   getTabDataStatus,
+  }) => {
     const [contractAccessPrivilege, setContractAccessPrivilege] = useState(false);
     const [calendarStart, setCalendarStart] = useState(false);
     const [calendarEnd, setCalendarEnd] = useState(false);
@@ -104,12 +107,8 @@ const ContractIdTermLimitIndividual = (
     },[])
 
   useEffect(() => {
-    getUserData();
     getSites();
-    if (method === 'PUT' && createdContractId !== '') {
-      getContractDetail();
-    }
-  }, [])
+  }, [isMultiSiteEntity])
 
   useEffect(() => {
     getReminder();
@@ -159,7 +158,7 @@ const ContractIdTermLimitIndividual = (
       setContractData(contractData?.contractDetail);
       setName(contractData?.contractName?.contractName || '');
       setContractName(contractData?.contractName?.contractName);
-      setContractId({ id: contractDetail?.contractId?.id, missing: contractData?.contractIdMissing });
+      setContractId({ id: contractDetail?.contractId?.id, missing: contractDetail?.contractIdMissing });
       setDepartmentSpecific(contractDetail?.departmentSpecificContract);
       setSiteSpecific(contractDetail?.siteSpecificContract);
       setContractTimeCommitment(contractDetail?.timeCommitment || {});
@@ -172,7 +171,7 @@ const ContractIdTermLimitIndividual = (
       setSelectedContractContinuationPolicy(contractDetail?.continuationPolicy?.contractPolicyType);
       let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
       setAutoRenewal({ renewalTerm: continuation?.autoRenewalTerm?.term.toString(), allowableRenewalTerm: continuation?.allowableAutoRenewalTerm?.term.toString(), calendar: continuation?.autoRenewalCalender })
-      setRenewalreminder(contractDetail?.continuationPolicy?.reminderList?.renewalReminderList);
+      setRenewalreminder(contractDetail?.continuationPolicy?.reminderList?.renewalReminderList || [{days:0}]);
       let fileData = [];
       contractDetail?.contractFiles?.map(data => {
         fileData.push({ id: data?.id, type: data?.documentType, name: data?.documentName, desc: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
@@ -185,7 +184,6 @@ const ContractIdTermLimitIndividual = (
     }
   }
 
-
   const getUserData = async () => {
     const { data: user } = await GET('user-management-service/user/role?role=Contract Manager');
     if (user) {
@@ -193,13 +191,19 @@ const ContractIdTermLimitIndividual = (
     }
   }
 
+  console.log('ismultisite entity', isMultiSiteEntity);
+
   const getSites = async () => {
     const { data: sites } = await GET('entity-service/sites');
     if (sites) {
       setSites(sites);
       if (!isMultiSiteEntity) {
+        console.log('inside multisite entity', isMultiSiteEntity);
         setSelectedSites(sites?.filter((data,index)=>index === 0)?.map(data=>data));
         setSelectedSite(sites?.[0]?.id);
+      }else{
+        setSelectedSites([]);
+        setSelectedSite('');
       }
     }
   }
@@ -218,25 +222,16 @@ const ContractIdTermLimitIndividual = (
     } else if (siteSpecific && !departmentSpecific) {
       siteData = selectedSites;
     } else {
-      console.log('selectedDepartmentSites', selectedDepartmentSites)
       siteData = selectedDepartmentSites;
     }
 
     return siteData;
   }
 
-  console.log('data', selectedDepartmentSites);
-
   const addContract = async (buttonType) => {
     let sites = getSiteData();
-    console.log('stes', sites);
     if(departmentSpecific && sites?.some(data=>data?.departmentList?.departments?.length === 0)){
       ErrorToaster('Select Departments for all the selected Sites');
-      return;
-    }
-
-    if (selectedContractContinuationPolicy === 'Select Value') {
-      ErrorToaster('Select Contract Continuation Policy');
       return;
     }
     let contractFiles = [];
@@ -284,21 +279,23 @@ const ContractIdTermLimitIndividual = (
           "endDate": contractTermPeriodTo === null ? null : format(contractTermPeriodTo, 'yyyy-MM-dd').toString(),
           "effectiveDate": contractEffectiveDate === null ? null : format(contractEffectiveDate, 'yyyy-MM-dd').toString(),
         },
-        "continuationPolicy": {
+        ...(selectedContractContinuationPolicy !== '' && {"continuationPolicy": {
           "contractPolicyType": selectedContractContinuationPolicy,
           "autoRenewalPeriod": {
-            "autoRenewalTerm": {
+            ...(parseInt(autoRenewal.renewalTerm) && {"autoRenewalTerm": {
               "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.renewalTerm) : 0,
-            },
-            "allowableAutoRenewalTerm": {
+            }}),
+            ...(parseInt(autoRenewal.allowableRenewalTerm) && {"allowableAutoRenewalTerm": {
               "term": selectedContractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.allowableRenewalTerm) : 0,
-            },
-            "autoRenewalCalender": selectedContractContinuationPolicy === 'AUTORENEWAL' ? autoRenewal.calendar : 'WEEKS'
+            }}),
+            ...(autoRenewal.calendar !== '' &&
+            {"autoRenewalCalender": selectedContractContinuationPolicy === 'AUTORENEWAL' ? autoRenewal.calendar : 'WEEKS'
+          })
           },
           "reminderList": {
             "renewalReminderList": renewalReminder
           }
-        },
+        }}),
         "timeCommitment": {
           "value": parseInt(contractedTimeCommitment?.value),
           "frequency": contractedTimeCommitment?.frequency,
@@ -342,6 +339,7 @@ const ContractIdTermLimitIndividual = (
     }else{
       getShowAlert(true);
     }
+    getTabDataStatus();
   }
 
   const onSelect = (selectedItem) => {
@@ -351,7 +349,9 @@ const ContractIdTermLimitIndividual = (
   const onSelectSite = (selectedItem) => {
     setItem(selectedItem);
     let temp = selectedSites;
-    temp.push(selectedItem);
+    if(!selectedSites?.includes(selectedItem)){
+      temp.push(selectedItem);
+    }
     setSelectedSites(temp);
     setDepartmentSpecific(false);
   }
@@ -410,7 +410,7 @@ const ContractIdTermLimitIndividual = (
 
   const handleReminder = (e, i) => {
     let temp = renewalReminder;
-    temp[i] = { 'days': parseInt(e) };
+    temp[i] = { 'days': parseInt(e.target.value) };
     setRenewalreminder(temp);
   }
 
@@ -888,7 +888,7 @@ const ContractIdTermLimitIndividual = (
                 value={selectedContractContinuationPolicy || 'Select...'}
                 onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
                 className={`${style.fullWidth}`}>
-                <option value="0" >
+                <option value="" >
                   Choose Your Contract Continuation Policy
                 </option>
                 <option value="AUTORENEWAL" >
@@ -955,10 +955,13 @@ const ContractIdTermLimitIndividual = (
           </div>
         </div>
       </div>
-      <div className={`${style.floatRight} ${style.marginTop20}`}>
-        <button className={style.newContractOutlinedButton} onClick={() => addContract('Save In Progress')}>SAVE IN-PROGRESS</button>
-        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { addContract('Continue'); getViewPage2(true); getViewPage1(false); getCurrentPage('Contracted Services Provider(s)') }}>CONTINUE</button>
-      </div>
+        {isEditable &&
+        (  <div className={`${style.floatRight} ${style.marginTop20}`}>
+            <button className={style.newContractOutlinedButton} onClick={() => addContract('Save In Progress')}>SAVE IN-PROGRESS</button>
+            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { addContract('Continue'); getViewPage2(true); getViewPage1(false); getCurrentPage('Contracted Services Provider(s)') }}>CONTINUE</button>
+          </div>)
+      }
+
       {addNewManagerDialog && (
         <AddNewContractManager getAddNewManagerDialog={getAddNewManagerDialog} contractType={contractType} getUserData={getUserData} contractId={contractIdFromActive} />
       )}

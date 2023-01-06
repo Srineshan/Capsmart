@@ -81,7 +81,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         billableService: true,
         rateType: 'HOURLY',
         totalSession: '0',
-        totalSessionFrequency: 'YEAR',
+        totalSessionFrequency: '',
         sessionAmount: '',
         sessionDuration: '0',
         workingTimeFrom: new Date(),
@@ -163,6 +163,11 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         setMetadata({ ...metadata, supplementServiceName: temp?.filter((data, indexValue) => index !== indexValue)?.map(data => data) });
     }
 
+    const updateWorkingPeriod = (e) => {
+      let minTime= new Date(new Date(e).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000));
+      setMetadata({...metadata, workingTimeFrom:e, workingTimeTo:minTime});
+    }
+
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -231,7 +236,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                             <Switch checked={metadata?.billableService} className={` ${style.textAlignLeft} `} />
                                         }
                                         color='primary'
-                                        onChange={() => handleValueChange('billableService', !metadata?.billableService)}
+                                        onChange={() => setMetadata({...metadata, billableService: !metadata?.billableService, sessionAmount: '0'})}
                                         className={`${style.switchFontStyle} ${style.flexLeft}`}
                                         label={metadata?.billableService ? 'YES' : 'NO'}
                                     />
@@ -258,10 +263,12 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                             <div className={`${style.threeFieldWidth}`}>
                                 <TextField
                                     size="small"
+                                    type="tel"
+                                    maxLength="3"
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                                     }}
-                                    onChange={(e) => handleValueChange('totalSession', e.target.value)}
+                                    onChange={(e) =>e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
                                     value={metadata?.totalSession}
                                 />
                             </div>
@@ -272,7 +279,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                 onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
                                 value={metadata?.totalSessionFrequency}
                             >
-                                <MenuItem value="">Select Frequecy</MenuItem>
+                                <MenuItem value={''}>Select Frequecy</MenuItem>
                                 <MenuItem value={'MONTH'}>Per Month</MenuItem>
                                 <MenuItem value={'YEAR'}>Per Contract Year</MenuItem>
                             </Select>
@@ -284,35 +291,41 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                         <div className={`${style.threeFieldWidth}`}>
                             <TextField
                                 size="small"
+                                type="tel"
+                                maxLength="3"
                                 InputProps={{
                                     endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                                 }}
-                                onChange={(e) => handleValueChange('sessionDuration', e.target.value)}
+                                onChange={(e) =>e.target.value >= 0 && setMetadata({...metadata, sessionDuration:e.target.value, sessionAmount:'0'})}
                                 value={metadata?.sessionDuration}
                             />
                         </div>
                     </div>
-
+                    {
+                      metadata?.billableService &&
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Supplemental Service Payment Amount*</div>
                         <div className={`${style.displayInRow}`}>
                             <div className={`${style.threeFieldWidth}`}>
                                 <TextField
                                     size="small"
+                                    type="tel"
+                                    maxLength="5"
                                     disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
                                     value={metadata?.sessionAmount}
-                                    onChange={(e) => handleValueChange('sessionAmount', e.target.value)}
+                                    onChange={(e) =>e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
                                 />
                             </div>
+
                             <div className={style.verticalAlignCenter}>
-                                <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>{(metadata?.sessionAmount / metadata?.totalSession || 0).toFixed(2)} per Hour (Pro Rata)</p>
+                                <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>{(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)</p>
                             </div>
                         </div>
                     </div>
-
+                  }
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Applicable Supplemental Workdays*</div>
                         <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
@@ -324,7 +337,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                             <TimePicker
                                 useAmPm={false}
                                 onChange={(e) => {
-                                    handleValueChange('workingTimeFrom', e);
+                                    updateWorkingPeriod(e);
                                 }}
                                 value={new Date(metadata?.workingTimeFrom)}
                             />

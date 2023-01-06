@@ -13,13 +13,13 @@ const ApexPieChart = ({ pieData }) => {
     if (data === "paidOnTime")
       return 'Paid On Time';
     else if (data === "paidDelayed")
-      return 'Paid Delayed';
+      return 'Payments Delayed';
     else if (data === "rejected")
       return 'Rejected';
     else if (data === "paidNotDone")
-      return 'Paid Not Done';
+      return 'Payment Not Made';
     else if (data === "paidPastDue")
-      return 'Paid Past Due';
+      return 'Payment Past Due';
     else return '';
   }
 

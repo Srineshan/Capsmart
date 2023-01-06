@@ -3,7 +3,6 @@ import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import style from './index.module.scss';
 
 const DeleteExecutedContractDialog = ({getDeleteExecutedContractDialog}) => {
-
     return(
         <Dialog isOpen={getDeleteExecutedContractDialog} onClose={() => getDeleteExecutedContractDialog(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
           <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>

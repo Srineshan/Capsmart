@@ -47,7 +47,7 @@ const MenuProps = {
   },
 };
 
-const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, getSelectedField, getShowAlert }) => {
+const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, getSelectedField, getShowAlert, isEditable, getTabDataStatus }) => {
   const testContractId = contractId;
   const [user, setUsers] = useState([]);
   const [userName, setUserName] = useState('');
@@ -118,9 +118,6 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       setContractorPhone(userProviderData?.communication?.mobileNumber);
       setContractorEmail(userProviderData?.email?.officialEmail);
       setAddress(userProviderData?.address);
-      // setCity(userProviderData?.address?.city);
-      // setState(userProviderData?.address?.state);
-      // setZipCode(userProviderData?.address?.zipcode);
       setSelectedRoles(userProviderData?.roles || []);
       setContracts(userProviderData?.contracts);
       let contractData = userProviderData?.contracts?.filter(data => data?.id === contractId)?.map(data => data)[0];
@@ -418,6 +415,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     }else{
       getShowAlert(true);
     }
+    getTabDataStatus();
   }
 
   const handleRoles = (value) => {
@@ -815,14 +813,15 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           </div>
         </div>
       </div>
+      {isEditable &&
       <div className={`${style.spaceBetween} ${style.marginTop20}`}>
         <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
         <div>
           <button className={style.newContractOutlinedButton} onClick={() => handleSave('Save In Progress')}>SAVE IN-PROGRESS</button>
-          <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('Continue')}}>CONTINUE</button>
+          <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => {handleSave('Continue')}}>CONTINUE</button>
         </div>
       </div>
-
+  }
     </div>
   )
 }

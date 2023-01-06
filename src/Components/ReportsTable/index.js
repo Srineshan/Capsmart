@@ -2,11 +2,10 @@ import React from 'react';
 
 import style from './index.module.scss';
 
-const ReportsTable = ({ tableHeading2, tableType, tableHeader, tableValue, activitiesServicesValues, styleName }) => {
+const ReportsTable = ({ tableType, tableHeader, tableValue, activitiesServicesValues, styleName }) => {
     return (
         <div className={style.marginTop40}>
             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{tableType}</div>
-            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>{tableHeading2}</div>
             <div className={`${styleName ? `${styleName}` : ''} ${style.marginTop20} ${style.headingBackground}`}>
                 {tableHeader?.map((data, index) => (
                     <div className={`${style.reportRunByTextStyle} ${style.verticalAlignCenter}`} key={index}>{data}</div>

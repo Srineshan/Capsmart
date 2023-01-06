@@ -32,13 +32,6 @@ const switchTheme = createTheme({
 const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected }) => {
   const limit5 = 5;
   let additionalDetails = ['Require Patient Data', 'Administrative Approval For Payment Required', 'Prior Pre-Authorisation Required', 'Require Reason For Add-On Service'];
-  const [addOnServiceName, setAddOnServiceName] = useState('');
-  const [workingPeriodFrom, setWorkingPeriodFrom] = useState('');
-  const [workingPeriodTo, setWorkingPeriodTo] = useState('');
-  const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
-  const [additionalSchedule, setAdditionalSchedule] = useState(false);
-  const [totalContractedService, setTotalContractedService] = useState(0);
-  const [selectedActivities, setSelectedActivities] = useState([]);
   const [fields, setFields] = useState();
   const [showNewService, setShowNewService] = useState(false);
   const [selectedService, setSelectedService] = useState('');

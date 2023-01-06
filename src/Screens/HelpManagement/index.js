@@ -36,6 +36,7 @@ const HelpHome = () => {
     const [showChatView, setShowChatView] = useState(false);
     const [selectedOption, setSelectedOption] = useState('TICKETS');
     const [showFeedbackTicketResolution, setShowFeedbackTicketResolution] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
     const [ticketId, setTicketId] = useState('');
     const [isEdit, setIsEdit] = useState(false);
     const [users, setUsers] = useState([]);
@@ -107,6 +108,10 @@ const HelpHome = () => {
         setShowFeedbackTicketResolution(true);
         setTicketId(value?.ticketId?.id);
         setIsEdit(true);
+    }
+
+    const getIsExpanded = (value) => {
+        setIsExpanded(value);
     }
 
     const messagesOnClickFunction = (data) => {
@@ -212,8 +217,12 @@ const HelpHome = () => {
     return (
         <Fragment>
             <Navbar />
-            <div className={`${style.bigCardGrid} ${style.margin20}`}>
-                <SideBar />
+            <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20}`}>
+                <div>
+                    <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+                        <div></div>
+                    </SideBar>
+                </div>
                 <div>
                     <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={'UPDATED ON FEB 16, 2022 16:45 EST'} hideClose={true} />
                     <div className={`${style.grid4} ${style.marginTop20}`}>
