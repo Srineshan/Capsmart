@@ -28,6 +28,7 @@ import SupplementalFields from './supplementalFields';
 import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
+import Notes from '../../Components/Notes';
 
 const switchTheme = createTheme({
   palette: {
@@ -506,7 +507,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           </div>
           <div className={style.extensionBorder}></div>
           {!isShowPDF ? (
-            <div className={style.displayInRow}>
+            <div>
               <div className={style.proofBorder}>
                 <div className={`${style.addManagerGrid} `}>
                   <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
@@ -643,7 +644,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 </div>
               ) : helpTool?.textArea ? (
                 <div className={style.calculatorDisplayStyle}>
-                  <Calculator />
+                  <Notes />
                 </div>
               ) : ''}
             </div>
@@ -654,7 +655,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           )}
         </div>
         <div>
-          {isEditable &&
+          {isEditable && !isShowPDF &&
             <div className={`${style.floatRight}`}>
               <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('ADD MORE'); reset() }}>ADD MORE</button>
               <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('SAVE AND EXIT'); reset() }}>SAVE & EXIT</button>

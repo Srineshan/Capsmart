@@ -34,7 +34,7 @@ const ReportHeader = () => {
                 </div>
                 <div>
                     {logo.logo && (
-                        <img src={logo.logo} alt="" className={style.headerLogo} />
+                        <img src={logo.logo} alt="" className={`${style.headerLogo} ExcludeMeFromPdf`} />
                     )}
                     <div className={style.entityNameBolderStyle}>{logo.title}</div>
                 </div>
