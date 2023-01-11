@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Icon, Intent, Dialog, Classes, TextArea } from '@blueprintjs/core';
 import { TextField } from '@mui/material';
-// import { PDFDownloadLink } from '@react-pdf/renderer';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import DownloadingOutlinedIcon from '@mui/icons-material/DownloadingOutlined';
@@ -10,7 +8,6 @@ import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import CachedOutlinedIcon from '@mui/icons-material/CachedOutlined';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
-import ZoomInMapIcon from '@mui/icons-material/ZoomInMap';
 import Popover from '@mui/material/Popover';
 import { useParams } from 'react-router-dom';
 import UserLogo1 from './../../images/userLogo3.png';
@@ -18,13 +15,9 @@ import UserLogo2 from './../../images/userLogo4.png';
 import UserLogo3 from './../../images/userLogo5.png';
 import UserLogo4 from './../../images/userLogo6.png';
 import Search from './../../images/search.png';
-import Info from './../../images/info.png';
 import SaveReport from './saveReport';
-import ReactToPdf from "react-to-pdf";
 
 import style from './index.module.scss';
-// import PDFDocument from './pdf';
-
 
 const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpdated, isLoading, dataToUseInReport, refToUse, getIsDownloadClicked }) => {
     const { reportType } = useParams();
@@ -136,25 +129,12 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                                 <div className={style.popoverStyle}>Click to Save this Report</div>
                             </Popover>
                         </div>
-                        {/* <PDFDownloadLink
-                        document={
-                            <PDFDocument />
-                        }
-                        fileName={`report.pdf`}>
-                        {({ blob, url, loading, error }) => ( */}
-                        {/* <ReactToPdf targetRef={refToUse} filename="sample.pdf" x={.5} y={.5} scale={0.8}>
-                            {({ toPdf }) =>  */}
                         <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => getIsDownloadClicked(true)}>
                             <DownloadingOutlinedIcon style={{ color: "#52575D" }} />
                         </div>
-                        {/* }
-                        </ReactToPdf> */}
-                        {/* )}
-                        </PDFDownloadLink> */}
                         <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={handlePrint}
                             onMouseEnter={(e) => setAnchorElPrint(e.currentTarget)} onMouseLeave={() => setAnchorElPrint(null)} aria-owns={openPrint ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            {/* <Link to={'/chart'} className={style.noFontStyle}> */}
                             <PrintOutlinedIcon style={{ color: "#52575D" }} />
                             <Popover
                                 id={'mouse-over-popover'}
@@ -172,14 +152,9 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                             >
                                 <div className={style.popoverStyle}>Click to Print this Report</div>
                             </Popover>
-                            {/* </Link> */}
                         </div>
                         <div className={`${style.iconPadding} ${style.cursorPointer}`} >
-                            {/* {showExpandedView ? ( */}
                             <ZoomOutMapIcon style={{ color: "#52575D" }} onClick={handle.enter} />
-                            {/* ) : (
-                                <ZoomOutMapIcon style={{color:"#52575D"}} onClick={()=> getShowExpandedView(true)} />
-                            )} */}
                         </div>
                     </div>
                 </div>
