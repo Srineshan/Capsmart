@@ -12,7 +12,7 @@ import RedirectingPopUp from './redirectingPopUp';
 import style from './index.module.scss';
 
 const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus }) => {
-    const [timesheet, setTimesheet] = useState({id:'', reviewer:'', approver:''});
+    const [timesheet, setTimesheet] = useState({id:'', aggregator:'', reviewer:'', approver:''});
     const [workFlowList,setWorkFlowList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('');
@@ -23,6 +23,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     const [timeSheetTabs, setTimeSheetTabs] = useState([]);
     const [timesheetWorkFlow, setTimeSheetWorkFlow] = useState([]);
     const [users,setUsers] = useState([]);
+    const [provider, setProvider] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedTimeSheet,setSelectedTimeSheet] = useState({id:'',reviewer:'',approver:''});
 
@@ -34,13 +35,14 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     },[timesheetProcessingWorkflow]);
 
     useEffect(()=>{
-        setTimesheet({id:'',approver:'',reviewer:''});
+        setTimesheet({id:'', approver:'', reviewer:'', aggregator:''});
         getTimeSheetSubmissionTerms();
         setTabIndex(timeSheetTabs?.indexOf(activeTab));
   },[activeTab])
 
     useEffect(()=>{
       getUserData();
+      getProviderData();
       getTimeSheetValues();
       getTimeSheetWorkFlow();
     },[])
@@ -57,6 +59,15 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
       const {data:userList} = await GET(`contract-managment-service/contracts/workFlowUser`)
       if(userList){
         setUsers(userList);
+      }
+    }
+
+    const getProviderData = async () => {
+      if (contractId !== '' && selectContractInfo === 'MULTIPLE') {
+        const { data: providerData } = await GET(`user-management-service/user?contractID=${contractId}`);
+        if (providerData) {
+          setProvider(providerData);
+        }
       }
     }
 
@@ -104,10 +115,120 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
       return user;
     }
 
-
-    const handleTimeSheetWorkFlow = (name, reviewer, approver, activeTab) => {
+    const handleTimeSheetWorkFlow = (name, reviewer, approver, aggregator, activeTab) => {
       let data;
-      if(reviewer === approver){
+      if(selectContractInfo === 'MULTIPLE' && reviewer === approver){
+        data = {
+          "name": {
+            "name": name
+          },
+          "workFlowMap": {
+            "workflow": {
+              "1": {
+                "workFlowUser": {
+                  "id": aggregator,
+                  "title":{
+                    "title":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.title?.title || '',
+                    "id":null,
+                  },
+                  "name":{
+                    "name":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.firstName || '',
+                  },
+                  "suffix":{
+                    "id":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.suffix?.id || '',
+                    "suffix":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.suffix?.suffix || '',
+                  }
+                },
+                "workFlowStatus": {
+                  "status": "AGGREGATOR"
+                }
+              },
+              "2": {
+                "workFlowUser": {
+                  "id": reviewer,
+                  "title":{
+                    "title":getSelectedUserDetails(reviewer)?.title?.title || '',
+                    "id":null,
+                  },
+                  "name":{
+                    "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                  },
+                  "suffix":{
+                    "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                    "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
+                  }
+                },
+                "workFlowStatus": {
+                  "status": "APPROVED"
+                }
+              }}}}
+      }
+      else if(selectContractInfo === 'MULTIPLE' && approver !== reviewer){
+        data = {
+          "name": {
+            "name": name
+          },
+          "workFlowMap": {
+            "workflow": {
+              "1": {
+                "workFlowUser": {
+                  "id": aggregator,
+                  "title":{
+                    "title":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.title?.title || '',
+                    "id":null,
+                  },
+                  "name":{
+                    "name":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.firstName || '',
+                  },
+                  "suffix":{
+                    "id":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.suffix?.id || '',
+                    "suffix":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.suffix?.suffix || '',
+                  }
+                },
+                "workFlowStatus": {
+                  "status": "AGGREGATOR"
+                }
+              },
+              "2": {
+                "workFlowUser": {
+                  "id": reviewer,
+                  "title":{
+                    "title":getSelectedUserDetails(reviewer)?.title?.title || '',
+                    "id":null,
+                  },
+                  "name":{
+                    "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                  },
+                  "suffix":{
+                    "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                    "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
+                  }
+                },
+                "workFlowStatus": {
+                  "status": "REVIEWED"
+                }
+              },
+              "2": {
+                "workFlowUser": {
+                  "id": approver,
+                  "title":{
+                    "title":getSelectedUserDetails(approver)?.title?.title || '',
+                    "id":null,
+                  },
+                  "name":{
+                    "name":getSelectedUserDetails(approver)?.name?.firstName || '',
+                  },
+                  "suffix":{
+                    "id":getSelectedUserDetails(approver)?.name?.suffix?.id || '',
+                    "suffix":getSelectedUserDetails(approver)?.name?.suffix?.suffix || '',
+                  }
+                },
+                "workFlowStatus": {
+                  "status": "APPROVED"
+                }
+              }}}}
+      }
+      else if(selectContractInfo !== 'MULTIPLE' && reviewer === approver){
         data = {
           "name": {
             "name": name
@@ -190,7 +311,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
         ErrorToaster('Select both Approver and Reviewer to save');
         return;
       }
-        let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, activeTab );
+      if(selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '0'){
+        ErrorToaster('Select Aggregator to save');
+        return;
+      }
+        let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab );
         updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
         if(buttontext === 'Continue'){
           getViewPage9(true);
@@ -236,6 +361,17 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
           if(workFlowValues?.length === 1){
             let approver = workFlowValues?.[0]?.workFlowUser?.id;
             setTimesheet({...timesheet, id:id, reviewer: approver, approver: approver});
+          }
+          else if(workFlowValues?.length === 3){
+            let aggregator = workFlowValues?.[0]?.workFlowUser?.id;
+            let reviewer = workFlowValues?.[1]?.workFlowUser?.id;
+            let approver = workFlowValues?.[2]?.workFlowUser?.id;
+            setTimesheet({...timesheet, id:id, aggregator:aggregator, eviewer: approver, approver: approver});
+          }
+          else if(selectContractInfo === 'MULTIPLE' && workFlowValues?.length  === 2){
+            let aggregator = workFlowValues?.[0]?.workFlowUser?.id;
+            let approver = workFlowValues?.[1]?.workFlowUser?.id;
+            setTimesheet({...timesheet, id:id, reviewer: approver, approver: approver, aggregator:aggregator});
           }else{
             let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
             let approver = workFlowValues?.[1]?.workFlowUser?.id;
@@ -277,6 +413,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                         value={activeTab} readOnly />
                     </div>
                   </div>
+                  {selectContractInfo === 'MULTIPLE' &&
+                  <ReviewerApproverField data={provider} label="Timesheet Aggregator*" onValueChange={(value)=>{setTimesheet({...timesheet, aggregator:value})}} selectLabel="Select Aggregator" value={timesheet?.aggregator || '0'}/>
+                  }
                   <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value)=>{setTimesheet({...timesheet, reviewer:value})}} selectLabel="Select Reviewer" value={timesheet?.reviewer || '0'}/>
                   <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value)=>{setTimesheet({...timesheet, approver:value})}} selectLabel="Select Approver" value={timesheet?.approver || '0'}/>
               </div>
