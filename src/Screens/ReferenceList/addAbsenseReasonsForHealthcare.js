@@ -48,6 +48,7 @@ const AddAbsenseReasonsForHealthcare = ({
             document.getElementById("absenceEl").focus()
             return false
         }
+        
         const data = {
             ...(isEdit && { 'id': absenseId }),
             ...(isEdit && { 'createdDate': createdDate }),

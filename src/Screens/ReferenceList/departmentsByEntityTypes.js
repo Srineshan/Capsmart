@@ -50,6 +50,13 @@ const DepartmentsByEntityTypes = ({ getAddEntityDialog, showAddEntityDialog, isE
         let lastModifiedDate = sorted[0].toString().split('+')[0];
         sendLastDate(moment.tz(lastModifiedDate, "America/New_York").format('MMM D, YYYY hh:mm z'))
         localStorage.setItem("department", moment(lastModifiedDate).format('MMMM YYYY').toUpperCase())
+
+        var showList = JSON.parse(localStorage.getItem('showList')||'[]');
+        if(showList.indexOf(lastModifiedDate) == -1){
+          showList.push(lastModifiedDate);
+          localStorage.setItem("showList", JSON.stringify(showList));                    
+        }
+        
     }
 
     const getDepartmentData = async () => {
