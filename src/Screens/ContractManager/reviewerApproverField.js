@@ -3,11 +3,6 @@ import style from './index.module.scss';
 
 const ReviewerApproverField = ({data,label,onValueChange,selectLabel,value}) => {
   const [selectedValue,setSelectedValue] = useState(value);
-  console.log('valueCheck', value, data)
-
-  // useEffect(()=>{
-  //   setSelectedValue(value);
-  // },[value])
 
   return(
     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -23,7 +18,12 @@ const ReviewerApproverField = ({data,label,onValueChange,selectLabel,value}) => 
             <option value="0">
                 {selectLabel}
             </option>
-            {data?.map(data=>(
+            {label?.includes('Aggregator') ? data?.map(data=>(
+              <option value={data?.id}>
+                {data?.name?.firstName} {data?.name?.lastName}
+              </option>
+            )):
+            data?.map(data=>(
               <option value={data?.userId}>
                 {data?.title?.title}
               </option>
