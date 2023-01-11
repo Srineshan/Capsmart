@@ -25,7 +25,7 @@ const switchTheme = createTheme({
 });
 
 
-const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField, getShowAlert, isEditable, getTabDataStatus }) => {
+const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus }) => {
   const [isUserUpdated, setIsUserUpdated] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -356,7 +356,7 @@ const setBusinessEntityData = () => {
             <div className={`${style.newContractFromCloneBoxStyle}`}>
               {selectContractInfo === "INDIVIDUAL" && (
                 <div className={`${style.extentionGrid}`}
-                  onFocus={() => { getSelectedField('Contractor Business Contact Same As Contractor') }}>
+                  onFocus={() => { checkFieldAndPopAlert(true, 'Contractor Business Contact Same As Contractor') }}>
                   <div className={style.extentionLableStyle}>Contractor Business Contact Same As Contractor*</div>
                   <ThemeProvider theme={switchTheme}>
                     <FormControlLabel
@@ -371,7 +371,7 @@ const setBusinessEntityData = () => {
                 </div>
               )}
               <div className={`${style.extentionGrid} ${selectContractInfo === "INDIVIDUAL" && style.marginTop20}`}
-                onFocus={() => { getSelectedField('Contractor NPIN') }}>
+                onFocus={() => { checkFieldAndPopAlert(contractorNPIN?.npin, 'Contractor NPIN') }}>
                 <div className={style.extentionLableStyle}>Vendor NPIN*</div>
                 <div className={style.twoCol}>
                   <InputGroup className={style.fullWidth}
@@ -392,7 +392,7 @@ const setBusinessEntityData = () => {
                 </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
-                onFocus={() => { getSelectedField('Contractor Entity Tax ID') }}>
+                onFocus={() => { checkFieldAndPopAlert(contractorEntityTaxId?.taxId, 'Contractor Entity Tax ID') }}>
                 <div className={style.extentionLableStyle}>Vendor Tax ID*</div>
                 <div className={style.twoCol}>
                   <InputGroup className={style.fullWidth} disabled={contractorEntityTaxId?.missing || contractorEntityTaxId?.notApplicable} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
@@ -411,7 +411,7 @@ const setBusinessEntityData = () => {
                 <div className={style.extentionLableStyle}>Business Entity Name*</div>
                 <InputGroup className={style.fullWidth}
                   value={businessEntity?.name}
-                  onFocus={() => { getSelectedField('Business Entity Name') }}
+                  onFocus={() => { checkFieldAndPopAlert(businessEntity?.name, 'Business Entity Name') }}
                   placeholder="Enter Business Entity Name"
                   onChange={(e) => setBusinessEntity({ ...businessEntity, name: e.target.value })} />
               </div>
@@ -419,14 +419,14 @@ const setBusinessEntityData = () => {
                 <div className={style.extentionLableStyle}>Business Point of Contact*</div>
                 <div className={style.twoCol}>
                   <InputGroup className={style.fullWidth}
-                    onFocus={() => { getSelectedField('Contractor Business Contact First Name') }}
+                    onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.name?.firstName, 'Contractor Business Contact First Name') }}
                     value={businessEntityUser?.name?.firstName} placeholder="Enter First Name"
                     onChange={(e) => {
                       setBusinessEntityUser({ ...businessEntityUser, name: { firstName: e.target.value, lastName: businessEntityUser?.name?.lastName, suffix: {} } });
                       setIsUserUpdated(true);
                     }} />
                   <InputGroup className={style.fullWidth}
-                    onFocus={() => { getSelectedField('Contractor Business Contact Last Name') }}
+                    onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.name?.lastName, 'Contractor Business Contact Last Name') }}
                     value={businessEntityUser?.name?.lastName} placeholder="Enter Last Name"
                     onChange={(e) => {
                       setBusinessEntityUser({ ...businessEntityUser, name: { lastName: e.target.value, firstName: businessEntityUser?.name?.firstName, suffix: {} } });
@@ -437,7 +437,7 @@ const setBusinessEntityData = () => {
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Business Contact Email Address*</div>
                   <InputGroup className={style.fullWidth} value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
-                    onFocus={() => { getSelectedField('Business Contact Email Address') }}
+                    onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.email?.officialEmail, 'Business Contact Email Address') }}
                     onChange={(e) => {
                       setBusinessEntityUser({ ...businessEntityUser, email: { officialEmail: e.target.value } });
                       setIsUserUpdated(true);
@@ -445,7 +445,7 @@ const setBusinessEntityData = () => {
                   />
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
-                onFocus={() => { getSelectedField('Cell Phone') }}
+                onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.contactNumber?.number, 'Cell Phone') }}
               >
                 <div className={style.extentionLableStyle}>Cell Phone*</div>
                 <div className={style.twoCol}>
@@ -472,17 +472,17 @@ const setBusinessEntityData = () => {
                 <div className={style.extentionLableStyle}>Mailing Address*</div>
                 <div>
                   <InputGroup className={style.fullWidth} value={mailingAddress?.addressLine} placeholder="Enter Street"
-                    onFocus={() => { getSelectedField('Mailing Address Street') }}
+                    onFocus={() => { checkFieldAndPopAlert(mailingAddress?.addressLine, 'Mailing Address Street') }}
                     onChange={(e) => setMailingAddress({ ...mailingAddress, addressLine: e.target.value })} />
                   <div className={`${style.grid3} ${style.marginTop10}`}>
                     <InputGroup className={style.fullWidth} value={mailingAddress?.city} placeholder="Enter City"
-                      onFocus={() => { getSelectedField('Address City') }}
+                      onFocus={() => { checkFieldAndPopAlert(mailingAddress?.city, 'Address City') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, city: e.target.value })} />
                     <InputGroup className={style.fullWidth} value={mailingAddress?.state} placeholder="Enter State"
-                      onFocus={() => { getSelectedField('Address State') }}
+                      onFocus={() => { checkFieldAndPopAlert(mailingAddress?.state, 'Address State') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, state: e.target.value })} />
                     <InputGroup className={style.fullWidth} value={mailingAddress?.zipcode} placeholder="Enter Zipcode"
-                      onFocus={() => { getSelectedField('Address Zip Code') }}
+                      onFocus={() => { checkFieldAndPopAlert(mailingAddress?.zipcode, 'Address Zip Code') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, zipcode: e.target.value })} />
                   </div>
                 </div>

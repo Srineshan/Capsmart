@@ -63,6 +63,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [helpTool, setHelpTool] = useState({ calculator: false, textArea: false });
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [timeCommitment, setTimeCommitment] = useState({ value: 0, frequency: '' });
+  const [allowableWorkingHours, setAllowableWorkingHours] = useState({from:new Date()?.toLocaleTimeString('it-IT').toString(), to:new Date()?.toLocaleTimeString('it-IT').toString()});
   const [isShowPDF, setIsShowPDF] = useState(false);
   const limit = 3;
   const limit5 = 5;
@@ -218,13 +219,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const getSites = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
+    setAllowableWorkingHours({from:contractDetail?.allowableWorkingHours?.from, to:contractDetail?.allowableWorkingHours?.to});
     setTimeCommitment(contractDetail?.timeCommitment);
+    console.log('inside sites function');
     let sites = contractDetail?.site?.sites;
     if (sites && siteList?.length === 0) {
       setSiteList(sites);
     }
   }
-  console.log('metadata', metadata?.selectedActivities);
+
+  console.log('metadata in add services', metadata);
 
   const handleSave = async (buttonType) => {
     if (serviceType === '') {
@@ -270,13 +274,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     let data = [];
     if (serviceType === 'Add-On Services' && !editService) {
+      console.log('inside check', metadata);
       let temp = metadata;
       data = temp;
       temp?.map(data => {
+        data.refId = (new Date()).getTime();
+        let dataMap = {selectedActityId: data?.selectedActityId}
+        data.activityResponse = {dataMap: dataMap};
         data.sites = siteData;
         data.performingActivity = { activity: data?.performingActivity };
         data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
       });
+      console.log('after alteration', temp);
     }
     else {
       let dataValues = metadata;
@@ -284,6 +293,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         dataValues = metadata?.[0];
       }
       data = [{
+        "refId":(new Date()).getTime(),
         "sites": siteData,
         "activityType": {
           "activityType": serviceType
@@ -360,15 +370,22 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "frequency": dataValues?.totalSessionFrequency
         },
         "serviceDays": dataValues?.serviceDays,
-        "workingPeriod": {
+        ...(serviceType !== 'On Call Coverage Duty Days' && {
+          "workingPeriod": {
+            "from": allowableWorkingHours?.from,
+            "to": allowableWorkingHours?.to,
+          }
+        }),
+        ...(serviceType === 'On Call Coverage Duty Days' && {"workingPeriod": {
           "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
           "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
-        },
+        }
+        }),
         "workingHours": {
-          "normalWorkingHours": true,
-          "afterWorkingHours": true
+          "normalWorkingHours": false,
+          "afterWorkingHours": false
         },
-        "activityApprovalWFRequired": true,
+        "activityApprovalWFRequired": false,
         "designateSpecificContractor": isDesignatedSpecificContractor,
         "locationSpecified": showLocation,
         "dedicatedHoursSpecified": ['Supplemental Services', 'Administrative / Miscellaneous Services'].includes(serviceType) ? dataValues?.dedicatedHoursSpecified : false,
@@ -677,8 +694,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         <div>
           {isEditable &&
             <div className={`${style.floatRight}`}>
-              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('ADD MORE'); reset() }}>ADD MORE</button>
-              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('SAVE AND EXIT'); reset() }}>SAVE & EXIT</button>
+              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('ADD MORE');  }}>ADD MORE</button>
+              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('SAVE AND EXIT');  }}>SAVE & EXIT</button>
             </div>
           }
 

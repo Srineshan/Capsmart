@@ -270,7 +270,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             </div>
             <div className={`${style.timeSheetBoxStyle} ${style.verticalSpaceBetween}`}>
               <div>
-                  <div className={`${style.extentionGrid}`}>
+                  <div className={`${style.addManagerGrid}`}>
                     <div className={style.extentionLableStyle}>Timesheet To Define Process*</div>
                     <div className={style.displayInRow}>
                       <InputGroup className={style.fullWidth} placeholder={activeTab}

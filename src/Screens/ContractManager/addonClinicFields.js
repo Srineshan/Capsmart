@@ -3,19 +3,23 @@ import cloneDeep from 'lodash.clonedeep';
 import { InputGroup, EditableText } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import DatalistInput from 'react-datalist-input';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 import InputAdornment from '@mui/material/InputAdornment';
-import Select from '@mui/material/Select';
-import { ErrorToaster } from './../../utils/toaster';
+import { ErrorToaster,SuccessToaster } from './../../utils/toaster';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
+import { POST, GET, PUT } from './../dataSaver';
+import ReviewerApproverField from './reviewerApproverField';
+
 
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
@@ -31,7 +35,7 @@ const switchTheme = createTheme({
 
 const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected }) => {
   const limit5 = 5;
-  let additionalDetails = ['Require Patient Data', 'Administrative Approval For Payment Required', 'Prior Pre-Authorisation Required', 'Require Reason For Add-On Service'];
+  let additionalDetails = ['Require Patient Data', 'Prior Pre-Authorisation Required', 'Administrative Approval For Payment Required', 'Require Reason For Add-On Service'];
   const [fields, setFields] = useState();
   const [showNewService, setShowNewService] = useState(false);
   const [selectedService, setSelectedService] = useState('');
@@ -47,6 +51,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   });
   const [currentServiceData, setCurrentServiceData] = useState();
   const [metadata, setMetadata] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     getFields();
@@ -55,6 +60,10 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   useEffect(() => {
     getMetaData(metadata);
   }, [metadata])
+
+  useEffect(()=>{
+    getUserData();
+  }, [])
 
   useEffect(() => {
     setSelectedValues();
@@ -85,7 +94,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
         },
         activityResponse: {
           dataMap: {
-            additionalDetails: serviceSelected?.activityResponse?.dataMap?.additionalDetails || []
+            additionalDetails: serviceSelected?.activityResponse?.dataMap?.additionalDetails || [],
+            selectedActivityId: serviceSelected?.activityResponse?.dataMap?.selectedActityId || undefined,
           }
         },
         activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired
@@ -107,6 +117,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       locations: [],
       additionalDetails: []
     })
+  }
+
+  const getUserData = async () => {
+      const { data: userList } = await GET(`contract-managment-service/contracts/workFlowUser`)
+      if (userList) {
+          setUsers(userList);
+      }
   }
 
   const getSelectedLocation = (serviceName) => {
@@ -182,6 +199,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       const selectedData = cloneDeep(services?.filter(data => getServiceName(data?.activityType?.activityType, data?.activities?.map(data => data?.activity)) === name)?.map(data => data)[0]);
       selectedData.performingActivity = name;
       selectedData.activityType = { activityType: 'Add-On Services' };
+      selectedData.selectedActityId = selectedData?.refId;
+      selectedData.refId = null;
       temp.push(selectedData);
       setSelectedServices(temp?.map(data => data?.performingActivity));
       setMetadata(temp);
@@ -198,6 +217,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     temp?.filter(data => getServiceName(data?.activityType?.activityType, data?.activities?.map(data => data?.activity)) === name)?.map(data => {
       data.activityApprovalWFRequired = !data.activityApprovalWFRequired;
     })
+
     setMetadata(temp);
     getFields();
   }
@@ -223,6 +243,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
 
   const handleAdditionalDetailSelection = (data) => {
     let temp = newServices?.additionalDetails || [];
+    if(data === 'Administrative Approval For Payment Required' && !temp?.includes('Prior Pre-Authorisation Required')){
+      return;
+    }
     if (temp?.includes(data)) {
       temp = temp?.filter(detail => detail !== data)?.map(data => data);
     } else {
@@ -290,6 +313,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     getFields();
   }
 
+  console.log('metadata', metadata?.[0]?.performingActivity);
+
   return (
     <div>
       {
@@ -312,6 +337,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   />
                 </ThemeProvider>
               </div>
+              <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => {}} />
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                 <div>
@@ -343,7 +369,59 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
         ))
       }
       {
-        metadata?.filter(data => !serviceList?.map(service => service)?.includes(data?.performingActivity) || editService)?.map(data => (
+        editService && metadata?.[0]?.activityResponse?.dataMap?.selectedActivityId && (
+          <div className={style.marginTop20}>
+            <FormGroup>
+              <FormControlLabel control={<Checkbox checked={true} label={<Typography variant="body2">{metadata?.[0]?.performingActivity?.activity || metadata?.[0]?.performingActivity}</Typography>} /> } />
+            </FormGroup>
+            <div className={`${style.addonBoxStyle}`}>
+              <div className={`${style.addManagerGrid}`}>
+                <div className={style.extentionLableStyle}>Only Allow Upon Request Approval</div>
+                <ThemeProvider theme={switchTheme}>
+                  <FormControlLabel
+                    control={
+                      <Switch className={`${style.textAlignLeft}`} />
+                    }
+                    color='primary'
+                    className={`${style.switchFontStyle} ${style.flexLeft} `}
+                    label={'YES'}
+                  />
+                </ThemeProvider>
+              </div>
+              <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => {}} />
+              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
+                <div>
+                  <div className={`${style.displayInRow} `}>
+                    <ThemeProvider theme={switchTheme}>
+                      <FormControlLabel
+                        control={
+                          <Switch className={`${style.textAlignLeft}`} />
+                        }
+                        color='primary'
+                        className={`${style.switchFontStyle} ${style.flexLeft} `}
+                        label={'YES'}
+                      />
+                    </ThemeProvider>
+                    <div className={`${style.addGrid} ${style.fullWidth}`}>
+                      <DatalistInput items={locationItems} className={style.fullWidth} />
+                      <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                        <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
+                      </div>
+                    </div>
+                  </div>
+                  {
+                    // getSelectedLocation(service)?.length !== 0 &&
+                    // <MultiSelectDisplay values={getSelectedLocation(service)} removeItem={removeLocation} />
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+      {
+        !metadata?.[0]?.activityResponse?.dataMap?.selectedActivityId && metadata?.filter(data => !serviceList?.map(service => service)?.includes(data?.performingActivity) || editService)?.map(data => (
           <div className={style.marginTop20} onClick={() => setSelectedService(data?.performingActivity)}>
             <FormGroup>
               <FormControlLabel control={<Checkbox checked={selectedServices?.includes(data?.performingActivity)} onChange={(e) => selectService(data?.performingActivity, e.target.checked)} />} label={<Typography variant="body2">{data?.performingActivity?.activity || data?.performingActivity}</Typography>} />

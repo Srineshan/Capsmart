@@ -6,6 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import cloneDeep from 'lodash.clonedeep';
 import TextField from '@mui/material/TextField';
+import { TimePicker } from "@blueprintjs/datetime";
 import InputAdornment from '@mui/material/InputAdornment';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -20,6 +21,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Auth } from './../../utils/auth'
 import { format, sub, add } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { GetDateFromHours } from './../../utils/formatting';
 import axios from 'axios';
 
 import style from './index.module.scss';
@@ -51,7 +53,7 @@ const ContractIdTermLimitIndividual = (
    contractIdFromActive,
    method,
    isMultiSiteEntity,
-   getSelectedField,
+   checkFieldAndPopAlert,
    getShowAlert,
    isEditable,
    getTabDataStatus,
@@ -97,6 +99,7 @@ const ContractIdTermLimitIndividual = (
     const [selectedDepartmentId,setSelectedDepartmentId] = useState([]);
     const [createdContractId,setCreatedContractId] = useState(contractIdFromActive);
     const [contractedTimeCommitment, setContractTimeCommitment] = useState({value:0, frequency:''});
+    const [allowableWorkingHours, setAllowableWorkingHours] = useState({from:null, to:null})
 
     useEffect(() => {
       getUserData();
@@ -172,6 +175,9 @@ const ContractIdTermLimitIndividual = (
       let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
       setAutoRenewal({ renewalTerm: continuation?.autoRenewalTerm?.term.toString(), allowableRenewalTerm: continuation?.allowableAutoRenewalTerm?.term.toString(), calendar: continuation?.autoRenewalCalender })
       setRenewalreminder(contractDetail?.continuationPolicy?.reminderList?.renewalReminderList || [{days:0}]);
+      setAllowableWorkingHours({...allowableWorkingHours,
+        from: GetDateFromHours(contractDetail?.allowableWorkingHours?.from?.toString() || ''),
+        to: GetDateFromHours(contractDetail?.allowableWorkingHours?.to?.toString() || ''),})
       let fileData = [];
       contractDetail?.contractFiles?.map(data => {
         fileData.push({ id: data?.id, type: data?.documentType, name: data?.documentName, desc: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
@@ -184,6 +190,8 @@ const ContractIdTermLimitIndividual = (
     }
   }
 
+  console.log('Working Hours', allowableWorkingHours);
+
   const getUserData = async () => {
     const { data: user } = await GET('user-management-service/user/role?role=Contract Manager');
     if (user) {
@@ -191,14 +199,11 @@ const ContractIdTermLimitIndividual = (
     }
   }
 
-  console.log('ismultisite entity', isMultiSiteEntity);
-
   const getSites = async () => {
     const { data: sites } = await GET('entity-service/sites');
     if (sites) {
       setSites(sites);
       if (!isMultiSiteEntity) {
-        console.log('inside multisite entity', isMultiSiteEntity);
         setSelectedSites(sites?.filter((data,index)=>index === 0)?.map(data=>data));
         setSelectedSite(sites?.[0]?.id);
       }else{
@@ -232,6 +237,10 @@ const ContractIdTermLimitIndividual = (
     let sites = getSiteData();
     if(departmentSpecific && sites?.some(data=>data?.departmentList?.departments?.length === 0)){
       ErrorToaster('Select Departments for all the selected Sites');
+      return;
+    }
+    if(allowableWorkingHours?.from === null || allowableWorkingHours?.to === null){
+      ErrorToaster('Allowable Working hours has to be selected to proceed');
       return;
     }
     let contractFiles = [];
@@ -300,6 +309,10 @@ const ContractIdTermLimitIndividual = (
           "value": parseInt(contractedTimeCommitment?.value),
           "frequency": contractedTimeCommitment?.frequency,
         },
+        "allowableWorkingHours": {
+          "from": allowableWorkingHours?.from?.toLocaleTimeString('it-IT').toString(),
+          "to": allowableWorkingHours?.to?.toLocaleTimeString('it-IT').toString()
+        },
         "contractIdMissing": contractId?.missing,
         "fullyExecutedContract": fullyExecutedContract,
         "siteSpecificContract": siteSpecific,
@@ -354,6 +367,7 @@ const ContractIdTermLimitIndividual = (
     }
     setSelectedSites(temp);
     setDepartmentSpecific(false);
+    siteFieldCheck(siteSpecific)
   }
 
 
@@ -535,6 +549,14 @@ const ContractIdTermLimitIndividual = (
     setDepartmentSpecific(!departmentSpecific);
   }
 
+  const siteFieldCheck = (value) => {
+    checkFieldAndPopAlert(value ? selectedSites?.length : true, 'Site Specific Contract')
+  }
+
+  const deptFieldCheck = (value) => {
+    checkFieldAndPopAlert(value ? sites?.filter(data=>data?.departmentList?.departments?.length !== 0)?.map(data=>data)?.length : true, 'Department Specific Contract')
+  }
+
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -542,14 +564,14 @@ const ContractIdTermLimitIndividual = (
           <div className={style.extentionLableStyle}>Contract / Agreement Name*</div>
           <InputGroup placeholder="Contract Name" className={style.fullWidth} value={contractName}
             maxLength={TEXTFIELDLEN} onChange={(e) => { setContractName(e.target.value); setName(e.target.value) }}
-            onFocus={() => { getSelectedField('Contract / Agreement Name') }} />
+            onFocus={() => { checkFieldAndPopAlert(contractName , 'Contract / Agreement Name') }} />
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <div className={style.extentionLableStyle}>Contract ID ( CID )*</div>
           <div className={style.displayInRow}>
             <InputGroup placeholder="Contract Id" value={contractId.id} disabled={contractId.missing}
               maxLength={TEXTFIELDLEN}
-              onFocus={() => { getSelectedField('Contract ID') }} className={`${style.entityFieldWidth}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
+              onFocus={() => { checkFieldAndPopAlert(contractId?.id,'Contract ID') }} className={`${style.entityFieldWidth}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
             <Checkbox label="Missing" checked={contractId.missing} onChange={(e) => setContractId({ ...contractId, missing: e.target.checked, id: '' })} className={`${style.marginTop10} ${style.marginLeft20}`} />
           </div>
         </div>
@@ -576,7 +598,7 @@ const ContractIdTermLimitIndividual = (
                 className={style.selectAssignedContractFieldWidth}
                 maxLength={TEXTFIELDLEN}
                 value={contractData?.contractManager?.name?.firstName}
-                onFocus={() => { getSelectedField('Assigned Contract Manager') }} />
+                onFocus={() => { checkFieldAndPopAlert(selectContractManager, 'Assigned Contract Manager') }} />
               {(!items?.map(data => data?.name?.firstName)?.includes(userName) && userName !== '') && (
                 <div className={`${style.addBoxDescription} ${style.marginTop}`}>
                   The Contract Manager you are trying to add is not a registered
@@ -615,7 +637,7 @@ const ContractIdTermLimitIndividual = (
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <div className={style.extentionLableStyle}>Contract Documents On File*</div>
-          <div onFocus={() => { getSelectedField('Fully Executed Contract on File') }}>
+          <div onFocus={() => { checkFieldAndPopAlert(fullyExecutedContractData?.length, 'Fully Executed Contract on File') }}>
             <div className={`${style.spaceBetween}`}>
               <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
@@ -681,14 +703,14 @@ const ContractIdTermLimitIndividual = (
         </div>
        {isMultiSiteEntity &&
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
-            onFocus={() => { getSelectedField('Site Specific Contract') }}>
+            onFocus={()=>siteFieldCheck(siteSpecific)}>
             <div className={style.extentionLableStyle}>Site Specific Contract*</div>
             <div>
               <div className={style.displayInRow}>
                 <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch checked={siteSpecific} color={'primary'} className={`${style.textAlignLeft}`} onChange={() => setSiteSpecific(!siteSpecific)} />
+                    <Switch checked={siteSpecific} color={'primary'} className={`${style.textAlignLeft}`} onChange={() => {setSiteSpecific(!siteSpecific);siteFieldCheck(!siteSpecific);}} />
                   }
                   className={`${style.switchFontStyle}`}
                   label={siteSpecific ? 'YES' : "NO"}
@@ -719,14 +741,14 @@ const ContractIdTermLimitIndividual = (
         }
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { getSelectedField('Department Specific Contract') }}>
+          onFocus={() => { deptFieldCheck(departmentSpecific) }}>
           <div className={style.extentionLableStyle}>Department Specific Contract*</div>
           <div>
             <div className={style.displayInRow}>
             <ThemeProvider theme={switchTheme}>
               <FormControlLabel
                 control={
-                  <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => { handleDepartmentSpecific() }} />
+                  <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => { handleDepartmentSpecific(); deptFieldCheck(!departmentSpecific) }} />
                 }
                 className={`${style.switchFontStyle}`}
                 label={departmentSpecific ? 'YES' : "NO"}
@@ -747,7 +769,7 @@ const ContractIdTermLimitIndividual = (
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <div className={style.extentionLableStyle}>Contract Term Period*</div>
           <div className={style.termPeriodGrid}>
-            <div onFocus={() => { getSelectedField('Contract Term Period Start Date') }}>
+            <div onFocus={() => { checkFieldAndPopAlert(contractTermPeriodFrom, 'Contract Term Period Start Date') }}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   open={calendarStart}
@@ -783,7 +805,7 @@ const ContractIdTermLimitIndividual = (
               </LocalizationProvider>
             </div>
             <p className={`${style.toStyle} ${style.alignCenter}`}>To</p>
-            <div onFocus={() => { getSelectedField('Contract Term Period End Date') }}>
+            <div onFocus={() => { checkFieldAndPopAlert(contractTermPeriodTo, 'Contract Term Period End Date') }}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   open={calendarEnd}
@@ -819,7 +841,7 @@ const ContractIdTermLimitIndividual = (
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <div className={style.extentionLableStyle}>Contracted Services Effective Date*</div>
-          <div className={`${style.leftAlign} ${style.effectiveDateWidth}`} onFocus={() => { getSelectedField('Contracted Services Effective Date') }}>
+          <div className={`${style.leftAlign} ${style.effectiveDateWidth}`} onFocus={() => { checkFieldAndPopAlert(contractEffectiveDate, 'Contracted Services Effective Date') }}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
                 open={calendarEffective}
@@ -877,11 +899,28 @@ const ContractIdTermLimitIndividual = (
               </div>
           </div>
 
+          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
+              <div className={style.displayInRow}>
+                  <TimePicker
+                      useAmPm={false}
+                      onChange={(e) => setAllowableWorkingHours({...allowableWorkingHours, from:e, to:e})}
+                      value={new Date(allowableWorkingHours?.from)}
+                  />
+                  <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                  <TimePicker
+                      useAmPm={false}
+                      onChange={(e) => setAllowableWorkingHours({...allowableWorkingHours, to:e})}
+                      minTime={new Date(new Date(allowableWorkingHours?.from).getTime())}
+                      value={new Date(allowableWorkingHours?.to)}
+                />
+              </div>
+          </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <div className={style.extentionLableStyle}>Contract Continuation Policy*</div>
           <div>
-            <div onFocus={() => { getSelectedField('Contract Continuation Policy') }}>
+            <div onFocus={() => { checkFieldAndPopAlert(selectedContractContinuationPolicy, 'Contract Continuation Policy') }}>
               <select
                 name="class"
                 id="Class"
@@ -907,7 +946,7 @@ const ContractIdTermLimitIndividual = (
             </div>
             {selectedContractContinuationPolicy === "AUTORENEWAL" && (
               <div className={`${style.renewalBoxStyle}`}>
-                <div className={`${style.renewalBoxGrid}`} onFocus={() => { getSelectedField('Auto Renewal - Auto Renewal Term') }}>
+                <div className={`${style.renewalBoxGrid}`} onFocus={() => { checkFieldAndPopAlert(autoRenewal.renewalTerm, 'Auto Renewal - Auto Renewal Term') }}>
                   <div className={style.marginTop}>Auto Renewal Term*</div>
                   <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e) => (e <= 52 && setAutoRenewal({ ...autoRenewal, renewalTerm: e, calendar: '' }))} type="tel" />
                   <select
@@ -927,7 +966,7 @@ const ContractIdTermLimitIndividual = (
                     </option>
                   </select>
                 </div>
-                <div className={`${style.renewalBoxGrid}`} onFocus={() => { getSelectedField('Auto Renewal - Allowable Auto Renewal Terms') }}>
+                <div className={`${style.renewalBoxGrid}`} onFocus={() => { checkFieldAndPopAlert(autoRenewal.allowableRenewalTerm, 'Auto Renewal - Allowable Auto Renewal Terms') }}>
                   <div className={style.marginTop10}>Allowable Auto Renewal Terms*</div>
                   <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm} onChange={(e) => (e <= 12 && setAutoRenewal({ ...autoRenewal, allowableRenewalTerm: e }))} type="tel" />
                 </div>
@@ -938,7 +977,7 @@ const ContractIdTermLimitIndividual = (
               || selectedContractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION") && (
                 <div className={`${style.renewalRemainderBoxStyle}`}
                   onFocus={() => {
-                    getSelectedField(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
+                    checkFieldAndPopAlert(renewalReminder?.[0]?.days || 0, selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
                       ? "Written Contract Extension - Set Renewal Reminder"
                       : selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
                         ? "New Contract on Expiration - Set Renewal Reminder"

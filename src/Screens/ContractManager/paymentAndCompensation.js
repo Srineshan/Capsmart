@@ -28,7 +28,7 @@ const switchTheme = createTheme({
     },
 });
 
-const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPage, contractId, getSelectedField, getShowAlert, isEditable, getTabDataStatus }) => {
+const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPage, contractId, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus }) => {
     const [compensation, setCompensation] = useState('RVUBASED');
     const [paymentAndCompensation, setPaymentAndCompensation] = useState({});
     const [rvuQuantity, setRvuQuantity] = useState({
@@ -108,7 +108,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setRvuReferenceUsed(paymentAndCompensation?.rvuReferenceUsed);
         setRvuQuantityPeriod(paymentAndCompensation?.rvuQuantityPeriod);
         setRvuQuantityVariance(paymentAndCompensation?.rvuQuantityVariance);
-        console.log('asdasdad',paymentAndCompensation?.rvuQuantityPeriod);
         setDollarRate({...dollarRate, hour:paymentAndCompensation?.dollarRate?.hour, notApplicable:paymentAndCompensation?.dollarRate?.notApplicable});
         setDollarValue(paymentAndCompensation?.dollarValue);
         setCompensationOffsetCriteria(paymentAndCompensation?.compensationOffsetCriteria);
@@ -361,7 +360,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                 timeSheetTabs?.length !== 0 ?
                     <div className={style.cloneBlockStyle}>
                         <div className={`${style.newContractFromCloneBoxStyle}`}>
-                            <div className={`${style.extentionGrid} ${selectContractInfo === "Individual Contractor" && style.marginTop20}`} onFocus={() => { getSelectedField('Compensation Basis') }}>
+                            <div className={`${style.extentionGrid} ${selectContractInfo === "Individual Contractor" && style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(compensation, 'Compensation Basis') }}>
                                 <div className={style.extentionLableStyle}>Compensation Basis*</div>
                                 {/* <div>
                         <RadioGroup
@@ -393,7 +392,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             </div>
                             {compensation === "RVUBASED" && (
                                 <div>
-                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('RVU Quantity') }}>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuQuantity?.quantity, 'RVU Quantity') }}>
                                         <div className={style.extentionLableStyle}>RVU Quantity*</div>
                                         <div className={style.displayInRow}>
                                             <InputGroup className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0"
@@ -433,7 +432,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             </FormControl>
                                         </div>
                                     </div>
-                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('FTE Equivalent') }} >
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(fteEquivalent?.value, 'FTE Equivalent') }} >
                                         <div className={style.extentionLableStyle}>FTE Equivalent</div>
                                         <InputGroup className={style.twoFieldWidth} value={fteEquivalent?.value} placeholder="0" type="number"
                                             min="0"
@@ -441,7 +440,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                                 ...fteEquivalent, value: parseFloat(e.target.value.slice(0, limit4))
                                             })} />
                                     </div>
-                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('RVU Reference Used') }}>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuReferenceUsed?.value, 'RVU Reference Used') }}>
                                         <div className={style.extentionLableStyle}>RVU Reference Used</div>
                                         <InputGroup className={style.fullWidth} value={rvuReferenceUsed?.value} placeholder="Enter RVU Reference Used"
                                             min="0"
@@ -449,7 +448,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                                 ...rvuReferenceUsed, value: e.target.value
                                             })} />
                                     </div>
-                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('RVU Quantity Variance (+/-)') }}>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuQuantityVariance?.value, 'RVU Quantity Variance (+/-)') }}>
                                         <div className={style.extentionLableStyle}>RVU Quantity Variance (+/-)</div>
                                         <InputGroup className={style.twoFieldWidth} value={rvuQuantityVariance?.value} placeholder="0" type='number'
                                             min="0" onChange={(e) => setRvuQuantityVariance({

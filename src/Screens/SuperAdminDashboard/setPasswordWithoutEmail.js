@@ -31,7 +31,8 @@ const SetPasswordWithoutPassword = () => {
 
     const getEntityId = async() => {
       await axios(`https://rest.timesmart.io/entity-service/entityID`,{
-          method: 'GET'
+          method: 'GET',
+          headers:{'X-subdomain':'demo'}
       }).then(response=>{
         var cookie = new Cookie();
         cookie.set('entityId',response?.data?.id);

@@ -1,4 +1,7 @@
 import React, {useState, useEffect} from 'react';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
 import style from './index.module.scss';
 
 const ReviewerApproverField = ({data,label,onValueChange,selectLabel,value}) => {
@@ -10,27 +13,24 @@ const ReviewerApproverField = ({data,label,onValueChange,selectLabel,value}) => 
   // },[value])
 
   return(
-    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
      <div className={style.extentionLableStyle}>{label}</div>
-      <div className={style.fullWidth}>
-        <select
-            name="class"
-            id={selectedValue}
-            className={`${style.fullWidth} `}
-            value={value}
-            defaultvalue={value}
-            onChange={e=>onValueChange(e.target.value)}>
-            <option value="0">
-                {selectLabel}
-            </option>
+        <FormControl size="small">
+            <Select
+                value={value}
+                defaultvalue={value}
+                onChange={e=>onValueChange(e.target.value)}
+                labelId="demo-select-small"
+                id="demo-select-small"
+                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+            >
+            <MenuItem value={''}>Select Add-On Approver</MenuItem>
             {data?.map(data=>(
-              <option value={data?.userId}>
-                {data?.title?.title}
-              </option>
+              <MenuItem value={data?.userId}>{data?.title?.title}</MenuItem>
             ))
             }
-        </select>
-      </div>
+            </Select>
+        </FormControl>
     </div>
   )
 }
