@@ -317,7 +317,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   ]
 
   const draftActionsData = [
-    // {'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
+    {'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
     { 'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
     // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}
   ]
