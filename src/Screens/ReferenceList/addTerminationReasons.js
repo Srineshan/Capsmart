@@ -35,17 +35,22 @@ const AddTerminationReasons = ({
   isEdit,
   getTerminationReasonData,
 }) => {
-  const [currentindustryType, setCurrentIndustryType] = useState("");
+  const [currentindustryType, setCurrentIndustryType] = useState(
+    IndustryData?.id ? IndustryData.id : ""
+  );
   const [terminationId, setTerminationId] = useState("");
   const [terminationBy, setTerminationBy] = useState("CONTRACTOR");
   const [primaryReason, setPrimaryReason] = useState("");
   const [secondaryReason, setSecondaryReason] = useState("");
-  const [currentEntityType, setCurrentEntityType] = useState("");
+  const [currentEntityType, setCurrentEntityType] = useState(
+    selectedEntity?.id ? selectedEntity.id : ""
+  );
   const [industryTypes, setIndustryTypes] = useState([]);
   const [entityTypes, setEntityTypes] = useState([]);
   const [createdDate, setCreatedDate] = useState("");
 
   const classes = useStyles();
+
   const getAllIndustries = async () => {
     const { data: industryData } = await GET(`entity-service/industryMaster`);
     setIndustryTypes(industryData);
@@ -116,14 +121,14 @@ const AddTerminationReasons = ({
   };
 
   useEffect(() => {
-    if (entityTypes.length !== 0) {
-      setCurrentEntityType(entityTypes?.[0]?.id);
-    }
-  }, [currentindustryType, entityTypes]);
-
-  useEffect(() => {
     getAllIndustries();
   }, []);
+
+  useEffect(() => {
+    if (IndustryData?.id) {
+      getEntityData(IndustryData?.id);
+    }
+  }, [IndustryData]);
 
   useEffect(() => {
     if (isEdit) {
@@ -144,6 +149,7 @@ const AddTerminationReasons = ({
       <img
         src={ArrowDown}
         className={`${style.colorFileStyle3} ${style.marginRight}`}
+        alt=""
       />
     );
   };

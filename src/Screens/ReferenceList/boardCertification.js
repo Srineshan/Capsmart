@@ -157,7 +157,7 @@ const BoardCertification = ({
     let updatedData = [...Data];
     setIndustryData(updatedData?.[0]);
     updatedData?.[0]?.entities.some((list, index) => {
-      setEntityData(list?.type);
+      setEntityData(list);
       if (list.CSP.length > 0) {
         setIsClicked(index);
         setSelectedTitle(list.CSP[0]?.contractedServiceProviderType);

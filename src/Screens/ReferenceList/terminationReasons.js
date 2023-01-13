@@ -128,6 +128,7 @@ const BoardCertification = ({
 
   const EntityDefaultSet = (Data) => {
     let updatedData = [...Data];
+    setIndustryData(updatedData?.[0]);
     updatedData.some((list, index) => {
       if (list.entities.length > 0) {
         setClicked(index);
