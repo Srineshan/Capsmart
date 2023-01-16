@@ -6,6 +6,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { ThemeProvider } from '@mui/styles';
 import { createTheme } from '@mui/material';
 import MUIRichTextEditor from "mui-rte";
+import { convertToRaw, EditorState } from 'draft-js'
 import { currentUser } from '../../utils/auth';
 
 import style from './index.module.scss';
@@ -14,6 +15,7 @@ const Notes = () => {
     const [openNotesIndex, setOpenNotesIndex] = useState(0);
     const [isOpenNotes, setIsOpenNotes] = useState(true);
     const [notesArray, setNotesArray] = useState(['Notes 1', 'Notes 1', 'Notes 1']);
+    const [value, setValue] = useState('')
     const currentUserDetails = currentUser();
 
     const handleOpenNotes = (index) => {
@@ -24,6 +26,12 @@ const Notes = () => {
     const save = (data) => {
         console.log(data);
     };
+
+    const handleFunct = (event) => {
+        console.log(event.getCurrentContent().getPlainText(), convertToRaw(event.getCurrentContent()));
+        const rteContent = convertToRaw(event.getCurrentContent())
+        rteContent && setValue(JSON.stringify(rteContent))
+    }
 
     const theme = createTheme({
         palette: {
@@ -61,7 +69,9 @@ const Notes = () => {
                             <MUIRichTextEditor
                                 label="To create a note in the contract scratch pad, you can type your note or you can highlight a section of text from the selected reference document on the left. Copy and paste the selected text over here. This text will remain in the scratch pad for you to refer to."
                                 onSave={save}
+                                onChange={handleFunct}
                                 toolbar={false}
+                                value={value}
                             />
                         </ThemeProvider>
                     </div>
