@@ -326,14 +326,14 @@ const HelpHome = () => {
                         </div>
                     </div>
                 )}
-                <div className={`${style.displayInRow} ${style.blueCircleContainer}`}>
+                {/* <div className={`${style.displayInRow} ${style.blueCircleContainer}`}>
                     <div className={style.blueCircle} onClick={() => setShowChatView(!showChatView)}>
                         {showChatView ? <CloseOutlinedIcon /> : <ChatOutlinedIcon />}
                     </div>
                     <div className={style.blueCircle} onClick={() => setShowVideoOptions(true)}>
                         <VideocamOutlinedIcon />
                     </div>
-                </div>
+                </div> */}
             </div>
             <Dialog isOpen={showVideoOptions} onClose={() => setShowVideoOptions(false)} className={`${style.videoOptionsDialogStyle} ${style.dialogPaddingBottom}`}>
                 <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>

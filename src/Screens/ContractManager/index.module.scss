@@ -1980,3 +1980,15 @@ input[type=number] {
     right: 20px;
     top: 50px;
 }
+
+.addServiceImgStyle {
+    height: 30px;
+    width: 30px;
+    object-fit: contain;
+}
+
+.addServiceNotesImgStyle {
+    height: 35px;
+    width: 35px;
+    object-fit: contain;
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Dialog, Classes, Icon, Intent, InputGroup, EditableText, RadioGroup, Radio, Checkbox, Tag, TextArea } from '@blueprintjs/core';
+import { Dialog, Classes, Icon, Intent, Tag } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import AddIcon from '@mui/icons-material/Add';
 import DatalistInput from 'react-datalist-input';
@@ -9,15 +9,18 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
-import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
 import { PUT, GET, TenantID, POST } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Calculator from './../../Components/Calculator';
-import ReactStickyNotes from '@react-latest-ui/react-sticky-notes';
 import style from './index.module.scss';
+import NotesNotOpen from './../../images/notesNotOpen.png';
+import DocumentNotOpen from './../../images/documentNotOpen.png';
+import CalculatorNotOpen from './../../images/calculatorNotOpen.png';
+import NotesOpen from './../../images/notesOpen.png';
+import DocumentOpen from './../../images/documentOpen.png';
+import CalculatorOpen from './../../images/calculatorOpen.png';
+import Popover from '@mui/material/Popover';
 import SendEmailUserList from './mailUser';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
@@ -67,6 +70,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [isShowPDF, setIsShowPDF] = useState(false);
   const limit = 3;
   const limit5 = 5;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+  const [anchorElDoc, setAnchorElDoc] = useState(null);
+  const openDoc = Boolean(anchorElDoc);
+  const idDoc = openDoc ? 'simple-popover' : undefined;
+  const [isShowNotesList, setIsShowNotesList] = useState(false);
+  const [isShowDocumentsList, setIsShowDocumentsList] = useState(false);
 
   useEffect(() => {
     if (editService) {
@@ -479,12 +490,26 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     if (!isShowPDF) {
       getAddServiceDialog(false);
       getEditServiceDialog(false);
-      console.log('false')
     } else {
       setIsShowPDF(!isShowPDF);
-      console.log('true')
     }
   }
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClosePopover = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClickDoc = (event) => {
+    setAnchorElDoc(event.currentTarget);
+  };
+
+  const handleClosePopoverDoc = () => {
+    setAnchorElDoc(null);
+  };
 
   return (
     <div>
@@ -493,14 +518,75 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
             <div className={style.displayInRow}>
-              <div className={`${style.cursorPointer} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>
-                <StickyNote2Icon style={{ fontSize: 30, color: '#bfbfbf' }} />
+              <div className={`${style.cursorPointer} ${style.marginRight20}`}>
+                <div
+                  // onClick={() => setIsShowNotesList(true)}
+                  onClick={(e) => { handleClick(e); setIsShowNotesList(!isShowNotesList) }} aria-describedby={id}
+                // onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}
+                >
+                  {helpTool?.textArea ? (
+                    <img src={NotesOpen} alt="" className={style.addServiceNotesImgStyle} />
+                  ) : (
+                    <img src={NotesNotOpen} alt="" className={style.addServiceNotesImgStyle} />
+                  )}
+                </div>
+                {isShowNotesList && (
+                  <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClosePopover}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <div className={style.actionsCard}>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 1</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 2</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 3</div>
+                    </div>
+                  </Popover>
+                )}
+                {/* <StickyNote2Icon style={{ fontSize: 30, color: '#bfbfbf' }} /> */}
               </div>
-              <div className={`${style.cursorPointer} ${style.marginRight}`} onClick={() => setIsShowPDF(!isShowPDF)}>
-                <TextSnippetIcon style={{ fontSize: 30, color: '#bfbfbf' }} />
+              <div className={`${style.cursorPointer} ${style.marginRight20}`}>
+                {/* <TextSnippetIcon style={{ fontSize: 30, color: '#bfbfbf' }} /> */}
+                <div onClick={(e) => { handleClickDoc(e);setIsShowDocumentsList(!isShowDocumentsList) }} aria-describedby={idDoc}>
+                  {isShowPDF ? (
+                    <img src={DocumentOpen} alt="" className={style.addServiceImgStyle} />
+                  ) : (
+                    <img src={DocumentNotOpen} alt="" className={style.addServiceImgStyle} />
+                  )}
+                </div>
+                {isShowDocumentsList && (
+                  <Popover
+                    id={idDoc}
+                    open={openDoc}
+                    anchorEl={anchorElDoc}
+                    onClose={handleClosePopoverDoc}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <div className={style.actionsCard}>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setIsShowPDF(!isShowPDF)}>List 1</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setIsShowPDF(!isShowPDF)}>List 2</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setIsShowPDF(!isShowPDF)}>List 3</div>
+                    </div>
+                  </Popover>
+                )}
               </div>
-              <div className={`${style.cursorPointer} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator })}>
-                <CalculateIcon style={{ fontSize: 30, color: '#bfbfbf' }} />
+              <div className={`${style.cursorPointer} ${style.marginRight20}`} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator })}>
+                {/* <CalculateIcon style={{ fontSize: 30, color: '#bfbfbf' }} /> */}
+                <div>
+                  {helpTool?.calculator ? (
+                    <img src={CalculatorOpen} alt="" className={style.addServiceImgStyle} />
+                  ) : (
+                    <img src={CalculatorNotOpen} alt="" className={style.addServiceImgStyle} />
+                  )}
+                </div>
               </div>
               <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => handleClose()} />
             </div>
@@ -638,7 +724,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                           ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} />
                           : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
               </div>
-              {helpTool?.calculator ? (
+              {/* {helpTool?.calculator ? (
                 <div className={style.calculatorDisplayStyle}>
                   <Calculator />
                 </div>
@@ -646,13 +732,22 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 <div className={style.calculatorDisplayStyle}>
                   <Notes />
                 </div>
-              ) : ''}
+              ) : ''} */}
             </div>
           ) : (
             <div className={`${style.pdfViewStyle} ${style.marginTop}`}>
               <iframe src='https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' allowfullscreen height="500px" width="100%" title='Document' />
             </div>
           )}
+          {helpTool?.calculator ? (
+            <div className={style.calculatorDisplayStyle}>
+              <Calculator />
+            </div>
+          ) : helpTool?.textArea ? (
+            <div className={style.calculatorDisplayStyle}>
+              <Notes />
+            </div>
+          ) : ''}
         </div>
         <div>
           {isEditable && !isShowPDF &&
