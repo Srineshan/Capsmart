@@ -33,13 +33,10 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
     if(tabValidation){
       let temp = tabValidation?.value2;
       temp.then(value=>{
-        console.log('value testing', value)
         setProviderDataStatus(value);
       })
     }
   }, [tabValidation])
-
-  console.log('provider Status', providerDataStatus);
 
 
   const getUserData = async () => {
@@ -62,7 +59,6 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
   const getDataStatus = () => {
     let tabsValid = validateTabs(contractId);
     tabsValid?.then(response=>{
-      console.log('inside',response);
       setTabValidation(response);
     })
   }

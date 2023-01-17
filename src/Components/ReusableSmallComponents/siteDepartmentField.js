@@ -19,7 +19,7 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
   const [defaultSelected, setDefaultSelected] = useState({ site: '', dept: '' });
   const [departmentList, setDepartmentList] = useState();
 
-  useEffect(()=>{
+  useEffect(() => {
     if (sites?.length === 1) {
       console.log('inside selected SIte');
       setDefaultSelected({ ...defaultSelected, site: selectedSites?.[0]?.id });
@@ -107,7 +107,7 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
   return (
     <div>
       <div className={style.siteDeptGrid}>
-        {sites?.length > 1 ?  <FormControl sx={{ minWidth: 120 }} size="small">
+        {sites?.length > 1 ? <FormControl sx={{ minWidth: 120 }} size="small">
           <InputLabel id="demo-select-small">Select Site</InputLabel>
           <Select
             labelId="demo-select-small"
@@ -121,36 +121,36 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
             ))}
           </Select>
         </FormControl> :
-      <FormControl sx={{ minWidth: 120 }} size="small">
-          <TextField id="outlined-basic" value={sites?.[0]?.siteName?.siteName} variant="outlined" readOnly size='small'
-            inputProps={{
-              style: {
-                height: 15,
-              },
-            }}
-          />
+          <FormControl sx={{ minWidth: 120 }} size="small">
+            <TextField id="outlined-basic" value={sites?.[0]?.siteName?.siteName} variant="outlined" readOnly size='small'
+              inputProps={{
+                style: {
+                  height: 15,
+                },
+              }}
+            />
+          </FormControl>
+        }
+        <FormControl sx={{ minWidth: 120 }} size="small">
+          <InputLabel id="demo-multiple-checkbox-label">Select Dept</InputLabel>
+          <Select
+            labelId="demo-multiple-checkbox-label"
+            id="demo-select-small"
+            multiple
+            value={departmentsSelected}
+            onChange={(e) => { onDepartmentSelect(e) }}
+            displayEmpty
+            input={<OutlinedInput label="Select Dept" />}
+            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+          >
+            {
+              departmentList?.map(dept => (
+                <MenuItem value={dept?.id}>{dept?.departmentName?.name}</MenuItem>
+              )
+              )
+            }
+          </Select>
         </FormControl>
-      }
-      <FormControl sx={{ minWidth: 120 }} size="small">
-        <InputLabel id="demo-multiple-checkbox-label">Select Dept</InputLabel>
-        <Select
-          labelId="demo-multiple-checkbox-label"
-          id="demo-select-small"
-          multiple
-          value={departmentsSelected}
-          onChange={(e) => { onDepartmentSelect(e) }}
-          displayEmpty
-          input={<OutlinedInput label="Select Dept" />}
-          SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-        >
-          {
-            departmentList?.map(dept => (
-              <MenuItem value={dept?.id}>{dept?.departmentName?.name}</MenuItem>
-            )
-            )
-          }
-        </Select>
-      </FormControl>
 
         {/* <FormControl sx={{ minWidth: 120 }} size="small">
           <TextField id="outlined-basic" label="Dept" variant="outlined" size='small'

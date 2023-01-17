@@ -115,6 +115,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     const setSelectedValues = () => {
         setMetadata({
             ...metadata,
+            refId: serviceSelected?.refId,
             dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
             dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
             dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,

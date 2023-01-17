@@ -9,25 +9,20 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
-import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
 import { PUT, GET, TenantID, POST } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Calculator from './../../Components/Calculator';
-import ReactStickyNotes from '@react-latest-ui/react-sticky-notes';
 import style from './index.module.scss';
-import SendEmailUserList from './mailUser';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
-import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import ClinicBlocksFields from './clinicBlocksField';
 import OnCallCoverageFields from './onCallCoverageFields';
 import SupplementalFields from './supplementalFields';
 import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
+import { workFlowDataGenerator } from './workflowDataGenerator';
 
 const switchTheme = createTheme({
   palette: {
@@ -41,6 +36,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const serviceTypeList = ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days', 'Supplemental Services', 'Add-On Services', 'Administrative / Miscellaneous Services'];
   const siteTypeId = sessionStorage.getItem('entityTypeId');
   const [serviceType, setServiceType] = useState('Clinic Blocks');
+  const [addOnButton, setAddOnButton] = useState('');
   const [siteList, setSiteList] = useState([]);
   const [allLocation, setAllLocation] = useState([]);
   const [siteData, setSiteData] = useState([]);
@@ -62,14 +58,17 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [selectedUser, setSelectedUser] = useState([]);
   const [helpTool, setHelpTool] = useState({ calculator: false, textArea: false });
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [isWorkFlowUpdated, setIsWorkFlowUpdated] = useState(false);
   const [timeCommitment, setTimeCommitment] = useState({ value: 0, frequency: '' });
-  const [allowableWorkingHours, setAllowableWorkingHours] = useState({from:new Date()?.toLocaleTimeString('it-IT').toString(), to:new Date()?.toLocaleTimeString('it-IT').toString()});
+  const [allowableWorkingHours, setAllowableWorkingHours] = useState({ from: new Date()?.toLocaleTimeString('it-IT').toString(), to: new Date()?.toLocaleTimeString('it-IT').toString() });
   const [isShowPDF, setIsShowPDF] = useState(false);
   const limit = 3;
   const limit5 = 5;
 
+
   useEffect(() => {
     if (editService) {
+      setSiteData(selectedService?.sites);
       getSelectedSites(selectedService?.sites);
       getNewLocation(selectedService?.locations);
       setServiceType(selectedService?.activityType?.activityType);
@@ -94,6 +93,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     removeSelectedLocationFromList();
   }, [selectedLocation])
 
+  useEffect(() => {
+    if (isWorkFlowUpdated) {
+      console.log('inside useEffect', metadata);
+      handleSave(addOnButton);
+      setIsWorkFlowUpdated(false);
+    }
+  }, [metadata, isWorkFlowUpdated])
+
   let rightHelpArea = helpTool?.calculator || helpTool?.textArea;
 
   const getSelectedSites = (value) => {
@@ -102,12 +109,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   const getNewLocation = (value) => {
     setNewLocation(value);
-  }
-
-  const leftElementButton = (text) => {
-    return (
-      <button className={`${style.minMaxLeftElement}`} >{text}</button>
-    )
   }
 
   const removeFriendlyName = (index) => {
@@ -174,6 +175,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const activityToAdd = async () => {
+    if (newActivity === '') {
+      ErrorToaster('Enter valid Acitivty name');
+      return;
+    }
+    if (activity?.map(data => data?.activity?.activity.includes(newActivity))) {
+      ErrorToaster('Activity Already Exists');
+      return;
+    }
     let data = {
       "activity": {
         "activity": newActivity
@@ -219,7 +228,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const getSites = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
-    setAllowableWorkingHours({from:contractDetail?.allowableWorkingHours?.from, to:contractDetail?.allowableWorkingHours?.to});
+    setAllowableWorkingHours({ from: contractDetail?.allowableWorkingHours?.from, to: contractDetail?.allowableWorkingHours?.to });
     setTimeCommitment(contractDetail?.timeCommitment);
     console.log('inside sites function');
     let sites = contractDetail?.site?.sites;
@@ -228,27 +237,134 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }
 
-  console.log('metadata in add services', metadata);
+  const addOnWorkFlow = async (buttonType) => {
+    setAddOnButton(buttonType);
+    if (serviceType === 'Add-On Services' && editService) {
+      let dataValue = [];
+      let temp = metadata;
+      temp?.map((data, index) => {
+        if (data?.approver !== undefined) {
+          let workFlowData;
+          if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
+            let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
+            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.userId, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+          } else {
+            let approverName = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
+            let paymentApproverName = `${data?.paymentApprover?.name?.firstName} ${data?.paymentApprover?.name?.lastName}`
+            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.userId, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.userId, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
+          }
+          if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
+            POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
+              then(response => {
+                data.workFlow = {
+                  id: response?.data,
+                  workFlowName: {
+                    name: data?.performingActivity?.activity,
+                  }
+                }
+                dataValue.push(data);
+                console.log('datavalue', dataValue);
+                if (temp?.length - 1 === index) {
+                  console.log('dataValue', dataValue);
+                  setMetadata(dataValue);
+                  setIsWorkFlowUpdated(true);
+                }
+              }).catch(error => {
+                ErrorToaster('Unexpected Error');
+              })
+          } else {
+            PUT(`timesheet-management-service/workflow/${data.workflowId}`, workFlowData)
+              .then(response => {
+                console.log('Success!');
+                dataValue.push(data);
+                setMetadata(dataValue);
+                setIsWorkFlowUpdated(true);
+              })
+              .catch(error => {
+                ErrorToaster('Unexpected Error');
+              })
+          }
+          console.log(' inside edit datavalue check', dataValue);
+        } else {
+          data.workFlow = null;
+        }
+      })
+    }
+    else if (serviceType === 'Add-On Services' && !editService) {
+      let dataValue = [];
+      let data = [];
+      console.log('inside check', metadata);
+      let temp = metadata;
+      data = temp;
+      temp?.map((data, index) => {
+        data.refId = (new Date()).getTime();
+        let dataMap = {
+          selectedActivityId: data?.selectedActivityId,
+          additionalDetails: data?.activityResponse?.dataMap?.additionalDetails,
+        }
+        data.activityResponse = { dataMap: dataMap };
+        data.sites = siteData;
+        data.performingActivity = { activity: data?.performingActivity };
+        data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
+        if (data?.approver !== undefined) {
+          let workFlowData;
+          if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
+            let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
+            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.userId, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+          } else {
+            let approverName = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
+            let paymentApproverName = `${data?.paymentApprover?.name?.firstName} ${data?.paymentApprover?.name?.lastName}`
+            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.userId, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.userId, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
+          }
+
+          if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
+            POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
+              then(response => {
+                data.workFlow = {
+                  id: response?.data,
+                  workFlowName: {
+                    name: data?.performingActivity?.activity,
+                  }
+                }
+                dataValue.push(data);
+                console.log('datavalue', dataValue);
+                if (temp?.length - 1 === index) {
+                  console.log('dataValue', dataValue);
+                  setMetadata(dataValue);
+                  setIsWorkFlowUpdated(true);
+                }
+              }).catch(error => {
+                ErrorToaster('Unexpected Error');
+              })
+          }
+        } else {
+          data.workFlow = null;
+        }
+      });
+
+    } else {
+      handleSave(buttonType);
+    }
+  }
 
   const handleSave = async (buttonType) => {
     if (serviceType === '') {
       ErrorToaster('Activity Type Selection is Mandatory');
       return;
     }
-    if(showLocation && selectedLocation?.length === 0){
+    if (showLocation && selectedLocation?.length === 0) {
       ErrorToaster('Atleast one location has to be selected if yes');
       return;
     }
-    if(selectContractInfo !== "INDIVIDUAL" && isDesignatedSpecificContractor && selectedUsers?.length === 0){
+    if (selectContractInfo !== "INDIVIDUAL" && isDesignatedSpecificContractor && selectedUsers?.length === 0) {
       ErrorToaster('Atleast one User has to be selected if Specific Contractor is Yes');
       return;
     }
-    if(metadata?.additionalScheduleRequired && (parseInt(metadata?.additionalScheduleValue) === 0 || metadata?.additionalScheduleFrequency === null)){
+    if (metadata?.additionalScheduleRequired && (parseInt(metadata?.additionalScheduleValue) === 0 || metadata?.additionalScheduleFrequency === null)) {
       ErrorToaster('Additional Schedule value and frequency required');
       return;
     }
-    if(metadata?.billableService && parseInt(metadata?.sessionAmount) === 0)
-    {
+    if (metadata?.billableService && parseInt(metadata?.sessionAmount) === 0) {
       ErrorToaster('Payment Amount field is mandatory if the service is Billable');
       return;
     }
@@ -274,26 +390,17 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     let data = [];
     if (serviceType === 'Add-On Services' && !editService) {
-      console.log('inside check', metadata);
-      let temp = metadata;
-      data = temp;
-      temp?.map(data => {
-        data.refId = (new Date()).getTime();
-        let dataMap = {selectedActityId: data?.selectedActityId}
-        data.activityResponse = {dataMap: dataMap};
-        data.sites = siteData;
-        data.performingActivity = { activity: data?.performingActivity };
-        data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
-      });
-      console.log('after alteration', temp);
+      console.log('inside metadata', metadata);
+      data = metadata;
     }
     else {
+      console.log('metadata', metadata);
       let dataValues = metadata;
       if (serviceType === 'Add-On Services') {
         dataValues = metadata?.[0];
       }
       data = [{
-        "refId":(new Date()).getTime(),
+        "refId": dataValues?.refId ? dataValues?.refId : (new Date()).getTime(),
         "sites": siteData,
         "activityType": {
           "activityType": serviceType
@@ -314,7 +421,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             }
           }
         }),
-        "locations": selectedLocation,
+        "locations": serviceType === 'Add-On Services' ? dataValues?.locations : selectedLocation,
         "contractedSchedule": {
           "minimum": {
             "value": parseInt(dataValues?.min || '0')
@@ -342,11 +449,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           },
           "noTargetApplicable": dataValues?.targetNoTargetApplicable
         },
-        ...(serviceType === 'Supplemental Services' && {"additionalSchedule": {
-          "value": parseInt(dataValues?.additionalScheduleValue),
-          "frequency": dataValues?.additionalScheduleFrequency,
-          "scheduleRequired": dataValues?.additionalScheduleRequired
-        }}),
+        ...(serviceType === 'Supplemental Services' && {
+          "additionalSchedule": {
+            "value": parseInt(dataValues?.additionalScheduleValue),
+            "frequency": dataValues?.additionalScheduleFrequency,
+            "scheduleRequired": dataValues?.additionalScheduleRequired
+          }
+        }),
         "rateType": dataValues?.rateType,
         "activityResponse": {
           "dataMap": {
@@ -357,6 +466,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             ...(serviceType === 'Administrative / Miscellaneous Services' && {
               'adminActivities': dataValues?.selectedActivities,
             }),
+            ...(serviceType === 'Add-On Services' && {
+              'selectedActivityId': dataValues?.activityResponse?.dataMap?.selectedActivityId,
+              'additionalDetails': dataValues?.activityResponse?.dataMap?.additionalDetails || [],
+            })
           }
         },
         "duration": {
@@ -376,18 +489,22 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             "to": allowableWorkingHours?.to,
           }
         }),
-        ...(serviceType === 'On Call Coverage Duty Days' && {"workingPeriod": {
-          "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
-          "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
-        }
+        ...(serviceType === 'On Call Coverage Duty Days' && {
+          "workingPeriod": {
+            "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
+            "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
+          }
         }),
         "workingHours": {
-          "normalWorkingHours": false,
-          "afterWorkingHours": false
+          "normalWorkingHours": dataValues?.workingHours?.normalWorkingHours || false,
+          "afterWorkingHours": dataValues?.workingHours?.afterWorkingHours || false,
         },
-        "activityApprovalWFRequired": false,
+        ...(serviceType === 'Add-On Services' && {
+          workflow: dataValues?.workFlow,
+        }),
+        "activityApprovalWFRequired": dataValues?.activityApprovalWFRequired || false,
         "designateSpecificContractor": isDesignatedSpecificContractor,
-        "locationSpecified": showLocation,
+        "locationSpecified": serviceType === 'Add-On Services' ? dataValues?.locationSpecified : showLocation,
         "dedicatedHoursSpecified": ['Supplemental Services', 'Administrative / Miscellaneous Services'].includes(serviceType) ? dataValues?.dedicatedHoursSpecified : false,
         "billableService": dataValues?.billableService
       }]
@@ -419,7 +536,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       getAddServiceDialog(false);
       getEditServiceDialog(false);
     }
-    getTabDataStatus();
+    // getTabDataStatus();
     reset();
   }
 
@@ -518,7 +635,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   const onShowLocationChange = (value) => {
     setShowLocation(value);
-    if(!value){
+    if (!value) {
       setSelectedLocation([]);
     }
   }
@@ -694,8 +811,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         <div>
           {isEditable &&
             <div className={`${style.floatRight}`}>
-              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('ADD MORE');  }}>ADD MORE</button>
-              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('SAVE AND EXIT');  }}>SAVE & EXIT</button>
+              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { addOnWorkFlow('ADD MORE'); }}>ADD MORE</button>
+              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { addOnWorkFlow('SAVE AND EXIT'); }}>SAVE & EXIT</button>
             </div>
           }
 

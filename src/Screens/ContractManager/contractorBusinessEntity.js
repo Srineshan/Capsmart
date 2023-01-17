@@ -242,7 +242,6 @@ const setBusinessEntityData = () => {
     setKeepConfidential(contractorBusinessEntity?.paymentDataConfidential);
   }
 
-  console.log('npin', contractorNPIN);
 
   useEffect(() => {
     getRoles();
