@@ -9,12 +9,14 @@ import FormGroup from '@mui/material/FormGroup';
 import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 import InputAdornment from '@mui/material/InputAdornment';
+import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
 import style from './index.module.scss';
+import EditableTable from './editableTable';
 
 const switchTheme = createTheme({
     palette: {
@@ -33,6 +35,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
         additionalScheduleValue: '0',
         additionalScheduleFrequency: 'WEEK',
         additionalScheduleRequired: true,
+        additionalOnCallBillableService: false,
         billableService: true,
         rateType: 'HOURLY',
         sessionDuration: '0',
@@ -58,10 +61,10 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
 
     const [specified, setSpecified] = useState(0);
 
-    useEffect(()=>{
-      let additionalFreq = metadata?.additionalScheduleFrequency === 'WEEK' ? timeCommitment?.value || 0 : (timeCommitment?.value/2) || 0;
-      let value = (parseInt(metadata?.min || '0') * timeCommitment?.value || 0) + (parseInt(metadata?.additionalScheduleValue || '0')  * additionalFreq);
-      setSpecified(value);
+    useEffect(() => {
+        let additionalFreq = metadata?.additionalScheduleFrequency === 'WEEK' ? timeCommitment?.value || 0 : (timeCommitment?.value / 2) || 0;
+        let value = (parseInt(metadata?.min || '0') * timeCommitment?.value || 0) + (parseInt(metadata?.additionalScheduleValue || '0') * additionalFreq);
+        setSpecified(value);
     }, [metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
 
 
@@ -104,7 +107,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     }
 
     const getServiceDaysMetadata = (serviceDays) => {
-        setMetadata({ ...metadata, serviceDays: serviceDays})
+        setMetadata({ ...metadata, serviceDays: serviceDays })
     }
 
     const handleOnCallCoverageFor = (value, e) => {
@@ -139,7 +142,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Service Days*</div>
+                <div className={style.extentionLableStyle}>Allowable Service Days*</div>
                 <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
             </div>
 
@@ -279,17 +282,17 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
                 <div className={style.twoCol}>
-                <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                    <EditableText placeholder='' value={metadata?.totalSession} type='number' min="0"
-                        className={style.editableSessionTextStyle}
-                        onChange={(e) => {
-                            let value = e.slice(0, e.slice());
-                            handleValueChange('totalSession', value);
-                        }} />
-                    <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Specified</div>
-                </div>
+                    <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
+                        <EditableText placeholder='' value={metadata?.totalSession} type='number' min="0"
+                            className={style.editableSessionTextStyle}
+                            onChange={(e) => {
+                                let value = e.slice(0, e.slice());
+                                handleValueChange('totalSession', value);
+                            }} />
+                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Specified</div>
+                    </div>
                     <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle}`}>For {timeCommitment?.value} {timeCommitment?.frequency === 'WEEK' ? 'Weeks' :'Months'} Per Contract Year</p>
+                        <p className={`${style.extentionLableStyle}`}>For {timeCommitment?.value} {timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year</p>
                     </div>
                 </div>
             </div>
@@ -313,6 +316,79 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                     />
                 </div>
             </div>
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Additional on call billable service specified</div>
+                <div className={style.displayInRow}>
+                    <ThemeProvider theme={switchTheme}>
+                        <FormControlLabel
+                            control={
+                                <Switch checked={metadata?.additionalOnCallBillableService} className={` ${style.textAlignLeft}`} />
+                            }
+                            color='primary'
+                            className={`${style.switchFontStyle} ${style.flexLeft}`}
+                            label={metadata?.additionalOnCallBillableService ? 'YES' : 'NO'}
+                            onChange={(e) => handleValueChange('additionalOnCallBillableService', !metadata?.additionalOnCallBillableService)}
+                        />
+                    </ThemeProvider>
+                    {
+                        metadata?.additionalOnCallBillableService &&
+                        <>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <TextField
+                                    size="small"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                    }}
+                                />
+                            </div>
+                            <div className={`${style.addOnCallGrid} ${style.marginLeft20}`}>
+                                <div className={style.extentionLableStyle}>Additional on call billable service specified</div>
+                                <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                    <AddIcon sx={{ fontSize: 25, color: 'white' }} />
+                                </div>
+                            </div>
+                            {/* <Select
+                                displayEmpty
+                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                            >
+                                <MenuItem value="">Select Frequecy</MenuItem>
+                                <MenuItem value={'PERDAY'} >Per Day</MenuItem>
+                                <MenuItem value={'PERACTIVITY'} >Per Activity</MenuItem>
+                            </Select> */}
+                        </>
+                    }
+                </div>
+            </div>
+            {metadata?.additionalOnCallBillableService && (
+                <>
+                    <EditableTable />
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Require Approval For Payment</div>
+                        <ThemeProvider theme={switchTheme}>
+                            <FormControlLabel
+                                control={
+                                    <Switch checked={true} className={` ${style.textAlignLeft}`} />
+                                }
+                                color='primary'
+                                className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                label={'YES'}
+                            />
+                        </ThemeProvider>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Designate Request Approver*</div>
+                        <Select
+                            displayEmpty
+                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                            className={`${style.fullWidth}`}
+                        >
+                            <MenuItem value="">Select Approver</MenuItem>
+                        </Select>
+                    </div>
+                </>
+            )}
         </div>
     )
 }

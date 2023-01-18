@@ -519,16 +519,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
             <div className={style.displayInRow}>
               <div className={`${style.cursorPointer} ${style.marginRight20}`}>
-                <div
-                  // onClick={() => setIsShowNotesList(true)}
-                  onClick={(e) => { handleClick(e); setIsShowNotesList(!isShowNotesList) }} aria-describedby={id}
-                // onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}
-                >
+                <div onClick={(e) => { handleClick(e); setIsShowNotesList(!isShowNotesList) }} aria-describedby={id} >
                   {helpTool?.textArea ? (
                     <img src={NotesOpen} alt="" className={style.addServiceNotesImgStyle} />
                   ) : (
                     <img src={NotesNotOpen} alt="" className={style.addServiceNotesImgStyle} />
                   )}
+                  <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginNotes}`}>4</div>
                 </div>
                 {isShowNotesList && (
                   <Popover
@@ -552,12 +549,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
               </div>
               <div className={`${style.cursorPointer} ${style.marginRight20}`}>
                 {/* <TextSnippetIcon style={{ fontSize: 30, color: '#bfbfbf' }} /> */}
-                <div onClick={(e) => { handleClickDoc(e);setIsShowDocumentsList(!isShowDocumentsList) }} aria-describedby={idDoc}>
+                <div onClick={(e) => { handleClickDoc(e); setIsShowDocumentsList(!isShowDocumentsList) }} aria-describedby={idDoc}>
                   {isShowPDF ? (
                     <img src={DocumentOpen} alt="" className={style.addServiceImgStyle} />
                   ) : (
                     <img src={DocumentNotOpen} alt="" className={style.addServiceImgStyle} />
                   )}
+                  <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginDocument}`}>4</div>
                 </div>
                 {isShowDocumentsList && (
                   <Popover
