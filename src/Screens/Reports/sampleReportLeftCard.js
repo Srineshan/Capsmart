@@ -297,7 +297,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                 onChange={handleChangeSites}
                                 MenuProps={MenuProps}
                             >
-                                {sites.map((data) => (
+                                {sites?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
@@ -317,7 +317,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
                             >
-                                {departments.map((data) => (
+                                {departments?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}

@@ -1,0 +1,52 @@
+.notesContainer {
+    width: 20vw;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.notesHeader {
+    background: #fed867 0% 0% no-repeat padding-box;
+    min-height: 45px;
+    width: 100%;
+    padding: 0 10px;
+}
+
+.notesBody {
+    background: #fee59a 0% 0% no-repeat padding-box;
+    width: 100%;
+    min-height: 250px;
+    padding: 10px;
+}
+
+.notesTextColor {
+    text-align: left;
+    font: normal normal medium 15px/20px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.marginLeft10 {
+    margin-left: 10px;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.marginTop {
+    margin-top: 20px;
+}

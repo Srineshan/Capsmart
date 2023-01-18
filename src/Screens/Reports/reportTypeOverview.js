@@ -875,7 +875,7 @@ const ReportTypeOverview = () => {
                                                     {paymentsReportLog?.paymentNotDone?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableType={'Timesheets With Not Paid'}
+                                                                tableType={'Timesheets Without Payment'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.paymentNotDone}
                                                                 activitiesServicesValues={getPaymentsValues('timesheetNotPaid')}
@@ -886,7 +886,7 @@ const ReportTypeOverview = () => {
                                                     {paymentsReportLog?.paidOnTime?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableType={'Timesheets With Paid On Time'}
+                                                                tableType={'Timesheets With Payment On Time'}
                                                                 tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
                                                                 tableValue={paymentsReportLog?.paidOnTime}
                                                                 activitiesServicesValues={getPaymentsValues('paidOnTime')}
