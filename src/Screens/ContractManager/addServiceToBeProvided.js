@@ -95,9 +95,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   useEffect(() => {
     if (isWorkFlowUpdated) {
+      setIsWorkFlowUpdated(false);
       console.log('inside useEffect', metadata);
       handleSave(addOnButton);
-      setIsWorkFlowUpdated(false);
+
     }
   }, [metadata, isWorkFlowUpdated])
 
@@ -170,7 +171,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const getUserData = async () => {
     const { data: userData } = await GET(`user-management-service/user?contractID=${contractId}`);
     if (userData) {
-      setUsers(userData);
+      setUsers(userData?.filter(user => user?.roles?.map(role => role?.roleName)?.includes('Activity Logger'))?.map(data => data));
     }
   }
 
@@ -237,13 +238,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }
 
+  console.log('metadata & isWorkFlowUpdated', metadata, isWorkFlowUpdated);
+
   const addOnWorkFlow = async (buttonType) => {
     setAddOnButton(buttonType);
-    if (serviceType === 'Add-On Services' && editService) {
+    if (serviceType === 'Add-On Services' && editService && metadata?.[0]?.approver !== undefined) {
       let dataValue = [];
       let temp = metadata;
       temp?.map((data, index) => {
         if (data?.approver !== undefined) {
+          console.log('inside data', data, ' inside if');
           let workFlowData;
           if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
             let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
@@ -254,12 +258,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.userId, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.userId, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
           }
           if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
+            console.log('inside post', data);
             POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
               then(response => {
                 data.workFlow = {
                   id: response?.data,
                   workFlowName: {
-                    name: data?.performingActivity?.activity,
+                    name: data?.performingActivity,
                   }
                 }
                 dataValue.push(data);
@@ -273,9 +278,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 ErrorToaster('Unexpected Error');
               })
           } else {
+            console.log('inside put', data);
             PUT(`timesheet-management-service/workflow/${data.workflowId}`, workFlowData)
               .then(response => {
                 console.log('Success!');
+                data.workFlow = {
+                  id: data?.workflowId,
+                  workFlowName: {
+                    name: data?.workflowName,
+                  }
+                }
                 dataValue.push(data);
                 setMetadata(dataValue);
                 setIsWorkFlowUpdated(true);
@@ -301,6 +313,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         let dataMap = {
           selectedActivityId: data?.selectedActivityId,
           additionalDetails: data?.activityResponse?.dataMap?.additionalDetails,
+        }
+        if (!data?.selectedActivityId) {
+          data.payableAmount = { value: parseInt(data?.sessionAmount) };
         }
         data.activityResponse = { dataMap: dataMap };
         data.sites = siteData;
@@ -489,18 +504,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             "to": allowableWorkingHours?.to,
           }
         }),
-        ...(serviceType === 'On Call Coverage Duty Days' && {
-          "workingPeriod": {
-            "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
-            "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
-          }
-        }),
-        "workingHours": {
-          "normalWorkingHours": dataValues?.workingHours?.normalWorkingHours || false,
-          "afterWorkingHours": dataValues?.workingHours?.afterWorkingHours || false,
+        "workingPeriod": {
+          "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
+          "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
         },
         ...(serviceType === 'Add-On Services' && {
-          workflow: dataValues?.workFlow,
+          workFlow: dataValues?.workFlow,
         }),
         "activityApprovalWFRequired": dataValues?.activityApprovalWFRequired || false,
         "designateSpecificContractor": isDesignatedSpecificContractor,

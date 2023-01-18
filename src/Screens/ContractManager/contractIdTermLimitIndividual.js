@@ -65,7 +65,7 @@ const ContractIdTermLimitIndividual = (
   const [selectContractManager, setSelectContractManager] = useState();
   const [siteSpecific, setSiteSpecific] = useState(false);
   const [selectedContract, setSelectedContract] = useState('Select...');
-  const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('Select Value');
+  const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('');
   const [item, setItem] = useState();
   const [contractData, setContractData] = useState();
   const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
@@ -95,11 +95,8 @@ const ContractIdTermLimitIndividual = (
   const [addFileClicked, setAddFileClicked] = useState(false);
   const [selectedDepartmentSites, setSelectedDepartmentSites] = useState([]);
   const [selectedSite, setSelectedSite] = useState('');
-  const [departmentsName, setDepartmentsName] = useState([]);
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState([]);
   const [createdContractId, setCreatedContractId] = useState(contractIdFromActive);
   const [contractedTimeCommitment, setContractTimeCommitment] = useState({ value: 0, frequency: '' });
-  const [allowableWorkingHours, setAllowableWorkingHours] = useState({ from: null, to: null })
 
   useEffect(() => {
     if (method === 'PUT' && createdContractId !== '') {
@@ -183,11 +180,6 @@ const ContractIdTermLimitIndividual = (
       let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
       setAutoRenewal({ renewalTerm: continuation?.autoRenewalTerm?.term.toString(), allowableRenewalTerm: continuation?.allowableAutoRenewalTerm?.term.toString(), calendar: continuation?.autoRenewalCalender })
       setRenewalreminder(contractDetail?.continuationPolicy?.reminderList?.renewalReminderList || [{ days: 0 }]);
-      setAllowableWorkingHours({
-        ...allowableWorkingHours,
-        from: GetDateFromHours(contractDetail?.allowableWorkingHours?.from?.toString() || ''),
-        to: GetDateFromHours(contractDetail?.allowableWorkingHours?.to?.toString() || ''),
-      })
       let fileData = [];
       contractDetail?.contractFiles?.map(data => {
         fileData.push({ id: data?.id, type: data?.documentType, name: data?.documentName, desc: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
@@ -239,10 +231,6 @@ const ContractIdTermLimitIndividual = (
     let sites = getSiteData();
     if (departmentSpecific && sites?.some(data => data?.departmentList?.departments?.length === 0)) {
       ErrorToaster('Select Departments for all the selected Sites');
-      return;
-    }
-    if (allowableWorkingHours?.from === null || allowableWorkingHours?.to === null) {
-      ErrorToaster('Allowable Working hours has to be selected to proceed');
       return;
     }
     let contractFiles = [];
@@ -317,10 +305,6 @@ const ContractIdTermLimitIndividual = (
         "timeCommitment": {
           "value": parseInt(contractedTimeCommitment?.value),
           "frequency": contractedTimeCommitment?.frequency,
-        },
-        "allowableWorkingHours": {
-          "from": allowableWorkingHours?.from?.toLocaleTimeString('it-IT').toString(),
-          "to": allowableWorkingHours?.to?.toLocaleTimeString('it-IT').toString()
         },
         "contractIdMissing": contractId?.missing,
         "fullyExecutedContract": fullyExecutedContract,
@@ -905,24 +889,6 @@ const ContractIdTermLimitIndividual = (
                 Months Per Contract Year
               </option>
             </select>
-          </div>
-        </div>
-
-        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
-          <div className={style.displayInRow}>
-            <TimePicker
-              useAmPm={false}
-              onChange={(e) => setAllowableWorkingHours({ ...allowableWorkingHours, from: e, to: e })}
-              value={new Date(allowableWorkingHours?.from)}
-            />
-            <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
-            <TimePicker
-              useAmPm={false}
-              onChange={(e) => setAllowableWorkingHours({ ...allowableWorkingHours, to: e })}
-              minTime={new Date(new Date(allowableWorkingHours?.from).getTime())}
-              value={new Date(allowableWorkingHours?.to)}
-            />
           </div>
         </div>
 

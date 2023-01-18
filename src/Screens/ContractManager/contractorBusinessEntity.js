@@ -60,8 +60,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       missing: false
     }
   });
-  const [roles, setRoles] = useState([])
-  const [selectedRoles, setSelectedRoles] = useState([])
+  const [roles, setRoles] = useState([]);
   const [mailingAddress, setMailingAddress] = useState({
     addressLine: "",
     city: "",
@@ -72,6 +71,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   const [contractorBusinessEntity, setContractorBusinessEntity] = useState({});
   const [userId, setUserId] = useState('0');
   const [showAlert, setShowAlert] = useState(false);
+  const [allowAggregator, setAllowAggregator] = useState(false);
+  const [selectedRoles, setSelectedRoles] = useState([]);
 
   useEffect(() => {
     getUserData();
@@ -95,6 +96,30 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       }
     }
     setIsLoading(false);
+  }
+
+
+  const onAllowBEMChange = (value) => {
+    let temp = selectedRoles;
+    if (value) {
+      temp.push(roles?.filter(role => role?.roleName === 'Contract Business Entity Manager')?.map(data => data)[0]);
+      setAllowBEM(value);
+    } else {
+      setAllowBEM([])
+    }
+    setSelectedRoles(temp);
+  }
+
+  const onAllowAggregatorChange = (value) => {
+    let temp = selectedRoles;
+    if (value) {
+      temp.push(roles?.filter(role => role?.roleName === 'Aggregator')?.map(data => data)[0]);
+      setAllowAggregator(value);
+    } else {
+      temp = selectedRoles?.filter(role => role?.roleName === 'Aggregator')?.map(data => data);
+      setAllowAggregator(value)
+    }
+    setSelectedRoles(temp);
   }
 
   const handleContinue = async (buttonType) => {
@@ -127,6 +152,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     else {
       ErrorToaster('Unexpected Error');
     }
+
 
     if (allowBEM) {
       const userData = {
@@ -190,34 +216,11 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     if (buttonType === 'Continue') {
       getViewPage5(true);
       getCurrentPage('Contracted Services Specification');
-    }else{
+    } else {
       getShowAlert(true);
     }
     getTabDataStatus();
   }
-
-  const handleRoles = (value) => {
-    if (value !== '0') {
-      const selectedValue = roles?.filter(data => data?.roleName === value)?.map(data => data)[0];
-
-      if (!selectedRoles?.map(data => data?.roleName)?.includes(value)) {
-        setSelectedRoles([...selectedRoles, selectedValue]);
-      }
-    }
-  }
-
-  const rolesTags = selectedRoles
-    ?.filter(data => roles?.map(role => role.id === data?.id))
-    .map((tag, index) => {
-      const onRemove = () => {
-        setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName)?.map(data => data));
-      };
-      return (
-        <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
-          {tag?.roleName}
-        </Tag>
-      );
-    });
 
   const getRoles = async () => {
     const { data: roles } = await GET('user-management-service/roles');
@@ -229,7 +232,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     setContractorBusinessEntity(contractorBusinessEntity);
   };
 
-const setBusinessEntityData = () => {
+  const setBusinessEntityData = () => {
     setSameAsContractor(contractorBusinessEntity?.contractorContact);
     setBusinessEntity(contractorBusinessEntity?.businessEntity || {});
     setContractorNPIN(contractorBusinessEntity?.contractorNPIN || {});
@@ -250,7 +253,7 @@ const setBusinessEntityData = () => {
   }, [])
 
   useEffect(() => {
-  setBusinessEntityData();
+    setBusinessEntityData();
   }, [contractorBusinessEntity])
 
 
@@ -280,15 +283,15 @@ const setBusinessEntityData = () => {
         npin: contractUser?.npin?.npin || '',
         missing: contractUser?.npin?.missing,
       });
-    }else{
+    } else {
       setBusinessEntityUser({
         name: {
-          firstName:'',
-          lastName : '',
+          firstName: '',
+          lastName: '',
           middleName: '',
           suffix: {},
         },
-        email: {officialEmail:''},
+        email: { officialEmail: '' },
         contactNumber: {
           number: '',
           missing: false
@@ -301,7 +304,7 @@ const setBusinessEntityData = () => {
         zipcode: ''
       });
       setContractorNPIN({
-        notApplicable:'',
+        notApplicable: '',
         npin: '',
         missing: false,
       });
@@ -329,26 +332,28 @@ const setBusinessEntityData = () => {
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
 
+  console.log('roles', selectedRoles);
+
   console.log('name', contractorNPIN);
 
   return (
     <>
-    <Dialog isOpen={showAlert} className={`${style.cloneDialog}`} canOutsideClickClose={false}>
-      <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
-        <div className={style.spaceBetween}>
-          <p className={style.extensionStyle}>Alert</p>
-          <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowAlert(false)} />
+      <Dialog isOpen={showAlert} className={`${style.cloneDialog}`} canOutsideClickClose={false}>
+        <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
+          <div className={style.spaceBetween}>
+            <p className={style.extensionStyle}>Alert</p>
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowAlert(false)} />
+          </div>
+          <div className={style.extensionBorder}></div>
+          <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
+            Business Contact Change Alert
+          </p>
+          <div className={`${style.positionCenter} ${style.marginTop20}`}>
+            <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => { setShowAlert(false); handleSameContact(!sameAsContractor); }}>OK</button>
+          </div>
+          <br />
         </div>
-        <div className={style.extensionBorder}></div>
-        <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
-        Business Contact Change Alert
-        </p>
-        <div className={`${style.positionCenter} ${style.marginTop20}`}>
-          <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => {setShowAlert(false); handleSameContact(!sameAsContractor);}}>OK</button>
-        </div>
-        <br />
-      </div>
-    </Dialog>
+      </Dialog>
       {
         userCount !== 0 ?
           <div className={style.cloneBlockStyle}>
@@ -378,7 +383,7 @@ const setBusinessEntityData = () => {
                     maxLength={10}
                     disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
                     value={contractorNPIN?.npin} placeholder="Enter Vendor NPIN"
-                    onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value, missing:false, notApplicable:false })} />
+                    onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value, missing: false, notApplicable: false })} />
                   <div className={`${style.displayInRow}`}>
                     <FormGroup className={style.marginLeft20}>
                       <FormControlLabel control={<Checkbox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked, notApplicable: false, npin: '' })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
@@ -435,13 +440,13 @@ const setBusinessEntityData = () => {
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Business Contact Email Address*</div>
-                  <InputGroup className={style.fullWidth} value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
-                    onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.email?.officialEmail, 'Business Contact Email Address') }}
-                    onChange={(e) => {
-                      setBusinessEntityUser({ ...businessEntityUser, email: { officialEmail: e.target.value } });
-                      setIsUserUpdated(true);
-                    }}
-                  />
+                <InputGroup className={style.fullWidth} value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
+                  onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.email?.officialEmail, 'Business Contact Email Address') }}
+                  onChange={(e) => {
+                    setBusinessEntityUser({ ...businessEntityUser, email: { officialEmail: e.target.value } });
+                    setIsUserUpdated(true);
+                  }}
+                />
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
                 onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.contactNumber?.number, 'Cell Phone') }}
@@ -486,33 +491,56 @@ const setBusinessEntityData = () => {
                   </div>
                 </div>
               </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                  <div className={style.extentionLableStyle}>Register Business POC with App User Role*</div>
-                  <div className={style.displayInRow}>
-                    <div>
-                      <ThemeProvider theme={switchTheme}>
-                        <FormControlLabel
-                          control={
-                            <Switch className={`${style.textAlignLeft}`} checked={allowBEM} onChange={(e)=>setAllowBEM(!allowBEM)}/>
-                          }
-                          color='primary'
-                          className={`${style.switchFontStyle} ${style.marginTop}`}
-                          label={allowBEM ? 'YES' : 'NO'}
-                        />
-                      </ThemeProvider>
-                    </div>
-                    {allowBEM &&
-                      <div>
-                        <InputGroup value="Business Contract Manager" className={style.fullWidth} readOnly/>
-                        <div className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}>
-                          The Business Contract Manager role allows the registered user to access
-                          contract related information and reports only for the contract associated
-                          with their business entity.
-                        </div>
-                      </div>
-                    }
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Register Business POC with App User Role*</div>
+                <div className={style.displayInRow}>
+                  <div>
+                    <ThemeProvider theme={switchTheme}>
+                      <FormControlLabel
+                        control={
+                          <Switch className={`${style.textAlignLeft}`} checked={allowBEM} onChange={(e) => onAllowBEMChange(!allowBEM)} />
+                        }
+                        color='primary'
+                        className={`${style.switchFontStyle} ${style.marginTop}`}
+                        label={allowBEM ? 'YES' : 'NO'}
+                      />
+                    </ThemeProvider>
                   </div>
+                  {allowBEM &&
+                    <div>
+                      <InputGroup value="Business Contract Manager" className={style.fullWidth} readOnly />
+                      <div className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}>
+                        The Business Contract Manager role allows the registered user to access
+                        contract related information and reports only for the contract associated
+                        with their business entity.
+                      </div>
+                    </div>
+                  }
+
+
+
+
                 </div>
+              </div>
+
+              {
+                selectContractInfo !== 'INDIVIDUAL' && (allowBEM || selectedRoles?.map(role => role?.roleName)?.includes('Aggregator')) &&
+                (
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Allow user as Aggregator*</div>
+                    <ThemeProvider theme={switchTheme}>
+                      <FormControlLabel
+                        control={
+                          <Switch checked={allowAggregator} className={`${style.textAlignLeft}`} onChange={() => onAllowAggregatorChange(!allowAggregator)} />
+                        }
+                        color='primary'
+                        className={`${style.switchFontStyle} ${style.marginTop}`}
+                        label={keepConfidential ? 'YES' : 'NO'}
+                      />
+                    </ThemeProvider>
+                  </div>
+                )
+              }
 
               {
                 selectContractInfo !== 'INDIVIDUAL' &&

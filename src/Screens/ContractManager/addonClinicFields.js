@@ -110,9 +110,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       let workFlowValues = Object?.values(workflowData);
       console.log('workflowdata', workFlowValues);
 
-      data.approver = users?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+      data.approver = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
       console.log('approver', data.approver, workFlowValues);
-      data.paymentApprover = users?.filter(data => data?.id === workFlowValues?.[1]?.workFlowUser?.id)?.map(data => data)[0];
+      data.paymentApprover = users?.filter(data => data?.userId === workFlowValues?.[1]?.workFlowUser?.id)?.map(data => data)[0];
       console.log('paymentApprover', data.paymentApprover);
 
       temp.push(data);
@@ -300,7 +300,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       activities: [{ activity: newServices?.name }],
       activityType: { activityType: 'Add-On Services' },
       performingActivity: newServices?.name,
-      payableAmount: { value: newServices?.rate },
+      sessionAmount: newServices?.rate,
       locations: newServices?.locations,
       locationSpecified: newServices?.showLocation,
       workingHours: {
@@ -341,7 +341,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     let temp = metadata;
     temp?.filter(data => data?.performingActivity === serviceName)?.map(data => {
       data.sessionAmount = value;
-      data.payableAmount = { value: value }
     });
     setMetadata(temp);
   }
@@ -350,6 +349,24 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     let temp = metadata;
     temp?.filter(data => data?.performingActivity === serviceName)?.map(data => {
       data.workingHours = { ...data.workingHours, [name]: value };
+    });
+    setMetadata(temp);
+    getFields();
+  }
+
+  const onAdditionalServiceApproverChange = (name, value) => {
+    let temp = metadata;
+    temp?.filter(data => data?.performingActivity === name)?.map(data => {
+      data.approver = value;
+    });
+    setMetadata(temp);
+    getFields();
+  }
+
+  const onAdditionalServicePaymentApproverChange = (name, value) => {
+    let temp = metadata;
+    temp?.filter(data => data?.performingActivity === name)?.map(data => {
+      data.paymentApprover = value;
     });
     setMetadata(temp);
     getFields();
@@ -493,11 +510,11 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                         </div>
                         {
                           data?.activityResponse?.dataMap?.additionalDetails?.includes('Prior Pre-Authorization Required') && details === 'Prior Pre-Authorization Required' &&
-                          <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.userId)?.map(data => data)[0] }) }} />
+                          <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.approver?.userId} />
                         }
                         {
                           data?.activityResponse?.dataMap?.additionalDetails?.includes('Administrative Approval For Payment Required') && details === 'Administrative Approval For Payment Required' &&
-                          <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.userId)?.map(data => data)[0] }) }} />
+                          <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.paymentApprover?.userId} />
                         }
                       </>
                     ))

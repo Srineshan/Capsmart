@@ -22,7 +22,7 @@ import DocumentationProofRequired from './documentationProofRequired';
 import PaymentAndCompensation from './paymentAndCompensation';
 import TimeSheetSubmissionTerms from './timeSheetSubmissionTerms';
 import TimesheetProcessingWorkflow from './timesheetProcessingWorkflow';
-import {validateTabs, validateContractIDTermLimit, validateContractProvider, validateBusinessEntity, validateServices, validateTimesheetSubmission, validateTimesheetProcessingWorkflow, validateRequestProcessingWorkflow} from './contractValidation';
+import { validateTabs, validateContractIDTermLimit, validateContractProvider, validateBusinessEntity, validateServices, validateTimesheetSubmission, validateTimesheetProcessingWorkflow, validateRequestProcessingWorkflow } from './contractValidation';
 
 import style from './index.module.scss';
 import RequestProcessingWorkflow from './requestProcessingWorkflow';
@@ -51,14 +51,14 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
     const [fileItems, setFileItems] = useState([]);
     const [isMultiSiteEntity, setIsMultiSiteEntity] = useState(false);
     const [helpTextData, setHelpTextData] = useState();
-    const [selectedField, setSelectedField] = useState({fieldName:'', empty:false});
+    const [selectedField, setSelectedField] = useState({ fieldName: '', empty: false });
     const [selectedFileURL, setSelectedFileURL] = useState('');
     const [showAlert, setShowAlert] = useState(false);
     const [isTabsValid, setIsTabsValid] = useState([]);
-    const [contractSelected, setContractSelected] = useState(contracts?.filter(contract=>contract?.id === contractId)?.map(data=>data)[0]);
+    const [contractSelected, setContractSelected] = useState(contracts?.filter(contract => contract?.id === contractId)?.map(data => data)[0]);
     const [providerDetails, setProviderDetails] = useState();
-    useEffect(()=>{
-      getTabDataStatus();
+    useEffect(() => {
+        getTabDataStatus();
     }, []);
 
     useEffect(() => {
@@ -76,23 +76,23 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
     }, [fileFields])
 
     const getTabDataStatus = () => {
-      let temp = validateTabs(contractSelected?.id);
-      temp.then(value=>{
-        setIsTabsValid(value);
-        let temp = value?.value2;
-        temp.then(response=>{
-          setProviderDetails(response);
-        })
-      });
+        let temp = validateTabs(contractSelected?.id);
+        temp.then(value => {
+            setIsTabsValid(value);
+            let temp = value?.value2;
+            temp.then(response => {
+                setProviderDetails(response);
+            })
+        });
     }
 
     const checkFieldAndPopAlert = (value, fieldName) => {
-      if(value === null || value === 0 || value === '' || value === undefined || value === '0'){
-        console.log('inside');
-        setSelectedField({fieldName:fieldName, empty:false})
-      }else{
-        setSelectedField({fieldName:fieldName, empty:true})
-      }
+        if (value === null || value === 0 || value === '' || value === undefined || value === '0') {
+            console.log('inside');
+            setSelectedField({ fieldName: fieldName, empty: false })
+        } else {
+            setSelectedField({ fieldName: fieldName, empty: true })
+        }
     }
 
     const helpText = async () => {
@@ -146,12 +146,12 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
         setAddOn(value);
     }
 
-    const getShowAlert = (value, type='cross') => {
-      setShowAlert(value);
-      if(!value && type === 'ok'){
-        getNewContract(false);
-       getContractIdFromActive('');
-      }
+    const getShowAlert = (value, type = 'cross') => {
+        setShowAlert(value);
+        if (!value && type === 'ok') {
+            getNewContract(false);
+            getContractIdFromActive('');
+        }
     }
 
     const getViewPage1 = (value) => {
@@ -225,9 +225,9 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
     }
 
     const onClose = () => {
-      getNewContract(false);
-      getContractIdFromActive('');
-      sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true);
+        getNewContract(false);
+        getContractIdFromActive('');
+        sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true);
     }
 
     return (
@@ -250,7 +250,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Contract ID & Term Limit" && style.selectedContractEntityStyle}`}
                         onClick={() => {
                             setCurrentPage('Contract ID & Term Limit');
-                            setSelectedField({...selectedField, fieldName:''});
+                            setSelectedField({ ...selectedField, fieldName: '' });
                         }}>
                         Contract ID & Term Limit
                         {contractId !== '' && (
@@ -258,15 +258,17 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         )}
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Contracted Services Provider(s)" && style.selectedContractEntityStyle}`}
-                        onClick={() => { setCurrentPage('Contracted Services Provider(s)');                             setSelectedField({...selectedField, fieldName:''}); }}>
+                        onClick={() => { setCurrentPage('Contracted Services Provider(s)'); setSelectedField({ ...selectedField, fieldName: '' }); }}>
                         Contracted Services Provider(s)
                         {contractId !== '' && (
-                            <img src={providerDetails?.filter(data=>data?.[1]?.length !== 0)?.map(data=>data)?.length === 0 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
+                            <img src={providerDetails?.filter(data => data?.[1]?.length !== 0)?.map(data => data)?.length === 0 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Contractor Business Entity" && style.selectedContractEntityStyle}`}
-                        onClick={() => { setCurrentPage('Contractor Business Entity');
-                                        setSelectedField({...selectedField, fieldName:''}); }}>
+                        onClick={() => {
+                            setCurrentPage('Contractor Business Entity');
+                            setSelectedField({ ...selectedField, fieldName: '' });
+                        }}>
                         Contractor Business Entity
                         {contractId !== '' && (
                             <img src={isTabsValid?.tab3 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
@@ -282,8 +284,10 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         // </div>
                     }
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Contracted Services Specification" && style.selectedContractEntityStyle}`}
-                        onClick={() => { setCurrentPage('Contracted Services Specification');
-                                       setSelectedField({...selectedField, fieldName:''}); }}>
+                        onClick={() => {
+                            setCurrentPage('Contracted Services Specification');
+                            setSelectedField({ ...selectedField, fieldName: '' });
+                        }}>
                         Contracted Services Specification
                         {contractId !== '' &&
                             <img src={isTabsValid?.tab4 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
@@ -298,36 +302,40 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                     </div> */}
 
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Timesheet Submission Terms" && style.selectedContractEntityStyle}`}
-                        onClick={() => { setCurrentPage('Timesheet Submission Terms');
-                        setSelectedField({...selectedField, fieldName:''});
-                      }}>
+                        onClick={() => {
+                            setCurrentPage('Timesheet Submission Terms');
+                            setSelectedField({ ...selectedField, fieldName: '' });
+                        }}>
                         Timesheet Submission Terms
                         {contractId !== '' && (
                             <img src={isTabsValid?.tab5 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Payment & Compensation" && style.selectedContractEntityStyle}`}
-                        onClick={() => { setCurrentPage('Payment & Compensation');
-                        setSelectedField({...selectedField, fieldName:''});
-                      }}>
+                        onClick={() => {
+                            setCurrentPage('Payment & Compensation');
+                            setSelectedField({ ...selectedField, fieldName: '' });
+                        }}>
                         Payment & Compensation
                         {contractId !== '' && (
                             <img src={isTabsValid?.tab6 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Timesheet Processing Workflow" && style.selectedContractEntityStyle}`}
-                        onClick={() => { setCurrentPage('Timesheet Processing Workflow');
-                        setSelectedField({...selectedField, fieldName:''});
-                      }}>
+                        onClick={() => {
+                            setCurrentPage('Timesheet Processing Workflow');
+                            setSelectedField({ ...selectedField, fieldName: '' });
+                        }}>
                         Timesheet Processing Workflow
                         {contractId !== '' && (
                             <img src={isTabsValid?.tab7 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
                     <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Request Processing Workflow" && style.selectedContractEntityStyle}`}
-                        onClick={() => { setCurrentPage('Request Processing Workflow');
-                                         setSelectedField({...selectedField, fieldName:''});
-                                       }}>
+                        onClick={() => {
+                            setCurrentPage('Request Processing Workflow');
+                            setSelectedField({ ...selectedField, fieldName: '' });
+                        }}>
                         Request Processing Workflow
                         {contractId !== '' && (
                             <img src={isTabsValid?.tab8 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
@@ -364,7 +372,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         isMultiSiteEntity={isMultiSiteEntity}
                         getShowAlert={getShowAlert}
                         isEditable={isEditable}
-                        getTabDataStatus={getTabDataStatus}/>
+                        getTabDataStatus={getTabDataStatus} />
                 ) : currentPage === "Payment & Compensation" ? (
                     <PaymentAndCompensation
                         selectContractInfo={selectContractInfo}
@@ -377,7 +385,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         getTabDataStatus={getTabDataStatus}
                     />
                 ) : (currentPage === "Contracted Add on service specification" || currentPage === "Contracted Services Specification") ?
-                    <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId={contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo} isMultiSiteEntity={isMultiSiteEntity} isEditable={isEditable}/>
+                    <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId={contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo} isMultiSiteEntity={isMultiSiteEntity} isEditable={isEditable} />
                     : currentPage === "Documentation Proof Required" ? (
                         <DocumentationProofRequired
                             getViewPage5={getViewPage5}
@@ -413,7 +421,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                                 getShowAlert={getShowAlert}
                                 isEditable={isEditable}
                                 getTabDataStatus={getTabDataStatus}
-                                />
+                            />
                         ) : (currentPage === "Contract ID & Term Limit") ? (
                             <ContractIdTermLimitIndividual
                                 getViewPage1={getViewPage1}
@@ -464,17 +472,16 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                     </div>
 
                     {!selectedField?.empty && helpTextData?.[selectedField?.fieldName]?.skipDataAlerts &&
-                      <>
-                        {(
-                            <div className={style.validationAlert}>
-                                <div className={style.displayInRow}>
-                                    <div>
-                                        <p className={`${style.blackText} ${style.leftAlign}`}><strong>Text to Alert User</strong></p>
-                                        <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[selectedField?.fieldName]?.skipDataAlerts}</p>
+                        <>
+                            {(
+                                <div className={style.validationAlert}>
+                                    <div className={style.displayInRow}>
+                                        <div>
+                                            <p className={`${style.blackText} ${style.leftAlign}`}>{helpTextData?.[selectedField?.fieldName]?.skipDataAlerts}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
                         </>
                     }
 
@@ -516,10 +523,10 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                 </Dialog>
             )}
             {newServiceProviderDialog && (
-                <NewServiceProvider getNewServiceProviderDialog={getNewServiceProviderDialog} contractId={contractId} contractType={contractType} contractName={contractName}/>
+                <NewServiceProvider getNewServiceProviderDialog={getNewServiceProviderDialog} contractId={contractId} contractType={contractType} contractName={contractName} />
             )}
             {showAlert && (
-              <Alert getShowAlertDialog={getShowAlert} header={'SAVE-IN PROGRESS'} content={'Your contract will be saved in draft, you can edit it later...'} redirectTo={'contracts'}/>
+                <Alert getShowAlertDialog={getShowAlert} header={'SAVE-IN PROGRESS'} content={'Your contract will be saved in draft, you can edit it later...'} redirectTo={'contracts'} />
             )}
         </div>
     )

@@ -333,6 +333,27 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment }) =>
                 <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
             </div>
 
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
+                <div className={style.displayInRow}>
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e) => {
+                            updateWorkingPeriod(e);
+                        }}
+                        value={new Date(metadata?.workingTimeFrom)}
+                    />
+                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                    <TimePicker
+                        useAmPm={false}
+                        onChange={(e) => handleValueChange('workingTimeTo', e)}
+                        value={new Date(metadata?.workingTimeTo)}
+                        minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+                    />
+                </div>
+            </div>
+
+
         </div>
     )
 }
