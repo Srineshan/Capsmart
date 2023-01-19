@@ -525,7 +525,7 @@ const ContractIdTermLimitIndividual = (
         <label for="file-upload" className={style.customFileUpload}>
           Choose File
         </label>
-        <input id="file-upload" type="file" accept="image/*, .pdf, .doc, .docx" onChange={(e) => handleFileUpload(e)} />
+        <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => handleFileUpload(e)} />
       </div>
     )
   }

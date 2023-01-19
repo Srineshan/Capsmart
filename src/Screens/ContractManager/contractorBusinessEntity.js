@@ -535,7 +535,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                         }
                         color='primary'
                         className={`${style.switchFontStyle} ${style.marginTop}`}
-                        label={keepConfidential ? 'YES' : 'NO'}
+                        label={allowAggregator ? 'YES' : 'NO'}
                       />
                     </ThemeProvider>
                   </div>
