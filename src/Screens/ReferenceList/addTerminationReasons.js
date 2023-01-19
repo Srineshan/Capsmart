@@ -4,47 +4,68 @@ import ArrowDown from './../../images/arrowDown.png';
 import style from './index.module.scss';
 import AddHealthcareGroup from './../../images/addGroupBlue.png';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import { POST,GET } from './../dataSaver'
+import { PUT, POST,GET, TenantID } from './../dataSaver'
 
-const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationReasonData}) => {
-    const [currentindustryType, setCurrentIndustryType] = useState("")
-    const [terminationBy, setTerminationBy] = useState("")
-    const [primaryReason, setPrimaryReason] = useState("")
-    const [secondaryReason, setSecondaryReason] = useState("")
-    const [currentEntityType, setCurrentEntityType] = useState("")
-    const [industryTypes,setIndustryTypes] = useState([])
-    const [entityTypes,setEntityTypes] = useState([])
-    const [editTermination , setEditTermination] = useState([])
+const AddTerminationReasons = ({ getAddTerminationReasonsDialog ,isEdit, terminationReasonData}) => {
+    const [currentindustryType, setCurrentIndustryType] = useState("");
+    const [terminationBy, setTerminationBy] = useState("");
+    const [primaryReason, setPrimaryReason] = useState("");
+    const [secondaryReason, setSecondaryReason] = useState("");
+    const [currentEntityType, setCurrentEntityType] = useState("");
+    const [industryTypes,setIndustryTypes] = useState([]);
+    const [entityTypes,setEntityTypes] = useState([]);
+    const [editTermination , setEditTermination] = useState([]);
+    const [terminationId,setTerminationId] = useState([]);
+    const [selectedIndustry, setSelectedIndustry] = useState({});
+    const [terminationReasonType,setTerminationReasonType] = useState([]);
+
+    const addMore = () => {
+        setTerminationId('')
+        setTerminationBy('')
+    }
 
       let data = []
 
-      const getAllIndustries = async() => {
-          const {data : data} = await GET (`/industryMaster`);
-          setIndustryTypes(data);
+      const getIndustryData = async() => {
+        const {data : data} = await GET (`entity-service/industryMaster`);
+        setSelectedIndustry(data?.filter(data => data?.industry === 'HEALTHCARE')?.map(data => data));
     }
+
+    //   const getAllIndustries = async() => {
+    //       const {data : data} = await GET (`/industryMaster`);
+    //       setIndustryTypes(data);
+    // }
 
 
     const getEntityData = async(industryId) =>{
         console.log("ok",data)
-        const {data : types} = await GET (`/entityTypeMaster?industryId=${industryId}`);
+        const {data : types} = await GET (`entity-service/entityTypeMaster?industryId=${industryId}`);
         setEntityTypes(types)
     }
 
-    useEffect(()=>{
-        getAllIndustries()
-        if(terminationReasonData!=null){
-            setCurrentIndustryType()
-            setTerminationBy()
-            setPrimaryReason()
-            setSecondaryReason()
-            setCurrentEntityType()
+    const getTerminationReasonData = async(trId) =>{
+        const {data : trtypes} = await GET (`entity-service/terminationReasonMaster?siteTypeId=${trId}`);
+        console.log("tr", trtypes)
+        setTerminationReasonType(trtypes)
+    }
 
-        }
+    useEffect(()=>{
+        getIndustryData()
+        // if(terminationReasonData!=null){
+        //     setCurrentIndustryType(terminationReasonData?.currentindustryType)
+        //     setTerminationBy(terminationReasonData?.terminationBy)
+        //     setPrimaryReason(terminationReasonData?.primaryReason)
+        //     setSecondaryReason(terminationReasonData?.secondaryReason)
+        //     setCurrentEntityType(terminationReasonData?.currentEntityType)
+        //     setTerminationId(terminationReasonData?.terminationId)
+
+        // }
     },[])
 
     const SubmitTerminationReason = async () => {
-        const TerminationInput = {
-            "id":currentEntityType,
+        if(isEdit) {
+            let data = {
+                "id":currentEntityType,
             "terminationBy": terminationBy,
             "primary_reason": primaryReason,
             "secondary_reasons": [
@@ -52,20 +73,51 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
             ],
             "siteTypeId": {
                 "id": currentEntityType
+            },
+            "industryId": {
+                "id": selectedIndustry[0]['id'] //TODO
+              },
+            "entityId": {
+                "id": TenantID
+              }
             }
-        }
-        await POST('/terminationReasonMaster', JSON.stringify(TerminationInput))
+        
+            await PUT(`entity-service/terminationReason/${terminationId}`, JSON.stringify(data))
             .then(response => {
-                SuccessToaster('User Added Successfully');
+                SuccessToaster('User Updated Successfully');
+                getAddTerminationReasonsDialog(false)
             })
             .catch(error => {
                 ErrorToaster(error);
             })
-        getAddTerminationReasonsDialog(false)
+        } else {
+        let data = {
+            "id":currentEntityType,
+            "terminationBy": terminationBy,
+            "primary_reason": primaryReason,
+            "secondary_reasons": [
+                secondaryReason
+            ],
+            "industryId": {
+                "id": selectedIndustry[0]['id'] //TODO
+              },
+            "siteTypeId": {
+                "id": currentEntityType
+            },
+            "entityId": {
+                "id": TenantID
+              }
+        }
+        await POST(`entity-service/terminationReason`, JSON.stringify(data))
+            .then(response => {
+                SuccessToaster('User Added Successfully');
+                getAddTerminationReasonsDialog(false)
+            })
+            .catch(error => {
+                ErrorToaster(error);
+            })
+        }     
     }
-
-
-
 
     const arrowDown = () => {
         return (
@@ -81,7 +133,7 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
                 </div>
                 <div className={style.ReferenceListEntityBorder}></div>
                 <div className={`${style.addHealthCareBoxStyle}`}>
-                    <div className={`${style.extentionGrid}`}>
+                    {/* <div className={`${style.extentionGrid}`}>
                         <div className={style.entityLableStyle}>Industry Type*</div>
                         <div className={style.displayInRow}>
                             <select value={currentindustryType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj =>{ setCurrentIndustryType(obj.target.value); getEntityData(obj.target.value)}} >
@@ -90,11 +142,11 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
                                     }
                                 </select>
                         </div>
-                    </div>
+                    </div> */}
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>Entity Type*</div>
                         <div className={style.displayInRow}>
-                            <select value={currentEntityType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => {setCurrentEntityType(obj.target.value); } }>
+                            <select value={currentEntityType} className={style.fullWidth} rightElement={arrowDown()} onChange={obj =>  {setCurrentEntityType(obj.target.value); getEntityData(obj.target.value)}}>
                             {
                                         entityTypes.map(type=>(<option value={type.id}>{type.type}</option>))
                                     }
@@ -104,7 +156,11 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.entityLableStyle}>For Cause Terminating Party*</div>
                         <div className={style.displayInRow}>
-                            <InputGroup value={terminationBy} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => setTerminationBy(obj.target.value)} />
+                            <select value={terminationBy} className={style.fullWidth} rightElement={arrowDown()} onChange={obj => {setTerminationBy(obj.target.value); getTerminationReasonData(obj.target.value)}}>
+                            {
+                                        entityTypes.map(type=>(<option value={type.id}>{type.type}</option>)) //TODO
+                                    }
+                                </select>
                         </div>
                     </div>
                     <div className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}></div>
@@ -132,13 +188,13 @@ const AddTerminationReasons = ({ getAddTerminationReasonsDialog , terminationRea
                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                         <div>
                         </div>
-                        <div className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}>ADD MORE</div>
+                        <div className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`} onClick={() => addMore()}>ADD MORE</div>
                     </div>
                 </div>
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
-                        <button className={style.outlinedButton}>SAVE & ADDMORE</button>
-                        <button onClick={() => SubmitTerminationReason()} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE & CLOSE</button>
+                        <button className={style.outlinedButton} onClick={() => getAddTerminationReasonsDialog(false)}>CANCEL</button>
+                        <button onClick={() => SubmitTerminationReason()} className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE</button>
                     </div>
                 </div>
             </div>

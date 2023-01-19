@@ -38,6 +38,7 @@ const HolidayScheduleForCustomers = () => {
 
     const getAddCompanyHolidayDialog = (value) => {
         setShowAddCompanyDialog(value);
+        getHolidayData();
     }
 
     const getIndustryData = async() => {
@@ -119,6 +120,9 @@ const HolidayScheduleForCustomers = () => {
 
     const handleSave = async () => {
         let data = [];
+        if(selectedHolidays.length == 0){
+            return;
+        }
         selectedHolidays?.map(holidayData => 
             data?.push({
                 "eventType": holidayData?.eventType,

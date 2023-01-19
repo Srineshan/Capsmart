@@ -76,27 +76,29 @@ const ClientAdminDashboard = () => {
                                         </div>
                                         </Link>
                                        <Link to='/referenceList/contractTerminationReasonForCustomer'className={style.linkStyle}> <div className={style.dashboardCardStyle}>
-                                            <h5 className={`${style.headingForReferenceList}`}>CONTRACT TERMINATION PREASONS BY ENTITY TYPE</h5>
+                                            <h5 className={`${style.headingForReferenceList}`}>CONTRACT TERMINATION REASONS BY ENTITY TYPE</h5>
                                             <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                 <span className={style.dashboardCardColorOption1}>STANDARD LIST IN USE</span>
                                                 <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
                                             </div>
                                         </div>
                                         </Link>
-                                        <div className={style.dashboardCardStyle}>
+                                        <Link to='/referenceList/proofOfDocumentationByEntity'className={style.linkStyle}> <div className={style.dashboardCardStyle}>
                                             <h5 className={`${style.headingForReferenceList}`}>PROOF OF DOCUMENTATION BY ENTITY TYPE</h5>
                                             <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                 <span className={style.dashboardCardColorOption1}>STANDARD LIST IN USE</span>
                                                 <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
                                             </div>
                                         </div>
-                                        <div className={style.dashboardCardStyle}>
+                                        </Link>
+                                        <Link to='/referenceList/contractedServicesForHealthcare'className={style.linkStyle}> <div className={style.dashboardCardStyle}>
                                             <h5 className={`${style.headingForReferenceList}`}>CONTRACTED SERVICES BY ENTITY TYPE</h5>
                                             <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                 <span className={style.dashboardCardColorOption1}>STANDARD LIST IN USE</span>
                                                 <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
                                             </div>
                                         </div>
+                                        </Link>
                                     </div>
                                 </div>
                                 <div className={style.margin20}>
@@ -104,8 +106,9 @@ const ClientAdminDashboard = () => {
                                         <Link to={'/referenceList/holidayScheduleForCustomers'} className={style.linkStyle}>
                                             <div className={style.dashboardCardStyle}>
                                                 <h5 className={`${style.headingForReferenceList}`}>HOLIDAY LIST BY ENTITY TYPE</h5><br />
-                                                <div className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}>
-                                                    <span className={style.dashboardCardColorOption1}>SETUP REQUIRED</span>
+                                                <div className={`${style.optionsStyle} ${style.displayInCol}`}>
+                                                <span className={style.dashboardCardColorOption1}>STANDARD LIST IN USE</span>
+                                                <span className={style.dashboardCardColorOption2}>LAST UPDATED ON JULY 2022</span>
                                                 </div>
                                             </div>
                                         </Link>

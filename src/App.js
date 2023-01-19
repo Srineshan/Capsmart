@@ -58,6 +58,7 @@ import ReportTypeOverview from './Screens/Reports/reportTypeOverview';
 import TenetHealthLogo from './images/Tenet_Health_logo.png';
 import Sanmateo from './images/sanmateo.jpg'
 import Home from './Screens/CustomerSystemAdmin';
+import ContractedServicesForHealthcare from './Screens/ReferenceList/contractedServicesForHealthcare';
 
 const App = ({props}) => {
   const [accessToken,setAccessToken] = useState(Auth());
@@ -151,7 +152,7 @@ const App = ({props}) => {
           <Route  path="/referenceList/absenseReasonsByIndustries" element={<AbsenseReasonsByIndustries />} />
           <Route  path="/referenceList/suffixByIndustries" element={<SuffixByIndustries />} />
           <Route  path="/referenceList/contractedServiceProviderByIndustries" element={<ContractedServiceProvidedByIndustries />} />
-          <Route  path="/referenceList/proofOfDocumentByEntity" element={<ProofOfDocumentationByEntity />} />
+          <Route  path="/referenceList/proofOfDocumentationByEntity" element={<ProofOfDocumentationByEntity />} />
           <Route  path="/referenceList/contractDoumentTypeForUpload" element={<ContractDocumentTypeForUpload />} />
           <Route  path="/referenceList/holidayScheduleForCustomers" element={<HolidayScheduleForCustomers />} />
           <Route  path="/referenceList/departmentsForCustomers" element={<DepartmentsForCustomers />} />
@@ -169,6 +170,7 @@ const App = ({props}) => {
           <Route  path="/referenceList/absenseReasonsByIndustries" element={<AbsenseReasonsByIndustries />} />
           <Route  path="/referenceList/suffixByIndustries" element={<SuffixByIndustries />} />
           <Route  path="/referenceList/contractedServiceProviderByIndustries" element={<ContractedServiceProvidedByIndustries />} />
+          <Route  path="/referenceList/contractedServicesForHealthcare" element={<ContractedServicesForHealthcare />} />
           <Route  path="/entitySitePortal" element={<Home />} />
           <Route  path="/thankyou" element={<Thankyou />} />
           <Route path="/reportType" element={<ReportType />} />

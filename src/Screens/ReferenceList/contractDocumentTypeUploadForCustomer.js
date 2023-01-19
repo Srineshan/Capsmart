@@ -7,9 +7,37 @@ import SelectArrow from './../../images/selectArrow.png';
 import AddNewEntity from './../../images/addEntity.png';
 import CrossPink from './../../images/crossPink.png';
 import { Link } from "react-router-dom";
+import AddContractDocumentTypeForUpload from "./addContractDocumentTypeForUpload";
+import DeleteConfirmation from '../../Components/DeleteConfirmation';
+import DeleteHcRow from './../../images/deleteHcRow.png';
 
 const ContractDocumentUploadForCustomer = () => {
+    const [showContractDocumentDialog, setShowContractDocumentDialog] = useState(false);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [isSelected, setIsSelected] = useState(false);
+    const [uploadList,setUploadList] = useState([]);
+    const [selectedDocumentType,setSelectedDocumentType] = useState([]);
+    const [allDocumentType,setAllDocumentType] = useState([]);
+
+    const getAddContractDocumentDialog = (value) => {
+        setShowContractDocumentDialog(value);
+    }
+
+    const handleDelete = (id) => {
+        // setAbsenceId(id);
+        setShowDeleteConfirmation(true);
+    }
+
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    }
+    
+    const getDeleteConfirmation = (value) => {
+        if(value){
+            // deleteAbsence(absenceId);
+        }
+    }
+    
     return (
         <Fragment>
             <Navbar />
@@ -39,37 +67,47 @@ const ContractDocumentUploadForCustomer = () => {
                                                 <p className={`${style.holidayScheduleHeadertextStyle1} ${style.marginLeft20}`}> DEFAULT LIST IN USE </p>
                                             </div>
                                             <div className={`${style.customersAdminCardStyle1} ${style.scrollbar}`}>
+                                                {/* {allDocumentType?.map((data) => {
+                                                    return (
+                                                        <>
+                                                            <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}>
+                                                                <Checkbox onChange={(e) => e.target.checked ? setUploadList([...uploadList,data]) : setUploadList(uploadList.filter((e) => e != data))} />
+                                                                <p className={`${style.TextStyle4}`}>{data}</p>
+                                                            </div>
+                                                        </>
+                                                    )
+                                                })} */}
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                    <Checkbox />
+                                                    <Checkbox onChange={(e) => e.target.checked ? setUploadList([...uploadList, "Executed Contract Agreement (Signed)"]) : setUploadList(uploadList.filter((e) => e != "Executed Contract Agreement (Signed)"))} />
                                                     <p className={`${style.TextStyle4}`}>Executed Contract Agreement (Signed)</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}>
-                                                    <Checkbox checked />
+                                                    <Checkbox onChange={(e) => e.target.checked ? setUploadList([...uploadList, "Final Contract Agreement (Unsigned)"]) : setUploadList(uploadList.filter((e) => e != "Final Contract Agreement (Unsigned)"))} />
                                                     <p className={`${style.TextStyle4}`}>Final Contract Agreement (Unsigned)</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                    <Checkbox checked />
+                                                    <Checkbox onChange={(e) => e.target.checked ? setUploadList([...uploadList, "Draft Contract Agreement"]) : setUploadList(uploadList.filter((e) => e != "Draft Contract Agreement"))} />
                                                     <p className={`${style.TextStyle4}`}>Draft Contract Agreement</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}>
-                                                    <Checkbox />
+                                                    <Checkbox onChange={(e) => e.target.checked ? setUploadList([...uploadList, "Exhibit"]) : setUploadList(uploadList.filter((e) => e != "Exhibit"))} />
                                                     <p className={`${style.TextStyle4}`}>Exhibit</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                    <Checkbox />
+                                                    <Checkbox onChange={(e) => e.target.checked ? setUploadList([...uploadList, "Addendum"]) : setUploadList(uploadList.filter((e) => e != "Addendum"))} />
                                                     <p className={`${style.TextStyle4}`}>Addendum</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}>
-                                                    <Checkbox checked />
-                                                    <p className={`${style.TextStyle4}`}>schedule</p>
+                                                    <Checkbox onChange={(e) => e.target.checked ? setUploadList([...uploadList, "Schedule"]) : setUploadList(uploadList.filter((e) => e != "Schedule"))} />
+                                                    <p className={`${style.TextStyle4}`}>Schedule</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                    <Checkbox checked />
-                                                    <p className={`${style.TextStyle4}`}>Prior contract</p>
+                                                    <Checkbox onChange={(e) => e.target.checked ? setUploadList([...uploadList, "Prior Contract"]) : setUploadList(uploadList.filter((e) => e != "Prior Contract"))} />
+                                                    <p className={`${style.TextStyle4}`}>Prior Contract</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}>
-                                                    <Checkbox />
-                                                    <p className={`${style.TextStyle4}`}>Supporting documents</p>
+                                                    <Checkbox onChange={(e) => e.target.checked ? setUploadList([...uploadList, "Supporting Documents"]) : setUploadList(uploadList.filter((e) => e != "Supporting Documents"))} />
+                                                    <p className={`${style.TextStyle4}`}>Supporting Documents</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -81,16 +119,40 @@ const ContractDocumentUploadForCustomer = () => {
                                             <div className={`${style.holidayScheduleHeader2}`}>
                                                 <p></p>
                                                 <p className={`${style.holidayScheduleHeadertextStyle1}`}>MY CUSTOM LIST TO USE</p>
-                                                <img src={AddNewEntity} className={`${style.colorFileStyle} ${style.marginLeft150} `}></img>
+                                                <img src={AddNewEntity} className={`${style.colorFileStyle} ${style.marginLeft150} `} onClick={() => getAddContractDocumentDialog(true)}></img>
                                             </div>
                                             <div className={style.customersAdminCardStyle3}>
-
-                                                <p className={style.holidayScheduleCardtextStyle1}>
+                                            { true ? 
+                                                   <>
+                                                    {
+                                                        selectedDocumentType.map((data)=>{
+                                                        return(
+                                                            <div className={style.tableHeaderIndustriesFontStyle}>
+                                                            <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
+                                                            <p></p>
+                                                            <p className={style.tableDataFontStyle}>{data.suffix}</p>
+                                                            <p></p>
+                                                            {/* <img src={EditBlue} className={style.colorFileStyle} onClick={() => {setIsEdit(true);setSelectedSuffix(data)}} /> */}
+                                                            <img src={DeleteHcRow} className={style.colorFileStyle} onClick={() => {handleDelete(data?.id)}} />
+                                                        </div>
+                                                        </div>
+                                                        )
+                                                    })} 
+                                                    </> :
+                                                    (<p className={style.holidayScheduleCardtextStyle1}>
+                                                        if you would like to setup your custom list for your
+                                                        site(s) you can select from the default list on the left,
+                                                        edit to change labels as needed, and also add new
+                                                        departments/ service area by clicking on the add icon
+                                                    </p>)
+                                                    
+                                                }
+                                                {/* <p className={style.holidayScheduleCardtextStyle1}>
                                                     if you would like to setup your custom list for your
                                                     site(s) you can select from the default list on the left,
                                                     edit to change labels as needed, and also add new
                                                     departments/ service area by clicking on the add icon
-                                                </p>
+                                                </p> */}
                                             </div>
                                         </div>
                                     </div>
@@ -100,6 +162,8 @@ const ContractDocumentUploadForCustomer = () => {
                     </div>
                 </div>
             </div>
+            {showContractDocumentDialog && <AddContractDocumentTypeForUpload getAddContractDocumentDialog={getAddContractDocumentDialog} />}
+            {showDeleteConfirmation && <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation} getDeleteConfirmation={getDeleteConfirmation} confirmationText="Do you want to delete this Absence Reason?" />}
         </Fragment>
     )
 }

@@ -115,7 +115,7 @@ const AddFunctionalTitles = ({ getAddFunctionalTitlesDialog }) => {
                             <InputGroup value={title} className={style.fullWidth} onChange={e=>setTitle(e.target.value)}/>
                         </div>
                         <div className={`${style.editFunctionalTitlesGrid} ${style.marginTop20}`}>
-                            <div className={style.entityLableStyle}>ALias Name</div>
+                            <div className={style.entityLableStyle}>Alias Name</div>
                             <InputGroup value={alias1} className={style.fullWidth} onChange={e=>setalias1(e.target.value)}/>
                             <InputGroup value={alias2} className={`${style.fullWidth}`} onChange={e=>setalias2(e.target.value)}/>
                         </div>
