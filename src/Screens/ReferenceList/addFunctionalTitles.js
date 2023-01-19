@@ -209,9 +209,15 @@ const AddFunctionalTitles = ({ getAddEntityDialog, isEdit, getFuntionalTitleData
                             <InputGroup value={title} id="functionalTitleEl" className={style.fullWidth} onChange={e => setTitle(e.target.value)} />
                         </div>
                         <div className={`${style.editFunctionalTitlesGrid} ${style.marginTop20}`}>
+<<<<<<< HEAD
                             <div className={style.entityLableStyle}>ALias Name</div>
                             <InputGroup value={alias1} className={style.fullWidth} onChange={e => setalias1(e.target.value)} />
                             <InputGroup value={alias2} className={`${style.fullWidth}`} onChange={e => setalias2(e.target.value)} />
+=======
+                            <div className={style.entityLableStyle}>Alias Name</div>
+                            <InputGroup value={alias1} className={style.fullWidth} onChange={e=>setalias1(e.target.value)}/>
+                            <InputGroup value={alias2} className={`${style.fullWidth}`} onChange={e=>setalias2(e.target.value)}/>
+>>>>>>> 01ff1ddd22400e2d6f0257795b0972f06746bb21
                         </div>
                     </div>
                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>

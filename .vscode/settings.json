@@ -1,7 +1,12 @@
 {
+<<<<<<< HEAD
     "files.autoSave": "afterDelay",
     "emmet.includeLanguages": {
         "javascript": "javascriptreact"
     },
     "editor.formatOnSave": true
+=======
+    "files.autoSave": "off",
+    "files.refactoring.autoSave": true
+>>>>>>> 01ff1ddd22400e2d6f0257795b0972f06746bb21
 }
