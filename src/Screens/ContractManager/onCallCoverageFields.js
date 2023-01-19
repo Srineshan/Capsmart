@@ -9,12 +9,14 @@ import FormGroup from '@mui/material/FormGroup';
 import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 import InputAdornment from '@mui/material/InputAdornment';
+import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
 import style from './index.module.scss';
+import EditableTable from './editableTable';
 
 const switchTheme = createTheme({
     palette: {
@@ -33,6 +35,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
         additionalScheduleValue: '0',
         additionalScheduleFrequency: '',
         additionalScheduleRequired: true,
+        additionalOnCallBillableService: false,
         billableService: true,
         rateType: 'HOURLY',
         sessionDuration: '0',
@@ -58,10 +61,10 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
 
     const [specified, setSpecified] = useState(0);
 
-    useEffect(()=>{
-      let additionalFreq = metadata?.additionalScheduleFrequency === 'WEEK' ? timeCommitment?.value || 0 : (timeCommitment?.value/2) || 0;
-      let value = (parseInt(metadata?.min || '0') * timeCommitment?.value || 0) + (parseInt(metadata?.additionalScheduleValue || '0')  * additionalFreq);
-      setSpecified(value);
+    useEffect(() => {
+        let additionalFreq = metadata?.additionalScheduleFrequency === 'WEEK' ? timeCommitment?.value || 0 : (timeCommitment?.value / 2) || 0;
+        let value = (parseInt(metadata?.min || '0') * timeCommitment?.value || 0) + (parseInt(metadata?.additionalScheduleValue || '0') * additionalFreq);
+        setSpecified(value);
     }, [metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
 
 
@@ -105,7 +108,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     }
 
     const getServiceDaysMetadata = (serviceDays) => {
-        setMetadata({ ...metadata, serviceDays: serviceDays})
+        setMetadata({ ...metadata, serviceDays: serviceDays })
     }
 
     const handleOnCallCoverageFor = (value, e) => {
@@ -120,15 +123,15 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     }
 
     const onTotalSessionChange = (e) => {
-      if(e >= 0){
-          let value = e.slice(0, e.slice());
-          handleValueChange('totalSession', value);
-      }
+        if (e >= 0) {
+            let value = e.slice(0, e.slice());
+            handleValueChange('totalSession', value);
+        }
     }
 
     const updateWorkingPeriod = (e) => {
-      let minTime= new Date(new Date(e).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000));
-      setMetadata({...metadata, workingTimeFrom:e, workingTimeTo:minTime});
+        let minTime = new Date(new Date(e).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000));
+        setMetadata({ ...metadata, workingTimeFrom: e, workingTimeTo: minTime });
     }
 
     return (
@@ -152,7 +155,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Service Days*</div>
+                <div className={style.extentionLableStyle}>Allowable Service Days*</div>
                 <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
             </div>
 
@@ -161,11 +164,11 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
-                        <EditableText value={metadata?.min} placeholder='' onChange={(e) =>e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                        <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MAX</div>
-                        <EditableText value={metadata?.max} placeholder='' onChange={(e) =>e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
+                        <EditableText value={metadata?.max} placeholder='' onChange={(e) => e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
                     </div>
                     <Select
                         displayEmpty
@@ -191,7 +194,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                     <Switch checked={metadata?.additionalSchedule} className={` ${style.textAlignLeft}`} />
                                 }
                                 color='primary'
-                                onChange={(e) => setMetadata({...metadata, additionalScheduleRequired:!metadata?.additionalScheduleRequired, additionalScheduleValue:'0', additionalScheduleFrequency: ''})}
+                                onChange={(e) => setMetadata({ ...metadata, additionalScheduleRequired: !metadata?.additionalScheduleRequired, additionalScheduleValue: '0', additionalScheduleFrequency: '' })}
                                 className={`${style.switchFontStyle} ${style.flexLeft}`}
                                 label={metadata?.additionalScheduleRequired ? 'YES' : 'NO'}
                             />
@@ -201,7 +204,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         metadata?.additionalScheduleRequired &&
                         <>
                             <InputGroup value={metadata?.additionalScheduleValue}
-                                onChange={(e) =>e.target.value >= 0 && handleValueChange('additionalScheduleValue', e.target.value)}
+                                onChange={(e) => e.target.value >= 0 && handleValueChange('additionalScheduleValue', e.target.value)}
                                 className={` ${style.threeFieldWidth}`} />
                             <Select
                                 displayEmpty
@@ -232,7 +235,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                         className={` ${style.textAlignLeft}`} />
                                 }
                                 color='primary'
-                                onChange={(e) => setMetadata({...metadata, billableService:!metadata?.billableService, sessionAmount:'0'})}
+                                onChange={(e) => setMetadata({ ...metadata, billableService: !metadata?.billableService, sessionAmount: '0' })}
                                 className={`${style.switchFontStyle} ${style.flexLeft}`}
                                 label={metadata?.billableService ? 'YES' : 'NO'}
                             />
@@ -266,45 +269,45 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                             endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                         }}
                         value={metadata?.sessionDuration}
-                        onChange={(e) =>e.target.value >= 0 && setMetadata({...metadata, sessionDuration:e.target.value, sessionAmount:'0'})}
+                        onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
                     />
                 </div>
             </div>
             {
-              metadata?.billableService &&
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>On Call Payment Amount*</div>
-                <div className={`${style.displayInRow}`}>
-                    <div className={`${style.threeFieldWidth}`}>
-                        <TextField
-                            size="small"
-                            type="tel"
-                            maxLength="5"
-                            disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
-                            }}
-                            value={metadata?.sessionAmount}
-                            onChange={(e) =>e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
-                        />
-                    </div>
-                    <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ {(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)</p>
+                metadata?.billableService &&
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>On Call Payment Amount*</div>
+                    <div className={`${style.displayInRow}`}>
+                        <div className={`${style.threeFieldWidth}`}>
+                            <TextField
+                                size="small"
+                                type="tel"
+                                maxLength="5"
+                                disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                }}
+                                value={metadata?.sessionAmount}
+                                onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
+                            />
+                        </div>
+                        <div className={style.verticalAlignCenter}>
+                            <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ {(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-          }
+            }
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
                 <div className={style.twoCol}>
-                <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                    <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="3"
-                        className={style.editableSessionTextStyle}
-                        onChange={(e) => onTotalSessionChange(e)} />
-                    <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Specified</div>
-                </div>
+                    <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
+                        <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="3"
+                            className={style.editableSessionTextStyle}
+                            onChange={(e) => onTotalSessionChange(e)} />
+                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Specified</div>
+                    </div>
                     <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle}`}>For {timeCommitment?.value} {timeCommitment?.frequency === 'WEEK' ? 'Weeks' :'Months'} Per Contract Year</p>
+                        <p className={`${style.extentionLableStyle}`}>For {timeCommitment?.value} {timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year</p>
                     </div>
                 </div>
             </div>
@@ -328,6 +331,79 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                     />
                 </div>
             </div>
+
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Additional on call billable service specified</div>
+                <div className={style.displayInRow}>
+                    <ThemeProvider theme={switchTheme}>
+                        <FormControlLabel
+                            control={
+                                <Switch checked={metadata?.additionalOnCallBillableService} className={` ${style.textAlignLeft}`} />
+                            }
+                            color='primary'
+                            className={`${style.switchFontStyle} ${style.flexLeft}`}
+                            label={metadata?.additionalOnCallBillableService ? 'YES' : 'NO'}
+                            onChange={(e) => handleValueChange('additionalOnCallBillableService', !metadata?.additionalOnCallBillableService)}
+                        />
+                    </ThemeProvider>
+                    {
+                        metadata?.additionalOnCallBillableService &&
+                        <>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <TextField
+                                    size="small"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                    }}
+                                />
+                            </div>
+                            <div className={`${style.addOnCallGrid} ${style.marginLeft20}`}>
+                                <div className={style.extentionLableStyle}>Additional on call billable service specified</div>
+                                <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                    <AddIcon sx={{ fontSize: 25, color: 'white' }} />
+                                </div>
+                            </div>
+                            {/* <Select
+                                displayEmpty
+                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                            >
+                                <MenuItem value="">Select Frequecy</MenuItem>
+                                <MenuItem value={'PERDAY'} >Per Day</MenuItem>
+                                <MenuItem value={'PERACTIVITY'} >Per Activity</MenuItem>
+                            </Select> */}
+                        </>
+                    }
+                </div>
+            </div>
+            {metadata?.additionalOnCallBillableService && (
+                <>
+                    <EditableTable />
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Require Approval For Payment</div>
+                        <ThemeProvider theme={switchTheme}>
+                            <FormControlLabel
+                                control={
+                                    <Switch checked={true} className={` ${style.textAlignLeft}`} />
+                                }
+                                color='primary'
+                                className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                label={'YES'}
+                            />
+                        </ThemeProvider>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Designate Request Approver*</div>
+                        <Select
+                            displayEmpty
+                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                            className={`${style.fullWidth}`}
+                        >
+                            <MenuItem value="">Select Approver</MenuItem>
+                        </Select>
+                    </div>
+                </>
+            )}
         </div>
     )
 }
