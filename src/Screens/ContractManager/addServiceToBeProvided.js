@@ -6,9 +6,6 @@ import DatalistInput from 'react-datalist-input';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import StickyNote2Icon from '@mui/icons-material/StickyNote2';
-import CalculateIcon from '@mui/icons-material/Calculate';
-import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import Select from '@mui/material/Select';
 import { PUT, GET, TenantID, POST } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
@@ -21,7 +18,6 @@ import NotesOpen from './../../images/notesOpen.png';
 import DocumentOpen from './../../images/documentOpen.png';
 import CalculatorOpen from './../../images/calculatorOpen.png';
 import Popover from '@mui/material/Popover';
-import SendEmailUserList from './mailUser';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 import ClinicBlocksFields from './clinicBlocksField';
@@ -71,8 +67,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [timeCommitment, setTimeCommitment] = useState({ value: 0, frequency: '' });
   const [allowableWorkingHours, setAllowableWorkingHours] = useState({ from: new Date()?.toLocaleTimeString('it-IT').toString(), to: new Date()?.toLocaleTimeString('it-IT').toString() });
   const [isShowPDF, setIsShowPDF] = useState(false);
-  const limit = 3;
-  const limit5 = 5;
+  const [pdfToOpen, setPdfToOpen] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
@@ -81,6 +76,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const idDoc = openDoc ? 'simple-popover' : undefined;
   const [isShowNotesList, setIsShowNotesList] = useState(false);
   const [isShowDocumentsList, setIsShowDocumentsList] = useState(false);
+  const [contractDocumentList, setContractDocumentList] = useState([]);
+  const [notesData, setNotesData] = useState([]);
 
 
   useEffect(() => {
@@ -147,6 +144,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     getSites();
     getActivityList();
     getLocations();
+    getContractNotes();
   }, [])
 
   useEffect(() => {
@@ -183,6 +181,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const { data: contractedServices } = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
     setContractedServices(contractedServices?.contractedServices);
     setExistingServices(contractedServices?.contractedServices);
+  }
+
+  const getContractNotes = async () => {
+    const { data: contractNotes } = await GET(`contract-managment-service/contracts/notes?contractId=${contractId}&&referenceId=${selectedService?.refId}`);
+    console.log('notes', contractNotes);
   }
 
   const getUserData = async () => {
@@ -246,16 +249,17 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const getSites = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
-    setAllowableWorkingHours({ from: contractDetail?.allowableWorkingHours?.from, to: contractDetail?.allowableWorkingHours?.to });
     setTimeCommitment(contractDetail?.timeCommitment);
-    console.log('inside sites function');
+    let temp = [];
+    contractDetail?.contractFiles?.map(data => {
+      temp.push({ name: data?.documentName, url: data?.fileURL });
+    })
+    setContractDocumentList(temp);
     let sites = contractDetail?.site?.sites;
     if (sites && siteList?.length === 0) {
       setSiteList(sites);
     }
   }
-
-  console.log('metadata & isWorkFlowUpdated', metadata, isWorkFlowUpdated);
 
   const addOnWorkFlow = async (buttonType) => {
     setAddOnButton(buttonType);
@@ -264,7 +268,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       let temp = metadata;
       temp?.map((data, index) => {
         if (data?.approver !== undefined) {
-          console.log('inside data', data, ' inside if');
           let workFlowData;
           if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
             let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
@@ -275,8 +278,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.userId, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.userId, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
           }
           if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
-            console.log('inside post', data);
-            POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
+            POST(`timesheet - management - service / workflow`, JSON.stringify(workFlowData)).
               then(response => {
                 data.workFlow = {
                   id: response?.data,
@@ -285,7 +287,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   }
                 }
                 dataValue.push(data);
-                console.log('datavalue', dataValue);
                 if (temp?.length - 1 === index) {
                   console.log('dataValue', dataValue);
                   setMetadata(dataValue);
@@ -295,10 +296,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 ErrorToaster('Unexpected Error');
               })
           } else {
-            console.log('inside put', data);
             PUT(`timesheet-management-service/workflow/${data.workflowId}`, workFlowData)
               .then(response => {
-                console.log('Success!');
                 data.workFlow = {
                   id: data?.workflowId,
                   workFlowName: {
@@ -313,7 +312,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 ErrorToaster('Unexpected Error');
               })
           }
-          console.log(' inside edit datavalue check', dataValue);
         } else {
           data.workFlow = null;
         }
@@ -322,7 +320,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     else if (serviceType === 'Add-On Services' && !editService) {
       let dataValue = [];
       let data = [];
-      console.log('inside check', metadata);
       let temp = metadata;
       data = temp;
       temp?.map((data, index) => {
@@ -359,7 +356,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   }
                 }
                 dataValue.push(data);
-                console.log('datavalue', dataValue);
                 if (temp?.length - 1 === index) {
                   console.log('dataValue', dataValue);
                   setMetadata(dataValue);
@@ -595,12 +591,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       );
     });
 
-  const inputElementText = (text) => {
-    return (
-      <button className={`${style.textElement}`}>{text}</button>
-    )
-  }
-
   const activityItems = useMemo(
     () =>
       activity?.filter(data => !usedActivity?.includes(data?.activity?.activity))?.map((data) => ({
@@ -689,14 +679,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
             <div className={style.displayInRow}>
-              <div className={`${style.cursorPointer} ${style.marginRight20}`}>
+              <div className={`${style.cursorPointer} ${style.marginRight20} `}>
                 <div onClick={(e) => { handleClick(e); setIsShowNotesList(!isShowNotesList) }} aria-describedby={id} >
                   {helpTool?.textArea ? (
                     <img src={NotesOpen} alt="" className={style.addServiceNotesImgStyle} />
                   ) : (
                     <img src={NotesNotOpen} alt="" className={style.addServiceNotesImgStyle} />
                   )}
-                  <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginNotes}`}>4</div>
+                  <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginNotes} `}>4</div>
                 </div>
                 {isShowNotesList && (
                   <Popover
@@ -710,23 +700,21 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     }}
                   >
                     <div className={style.actionsCard}>
-                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 1</div>
-                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 2</div>
-                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 3</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 1</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 2</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 3</div>
                     </div>
                   </Popover>
                 )}
-                {/* <StickyNote2Icon style={{ fontSize: 30, color: '#bfbfbf' }} /> */}
               </div>
-              <div className={`${style.cursorPointer} ${style.marginRight20}`}>
-                {/* <TextSnippetIcon style={{ fontSize: 30, color: '#bfbfbf' }} /> */}
+              <div className={`${style.cursorPointer} ${style.marginRight20} `}>
                 <div onClick={(e) => { handleClickDoc(e); setIsShowDocumentsList(!isShowDocumentsList) }} aria-describedby={idDoc}>
                   {isShowPDF ? (
                     <img src={DocumentOpen} alt="" className={style.addServiceImgStyle} />
                   ) : (
                     <img src={DocumentNotOpen} alt="" className={style.addServiceImgStyle} />
                   )}
-                  <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginDocument}`}>4</div>
+                  <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginDocument} `}>{contractDocumentList?.length}</div>
                 </div>
                 {isShowDocumentsList && (
                   <Popover
@@ -740,14 +728,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     }}
                   >
                     <div className={style.actionsCard}>
-                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setIsShowPDF(!isShowPDF)}>List 1</div>
-                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setIsShowPDF(!isShowPDF)}>List 2</div>
-                      <div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => setIsShowPDF(!isShowPDF)}>List 3</div>
+                      {contractDocumentList?.map(doc => (
+                        <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => { setIsShowPDF(!isShowPDF); setPdfToOpen(doc?.url) }}>{doc?.name}</div>
+                      ))
+                      }
                     </div>
                   </Popover>
                 )}
               </div>
-              <div className={`${style.cursorPointer} ${style.marginRight20}`} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator })}>
+              <div className={`${style.cursorPointer} ${style.marginRight20} `} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator })}>
                 {/* <CalculateIcon style={{ fontSize: 30, color: '#bfbfbf' }} /> */}
                 <div>
                   {helpTool?.calculator ? (
@@ -768,7 +757,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
                   <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData} isMultiSiteEntity={isMultiSiteEntity} />
                 </div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                   <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
                   <div>
                     <Select
@@ -776,7 +765,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                       value={serviceType}
                       onChange={(e) => { setServiceType(e.target.value) }}
                       SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                      className={`${style.fullWidth}`}
+                      className={`${style.fullWidth} `}
                     >
                       <MenuItem value="">Select Activity /Service Type</MenuItem>
                       {serviceTypeList?.map(data => (
@@ -786,14 +775,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   </div>
                 </div>
                 {selectContractInfo !== "INDIVIDUAL" && (
-                  <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>
                     <div>
                       <div className={`${style.displayInRow} `}>
                         <ThemeProvider theme={switchTheme}>
                           <FormControlLabel
                             control={
-                              <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => handleDesignateContractor()} />
+                              <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft} `} onChange={() => handleDesignateContractor()} />
                             }
                             color='primary'
                             className={`${style.switchFontStyle} ${style.flexLeft} `}
@@ -806,18 +795,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             displayEmpty
                             onChange={(e) => handleUsers(e.target.value)}
                             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                            className={`${style.fullWidth}`}
+                            className={`${style.fullWidth} `}
                           >
                             <MenuItem value="">Select Contractors for Services to be Provided</MenuItem>
                             {users?.map((data, index) => (
                               <MenuItem value={data?.id} key={index}> {data?.name?.firstName} {data?.name?.lastName}</MenuItem>
                             ))}
                           </Select>
-                        ) : <p className={` ${style.marginTop10}`}>Any Contractor</p>
+                        ) : <p className={` ${style.marginTop10} `}>Any Contractor</p>
                         }
                       </div>
                       {usersTags?.length !== 0 && (
-                        <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                        <div className={`${style.marginTop20} ${style.marginLeft20} `}>
                           {usersTags}
                         </div>
                       )}
@@ -827,12 +816,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 {
                   serviceType !== 'Administrative / Miscellaneous Services' && serviceType !== 'Add-On Services' && serviceType !== 'Supplemental Services' &&
                   <div>
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                       <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
                       <div>
                         <div className={style.addGrid}>
                           <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e) => setNewActivity(e.target.value)} />
-                          <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                          <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
                           </div>
                         </div>
@@ -847,14 +836,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
 
                 {serviceType !== 'Add-On Services' && <div>
-                  <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                     <div>
                       <div className={`${style.displayInRow} `}>
                         <ThemeProvider theme={switchTheme}>
                           <FormControlLabel
                             control={
-                              <Switch className={`${style.textAlignLeft}`} />
+                              <Switch className={`${style.textAlignLeft} `} />
                             }
                             color='primary'
                             checked={showLocation}
@@ -864,9 +853,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                           />
                         </ThemeProvider>
                         {showLocation &&
-                          <div className={`${style.addGrid} ${style.fullWidth}`}>
+                          <div className={`${style.addGrid} ${style.fullWidth} `}>
                             <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
-                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
                               <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                             </div>
                           </div>
@@ -893,19 +882,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                           ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} />
                           : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
               </div>
-              {/* {helpTool?.calculator ? (
-                <div className={style.calculatorDisplayStyle}>
-                  <Calculator />
-                </div>
-              ) : helpTool?.textArea ? (
-                <div className={style.calculatorDisplayStyle}>
-                  <Notes />
-                </div>
-              ) : ''} */}
             </div>
           ) : (
-            <div className={`${style.pdfViewStyle} ${style.marginTop}`}>
-              <iframe src='https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' allowfullscreen height="500px" width="100%" title='Document' />
+            <div className={`${style.pdfViewStyle} ${style.marginTop} `}>
+              <iframe src={pdfToOpen} allowfullscreen height="500px" width="100%" title='Document' />
             </div>
           )}
           {helpTool?.calculator ? (
@@ -914,15 +894,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             </div>
           ) : helpTool?.textArea ? (
             <div className={style.calculatorDisplayStyle}>
-              <Notes />
+              <Notes notes={notesData} contractId={contractId} />
             </div>
           ) : ''}
         </div>
         <div>
           {isEditable && !isShowPDF &&
-            <div className={`${style.floatRight}`}>
-              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { addOnWorkFlow('ADD MORE'); }}>ADD MORE</button>
-              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { addOnWorkFlow('SAVE AND EXIT'); }}>SAVE & EXIT</button>
+            <div className={`${style.floatRight} `}>
+              <button className={`${style.buttonStyle} ${style.marginLeft20} `} onClick={() => { addOnWorkFlow('ADD MORE'); }}>ADD MORE</button>
+              <button className={`${style.buttonStyle} ${style.marginLeft20} `} onClick={() => { addOnWorkFlow('SAVE AND EXIT'); }}>SAVE & EXIT</button>
             </div>
           }
 

@@ -335,17 +335,21 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Additional on call billable service specified</div>
                 <div className={style.displayInRow}>
-                    <ThemeProvider theme={switchTheme}>
-                        <FormControlLabel
-                            control={
-                                <Switch checked={metadata?.additionalOnCallBillableService} className={` ${style.textAlignLeft}`} />
-                            }
-                            color='primary'
-                            className={`${style.switchFontStyle} ${style.flexLeft}`}
-                            label={metadata?.additionalOnCallBillableService ? 'YES' : 'NO'}
-                            onChange={(e) => handleValueChange('additionalOnCallBillableService', !metadata?.additionalOnCallBillableService)}
-                        />
-                    </ThemeProvider>
+
+                    {
+                        //     <ThemeProvider theme={switchTheme}>
+                        //     <FormControlLabel
+                        //         control={
+                        //             <Switch checked={metadata?.additionalOnCallBillableService} className={` ${style.textAlignLeft}`} />
+                        //         }
+                        //         color='primary'
+                        //         className={`${style.switchFontStyle} ${style.flexLeft}`}
+                        //         label={metadata?.additionalOnCallBillableService ? 'YES' : 'NO'}
+                        //         onChange={(e) => handleValueChange('additionalOnCallBillableService', !metadata?.additionalOnCallBillableService)}
+                        //     />
+                        // </ThemeProvider>
+                    }
+
                     {
                         metadata?.additionalOnCallBillableService &&
                         <>
