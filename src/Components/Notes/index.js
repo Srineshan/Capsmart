@@ -28,7 +28,7 @@ const Notes = () => {
     };
 
     const handleFunct = (event) => {
-        console.log(event.getCurrentContent().getPlainText(), convertToRaw(event.getCurrentContent()));
+        // console.log(event.getCurrentContent().getPlainText(), convertToRaw(event.getCurrentContent()));
         const rteContent = convertToRaw(event.getCurrentContent())
         rteContent && setValue(JSON.stringify(rteContent))
     }
@@ -69,7 +69,7 @@ const Notes = () => {
                             <MUIRichTextEditor
                                 label="To create a note in the contract scratch pad, you can type your note or you can highlight a section of text from the selected reference document on the left. Copy and paste the selected text over here. This text will remain in the scratch pad for you to refer to."
                                 onSave={save}
-                                onChange={handleFunct}
+                                onChange={() => handleFunct()}
                                 toolbar={false}
                                 value={value}
                             />
