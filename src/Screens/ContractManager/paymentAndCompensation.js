@@ -135,7 +135,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                     maxPaymentPerContract: parseFloat(0),
                     reducedNumberOfServices: "",
                     providingAdditionalServices: "",
-                    overUnderPayment: "",
                     paymentBasedonFixedHoursVsActual: true
                 });
             });

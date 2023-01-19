@@ -354,7 +354,7 @@ const ContractIdTermLimitIndividual = (
 
   const onSelectSite = (selectedItem) => {
     setItem(selectedItem);
-    let temp = selectedSites;
+    let temp = selectedSites || [];
     if (!selectedSites?.includes(selectedItem)) {
       temp.push(selectedItem);
     }
