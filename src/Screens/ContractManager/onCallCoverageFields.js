@@ -56,8 +56,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
         },
         weekdaysCount: '0',
         weekendsCount: '0',
-        additionalOnCallBillableService: false,
-        additionalActivity: [{ activity: '', weekDayFrom: null, weekDayTo: null, weekEndFrom: null, weekEndTo: null, patientMRNRequired: false, attendingDocRequired: false }],
+        dependantServiceIncluded: false,
+        additionalActivity: [{ activity: '', weekdayFrom: null, weekdayTo: null, weekendFrom: null, weekendTo: null, patientMRNRequired: false, attendingDocRequired: false }],
         additionalActivityBillable: false,
         additionalActivityPaymentApprovalRequired: false,
         dependencyPayableAmount: '0',
@@ -76,12 +76,19 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
         setSpecified(value);
     }, [metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
 
-
     useEffect(() => {
         setSelectedValues();
     }, [serviceSelected]);
 
+    console.log('selected', serviceSelected);
+
     const setSelectedValues = () => {
+        let dependentActivities = [];
+        serviceSelected?.dependentService?.additionalServices?.map(data => {
+            dependentActivities.push(
+                { activity: data?.activity?.activity, weekdayFrom: GetDateFromHours(data?.weekday?.from?.toString() || ''), weekdayTo: GetDateFromHours(data?.weekday?.to?.toString() || ''), weekendFrom: GetDateFromHours(data?.weekend?.from?.toString() || ''), weekendTo: GetDateFromHours(data?.weekend?.to?.toString() || ''), patientMRNRequired: data?.patientMRNRequired, attendingDocRequired: data?.attendingDocRequired }
+            )
+        })
         setMetadata({
             ...metadata,
             refId: serviceSelected?.refId,
@@ -101,6 +108,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
             workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
             serviceDays: serviceSelected?.serviceDays,
+            additionalActivity: dependentActivities,
+            additionalActivityBillable: serviceSelected?.dependentService?.billableService,
+            additionalActivityPaymentApprovalRequired: serviceSelected?.dependentService?.paymentApprovalRequired,
+            dependencyPayableAmount: serviceSelected?.dependentService?.payableAmount?.value,
+            dependencyFrequency: serviceSelected?.dependentService?.frequency,
+            dependantServiceIncluded: serviceSelected?.dependantServiceIncluded,
         });
     }
 
@@ -113,6 +126,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     }, [metadata])
 
     const handleValueChange = (name, value) => {
+        console.log('inside handle value change function');
         setMetadata({ ...metadata, [name]: value });
     }
 
@@ -356,15 +370,15 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                     <ThemeProvider theme={switchTheme}>
                         <FormControlLabel
                             control={
-                                <Switch checked={metadata?.additionalOnCallBillableService} className={` ${style.textAlignLeft}`} />
+                                <Switch checked={metadata?.dependantServiceIncluded} className={` ${style.textAlignLeft}`} />
                             }
                             color='primary'
                             className={`${style.switchFontStyle} ${style.flexLeft}`}
-                            label={metadata?.additionalOnCallBillableService ? 'YES' : 'NO'}
-                            onChange={(e) => handleValueChange('additionalOnCallBillableService', !metadata?.additionalOnCallBillableService)}
+                            label={metadata?.dependantServiceIncluded ? 'YES' : 'NO'}
+                            onChange={(e) => handleValueChange('dependantServiceIncluded', !metadata?.dependantServiceIncluded)}
                         />
                     </ThemeProvider>
-                    {metadata?.additionalOnCallBillableService && (
+                    {metadata?.dependantServiceIncluded && (
                         <>
                             <div className={`${style.fullWidth}`}>
                                 <TextField
@@ -381,10 +395,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                 displayEmpty
                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 className={`${style.fullWidth}`}
+                                value={metadata?.dependencyFrequency}
+                                onChange={(e) => setMetadata({ ...metadata, dependencyFrequency: e.target.value })}
                             >
-                                <MenuItem value="">Select Frequecy</MenuItem>
-                                <MenuItem value={'PERDAY'} >Per Day</MenuItem>
-                                <MenuItem value={'PERSERVICE'} >Per Service</MenuItem>
+                                <MenuItem value={null}>Select Frequecy</MenuItem>
+                                <MenuItem value={'PER_DAY'} >Per Day</MenuItem>
+                                <MenuItem value={'PER_SERVICE'} >Per Service</MenuItem>
                             </Select>
                             <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                                 <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={() => addAdditionalEntry()} />
@@ -393,52 +409,57 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                     )}
                 </div>
             </div>
-            {metadata?.additionalOnCallBillableService && (
+            {metadata?.dependantServiceIncluded && (
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Billable Service</div>
                     <ThemeProvider theme={switchTheme}>
                         <FormControlLabel
                             control={
                                 <Switch
-                                    checked={true} className={` ${style.textAlignLeft}`} />
+                                    checked={metadata?.additionalActivityBillable} className={` ${style.textAlignLeft}`} onChange={() => setMetadata({ ...metadata, additionalActivityBillable: !metadata?.additionalActivityBillable })} />
                             }
                             color='primary'
                             className={`${style.switchFontStyle} ${style.flexLeft}`}
-                            label={'YES'}
+                            label={metadata?.additionalActivityBillable ? 'YES' : 'NO'}
                         />
                     </ThemeProvider>
                 </div>
             )}
-            {metadata?.additionalOnCallBillableService && (
+            {metadata?.dependantServiceIncluded && (
                 <>
                     <EditableTable additionalActivityData={metadata?.additionalActivity} getAdditionalActivityData={getAdditionalActivityData} />
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Require Approval For Payment</div>
-                        <ThemeProvider theme={switchTheme}>
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={metadata?.additionalActivityPaymentApprovalRequired}
-                                        onChange={e => setMetadata({ ...metadata, additionalActivityPaymentApprovalRequired: !metadata?.additionalActivityPaymentApprovalRequired })} className={` ${style.textAlignLeft}`} />
-                                }
-                                color='primary'
-                                className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                label={metadata?.additionalActivityPaymentApprovalRequired ? 'YES' : 'NO'}
-                            />
-                        </ThemeProvider>
-                    </div>
-                    {metadata?.additionalActivityPaymentApprovalRequired &&
-                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                            <div className={style.extentionLableStyle}>Designate Request Approver*</div>
-                            <Select
-                                displayEmpty
-                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                className={`${style.fullWidth}`}
-                            >
-                                <MenuItem value="">Select Approver</MenuItem>
-                            </Select>
-                        </div>
-                    }
+                    <>
+                        {
+                            //        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                            //        <div className={style.extentionLableStyle}>Require Approval For Payment</div>
+                            //        <ThemeProvider theme={switchTheme}>
+                            //            <FormControlLabel
+                            //                control={
+                            //                    <Switch
+                            //                        checked={metadata?.additionalActivityPaymentApprovalRequired}
+                            //                        onChange={e => setMetadata({ ...metadata, additionalActivityPaymentApprovalRequired: !metadata?.additionalActivityPaymentApprovalRequired })} className={` ${style.textAlignLeft}`} />
+                            //                }
+                            //                color='primary'
+                            //                className={`${style.switchFontStyle} ${style.flexLeft}`}
+                            //                label={metadata?.additionalActivityPaymentApprovalRequired ? 'YES' : 'NO'}
+                            //            />
+                            //        </ThemeProvider>
+                            //    </div>
+                            //    {metadata?.additionalActivityPaymentApprovalRequired &&
+                            //        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                            //            <div className={style.extentionLableStyle}>Designate Request Approver*</div>
+                            //            <Select
+                            //                displayEmpty
+                            //                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                            //                className={`${style.fullWidth}`}
+                            //            >
+                            //                <MenuItem value="">Select Approver</MenuItem>
+                            //            </Select>
+                            //        </div>
+                            //    }
+                        }
+                    </>
+
 
                 </>
             )}

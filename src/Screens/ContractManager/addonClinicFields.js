@@ -38,7 +38,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   const [addOnWorkFlow, setAddOnWorkFlow] = useState();
   const [newServices, setNewServices] = useState({
     name: '',
-    rate: '',
+    rate: '0',
     duringNormalWorkingHours: false,
     afterWorkingHours: false,
     showLocation: false,

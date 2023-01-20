@@ -65,6 +65,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [isWorkFlowUpdated, setIsWorkFlowUpdated] = useState(false);
   const [timeCommitment, setTimeCommitment] = useState({ value: 0, frequency: '' });
+  const [contractTermPeriod, setContractTermPeriod] = useState({ start: null, end: null });
   const [allowableWorkingHours, setAllowableWorkingHours] = useState({ from: new Date()?.toLocaleTimeString('it-IT').toString(), to: new Date()?.toLocaleTimeString('it-IT').toString() });
   const [isShowPDF, setIsShowPDF] = useState(false);
   const [pdfToOpen, setPdfToOpen] = useState('');
@@ -250,6 +251,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
     setTimeCommitment(contractDetail?.timeCommitment);
+    setContractTermPeriod({ start: contractDetail?.contractTerm?.startDate, end: contractDetail?.contractTerm?.endDate });
     let temp = [];
     contractDetail?.contractFiles?.map(data => {
       temp.push({ name: data?.documentName, url: data?.fileURL });
@@ -386,6 +388,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Atleast one location has to be selected if yes');
       return;
     }
+    if (serviceType === 'Clinic Blocks' && metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end) {
+      console.log('contract term periods', contractTermPeriod, metadata?.contractedSchedules?.[0]?.startDate, metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate);
+      ErrorToaster('Selected Duration Should be equal to the contract strat and end date');
+      return;
+    }
     if (selectContractInfo !== "INDIVIDUAL" && isDesignatedSpecificContractor && selectedUsers?.length === 0) {
       ErrorToaster('Atleast one User has to be selected if Specific Contractor is Yes');
       return;
@@ -400,6 +407,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     let performingActivity = '';
     let activities = [];
+    let dependentActivities = [];
     if (serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services' && serviceType !== 'Administrative / Miscellaneous Services') {
       performingActivity = selectedActivity?.map(data => data?.activity?.activity)?.join('-')
       selectedActivity?.map(data => {
@@ -412,6 +420,32 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         activities?.push({ "activity": data?.activity })
       })
     }
+    if (serviceType === 'On Call Coverage Duty Days') {
+      console.log('data check check', metadata?.additionalActivity, metadata);
+      let temp = metadata?.additionalActivity;
+
+      temp?.map(activity => {
+        dependentActivities.push({
+          "activity": {
+            "activity": activity?.activity
+          },
+          "weekday": {
+            "from": activity?.weekdayFrom?.toLocaleTimeString('it-IT').toString(),
+            "to": activity?.weekdayTo?.toLocaleTimeString('it-IT').toString(),
+          },
+          "weekend": {
+            "from": activity?.weekendFrom?.toLocaleTimeString('it-IT').toString(),
+            "to": activity?.weekendTo?.toLocaleTimeString('it-IT').toString()
+          },
+          "patientMRNRequired": activity?.patientMRNRequired,
+          "attendingDocRequired": activity?.attendingDocRequired,
+        }
+        )
+      })
+    }
+
+    console.log('in add dependent', dependentActivities);
+
     if (serviceType === 'Supplemental Services') {
       performingActivity = metadata?.supplementServiceName?.map(data => data)?.join('-') || '';
       metadata?.supplementServiceName?.map(data => (
@@ -440,6 +474,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "activity": performingActivity
         },
         "activities": activities,
+
         ...((serviceType === 'Supplemental Services' || serviceType === 'Administrative / Miscellaneous Services') &&
         {
           "hoursBorrowed": {
@@ -452,6 +487,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           }
         }),
         "locations": serviceType === 'Add-On Services' ? dataValues?.locations : selectedLocation,
+        ...((serviceType === 'Clinic Blocks' && {
+          "contractedSchedules": metadata?.contractedSchedules,
+          "patientsSeenTargets": metadata?.patientsSeenTargets,
+          "scheduledPatientsTargets": metadata?.scheduledPatientsTargets
+        })),
         "contractedSchedule": {
           "minimum": {
             "value": parseInt(dataValues?.min || '0')
@@ -513,10 +553,21 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "frequency": dataValues?.totalSessionFrequency
         },
         "serviceDays": dataValues?.serviceDays,
-        ...(serviceType !== 'On Call Coverage Duty Days' && {
-          "workingPeriod": {
-            "from": allowableWorkingHours?.from,
-            "to": allowableWorkingHours?.to,
+        ...(serviceType === 'On Call Coverage Duty Days' && {
+          "dependentService": {
+            "payableAmount": {
+              "value": parseInt(dataValues?.dependencyPayableAmount)
+            },
+            "frequency": dataValues?.dependencyFrequency,
+            "additionalServices": dependentActivities,
+            // "workFlow": {
+            //   "id": "string",
+            //   "workFlowName": {
+            //     "name": "string"
+            //   }
+            // },
+            "billableService": dataValues?.additionalActivityBillable,
+            "paymentApprovalRequired": dataValues?.additionalActivityPaymentApprovalRequired,
           }
         }),
         "workingPeriod": {
@@ -530,7 +581,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "designateSpecificContractor": isDesignatedSpecificContractor,
         "locationSpecified": serviceType === 'Add-On Services' ? dataValues?.locationSpecified : showLocation,
         "dedicatedHoursSpecified": ['Supplemental Services', 'Administrative / Miscellaneous Services'].includes(serviceType) ? dataValues?.dedicatedHoursSpecified : false,
-        "billableService": dataValues?.billableService
+        "billableService": dataValues?.billableService,
+        "dependantServiceIncluded": dataValues?.dependantServiceIncluded || false,
       }]
     }
     if (editService && serviceType === 'Add-On Services') {
