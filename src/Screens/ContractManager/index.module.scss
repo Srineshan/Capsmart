@@ -498,6 +498,12 @@ body {
     grid-template-columns: 45% 10% 45%;
 }
 
+.termPeriodWithAddGrid {
+    display: grid;
+    grid-template-columns: 1fr 10% 1fr 35px;
+    grid-gap: 10px;
+}
+
 .contractedTime {
     display: grid;
     grid-template-columns: 45% 45%;
@@ -1593,9 +1599,9 @@ input[type="file"] {
     grid-gap: 10px;
 }
 
-.addOnCallGrid {
+.onCallBillableGrid {
     display: grid;
-    grid-template-columns: 1fr 65px;
+    grid-template-columns: 0.5fr 1fr 1fr 35px;
     grid-gap: 10px;
 }
 
@@ -2004,6 +2010,7 @@ input[type=number] {
     border: 1px solid #7165E3;
     height: 15px;
     width: 15px;
+    position: absolute;
     background-color: #fff;
     border-radius: 50%;
     color: red;
@@ -2032,8 +2039,8 @@ input[type=number] {
 
 .editableTableGridStyle {
     display: grid;
-    grid-template-columns: 30% 15% 15% 15% 15%;
-    grid-gap: 20px;
+    grid-template-columns: 20% 27% 27% 10% 10%;
+    grid-gap: 10px;
 }
 
 .tableHeaderFontStyle {

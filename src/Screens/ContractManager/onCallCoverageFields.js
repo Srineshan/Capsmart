@@ -157,7 +157,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>On Call Coverage For *</div>
                 <div className={style.spaceBetween}>
-                    <FormGroup className={`${style.marginLeft10} ${style.threeFieldWidth}`}>
+                    <FormGroup className={`${style.threeFieldWidth}`}>
                         <FormControlLabel control={<Checkbox checked={metadata?.onCallCoverageFor?.includes('InPatient')} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} />} label={<Typography variant="body2" color="textSecondary">Inpatient</Typography>} />
                     </FormGroup>
                     <FormGroup className={`${style.marginLeft10} ${style.threeFieldWidth}`}>
@@ -352,7 +352,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Additional on call billable service specified</div>
-                <div className={style.displayInRow}>
+                <div className={style.onCallBillableGrid}>
                     <ThemeProvider theme={switchTheme}>
                         <FormControlLabel
                             control={
@@ -364,12 +364,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                             onChange={(e) => handleValueChange('additionalOnCallBillableService', !metadata?.additionalOnCallBillableService)}
                         />
                     </ThemeProvider>
-
-
-                    {
-                        metadata?.additionalOnCallBillableService &&
+                    {metadata?.additionalOnCallBillableService && (
                         <>
-                            <div className={`${style.threeFieldWidth}`}>
+                            <div className={`${style.fullWidth}`}>
                                 <TextField
                                     value={metadata?.dependencyPayableAmount}
                                     onChange={(e) => setMetadata({ ...metadata, dependencyPayableAmount: e.target.value })}
@@ -380,25 +377,38 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                     }}
                                 />
                             </div>
-                            <div className={`${style.addOnCallGrid} ${style.marginLeft20}`}>
-                                <div className={style.extentionLableStyle}>Additional on call billable service specified</div>
-                                <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                    <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={() => addAdditionalEntry()} />
-                                </div>
-                            </div>
-                            {/* <Select
+                            <Select
                                 displayEmpty
                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                                className={`${style.fullWidth}`}
                             >
                                 <MenuItem value="">Select Frequecy</MenuItem>
                                 <MenuItem value={'PERDAY'} >Per Day</MenuItem>
-                                <MenuItem value={'PERACTIVITY'} >Per Activity</MenuItem>
-                            </Select> */}
+                                <MenuItem value={'PERSERVICE'} >Per Service</MenuItem>
+                            </Select>
+                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={() => addAdditionalEntry()} />
+                            </div>
                         </>
-                    }
+                    )}
                 </div>
             </div>
+            {metadata?.additionalOnCallBillableService && (
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Billable Service</div>
+                    <ThemeProvider theme={switchTheme}>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={true} className={` ${style.textAlignLeft}`} />
+                            }
+                            color='primary'
+                            className={`${style.switchFontStyle} ${style.flexLeft}`}
+                            label={'YES'}
+                        />
+                    </ThemeProvider>
+                </div>
+            )}
             {metadata?.additionalOnCallBillableService && (
                 <>
                     <EditableTable additionalActivityData={metadata?.additionalActivity} getAdditionalActivityData={getAdditionalActivityData} />

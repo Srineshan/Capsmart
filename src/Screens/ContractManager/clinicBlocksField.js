@@ -7,6 +7,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
 import { GetDateFromHours } from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
@@ -151,6 +155,72 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment }) =>
 
     return (
         <div>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Period*</div>
+                <div className={style.termPeriodWithAddGrid}>
+                    <div>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                                InputProps={{
+                                    style: {
+                                        fontSize: 14,
+                                        height: 30,
+                                    },
+                                    onFocus: e => {
+                                        // setCalendarStart(true);
+                                    },
+                                    onBlur: e => {
+                                        // setCalendarStart(false);
+                                    }
+                                }}
+                                renderInput={(params) => <TextField {...params}
+                                    // onClick={() => setCalendarStart(true)}
+                                    inputProps={{
+                                        ...params.inputProps,
+                                        placeholder: "Start Date"
+                                    }} />}
+                            />
+                        </LocalizationProvider>
+                    </div>
+                    <p className={`${style.toStyle} ${style.alignCenter}`}>To</p>
+                    <div >
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                                // open={calendarEnd}
+                                // onOpen={() => setCalendarEnd(true)}
+                                // onClose={() => setCalendarEnd(false)}
+                                // value={contractTermPeriodTo}
+                                // onChange={(newValue) => {
+                                //     setContractTermPeriodTo(newValue);
+                                // }}
+                                InputProps={{
+                                    style: {
+                                        fontSize: 14,
+                                        height: 30,
+                                    },
+                                    onFocus: e => {
+                                        // setCalendarEnd(true);
+                                    },
+                                    onBlur: e => {
+                                        // setCalendarEnd(false);
+                                    }
+                                }}
+                                // minDate={contractTermPeriodFrom}
+                                // maxDate={add(new Date(), { years: 5 })}
+                                renderInput={(params) => <TextField  {...params}
+                                    //  onClick={() => setCalendarEnd(true)}
+                                    inputProps={{
+                                        ...params.inputProps,
+                                        placeholder: "End Date"
+                                    }} />}
+                            />
+                        </LocalizationProvider>
+                    </div>
+                    <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                        <AddIcon sx={{ fontSize: 25, color: 'white' }} />
+                    </div>
+                </div>
+            </div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Regular Service Schedule*</div>
                 <div className={style.displayInRow}>
