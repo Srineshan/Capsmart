@@ -367,6 +367,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           }
         } else {
           data.workFlow = null;
+          handleSave(buttonType);
         }
       });
 
@@ -376,6 +377,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const handleSave = async (buttonType) => {
+    console.log('billable', metadata?.[0]?.billableService, metadata?.[0]?.sessionAmount);
     if (serviceType === '') {
       ErrorToaster('Activity Type Selection is Mandatory');
       return;
@@ -388,11 +390,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Atleast one User has to be selected if Specific Contractor is Yes');
       return;
     }
-    if (metadata?.additionalScheduleRequired && (parseInt(metadata?.additionalScheduleValue) === 0 || metadata?.additionalScheduleFrequency === null)) {
+    if (metadata?.[0]?.additionalScheduleRequired && (parseInt(metadata?.[0]?.additionalScheduleValue) === 0 || metadata?.[0]?.additionalScheduleFrequency === null)) {
       ErrorToaster('Additional Schedule value and frequency required');
       return;
     }
-    if (metadata?.billableService && parseInt(metadata?.sessionAmount) === 0) {
+    if (metadata?.[0]?.billableService && parseInt(metadata?.[0]?.sessionAmount) === 0) {
       ErrorToaster('Payment Amount field is mandatory if the service is Billable');
       return;
     }
