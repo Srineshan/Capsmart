@@ -672,6 +672,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setAnchorElDoc(null);
   };
 
+  console.log('contract services', existingServices);
+
   return (
     <div>
       <Dialog isOpen={getAddServiceDialog} onClose={() => { getAddServiceDialog(false); getEditServiceDialog(false); }} className={`${style.manageServiceDialog} ${style.addManagerDialogBackground} ${rightHelpArea && style.moveDialogPosition}`}>
@@ -894,7 +896,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             </div>
           ) : helpTool?.textArea ? (
             <div className={style.calculatorDisplayStyle}>
-              <Notes notes={notesData} contractId={contractId} />
+              {
+                //  notes={notesData} contractId={contractId}
+              }
+              <Notes />
             </div>
           ) : ''}
         </div>

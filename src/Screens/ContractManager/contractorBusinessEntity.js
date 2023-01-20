@@ -154,7 +154,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     }
 
 
-    if (allowBEM) {
+    if (allowBEM || allowAggregator) {
       const userData = {
         ...(userId !== '0' && { 'id': userId }),
         "name": {
@@ -524,7 +524,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               </div>
 
               {
-                selectContractInfo !== 'INDIVIDUAL' && (allowBEM || selectedRoles?.map(role => role?.roleName)?.includes('Aggregator')) &&
+                selectContractInfo !== 'INDIVIDUAL' &&
                 (
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Allow user as Aggregator*</div>

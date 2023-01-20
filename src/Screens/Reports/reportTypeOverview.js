@@ -20,6 +20,7 @@ import ApexPieChart from './chart-data/pie-chart';
 import ApexGroupedBarChart from './chart-data/groupedBarChart';
 import ApexStackedBarChart from './chart-data/stackedBarChart';
 import ApexLineChart from './chart-data/lineChart';
+import ApexBarChart from './chart-data/barChart';
 
 import style from './index.module.scss';
 import ApexBoxChart from './chart-data/boxChart';
@@ -53,6 +54,8 @@ const ReportTypeOverview = () => {
     const [paymentsReportLog, setPaymentsReportLog] = useState();
     const [series, setSeries] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [barChartSeries, setBarChartSeries] = useState([]);
+    const [barChartCategories, setBarChartCategories] = useState([]);
     const [stackedSeries, setStackedSeries] = useState([]);
     const [stackedCategories, setStackedCategories] = useState([]);
     const [isDownloadClicked, setIsDownloadClicked] = useState(false);
@@ -327,6 +330,11 @@ const ReportTypeOverview = () => {
                 temp[index] = { key: data, value: Object?.values(chartData?.timesheetProcessingStatus)?.[index] }
             })
             setPieData(temp);
+            setBarChartSeries([{
+                'data': chartData?.paymentContracts?.map(data => data?.payment),
+                'name': 'Services Performed'
+            }])
+            setBarChartCategories(chartData?.paymentContracts?.map(data => data?.contract?.name));
         }
         setIsLoading(false);
     }
@@ -823,13 +831,30 @@ const ReportTypeOverview = () => {
                                                             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Timesheets Processing Status</div>
                                                             <ApexPieChart pieData={pieData} />
                                                         </div>
-
-                                                        {/* <div>
-                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>By Category Of Service Performed</div>
-                                                            <div className={style.marginTop20}>
-                                                                <ApexGroupedBarChart series={series} categories={categories} />
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Payments Made Summary Statistics</div>
+                                                            <div className={`${style.summaryGrid} ${style.marginTop40}`}>
+                                                                <div>
+                                                                    <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Minimum Payment</div>
+                                                                    <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Maximum Payment</div>
+                                                                    <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Average Payment Per Timesheet</div>
+                                                                    <div className={`${style.summaryTextStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Median Payment ( 50TH Percentile )</div>
+                                                                </div>
+                                                                <div>
+                                                                    <div className={`${style.summaryTextStyle} ${style.marginTop20}`}>$ {paymentsReportLog?.paymentStats?.minPayment}</div>
+                                                                    <div className={`${style.summaryTextStyle} ${style.marginTop20}`}>$ {paymentsReportLog?.paymentStats?.maxPayment}</div>
+                                                                    <div className={`${style.summaryTextStyle} ${style.marginTop20}`}>$ {paymentsReportLog?.paymentStats?.avgPayment}</div>
+                                                                    <div className={`${style.summaryTextStyle} ${style.marginTop20}`}>$ {paymentsReportLog?.paymentStats?.medianPayment}</div>
+                                                                </div>
                                                             </div>
-                                                        </div> */}
+                                                        </div>
+                                                    </div>
+                                                    <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
+                                                    <div>
+                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Payment For Services Performed By Contract</div>
+                                                        <div className={style.marginTop20}>
+                                                            <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={`${format(new Date(dataToUseInReport?.from || new Date()), 'MMM d')} to ${format(new Date(dataToUseInReport?.to || new Date()), 'MMM d')}`} yAxisTitle="Dollars Paid (In thousands)" />
+                                                        </div>
                                                     </div>
                                                     <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
                                                     {/* <div className={style.marginTop40}>

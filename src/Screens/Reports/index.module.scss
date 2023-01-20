@@ -1386,3 +1386,14 @@
     size: auto;
     margin: 3mm 0mm 10mm 0mm;
 }
+
+.summaryGrid {
+    display: grid;
+    grid-template-columns: 1fr 150px;
+    grid-gap: 20px;
+}
+
+.summaryTextStyle {
+    font: normal normal bold 15px/20px Montserrat;
+    color: #858c93;
+}
