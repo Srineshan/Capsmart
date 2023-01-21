@@ -47,7 +47,7 @@ const MenuProps = {
   },
 };
 
-const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, getSelectedField, getShowAlert, isEditable, getTabDataStatus }) => {
+const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus }) => {
   const testContractId = contractId;
   const [user, setUsers] = useState([]);
   const [userName, setUserName] = useState('');
@@ -527,13 +527,13 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div>
-          <div className={`${style.extentionGrid}`} onFocus={() => { getSelectedField('Service Provider Type') }}>
+          <div className={`${style.extentionGrid}`} onFocus={() => { checkFieldAndPopAlert(serviceProviderType?.id, 'Service Provider Type') }}>
             <div className={style.extentionLableStyle}>Service Provider Type*</div>
             <div className={style.grid3}>
               <ProviderTypeList value={serviceProviderType?.id} onChangeFunc={(id, value) => setServiceProviderType({ id: id, contractedServiceProviderType: value })} className={[style.fullWidth]} />
             </div>
           </div>
-          <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('NPIN') }}>
+          <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(npin, 'NPIN') }}>
             <div className={style.extentionLableStyle}>NPIN*</div>
             <div className={style.grid3}>
               <InputGroup className={style.fullWidth}
@@ -557,29 +557,29 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               <InputGroup className={style.fullWidth} placeholder="First"
                 value={contractorFirstName}
                 maxLength={30}
-                onFocus={() => { getSelectedField('Contractor First Name') }}
+                onFocus={() => { checkFieldAndPopAlert(contractorFirstName, 'Contractor First Name') }}
                 onChange={(e) => setContractorFirstName(e.target.value)} />
               <InputGroup className={style.fullWidth} placeholder="Middle"
                 value={contractorMiddleName}
                 maxLength={30}
-                onFocus={() => { getSelectedField('Contractor Middle Initials') }}
+                onFocus={() => { checkFieldAndPopAlert(contractorMiddleName, 'Contractor Middle Initials') }}
                 onChange={(e) => setContractorMiddleName(e.target.value)} />
               <InputGroup className={style.fullWidth} placeholder="Last"
                 value={contractorLastName}
                 maxLength={30}
-                onFocus={() => { getSelectedField('Contractor Last Name') }}
+                onFocus={() => { checkFieldAndPopAlert(contractorLastName, 'Contractor Last Name') }}
                 onChange={(e) => setContractorLastName(e.target.value)} />
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
-            onFocus={() => { getSelectedField('Suffix') }}>
+            onFocus={() => { checkFieldAndPopAlert(contractorNameSuffix?.id, 'Suffix') }}>
             <div className={style.extentionLableStyle}>Suffix*</div>
             <div className={style.grid3}>
               <SuffixList value={contractorNameSuffix?.id} onChangeFunc={(id, value) => setContractorNameSuffix({ ...contractorNameSuffix, id: id, suffix: value })} className={[style.fullWidth]} />
             </div>
           </div>
 
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+          <div className={`${style.extentionGrid} ${style.marginTop20}`} >
             <div className={style.extentionLableStyle}>Allow Use of Alternate/ Personal Email Address</div>
             <div className={style.displayInRow}>
               <ThemeProvider theme={switchTheme}>
@@ -592,7 +592,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                 />
               </ThemeProvider>
               {allowPersonalMail &&
-                <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
+                <div className={`${style.fullWidth} ${style.verticalAlignCenter}`} onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
                   <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={contractorEmail} onChange={(e)=>setContractorEmail(e.target.value)}/>
                 </div>
               }
@@ -601,7 +601,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           </div>
           {
             !allowPersonalMail && <div className={`${style.extentionGrid} ${style.marginTop20}`}
-              onFocus={() => { getSelectedField('Email Contractor id') }}>
+              onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
               <div className={style.extentionLableStyle}>Email Contractor id*</div>
               <div className={style.displayInRow}>
                 <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
@@ -614,7 +614,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
 
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
-            onFocus={() => { getSelectedField('Cell Phone') }}>
+            onFocus={() => { checkFieldAndPopAlert(contractorPhone, 'Cell Phone') }}>
             <div className={style.extentionLableStyle}>Cell Phone*</div>
             <div className={style.twoCol}>
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
@@ -633,22 +633,22 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
             <InputGroup className={style.fullWidth} placeholder="Street"
               value={address?.addressLine}
               onChange={(e)=>setAddress({...address, addressLine:e.target.value})}
-              onFocus={() => { getSelectedField('Address Street') }}/>
+              onFocus={() => { checkFieldAndPopAlert(address?.addressLine, 'Address Street') }}/>
             <div className={`${style.grid3} ${style.marginTop20}`}>
               <InputGroup className={style.fullWidth} placeholder="City"
                 value={address?.city}
                 maxLength={50}
-                onFocus={() => { getSelectedField('Address City') }}
+                onFocus={() => { checkFieldAndPopAlert(address?.city, 'Address City') }}
                 onChange={(e) => setAddress({...address, city:e.target.value})} />
               <InputGroup className={style.fullWidth} placeholder="State"
                 value={address?.state}
                 maxLength={20}
-                onFocus={() => { getSelectedField('Address State') }}
+                onFocus={() => { checkFieldAndPopAlert(address?.state, 'Address State') }}
                 onChange={(e) => setAddress({...address, state:e.target.value})} />
               <InputGroup className={style.fullWidth} placeholder="Zipcode"
                 value={address?.zipcode}
                 maxLength={5}
-                onFocus={() => { getSelectedField('Address Zip Code') }}
+                onFocus={() => { checkFieldAndPopAlert(address?.zipcode, 'Address Zip Code') }}
                 onChange={(e) => setAddress({...address, zipcode:e.target.value})} />
             </div>
             </div>
@@ -657,7 +657,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
 
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { getSelectedField('Site Level Responsibility') }}>
+          onFocus={() => { checkFieldAndPopAlert(siteLevel? siteTitleValues?.length : true, 'Site Level Responsibility') }}>
           <div className={style.extentionLableStyle}>Site Level Responsibility*</div>
           <div>
             <div className={style.flexLeft}>
@@ -672,7 +672,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               </ThemeProvider>
             </div>
             {siteLevel && (
-              <div className={`${style.siteLevelBoxStyle}`}>
+              <div className={`${style.siteLevelBoxStyle}`} onFocus={()=>checkFieldAndPopAlert(siteTitleValues?.length, 'Site Level Responsibility')}>
                 <div className={`${style.siteLevelGrid}`}>
                   <div className={style.marginTop}>Site*</div>
                   <select
@@ -712,7 +712,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { getSelectedField('Department Level Responsibility') }}>
+          onFocus={() => { checkFieldAndPopAlert(departmentLevel ? departmentTitleValues?.length : true,'Department Level Responsibility') }}>
           <div className={style.extentionLableStyle}>Department Level Responsibility*</div>
           <div>
             <div className={style.flexLeft}>
@@ -728,7 +728,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
             </div>
             <div>
               {departmentLevel && (
-                <div className={`${style.departmentLevelBoxStyle}`}>
+                <div className={`${style.departmentLevelBoxStyle}`} onFocus={() => { checkFieldAndPopAlert(departmentTitleValues?.length, 'Department Level Responsibility') }}>
                   {/* {selectedContract === "Multiple Contractor" && ( */}
                   <div className={`${style.siteLevelGrid}`}>
                     <div className={style.marginTop}>Site*</div>
@@ -790,7 +790,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { getSelectedField('Assign Contractor With App User Role') }}>
+          onFocus={() => { checkFieldAndPopAlert(true, 'Assign Contractor With App User Role') }}>
           <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
           <div className={`${style.reduce10Left} ${style.marginRight}`}>
             <select

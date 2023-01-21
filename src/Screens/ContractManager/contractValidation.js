@@ -11,6 +11,8 @@ export const validateContractIDTermLimit = (contract) => {
                   {field: 'contract Effective date', value:contract?.contractDetail?.contractTerm?.effectiveDate},
                   {field: 'Time Commitment - value', value:contract?.contractDetail?.timeCommitment?.value},
                   {field: 'Time Commitment - frequency', value:contract?.contractDetail?.timeCommitment?.frequency},
+                  {field: 'Allowable Working Hours - From', value:contract?.contractDetail?.allowableWorkingHours?.from},
+                  {field: 'Allowable Working Hours - To', value:contract?.contractDetail?.allowableWorkingHours?.to},
                   {field: 'contract Effective date', value:contract?.contractDetail?.contractTerm?.effectiveDate},
                   {field: 'Contract Continuation Policy' , value:contract?.contractDetail?.continuationPolicy?.contractPolicyType},
                 ];
@@ -36,6 +38,9 @@ export const validateContractProvider = async(contract) => {
   if (contractId !== '' && contractId !== undefined) {
     const { data: userData } = await GET(`user-management-service/user?contractID=${contractId}`);
     providers = userData?.filter(data=>data?.contracts?.map(contract=>contract?.roles?.map(role=>role?.roleName)?.includes('Activity Logger')))?.map(data=>data);
+  }
+  if(providers?.length === 0){
+    emptyFields = ['Service Provider', 'NPIN', 'Contract Provider First Name', 'Contract Provider Last Name', 'Suffix', 'Contract Provider Email', 'Mobile Number', 'Address', 'City', 'State', 'Zipcode'];
   }
   providers?.map((user, index)=> {
     let fieldData = [{field:'Service Provider', value:user?.serviceProviderType?.id},

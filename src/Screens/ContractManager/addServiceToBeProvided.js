@@ -1,33 +1,33 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Dialog, Classes, Icon, Intent, InputGroup, EditableText, RadioGroup, Radio, Checkbox, Tag, TextArea } from '@blueprintjs/core';
+import { Dialog, Classes, Icon, Intent, Tag } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import AddIcon from '@mui/icons-material/Add';
 import DatalistInput from 'react-datalist-input';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import StickyNote2Icon from '@mui/icons-material/StickyNote2';
-import CalculateIcon from '@mui/icons-material/Calculate';
-import TextSnippetIcon from '@mui/icons-material/TextSnippet';
-import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
 import { PUT, GET, TenantID, POST } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Calculator from './../../Components/Calculator';
-import ReactStickyNotes from '@react-latest-ui/react-sticky-notes';
 import style from './index.module.scss';
-import SendEmailUserList from './mailUser';
+import NotesNotOpen from './../../images/notesNotOpen.png';
+import DocumentNotOpen from './../../images/documentNotOpen.png';
+import CalculatorNotOpen from './../../images/calculatorNotOpen.png';
+import NotesOpen from './../../images/notesOpen.png';
+import DocumentOpen from './../../images/documentOpen.png';
+import CalculatorOpen from './../../images/calculatorOpen.png';
+import Popover from '@mui/material/Popover';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
-import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import ClinicBlocksFields from './clinicBlocksField';
 import OnCallCoverageFields from './onCallCoverageFields';
 import SupplementalFields from './supplementalFields';
 import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
+import { workFlowDataGenerator } from './workflowDataGenerator';
+import Notes from '../../Components/Notes';
 
 const switchTheme = createTheme({
   palette: {
@@ -41,6 +41,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const serviceTypeList = ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days', 'Supplemental Services', 'Add-On Services', 'Administrative / Miscellaneous Services'];
   const siteTypeId = sessionStorage.getItem('entityTypeId');
   const [serviceType, setServiceType] = useState('Clinic Blocks');
+  const [addOnButton, setAddOnButton] = useState('');
   const [siteList, setSiteList] = useState([]);
   const [allLocation, setAllLocation] = useState([]);
   const [siteData, setSiteData] = useState([]);
@@ -62,13 +63,27 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [selectedUser, setSelectedUser] = useState([]);
   const [helpTool, setHelpTool] = useState({ calculator: false, textArea: false });
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [isWorkFlowUpdated, setIsWorkFlowUpdated] = useState(false);
   const [timeCommitment, setTimeCommitment] = useState({ value: 0, frequency: '' });
+  const [contractTermPeriod, setContractTermPeriod] = useState({ start: null, end: null });
+  const [allowableWorkingHours, setAllowableWorkingHours] = useState({ from: new Date()?.toLocaleTimeString('it-IT').toString(), to: new Date()?.toLocaleTimeString('it-IT').toString() });
   const [isShowPDF, setIsShowPDF] = useState(false);
-  const limit = 3;
-  const limit5 = 5;
+  const [pdfToOpen, setPdfToOpen] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+  const [anchorElDoc, setAnchorElDoc] = useState(null);
+  const openDoc = Boolean(anchorElDoc);
+  const idDoc = openDoc ? 'simple-popover' : undefined;
+  const [isShowNotesList, setIsShowNotesList] = useState(false);
+  const [isShowDocumentsList, setIsShowDocumentsList] = useState(false);
+  const [contractDocumentList, setContractDocumentList] = useState([]);
+  const [notesData, setNotesData] = useState([]);
+
 
   useEffect(() => {
     if (editService) {
+      setSiteData(selectedService?.sites);
       getSelectedSites(selectedService?.sites);
       getNewLocation(selectedService?.locations);
       setServiceType(selectedService?.activityType?.activityType);
@@ -93,6 +108,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     removeSelectedLocationFromList();
   }, [selectedLocation])
 
+  useEffect(() => {
+    if (isWorkFlowUpdated) {
+      setIsWorkFlowUpdated(false);
+      console.log('inside useEffect', metadata);
+      handleSave(addOnButton);
+
+    }
+  }, [metadata, isWorkFlowUpdated])
+
   let rightHelpArea = helpTool?.calculator || helpTool?.textArea;
 
   const getSelectedSites = (value) => {
@@ -101,12 +125,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   const getNewLocation = (value) => {
     setNewLocation(value);
-  }
-
-  const leftElementButton = (text) => {
-    return (
-      <button className={`${style.minMaxLeftElement}`} >{text}</button>
-    )
   }
 
   const removeFriendlyName = (index) => {
@@ -127,6 +145,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     getSites();
     getActivityList();
     getLocations();
+    getContractNotes();
   }, [])
 
   useEffect(() => {
@@ -165,14 +184,27 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setExistingServices(contractedServices?.contractedServices);
   }
 
+  const getContractNotes = async () => {
+    const { data: contractNotes } = await GET(`contract-managment-service/contracts/notes?contractId=${contractId}&&referenceId=${selectedService?.refId}`);
+    console.log('notes', contractNotes);
+  }
+
   const getUserData = async () => {
     const { data: userData } = await GET(`user-management-service/user?contractID=${contractId}`);
     if (userData) {
-      setUsers(userData);
+      setUsers(userData?.filter(user => user?.roles?.map(role => role?.roleName)?.includes('Activity Logger'))?.map(data => data));
     }
   }
 
   const activityToAdd = async () => {
+    if (newActivity === '') {
+      ErrorToaster('Enter valid Acitivty name');
+      return;
+    }
+    if (activity?.map(data => data?.activity?.activity.includes(newActivity))) {
+      ErrorToaster('Activity Already Exists');
+      return;
+    }
     let data = {
       "activity": {
         "activity": newActivity
@@ -219,37 +251,163 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
     setTimeCommitment(contractDetail?.timeCommitment);
+    setContractTermPeriod({ start: contractDetail?.contractTerm?.startDate, end: contractDetail?.contractTerm?.endDate });
+    let temp = [];
+    contractDetail?.contractFiles?.map(data => {
+      temp.push({ name: data?.documentName, url: data?.fileURL });
+    })
+    setContractDocumentList(temp);
     let sites = contractDetail?.site?.sites;
     if (sites && siteList?.length === 0) {
       setSiteList(sites);
     }
   }
-  console.log('metadata', metadata?.selectedActivities);
+
+  const addOnWorkFlow = async (buttonType) => {
+    setAddOnButton(buttonType);
+    if (serviceType === 'Add-On Services' && editService && metadata?.[0]?.approver !== undefined) {
+      let dataValue = [];
+      let temp = metadata;
+      temp?.map((data, index) => {
+        if (data?.approver !== undefined) {
+          let workFlowData;
+          if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
+            let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
+            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.userId, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+          } else {
+            let approverName = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
+            let paymentApproverName = `${data?.paymentApprover?.name?.firstName} ${data?.paymentApprover?.name?.lastName}`
+            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.userId, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.userId, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
+          }
+          if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
+            POST(`timesheet - management - service / workflow`, JSON.stringify(workFlowData)).
+              then(response => {
+                data.workFlow = {
+                  id: response?.data,
+                  workFlowName: {
+                    name: data?.performingActivity,
+                  }
+                }
+                dataValue.push(data);
+                if (temp?.length - 1 === index) {
+                  console.log('dataValue', dataValue);
+                  setMetadata(dataValue);
+                  setIsWorkFlowUpdated(true);
+                }
+              }).catch(error => {
+                ErrorToaster('Unexpected Error');
+              })
+          } else {
+            PUT(`timesheet-management-service/workflow/${data.workflowId}`, workFlowData)
+              .then(response => {
+                data.workFlow = {
+                  id: data?.workflowId,
+                  workFlowName: {
+                    name: data?.workflowName,
+                  }
+                }
+                dataValue.push(data);
+                setMetadata(dataValue);
+                setIsWorkFlowUpdated(true);
+              })
+              .catch(error => {
+                ErrorToaster('Unexpected Error');
+              })
+          }
+        } else {
+          data.workFlow = null;
+        }
+      })
+    }
+    else if (serviceType === 'Add-On Services' && !editService) {
+      let dataValue = [];
+      let data = [];
+      let temp = metadata;
+      data = temp;
+      temp?.map((data, index) => {
+        data.refId = (new Date()).getTime();
+        let dataMap = {
+          selectedActivityId: data?.selectedActivityId,
+          additionalDetails: data?.activityResponse?.dataMap?.additionalDetails,
+        }
+        if (!data?.selectedActivityId) {
+          data.payableAmount = { value: parseInt(data?.sessionAmount) };
+        }
+        data.activityResponse = { dataMap: dataMap };
+        data.sites = siteData;
+        data.performingActivity = { activity: data?.performingActivity };
+        data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
+        if (data?.approver !== undefined) {
+          let workFlowData;
+          if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
+            let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
+            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.userId, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+          } else {
+            let approverName = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
+            let paymentApproverName = `${data?.paymentApprover?.name?.firstName} ${data?.paymentApprover?.name?.lastName}`
+            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.userId, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.userId, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
+          }
+
+          if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
+            POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
+              then(response => {
+                data.workFlow = {
+                  id: response?.data,
+                  workFlowName: {
+                    name: data?.performingActivity?.activity,
+                  }
+                }
+                dataValue.push(data);
+                if (temp?.length - 1 === index) {
+                  console.log('dataValue', dataValue);
+                  setMetadata(dataValue);
+                  setIsWorkFlowUpdated(true);
+                }
+              }).catch(error => {
+                ErrorToaster('Unexpected Error');
+              })
+          }
+        } else {
+          data.workFlow = null;
+          handleSave(buttonType);
+        }
+      });
+
+    } else {
+      handleSave(buttonType);
+    }
+  }
 
   const handleSave = async (buttonType) => {
+    console.log('billable', metadata?.[0]?.billableService, metadata?.[0]?.sessionAmount);
     if (serviceType === '') {
       ErrorToaster('Activity Type Selection is Mandatory');
       return;
     }
-    if(showLocation && selectedLocation?.length === 0){
+    if (showLocation && selectedLocation?.length === 0) {
       ErrorToaster('Atleast one location has to be selected if yes');
       return;
     }
-    if(selectContractInfo !== "INDIVIDUAL" && isDesignatedSpecificContractor && selectedUsers?.length === 0){
+    if (serviceType === 'Clinic Blocks' && metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end) {
+      console.log('contract term periods', contractTermPeriod, metadata?.contractedSchedules?.[0]?.startDate, metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate);
+      ErrorToaster('Selected Duration Should be equal to the contract strat and end date');
+      return;
+    }
+    if (selectContractInfo !== "INDIVIDUAL" && isDesignatedSpecificContractor && selectedUsers?.length === 0) {
       ErrorToaster('Atleast one User has to be selected if Specific Contractor is Yes');
       return;
     }
-    if(metadata?.additionalScheduleRequired && (parseInt(metadata?.additionalScheduleValue) === 0 || metadata?.additionalScheduleFrequency === null)){
+    if (metadata?.[0]?.additionalScheduleRequired && (parseInt(metadata?.[0]?.additionalScheduleValue) === 0 || metadata?.[0]?.additionalScheduleFrequency === null)) {
       ErrorToaster('Additional Schedule value and frequency required');
       return;
     }
-    if(metadata?.billableService && parseInt(metadata?.sessionAmount) === 0)
-    {
+    if (metadata?.[0]?.billableService && parseInt(metadata?.[0]?.sessionAmount) === 0) {
       ErrorToaster('Payment Amount field is mandatory if the service is Billable');
       return;
     }
     let performingActivity = '';
     let activities = [];
+    let dependentActivities = [];
     if (serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services' && serviceType !== 'Administrative / Miscellaneous Services') {
       performingActivity = selectedActivity?.map(data => data?.activity?.activity)?.join('-')
       selectedActivity?.map(data => {
@@ -262,6 +420,32 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         activities?.push({ "activity": data?.activity })
       })
     }
+    if (serviceType === 'On Call Coverage Duty Days') {
+      console.log('data check check', metadata?.additionalActivity, metadata);
+      let temp = metadata?.additionalActivity;
+
+      temp?.map(activity => {
+        dependentActivities.push({
+          "activity": {
+            "activity": activity?.activity
+          },
+          "weekday": {
+            "from": activity?.weekdayFrom?.toLocaleTimeString('it-IT').toString(),
+            "to": activity?.weekdayTo?.toLocaleTimeString('it-IT').toString(),
+          },
+          "weekend": {
+            "from": activity?.weekendFrom?.toLocaleTimeString('it-IT').toString(),
+            "to": activity?.weekendTo?.toLocaleTimeString('it-IT').toString()
+          },
+          "patientMRNRequired": activity?.patientMRNRequired,
+          "attendingDocRequired": activity?.attendingDocRequired,
+        }
+        )
+      })
+    }
+
+    console.log('in add dependent', dependentActivities);
+
     if (serviceType === 'Supplemental Services') {
       performingActivity = metadata?.supplementServiceName?.map(data => data)?.join('-') || '';
       metadata?.supplementServiceName?.map(data => (
@@ -270,20 +454,17 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     let data = [];
     if (serviceType === 'Add-On Services' && !editService) {
-      let temp = metadata;
-      data = temp;
-      temp?.map(data => {
-        data.sites = siteData;
-        data.performingActivity = { activity: data?.performingActivity };
-        data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
-      });
+      console.log('inside metadata', metadata);
+      data = metadata;
     }
     else {
+      console.log('metadata', metadata);
       let dataValues = metadata;
       if (serviceType === 'Add-On Services') {
         dataValues = metadata?.[0];
       }
       data = [{
+        "refId": dataValues?.refId ? dataValues?.refId : (new Date()).getTime(),
         "sites": siteData,
         "activityType": {
           "activityType": serviceType
@@ -293,6 +474,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "activity": performingActivity
         },
         "activities": activities,
+
         ...((serviceType === 'Supplemental Services' || serviceType === 'Administrative / Miscellaneous Services') &&
         {
           "hoursBorrowed": {
@@ -304,7 +486,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             }
           }
         }),
-        "locations": selectedLocation,
+        "locations": serviceType === 'Add-On Services' ? dataValues?.locations : selectedLocation,
+        ...((serviceType === 'Clinic Blocks' && {
+          "contractedSchedules": metadata?.contractedSchedules,
+          "patientsSeenTargets": metadata?.patientsSeenTargets,
+          "scheduledPatientsTargets": metadata?.scheduledPatientsTargets
+        })),
         "contractedSchedule": {
           "minimum": {
             "value": parseInt(dataValues?.min || '0')
@@ -332,11 +519,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           },
           "noTargetApplicable": dataValues?.targetNoTargetApplicable
         },
-        ...(serviceType === 'Supplemental Services' && {"additionalSchedule": {
-          "value": parseInt(dataValues?.additionalScheduleValue),
-          "frequency": dataValues?.additionalScheduleFrequency,
-          "scheduleRequired": dataValues?.additionalScheduleRequired
-        }}),
+        ...(serviceType === 'Supplemental Services' && {
+          "additionalSchedule": {
+            "value": parseInt(dataValues?.additionalScheduleValue),
+            "frequency": dataValues?.additionalScheduleFrequency,
+            "scheduleRequired": dataValues?.additionalScheduleRequired
+          }
+        }),
         "rateType": dataValues?.rateType,
         "activityResponse": {
           "dataMap": {
@@ -347,6 +536,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             ...(serviceType === 'Administrative / Miscellaneous Services' && {
               'adminActivities': dataValues?.selectedActivities,
             }),
+            ...(serviceType === 'Add-On Services' && {
+              'selectedActivityId': dataValues?.activityResponse?.dataMap?.selectedActivityId,
+              'additionalDetails': dataValues?.activityResponse?.dataMap?.additionalDetails || [],
+            })
           }
         },
         "duration": {
@@ -360,19 +553,36 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "frequency": dataValues?.totalSessionFrequency
         },
         "serviceDays": dataValues?.serviceDays,
+        ...(serviceType === 'On Call Coverage Duty Days' && {
+          "dependentService": {
+            "payableAmount": {
+              "value": parseInt(dataValues?.dependencyPayableAmount)
+            },
+            "frequency": dataValues?.dependencyFrequency,
+            "additionalServices": dependentActivities,
+            // "workFlow": {
+            //   "id": "string",
+            //   "workFlowName": {
+            //     "name": "string"
+            //   }
+            // },
+            "billableService": dataValues?.additionalActivityBillable,
+            "paymentApprovalRequired": dataValues?.additionalActivityPaymentApprovalRequired,
+          }
+        }),
         "workingPeriod": {
           "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
           "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
         },
-        "workingHours": {
-          "normalWorkingHours": true,
-          "afterWorkingHours": true
-        },
-        "activityApprovalWFRequired": true,
+        ...(serviceType === 'Add-On Services' && {
+          workFlow: dataValues?.workFlow,
+        }),
+        "activityApprovalWFRequired": dataValues?.activityApprovalWFRequired || false,
         "designateSpecificContractor": isDesignatedSpecificContractor,
-        "locationSpecified": showLocation,
+        "locationSpecified": serviceType === 'Add-On Services' ? dataValues?.locationSpecified : showLocation,
         "dedicatedHoursSpecified": ['Supplemental Services', 'Administrative / Miscellaneous Services'].includes(serviceType) ? dataValues?.dedicatedHoursSpecified : false,
-        "billableService": dataValues?.billableService
+        "billableService": dataValues?.billableService,
+        "dependantServiceIncluded": dataValues?.dependantServiceIncluded || false,
       }]
     }
     if (editService && serviceType === 'Add-On Services') {
@@ -402,7 +612,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       getAddServiceDialog(false);
       getEditServiceDialog(false);
     }
-    getTabDataStatus();
+    // getTabDataStatus();
     reset();
   }
 
@@ -434,12 +644,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         </Tag>
       );
     });
-
-  const inputElementText = (text) => {
-    return (
-      <button className={`${style.textElement}`}>{text}</button>
-    )
-  }
 
   const activityItems = useMemo(
     () =>
@@ -501,10 +705,28 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   const onShowLocationChange = (value) => {
     setShowLocation(value);
-    if(!value){
+    if (!value) {
       setSelectedLocation([]);
     }
   }
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClosePopover = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClickDoc = (event) => {
+    setAnchorElDoc(event.currentTarget);
+  };
+
+  const handleClosePopoverDoc = () => {
+    setAnchorElDoc(null);
+  };
+
+  console.log('contract services', existingServices);
 
   return (
     <div>
@@ -513,27 +735,85 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
             <div className={style.displayInRow}>
-              <div className={`${style.cursorPointer} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>
-                <StickyNote2Icon style={{ fontSize: 30, color: '#bfbfbf' }} />
+              <div className={`${style.cursorPointer} ${style.marginRight20} `}>
+                <div onClick={(e) => { handleClick(e); setIsShowNotesList(!isShowNotesList) }} aria-describedby={id} >
+                  {helpTool?.textArea ? (
+                    <img src={NotesOpen} alt="" className={style.addServiceNotesImgStyle} />
+                  ) : (
+                    <img src={NotesNotOpen} alt="" className={style.addServiceNotesImgStyle} />
+                  )}
+                  <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginNotes} `}>4</div>
+                </div>
+                {isShowNotesList && (
+                  <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClosePopover}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <div className={style.actionsCard}>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 1</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 2</div>
+                      <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 3</div>
+                    </div>
+                  </Popover>
+                )}
               </div>
-              <div className={`${style.cursorPointer} ${style.marginRight}`} onClick={() => setIsShowPDF(!isShowPDF)}>
-                <TextSnippetIcon style={{ fontSize: 30, color: '#bfbfbf' }} />
+              <div className={`${style.cursorPointer} ${style.marginRight20} `}>
+                <div onClick={(e) => { handleClickDoc(e); setIsShowDocumentsList(!isShowDocumentsList) }} aria-describedby={idDoc}>
+                  {isShowPDF ? (
+                    <img src={DocumentOpen} alt="" className={style.addServiceImgStyle} />
+                  ) : (
+                    <img src={DocumentNotOpen} alt="" className={style.addServiceImgStyle} />
+                  )}
+                  <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginDocument} `}>{contractDocumentList?.length}</div>
+                </div>
+                {isShowDocumentsList && (
+                  <Popover
+                    id={idDoc}
+                    open={openDoc}
+                    anchorEl={anchorElDoc}
+                    onClose={handleClosePopoverDoc}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <div className={style.actionsCard}>
+                      {contractDocumentList?.map(doc => (
+                        <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => { setIsShowPDF(!isShowPDF); setPdfToOpen(doc?.url) }}>{doc?.name}</div>
+                      ))
+                      }
+                    </div>
+                  </Popover>
+                )}
               </div>
-              <div className={`${style.cursorPointer} ${style.marginRight}`} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator })}>
-                <CalculateIcon style={{ fontSize: 30, color: '#bfbfbf' }} />
+              <div className={`${style.cursorPointer} ${style.marginRight20} `} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator })}>
+                {/* <CalculateIcon style={{ fontSize: 30, color: '#bfbfbf' }} /> */}
+                <div>
+                  {helpTool?.calculator ? (
+                    <img src={CalculatorOpen} alt="" className={style.addServiceImgStyle} />
+                  ) : (
+                    <img src={CalculatorNotOpen} alt="" className={style.addServiceImgStyle} />
+                  )}
+                </div>
               </div>
               <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => handleClose()} />
             </div>
           </div>
           <div className={style.extensionBorder}></div>
           {!isShowPDF ? (
-            <div className={style.displayInRow}>
+            <div>
               <div className={style.proofBorder}>
                 <div className={`${style.addManagerGrid} `}>
                   <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
                   <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData} isMultiSiteEntity={isMultiSiteEntity} />
                 </div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                   <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
                   <div>
                     <Select
@@ -541,7 +821,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                       value={serviceType}
                       onChange={(e) => { setServiceType(e.target.value) }}
                       SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                      className={`${style.fullWidth}`}
+                      className={`${style.fullWidth} `}
                     >
                       <MenuItem value="">Select Activity /Service Type</MenuItem>
                       {serviceTypeList?.map(data => (
@@ -551,14 +831,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   </div>
                 </div>
                 {selectContractInfo !== "INDIVIDUAL" && (
-                  <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>
                     <div>
                       <div className={`${style.displayInRow} `}>
                         <ThemeProvider theme={switchTheme}>
                           <FormControlLabel
                             control={
-                              <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft}`} onChange={() => handleDesignateContractor()} />
+                              <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft} `} onChange={() => handleDesignateContractor()} />
                             }
                             color='primary'
                             className={`${style.switchFontStyle} ${style.flexLeft} `}
@@ -571,18 +851,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             displayEmpty
                             onChange={(e) => handleUsers(e.target.value)}
                             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                            className={`${style.fullWidth}`}
+                            className={`${style.fullWidth} `}
                           >
                             <MenuItem value="">Select Contractors for Services to be Provided</MenuItem>
                             {users?.map((data, index) => (
                               <MenuItem value={data?.id} key={index}> {data?.name?.firstName} {data?.name?.lastName}</MenuItem>
                             ))}
                           </Select>
-                        ) : <p className={` ${style.marginTop10}`}>Any Contractor</p>
+                        ) : <p className={` ${style.marginTop10} `}>Any Contractor</p>
                         }
                       </div>
                       {usersTags?.length !== 0 && (
-                        <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                        <div className={`${style.marginTop20} ${style.marginLeft20} `}>
                           {usersTags}
                         </div>
                       )}
@@ -592,12 +872,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 {
                   serviceType !== 'Administrative / Miscellaneous Services' && serviceType !== 'Add-On Services' && serviceType !== 'Supplemental Services' &&
                   <div>
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                       <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
                       <div>
                         <div className={style.addGrid}>
                           <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e) => setNewActivity(e.target.value)} />
-                          <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                          <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
                           </div>
                         </div>
@@ -612,14 +892,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
 
                 {serviceType !== 'Add-On Services' && <div>
-                  <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                     <div>
                       <div className={`${style.displayInRow} `}>
                         <ThemeProvider theme={switchTheme}>
                           <FormControlLabel
                             control={
-                              <Switch className={`${style.textAlignLeft}`} />
+                              <Switch className={`${style.textAlignLeft} `} />
                             }
                             color='primary'
                             checked={showLocation}
@@ -629,9 +909,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                           />
                         </ThemeProvider>
                         {showLocation &&
-                          <div className={`${style.addGrid} ${style.fullWidth}`}>
+                          <div className={`${style.addGrid} ${style.fullWidth} `}>
                             <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
-                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
                               <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                             </div>
                           </div>
@@ -658,27 +938,30 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                           ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} />
                           : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
               </div>
-              {helpTool?.calculator ? (
-                <div className={style.calculatorDisplayStyle}>
-                  <Calculator />
-                </div>
-              ) : helpTool?.textArea ? (
-                <div className={style.calculatorDisplayStyle}>
-                  <Calculator />
-                </div>
-              ) : ''}
             </div>
           ) : (
-            <div className={`${style.pdfViewStyle} ${style.marginTop}`}>
-              <iframe src='https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' allowfullscreen height="500px" width="100%" title='Document' />
+            <div className={`${style.pdfViewStyle} ${style.marginTop} `}>
+              <iframe src={pdfToOpen} allowfullscreen height="500px" width="100%" title='Document' />
             </div>
           )}
+          {helpTool?.calculator ? (
+            <div className={style.calculatorDisplayStyle}>
+              <Calculator />
+            </div>
+          ) : helpTool?.textArea ? (
+            <div className={style.calculatorDisplayStyle}>
+              {
+                //  notes={notesData} contractId={contractId}
+              }
+              <Notes />
+            </div>
+          ) : ''}
         </div>
         <div>
-          {isEditable &&
-            <div className={`${style.floatRight}`}>
-              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('ADD MORE'); reset() }}>ADD MORE</button>
-              <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('SAVE AND EXIT'); reset() }}>SAVE & EXIT</button>
+          {isEditable && !isShowPDF &&
+            <div className={`${style.floatRight} `}>
+              <button className={`${style.buttonStyle} ${style.marginLeft20} `} onClick={() => { addOnWorkFlow('ADD MORE'); }}>ADD MORE</button>
+              <button className={`${style.buttonStyle} ${style.marginLeft20} `} onClick={() => { addOnWorkFlow('SAVE AND EXIT'); }}>SAVE & EXIT</button>
             </div>
           }
 

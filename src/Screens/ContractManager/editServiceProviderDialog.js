@@ -646,7 +646,6 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
                       <Button variant="outlined" onClick={() => handleDepartmentLevelValues()}>Add</Button>
                     </div>
                     <TagInput
-                      // placeholder="Enter tags/keywords relative to the post"
                       values={departmentTitleValues}
                       className={`${style.marginTop20}`}
                       onRemove={handleDeptRemove}

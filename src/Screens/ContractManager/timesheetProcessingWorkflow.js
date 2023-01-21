@@ -3,7 +3,7 @@ import { TextArea, InputGroup, Icon, Dialog, Classes, Intent, Checkbox } from '@
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import ToolBar from './toolbar';
-import {POST, GET, PUT} from './../dataSaver';
+import { POST, GET, PUT } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ReviewerApproverField from './reviewerApproverField';
 import LoadingScreen from '../../Components/LoadingScreen';
@@ -12,429 +12,439 @@ import RedirectingPopUp from './redirectingPopUp';
 import style from './index.module.scss';
 
 const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus }) => {
-    const [timesheet, setTimesheet] = useState({id:'', aggregator:'', reviewer:'', approver:''});
-    const [workFlowList,setWorkFlowList] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState('');
-    const [selectTimesheetToDefineProcess, setSelectTimesheetToDefineProcess] = useState('');
-    const [customWorkFlow, setCustomWorkFlow] = useState(false);
-    const [workflowTemplateToUse, setWorkflowTemplateToUse] = useState('');
-    const [timesheetProcessingWorkflow, setTimesheetProcessingWorkflow] = useState([]);
-    const [timeSheetTabs, setTimeSheetTabs] = useState([]);
-    const [timesheetWorkFlow, setTimeSheetWorkFlow] = useState([]);
-    const [users,setUsers] = useState([]);
-    const [provider, setProvider] = useState([]);
-    const [tabIndex, setTabIndex] = useState(0);
-    const [selectedTimeSheet,setSelectedTimeSheet] = useState({id:'',reviewer:'',approver:''});
+  const [timesheet, setTimesheet] = useState({ id: '', aggregator: '', reviewer: '', approver: '' });
+  const [workFlowList, setWorkFlowList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('');
+  const [selectTimesheetToDefineProcess, setSelectTimesheetToDefineProcess] = useState('');
+  const [customWorkFlow, setCustomWorkFlow] = useState(false);
+  const [workflowTemplateToUse, setWorkflowTemplateToUse] = useState('');
+  const [timesheetProcessingWorkflow, setTimesheetProcessingWorkflow] = useState([]);
+  const [timeSheetTabs, setTimeSheetTabs] = useState([]);
+  const [timesheetWorkFlow, setTimeSheetWorkFlow] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [provider, setProvider] = useState([]);
+  const [tabIndex, setTabIndex] = useState(0);
+  const [selectedTimeSheet, setSelectedTimeSheet] = useState({ id: '', reviewer: '', approver: '' });
 
-    useEffect(()=>{
-        setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
-        setWorkflowTemplateToUse(timesheetProcessingWorkflow[0]?.workFlowTemplate?.name?.name);
-        setCustomWorkFlow(timesheetProcessingWorkflow[0]?.customWorkFlow);
-        setWorkFlowList(timesheetProcessingWorkflow?.map(data=>data?.workFlow?.id));
-    },[timesheetProcessingWorkflow]);
+  useEffect(() => {
+    setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
+    setWorkflowTemplateToUse(timesheetProcessingWorkflow[0]?.workFlowTemplate?.name?.name);
+    setCustomWorkFlow(timesheetProcessingWorkflow[0]?.customWorkFlow);
+    setWorkFlowList(timesheetProcessingWorkflow?.map(data => data?.workFlow?.id));
+  }, [timesheetProcessingWorkflow]);
 
-    useEffect(()=>{
-        setTimesheet({id:'', approver:'', reviewer:'', aggregator:''});
-        getTimeSheetSubmissionTerms();
-        setTabIndex(timeSheetTabs?.indexOf(activeTab));
-  },[activeTab])
+  useEffect(() => {
+    setTimesheet({ id: '', approver: '', reviewer: '', aggregator: '' });
+    getTimeSheetSubmissionTerms();
+    setTabIndex(timeSheetTabs?.indexOf(activeTab));
+  }, [activeTab])
 
-    useEffect(()=>{
-      getUserData();
-      getProviderData();
-      getTimeSheetValues();
-      getTimeSheetWorkFlow();
-    },[])
+  useEffect(() => {
+    getUserData();
+    getProviderData();
+    getTimeSheetValues();
+    getTimeSheetWorkFlow();
+  }, [])
 
-   useEffect(()=>{
-     getTimeSheetSubmissionTerms();
-   }, [timesheetWorkFlow])
+  useEffect(() => {
+    getTimeSheetSubmissionTerms();
+  }, [timesheetWorkFlow])
 
-    const refresh = () => {
-      getTimeSheetWorkFlow();
+  const refresh = () => {
+    getTimeSheetWorkFlow();
+  }
+
+  const getUserData = async () => {
+    const { data: userList } = await GET(`contract-managment-service/contracts/workFlowUser`)
+    if (userList) {
+      setUsers(userList);
     }
+  }
 
-    const getUserData = async() => {
-      const {data:userList} = await GET(`contract-managment-service/contracts/workFlowUser`)
-      if(userList){
-        setUsers(userList);
+  const getProviderData = async () => {
+    if (contractId !== '' && selectContractInfo === 'MULTIPLE') {
+      const { data: providerData } = await GET(`user-management-service/user?contractID=${contractId}`);
+      if (providerData) {
+        setProvider(providerData);
       }
     }
+  }
 
-    const getProviderData = async () => {
-      if (contractId !== '' && selectContractInfo === 'MULTIPLE') {
-        const { data: providerData } = await GET(`user-management-service/user?contractID=${contractId}`);
-        if (providerData) {
-          setProvider(providerData);
-        }
-      }
+  const getTimeSheetWorkFlow = async () => {
+    const { data: timesheetWorkFlow } = await GET('timesheet-management-service/workflow');
+    if (timesheetWorkFlow) {
+      setTimeSheetWorkFlow(timesheetWorkFlow);
     }
+  }
 
-    const getTimeSheetWorkFlow = async() => {
-      const {data:timesheetWorkFlow} = await GET('timesheet-management-service/workflow');
-      if(timesheetWorkFlow){
-        setTimeSheetWorkFlow(timesheetWorkFlow);
-      }
+  const getTimeSheetValues = async () => {
+    setIsLoading(true);
+    const { data: timesheetSubmissionTerms } = await GET(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`);
+    setTimeSheetTabs(timesheetSubmissionTerms?.timesheetActivitiesPeriods?.map(data => data.timesheetLabel?.label) || []);
+    setActiveTab(timesheetSubmissionTerms?.timesheetActivitiesPeriods?.map(data => data.timesheetLabel?.label)?.[0] || '');
+    setIsLoading(false);
+  }
+
+  const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
+    let id = timesheet?.id;
+    if (id === '') {
+      await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
+        .then(response => {
+          handleContinue(response?.data);
+        })
+        .catch(error => {
+          ErrorToaster('Unexpected Error');
+        })
     }
-
-    const getTimeSheetValues = async() => {
-      setIsLoading(true);
-      const {data: timesheetSubmissionTerms} = await GET(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`);
-      setTimeSheetTabs(timesheetSubmissionTerms?.timesheetActivitiesPeriods?.map(data=>data.timesheetLabel?.label) || []);
-      setActiveTab(timesheetSubmissionTerms?.timesheetActivitiesPeriods?.map(data=>data.timesheetLabel?.label)?.[0] || '');
-      setIsLoading(false);
+    else {
+      await PUT(`timesheet-management-service/workflow/${id}`, data)
+        .then(response => {
+          SuccessToaster('Workflow Updated Successfully');
+        })
+        .catch(error => {
+          ErrorToaster('Unexpected Error');
+        })
     }
+    getTabDataStatus();
+    refresh();
+  }
 
-    const updateTimeSheetWorkflow = async(data, workFlowName, type) => {
-      let id = timesheet?.id;
-      if(id === ''){
-        await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
-         .then(response=>{
-           handleContinue(response?.data);
-         })
-         .catch(error=>{
-           ErrorToaster('Unexpected Error');
-         })
-      }
-      else{
-          await PUT(`timesheet-management-service/workflow/${id}`, data)
-           .then(response=>{
-            SuccessToaster('Workflow Updated Successfully');
-           })
-           .catch(error=>{
-             ErrorToaster('Unexpected Error');
-           })
-     }
-     getTabDataStatus();
-     refresh();
-    }
+  const getSelectedUserDetails = (id) => {
+    let user = users?.filter(user => user?.userId === id)?.map(data => data)[0];
+    return user;
+  }
 
-    const getSelectedUserDetails = (id) => {
-      let user = users?.filter(user=>user?.userId === id)?.map(data=>data)[0];
-      return user;
-    }
-
-    const handleTimeSheetWorkFlow = (name, reviewer, approver, aggregator, activeTab) => {
-      let data;
-      if(selectContractInfo === 'MULTIPLE' && reviewer === approver){
-        data = {
-          "name": {
-            "name": name
-          },
-          "workFlowMap": {
-            "workflow": {
-              "1": {
-                "workFlowUser": {
-                  "id": aggregator,
-                  "title":{
-                    "title":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.title?.title || '',
-                    "id":null,
-                  },
-                  "name":{
-                    "name":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.firstName || '',
-                  },
-                  "suffix":{
-                    "id":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.suffix?.id || '',
-                    "suffix":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.suffix?.suffix || '',
-                  }
+  const handleTimeSheetWorkFlow = (name, reviewer, approver, aggregator, activeTab) => {
+    let data;
+    if (selectContractInfo === 'MULTIPLE' && reviewer === approver) {
+      data = {
+        "name": {
+          "name": name
+        },
+        "workFlowMap": {
+          "workflow": {
+            "1": {
+              "workFlowUser": {
+                "id": aggregator,
+                "title": {
+                  "title": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.title?.title || '',
+                  "id": null,
                 },
-                "workFlowStatus": {
-                  "status": "AGGREGATOR"
+                "name": {
+                  "name": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.firstName || '',
+                },
+                "suffix": {
+                  "id": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.suffix?.id || '',
+                  "suffix": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.suffix?.suffix || '',
                 }
               },
-              "2": {
-                "workFlowUser": {
-                  "id": reviewer,
-                  "title":{
-                    "title":getSelectedUserDetails(reviewer)?.title?.title || '',
-                    "id":null,
-                  },
-                  "name":{
-                    "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
-                  },
-                  "suffix":{
-                    "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
-                    "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
-                  }
+              "workFlowStatus": {
+                "status": "AGGREGATOR"
+              }
+            },
+            "2": {
+              "workFlowUser": {
+                "id": reviewer,
+                "title": {
+                  "title": getSelectedUserDetails(reviewer)?.title?.title || '',
+                  "id": null,
                 },
-                "workFlowStatus": {
-                  "status": "APPROVED"
-                }
-              }}}}
-      }
-      else if(selectContractInfo === 'MULTIPLE' && approver !== reviewer){
-        data = {
-          "name": {
-            "name": name
-          },
-          "workFlowMap": {
-            "workflow": {
-              "1": {
-                "workFlowUser": {
-                  "id": aggregator,
-                  "title":{
-                    "title":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.title?.title || '',
-                    "id":null,
-                  },
-                  "name":{
-                    "name":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.firstName || '',
-                  },
-                  "suffix":{
-                    "id":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.suffix?.id || '',
-                    "suffix":provider?.filter(data=>data?.id === aggregator)?.map(data=>data)?.[0]?.name?.suffix?.suffix || '',
-                  }
+                "name": {
+                  "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
                 },
-                "workFlowStatus": {
-                  "status": "AGGREGATOR"
+                "suffix": {
+                  "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                  "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
                 }
               },
-              "2": {
-                "workFlowUser": {
-                  "id": reviewer,
-                  "title":{
-                    "title":getSelectedUserDetails(reviewer)?.title?.title || '',
-                    "id":null,
-                  },
-                  "name":{
-                    "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
-                  },
-                  "suffix":{
-                    "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
-                    "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
-                  }
-                },
-                "workFlowStatus": {
-                  "status": "REVIEWED"
-                }
-              },
-              "2": {
-                "workFlowUser": {
-                  "id": approver,
-                  "title":{
-                    "title":getSelectedUserDetails(approver)?.title?.title || '',
-                    "id":null,
-                  },
-                  "name":{
-                    "name":getSelectedUserDetails(approver)?.name?.firstName || '',
-                  },
-                  "suffix":{
-                    "id":getSelectedUserDetails(approver)?.name?.suffix?.id || '',
-                    "suffix":getSelectedUserDetails(approver)?.name?.suffix?.suffix || '',
-                  }
-                },
-                "workFlowStatus": {
-                  "status": "APPROVED"
-                }
-              }}}}
-      }
-      else if(selectContractInfo !== 'MULTIPLE' && reviewer === approver){
-        data = {
-          "name": {
-            "name": name
-          },
-          "workFlowMap": {
-            "workflow": {
-              "1": {
-                "workFlowUser": {
-                  "id": reviewer,
-                  "title":{
-                    "title":getSelectedUserDetails(reviewer)?.title?.title || '',
-                    "id":null,
-                  },
-                  "name":{
-                    "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
-                  },
-                  "suffix":{
-                    "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
-                    "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
-                  }
-                },
-                "workFlowStatus": {
-                  "status": "APPROVED"
-                }
-              }}}}
-      }else{
-        data = {
-          "name": {
-            "name": name
-          },
-          "workFlowMap": {
-            "workflow": {
-              "1": {
-                "workFlowUser": {
-                  "id": reviewer,
-                  "title":{
-                    "title":getSelectedUserDetails(reviewer)?.title?.title || '',
-                    "id":null,
-                  },
-                  "name":{
-                    "name":getSelectedUserDetails(reviewer)?.name?.firstName || '',
-                  },
-                  "suffix":{
-                    "id":getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
-                    "suffix":getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
-                  }
-                },
-                "workFlowStatus": {
-                  "status": "REVIEWED"
-                }
-              },
-              "2": {
-                "workFlowUser": {
-                  "id": approver,
-                  "title":{
-                    "title":getSelectedUserDetails(approver)?.title?.title || '',
-                    "id":null,
-                  },
-                  "name":{
-                    "name":getSelectedUserDetails(approver)?.name?.firstName || '',
-                  },
-                  "suffix":{
-                    "id":getSelectedUserDetails(approver)?.name?.suffix?.id || '',
-                    "suffix":getSelectedUserDetails(approver)?.name?.suffix?.suffix || '',
-                  }
-                },
-                "workFlowStatus": {
-                  "status": "APPROVED"
-                }
+              "workFlowStatus": {
+                "status": "APPROVED"
               }
             }
           }
         }
       }
-      return data;
     }
-
-    const submit = async(buttontext) => {
-      if(timesheet?.reviewer === '0' || timesheet?.approver === '0'){
-        ErrorToaster('Select both Approver and Reviewer to save');
-        return;
-      }
-      if(selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '0'){
-        ErrorToaster('Select Aggregator to save');
-        return;
-      }
-        let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab );
-        updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
-        if(buttontext === 'Continue'){
-          getViewPage9(true);
-          getCurrentPage('Request Processing Workflow')
-        }else{
-          getNextTab();
+    else if (selectContractInfo === 'MULTIPLE' && approver !== reviewer) {
+      data = {
+        "name": {
+          "name": name
+        },
+        "workFlowMap": {
+          "workflow": {
+            "1": {
+              "workFlowUser": {
+                "id": aggregator,
+                "title": {
+                  "title": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.title?.title || '',
+                  "id": null,
+                },
+                "name": {
+                  "name": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.firstName || '',
+                },
+                "suffix": {
+                  "id": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.suffix?.id || '',
+                  "suffix": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.suffix?.suffix || '',
+                }
+              },
+              "workFlowStatus": {
+                "status": "AGGREGATOR"
+              }
+            },
+            "2": {
+              "workFlowUser": {
+                "id": reviewer,
+                "title": {
+                  "title": getSelectedUserDetails(reviewer)?.title?.title || '',
+                  "id": null,
+                },
+                "name": {
+                  "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                },
+                "suffix": {
+                  "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                  "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
+                }
+              },
+              "workFlowStatus": {
+                "status": "REVIEWED"
+              }
+            },
+            "3": {
+              "workFlowUser": {
+                "id": approver,
+                "title": {
+                  "title": getSelectedUserDetails(approver)?.title?.title || '',
+                  "id": null,
+                },
+                "name": {
+                  "name": getSelectedUserDetails(approver)?.name?.firstName || '',
+                },
+                "suffix": {
+                  "id": getSelectedUserDetails(approver)?.name?.suffix?.id || '',
+                  "suffix": getSelectedUserDetails(approver)?.name?.suffix?.suffix || '',
+                }
+              },
+              "workFlowStatus": {
+                "status": "APPROVED"
+              }
+            }
+          }
         }
+      }
     }
-
-    const handleContinue = async (workflowId) => {
-          let temp = timesheetProcessingWorkflow;
-          temp?.push({
-                    "timesheetLabel": {
-                        "label": activeTab
-                    },
-                    "workFlowTemplate": {},
-                    "workFlowDescription": {},
-                    "workFlow": {
-                        "id": workflowId,
-                        "workFlowName": {
-                            "name": activeTab
-                        }
-                    },
-                    "customWorkFlow": false
-          })
-          let data = {"workFlowDetails":temp}
-          await PUT(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`, data)
-          .then(response=>{
-                SuccessToaster('Timesheet Processing Workflow Updated Successfully');
-            })
-          .catch(error=>{
-            ErrorToaster('Unexpected Error');
-          })
-
-    }
-
-    const getTimeSheetSubmissionTerms = async() => {
-        const {data: timesheetFlow} = await GET(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`);
-        let id = timesheetFlow?.workFlowDetails?.filter(data=>data?.workFlow?.workFlowName?.name === activeTab)?.map(data=>data?.workFlow?.id)[0];
-        if(timesheetFlow){
-          let workflowData = timesheetWorkFlow?.filter(data=>data?.id === id)?.map(data=>data?.workFlowMap?.workflow)[0];
-          let workFlowValues = Object.values(workflowData);
-          if(workFlowValues?.length === 1){
-            let approver = workFlowValues?.[0]?.workFlowUser?.id;
-            setTimesheet({...timesheet, id:id, reviewer: approver, approver: approver});
+    else if (selectContractInfo !== 'MULTIPLE' && reviewer === approver) {
+      data = {
+        "name": {
+          "name": name
+        },
+        "workFlowMap": {
+          "workflow": {
+            "1": {
+              "workFlowUser": {
+                "id": reviewer,
+                "title": {
+                  "title": getSelectedUserDetails(reviewer)?.title?.title || '',
+                  "id": null,
+                },
+                "name": {
+                  "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                },
+                "suffix": {
+                  "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                  "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
+                }
+              },
+              "workFlowStatus": {
+                "status": "APPROVED"
+              }
+            }
           }
-          else if(workFlowValues?.length === 3){
-            let aggregator = workFlowValues?.[0]?.workFlowUser?.id;
-            let reviewer = workFlowValues?.[1]?.workFlowUser?.id;
-            let approver = workFlowValues?.[2]?.workFlowUser?.id;
-            setTimesheet({...timesheet, id:id, aggregator:aggregator, eviewer: approver, approver: approver});
-          }
-          else if(selectContractInfo === 'MULTIPLE' && workFlowValues?.length  === 2){
-            let aggregator = workFlowValues?.[0]?.workFlowUser?.id;
-            let approver = workFlowValues?.[1]?.workFlowUser?.id;
-            setTimesheet({...timesheet, id:id, reviewer: approver, approver: approver, aggregator:aggregator});
-          }else{
-            let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
-            let approver = workFlowValues?.[1]?.workFlowUser?.id;
-            setTimesheet({...timesheet, id:id, reviewer: reviewer, approver: approver});
-          }
-
         }
-    };
-
-    const getNextTab = () => {
-      let tabIndexValue = timeSheetTabs?.indexOf(activeTab);
-      setActiveTab(timeSheetTabs[tabIndexValue+1]);
-      setTabIndex(tabIndexValue+1);
+      }
+    } else {
+      data = {
+        "name": {
+          "name": name
+        },
+        "workFlowMap": {
+          "workflow": {
+            "1": {
+              "workFlowUser": {
+                "id": reviewer,
+                "title": {
+                  "title": getSelectedUserDetails(reviewer)?.title?.title || '',
+                  "id": null,
+                },
+                "name": {
+                  "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
+                },
+                "suffix": {
+                  "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
+                  "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
+                }
+              },
+              "workFlowStatus": {
+                "status": "REVIEWED"
+              }
+            },
+            "2": {
+              "workFlowUser": {
+                "id": approver,
+                "title": {
+                  "title": getSelectedUserDetails(approver)?.title?.title || '',
+                  "id": null,
+                },
+                "name": {
+                  "name": getSelectedUserDetails(approver)?.name?.firstName || '',
+                },
+                "suffix": {
+                  "id": getSelectedUserDetails(approver)?.name?.suffix?.id || '',
+                  "suffix": getSelectedUserDetails(approver)?.name?.suffix?.suffix || '',
+                }
+              },
+              "workFlowStatus": {
+                "status": "APPROVED"
+              }
+            }
+          }
+        }
+      }
     }
+    return data;
+  }
 
-    if(isLoading){
-      return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
+  const submit = async (buttontext) => {
+    if (timesheet?.reviewer === '0' || timesheet?.approver === '0') {
+      ErrorToaster('Select both Approver and Reviewer to save');
+      return;
     }
+    if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '0') {
+      ErrorToaster('Select Aggregator to save');
+      return;
+    }
+    let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
+    updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
+    if (buttontext === 'Continue') {
+      getViewPage9(true);
+      getCurrentPage('Request Processing Workflow')
+    } else {
+      getNextTab();
+    }
+  }
+
+  const handleContinue = async (workflowId) => {
+    let temp = timesheetProcessingWorkflow;
+    temp?.push({
+      "timesheetLabel": {
+        "label": activeTab
+      },
+      "workFlowTemplate": {},
+      "workFlowDescription": {},
+      "workFlow": {
+        "id": workflowId,
+        "workFlowName": {
+          "name": activeTab
+        }
+      },
+      "customWorkFlow": false
+    })
+    let data = { "workFlowDetails": temp }
+    await PUT(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`, data)
+      .then(response => {
+        SuccessToaster('Timesheet Processing Workflow Updated Successfully');
+      })
+      .catch(error => {
+        ErrorToaster('Unexpected Error');
+      })
+
+  }
+
+  const getTimeSheetSubmissionTerms = async () => {
+    const { data: timesheetFlow } = await GET(`contract-managment-service/contracts/${contractId}/timesheetProcessingWorkFlow`);
+    let id = timesheetFlow?.workFlowDetails?.filter(data => data?.workFlow?.workFlowName?.name === activeTab)?.map(data => data?.workFlow?.id)[0];
+    if (timesheetFlow) {
+      let workflowData = timesheetWorkFlow?.filter(data => data?.id === id)?.map(data => data?.workFlowMap?.workflow)[0];
+      let workFlowValues = Object.values(workflowData);
+      if (workFlowValues?.length === 1) {
+        let approver = workFlowValues?.[0]?.workFlowUser?.id;
+        setTimesheet({ ...timesheet, id: id, reviewer: approver, approver: approver });
+      }
+      else if (workFlowValues?.length === 3) {
+        let aggregator = workFlowValues?.[0]?.workFlowUser?.id;
+        let reviewer = workFlowValues?.[1]?.workFlowUser?.id;
+        let approver = workFlowValues?.[2]?.workFlowUser?.id;
+        setTimesheet({ ...timesheet, id: id, aggregator: aggregator, reviewer: reviewer, approver: approver });
+      }
+      else if (selectContractInfo === 'MULTIPLE' && workFlowValues?.length === 2) {
+        let aggregator = workFlowValues?.[0]?.workFlowUser?.id;
+        let approver = workFlowValues?.[1]?.workFlowUser?.id;
+        setTimesheet({ ...timesheet, id: id, reviewer: approver, approver: approver, aggregator: aggregator });
+      } else {
+        let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
+        let approver = workFlowValues?.[1]?.workFlowUser?.id;
+        setTimesheet({ ...timesheet, id: id, reviewer: reviewer, approver: approver });
+      }
+
+    }
+  };
+
+  const getNextTab = () => {
+    let tabIndexValue = timeSheetTabs?.indexOf(activeTab);
+    setActiveTab(timeSheetTabs[tabIndexValue + 1]);
+    setTabIndex(tabIndexValue + 1);
+  }
+
+  if (isLoading) {
+    return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
+  }
 
 
-    return (
-      <>
+  return (
+    <>
       {
         timeSheetTabs?.length !== 0 ?
-        <div className={style.cloneBlockStyle}>
+          <div className={style.cloneBlockStyle}>
             <div className={`${style.flexLeft} ${style.reduce10Left} ${style.horizontalScroll} ${style.fullWidth}`}>
-            {
-              timeSheetTabs?.map(data=>(
-                <button className={`${style.timesheetButtonStyle} ${activeTab === data && style.selectedTimesheetButton}`} onClick={() => setActiveTab(data)}>{data}</button>
-              ))
-            }
+              {
+                timeSheetTabs?.map(data => (
+                  <button className={`${style.timesheetButtonStyle} ${activeTab === data && style.selectedTimesheetButton}`} onClick={() => setActiveTab(data)}>{data}</button>
+                ))
+              }
             </div>
             <div className={`${style.timeSheetBoxStyle} ${style.verticalSpaceBetween}`}>
               <div>
-                  <div className={`${style.extentionGrid}`}>
-                    <div className={style.extentionLableStyle}>Timesheet To Define Process*</div>
-                    <div className={style.displayInRow}>
-                      <InputGroup className={style.fullWidth} placeholder={activeTab}
-                        value={activeTab} readOnly />
-                    </div>
+                <div className={`${style.addManagerGrid}`}>
+                  <div className={style.extentionLableStyle}>Timesheet To Define Process*</div>
+                  <div className={style.displayInRow}>
+                    <InputGroup className={style.fullWidth} placeholder={activeTab}
+                      value={activeTab} readOnly />
                   </div>
-                  {selectContractInfo === 'MULTIPLE' &&
-                  <ReviewerApproverField data={provider} label="Timesheet Aggregator*" onValueChange={(value)=>{setTimesheet({...timesheet, aggregator:value})}} selectLabel="Select Aggregator" value={timesheet?.aggregator || '0'}/>
-                  }
-                  <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value)=>{setTimesheet({...timesheet, reviewer:value})}} selectLabel="Select Reviewer" value={timesheet?.reviewer || '0'}/>
-                  <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value)=>{setTimesheet({...timesheet, approver:value})}} selectLabel="Select Approver" value={timesheet?.approver || '0'}/>
+                </div>
+                {selectContractInfo === 'MULTIPLE' &&
+                  <ReviewerApproverField data={provider} label="Timesheet Aggregator*" onValueChange={(value) => { setTimesheet({ ...timesheet, aggregator: value }) }} selectLabel="Select Aggregator" value={timesheet?.aggregator || '0'} />
+                }
+                <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value) => { setTimesheet({ ...timesheet, reviewer: value }) }} selectLabel="Select Reviewer" value={timesheet?.reviewer || '0'} />
+                <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value) => { setTimesheet({ ...timesheet, approver: value }) }} selectLabel="Select Approver" value={timesheet?.approver || '0'} />
               </div>
               {
-                tabIndex < timeSheetTabs?.length-1 && isEditable &&
+                tabIndex < timeSheetTabs?.length - 1 && isEditable &&
                 <div>
-                  <button className={`${style.timesheetNextButtonStyle} ${style.floatRight}`} onClick={()=> {submit('Next')}}>NEXT</button>
+                  <button className={`${style.timesheetNextButtonStyle} ${style.floatRight}`} onClick={() => { submit('Next') }}>NEXT</button>
                 </div>
               }
             </div>
             {isEditable &&
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                  <button className={`${style.newContractButtonStyle}`} onClick={()=> {getCurrentPage('Payment & Compensation')}}>BACK</button>
-                  <div>
-                      <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                      onClick={() => {
-                        submit('Continue')}}
-                         >CONTINUE</button>
-                  </div>
+                <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Payment & Compensation') }}>BACK</button>
+                <div>
+                  <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
+                    onClick={() => {
+                      submit('Continue')
+                    }}
+                  >CONTINUE</button>
+                </div>
               </div>
             }
 
@@ -455,12 +465,12 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
               // </Dialog>
             }
 
-        </div>
-        :
-        <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Timesheet Submission Terms'} title={'NO TIMESHEET FOUND'} description={'No Timesheet Is Found.'} buttonText={'ADD TIMESHEET'}/>
+          </div>
+          :
+          <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Timesheet Submission Terms'} title={'NO TIMESHEET FOUND'} description={'No Timesheet Is Found.'} buttonText={'ADD TIMESHEET'} />
       }
-      </>
-    )
+    </>
+  )
 }
 
 export default TimesheetProcessingWorkflow;

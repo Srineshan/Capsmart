@@ -27,14 +27,6 @@ body {
     margin-top: 20px !important;
 }
 
-.marginTop30 {
-    margin-top: 30px !important;
-}
-
-.marginTop40 {
-    margin-top: 40px !important;
-}
-
 .marginTop {
     margin-top: 5px !important;
 }
@@ -49,10 +41,6 @@ body {
 
 .marginBottom10 {
     margin-bottom: 10px !important;
-}
-
-.marginTop15 {
-    margin-top: 15px !important;
 }
 
 .cardStyle {
@@ -152,24 +140,12 @@ body {
     margin-left: 30px;
 }
 
-.marginLeft50 {
-    margin-left: 50px;
-}
-
 .reduce10Left {
     margin-left: -10px;
 }
 
-.reduce20Left {
-    margin-left: -20px;
-}
-
 .reduce25Left {
     margin-left: -25px;
-}
-
-.reduce30Left {
-    margin-left: -30px;
 }
 
 .chevronRightStyle {
@@ -181,52 +157,9 @@ body {
     margin-left: 15px;
 }
 
-.headingForContracts {
-    font: normal normal bold 17px/15px Montserrat;
-    letter-spacing: 0px;
-    text-align: left;
-    color: #52575D;
-    text-transform: uppercase;
-    opacity: 1;
-    margin-top: 0px !important;
-
-    @include breakpoint(md) {
-        font: normal normal bold 14px/12px Montserrat;
-    }
-}
-
-.headingCountForContracts {
-    color: #52575D;
-    font-size: 40px;
-    // margin-top: -20px;
-    font-weight: bold;
-
-    @include breakpoint(md) {
-        font-size: 40px;
-    }
-}
-
 .spaceBetween {
     display: flex;
     justify-content: space-between;
-}
-
-.displayInCol {
-    display: flex;
-    flex-direction: column;
-}
-
-.optionsStyle {
-    margin: -3px 0px 0 0px;
-    text-align: left;
-    font: normal normal bold 12px/15px Montserrat;
-    color: #52575D;
-
-    span {
-        @include breakpoint(md) {
-            font: normal normal bold 10px/12px Montserrat !important;
-        }
-    }
 }
 
 .green {
@@ -239,29 +172,6 @@ body {
 
 .orange {
     color: orange;
-}
-
-.red {
-    color: #FF6562;
-}
-
-.blue {
-    color: #7165E3;
-}
-
-.next30Style {
-    text-align: left;
-    font: normal normal normal 10px/18px Roboto;
-    color: #52575D;
-    opacity: 1;
-    margin-bottom: -5px;
-    margin-top: -10px;
-}
-
-.statisticsHeading {
-    border-bottom: 2px solid #EBF2F7;
-    padding-bottom: 20px;
-    text-align: center;
 }
 
 .searchBarStyle {
@@ -280,51 +190,9 @@ body {
     }
 }
 
-.progressbarStyle {
-    width: 80%;
-    margin-left: 10%;
-}
-
-.progressMargin {
-    margin: -5px 0 20px 0;
-}
-
-.viewStyle {
-    font: normal normal normal 10px/15px Montserrat;
-    letter-spacing: -0.3px;
-    color: #52575D;
-    opacity: 1;
-}
-
-.statisticsProgress {
-    font: normal normal normal 9px/13px Montserrat;
-    letter-spacing: -0.3px;
-    color: #52575D;
-    opacity: 1;
-    text-align: left;
-    margin-bottom: 1px !important;
-}
-
-.scrollStyle {
-    height: calc(100vh - 400px);
-    overflow: scroll;
-}
-
-.footerIconStyle {
-    height: 40px;
-    width: 40px;
-    object-fit: contain;
-    margin-top: 5px;
-}
-
 .displayInRow {
     display: flex;
     flex-direction: row;
-}
-
-.activeContractsWidth {
-    width: 220px;
-    margin-top: 10px;
 }
 
 .smallIcons {
@@ -333,67 +201,10 @@ body {
     margin-left: 20px;
 }
 
-.filterIcon {
-    height: 20px;
-    width: 20px;
-    margin-left: 20px;
-    margin-right: 20px;
-    margin-top: 5px;
-}
-
 .fileIcon {
     height: 15px;
     width: 15px;
     margin-right: 5px;
-}
-
-.colorIconsStyle {
-    height: 20px !important;
-    width: 20px !important;
-    margin-left: 5px;
-    margin-top: -3px;
-    object-fit: contain;
-}
-
-.colorFileStyle {
-    height: 15px !important;
-    width: 15px !important;
-    margin-right: 5px;
-    margin-top: 10px;
-    object-fit: contain;
-}
-
-.contractButton {
-    width: 184px;
-    height: 40px;
-    box-shadow: 0px 3px 11px var(--unnamed-color-7165e3);
-    background: #7165E3 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 11px #7165E3;
-    border-radius: 8px;
-    opacity: 1;
-    border: none;
-    color: white;
-    font: normal normal 600 16px/21px Montserrat;
-    margin: 15px 20px 0 0;
-    cursor: pointer;
-
-    @include breakpoint(md) {
-        font: normal normal 600 12px/10px Montserrat;
-    }
-}
-
-.selectedContractBackground {
-    background-color: #D8D5FD;
-}
-
-.tableHeader {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
 }
 
 .documentPageHeader {
@@ -418,35 +229,8 @@ body {
     grid-template-columns: 10% 35% 25% 25% 5%;
 }
 
-.serviceSpecificationTableHeader {
-    background: #BEB9F2 0% 0% no-repeat padding-box;
-    height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    border-radius: 6px;
-    text-align: left;
-    display: grid;
-    grid-template-columns: 10% 28% 24% 24% 10%;
-    grid-gap: 10px;
-}
-
-.documentProofInputWidth {
-    width: 96%;
-}
-
 .contractWidth {
     width: 200px;
-}
-
-.tableData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    min-height: 50px;
-    width: 96%;
-    margin-left: 2%;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    margin-top: 5px;
 }
 
 .activeContractGrid {
@@ -511,56 +295,6 @@ body {
     word-break: break-word !important;
 }
 
-.serviceSpecificationTableData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    width: 96%;
-    margin-left: 2%;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    margin-top: 5px;
-    display: grid;
-    grid-template-columns: 10% 28% 24% 24% 10%;
-    grid-gap: 10px;
-}
-
-.checkBoxHeader {
-    opacity: 1;
-    height: 25px;
-    width: 10%;
-}
-
-.checkBoxData {
-    background: #B3B8BD 0% 0% no-repeat padding-box;
-    border: 1px solid #E9E9F0;
-    opacity: 1;
-    height: 15px;
-    width: 15px;
-    margin: 0 10px 0 20px;
-}
-
-.tableHeaderFontStyle {
-    font: normal normal bold 13px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    text-transform: uppercase;
-    opacity: 1;
-    text-align: left;
-    margin-top: 10px;
-}
-
-.multipleContractorTextWidth {
-    font: normal normal bold 13px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    text-transform: uppercase;
-    opacity: 1;
-    margin-left: 10px;
-    text-align: center;
-    width: 20%;
-    margin-top: 10px;
-}
-
 .documentProofTextWidth {
     font: normal normal bold 13px/17px Montserrat;
     letter-spacing: 0px;
@@ -569,26 +303,6 @@ body {
     opacity: 1;
     text-align: left;
     margin-top: 15px;
-}
-
-.tableDataFontStyle {
-    font: normal normal normal 13px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    text-transform: uppercase;
-    text-align: left;
-    margin-top: 10px;
-}
-
-.multipleDataTextWidth {
-    font: normal normal normal 13px/17px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    text-transform: uppercase;
-    opacity: 1;
-    text-align: center;
-    width: 20%;
-    margin-top: 10px;
 }
 
 .documentProofDataTextWidth {
@@ -602,92 +316,6 @@ body {
     margin-top: 10px;
 }
 
-.greenDotStyle {
-    height: 6px;
-    width: 6px;
-    border-radius: 50%;
-    background-color: #00C07F;
-    margin-top: 8px;
-}
-
-.yellowDotStyle {
-    height: 6px;
-    width: 6px;
-    border-radius: 50%;
-    background-color: #FEC106;
-    margin-top: 8px;
-}
-
-
-.redDotStyle {
-    height: 6px;
-    width: 6px;
-    border-radius: 50%;
-    background-color: #FF6562;
-    margin-top: 8px;
-}
-
-.blueDotStyle {
-    height: 6px;
-    width: 6px;
-    border-radius: 50%;
-    background-color: #7165E3;
-    margin-top: 8px;
-}
-
-.width10 {
-    width: 7%;
-}
-
-.accountActivityStyle {
-    font: normal normal normal 15px/22px Montserrat;
-    letter-spacing: 0.66px;
-    color: #52575D;
-    opacity: 0.38;
-    margin-left: 20px;
-    margin-top: 7px;
-}
-
-.paginationStyle {
-    font: normal normal 600 12px/15px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    opacity: 1;
-    margin-top: 10px;
-}
-
-.minMaxWidth {
-    width: 130px;
-}
-
-.roundChevron {
-    width: 15px;
-    height: 15px;
-    margin-left: 10px;
-    margin-right: 20px;
-    margin-top: 11px;
-}
-
-.actionsIcon {
-    width: 30px;
-    height: 30px;
-    margin: 5px;
-}
-
-.activateIcon {
-    width: 130px;
-    height: 30px;
-    margin: 5px;
-    object-fit: cover;
-    margin-left: -90px;
-}
-
-.actionCard {
-    background: #D8D7EE 0% 0% no-repeat padding-box;
-    opacity: 0.99;
-    width: 40px;
-}
-
 .poweredBy {
     text-align: left;
     font: normal normal normal 11px/14px Montserrat;
@@ -695,10 +323,6 @@ body {
     color: #7165E3;
     opacity: 1;
     margin: 5px 0 0 10px;
-}
-
-.leftChevronColor {
-    color: #52575D;
 }
 
 .marginRight {
@@ -750,16 +374,6 @@ body {
     width: 60%;
 }
 
-.disabledButton {
-    color: rgba(143, 153, 168, 0.5);
-    background-color: #f1f2f3;
-    height: 33px;
-    width: 100px;
-    border: none;
-    border-radius: 6px;
-    cursor: not-allowed;
-}
-
 .disabledUploadButton {
     color: rgba(143, 153, 168, 0.5) !important;
     background-color: #f1f2f3;
@@ -788,27 +402,8 @@ body {
     margin-right: 10px;
 }
 
-.addSymbolStyle {
-    background-color: #7165E3;
-    color: white;
-    font-size: 25px;
-    box-shadow: 0px 0px 6px #00000029;
-    border-radius: 11px;
-    width: 40px;
-    height: 32px;
-}
-
-.plusSymbolPosition {
-    position: relative;
-    top: -2px;
-}
-
 .disabled {
     cursor: not-allowed;
-}
-
-.disabledColor {
-    cursor: rgba(143, 153, 168, 0.5);
 }
 
 .addBoxDescription {
@@ -898,11 +493,15 @@ body {
     font: normal normal normal 15px/19px Montserrat;
 }
 
-
-
 .termPeriodGrid {
     display: grid;
     grid-template-columns: 45% 10% 45%;
+}
+
+.termPeriodWithAddGrid {
+    display: grid;
+    grid-template-columns: 1fr 10% 1fr 35px;
+    grid-gap: 10px;
 }
 
 .contractedTime {
@@ -913,10 +512,6 @@ body {
 
 .effectiveDateWidth {
     width: 45%;
-}
-
-.greyText {
-    color: #52575D;
 }
 
 .extentionBoxStyle {
@@ -1003,11 +598,6 @@ body {
     margin-left: 20px;
 }
 
-.trashStyle {
-    color: linear-gradient(#7165E3, #FF6562) !important;
-    cursor: pointer;
-}
-
 .textFieldWidth {
     width: 350px;
 }
@@ -1084,13 +674,6 @@ select {
     justify-content: center;
     align-items: center;
     height: 100%;
-}
-
-.alertValidationInputStyle {
-    border: 1px solid red !important;
-    border-radius: 4px !important;
-    box-shadow: none !important;
-    height: 32px;
 }
 
 .contractCardData {
@@ -1342,14 +925,6 @@ select {
     margin-top: -10px;
 }
 
-.reduceTop35 {
-    margin-top: -35px;
-}
-
-.reduceTop20 {
-    margin-top: -20px;
-}
-
 .reduceTop {
     margin-top: -5px;
 }
@@ -1505,24 +1080,6 @@ select {
     width: 50%;
 }
 
-.uploadButtonStyle {
-    background-color: #f1f2f3;
-    color: #7165E3;
-    border: none;
-    height: 30px;
-    font-size: 12px;
-    width: 70px;
-}
-
-.chooseFileStyle {
-    background-color: #f1f2f3;
-    color: #7165E3;
-    border: none;
-    height: 30px;
-    font-size: 12px;
-    width: 100px;
-}
-
 .minMaxLeftElement {
     background-color: #f1f2f3;
     color: #AFB2B6;
@@ -1582,28 +1139,6 @@ select {
     width: 60%;
 }
 
-.textElementWithoutBackground {
-    color: #AFB2B6;
-    border: none;
-    height: 35px;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    padding-left: 20px;
-    line-height: 15px;
-    width: 60%;
-}
-
-.editableTextStyle {
-    height: 35px;
-    display: flex;
-    align-items: center;
-    padding-left: 20px;
-    padding-top: 8px;
-    width: 50px;
-    border-radius: 4px !important;
-}
-
 .serviceProvidedEditableTextStyle {
     height: 35px;
     display: flex;
@@ -1625,15 +1160,6 @@ select {
     border-radius: 4px !important;
 }
 
-.editableTextSpecifiedStyle {
-    height: 35px;
-    padding-left: 20px;
-    padding-top: 8px;
-    text-align: left;
-    width: 65px;
-    border-radius: 4px !important;
-}
-
 .editableTextStyleDays {
     height: 35px;
     display: flex;
@@ -1643,10 +1169,6 @@ select {
     padding-left: 10px;
     width: 50px;
     border-radius: 4px !important;
-}
-
-.editableTextStyle4DaysWidth {
-    width: 55px !important;
 }
 
 .textElementWithoutBackgroundDays {
@@ -1660,31 +1182,12 @@ select {
     width: 60%;
 }
 
-.editableTextStyleSmallWidth {
-    height: 35px;
-    display: flex;
-    align-items: center;
-    padding: 8px 20px;
-    width: 40px !important;
-    border-radius: 4px !important;
-}
-
 .editableSessionTextStyle {
     height: 35px;
     display: flex;
     align-items: center;
     padding: 8px 15px;
     width: 40% !important;
-    border-radius: 4px !important;
-}
-
-.editableTextStyleWithoutPadding {
-    height: 35px;
-    display: flex;
-    align-items: center;
-    padding-right: 20px;
-    padding-top: 8px;
-    width: 50px;
     border-radius: 4px !important;
 }
 
@@ -1708,10 +1211,6 @@ select {
 
 .threeFieldWidth {
     width: 33.3% !important;
-}
-
-.fourFieldWidth {
-    width: 25%;
 }
 
 .fourFieldWidth {
@@ -1903,6 +1402,10 @@ select {
     padding: 10px;
 }
 
+.padding20 {
+    padding: 20px;
+}
+
 .searchIcon {
     max-height: 20px;
     max-width: 20px;
@@ -1975,13 +1478,6 @@ select {
     padding: 10px;
 }
 
-
-.dotStyle {
-    height: 20px;
-    width: 80px;
-    object-fit: contain;
-}
-
 .timesheetButtonStyle {
     background: #EBF2F7 0% 0% no-repeat padding-box;
     border: 1px solid #7165E3;
@@ -2011,47 +1507,12 @@ select {
     justify-content: space-between;
 }
 
-.workflowBoxStyle {
-    border: 1px solid #E9E9F0;
-    border-radius: 0px 6px 0px 0px;
-    opacity: 1;
-    height: calc(100vh - 160px);
-    overflow-x: hidden;
-    width: 105%;
-    margin-left: -10px;
-    padding: 10px;
-}
-
-.workFlowButtonStyle {
-    background: #EBF2F7 0% 0% no-repeat padding-box;
-    border: 1px solid #7165E3;
-    border-radius: 6px 6px 0px 0px;
-    width: 130px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-}
-
 .flowChartBoxStyle {
     border: 1px solid #F3F3F3;
     opacity: 1;
     height: 200vh;
     width: 100%;
     background-color: #F3F3F3;
-}
-
-.selectedWorkFlowButton {
-    background: #D7D4F7 0% 0% no-repeat padding-box;
-}
-
-.shapeBackground {
-    background: black 0% 0% no-repeat padding-box;
-    border: 1px solid #7165E3;
-    height: 50px;
-    width: 60px;
-    margin: 20px;
 }
 
 .disabledView {
@@ -2080,62 +1541,15 @@ input[type="file"] {
     top: 7px;
 }
 
-.selectMultipleCheckbox {
-    height: auto;
-    min-height: 1em !important;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
 .addButtonPosition {
     display: flex;
     justify-content: flex-end;
-}
-
-.alternativeBackgroundColor {
-    background-color: #ebe9fb !important;
-}
-
-.dateInputStyle {
-    height: 40px !important;
-    padding: 0px;
 }
 
 .horizontalScroll {
     width: 30em;
     overflow-x: auto;
     white-space: nowrap;
-}
-
-.countDesign {
-    border-radius: 8px;
-    height: 20px;
-    min-width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 10px;
-}
-
-.orangeCountStyle {
-    color: #ffa500;
-    background-color: #ffedcc;
-}
-
-.redCountStyle {
-    color: #FF6562;
-    background-color: #ffcdcc;
-}
-
-.selectedOrangeCountStyle {
-    background-color: #ffa500;
-    color: white;
-}
-
-.selectedRedCountStyle {
-    background-color: #FF6562;
-    color: white;
 }
 
 .verticalAlignCenter {
@@ -2156,12 +1570,6 @@ input[type="file"] {
     margin-top: 50px;
 }
 
-.daysSelectorGrid {
-    display: grid;
-    grid-template-columns: 60px 40px;
-    grid-gap: 10px;
-}
-
 .popUpHeading {
     font: bold 18px/15px Montserrat;
     color: #7165E3;
@@ -2180,29 +1588,20 @@ input[type="file"] {
     padding: 10px;
 }
 
-.calculatorIconColor {
-    color: #707070;
-}
-
 .addServiceDialog {
     height: 75%;
     width: 85% !important;
 }
 
-.addServiceGrid {
-    display: grid;
-    grid-template-columns: 2.5fr 1fr;
-    grid-gap: 20px;
-}
-
-.referenceTextArea {
-    width: 25rem;
-    white-space: pre;
-}
-
 .addGrid {
     display: grid;
     grid-template-columns: 1fr 35px;
+    grid-gap: 10px;
+}
+
+.onCallBillableGrid {
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 1fr 35px;
     grid-gap: 10px;
 }
 
@@ -2310,32 +1709,6 @@ input[type="file"] {
     background-color: #ebe9fb;
     margin: 0 -20px;
     padding: 0 20px;
-}
-
-.noContractsBox {
-    border: 2px dashed #c4bef3;
-    padding: 20px;
-    height: 180px;
-    margin: 50px;
-}
-
-.noContractsFontStyle {
-    font: normal normal bold 32px/40px Montserrat;
-    letter-spacing: 0px;
-    color: #52575D;
-    text-align: center;
-}
-
-.noContractsSmallFontStyle {
-    font: normal normal bold 20px/25px Montserrat;
-    letter-spacing: 0px;
-    color: #6c727a;
-    text-align: center;
-}
-
-.linkStyle {
-    text-decoration: underline;
-    color: #8080ff;
 }
 
 .dialogAdditionalDetailTextStyle {
@@ -2597,6 +1970,7 @@ input[type=number] {
     height: 20px;
     width: 100px;
     object-fit: contain;
+    margin-top: 5px;
 }
 
 .multipleServiceProviderGrid {
@@ -2616,4 +1990,81 @@ input[type=number] {
 .calculatorDisplayStyle {
     position: absolute;
     right: 20px;
+    top: 50px;
+}
+
+.addServiceImgStyle {
+    height: 25px;
+    width: 25px;
+    object-fit: contain;
+}
+
+.addServiceNotesImgStyle {
+    height: 30px;
+    width: 30px;
+    object-fit: contain;
+}
+
+.addServiceCountStyle {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid #7165E3;
+    height: 15px;
+    width: 15px;
+    position: absolute;
+    background-color: #fff;
+    border-radius: 50%;
+    color: red;
+    font-size: 10px;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.marginNotes {
+    margin-top: -20px;
+    margin-left: 25px;
+}
+
+.marginDocument {
+    margin-top: -15px;
+    margin-left: 18px;
+}
+
+.tableHeader {
+    background: #BEB9F2 0% 0% no-repeat padding-box;
+    min-height: 50px;
+    width: 100%;
+    border-radius: 6px;
+    padding: 0 10px;
+}
+
+.editableTableGridStyle {
+    display: grid;
+    grid-template-columns: 20% 27% 27% 10% 10%;
+    grid-gap: 10px;
+}
+
+.tableHeaderFontStyle {
+    font: normal normal bold 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+    text-align: left;
+}
+
+.tableData {
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    min-height: 50px;
+    width: 100%;
+    border-radius: 6px;
+    margin-top: 5px;
+    padding: 0 10px;
+}
+
+.tableDataFontStyle {
+    font: normal normal normal 13px/17px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: uppercase;
+    text-align: left;
 }
