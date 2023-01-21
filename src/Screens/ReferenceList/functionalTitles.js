@@ -1,12 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import Navbar from "../../Components/Navbar";
-import SideBar from "./../../Components/Sidebar";
-import { Icon, Intent } from "@blueprintjs/core";
 import style from "./index.module.scss";
 import AddFunctionalTitles from "./addFunctionalTitles";
-import AddNewEntity from "./../../images/addEntity.png";
-import AddRefresh from "./../../images/refreshEntity.png";
 import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
 import TransparentFolder from "./../../images/transparentFolder.png";
 import ArrowDown from "./../../images/arrowDown.png";
@@ -37,8 +31,6 @@ const FunctionalTitles = ({
   const [entityData, setEntityData] = useState({});
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
-
-  const moment = require("moment-timezone");
 
   const entityAllData = async (industry) => {
     const { data: entities } = await GET(
@@ -82,14 +74,33 @@ const FunctionalTitles = ({
     });
     let sorted = allDates.sort((a, b) => a - b).reverse();
     let lastModifiedDate = sorted[0].toString().split("+")[0];
+
+    const date = new Date(lastModifiedDate);
+
     sendLastDate(
-      moment
-        .tz(lastModifiedDate, "America/New_York")
-        .format("MMM D, YYYY hh:mm z")
+      date
+        .toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          month: "short",
+          day: "2-digit",
+          hour: "numeric",
+          minute: "numeric",
+          year: "numeric",
+          timeZoneName: "short",
+          hour12: false,
+        })
+        .toUpperCase()
     );
+
     localStorage.setItem(
       "functionalTitle",
-      moment(lastModifiedDate).format("MMMM YYYY").toUpperCase()
+      date
+        .toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          year: "numeric",
+          month: "long",
+        })
+        .toUpperCase()
     );
 
     var showList = JSON.parse(localStorage.getItem("showList") || "[]");

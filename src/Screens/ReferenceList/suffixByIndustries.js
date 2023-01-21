@@ -27,8 +27,6 @@ const SuffixByIndustries = ({
   const [deleteEntityId, setDeleteEntityId] = useState("");
   const [isEdit, setIsEdit] = useState(false);
 
-  const moment = require("moment-timezone");
-
   const getAddHcEntityDialog = (value) => {
     setShowAddHcEntityDialog(value);
     if (!value) {
@@ -58,14 +56,32 @@ const SuffixByIndustries = ({
     });
     let sorted = allDates.sort((a, b) => a - b).reverse();
     let lastModifiedDate = sorted[0].toString().split("+")[0];
+    const date = new Date(lastModifiedDate);
+
     sendLastDate(
-      moment
-        .tz(lastModifiedDate, "America/New_York")
-        .format("MMM D, YYYY hh:mm z")
+      date
+        .toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          month: "short",
+          day: "2-digit",
+          hour: "numeric",
+          minute: "numeric",
+          year: "numeric",
+          timeZoneName: "short",
+          hour12: false,
+        })
+        .toUpperCase()
     );
+
     localStorage.setItem(
       "nameSuffix",
-      moment(lastModifiedDate).format("MMMM YYYY").toUpperCase()
+      date
+        .toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          year: "numeric",
+          month: "long",
+        })
+        .toUpperCase()
     );
 
     var showList = JSON.parse(localStorage.getItem("showList") || "[]");

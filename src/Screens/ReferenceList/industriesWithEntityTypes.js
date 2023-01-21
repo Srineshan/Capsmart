@@ -10,6 +10,7 @@ import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
 import { GET, DELETE } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import { formatInTimeZone } from "date-fns-tz";
 
 const IndustriesWithEntityTypes = ({
   getAddEntityDialog,
@@ -26,8 +27,6 @@ const IndustriesWithEntityTypes = ({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
   const [allData, setAllData] = useState([]);
-
-  const moment = require("moment-timezone");
 
   const getAddHcEntityDialog = (value) => {
     setShowAddHcEntityDialog(value);
@@ -50,19 +49,40 @@ const IndustriesWithEntityTypes = ({
     setAllData(allEntries);
     let allDates = [];
     allEntries.forEach((e) => {
-      let dates = e.entities.map((row) => new Date(row.lastModifiedDate));
+      let dates = e.entities.map((row) => row.lastModifiedDate);
       allDates.push(...dates);
     });
     let sorted = allDates.sort((a, b) => a - b).reverse();
     let lastModifiedDate = sorted[0].toString().split("+")[0];
+
+    const date = new Date(lastModifiedDate);
+    // console.log(
+    //   formatInTimeZone(date, "America/New_York", "MMM d,yyyy HH:mm zzzz")
+    // );
     sendLastDate(
-      moment
-        .tz(lastModifiedDate, "America/New_York")
-        .format("MMM D, YYYY hh:mm z")
+      date
+        .toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          month: "short",
+          day: "2-digit",
+          hour: "numeric",
+          minute: "numeric",
+          year: "numeric",
+          timeZoneName: "short",
+          hour12: false,
+        })
+        .toUpperCase()
     );
+
     localStorage.setItem(
       "industries",
-      moment(lastModifiedDate).format("MMMM YYYY").toUpperCase()
+      date
+        .toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          year: "numeric",
+          month: "long",
+        })
+        .toUpperCase()
     );
 
     var showList = JSON.parse(localStorage.getItem("showList") || "[]");

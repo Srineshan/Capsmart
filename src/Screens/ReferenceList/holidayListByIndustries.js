@@ -30,7 +30,6 @@ const BoardCertification = ({
 }) => {
   const [showAddCompanyHolidayDialog, setShowAddCompanyHolidayDialog] =
     useState(false);
-  const [industryTypes, setIndustryTypes] = useState([]);
   const [selectedIndustry, setSelectedIndustry] = useState({});
   const [holidayData, setHolidayData] = useState([]);
   const [country, setCountry] = useState("USA");
@@ -38,12 +37,6 @@ const BoardCertification = ({
   const [selectedHoliday, setSelectedHoliday] = useState({});
   const [holidayId, setHolidayId] = useState("");
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-
-  const moment = require("moment-timezone");
-
-  const getAddCompanyHolidayDialog = (value) => {
-    setShowAddCompanyHolidayDialog(value);
-  };
 
   const getIndustryData = async () => {
     const { data: data } = await GET(`entity-service/industryMaster`);
@@ -64,14 +57,32 @@ const BoardCertification = ({
         ?.map((data) => data)
     );
     let lastModifiedDate = "Fri Dec 30 2022 17:22:23 GMT";
+    const date = new Date(lastModifiedDate);
+
     sendLastDate(
-      moment
-        .tz(lastModifiedDate, "America/New_York")
-        .format("MMM D, YYYY hh:mm z")
+      date
+        .toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          month: "short",
+          day: "2-digit",
+          hour: "numeric",
+          minute: "numeric",
+          year: "numeric",
+          timeZoneName: "short",
+          hour12: false,
+        })
+        .toUpperCase()
     );
+
     localStorage.setItem(
       "holidayMaster",
-      moment(lastModifiedDate).format("MMMM YYYY").toUpperCase()
+      date
+        .toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          year: "numeric",
+          month: "long",
+        })
+        .toUpperCase()
     );
 
     var showList = JSON.parse(localStorage.getItem("showList") || "[]");
