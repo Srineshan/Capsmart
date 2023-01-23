@@ -251,7 +251,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
     setTimeCommitment(contractDetail?.timeCommitment);
-    setContractTermPeriod({ start: contractDetail?.contractTerm?.startDate, end: contractDetail?.contractTerm?.endDate });
+    setContractTermPeriod({ start: contractDetail?.contractTerm?.effectiveDate, end: contractDetail?.contractTerm?.endDate });
     let temp = [];
     contractDetail?.contractFiles?.map(data => {
       temp.push({ name: data?.documentName, url: data?.fileURL });
@@ -388,7 +388,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Atleast one location has to be selected if yes');
       return;
     }
-    if (serviceType === 'Clinic Blocks' && metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end) {
+    if (serviceType === 'Clinic Blocks' && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
       console.log('contract term periods', contractTermPeriod, metadata?.contractedSchedules?.[0]?.startDate, metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate);
       ErrorToaster('Selected Duration Should be equal to the contract strat and end date');
       return;
@@ -927,7 +927,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 </div>}
 
                 {serviceType === 'Clinic Blocks'
-                  ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
+                  ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} />
                   : serviceType === 'Surgery Session'
                     ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
                     : serviceType === 'On Call Coverage Duty Days'

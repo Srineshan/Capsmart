@@ -429,34 +429,33 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                 <>
                     <EditableTable additionalActivityData={metadata?.additionalActivity} getAdditionalActivityData={getAdditionalActivityData} />
                     <>
-                        {
-                            //        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                            //        <div className={style.extentionLableStyle}>Require Approval For Payment</div>
-                            //        <ThemeProvider theme={switchTheme}>
-                            //            <FormControlLabel
-                            //                control={
-                            //                    <Switch
-                            //                        checked={metadata?.additionalActivityPaymentApprovalRequired}
-                            //                        onChange={e => setMetadata({ ...metadata, additionalActivityPaymentApprovalRequired: !metadata?.additionalActivityPaymentApprovalRequired })} className={` ${style.textAlignLeft}`} />
-                            //                }
-                            //                color='primary'
-                            //                className={`${style.switchFontStyle} ${style.flexLeft}`}
-                            //                label={metadata?.additionalActivityPaymentApprovalRequired ? 'YES' : 'NO'}
-                            //            />
-                            //        </ThemeProvider>
-                            //    </div>
-                            //    {metadata?.additionalActivityPaymentApprovalRequired &&
-                            //        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                            //            <div className={style.extentionLableStyle}>Designate Request Approver*</div>
-                            //            <Select
-                            //                displayEmpty
-                            //                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                            //                className={`${style.fullWidth}`}
-                            //            >
-                            //                <MenuItem value="">Select Approver</MenuItem>
-                            //            </Select>
-                            //        </div>
-                            //    }
+
+                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                            <div className={style.extentionLableStyle}>Require Approval For Payment</div>
+                            <ThemeProvider theme={switchTheme}>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={metadata?.additionalActivityPaymentApprovalRequired}
+                                            onChange={e => setMetadata({ ...metadata, additionalActivityPaymentApprovalRequired: !metadata?.additionalActivityPaymentApprovalRequired })} className={` ${style.textAlignLeft}`} />
+                                    }
+                                    color='primary'
+                                    className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                    label={metadata?.additionalActivityPaymentApprovalRequired ? 'YES' : 'NO'}
+                                />
+                            </ThemeProvider>
+                        </div>
+                        {metadata?.additionalActivityPaymentApprovalRequired &&
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <div className={style.extentionLableStyle}>Designate Request Approver*</div>
+                                <Select
+                                    displayEmpty
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    className={`${style.fullWidth}`}
+                                >
+                                    <MenuItem value="">Select Approver</MenuItem>
+                                </Select>
+                            </div>
                         }
                     </>
 
