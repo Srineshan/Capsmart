@@ -5,6 +5,7 @@ import DeleteHcFolder from "./../../images/deleteHcFolder.png";
 import EditHcFolder from "./../../images/editHcFolder.png";
 import DeleteHcRow from "./../../images/deleteHcRow.png";
 import EditBlue from "./../../images/editBlue.png";
+import EditHcRow from "../../images/editHcRow.png";
 import AddContractedServiceForHealthcare from "./addContractedServiceProvider";
 import { GET, DELETE } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
@@ -19,7 +20,7 @@ const ContractedServiceProvidedByIndustries = ({
   rotate,
 }) => {
   const [sideMenu, setSideMenu] = useState([]);
-  const [selectedTitle, setSelectedTitle] = useState(`${sideMenu?.[0]?.id}`);
+  const [selectedTitle, setSelectedTitle] = useState("");
   const [industryId, setIndustryId] = useState("");
   const [siteTypeData, setSiteTypeData] = useState([]);
   const [siteTypeTableData, setSiteTypeTableData] = useState([]);
@@ -31,7 +32,7 @@ const ContractedServiceProvidedByIndustries = ({
     const { data: CSPType } = await GET(
       `entity-service/contractedServiceProviderMaster?siteTypeId=${siteTypeId.id}`
     );
-    return await { ...siteTypeId, CSP: CSPType };
+    return await { ...siteTypeId, CSPType };
   };
 
   const entityAllData = async (industry) => {
@@ -44,15 +45,28 @@ const ContractedServiceProvidedByIndustries = ({
     return await { ...industry, entities: reconstructedEntities };
   };
 
+  const entityCountHandler = (entity) => {
+    let length = 0;
+    entity.entities.map((data) => {
+      length += data.CSPType.length;
+    });
+    return length;
+  };
+
   const getIndustryData = async () => {
     const { data: industryData } = await GET(`entity-service/industryMaster`);
     setSideMenu([]);
     let allEntries = await Promise.all(industryData.map(entityAllData));
+
+    setIndustryId(allEntries[0].id);
+    setSelectedTitle(allEntries[0].industry);
     setSideMenu(allEntries);
+
     let allDates = [];
     allEntries.forEach((e) => {
       e.entities.forEach((d) => {
-        let dates = d.CSP.map((row) => new Date(row.lastModifiedDate));
+        console.log(d);
+        let dates = d.CSPType.map((row) => row.lastModifiedDat);
         allDates.push(...dates);
       });
     });
@@ -104,7 +118,7 @@ const ContractedServiceProvidedByIndustries = ({
         `entity-service/contractedServiceProviderMaster?siteTypeId=${d.id}`
       );
       let inter = { ...d, items: val.data };
-      setSiteTypeTableData((p) => [...p, inter]);
+      setSiteTypeTableData((p) => [inter, ...p]);
     });
   };
 
@@ -148,15 +162,23 @@ const ContractedServiceProvidedByIndustries = ({
   }, [selectedTitle]);
 
   useEffect(() => {
-    setSelectedTitle(sideMenu?.[0]?.industry);
-    setIndustryId(sideMenu?.[0]?.id);
-  }, [sideMenu]);
-
-  useEffect(() => {
-    if (rotate) {
-      getIndustryData();
-    }
-  }, [rotate]);
+    let updateTableData = [];
+    siteTypeTableData.map((data) => {
+      updateTableData.push({
+        ...data,
+        CSPType: data.items,
+      });
+    });
+    let updatedSideMenu = [];
+    sideMenu.forEach((data) => {
+      if (data.id === industryId) {
+        updatedSideMenu.push({ ...data, entities: updateTableData });
+      } else {
+        updatedSideMenu.push({ ...data });
+      }
+    });
+    setSideMenu(updatedSideMenu);
+  }, [siteTypeTableData]);
 
   return (
     <Fragment>
@@ -177,7 +199,7 @@ const ContractedServiceProvidedByIndustries = ({
                     {data.industry}
                   </p>
                   <p className={style.industriesCardTextStyle1}>
-                    {data.entities.length}
+                    {entityCountHandler(data)}
                   </p>
                 </div>
               </div>
@@ -245,7 +267,7 @@ const ContractedServiceProvidedByIndustries = ({
                           .join("-")}
                       </p>
                       <img
-                        src={EditBlue}
+                        src={EditHcRow}
                         className={style.colorFileStyle}
                         onClick={() => {
                           setIsEdit(true);
@@ -280,6 +302,7 @@ const ContractedServiceProvidedByIndustries = ({
           seletedEntity={seletedEntity}
           isEdit={isEdit}
           siteTypeTableData={siteTypeTableData}
+          selectedTitle={selectedTitle}
         />
       )}
 

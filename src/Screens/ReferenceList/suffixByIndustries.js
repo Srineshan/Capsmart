@@ -15,7 +15,6 @@ const SuffixByIndustries = ({
   getAddEntityDialog,
   showAddEntityDialog,
   sendLastDate,
-  rotate,
 }) => {
   const [showAddHcEntityDialog, setShowAddHcEntityDialog] = useState(false);
   const [sideMenu, setSideMenu] = useState([]);
@@ -29,9 +28,6 @@ const SuffixByIndustries = ({
 
   const getAddHcEntityDialog = (value) => {
     setShowAddHcEntityDialog(value);
-    if (!value) {
-      getIndustryData();
-    }
   };
 
   const entityAllData = async (industry) => {
@@ -115,6 +111,7 @@ const SuffixByIndustries = ({
   const getDeleteConfirmation = (value) => {
     if (value) {
       deleteEntity(deleteEntityId);
+      getIndustryData();
     }
   };
 
@@ -142,36 +139,29 @@ const SuffixByIndustries = ({
     setIndustryId(sideMenu?.[0]?.id);
   }, [sideMenu]);
 
-  useEffect(() => {
-    if (rotate) {
-      getIndustryData();
-    }
-  }, [rotate]);
-
   return (
     <Fragment>
       <div className={style.departmentCardColumnsGrid}>
         <div className={style.displayInCol}>
-          {!rotate &&
-            sideMenu?.map((data, index) => (
-              <div
-                className={
-                  data?.industry === selectedTitle
-                    ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
-                    : `${style.industriesCardStyle} ${style.marginTop10}`
-                }
-                onClick={() => SelectedHandler(data)}
-              >
-                <div className={style.spaceBetween}>
-                  <p className={style.industriesCardTextStyle1}>
-                    {data.industry}
-                  </p>
-                  <p className={style.industriesCardTextStyle1}>
-                    {data.entities.length}
-                  </p>
-                </div>
+          {sideMenu?.map((data, index) => (
+            <div
+              className={
+                data?.industry === selectedTitle
+                  ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
+                  : `${style.industriesCardStyle} ${style.marginTop10}`
+              }
+              onClick={() => SelectedHandler(data)}
+            >
+              <div className={style.spaceBetween}>
+                <p className={style.industriesCardTextStyle1}>
+                  {data.industry}
+                </p>
+                <p className={style.industriesCardTextStyle1}>
+                  {data?.nameSuffix.length}
+                </p>
               </div>
-            ))}
+            </div>
+          ))}
         </div>
 
         <div className={style.industriesEntityCardStyle}>
@@ -179,10 +169,10 @@ const SuffixByIndustries = ({
             <p
               className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft40}`}
             >
-              SUFFIX FOR HEALTHCARE
+              {`SUFFIX FOR ${selectedTitle}`}
             </p>
           </div>
-          {!rotate && (
+          {
             <div className={style.healthCareIndustriesHeader}>
               <img
                 src={IndustriesEntityFolder}
@@ -197,7 +187,7 @@ const SuffixByIndustries = ({
                 className={style.colorFileStyle}
                 onClick={() => {
                   setIsEdit(false);
-                  getAddHcEntityDialog(true);
+                  getAddEntityDialog(true);
                 }}
                 alt=""
               />
@@ -207,60 +197,60 @@ const SuffixByIndustries = ({
                 alt=""
               />
             </div>
-          )}
-          {!rotate &&
-            tableEntityData?.map((data, innerIndex) => {
-              return (
-                <div
-                  className={
-                    innerIndex % 2 !== 0
-                      ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                      : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                  }
-                >
-                  <p className={style.tableDataFontStyle}>{data.suffix}</p>
-                  <p className={style.tableDataFontStyle}></p>
-                  <p className={style.tableDataFontStyle}></p>
-                  <img
-                    src={EditHcRow}
-                    className={style.colorFileStyle}
-                    onClick={() => {
-                      setIsEdit(true);
-                      setSelectedEntity(data);
-                      getAddHcEntityDialog(true);
-                    }}
-                    alt=""
-                  />
-                  <img
-                    src={DeleteHcRow}
-                    className={style.colorFileStyle}
-                    onClick={() => {
-                      deleteHandler(data);
-                    }}
-                    alt=""
-                  />
-                </div>
-              );
-            })}
+          }
+          {tableEntityData?.map((data, innerIndex) => {
+            return (
+              <div
+                className={
+                  innerIndex % 2 !== 0
+                    ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                    : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                }
+              >
+                <p className={style.tableDataFontStyle}>{data.suffix}</p>
+                <p className={style.tableDataFontStyle}></p>
+                <p className={style.tableDataFontStyle}></p>
+                <img
+                  src={EditHcRow}
+                  className={style.colorFileStyle}
+                  onClick={() => {
+                    setIsEdit(true);
+                    setSelectedEntity(data);
+                    getAddEntityDialog(true);
+                  }}
+                  alt=""
+                />
+                <img
+                  src={DeleteHcRow}
+                  className={style.colorFileStyle}
+                  onClick={() => {
+                    deleteHandler(data);
+                  }}
+                  alt=""
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {showAddEntityDialog && (
+      {/* {showAddEntityDialog && (
         <AddIndustryTypeEntity
           getAddEntityDialog={getAddEntityDialog}
           getIndustryData={getIndustryData}
         />
-      )}
+      )} */}
 
-      {showAddHcEntityDialog && (
+      {showAddEntityDialog && (
         <AddSuffixEntity
-          getAddHcEntityDialog={getAddHcEntityDialog}
+          getAddEntityDialog={getAddEntityDialog}
           IndustryId={industryId}
           isEdit={isEdit}
           seletedEntity={seletedEntity}
           selectedTitle={selectedTitle}
           getEntityData={getEntityData}
           tableEntityData={tableEntityData}
+          getIndustryData={getIndustryData}
         />
       )}
 
@@ -268,7 +258,7 @@ const SuffixByIndustries = ({
         <DeleteConfirmation
           getShowDeleteConfirmation={getShowDeleteConfirmation}
           getDeleteConfirmation={getDeleteConfirmation}
-          confirmationText="Do you want to delete this hoiday?"
+          confirmationText="Do you want to delete this Suffix?"
         />
       )}
     </Fragment>

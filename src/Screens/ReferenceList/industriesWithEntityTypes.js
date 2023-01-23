@@ -10,13 +10,11 @@ import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
 import { GET, DELETE } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
-import { formatInTimeZone } from "date-fns-tz";
 
 const IndustriesWithEntityTypes = ({
   getAddEntityDialog,
   showAddEntityDialog,
   sendLastDate,
-  rotate,
 }) => {
   const [showAddHcEntityDialog, setShowAddHcEntityDialog] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState("");
@@ -30,9 +28,6 @@ const IndustriesWithEntityTypes = ({
 
   const getAddHcEntityDialog = (value) => {
     setShowAddHcEntityDialog(value);
-    if (!value) {
-      getIndustryData();
-    }
   };
 
   const entityAllData = async (industry) => {
@@ -56,9 +51,6 @@ const IndustriesWithEntityTypes = ({
     let lastModifiedDate = sorted[0].toString().split("+")[0];
 
     const date = new Date(lastModifiedDate);
-    // console.log(
-    //   formatInTimeZone(date, "America/New_York", "MMM d,yyyy HH:mm zzzz")
-    // );
     sendLastDate(
       date
         .toLocaleString("en-US", {
@@ -144,39 +136,32 @@ const IndustriesWithEntityTypes = ({
     setIndustryId(allData?.[0]?.id);
   }, [allData]);
 
-  useEffect(() => {
-    if (rotate) {
-      getIndustryData();
-    }
-  }, [rotate]);
-
   return (
     <Fragment>
       <div className={style.centreCardColumnsGrid}>
         <div className={style.displayInCol}>
-          {!rotate &&
-            allData?.map((data, index) => {
-              return (
-                <div
-                  className={
-                    data?.industry === selectedTitle
-                      ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
-                      : `${style.industriesCardStyle} ${style.marginTop10}`
-                  }
-                  onClick={() => SelectedHandler(data)}
-                  key={index}
-                >
-                  <div className={style.spaceBetween}>
-                    <p className={style.industriesCardTextStyle1}>
-                      {data.industry}
-                    </p>
-                    <p className={style.industriesCardTextStyle1}>
-                      {data.entities.length}
-                    </p>
-                  </div>
+          {allData?.map((data, index) => {
+            return (
+              <div
+                className={
+                  data?.industry === selectedTitle
+                    ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
+                    : `${style.industriesCardStyle} ${style.marginTop10}`
+                }
+                onClick={() => SelectedHandler(data)}
+                key={index}
+              >
+                <div className={style.spaceBetween}>
+                  <p className={style.industriesCardTextStyle1}>
+                    {data.industry}
+                  </p>
+                  <p className={style.industriesCardTextStyle1}>
+                    {data.entities.length}
+                  </p>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
         </div>
 
         {/* //Table */}
@@ -194,7 +179,7 @@ const IndustriesWithEntityTypes = ({
             </p>
             <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
           </div>
-          {!rotate && (
+          {
             <div className={style.healthCareIndustriesHeader}>
               <img
                 src={IndustriesEntityFolder}
@@ -219,53 +204,52 @@ const IndustriesWithEntityTypes = ({
                 alt=""
               />
             </div>
-          )}
-          {!rotate &&
-            tableEntityData?.map((data, innerIndex) => {
-              return (
-                <div
-                  className={
-                    innerIndex % 2 !== 0
-                      ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                      : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                  }
-                >
-                  <p className={style.tableDataFontStyle}>{data.type}</p>
-                  <p className={style.tableDataFontStyle}>
-                    {data.createdDate
-                      .split("T")[0]
-                      .split("-")
-                      .reverse()
-                      .join("-")}
-                  </p>
-                  <p className={style.tableDataFontStyle}>
-                    {data.lastModifiedDate
-                      .split("T")[0]
-                      .split("-")
-                      .reverse()
-                      .join("-")}
-                  </p>
-                  <img
-                    src={EditHcRow}
-                    className={style.colorFileStyle}
-                    onClick={() => {
-                      setIsEdit(true);
-                      setSelectedEntity(data);
-                      getAddHcEntityDialog(true);
-                    }}
-                    alt=""
-                  />
-                  <img
-                    src={DeleteHcRow}
-                    className={style.colorFileStyle}
-                    onClick={() => {
-                      deleteHandler(data);
-                    }}
-                    alt=""
-                  />
-                </div>
-              );
-            })}
+          }
+          {tableEntityData?.map((data, innerIndex) => {
+            return (
+              <div
+                className={
+                  innerIndex % 2 !== 0
+                    ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                    : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                }
+              >
+                <p className={style.tableDataFontStyle}>{data.type}</p>
+                <p className={style.tableDataFontStyle}>
+                  {data.createdDate
+                    .split("T")[0]
+                    .split("-")
+                    .reverse()
+                    .join("-")}
+                </p>
+                <p className={style.tableDataFontStyle}>
+                  {data.lastModifiedDate
+                    .split("T")[0]
+                    .split("-")
+                    .reverse()
+                    .join("-")}
+                </p>
+                <img
+                  src={EditHcRow}
+                  className={style.colorFileStyle}
+                  onClick={() => {
+                    setIsEdit(true);
+                    setSelectedEntity(data);
+                    getAddHcEntityDialog(true);
+                  }}
+                  alt=""
+                />
+                <img
+                  src={DeleteHcRow}
+                  className={style.colorFileStyle}
+                  onClick={() => {
+                    deleteHandler(data);
+                  }}
+                  alt=""
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -292,7 +276,7 @@ const IndustriesWithEntityTypes = ({
         <DeleteConfirmation
           getShowDeleteConfirmation={getShowDeleteConfirmation}
           getDeleteConfirmation={getDeleteConfirmation}
-          confirmationText="Do you want to delete this Industry?"
+          confirmationText={`Do you want to delete this Entity For ${selectedTitle} ?`}
         />
       )}
     </Fragment>
