@@ -26,7 +26,7 @@ const switchTheme = createTheme({
     },
 });
 
-const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment }) => {
+const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, contractTermPeriod }) => {
     const [schedulesField, setSchedulesField] = useState([]);
     const [metadata, setMetadata] = useState({
         contractedSchedules: [],
@@ -229,6 +229,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment }) =>
     }
     // let valCheck = new Date(metadata?.contractedSchedules?.[0]?.startDate);
 
+    console.log('contractPeriod', contractTermPeriod?.start, contractTermPeriod?.end)
+
     const getSchedulesField = () => {
         let temp = [];
         if (metadata?.contractedSchedules?.length === 0) {
@@ -244,8 +246,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment }) =>
                             <div>
                                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                                     <DatePicker
-                                        // minDate={sub(new Date(), { years: 3 })}
-                                        // maxDate={add(new Date(), { months: 6 })}
+                                        minDate={new Date(contractTermPeriod?.start)}
+                                        maxDate={new Date(contractTermPeriod?.end)}
                                         value={new Date(metadata?.contractedSchedules?.[i]?.startDate)}
                                         onChange={(newValue) => {
                                             onContractedSchedulesChange(i, 'startDate', format(newValue, 'yyyy-MM-dd').toString(), 'contractedSchedules');
@@ -278,8 +280,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment }) =>
                                                 height: 30,
                                             },
                                         }}
-                                        // minDate={contractTermPeriodFrom}
-                                        // maxDate={add(new Date(), { years: 5 })}
+                                        minDate={new Date(contractTermPeriod?.start)}
+                                        maxDate={new Date(contractTermPeriod?.end)}
                                         renderInput={(params) => <TextField  {...params}
                                             inputProps={{
                                                 ...params.inputProps,
