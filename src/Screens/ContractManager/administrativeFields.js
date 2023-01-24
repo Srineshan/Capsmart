@@ -196,8 +196,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
     console.log('date', metadata.selectedActivities);
     const updateWorkingPeriod = (e) => {
-        let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
-        setMetadata({ ...metadata, workingTimeFrom: e, workingTimeTo: minTime });
+        // let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
+        setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
     return (
@@ -449,7 +449,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         useAmPm={false}
                         onChange={(e) => handleValueChange('workingTimeTo', e)}
                         value={new Date(metadata?.workingTimeTo)}
-                        minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
+                    // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                     />
                 </div>
             </div>

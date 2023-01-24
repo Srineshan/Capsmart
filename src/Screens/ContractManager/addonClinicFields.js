@@ -113,12 +113,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       };
       let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
       let workFlowValues = Object?.values(workflowData);
-      console.log('workflowdata', workFlowValues);
-
-      data.approver = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
-      console.log('approver', data.approver, workFlowValues);
-      data.paymentApprover = users?.filter(data => data?.userId === workFlowValues?.[1]?.workFlowUser?.id)?.map(data => data)[0];
-      console.log('paymentApprover', data.paymentApprover);
+      if (workFlowValues?.length === 1) {
+        data.approver = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+        data.paymentApprover = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+      } else {
+        data.approver = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+        data.paymentApprover = users?.filter(data => data?.userId === workFlowValues?.[1]?.workFlowUser?.id)?.map(data => data)[0];
+      }
 
       temp.push(data);
       setMetadata(temp);

@@ -112,8 +112,8 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     }
 
     const updateWorkingPeriod = (e) => {
-        let minTime = new Date(new Date(e).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000));
-        setMetadata({ ...metadata, workingTimeFrom: e, workingTimeTo: minTime });
+        // let minTime = new Date(new Date(e).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000));
+        setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
     return (
@@ -298,7 +298,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         useAmPm={false}
                         onChange={(e) => handleValueChange('workingTimeTo', e)}
                         value={new Date(metadata?.workingTimeTo)}
-                        minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+                    // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                     />
                 </div>
             </div>

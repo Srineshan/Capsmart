@@ -138,7 +138,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                     paymentBasedonFixedHoursVsActual: true
                 });
             });
-            setTimesheetPayments(temp)
+            setTimesheetPayments(temp);
+            getPaymentFields();
         }
     }
 
@@ -150,7 +151,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     useEffect(() => {
         getPaymentFields();
-    }, [timesheetPayments?.length])
+    }, [timesheetPayments?.length, timesheetPayments])
 
     const updateTimesheetPayment = (value, name, index) => {
         let temp = timesheetPayments;

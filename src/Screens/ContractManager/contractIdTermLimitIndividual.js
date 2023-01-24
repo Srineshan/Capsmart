@@ -560,9 +560,9 @@ const ContractIdTermLimitIndividual = (
             onFocus={() => { checkFieldAndPopAlert(contractName, 'Contract / Agreement Name') }} />
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contract ID ( CID )*</div>
+          <div className={style.extentionLableStyle}>Contract ID / Resolution No*</div>
           <div className={style.displayInRow}>
-            <InputGroup placeholder="Contract Id" value={contractId.id} disabled={contractId.missing}
+            <InputGroup placeholder="Contract ID / Resolution No" value={contractId.id} disabled={contractId.missing}
               maxLength={TEXTFIELDLEN}
               onFocus={() => { checkFieldAndPopAlert(contractId?.id, 'Contract ID') }} className={`${style.entityFieldWidth}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
             <Checkbox label="Missing" checked={contractId.missing} onChange={(e) => setContractId({ ...contractId, missing: e.target.checked, id: '' })} className={`${style.marginTop10} ${style.marginLeft20}`} />

@@ -207,13 +207,14 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
         <div className={style.cloneBlockStyle}>
             <div className={`${style.timeSheetBoxStyle}`}>
                 <div>
-                    <div>
+
+                    {/* <div>
                         <div className={style.purpleTitle}>
                             ADD-ON ACTIVITY / SERVICE REQUESTS
                         </div>
                         <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setAddOn({ ...addOn, reviewer: value }) }} value={addOn?.reviewer} />
-                    </div>
-                    <div className={style.marginTop50}>
+                    </div> */}
+                    <div>
                         <div className={style.purpleTitle}>
                             PLANNED ABSENCE REQUESTS
                         </div>
