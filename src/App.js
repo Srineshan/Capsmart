@@ -148,7 +148,7 @@ const App = ({ props }) => {
             />
             <Route path="/chart" element={<ChartPage />} />
             <Route path="/help" element={<HelpHome />} />
-            <Route path="/tasksAndAlerts" element={<TasksAndAlerts />} />
+            <Route path="/partnerPortal" element={<TasksAndAlerts />} />
             <Route path="/activeCustomers" element={<CustomerManagement />} />
             <Route path="/customerSetup" element={<CustomerSetup />} />
             <Route path="/referenceList" element={<ReferenceList />} />
