@@ -65,8 +65,7 @@ const ContractedServiceProvidedByIndustries = ({
     let allDates = [];
     allEntries.forEach((e) => {
       e.entities.forEach((d) => {
-        console.log(d);
-        let dates = d.CSPType.map((row) => row.lastModifiedDat);
+        let dates = d.CSPType.map((row) => row.lastModifiedDate);
         allDates.push(...dates);
       });
     });

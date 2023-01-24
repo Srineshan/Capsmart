@@ -34,6 +34,7 @@ const AddTerminationReasons = ({
   isSecondary,
   isEdit,
   getTerminationReasonData,
+  selectedTitle,
 }) => {
   const [currentindustryType, setCurrentIndustryType] = useState(
     IndustryData?.id ? IndustryData.id : ""
@@ -63,7 +64,7 @@ const AddTerminationReasons = ({
     setEntityTypes(types);
   };
 
-  const SubmitTerminationReason = async () => {
+  const SaveSubmitHandler = async (type) => {
     let SecondaryReasonData = [];
     if (selectedTermination?.secondary_reasons) {
       SecondaryReasonData = [...selectedTermination.secondary_reasons];
@@ -90,34 +91,36 @@ const AddTerminationReasons = ({
       },
     };
 
-    if (
-      !isEdit
-        ? await POST(
-            "entity-service/terminationReasonMaster",
-            JSON.stringify(data)
-          )
-            .then((response) => {
-              SuccessToaster("Termination Added Successfully");
-              getAddEntityDialog(false);
-              getTerminationReasonData();
-            })
-            .catch((error) => {
-              ErrorToaster(error);
-            })
-        : await PUT(
-            `entity-service/terminationReasonMaster/${terminationId}`,
-            JSON.stringify(data)
-          )
-            .then((response) => {
-              SuccessToaster("Termination Updated Successfully");
-              getAddEntityDialog(false);
-              getTerminationReasonData();
-            })
-            .catch((error) => {
-              ErrorToaster(error);
-            })
-    )
+    if (!isEdit) {
+      await POST("entity-service/terminationReasonMaster", JSON.stringify(data))
+        .then((response) => {
+          SuccessToaster("Termination Added Successfully");
+          getTerminationReasonData();
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      await PUT(
+        `entity-service/terminationReasonMaster/${terminationId}`,
+        JSON.stringify(data)
+      )
+        .then((response) => {
+          SuccessToaster("Termination Updated Successfully");
+          getTerminationReasonData();
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    }
+
+    if (type !== "Add More") {
       getAddEntityDialog(false);
+    } else {
+      setPrimaryReason("");
+      setSecondaryReason("");
+      document.getElementById("primaryReasonEl").focus();
+    }
   };
 
   useEffect(() => {
@@ -164,7 +167,9 @@ const AddTerminationReasons = ({
         className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
       >
         <div className={style.spaceBetween}>
-          <p className={style.extensionStyle}>Add / Edit Termination Reasons</p>
+          <p
+            className={style.extensionStyle}
+          >{`Add / Edit Termination Reasons For ${selectedTitle}`}</p>
           <Icon
             icon="cross"
             size={20}
@@ -317,6 +322,7 @@ const AddTerminationReasons = ({
             <div></div>
             <div
               className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
+              onClick={() => SaveSubmitHandler("Add More")}
             >
               ADD MORE
             </div>
@@ -324,12 +330,17 @@ const AddTerminationReasons = ({
         </div>
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
-            <button className={style.outlinedButton}>SAVE & ADDMORE</button>
             <button
-              onClick={() => SubmitTerminationReason()}
+              className={style.outlinedButton}
+              onClick={() => getAddEntityDialog(false)}
+            >
+              CANCEL
+            </button>
+            <button
+              onClick={() => SaveSubmitHandler("Save & Exit")}
               className={`${style.buttonStyle} ${style.marginLeft20}`}
             >
-              SAVE & CLOSE
+              SAVE
             </button>
           </div>
         </div>

@@ -530,6 +530,7 @@ const BoardCertification = ({
           isSecondary={isSecondary}
           terminationData={terminationData}
           getTerminationReasonData={getTerminationReasonData}
+          selectedTitle={selectedTitle}
         />
       )}
 
