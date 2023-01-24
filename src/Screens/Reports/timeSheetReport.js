@@ -9,6 +9,7 @@ import { Link, useParams } from 'react-router-dom';
 import { GET } from '../dataSaver';
 import { format } from 'date-fns';
 import { currentUser } from '../../utils/auth';
+import NoDataBox from '../../Components/ReusableSmallComponents/noDataBox';
 
 export const Run = ({ link }) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -60,7 +61,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             (reportType === 'contractCompliance') ?
                 'CONTRACT_COMPLIANCE' :
                 (reportType === 'contractPerformance') ?
-                    'CONTRACT_PERFORMANCE' : '';
+                    'CONTRACT_PERFORMANCE' :
+                    (reportType === 'payments') ?
+                        'PAYMENT' : '';
 
     useEffect(() => {
         sessionStorage.removeItem('reportFilter');
@@ -69,13 +72,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const showMyReport = (data) => {
         let reportURL = getMyReportURL(data?.report?.type);
         sessionStorage.setItem('reportFilter', JSON.stringify(data?.report?.filters?.dataMap));
+        console.log(data, reportURL, data?.report?.type)
         navigate(`/reportTypeOverview/${reportURL}`);
     };
 
     const getMyReportURL = (value) => {
         if (value === 'ACTIVITES_SERVICES_LOG_SUMMARY') {
             return 'activitiesOrServices';
-        } else if (value === 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY ') {
+        } else if (value === 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY') {
             return 'addOnActivities';
         } else {
             return '';
@@ -84,7 +88,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     useEffect(() => {
         getMyReports();
-    }, [])
+    }, [tabName])
 
     const getMyReports = async () => {
         const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${category}`);
@@ -307,7 +311,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                     <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>1</div>
                                         <Link to="/reportTypeOverview/paymentsProcessingSummary" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Payments Processing Summary</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>This report provides a comprehensive summary of statistics with regards to status of payemnts being made to contracted service providers</div>
+                                        <div className={style.tableDataReportsFontStyle}>This report provides a comprehensive summary of statistics with regards to status of payments being made to contracted service providers</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
@@ -379,7 +383,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                 <p className={style.headingStyle}>Last Updated</p>
                             </div>
                             <div className={style.scrollStyle}>
-                                {myReports?.map((data, index) => (
+                                {myReports?.length !== 0 ? myReports?.map((data, index) => (
                                     <div className={`${style.timeSheetTableGrid} ${style.marginTop20}`} key={index}>
                                         <div className={style.tableDataReportsFontStyle}>{index + 1}</div>
                                         <div className={style.tableDataReportsFontStyle}>{data?.report?.title}</div>
@@ -393,7 +397,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         </div>
                                         {/* <div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div> */}
                                     </div>
-                                ))}
+                                )) : (
+                                    <NoDataBox heading={'No Reports Available'} />
+                                )}
                             </div>
                         </div>
                     ) : tabName === "Saved Report Outputs" ? (

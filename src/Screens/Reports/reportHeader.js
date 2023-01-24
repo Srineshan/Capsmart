@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz'
 import Cookie from 'universal-cookie';
 import { TenantID, GET } from './../../Screens/dataSaver';
 import jwt from 'jwt-decode';
@@ -12,7 +12,7 @@ const ReportHeader = () => {
     const userDetail = jwt(userDetails);
 
     const [logo, setLogo] = useState({ logo: sessionStorage?.getItem('logo'), title: sessionStorage.getItem('title') });
-    const [currentTime] = useState(format(new Date(), 'MMM d yyyy, H:mm'));
+    const [currentTime, setCurrentTime] = useState(formatInTimeZone(new Date(), 'America/New_York', 'MMM d yyyy, H:mm zzz'));
 
     useEffect(() => {
         getLogo();

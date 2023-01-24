@@ -19,7 +19,7 @@ import SaveReport from './saveReport';
 
 import style from './index.module.scss';
 
-const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpdated, isLoading, dataToUseInReport, refToUse, getIsDownloadClicked }) => {
+const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpdated, dataToUseInReport, refToUse, getIsDownloadClicked }) => {
     const { reportType } = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -56,14 +56,14 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                 <div className={` ${style.margin20}`}>
                     <div className={style.displayInRow}>
                         {/* <img src={Info} className={`${style.infoStyle} ${style.marginTop5}`} /> */}
-                        <div className={`${style.displayInRow} ${style.marginLeft20}`}>
+                        {/* <div className={`${style.displayInRow} ${style.marginLeft20}`}>
                             <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
-                        </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
+                        </div> */}
+                        {/* <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
                             onMouseEnter={(e) => setAnchorElRefresh(e.currentTarget)} onMouseLeave={() => setAnchorElRefresh(null)} aria-owns={openRefresh ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <CachedOutlinedIcon style={{ color: isUpdated ? '#F46044' : '#52575D' }} onClick={() => { setShowReportRefreshingDialog(true); getIsRefresh(true) }} />
@@ -83,11 +83,11 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                             >
                                 <div className={style.popoverStyle}>Click to Refresh this Report</div>
                             </Popover>
-                        </div>
+                        </div> */}
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
                             <ShareOutlinedIcon style={{color:"#52575D"}} onClick={() => setShowShareDialog(true)} />
                         </div> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
                             onMouseEnter={(e) => setAnchorElSchedule(e.currentTarget)} onMouseLeave={() => setAnchorElSchedule(null)} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <CalendarTodayIcon style={{ color: "#52575D" }} onClick={() => setShowSaveReport(true)} />
@@ -108,7 +108,7 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                                 <div className={style.popoverStyle}>Click to Schedule this Report</div>
                             </Popover>
                         </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => setShowSaveReportOutput(true)}
+                        {/* <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => setShowSaveReportOutput(true)}
                             onMouseEnter={(e) => setAnchorElSave(e.currentTarget)} onMouseLeave={() => setAnchorElSave(null)} aria-owns={openSave ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <SaveOutlinedIcon style={{ color: "#52575D" }} />
@@ -128,7 +128,7 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                             >
                                 <div className={style.popoverStyle}>Click to Save this Report</div>
                             </Popover>
-                        </div>
+                        </div> */}
                         <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => getIsDownloadClicked(true)}>
                             <DownloadingOutlinedIcon style={{ color: "#52575D" }} />
                         </div>
@@ -196,14 +196,14 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                     <div className={style.reportSavedStyle}>Report Saved</div>
                 </div>
             </Dialog>
-            <Dialog isOpen={isLoading} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
+            {/* <Dialog isOpen={isLoading} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
                     <div className={style.justifyCenter}>
                         <CachedOutlinedIcon sx={{ fontSize: 60 }} style={{ color: "#7165E3" }} className={style.reportIconStyle} />
                     </div>
                     <div className={style.reportSavedStyle}>Refreshing Report</div>
                 </div>
-            </Dialog>
+            </Dialog> */}
             <Dialog isOpen={showShareDialog} onClose={() => setShowShareDialog(false)} className={`${style.sendMailUserDialog} ${style.dialogPaddingBottom}`}>
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
                     <div className={style.spaceBetween}>
