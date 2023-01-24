@@ -7,14 +7,28 @@ import { Link } from "react-router-dom";
 import NewPodTypeForHealthcare from "./newPodTypeForHealthCare";
 
 const SuperAdminDashboard = () => {
-  const moment = require("moment-timezone");
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const arrayOfValues = JSON.parse(localStorage.getItem("showList"));
-  let sorted = arrayOfValues
-    .sort((a, b) => new Date(a) - new Date(b))
-    .reverse();
-  let lastModifiedDate = sorted[0].toString().split("+")[0];
+  // const arrayOfValues = JSON.parse(localStorage.getItem("showList"));
+  // let sorted = arrayOfValues
+  //   .sort((a, b) => new Date(a) - new Date(b))
+  //   .reverse();
+  // let lastModifiedDate = sorted[0].toString().split("+")[0];
+
+  // const date = new Date(lastModifiedDate);
+
+  // const LMD = date
+  //   .toLocaleString("en-US", {
+  //     timeZone: "America/New_York",
+  //     month: "short",
+  //     day: "2-digit",
+  //     hour: "numeric",
+  //     minute: "numeric",
+  //     year: "numeric",
+  //     timeZoneName: "short",
+  //     hour12: false,
+  //   })
+  //   .toUpperCase();
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -43,10 +57,8 @@ const SuperAdminDashboard = () => {
               <div
                 className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
               >
-                {/* UPDATED ON FEB 16, 2022 16:45 EST */}
-                {`UPDATED ON ${moment
-                  .tz(lastModifiedDate, "America/New_York")
-                  .format("MMM D, YYYY hh:mm z")}`}
+                UPDATED ON FEB 16, 2022 16:45 EST
+                {/* {`UPDATED ON ${LMD}`} */}
               </div>
               <div className={style.crossStyle}>
                 <Icon icon="cross" size={25} intent={Intent.DANGER} />

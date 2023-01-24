@@ -15,7 +15,6 @@ const IndustriesWithEntityTypes = ({
   getAddEntityDialog,
   showAddEntityDialog,
   sendLastDate,
-  rotate,
 }) => {
   const [showAddHcEntityDialog, setShowAddHcEntityDialog] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState("");
@@ -27,13 +26,8 @@ const IndustriesWithEntityTypes = ({
   const [deleteEntityId, setDeleteEntityId] = useState("");
   const [allData, setAllData] = useState([]);
 
-  const moment = require("moment-timezone");
-
   const getAddHcEntityDialog = (value) => {
     setShowAddHcEntityDialog(value);
-    if (!value) {
-      getIndustryData();
-    }
   };
 
   const entityAllData = async (industry) => {
@@ -50,19 +44,37 @@ const IndustriesWithEntityTypes = ({
     setAllData(allEntries);
     let allDates = [];
     allEntries.forEach((e) => {
-      let dates = e.entities.map((row) => new Date(row.lastModifiedDate));
+      let dates = e.entities.map((row) => row.lastModifiedDate);
       allDates.push(...dates);
     });
     let sorted = allDates.sort((a, b) => a - b).reverse();
     let lastModifiedDate = sorted[0].toString().split("+")[0];
+
+    const date = new Date(lastModifiedDate);
     sendLastDate(
-      moment
-        .tz(lastModifiedDate, "America/New_York")
-        .format("MMM D, YYYY hh:mm z")
+      date
+        .toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          month: "short",
+          day: "2-digit",
+          hour: "numeric",
+          minute: "numeric",
+          year: "numeric",
+          timeZoneName: "short",
+          hour12: false,
+        })
+        .toUpperCase()
     );
+
     localStorage.setItem(
       "industries",
-      moment(lastModifiedDate).format("MMMM YYYY").toUpperCase()
+      date
+        .toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          year: "numeric",
+          month: "long",
+        })
+        .toUpperCase()
     );
 
     var showList = JSON.parse(localStorage.getItem("showList") || "[]");
@@ -124,39 +136,32 @@ const IndustriesWithEntityTypes = ({
     setIndustryId(allData?.[0]?.id);
   }, [allData]);
 
-  useEffect(() => {
-    if (rotate) {
-      getIndustryData();
-    }
-  }, [rotate]);
-
   return (
     <Fragment>
       <div className={style.centreCardColumnsGrid}>
         <div className={style.displayInCol}>
-          {!rotate &&
-            allData?.map((data, index) => {
-              return (
-                <div
-                  className={
-                    data?.industry === selectedTitle
-                      ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
-                      : `${style.industriesCardStyle} ${style.marginTop10}`
-                  }
-                  onClick={() => SelectedHandler(data)}
-                  key={index}
-                >
-                  <div className={style.spaceBetween}>
-                    <p className={style.industriesCardTextStyle1}>
-                      {data.industry}
-                    </p>
-                    <p className={style.industriesCardTextStyle1}>
-                      {data.entities.length}
-                    </p>
-                  </div>
+          {allData?.map((data, index) => {
+            return (
+              <div
+                className={
+                  data?.industry === selectedTitle
+                    ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
+                    : `${style.industriesCardStyle} ${style.marginTop10}`
+                }
+                onClick={() => SelectedHandler(data)}
+                key={index}
+              >
+                <div className={style.spaceBetween}>
+                  <p className={style.industriesCardTextStyle1}>
+                    {data.industry}
+                  </p>
+                  <p className={style.industriesCardTextStyle1}>
+                    {data.entities.length}
+                  </p>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
         </div>
 
         {/* //Table */}
@@ -174,7 +179,7 @@ const IndustriesWithEntityTypes = ({
             </p>
             <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
           </div>
-          {!rotate && (
+          {
             <div className={style.healthCareIndustriesHeader}>
               <img
                 src={IndustriesEntityFolder}
@@ -199,53 +204,52 @@ const IndustriesWithEntityTypes = ({
                 alt=""
               />
             </div>
-          )}
-          {!rotate &&
-            tableEntityData?.map((data, innerIndex) => {
-              return (
-                <div
-                  className={
-                    innerIndex % 2 !== 0
-                      ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                      : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                  }
-                >
-                  <p className={style.tableDataFontStyle}>{data.type}</p>
-                  <p className={style.tableDataFontStyle}>
-                    {data.createdDate
-                      .split("T")[0]
-                      .split("-")
-                      .reverse()
-                      .join("-")}
-                  </p>
-                  <p className={style.tableDataFontStyle}>
-                    {data.lastModifiedDate
-                      .split("T")[0]
-                      .split("-")
-                      .reverse()
-                      .join("-")}
-                  </p>
-                  <img
-                    src={EditHcRow}
-                    className={style.colorFileStyle}
-                    onClick={() => {
-                      setIsEdit(true);
-                      setSelectedEntity(data);
-                      getAddHcEntityDialog(true);
-                    }}
-                    alt=""
-                  />
-                  <img
-                    src={DeleteHcRow}
-                    className={style.colorFileStyle}
-                    onClick={() => {
-                      deleteHandler(data);
-                    }}
-                    alt=""
-                  />
-                </div>
-              );
-            })}
+          }
+          {tableEntityData?.map((data, innerIndex) => {
+            return (
+              <div
+                className={
+                  innerIndex % 2 !== 0
+                    ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                    : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                }
+              >
+                <p className={style.tableDataFontStyle}>{data.type}</p>
+                <p className={style.tableDataFontStyle}>
+                  {data.createdDate
+                    .split("T")[0]
+                    .split("-")
+                    .reverse()
+                    .join("-")}
+                </p>
+                <p className={style.tableDataFontStyle}>
+                  {data.lastModifiedDate
+                    .split("T")[0]
+                    .split("-")
+                    .reverse()
+                    .join("-")}
+                </p>
+                <img
+                  src={EditHcRow}
+                  className={style.colorFileStyle}
+                  onClick={() => {
+                    setIsEdit(true);
+                    setSelectedEntity(data);
+                    getAddHcEntityDialog(true);
+                  }}
+                  alt=""
+                />
+                <img
+                  src={DeleteHcRow}
+                  className={style.colorFileStyle}
+                  onClick={() => {
+                    deleteHandler(data);
+                  }}
+                  alt=""
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -272,7 +276,7 @@ const IndustriesWithEntityTypes = ({
         <DeleteConfirmation
           getShowDeleteConfirmation={getShowDeleteConfirmation}
           getDeleteConfirmation={getDeleteConfirmation}
-          confirmationText="Do you want to delete this Industry?"
+          confirmationText={`Do you want to delete this Entity For ${selectedTitle} ?`}
         />
       )}
     </Fragment>
