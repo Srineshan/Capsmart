@@ -74,7 +74,7 @@ const ReferenceListMainPage = () => {
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/functionalTitles",
       tableComponent: FunctionalTitles,
-      Title: "ADD FUNCTIONAL",
+      Title: "ADD FUNCTIONAL TITLES",
     },
     {
       name: "BOARD CERTIFICATION SPECIALTIES BY INDUSTRIES",
