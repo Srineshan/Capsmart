@@ -61,7 +61,9 @@ const SuperAdminDashboard = () => {
                 {/* {`UPDATED ON ${LMD}`} */}
               </div>
               <div className={style.crossStyle}>
-                <Icon icon="cross" size={25} intent={Intent.DANGER} />
+                <Link to={"/entitySitePortal"}>
+                  <Icon icon="cross" size={25} intent={Intent.DANGER} />
+                </Link>
               </div>
             </div>
             <div className={style.marginTop35}>
