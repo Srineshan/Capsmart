@@ -408,85 +408,85 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                 </div>
                             </>
                         )}
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label2"
-                                id="demo-multiple-name2"
-                                multiple
-                                value={selectedSites}
-                                onChange={handleChangeSites}
-                                MenuProps={MenuProps}
-                            >
-                                {sites?.map((data) => (
-                                    <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
-                                    >
-                                        {data?.siteName?.siteName}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label2"
-                                id="demo-multiple-name2"
-                                multiple
-                                value={selectedDepartments}
-                                onChange={handleChangeDepartments}
-                                MenuProps={MenuProps}
-                            >
-                                {departments?.map((data) => (
-                                    <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
-                                    >
-                                        {data?.departmentName?.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
                         {reportType === "activitiesOrServices" && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-multiple-name-label5">Contract</InputLabel>
-                                <Select
-                                    labelId="demo-multiple-name-label5"
-                                    id="demo-multiple-name5"
-                                    multiple
-                                    value={selectedContracts}
-                                    onChange={handleChangeContracts}
-                                    MenuProps={MenuProps}
-                                >
-                                    {contracts?.map((data) => (
+                            <>
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label2"
+                                        id="demo-multiple-name2"
+                                        multiple
+                                        value={selectedSites}
+                                        onChange={handleChangeSites}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {sites?.map((data) => (
+                                            <MenuItem
+                                                key={data?.id}
+                                                value={data?.id}
+                                            >
+                                                {data?.siteName?.siteName}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label2"
+                                        id="demo-multiple-name2"
+                                        multiple
+                                        value={selectedDepartments}
+                                        onChange={handleChangeDepartments}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {departments?.map((data) => (
+                                            <MenuItem
+                                                key={data?.id}
+                                                value={data?.id}
+                                            >
+                                                {data?.departmentName?.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label5">Contract</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label5"
+                                        id="demo-multiple-name5"
+                                        multiple
+                                        value={selectedContracts}
+                                        onChange={handleChangeContracts}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {contracts?.map((data) => (
+                                            <MenuItem
+                                                key={data?.id}
+                                                value={data?.id}
+                                            >
+                                                {data?.contractName?.contractName}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label5"
+                                        id="demo-multiple-name5"
+                                        value={selectedContractedServiceProvider}
+                                        onChange={handleChangeContractedServiceProviders}
+                                        MenuProps={MenuProps}
+                                    >
                                         <MenuItem
-                                            key={data?.id}
-                                            value={data?.id}
+                                            value={currentUserDetails?.id}
                                         >
-                                            {data?.contractName?.contractName}
+                                            {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
                                         </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        )}
-                        {reportType === "activitiesOrServices" && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
-                                <Select
-                                    labelId="demo-multiple-name-label5"
-                                    id="demo-multiple-name5"
-                                    value={selectedContractedServiceProvider}
-                                    onChange={handleChangeContractedServiceProviders}
-                                    MenuProps={MenuProps}
-                                >
-                                    <MenuItem
-                                        value={currentUserDetails?.id}
-                                    >
-                                        {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
-                                    </MenuItem>
-                                </Select>
-                            </FormControl>
+                                    </Select>
+                                </FormControl>
+                            </>
                         )}
                     </>
                 ) : reportType === "nonCompliant" ? (
