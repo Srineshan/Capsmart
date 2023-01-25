@@ -23,7 +23,6 @@ const ReferenceListMainPage = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [lastDate, setLastDate] = useState("");
-  const [rotate, setRotate] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getAddEntityDialog = (value) => {
@@ -40,72 +39,84 @@ const ReferenceListMainPage = () => {
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/industriesWithEntityTypes",
       tableComponent: industriesWithEntityTypes,
+      Title: "ADD INDUSTRY",
     },
     {
       name: "DEPARTMENTS / SERVICE AREAS BY ENTITY TYPES",
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/departmentsByEntityTypes",
       tableComponent: DepartmentsByEntityTypes,
+      Title: "ADD DEPARTMENT",
     },
     {
       name: "ABSENCE REASONS BY INDUSTRIES",
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/absenseReasonsByIndustries",
       tableComponent: AbsenseReasonsByIndustries,
+      Title: "ADD ABSENSE REASONS",
     },
     {
       name: "SUFFIX BY INDUSTRIES",
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/suffixByIndustries",
       tableComponent: SuffixByIndustries,
+      Title: "ADD SUFFIX",
     },
     {
       name: "CONTRACTED SERVICE PROVIDERS BY INDUSTRY & ENTITY TYPES",
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/contractedServiceProviderByIndustries",
       tableComponent: ContractedServiceProvidedByIndustries,
+      Title: "ADD CSP",
     },
     {
       name: "FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS",
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/functionalTitles",
       tableComponent: FunctionalTitles,
+      Title: "ADD FUNCTIONAL TITLES",
     },
     {
       name: "BOARD CERTIFICATION SPECIALTIES BY INDUSTRIES",
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/boardCertification",
       tableComponent: BoardCertification,
+      Title: "ADD BOARD CERTIFICATION",
     },
     {
       name: "TERMINATION REASONS BY ENTITY",
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/terminationReasons",
       tableComponent: TerminationReasons,
+      Title: "ADD TERMINATION",
     },
     {
       name: "PROOF OF DOCUMENTATION BY ENTITY",
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/proofOfDocumentByEntity",
       tableComponent: ProofOfDocumentationByEntity,
+      Title: "ADD POD",
     },
     {
       name: "HOLIDAY SCHEDULE BY INDUSTRIES",
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/holidayListByIndustries",
       tableComponent: HolidayListByIndustries,
+      Title: "ADD HOLIDAY",
     },
     {
       name: "CONTRACT DOCUMENT TYPE FOR UPLOAD",
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/contractDoumentTypeForUpload",
       tableComponent: industriesWithEntityTypes,
+      Title: "ADD CONTRACT DOCUMENT",
     },
     {
       name: "COUNTRY",
       status: "UPDATED ON FEB 16, 2022 16:45 EST",
       pathName: "/referenceList/countriesSupportedWithStates",
       tableComponent: CountriesSupportedWithStates,
+      Title: "ADD COUNTRY",
     },
   ];
 
@@ -144,8 +155,7 @@ const ReferenceListMainPage = () => {
                 isEdit={isEdit}
                 setIsEdit={setIsEdit}
                 needHeader={true}
-                rotate={rotate}
-                setRotate={setRotate}
+                Title={data.Title}
               />
             ))}
 
@@ -160,8 +170,6 @@ const ReferenceListMainPage = () => {
                         isEdit={isEdit}
                         setIsEdit={setIsEdit}
                         sendLastDate={getLastDate}
-                        rotate={rotate}
-                        setRotate={setRotate}
                       />
                     );
                   })}

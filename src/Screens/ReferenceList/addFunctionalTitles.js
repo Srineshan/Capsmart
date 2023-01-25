@@ -22,6 +22,7 @@ const AddFunctionalTitles = ({
   IndustryData,
   EntityData,
   getEntityDataList,
+  selectedTitle,
 }) => {
   const [functionalId, setFunctionalId] = useState("");
   const [title, setTitle] = useState("");
@@ -61,7 +62,7 @@ const AddFunctionalTitles = ({
     setContarctedServiceProviderType(csptypes);
   };
 
-  const AddFunctionalTitlesData = async () => {
+  const saveSubmitHandler = async (type) => {
     const isPresent = getEntityDataList.find((p) => p.title === title);
     if (isPresent) {
       ErrorToaster("Already This Name Exists");
@@ -89,78 +90,41 @@ const AddFunctionalTitles = ({
       },
     };
 
-    if (
-      !isEdit
-        ? await POST(
-            "entity-service/functionalTitlesForCSPTypeMaster",
-            JSON.stringify(data)
-          )
-            .then((response) => {
-              SuccessToaster("FunctionlTitle Added Successfully");
-              getAddEntityDialog(false);
-              getFuntionalTitleData();
-            })
-            .catch((error) => {
-              ErrorToaster(error);
-            })
-        : await PUT(
-            `entity-service/functionalTitlesForCSPTypeMaster/${functionalId}`,
-            JSON.stringify(data)
-          )
-            .then((response) => {
-              SuccessToaster("FunctionlTitle Updated Successfully");
-              getAddEntityDialog(false);
-              getFuntionalTitleData();
-            })
-            .catch((error) => {
-              ErrorToaster(error);
-            })
-    )
+    if (!isEdit) {
+      await POST(
+        "entity-service/functionalTitlesForCSPTypeMaster",
+        JSON.stringify(data)
+      )
+        .then((response) => {
+          SuccessToaster("Functionl Title Added Successfully");
+          getFuntionalTitleData();
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      await PUT(
+        `entity-service/functionalTitlesForCSPTypeMaster/${functionalId}`,
+        JSON.stringify(data)
+      )
+        .then((response) => {
+          SuccessToaster("Functionl Title Updated Successfully");
+          getFuntionalTitleData();
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    }
+
+    if (type !== "Add More") {
       getAddEntityDialog(false);
-  };
-
-  const AddMoreFunctionalData = async () => {
-    const isPresent = getEntityDataList.find((p) => p.title === title);
-    if (isPresent) {
-      ErrorToaster("Already This Name Exists");
-      document.getElementById("functionalTitle").focus();
-      getAddEntityDialog(true);
-      return false;
-    }
-
-    if (!title && title === "") {
+    } else {
+      setTitle("");
+      setalias1("");
+      setalias2("");
       document.getElementById("functionalTitleEl").focus();
-      return false;
+      getFuntionalTitleData();
     }
-
-    const data = {
-      title: title,
-      alias1: alias1,
-      alias2: alias2,
-      contractedServiceProviderTypeId: {
-        id: currentCSPType,
-      },
-      entityId: {
-        id: currentEntityType,
-      },
-    };
-    getAddEntityDialog(true);
-    setTitle("");
-    setalias1("");
-    setalias2("");
-    await POST(
-      "entity-service/functionalTitlesForCSPTypeMaster",
-      JSON.stringify(data)
-    )
-      .then((response) => {
-        SuccessToaster("FunctionlTitle Added Successfully");
-        getAddEntityDialog(true);
-        getFuntionalTitleData();
-      })
-      .catch((error) => {
-        ErrorToaster(error);
-      });
-    getAddEntityDialog(true);
   };
 
   useEffect(() => {
@@ -221,7 +185,7 @@ const AddFunctionalTitles = ({
       >
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>
-            Add/Edit Functional Titles For Contracted Service Providers
+            {`Add/Edit Functional Titles For ${selectedTitle}`}
           </p>
           <Icon
             icon="cross"
@@ -324,6 +288,7 @@ const AddFunctionalTitles = ({
             {!isEdit && (
               <div
                 className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
+                onClick={() => saveSubmitHandler("Add More")}
               >
                 ADD MORE
               </div>
@@ -335,16 +300,16 @@ const AddFunctionalTitles = ({
             {!isEdit && (
               <button
                 className={style.outlinedButton}
-                onClick={() => AddMoreFunctionalData()}
+                onClick={() => getAddEntityDialog(false)}
               >
-                SAVE & ADD MORE
+                CANCEL
               </button>
             )}
             <button
-              onClick={() => AddFunctionalTitlesData()}
+              onClick={() => saveSubmitHandler("Save & Exit")}
               className={`${style.buttonStyle} ${style.marginLeft20}`}
             >
-              SAVE & CLOSE
+              SAVE
             </button>
           </div>
         </div>

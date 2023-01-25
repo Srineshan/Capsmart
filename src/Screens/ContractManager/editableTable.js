@@ -7,15 +7,14 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import style from './index.module.scss';
 
 const EditableTable = ({ additionalActivityData, getAdditionalActivityData }) => {
-    const [additionalActivity, setAdditionalActivity] = useState([]);
+    const [additionalActivity, setAdditionalActivity] = useState(additionalActivityData);
     const [activityTableRows, setActivityTableRows] = useState([]);
 
     useEffect(() => {
         if (additionalActivity?.length === 0) {
             setAdditionalActivity(additionalActivityData);
-            getActivitytableRows();
         }
-    }, [additionalActivityData]);
+    }, []);
 
     useEffect(() => {
         getAdditionalActivityData(additionalActivity)
@@ -46,7 +45,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData }) =>
         let temp = [];
         for (let i = 0; i < additionalActivity?.length; i++) {
             temp[i] = (
-                <div className={`${style.tableData} ${style.editableTableGridStyle} ${style.alternativeBackgroundColor} ${style.verticalAlignCenter}`} >
+                <div className={`${style.tableData} ${style.editableTableGridStyle} ${style.alternativeBackgroundColor} ${style.verticalAlignCenter}`} key={i}>
                     <EditableText placeholder='Enter Service' onChange={(e) => handleActivityChange(e, i, 'activity')} />
                     <div className={style.displayInRow}>
                         <TimePicker
@@ -54,7 +53,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData }) =>
                             onChange={(e) => {
                                 handleActivityChange(e, i, 'weekdayFrom');
                             }}
-                            value={new Date(additionalActivity?.[i]?.weekdayFrom)}
+                            value={new Date(additionalActivity?.[i]?.weekdayFrom || new Date())}
                         />
                         <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                         <TimePicker
@@ -62,10 +61,9 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData }) =>
                             onChange={(e) => {
                                 handleActivityChange(e, i, 'weekdayTo');
                             }}
-                            value={new Date(additionalActivity?.[i]?.weekdayTo)}
+                            value={new Date(additionalActivity?.[i]?.weekdayTo || new Date())}
                         />
                     </div>
-                    <></>
 
 
                     <div className={style.displayInRow}>
@@ -74,7 +72,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData }) =>
                             onChange={(e) => {
                                 handleActivityChange(e, i, 'weekendFrom');
                             }}
-                            value={new Date(additionalActivity?.[i]?.weekendFrom)}
+                            value={new Date(additionalActivity?.[i]?.weekendFrom || new Date())}
                         />
                         <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                         <TimePicker
@@ -82,7 +80,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData }) =>
                             onChange={(e) => {
                                 handleActivityChange(e, i, 'weekendTo');
                             }}
-                            value={new Date(additionalActivity?.[i]?.weekendTo)}
+                            value={new Date(additionalActivity?.[i]?.weekendTo || new Date())}
                         />
                     </div>
 

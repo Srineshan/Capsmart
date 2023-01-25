@@ -7,14 +7,28 @@ import { Link } from "react-router-dom";
 import NewPodTypeForHealthcare from "./newPodTypeForHealthCare";
 
 const SuperAdminDashboard = () => {
-  const moment = require("moment-timezone");
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const arrayOfValues = JSON.parse(localStorage.getItem("showList"));
-  let sorted = arrayOfValues
-    .sort((a, b) => new Date(a) - new Date(b))
-    .reverse();
-  let lastModifiedDate = sorted[0].toString().split("+")[0];
+  // const arrayOfValues = JSON.parse(localStorage.getItem("showList"));
+  // let sorted = arrayOfValues
+  //   .sort((a, b) => new Date(a) - new Date(b))
+  //   .reverse();
+  // let lastModifiedDate = sorted[0].toString().split("+")[0];
+
+  // const date = new Date(lastModifiedDate);
+
+  // const LMD = date
+  //   .toLocaleString("en-US", {
+  //     timeZone: "America/New_York",
+  //     month: "short",
+  //     day: "2-digit",
+  //     hour: "numeric",
+  //     minute: "numeric",
+  //     year: "numeric",
+  //     timeZoneName: "short",
+  //     hour12: false,
+  //   })
+  //   .toUpperCase();
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -43,13 +57,13 @@ const SuperAdminDashboard = () => {
               <div
                 className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
               >
-                {/* UPDATED ON FEB 16, 2022 16:45 EST */}
-                {`UPDATED ON ${moment
-                  .tz(lastModifiedDate, "America/New_York")
-                  .format("MMM D, YYYY hh:mm z")}`}
+                UPDATED ON FEB 16, 2022 16:45 EST
+                {/* {`UPDATED ON ${LMD}`} */}
               </div>
               <div className={style.crossStyle}>
-                <Icon icon="cross" size={25} intent={Intent.DANGER} />
+                <Link to={"/entitySitePortal"}>
+                  <Icon icon="cross" size={25} intent={Intent.DANGER} />
+                </Link>
               </div>
             </div>
             <div className={style.marginTop35}>
@@ -60,12 +74,12 @@ const SuperAdminDashboard = () => {
                       to={"/referenceList/industriesWithEntityTypes"}
                       className={style.linkStyle}
                     >
-                      <div className={style.dashboardCardStyle}>
+                      <div className={`${style.dashboardCardStyle}`}>
                         <h5 className={`${style.headingForReferenceList}`}>
                           INDUSTRIES SUPPORTED WITH ENTITY TYPES
                         </h5>
                         <div
-                          className={`${style.optionsStyle} ${style.displayInCol}`}
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <span className={style.dashboardCardColorOption1}>
                             DEFAULT LIST IS CREATED
@@ -85,7 +99,7 @@ const SuperAdminDashboard = () => {
                           DEPARTMENTS / SERVICE AREAS BY ENTITY TYPES
                         </h5>
                         <div
-                          className={`${style.optionsStyle} ${style.displayInCol}`}
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <span className={style.dashboardCardColorOption1}>
                             DEFAULT LIST IS CREATED
@@ -105,7 +119,7 @@ const SuperAdminDashboard = () => {
                           ABSENCE REASONS BY INDUSTRY TYPE
                         </h5>
                         <div
-                          className={`${style.optionsStyle} ${style.displayInCol}`}
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <span className={style.dashboardCardColorOption1}>
                             DEFAULT LIST IS CREATED
@@ -126,7 +140,7 @@ const SuperAdminDashboard = () => {
                           NAME SUFFIX BY INDUSTRY TYPE
                         </h5>
                         <div
-                          className={`${style.optionsStyle} ${style.displayInCol}`}
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <span className={style.dashboardCardColorOption1}>
                             DEFAULT LIST IS CREATED
@@ -149,7 +163,7 @@ const SuperAdminDashboard = () => {
                           TYPES
                         </h5>
                         <div
-                          className={`${style.optionsStyle} ${style.displayInCol}`}
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <span className={style.dashboardCardColorOption1}>
                             DEFAULT LIST IS CREATED
@@ -170,7 +184,7 @@ const SuperAdminDashboard = () => {
                           FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS
                         </h5>
                         <div
-                          className={`${style.optionsStyle} ${style.displayInCol}`}
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <span className={style.dashboardCardColorOption1}>
                             DEFAULT LIST IS CREATED
@@ -191,7 +205,7 @@ const SuperAdminDashboard = () => {
                           BOARD CERTIFICATION SPECIALTIES BY INDUSTRIES
                         </h5>
                         <div
-                          className={`${style.optionsStyle} ${style.displayInCol}`}
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <span className={style.dashboardCardColorOption1}>
                             DEFAULT LIST IS CREATED
@@ -212,7 +226,7 @@ const SuperAdminDashboard = () => {
                           TERMINATION REASONS BY ENTITY TYPE
                         </h5>
                         <div
-                          className={`${style.optionsStyle} ${style.displayInCol}`}
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <span className={style.dashboardCardColorOption1}>
                             DEFAULT LIST IS CREATED
@@ -232,10 +246,14 @@ const SuperAdminDashboard = () => {
                         <h5 className={`${style.headingForReferenceList}`}>
                           PROOF OF DOCUMENTATION BY INDUSTRIES
                         </h5>
-                        <div className={`${style.dashboardInsideCardStyle} `}>
-                          <span className={style.dashboardCardColorOption1}>
-                            DEFAULT LIST SETUP REQUIRED
-                          </span>
+                        <div
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
+                        >
+                          <div className={`${style.dashboardInsideCardStyle} `}>
+                            <span className={style.dashboardCardColorOption1}>
+                              DEFAULT LIST SETUP REQUIRED
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -243,11 +261,15 @@ const SuperAdminDashboard = () => {
                       <h5 className={`${style.headingForReferenceList}`}>
                         CONTRACTED SERVICES BY INDUSTRIES
                       </h5>
-                      <div className={`${style.dashboardInsideCardStyle} `}>
-                        <span className={style.dashboardCardColorOption1}>
-                          DEFAULT LIST SETUP REQUIRED
-                        </span>
-                      </div>
+                      <div
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
+                        >
+                          <div className={`${style.dashboardInsideCardStyle} `}>
+                            <span className={style.dashboardCardColorOption1}>
+                              DEFAULT LIST SETUP REQUIRED
+                            </span>
+                          </div>
+                        </div>
                     </div>
                     <Link
                       to={"/referenceList/holidayListByIndustries"}
@@ -258,7 +280,7 @@ const SuperAdminDashboard = () => {
                           HOLIDAY LIST BY INDUSTRIES
                         </h5>
                         <div
-                          className={`${style.optionsStyle} ${style.displayInCol}`}
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <span className={style.dashboardCardColorOption1}>
                             DEFAULT LIST IS CREATED
@@ -278,10 +300,14 @@ const SuperAdminDashboard = () => {
                         <h5 className={`${style.headingForReferenceList}`}>
                           CONTRACT DOCUMENT <br /> TYPE FOR UPLOAD
                         </h5>
-                        <div className={`${style.dashboardInsideCardStyle} `}>
-                          <span className={style.dashboardCardColorOption1}>
-                            DEFAULT LIST SETUP REQUIRED
-                          </span>
+                        <div
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
+                        >
+                          <div className={`${style.dashboardInsideCardStyle} `}>
+                            <span className={style.dashboardCardColorOption1}>
+                              DEFAULT LIST SETUP REQUIRED
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -293,10 +319,14 @@ const SuperAdminDashboard = () => {
                         <h5 className={`${style.headingForReferenceList}`}>
                           COUNTRIES SUPPORTED WITH <br /> STATES
                         </h5>
-                        <div className={`${style.dashboardInsideCardStyle} `}>
-                          <span className={style.dashboardCardColorOption1}>
-                            DEFAULT LIST SETUP REQUIRED
-                          </span>
+                        <div
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
+                        >
+                          <div className={`${style.dashboardInsideCardStyle} `}>
+                            <span className={style.dashboardCardColorOption1}>
+                              DEFAULT LIST SETUP REQUIRED
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </Link>

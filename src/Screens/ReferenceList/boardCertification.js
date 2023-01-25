@@ -1,11 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
-import Navbar from "../../Components/Navbar";
-import SideBar from "./../../Components/Sidebar";
-import { Icon, Intent } from "@blueprintjs/core";
 import style from "./index.module.scss";
 import AddBoardCertifcation from "./addBoardCertifcation";
-import AddNewEntity from "./../../images/addEntity.png";
-import AddRefresh from "./../../images/refreshEntity.png";
 import OpenFolder from "./../../images/openFolder.png";
 import BlackBorderFolder from "./../../images/blackBorderFolder.png";
 import BlueFolder from "./../../images/blueFolder.png";
@@ -25,7 +20,6 @@ const BoardCertification = ({
   isEdit,
   setIsEdit,
   sendLastDate,
-  rotate,
 }) => {
   const [allData, setAllData] = useState([]);
   const [isSecondary, setIsSecondary] = useState(false);
@@ -39,8 +33,6 @@ const BoardCertification = ({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
   const [selectedBoard, setSelectedBoard] = useState({});
-
-  const moment = require("moment-timezone");
 
   const entityAllData = async (industry) => {
     const { data: entities } = await GET(
@@ -74,14 +66,33 @@ const BoardCertification = ({
           allDates.push(...dates);
           let sorted = allDates.sort((a, b) => a - b).reverse();
           let lastModifiedDate = sorted[0].toString().split("+")[0];
+
+          const date = new Date(lastModifiedDate);
+
           sendLastDate(
-            moment
-              .tz(lastModifiedDate, "America/New_York")
-              .format("MMM D, YYYY hh:mm z")
+            date
+              .toLocaleString("en-US", {
+                timeZone: "America/New_York",
+                month: "short",
+                day: "2-digit",
+                hour: "numeric",
+                minute: "numeric",
+                year: "numeric",
+                timeZoneName: "short",
+                hour12: false,
+              })
+              .toUpperCase()
           );
+
           localStorage.setItem(
             "boardCertification",
-            moment(lastModifiedDate).format("MMMM YYYY").toUpperCase()
+            date
+              .toLocaleString("en-US", {
+                timeZone: "America/New_York",
+                year: "numeric",
+                month: "long",
+              })
+              .toUpperCase()
           );
 
           var showList = JSON.parse(localStorage.getItem("showList") || "[]");
@@ -114,7 +125,7 @@ const BoardCertification = ({
 
   const getBoardCertificationData = async (industryId, contractPID) => {
     const { data: boardData } = await GET(
-      `entity-service/boardCertificateSpecialtiesMaster?industry=${industryId}&contractedServiceProviderType=${contractPID}`
+      `entity-service/boardCertificateSpecialtiesMaster?industry=${industryData.id}&contractedServiceProviderType=${selectedEntity.id}`
     );
     setBoardCertificationTable(boardData);
   };
@@ -146,7 +157,7 @@ const BoardCertification = ({
   };
 
   useEffect(() => {
-    getBoardCertificationData(industryData?.id, selectedEntity?.id);
+    getBoardCertificationData();
   }, [selectedEntity, industryData]);
 
   useEffect(() => {
@@ -171,141 +182,134 @@ const BoardCertification = ({
     EntityDefaultSet(allData);
   }, [allData]);
 
-  useEffect(() => {
-    if (rotate) {
-      getAllData();
-    }
-  }, [rotate]);
-
   return (
     <Fragment>
       <div className={style.departmentCardColumnsGrid}>
         <div>
-          {!rotate &&
-            allData?.map((data, index) => {
-              return data?.entities.length !== 0 ? (
-                <>
-                  <div
-                    className={`${style.healthCareListHeader} ${style.HealthCareListBackground3} ${style.spaceBetween} ${style.marginTop10}`}
-                    key={index}
-                    onClick={() => handleToggle(index, data)}
-                  >
-                    <img
-                      src={BlackBorderFolder}
-                      className={`${style.colorFileStyle2} ${style.marginLeft15}`}
-                      alt=""
-                    />
-                    <p className={style.healthCareHeaderTextStyle4}>
-                      {data.industry}
+          {allData?.map((data, index) => {
+            return data?.entities.length !== 0 ? (
+              <>
+                <div
+                  className={`${style.healthCareListHeader} ${style.HealthCareListBackground3} ${style.spaceBetween} ${style.marginTop10}`}
+                  key={index}
+                  onClick={() => handleToggle(index, data)}
+                >
+                  <img
+                    src={BlackBorderFolder}
+                    className={`${style.colorFileStyle2} ${style.marginLeft15}`}
+                    alt=""
+                  />
+                  <p className={style.healthCareHeaderTextStyle4}>
+                    {data.industry}
+                  </p>
+                  {clicked === index ? (
+                    <p
+                      className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}
+                    >
+                      -
                     </p>
-                    {clicked === index ? (
-                      <p
-                        className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}
-                      >
-                        -
-                      </p>
-                    ) : (
-                      <img
-                        src={OpenFolder}
-                        alt="OpenFolder"
-                        className={`${style.colorFileStyle} ${style.reduce10Left}`}
-                      />
-                    )}
-                  </div>
-                  <div
-                    className={
-                      clicked === index
-                        ? `${style.listWrapper} ${style.open}`
-                        : `${style.listWrapper}`
-                    }
-                  >
-                    {data?.entities?.map((entity, indx) => {
-                      return entity.CSP.length !== 0 ? (
-                        <>
-                          <div
-                            className={`${style.healthCareListHeader} ${style.HealthCareListBackground4} ${style.spaceBetween} ${style.marginTop10}`}
-                            onClick={() => handleToggleCsp(indx, entity)}
-                          >
-                            <img
-                              src={BlackBorderFolder}
-                              className={`${style.colorFileStyle2} ${style.marginLeft15}`}
-                              alt=""
-                            />
-                            <p className={style.healthCareHeaderTextStyle5}>
-                              {" "}
-                              {entity.type}
+                  ) : (
+                    <img
+                      src={OpenFolder}
+                      alt="OpenFolder"
+                      className={`${style.colorFileStyle} ${style.reduce10Left}`}
+                    />
+                  )}
+                </div>
+                <div
+                  className={
+                    clicked === index
+                      ? `${style.listWrapper} ${style.open}`
+                      : `${style.listWrapper}`
+                  }
+                >
+                  {data?.entities?.map((entity, indx) => {
+                    return entity.CSP.length !== 0 ? (
+                      <>
+                        <div
+                          className={`${style.healthCareListHeader} ${style.HealthCareListBackground4} ${style.spaceBetween} ${style.marginTop10}`}
+                          onClick={() => handleToggleCsp(indx, entity)}
+                        >
+                          <img
+                            src={BlackBorderFolder}
+                            className={`${style.colorFileStyle2} ${style.marginLeft15}`}
+                            alt=""
+                          />
+                          <p className={style.healthCareHeaderTextStyle5}>
+                            {" "}
+                            {entity.type}
+                          </p>
+                          {isClicked === indx ? (
+                            <p
+                              className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}
+                            >
+                              -
                             </p>
-                            {isClicked === indx ? (
-                              <p
-                                className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}
+                          ) : (
+                            <img
+                              src={OpenFolder}
+                              alt="OpenFolder"
+                              className={`${style.colorFileStyle} ${style.reduce10Left}`}
+                            />
+                          )}
+                        </div>
+                        <div
+                          className={
+                            isClicked === indx
+                              ? `${style.listWrapper} ${style.open}`
+                              : `${style.listWrapper}`
+                          }
+                        >
+                          {entity?.CSP?.map((siteType) => {
+                            return (
+                              <div
+                                className={
+                                  siteType?.contractedServiceProviderType ===
+                                  selectedTitle
+                                    ? `${style.healthCareListCardStyle}  ${style.marginTop10} ${style.HealthCareListBackground5} ${style.spaceBetween}`
+                                    : `${style.healthCareListCardStyle2}  ${style.marginTop10}  ${style.spaceBetween}`
+                                }
+                                onClick={() => {
+                                  setSelectedTitle(
+                                    siteType.contractedServiceProviderType
+                                  );
+                                  setIsEdit(false);
+                                  setSelectedEntity(siteType);
+                                }}
                               >
-                                -
-                              </p>
-                            ) : (
-                              <img
-                                src={OpenFolder}
-                                alt="OpenFolder"
-                                className={`${style.colorFileStyle} ${style.reduce10Left}`}
-                              />
-                            )}
-                          </div>
-                          <div
-                            className={
-                              isClicked === indx
-                                ? `${style.listWrapper} ${style.open}`
-                                : `${style.listWrapper}`
-                            }
-                          >
-                            {entity?.CSP?.map((siteType) => {
-                              return (
-                                <div
-                                  className={
+                                <img
+                                  src={
                                     siteType?.contractedServiceProviderType ===
                                     selectedTitle
-                                      ? `${style.healthCareListCardStyle}  ${style.marginTop10} ${style.HealthCareListBackground5} ${style.spaceBetween}`
-                                      : `${style.healthCareListCardStyle2}  ${style.marginTop10}  ${style.spaceBetween}`
+                                      ? BlueFolder
+                                      : IndustriesEntityFolder
                                   }
-                                  onClick={() => {
-                                    setSelectedTitle(
-                                      siteType.contractedServiceProviderType
-                                    );
-                                    setIsEdit(false);
-                                    setSelectedEntity(siteType);
-                                  }}
+                                  className={`${style.colorFileStyle7} ${style.marginLeft5}`}
+                                  alt=""
+                                />
+                                <p
+                                  className={`${style.healthCareHeaderTextStyle6} ${style.marginTop10}`}
                                 >
-                                  <img
-                                    src={
-                                      siteType?.contractedServiceProviderType ===
-                                      selectedTitle
-                                        ? BlueFolder
-                                        : IndustriesEntityFolder
-                                    }
-                                    className={`${style.colorFileStyle7} ${style.marginLeft5}`}
-                                    alt=""
-                                  />
-                                  <p
-                                    className={`${style.healthCareHeaderTextStyle6} ${style.marginTop10}`}
-                                  >
-                                    {siteType.contractedServiceProviderType}
-                                  </p>
-                                  {/* <p className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}>
+                                  {siteType.contractedServiceProviderType}
+                                </p>
+                                {/* <p className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}>
                                             5
                                           </p> */}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </>
-                      ) : (
-                        <></>
-                      );
-                    })}
-                  </div>
-                </>
-              ) : (
-                <></>
-              );
-            })}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    ) : (
+                      <></>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <></>
+            );
+          })}
         </div>
 
         <div className={style.DepartmentEntityCardStyle}>
@@ -318,7 +322,7 @@ const BoardCertification = ({
             <p className={style.tableHeaderIndustriesFontStyle}>CREATED DATE</p>
             <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
           </div>
-          {!rotate && (
+          {
             <div className={style.healthCareIndustriesHeader}>
               <img
                 src={IndustriesEntityFolder}
@@ -329,164 +333,163 @@ const BoardCertification = ({
                 {selectedEntity.contractedServiceProviderType}
               </p>
             </div>
-          )}
+          }
 
-          {!rotate &&
-            boardCerticationTable?.map((data, index) => {
-              if (data?.secondaryBoards.length !== 0) {
-                return (
-                  <>
-                    <div
-                      className={
-                        index % 2 === 0
-                          ? `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                          : `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                      }
-                    >
-                      <img
-                        src={SemiTransparentFolder}
-                        alt="SemiTransparentFolder"
-                        className={`${style.colorFileStyle} ${style.marginLeft10}`}
-                      />
-                      <p className={style.tableDataFontStyle}>
-                        {data?.primaryBoard.name}
-                      </p>
-                      <p className={style.tableDataFontStyle}>
-                        {data.createdDate
-                          .split("T")[0]
-                          .split("-")
-                          .reverse()
-                          .join("-")}
-                      </p>
-                      <p className={style.tableDataFontStyle}>
-                        {data.lastModifiedDate
-                          .split("T")[0]
-                          .split("-")
-                          .reverse()
-                          .join("-")}
-                      </p>
-                      <img
-                        src={EditHcFolder}
-                        onClick={() => {
-                          getAddEntityDialog(true);
-                          setIsEdit(true);
-                          setIsSecondary(false);
-                          setSelectedBoard(data);
-                        }}
-                        className={style.colorFileStyle}
-                        alt=""
-                      />
-                      <img
-                        src={DeleteHcFolder}
-                        className={style.colorFileStyle}
-                        alt=""
-                        onClick={() => {
-                          deleteHandler(data);
-                        }}
-                      />
-                    </div>
-                    {data?.secondaryBoards?.map((secondary, idx) => {
-                      return (
-                        <div
-                          className={
-                            idx % 2 === 0
-                              ? `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                              : `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                          }
-                        >
-                          <p></p>
-                          <p className={style.tableDataFontStyle}>
-                            {secondary?.name}
-                          </p>
-                          <p className={style.tableDataFontStyle}>
-                            {data.createdDate
-                              .split("T")[0]
-                              .split("-")
-                              .reverse()
-                              .join("-")}
-                          </p>
-                          <p className={style.tableDataFontStyle}>
-                            {data.lastModifiedDate
-                              .split("T")[0]
-                              .split("-")
-                              .reverse()
-                              .join("-")}
-                          </p>
-                          <img
-                            src={EditHcRow}
-                            className={style.colorFileStyle}
-                            onClick={() => {
-                              setIsEdit(true);
-                              setIsSecondary(true);
-                              getAddEntityDialog(true);
-                              setSelectedBoard(data);
-                            }}
-                            alt=""
-                          />
-                          <img
-                            src={DeleteHcRow}
-                            className={style.colorFileStyle}
-                            alt=""
-                            onClick={() => {
-                              deleteHandler(data);
-                            }}
-                          />
-                        </div>
-                      );
-                    })}
-                  </>
-                );
-              } else {
-                return (
-                  <>
-                    <div
-                      className={
-                        index % 2 === 0
-                          ? `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                          : `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                      }
-                    >
-                      <p></p>
-                      <p className={style.tableDataFontStyle}>
-                        {data?.primaryBoard.name}
-                      </p>
-                      <p className={style.tableDataFontStyle}>
-                        {data.createdDate
-                          .split("T")[0]
-                          .split("-")
-                          .reverse()
-                          .join("-")}
-                      </p>
-                      <p className={style.tableDataFontStyle}>
-                        {data.lastModifiedDate
-                          .split("T")[0]
-                          .split("-")
-                          .reverse()
-                          .join("-")}
-                      </p>
-                      <img
-                        src={EditHcRow}
-                        className={style.colorFileStyle}
-                        onClick={() => {
-                          setIsEdit(true);
-                          getAddEntityDialog(true);
-                          setSelectedBoard(data);
-                        }}
-                        alt=""
-                      />
-                      <img
-                        src={DeleteHcRow}
-                        className={style.colorFileStyle}
-                        onClick={() => {
-                          deleteHandler(data);
-                        }}
-                        alt=""
-                      />
-                    </div>
-                  </>
-                );
-              }
-            })}
+          {boardCerticationTable?.map((data, index) => {
+            if (data?.secondaryBoards.length !== 0) {
+              return (
+                <>
+                  <div
+                    className={
+                      index % 2 === 0
+                        ? `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                        : `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                    }
+                  >
+                    <img
+                      src={SemiTransparentFolder}
+                      alt="SemiTransparentFolder"
+                      className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                    />
+                    <p className={style.tableDataFontStyle}>
+                      {data?.primaryBoard.name}
+                    </p>
+                    <p className={style.tableDataFontStyle}>
+                      {data.createdDate
+                        .split("T")[0]
+                        .split("-")
+                        .reverse()
+                        .join("-")}
+                    </p>
+                    <p className={style.tableDataFontStyle}>
+                      {data.lastModifiedDate
+                        .split("T")[0]
+                        .split("-")
+                        .reverse()
+                        .join("-")}
+                    </p>
+                    <img
+                      src={EditHcFolder}
+                      onClick={() => {
+                        getAddEntityDialog(true);
+                        setIsEdit(true);
+                        setIsSecondary(false);
+                        setSelectedBoard(data);
+                      }}
+                      className={style.colorFileStyle}
+                      alt=""
+                    />
+                    <img
+                      src={DeleteHcFolder}
+                      className={style.colorFileStyle}
+                      alt=""
+                      onClick={() => {
+                        deleteHandler(data);
+                      }}
+                    />
+                  </div>
+                  {data?.secondaryBoards?.map((secondary, idx) => {
+                    return (
+                      <div
+                        className={
+                          idx % 2 === 0
+                            ? `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                            : `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                        }
+                      >
+                        <p></p>
+                        <p className={style.tableDataFontStyle}>
+                          {secondary?.name}
+                        </p>
+                        <p className={style.tableDataFontStyle}>
+                          {data.createdDate
+                            .split("T")[0]
+                            .split("-")
+                            .reverse()
+                            .join("-")}
+                        </p>
+                        <p className={style.tableDataFontStyle}>
+                          {data.lastModifiedDate
+                            .split("T")[0]
+                            .split("-")
+                            .reverse()
+                            .join("-")}
+                        </p>
+                        <img
+                          src={EditHcRow}
+                          className={style.colorFileStyle}
+                          onClick={() => {
+                            setIsEdit(true);
+                            setIsSecondary(true);
+                            getAddEntityDialog(true);
+                            setSelectedBoard(data);
+                          }}
+                          alt=""
+                        />
+                        <img
+                          src={DeleteHcRow}
+                          className={style.colorFileStyle}
+                          alt=""
+                          onClick={() => {
+                            deleteHandler(data);
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            } else {
+              return (
+                <>
+                  <div
+                    className={
+                      index % 2 === 0
+                        ? `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                        : `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                    }
+                  >
+                    <p></p>
+                    <p className={style.tableDataFontStyle}>
+                      {data?.primaryBoard.name}
+                    </p>
+                    <p className={style.tableDataFontStyle}>
+                      {data.createdDate
+                        .split("T")[0]
+                        .split("-")
+                        .reverse()
+                        .join("-")}
+                    </p>
+                    <p className={style.tableDataFontStyle}>
+                      {data.lastModifiedDate
+                        .split("T")[0]
+                        .split("-")
+                        .reverse()
+                        .join("-")}
+                    </p>
+                    <img
+                      src={EditHcRow}
+                      className={style.colorFileStyle}
+                      onClick={() => {
+                        setIsEdit(true);
+                        getAddEntityDialog(true);
+                        setSelectedBoard(data);
+                      }}
+                      alt=""
+                    />
+                    <img
+                      src={DeleteHcRow}
+                      className={style.colorFileStyle}
+                      onClick={() => {
+                        deleteHandler(data);
+                      }}
+                      alt=""
+                    />
+                  </div>
+                </>
+              );
+            }
+          })}
         </div>
       </div>
       {showAddEntityDialog && (
@@ -499,6 +502,7 @@ const BoardCertification = ({
           selectedBoard={selectedBoard}
           isSecondary={isSecondary}
           getBoardCertificationData={getBoardCertificationData}
+          selectedTitle={selectedTitle}
         />
       )}
 

@@ -38,14 +38,15 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   const [addOnWorkFlow, setAddOnWorkFlow] = useState();
   const [newServices, setNewServices] = useState({
     name: '',
-    rate: '',
+    rate: '0',
     duringNormalWorkingHours: false,
     afterWorkingHours: false,
     showLocation: false,
     locations: [],
     additionalDetails: [],
-    approver: {},
-    paymentApprover: {},
+    approver: undefined,
+    paymentApprover: undefined,
+    billableService: false,
   });
   const [currentServiceData, setCurrentServiceData] = useState();
   const [metadata, setMetadata] = useState([]);
@@ -75,6 +76,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     }
   }
 
+  console.log('add-on ', serviceSelected);
+
   const setSelectedValues = async () => {
     if (editService) {
       let temp = [];
@@ -100,20 +103,23 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
           normalWorkingHours: serviceSelected?.workingHours?.normalWorkingHours,
           afterWorkingHours: serviceSelected?.workingHours?.afterWorkingHours,
         },
+        billableService: serviceSelected?.billableService,
         activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
         activityResponse: serviceSelected?.activityResponse,
         activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
         workflowId: serviceSelected?.workFlow?.id,
         workflowName: serviceSelected?.workFlow?.workFlowName?.name,
+        billableService: serviceSelected?.billableService,
       };
       let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
       let workFlowValues = Object?.values(workflowData);
-      console.log('workflowdata', workFlowValues);
-
-      data.approver = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
-      console.log('approver', data.approver, workFlowValues);
-      data.paymentApprover = users?.filter(data => data?.userId === workFlowValues?.[1]?.workFlowUser?.id)?.map(data => data)[0];
-      console.log('paymentApprover', data.paymentApprover);
+      if (workFlowValues?.length === 1) {
+        data.approver = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+        data.paymentApprover = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+      } else {
+        data.approver = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+        data.paymentApprover = users?.filter(data => data?.userId === workFlowValues?.[1]?.workFlowUser?.id)?.map(data => data)[0];
+      }
 
       temp.push(data);
       setMetadata(temp);
@@ -126,14 +132,15 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   const resetNewServices = () => {
     setNewServices({
       name: '',
-      rate: '',
+      rate: '0',
       duringNormalWorkingHours: false,
       afterWorkingHours: false,
       showLocation: false,
       locations: [],
       additionalDetails: [],
-      approver: {},
-      paymentApprover: {},
+      approver: undefined,
+      paymentApprover: undefined,
+      billableService: false
     })
   }
 
@@ -263,7 +270,11 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   }
 
   const handleNewServiceChange = (name, value) => {
-    setNewServices({ ...newServices, [name]: value });
+    if (name === 'billableService' && !value) {
+      setNewServices({ ...newServices, billableService: value, rate: '0' })
+    } else {
+      setNewServices({ ...newServices, [name]: value });
+    }
   }
 
   const handleNewServiceLocation = (selectedItem) => {
@@ -293,6 +304,10 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   }
 
   const addToMetaData = () => {
+    if (newServices?.billableService && newServices?.rate === '0') {
+      ErrorToaster('Payment Rate Cannot be 0 if Billable');
+      return;
+    }
     let temp = metadata;
     console.log('new services', newServices?.additionalDetails)
     temp.push({
@@ -315,6 +330,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       activityApprovalWFRequired: newServices?.additionalDetails?.includes('Prior Pre-Authorization Required'),
       approver: newServices?.approver,
       paymentApprover: newServices?.paymentApprover,
+      billableService: newServices?.billableService,
     });
 
     setMetadata(temp);
@@ -343,7 +359,25 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       data.sessionAmount = value;
     });
     setMetadata(temp);
+    getFields();
   }
+
+  const UpdateBillable = (serviceName, value) => {
+    console.log('inside func', value, serviceName)
+    let temp = metadata;
+    temp?.filter(data => data?.performingActivity === serviceName)?.map(data => {
+      console.log('inside filter', data?.billableService, data?.sessionAmount, value)
+      data.billableService = value;
+      if (!value) {
+        data.sessionAmount = '0';
+      }
+    });
+    setMetadata(temp);
+    getFields();
+  }
+
+  console.log('metadata', metadata, newServices);
+
 
   const handleWorkingHoursChange = (serviceName, value, name) => {
     let temp = metadata;
@@ -436,25 +470,42 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
             <FormGroup>
               <FormControlLabel control={<Checkbox checked={selectedServices?.includes(data?.performingActivity)} onChange={(e) => selectService(data?.performingActivity, e.target.checked)} />} label={<Typography variant="body2">{data?.performingActivity?.activity || data?.performingActivity}</Typography>} />
             </FormGroup>
-            <div className={`${style.addonBoxStyle}`}>
+            <div className={`${style.addonBoxStyle} ${style.marginTop20}`}>
               <div className={`${style.addManagerGrid}`}>
-                <div className={style.extentionLableStyle}>ADD-ON Payment Rate*</div>
-                <div className={`${style.displayInRow}`}>
-                  <div className={`${style.threeFieldWidth}`}>
-                    <TextField
-                      size="small"
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
-                      }}
-                      defaultValue={data?.sessionAmount}
-                      onChange={(e) => updateRate(data?.performingActivity, e.target.value)}
-                    />
-                  </div>
-                  <div className={style.verticalAlignCenter}>
-                    <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Per Hour</p>
+                <div className={style.extentionLableStyle}>Billable Service*</div>
+                <ThemeProvider theme={switchTheme}>
+                  <FormControlLabel
+                    control={
+                      <Switch className={`${style.textAlignLeft}`} checked={data?.billableService} onChange={() => UpdateBillable(data?.performingActivity, !data?.billableService)} />
+                    }
+                    color='primary'
+                    className={`${style.switchFontStyle} ${style.flexLeft} `}
+                    label={data?.billableService ? 'YES' : 'NO'}
+                  />
+                </ThemeProvider>
+              </div>
+              {
+                data?.billableService &&
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                  <div className={style.extentionLableStyle}>ADD-ON Payment Rate*</div>
+                  <div className={`${style.displayInRow}`}>
+                    <div className={`${style.threeFieldWidth}`}>
+                      <TextField
+                        size="small"
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                        }}
+                        defaultValue={data?.sessionAmount}
+                        onChange={(e) => updateRate(data?.performingActivity, e.target.value)}
+                      />
+                    </div>
+                    <div className={style.verticalAlignCenter}>
+                      <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Per Hour</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              }
+
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Allowable Add-On Working Hours*</div>
                 <div className={style.twoCol}>
@@ -596,23 +647,40 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
           </div>
 
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>ADD-ON Payment Rate*</div>
-            <div className={`${style.displayInRow}`}>
-              <div className={`${style.threeFieldWidth}`}>
-                <TextField
-                  size="small"
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
-                  }}
-                  value={newServices?.rate}
-                  onChange={(e) => { handleNewServiceChange('rate', e.target.value) }}
-                />
-              </div>
-              <div className={style.verticalAlignCenter}>
-                <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Per Hour</p>
+            <div className={style.extentionLableStyle}>Billable Service*</div>
+            <ThemeProvider theme={switchTheme}>
+              <FormControlLabel
+                control={
+                  <Switch className={`${style.textAlignLeft}`} checked={newServices?.billableService} onChange={() => handleNewServiceChange('billableService', !newServices?.billableService)} />
+                }
+                color='primary'
+                className={`${style.switchFontStyle} ${style.flexLeft} `}
+                label={newServices?.billableService ? 'YES' : 'NO'}
+              />
+            </ThemeProvider>
+          </div>
+          {
+            newServices?.billableService &&
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <div className={style.extentionLableStyle}>ADD-ON Payment Rate*</div>
+              <div className={`${style.displayInRow}`}>
+                <div className={`${style.threeFieldWidth}`}>
+                  <TextField
+                    size="small"
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                    }}
+                    value={newServices?.rate}
+                    onChange={(e) => { handleNewServiceChange('rate', e.target.value) }}
+                  />
+                </div>
+                <div className={style.verticalAlignCenter}>
+                  <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Per Hour</p>
+                </div>
               </div>
             </div>
-          </div>
+          }
+
 
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>Allowable Add-On Working Hours*</div>

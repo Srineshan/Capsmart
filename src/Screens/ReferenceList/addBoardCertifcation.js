@@ -9,6 +9,7 @@ import {
   Button,
   RadioGroup,
   Radio,
+  Checkbox,
 } from "@blueprintjs/core";
 import ArrowDown from "./../../images/arrowDown.png";
 import style from "./index.module.scss";
@@ -25,6 +26,7 @@ const AddBoardCertifcation = ({
   selectedBoard,
   getBoardCertificationData,
   isSecondary,
+  selectedTitle,
 }) => {
   const arrowDown = () => {
     return (
@@ -55,6 +57,7 @@ const AddBoardCertifcation = ({
   const [secondaryBoardName, setSecondaryBoardName] = useState("");
   const [secondaryBoardUrl, setSecondaryBoardUrl] = useState("");
   const [createdDate, setCreatedDate] = useState("");
+  const [addSubSpeciality, setAddSubSpeciality] = useState(true);
 
   const getAllIndustries = async () => {
     const { data: industryData } = await GET(`entity-service/industryMaster`);
@@ -75,7 +78,7 @@ const AddBoardCertifcation = ({
     setContarctedServiceProviderType(csptypes);
   };
 
-  const AddSaveBoardCertification = async () => {
+  const SaveSubmitHandler = async (type) => {
     let SecondaryBoardData = [];
     if (selectedBoard?.secondaryBoards) {
       SecondaryBoardData = [...selectedBoard.secondaryBoards];
@@ -107,78 +110,41 @@ const AddBoardCertifcation = ({
       industry: currentindustryType,
     };
 
-    if (
-      !isEdit
-        ? await POST(
-            "entity-service/boardCertificateSpecialtiesMaster",
-            JSON.stringify(data)
-          )
-            .then((response) => {
-              SuccessToaster("BoardCertificateSpecialties Added Successfully");
-              getAddEntityDialog(false);
-              getBoardCertificationData();
-            })
-            .catch((error) => {
-              ErrorToaster(error);
-            })
-        : await PUT(
-            `entity-service/boardCertificateSpecialtiesMaster/${boardId}`,
-            JSON.stringify(data)
-          )
-            .then((response) => {
-              SuccessToaster(
-                "BoardCertificateSpecialties Updated Successfully"
-              );
-              getAddEntityDialog(false);
-              getBoardCertificationData();
-            })
-            .catch((error) => {
-              ErrorToaster(error);
-            })
-    )
-      getAddEntityDialog(false);
-  };
-
-  const AddMoreBoardCertification = async () => {
-    let SecondaryBoardData = [];
-    if (secondaryBoardName !== "" && secondaryBoardUrl !== "") {
-      SecondaryBoardData.push({
-        name: secondaryBoardName,
-        url: secondaryBoardUrl,
-      });
+    if (!isEdit) {
+      await POST(
+        "entity-service/boardCertificateSpecialtiesMaster",
+        JSON.stringify(data)
+      )
+        .then((response) => {
+          SuccessToaster("BoardCertificateSpecialties Added Successfully");
+          getBoardCertificationData();
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      await PUT(
+        `entity-service/boardCertificateSpecialtiesMaster/${boardId}`,
+        JSON.stringify(data)
+      )
+        .then((response) => {
+          SuccessToaster("BoardCertificateSpecialties Updated Successfully");
+          getBoardCertificationData();
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
     }
 
-    const data = {
-      primaryBoard: {
-        name: primaryBoardName,
-        url: primaryBoardUrl,
-      },
-      secondaryBoards: SecondaryBoardData,
-      contractedServiceProviderType: currentCSPType,
-      industry: currentindustryType,
-    };
-    getAddEntityDialog(true);
-    setEntityTypes([]);
-    setContarctedServiceProviderType([]);
-    setCurrentIndustryType("");
-    setCurrentEntityType("");
-    setCurrentCSPType("");
-    setPrimaryBoardName("");
-    setPrimaryBoardUrl("");
-    setSecondaryBoardName("");
-    setSecondaryBoardUrl("");
-    await POST(
-      "entity-service/boardCertificateSpecialtiesMaster",
-      JSON.stringify(data)
-    )
-      .then((response) => {
-        SuccessToaster("BoardCertificateSpecialties Added Successfully");
-        getAddEntityDialog(true);
-      })
-      .catch((error) => {
-        ErrorToaster(error);
-      });
-    getAddEntityDialog(true);
+    if (type !== "Add More") {
+      getAddEntityDialog(false);
+    } else {
+      setPrimaryBoardName("");
+      setPrimaryBoardUrl("");
+      setSecondaryBoardName("");
+      setSecondaryBoardUrl("");
+      document.getElementById("primaryBoardNameEl").focus();
+    }
   };
 
   useEffect(() => {
@@ -226,7 +192,7 @@ const AddBoardCertifcation = ({
       >
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>
-            ADD / Edit Board Certification Specialties
+            {`ADD / Edit Board Certification Specialties For ${selectedTitle}`}
           </p>
           <Icon
             icon="cross"
@@ -309,13 +275,13 @@ const AddBoardCertifcation = ({
                 className={style.fullWidth}
                 onChange={(e) => setPrimaryBoardName(e.target.value)}
               />
-              <RadioGroup
-                inline={true}
+              <Checkbox
+                value="ADD SUB-SPECIALTY"
+                checked={addSubSpeciality}
+                onChange={(e) => setAddSubSpeciality(e.target.checked)}
                 className={` ${style.marginLeft20} ${style.marginTop}`}
-                selectedValue={"ADD SUB-SPECIALTY"}
-              >
-                <Radio label="ADD SUB-SPECIALTY" value="ADD SUB-SPECIALTY" />
-              </RadioGroup>
+                label="ADD SUB-SPECIALTY"
+              />
             </div>
           </div>
           <div className={style.extentionGrid}>
@@ -326,32 +292,36 @@ const AddBoardCertifcation = ({
               onChange={(e) => setPrimaryBoardUrl(e.target.value)}
             />
           </div>
-          <div className={`${style.addHealthCareBoxStyle}`}>
-            <div className={`${style.extentionGrid}`}>
-              <div className={style.entityLableStyle}>
-                Sub- Specialty Board*
+          {addSubSpeciality && (
+            <div className={`${style.addHealthCareBoxStyle}`}>
+              <div className={`${style.extentionGrid}`}>
+                <div className={style.entityLableStyle}>
+                  Sub- Specialty Board*
+                </div>
+                <div className={style.displayInRow}>
+                  <InputGroup
+                    value={secondaryBoardName}
+                    className={style.fullWidth}
+                    onChange={(e) => setSecondaryBoardName(e.target.value)}
+                  />
+                </div>
               </div>
-              <div className={style.displayInRow}>
+              <div className={style.extentionGrid}>
+                <p></p>
                 <InputGroup
-                  value={secondaryBoardName}
-                  className={style.fullWidth}
-                  onChange={(e) => setSecondaryBoardName(e.target.value)}
+                  value={secondaryBoardUrl}
+                  className={`${style.entityLableStyle}`}
+                  onChange={(e) => setSecondaryBoardUrl(e.target.value)}
                 />
               </div>
             </div>
-            <div className={style.extentionGrid}>
-              <p></p>
-              <InputGroup
-                value={secondaryBoardUrl}
-                className={`${style.entityLableStyle}`}
-                onChange={(e) => setSecondaryBoardUrl(e.target.value)}
-              />
-            </div>
-          </div>
+          )}
+
           <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <div></div>
             <div
               className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
+              onClick={() => SaveSubmitHandler("Add More")}
             >
               ADD MORE
             </div>
@@ -360,16 +330,16 @@ const AddBoardCertifcation = ({
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
-              onClick={AddMoreBoardCertification}
+              onClick={() => getAddEntityDialog(false)}
               className={style.outlinedButton}
             >
-              SAVE & ADDMORE
+              CANCEL
             </button>
             <button
-              onClick={AddSaveBoardCertification}
+              onClick={() => SaveSubmitHandler("Save & Exit")}
               className={`${style.buttonStyle} ${style.marginLeft20}`}
             >
-              SAVE & CLOSE
+              SAVE
             </button>
           </div>
         </div>
