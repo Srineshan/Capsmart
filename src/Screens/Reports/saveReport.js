@@ -138,7 +138,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                 "private": isPrivate
             }
         }
-        if (reportName !== '') {
+        if (reportName !== '' && reportDescription !== '' && deliverySchedule !== '') {
             await POST('timesheet-management-service/report/myReport/', JSON.stringify(data))
                 .then(response => {
                     SuccessToaster('Report Saved Successfully');
@@ -147,7 +147,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                     ErrorToaster('Unexpected Error');
                 })
         } else {
-            ErrorToaster('Title and Description is Mandatory');
+            ErrorToaster('All Fields are Mandatory');
         }
         getSaveReportDialog(false);
     }
@@ -274,13 +274,16 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                             <label className={`${style.privateLabelStyle}`}>Private</label>
                             <Stack direction="row" spacing={1} alignItems="center">
                                 <Typography className={!isPrivate && style.typographyStyle}>No</Typography>
-                                <AntSwitch checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} inputProps={{ 'aria-label': 'ant design' }} />
+                                <AntSwitch checked={isPrivate} onChange={(e) => { setIsPrivate(e.target.checked); setScheduledFor('MYSELF') }} inputProps={{ 'aria-label': 'ant design' }} />
                                 <Typography className={isPrivate && style.typographyStyle}>Yes</Typography>
                             </Stack>
                         </div>
                     </div>
                     <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                        <button className={`${style.saveStyle} ${style.cursorPointer}`} onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}>{scheduledFor === "MYSELF" ? "SAVE" : "NEXT"}</button>
+                        <button className={`${style.saveStyle} ${style.cursorPointer}`}
+                            onClick={() => { handleSave() }}
+                        // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
+                        >{"SAVE"}</button>
                     </div>
                 </div>
             </Dialog>

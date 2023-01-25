@@ -12,9 +12,12 @@ const ReportFooter = () => {
                     <div className={style.poweredByTextStyle}>Powered By</div>
                     <img src={TimeSmartLogo} alt="poweredBy" className={style.reportFooterLogo} />
                 </div>
+                {/* <div id='content'>
+                    <div className={`${style.reportFooterTextStyle}`} id="pageFooter"></div>
+                </div> */}
                 <div className={style.marginTop20}>
-                    <div className={style.reportFooterTextStyle}>© {new Date()?.getFullYear()}, by TimeSmart.AI</div>
-                    <div className={style.reportFooterTextStyle}>All Rights Reserved</div>
+                    <div className={style.reportFooterTextStyle}>© Copyright {new Date()?.getFullYear()}. TimeSmartAI, Inc.</div>
+                    <div className={style.reportFooterTextStyle}>All Rights Reserved.</div>
                 </div>
             </div>
         </div>
