@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, Fragment } from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Checkbox } from '@material-ui/core';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
@@ -18,7 +18,7 @@ import StopTrial from './stopTrial';
 import ExtendTrial from './extendTrial';
 import ConvertTrial from './convertTrial';
 
-const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
+const TrialCustomers = ({ getSelectedCustomer, getAddContract, entityList }) => {
     const [showOptions, setShowOptions] = useState(false);
 
     const [stopTrialDialog, setStopTrialDialog] = useState(false);
@@ -42,18 +42,18 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
 
     function useOptionsHide(ref) {
         useEffect(() => {
-          function handleClickOutside(event) {
-            if (ref.current && !ref.current.contains(event.target)) {
-              setShowOptions(false)
+            function handleClickOutside(event) {
+                if (ref.current && !ref.current.contains(event.target)) {
+                    setShowOptions(false)
+                }
             }
-          }
-          document.addEventListener("mousedown", handleClickOutside);
-          return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-          };
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
         }, [ref]);
-      }
-    return(
+    }
+    return (
         <Fragment>
             <Navbar />
             <div className={style.margin20}>
@@ -72,7 +72,7 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
                             <div className={`${style.cardStyle}`} onClick={() => getSelectedCustomer('ACTIVE CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>ACTIVE CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data=>data)?.length || 0}</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data => data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.red}>1 </span> RENEWAL PAST DUE</span>
                                         <span><span className={style.yellow}>1 </span> AUTO RENEWED</span>
@@ -83,7 +83,7 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
                             <div className={`${style.cardStyle} ${style.selectedContractBackground}`} onClick={() => getSelectedCustomer('IN-PROGRESS / TRIAL CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>IN-PROGRESS / TRIAL CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data=>data)?.length || 0}</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data => data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.green}>1 </span> ON TRIAL</span>
                                         <span><span className={style.yellow}>1 </span> OVER 30 DAYS</span>
@@ -142,28 +142,28 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
                                         <p className={style.tableHeaderFontStyleActiveCustomer}>ACTION</p>
                                     </div>
                                     {
-                                    entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data=> (
-                                      <div className={`${style.tableDataTrialCustomer}`}>
-                                          <div className={`${style.displayInRow}`}>
-                                              <Checkbox />
-                                              <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
-                                          </div>
-                                          <Link to={`/entitySetup/${data?.id}`} className={`${style.linkStyle}`}>
-                                            <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>{data?.entityName?.entityName}</p>
-                                          </Link>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>{data?.customerType}</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>Trial</p>
-                                          <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>Maggiehaven</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>NY</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>-</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                          <div className={style.tableDataFontStyle}>
-                                              <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
-                                          </div>
-                                      </div>
-                                    ))
+                                        entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data => (
+                                            <div className={`${style.tableDataTrialCustomer}`}>
+                                                <div className={`${style.displayInRow}`}>
+                                                    <Checkbox />
+                                                    <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
+                                                </div>
+                                                <Link to={`/entitySetup/${data?.id}`} className={`${style.linkStyle}`}>
+                                                    <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>{data?.entityName?.entityName}</p>
+                                                </Link>
+                                                <p className={style.tableDataFontStyleActiveCustomers}>{data?.customerType}</p>
+                                                <p className={style.tableDataFontStyleActiveCustomers}>Trial</p>
+                                                <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>Maggiehaven</p>
+                                                <p className={style.tableDataFontStyleActiveCustomers}>NY</p>
+                                                <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
+                                                <p className={style.tableDataFontStyleActiveCustomers}>-</p>
+                                                <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
+                                                <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
+                                                <div className={style.tableDataFontStyle}>
+                                                    <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
+                                                </div>
+                                            </div>
+                                        ))
                                     }
 
                                     {showOptions && (
@@ -176,8 +176,8 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
                                     <div className={style.spaceBetween}>
                                         <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
                                         <div className={style.displayInRow}>
-                                        <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                                        <img src={ChevronRight} className={style.roundChevron} />
+                                            <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                                            <img src={ChevronRight} className={style.roundChevron} />
                                         </div>
                                     </div>
                                 </div>
@@ -186,8 +186,8 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
                     </div>
                 </div>
                 <div className={style.spaceBetween}>
-                    <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                    <p className={style.poweredBy}>© TimeSmart.AI</p>
+                    <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+                    <p className={style.poweredBy}>© TimeSmartAI</p>
                 </div>
             </div>
             {stopTrialDialog && (

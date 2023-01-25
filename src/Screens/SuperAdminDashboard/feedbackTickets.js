@@ -9,8 +9,8 @@ import SideBar from '../../Components/Sidebar';
 import SearchBar from './../../Components/SearchBar';
 import Navbar from '../../Components/Navbar';
 
-const FeedbackCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
-    return(
+const FeedbackCustomers = ({ getSelectedCustomer, getAddContract, entityList }) => {
+    return (
         <Fragment>
             <Navbar />
             <div className={style.margin20}>
@@ -29,7 +29,7 @@ const FeedbackCustomers = ({getSelectedCustomer, getAddContract, entityList}) =>
                             <div className={`${style.cardStyle}`} onClick={() => getSelectedCustomer('ACTIVE CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>ACTIVE CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data=>data)?.length || 0}</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data => data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.red}>1 </span> RENEWAL PAST DUE</span>
                                         <span><span className={style.yellow}>1 </span> AUTO RENEWED</span>
@@ -40,7 +40,7 @@ const FeedbackCustomers = ({getSelectedCustomer, getAddContract, entityList}) =>
                             <div className={style.cardStyle} onClick={() => getSelectedCustomer('IN-PROGRESS / TRIAL CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>IN-PROGRESS / TRIAL CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data=>data)?.length || 0}</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data => data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.green}>1 </span> ON TRIAL</span>
                                         <span><span className={style.yellow}>1 </span> OVER 30 DAYS</span>
@@ -145,8 +145,8 @@ const FeedbackCustomers = ({getSelectedCustomer, getAddContract, entityList}) =>
                                     <div className={style.spaceBetween}>
                                         <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
                                         <div className={style.displayInRow}>
-                                        <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                                        <img src={ChevronRight} className={style.roundChevron} />
+                                            <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                                            <img src={ChevronRight} className={style.roundChevron} />
                                         </div>
                                     </div>
                                 </div>
@@ -155,8 +155,8 @@ const FeedbackCustomers = ({getSelectedCustomer, getAddContract, entityList}) =>
                     </div>
                 </div>
                 <div className={style.spaceBetween}>
-                    <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                    <p className={style.poweredBy}>© TimeSmart.AI</p>
+                    <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+                    <p className={style.poweredBy}>© TimeSmartAI</p>
                 </div>
             </div>
         </Fragment>

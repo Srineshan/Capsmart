@@ -292,7 +292,7 @@ const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
                 <div className={`${style.footerLogoStyle} ${style.justifyCenter}`}>
                     <img src={WhiteTimeSmartLogo} alt="logo" className={style.logoStyle} />
                 </div>
-                <div className={style.copyrightText}>Copyright © 2022 TimeSmart.AI. All rights reserved.</div>
+                <div className={style.copyrightText}>Copyright © 2022 TimeSmartAI. All rights reserved.</div>
             </div>
         </Dialog>
     )

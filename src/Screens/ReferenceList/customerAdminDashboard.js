@@ -75,7 +75,7 @@ const ClientAdminDashboard = () => {
                                             </div>
                                         </div>
                                         </Link>
-                                       <Link to='/referenceList/contractTerminationReasonForCustomer'className={style.linkStyle}> <div className={style.dashboardCardStyle}>
+                                        <Link to='/referenceList/contractTerminationReasonForCustomer' className={style.linkStyle}> <div className={style.dashboardCardStyle}>
                                             <h5 className={`${style.headingForReferenceList}`}>CONTRACT TERMINATION PREASONS BY ENTITY TYPE</h5>
                                             <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                                 <span className={style.dashboardCardColorOption1}>STANDARD LIST IN USE</span>
@@ -125,8 +125,8 @@ const ClientAdminDashboard = () => {
                     </div>
                 </div>
                 <div className={style.spaceBetween}>
-                    <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                    <p className={style.poweredBy}>© TimeSmart.AI</p>
+                    <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+                    <p className={style.poweredBy}>© TimeSmartAI</p>
                 </div>
             </div>
         </Fragment>

@@ -397,9 +397,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                 value={metadata?.dependencyFrequency}
                                 onChange={(e) => setMetadata({ ...metadata, dependencyFrequency: e.target.value })}
                             >
-                                <MenuItem value={null}>Select Frequecy</MenuItem>
-                                <MenuItem value={'PER_DAY'} >Per Day</MenuItem>
-                                <MenuItem value={'PER_SERVICE'} >Per Service</MenuItem>
+                                <MenuItem value={null}>Select Payment Basis</MenuItem>
+                                <MenuItem value={'PER_DAY'} >Per On Call Day</MenuItem>
+                                <MenuItem value={'PER_SERVICE'} >Per Service Performed</MenuItem>
                             </Select>
                             <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                                 <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={() => addAdditionalEntry()} />

@@ -26,7 +26,7 @@ const SuffixByCustomer = () => {
                                 UPDATED ON FEB 16, 2022 16:45 EST
                             </div>
                             <div className={style.crossStyle}>
-                               <Link to="/Screens/ReferenceList/customerAdminDashboard" className={style.linkStyle}> <img src={CrossPink} className={`${style.colorFileStyle2} ${style.marginLeft20}`} /></Link>
+                                <Link to="/Screens/ReferenceList/customerAdminDashboard" className={style.linkStyle}> <img src={CrossPink} className={`${style.colorFileStyle2} ${style.marginLeft20}`} /></Link>
                             </div>
                         </div>
 
@@ -48,7 +48,7 @@ const SuffixByCustomer = () => {
                                                     <p className={`${style.TextStyle4}`}>DO</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}>
-                                                    <Checkbox checked/>
+                                                    <Checkbox checked />
                                                     <p className={`${style.TextStyle4}`}>MS</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}>
@@ -60,7 +60,7 @@ const SuffixByCustomer = () => {
                                                     <p className={`${style.TextStyle4}`}>RN</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}>
-                                                    <Checkbox checked/>
+                                                    <Checkbox checked />
                                                     <p className={`${style.TextStyle4}`}>PA</p>
                                                 </div>
                                                 <div className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}>
@@ -112,8 +112,8 @@ const SuffixByCustomer = () => {
                     </div>
                 </div>
                 <div className={style.spaceBetween}>
-                    <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                    <p className={style.poweredBy}>© TimeSmart.AI</p>
+                    <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+                    <p className={style.poweredBy}>© TimeSmartAI</p>
                 </div>
             </div>
         </Fragment>

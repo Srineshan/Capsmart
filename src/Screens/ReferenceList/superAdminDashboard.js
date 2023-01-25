@@ -61,7 +61,7 @@ const SuperAdminDashboard = () => {
                 {/* {`UPDATED ON ${LMD}`} */}
               </div>
               <div className={style.crossStyle}>
-                <Link to={"/entitySitePortal"}>
+                <Link to={"/partnerPortal"}>
                   <Icon icon="cross" size={25} intent={Intent.DANGER} />
                 </Link>
               </div>
@@ -262,14 +262,14 @@ const SuperAdminDashboard = () => {
                         CONTRACTED SERVICES BY INDUSTRIES
                       </h5>
                       <div
-                          className={`${style.optionsStyle} ${style.displayInCol}  `}
-                        >
-                          <div className={`${style.dashboardInsideCardStyle} `}>
-                            <span className={style.dashboardCardColorOption1}>
-                              DEFAULT LIST SETUP REQUIRED
-                            </span>
-                          </div>
+                        className={`${style.optionsStyle} ${style.displayInCol}  `}
+                      >
+                        <div className={`${style.dashboardInsideCardStyle} `}>
+                          <span className={style.dashboardCardColorOption1}>
+                            DEFAULT LIST SETUP REQUIRED
+                          </span>
                         </div>
+                      </div>
                     </div>
                     <Link
                       to={"/referenceList/holidayListByIndustries"}
@@ -416,8 +416,8 @@ const SuperAdminDashboard = () => {
           </div>
         </div>
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-          <p className={style.poweredBy}>© TimeSmart.AI</p>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI</p>
         </div>
       </div>
       {/* {showPodTypeForHealthcareDialog && (

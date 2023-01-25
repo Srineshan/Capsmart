@@ -13,7 +13,7 @@ const ReportFooter = () => {
                     <img src={TimeSmartLogo} alt="poweredBy" className={style.reportFooterLogo} />
                 </div>
                 <div className={style.marginTop20}>
-                    <div className={style.reportFooterTextStyle}>© {new Date()?.getFullYear()}, by TimeSmart.AI</div>
+                    <div className={style.reportFooterTextStyle}>© {new Date()?.getFullYear()}, by TimeSmartAI</div>
                     <div className={style.reportFooterTextStyle}>All Rights Reserved</div>
                 </div>
             </div>
