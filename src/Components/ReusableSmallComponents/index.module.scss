@@ -21,6 +21,12 @@
     grid-gap: 10px;
 }
 
+.serviceDaysGrid {
+    display: grid;
+    grid-template-columns: 1fr 0.6fr 0.6fr;
+    grid-gap: 10px;
+}
+
 .siteCard {
     background: #F6F5F5 0% 0% no-repeat padding-box;
     border-radius: 3px;

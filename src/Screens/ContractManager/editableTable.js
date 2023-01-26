@@ -84,6 +84,24 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData }) =>
                         />
                     </div>
 
+                    <div className={style.displayInRow}>
+                        <TimePicker
+                            useAmPm={false}
+                            onChange={(e) => {
+                                handleActivityChange(e, i, 'weekendFrom');
+                            }}
+                            value={new Date(additionalActivity?.[i]?.weekendFrom || new Date())}
+                        />
+                        <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                        <TimePicker
+                            useAmPm={false}
+                            onChange={(e) => {
+                                handleActivityChange(e, i, 'weekendTo');
+                            }}
+                            value={new Date(additionalActivity?.[i]?.weekendTo || new Date())}
+                        />
+                    </div>
+
                     <ThemeProvider theme={switchTheme}>
                         <FormControlLabel
                             control={
@@ -126,7 +144,8 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData }) =>
             <div className={`${style.tableHeader} ${style.editableTableGridStyle} ${style.marginTop10}`}>
                 <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} >ADDITIONAL ON CALL SERVICE</p>
                 <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} >WEEKDAY HOURS</p>
-                <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} >WEEKEND / HOLIDAY HOURS</p>
+                <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} >WEEKEND HOURS</p>
+                <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} >HOLIDAY HOURS</p>
                 <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} >REQUIRE PATIENT MRN</p>
                 <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} >REQUIRE ATTENDING DOC</p>
             </div>

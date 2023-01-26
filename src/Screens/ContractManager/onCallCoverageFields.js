@@ -377,51 +377,49 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                             onChange={(e) => handleValueChange('dependantServiceIncluded', !metadata?.dependantServiceIncluded)}
                         />
                     </ThemeProvider>
-                    {metadata?.dependantServiceIncluded && (
-                        <>
-                            <div className={`${style.fullWidth}`}>
-                                <TextField
-                                    value={metadata?.dependencyPayableAmount}
-                                    onChange={(e) => setMetadata({ ...metadata, dependencyPayableAmount: e.target.value })}
-                                    size="small"
-                                    type="number"
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
-                                    }}
-                                />
-                            </div>
-                            <Select
-                                displayEmpty
-                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                className={`${style.fullWidth}`}
-                                value={metadata?.dependencyFrequency}
-                                onChange={(e) => setMetadata({ ...metadata, dependencyFrequency: e.target.value })}
-                            >
-                                <MenuItem value={null}>Select Payment Basis</MenuItem>
-                                <MenuItem value={'PER_DAY'} >Per On Call Day</MenuItem>
-                                <MenuItem value={'PER_SERVICE'} >Per Service Performed</MenuItem>
-                            </Select>
-                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={() => addAdditionalEntry()} />
-                            </div>
-                        </>
-                    )}
                 </div>
             </div>
             {metadata?.dependantServiceIncluded && (
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Billable Service</div>
-                    <ThemeProvider theme={switchTheme}>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={metadata?.additionalActivityBillable} className={` ${style.textAlignLeft}`} onChange={() => setMetadata({ ...metadata, additionalActivityBillable: !metadata?.additionalActivityBillable })} />
-                            }
-                            color='primary'
-                            className={`${style.switchFontStyle} ${style.flexLeft}`}
-                            label={metadata?.additionalActivityBillable ? 'YES' : 'NO'}
-                        />
-                    </ThemeProvider>
+                    <div className={style.onCallBillableGrid}>
+                        <ThemeProvider theme={switchTheme}>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={metadata?.additionalActivityBillable} className={` ${style.textAlignLeft}`} onChange={() => setMetadata({ ...metadata, additionalActivityBillable: !metadata?.additionalActivityBillable })} />
+                                }
+                                color='primary'
+                                className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                label={metadata?.additionalActivityBillable ? 'YES' : 'NO'}
+                            />
+                        </ThemeProvider>
+                        <div className={`${style.fullWidth}`}>
+                            <TextField
+                                value={metadata?.dependencyPayableAmount}
+                                onChange={(e) => setMetadata({ ...metadata, dependencyPayableAmount: e.target.value })}
+                                size="small"
+                                type="number"
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                }}
+                            />
+                        </div>
+                        <Select
+                            displayEmpty
+                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                            className={`${style.fullWidth}`}
+                            value={metadata?.dependencyFrequency}
+                            onChange={(e) => setMetadata({ ...metadata, dependencyFrequency: e.target.value })}
+                        >
+                            <MenuItem value={null}>Select Payment Basis</MenuItem>
+                            <MenuItem value={'PER_DAY'} >Per On Call Day</MenuItem>
+                            <MenuItem value={'PER_SERVICE'} >Per Service Performed</MenuItem>
+                        </Select>
+                        <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={() => addAdditionalEntry()} />
+                        </div>
+                    </div>
                 </div>
             )}
             {metadata?.dependantServiceIncluded && (
