@@ -89,7 +89,9 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                         'PAYMENT' : '';
 
     const type = (reportType === 'activitiesOrServices' ?
-        'ACTIVITES_SERVICES_LOG_SUMMARY' : 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY');
+        'ACTIVITES_SERVICES_LOG_SUMMARY' : 
+        reportType === 'paymentsProcessingSummary' ? 'PAYMENT_PROCESSING_SUMMARY' : 
+        'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY');
 
     const filters = {
         reportingTimePeriod: dataToUseInReport?.reportingTimePeriod,
