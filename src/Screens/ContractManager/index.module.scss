@@ -1286,6 +1286,11 @@ select {
     width: 70% !important;
 }
 
+
+.ScheduleDialog {
+    width: 65% !important;
+}
+
 .moveDialogPosition {
     margin-left: -20% !important;
 }
@@ -2044,7 +2049,7 @@ input[type=number] {
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold 13px/17px Montserrat;
+    font: normal normal bold 13px/15px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
     text-transform: uppercase;
@@ -2067,4 +2072,19 @@ input[type=number] {
     color: #52575D;
     text-transform: uppercase;
     text-align: left;
+}
+
+.scheduleTableGrid1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 2fr 1fr 2fr;
+}
+
+.scheduleTableGrid2 {
+    display: grid;
+    grid-template-columns: 2fr 0.5fr 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.flexCenter {
+    display: flex;
+    justify-content: center;
 }
