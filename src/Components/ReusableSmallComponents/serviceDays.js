@@ -18,29 +18,38 @@ const ServiceDays = ({ setMetaData, selectedService }) => {
     sunday: false,
     weekDays: false,
     weekEnds: false,
-    monday: false
+    isholidays: false,
+    monday: false,
+    weekdaysSpecific: false,
+    weekendsSpecific: false,
   });
+  const [weekdayLabel, setWeekdayLabel] = useState('Weekdays');
 
   useEffect(() => {
     setServiceDays(selectedService?.serviceDays);
   }, [selectedService])
 
   useEffect(() => {
+    if (!serviceDays?.monday || !serviceDays?.tuesday || !serviceDays?.wednesday || !serviceDays?.thursday || !serviceDays?.friday) {
+      setWeekdayLabel('Weekdays Specific');
+    } else {
+      setWeekdayLabel('Weekdays');
+    }
     setMetaData(serviceDays);
   }, [serviceDays])
 
-  useEffect(() => {
-    let weekDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-    let weekEnds = ['saturday', 'sunday'];
-    let weekDaysCount = 0;
-    let weekEndsCount = 0;
-    Object.keys(serviceDays || [])?.filter(data => weekEnds?.map(days => days)?.includes(data) && serviceDays[data] === true)?.map(data => {
-      weekEndsCount = weekEndsCount + 52;
-    });
-    Object.keys(serviceDays || [])?.filter(data => weekDays?.map(days => days)?.includes(data) && serviceDays[data] === true)?.map(data => {
-      weekDaysCount = weekDaysCount + 52;
-    });
-  }, [serviceDays])
+  // useEffect(() => {
+  //   let weekDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+  //   let weekEnds = ['saturday', 'sunday'];
+  //   let weekDaysCount = 0;
+  //   let weekEndsCount = 0;
+  //   Object.keys(serviceDays || [])?.filter(data => weekEnds?.map(days => days)?.includes(data) && serviceDays[data] === true)?.map(data => {
+  //     weekEndsCount = weekEndsCount + 52;
+  //   });
+  //   Object.keys(serviceDays || [])?.filter(data => weekDays?.map(days => days)?.includes(data) && serviceDays[data] === true)?.map(data => {
+  //     weekDaysCount = weekDaysCount + 52;
+  //   });
+  // }, [serviceDays])
 
   const onWeekDaysCheck = (checked) => {
     if (checked) {
@@ -51,7 +60,8 @@ const ServiceDays = ({ setMetaData, selectedService }) => {
         thursday: true,
         friday: true,
         weekDays: checked,
-        monday: true
+        monday: true,
+        weekdaysSpecific: false
       })
     } else {
       setServiceDays({
@@ -72,7 +82,8 @@ const ServiceDays = ({ setMetaData, selectedService }) => {
         ...serviceDays,
         saturday: true,
         sunday: true,
-        weekEnds: checked
+        weekEnds: checked,
+        weekendsSpecific: false,
       })
     } else {
       setServiceDays({
@@ -84,12 +95,27 @@ const ServiceDays = ({ setMetaData, selectedService }) => {
     }
   }
 
+  const getLabel = (days) => {
+    if (days === 'Weekdays') {
+      if (!serviceDays?.monday || !serviceDays?.tuesday || !serviceDays?.wednesday || !serviceDays?.thursday || !serviceDays?.friday) {
+        return 'Weekdays Specific';
+      } else {
+        return 'Weekdays';
+      }
+    }
+    else {
+      return 'Weekends';
+    }
+  }
+
+  console.log('weekdays label', weekdayLabel)
+
   return (
     <div>
       <div className={`${style.serviceDaysGrid}`}>
         <div className={`${style.displayInRow} ${style.fullWidth}`}>
           <FormGroup >
-            <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekDays} onChange={(e) => onWeekDaysCheck(e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">Weekdays</Typography>} />
+            <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekDays} onChange={(e) => onWeekDaysCheck(e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">{weekdayLabel}</Typography>} />
           </FormGroup>
         </div>
         <div className={`${style.displayInRow} ${style.fullWidth}`}>
@@ -99,21 +125,21 @@ const ServiceDays = ({ setMetaData, selectedService }) => {
         </div>
         <div className={`${style.displayInRow} ${style.fullWidth}`}>
           <FormGroup className={`${style.marginLeft10}`}>
-            <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekEnds} onChange={(e) => onWeekEndsCheck(e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">Holidays</Typography>} />
+            <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.isholidays} onChange={(e) => setServiceDays({ ...serviceDays, isholidays: e.target.checked })} />} label={<Typography variant="body2" color="textSecondary">Holidays</Typography>} />
           </FormGroup>
         </div>
       </div>
       <div className={`${style.serviceDaysGrid} ${style.marginTop10}`}>
         <div className={style.displayInRow}>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.monday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, monday: !serviceDays?.monday })}>M</div>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.tuesday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, tuesday: !serviceDays?.tuesday })}>T</div>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.wednesday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, wednesday: !serviceDays?.wednesday })}>W</div>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.thursday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, thursday: !serviceDays?.thursday })}>T</div>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.friday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, friday: !serviceDays?.friday })}>F</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.monday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, monday: !serviceDays?.monday, weekdaysSpecific: true })}>M</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.tuesday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, tuesday: !serviceDays?.tuesday, weekdaysSpecific: true })}>T</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.wednesday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, wednesday: !serviceDays?.wednesday, weekdaysSpecific: true })}>W</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.thursday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, thursday: !serviceDays?.thursday, weekdaysSpecific: true })}>T</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.friday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, friday: !serviceDays?.friday, weekdaysSpecific: true })}>F</div>
         </div>
         <div className={style.displayInRow}>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.saturday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, saturday: !serviceDays?.saturday })}>S</div>
-          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.sunday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, sunday: !serviceDays?.sunday })}>S</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.saturday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, saturday: !serviceDays?.saturday, weekendsSpecific: true })}>S</div>
+          <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${serviceDays?.sunday ? `${style.selectedDay}` : ''}`} onClick={() => setServiceDays({ ...serviceDays, sunday: !serviceDays?.sunday, weekendsSpecific: true })}>S</div>
         </div>
       </div>
       <div className={`${style.daysWarningText} ${style.marginTop10}`}>

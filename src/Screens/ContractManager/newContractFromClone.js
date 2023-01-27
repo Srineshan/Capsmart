@@ -230,6 +230,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
         sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true);
     }
 
+    console.log('isTabsValid', isTabsValid);
+
     return (
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
             <div className={style.spaceBetween}>

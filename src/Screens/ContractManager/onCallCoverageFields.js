@@ -57,7 +57,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
         weekdaysCount: '0',
         weekendsCount: '0',
         dependantServiceIncluded: false,
-        additionalActivity: [{ activity: '', weekdayFrom: null, weekdayTo: null, weekendFrom: null, weekendTo: null, patientMRNRequired: false, attendingDocRequired: false }],
+        additionalActivity: [{ activity: '', weekdayFrom: null, weekdayTo: null, weekendFrom: null, weekendTo: null, holidayFrom: null, holidayTo: null, patientMRNRequired: false, attendingDocRequired: false }],
         additionalActivityBillable: false,
         additionalActivityPaymentApprovalRequired: false,
         dependencyPayableAmount: '0',
@@ -86,7 +86,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
         let dependentActivities = [];
         serviceSelected?.dependentService?.additionalServices?.map(data => {
             dependentActivities.push(
-                { activity: data?.activity?.activity, weekdayFrom: GetDateFromHours(data?.weekday?.from?.toString() || ''), weekdayTo: GetDateFromHours(data?.weekday?.to?.toString() || ''), weekendFrom: GetDateFromHours(data?.weekend?.from?.toString() || ''), weekendTo: GetDateFromHours(data?.weekend?.to?.toString() || ''), patientMRNRequired: data?.patientMRNRequired, attendingDocRequired: data?.attendingDocRequired }
+                { activity: data?.activity?.activity, weekdayFrom: GetDateFromHours(data?.weekday?.from?.toString() || ''), weekdayTo: GetDateFromHours(data?.weekday?.to?.toString() || ''), weekendFrom: GetDateFromHours(data?.weekend?.from?.toString() || ''), weekendTo: GetDateFromHours(data?.weekend?.to?.toString() || ''), holidayFrom: GetDateFromHours(data?.holiday?.from?.toString() || ''), holidayTo: GetDateFromHours(data?.holiday?.to?.toString() || ''), patientMRNRequired: data?.patientMRNRequired, attendingDocRequired: data?.attendingDocRequired }
             )
         })
         setMetadata({
@@ -153,13 +153,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     }
 
     const updateWorkingPeriod = (e) => {
-        // let minTime = new Date(new Date(e).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000));
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
     const addAdditionalEntry = () => {
         let temp = metadata?.additionalActivity;
-        temp.push({ activity: '', weekdayFrom: null, weekdayTo: null, weekendFrom: null, weekendTo: null, patientMRNRequired: false, attendingDocRequired: false });
+        temp.push({ activity: '', weekdayFrom: null, weekdayTo: null, weekendFrom: null, weekendTo: null, holidayfrom: null, holidayTo: null, patientMRNRequired: false, attendingDocRequired: false });
         setMetadata({ ...metadata, aditionalActivity: temp });
     }
 
@@ -364,7 +363,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Additional on call billable service specified</div>
+                <div className={style.extentionLableStyle}>Any Additional On Call Services Specified</div>
                 <div className={style.onCallBillableGrid}>
                     <ThemeProvider theme={switchTheme}>
                         <FormControlLabel
@@ -382,7 +381,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             {metadata?.dependantServiceIncluded && (
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Billable Service</div>
-                    <div className={style.onCallBillableGrid}>
+                    <div className={metadata?.additionalActivityBillable ? style.onCallBillableGrid : style.spaceBetween}>
                         <ThemeProvider theme={switchTheme}>
                             <FormControlLabel
                                 control={
@@ -394,28 +393,35 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                 label={metadata?.additionalActivityBillable ? 'YES' : 'NO'}
                             />
                         </ThemeProvider>
-                        <div className={`${style.fullWidth}`}>
-                            <TextField
-                                value={metadata?.dependencyPayableAmount}
-                                onChange={(e) => setMetadata({ ...metadata, dependencyPayableAmount: e.target.value })}
-                                size="small"
-                                type="number"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
-                                }}
-                            />
-                        </div>
-                        <Select
-                            displayEmpty
-                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                            className={`${style.fullWidth}`}
-                            value={metadata?.dependencyFrequency}
-                            onChange={(e) => setMetadata({ ...metadata, dependencyFrequency: e.target.value })}
-                        >
-                            <MenuItem value={null}>Select Payment Basis</MenuItem>
-                            <MenuItem value={'PER_DAY'} >Per On Call Day</MenuItem>
-                            <MenuItem value={'PER_SERVICE'} >Per Service Performed</MenuItem>
-                        </Select>
+                        {
+                            metadata?.additionalActivityBillable && (
+                                <>
+                                    <div className={`${style.fullWidth}`}>
+                                        <TextField
+                                            value={metadata?.dependencyPayableAmount}
+                                            onChange={(e) => setMetadata({ ...metadata, dependencyPayableAmount: e.target.value })}
+                                            size="small"
+                                            type="number"
+                                            InputProps={{
+                                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                            }}
+                                        />
+                                    </div>
+                                    <Select
+                                        displayEmpty
+                                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                        className={`${style.fullWidth}`}
+                                        value={metadata?.dependencyFrequency}
+                                        onChange={(e) => setMetadata({ ...metadata, dependencyFrequency: e.target.value })}
+                                    >
+                                        <MenuItem value={null}>Select Payment Basis</MenuItem>
+                                        <MenuItem value={'PER_DAY'} >Per On Call Day</MenuItem>
+                                        <MenuItem value={'PER_SERVICE'} >Per Service Performed</MenuItem>
+                                    </Select>
+                                </>
+                            )
+                        }
+
                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={() => addAdditionalEntry()} />
                         </div>
@@ -424,7 +430,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             )}
             {metadata?.dependantServiceIncluded && (
                 <>
-                    <EditableTable additionalActivityData={metadata?.additionalActivity} getAdditionalActivityData={getAdditionalActivityData} />
+                    <EditableTable additionalActivityData={metadata?.additionalActivity} getAdditionalActivityData={getAdditionalActivityData} serviceDays={metadata?.serviceDays} />
                     <>
 
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

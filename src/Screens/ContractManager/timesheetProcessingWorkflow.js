@@ -66,7 +66,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     if (contractId !== '' && selectContractInfo === 'MULTIPLE') {
       const { data: providerData } = await GET(`user-management-service/user?contractID=${contractId}`);
       if (providerData) {
-        setProvider(providerData);
+        let aggregatorUser = providerData?.filter(user => user?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.map(data => data);
+        console.log('aggregatorUser', aggregatorUser);
+        setProvider(aggregatorUser);
       }
     }
   }
@@ -316,11 +318,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   }
 
   const submit = async (buttontext) => {
-    if (timesheet?.reviewer === '0' || timesheet?.approver === '0') {
+    if (timesheet?.reviewer === '' || timesheet?.approver === '') {
       ErrorToaster('Select both Approver and Reviewer to save');
       return;
     }
-    if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '0') {
+    if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '') {
       ErrorToaster('Select Aggregator to save');
       return;
     }

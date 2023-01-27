@@ -17,8 +17,6 @@ import { GetDateFromHours } from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 
 import style from './index.module.scss';
-import ScheduleAndTargetSameTable from './scheduleAndTargetSameTable';
-import AddScheduleAndTargetForDifferentPeriods from './addScheduleAndTrgetForDifferentPeriods';
 
 const switchTheme = createTheme({
     palette: {
@@ -30,7 +28,6 @@ const switchTheme = createTheme({
 
 const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, contractTermPeriod }) => {
     const [schedulesField, setSchedulesField] = useState([]);
-    const [addScheduleAndTargetForDifferentPeriods, setAddScheduleAndTargetForDifferentPeriods] = useState(false);
     const [metadata, setMetadata] = useState({
         contractedSchedules: [],
         patientsSeenTargets: [],
@@ -47,7 +44,6 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
         additionalScheduleValue: '0',
         additionalScheduleFrequency: '',
         additionalScheduleRequired: true,
-        scheduleAndTargetSame: true,
         billableService: true,
         rateType: 'HOURLY',
         sessionDuration: '0',
@@ -85,10 +81,6 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
     useEffect(() => {
         setSelectedValues();
     }, [serviceSelected]);
-
-    const getAddScheduleAndTargetForDifferentPeriods = (value) => {
-        setAddScheduleAndTargetForDifferentPeriods(value);
-    }
 
     const setSelectedValues = () => {
         setMetadata({
@@ -368,12 +360,12 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
 
     return (
         <div>
-            {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
 
                 <div className={style.extentionLableStyle}></div>
                 <div className={style.termPeriodWithAddGrid}>
                     <div>
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
                                 InputProps={{
                                     style: {
@@ -394,11 +386,11 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                         placeholder: "Start Date"
                                     }} />}
                             />
-                        </LocalizationProvider>
+                        </LocalizationProvider> */}
                     </div>
                     <p className={`${style.toStyle} ${style.alignCenter}`}></p>
                     <div >
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
                                 // open={calendarEnd}
                                 // onOpen={() => setCalendarEnd(true)}
@@ -428,101 +420,19 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                         placeholder: "End Date"
                                     }} />}
                             />
-                        </LocalizationProvider>
+                        </LocalizationProvider> */}
                     </div>
                     <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                         <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={incrementScheduleSet} />
                     </div>
                 </div>
-            </div> */}
-            {/* {
-                schedulesField
-            } */}
-
-
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Schedule And Target Are Same For Full Contract Year</div>
-                <div className={style.spaceBetween}>
-                    <div className={`${style.threeFieldWidth}`} >
-                        <ThemeProvider theme={switchTheme}>
-                            <FormControlLabel
-                                control={
-                                    <Switch checked={metadata?.scheduleAndTargetSame} className={`${style.textAlignLeft}`} />
-                                }
-                                color='primary'
-                                onChange={(e) => handleValueChange('scheduleAndTargetSame', !metadata?.scheduleAndTargetSame)}
-                                className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                label={metadata?.scheduleAndTargetSame ? 'YES' : 'NO'}
-                            />
-                        </ThemeProvider>
-                    </div>
-                    {!metadata?.scheduleAndTargetSame && (
-                        <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={() => setAddScheduleAndTargetForDifferentPeriods(true)} />
-                        </div>
-                    )}
-                </div>
             </div>
+            {
+                schedulesField
+            }
 
-            {metadata?.scheduleAndTargetSame && (
-                <>
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Regular Service Schedule*</div>
-                        <div className={style.displayInRow}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                <div className={style.textElement}>MIN</div>
-                                <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                <div className={style.textElement}>MAX</div>
-                                <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <Select
-                                displayEmpty
-                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                className={`${style.fullWidth} ${style.marginLeft20}`}
-                            >
-                                <MenuItem value={''}>Select Frequecy</MenuItem>
-                                <MenuItem value={'WEEK'}>Per Week</MenuItem>
-                                <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                            </Select>
-                        </div>
-                    </div>
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Patients Seen Target*</div>
-                        <div className={style.withNurseGrid}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                <div className={style.textElement}>WITH NURSE</div>
-                                <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                <div className={style.textElement}>WITHOUT NURSE</div>
-                                <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <Checkbox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} />
-                        </div>
-                    </div>
 
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Scheduled Patient Target*</div>
-                        <div className={`${style.withNurseGrid} ${style.fullWidth}`}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                <div className={style.textElement}>WITH NURSE</div>
-                                <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                <div className={style.textElement}>WITHOUT NURSE</div>
-                                <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <Checkbox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} />
-                        </div>
-                    </div>
-                </>
-            )}
 
-            {!metadata?.scheduleAndTargetSame && (
-                <ScheduleAndTargetSameTable />
-            )}
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Additional Schedule*</div>
@@ -671,9 +581,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                 </div>
             </div>
 
-            {addScheduleAndTargetForDifferentPeriods && (
-                <AddScheduleAndTargetForDifferentPeriods getAddScheduleAndTargetForDifferentPeriods={getAddScheduleAndTargetForDifferentPeriods} />
-            )}
+
         </div>
     )
 }
