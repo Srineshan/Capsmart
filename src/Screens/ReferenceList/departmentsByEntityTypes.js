@@ -46,19 +46,12 @@ const DepartmentsByEntityTypes = ({
     const { data: industryData } = await GET(`entity-service/industryMaster`);
     let allEntries = await Promise.all(industryData.map(entityAllData));
     setAllData(allEntries);
-    let allDates = [];
-    allEntries.forEach((e) => {
-      e.entities.forEach((d) => {
-        let dates = d.departmentData.map(
-          (row) => new Date(row.lastModifiedDate)
-        );
-        allDates.push(...dates);
-      });
-    });
-    let sorted = allDates.sort((a, b) => a - b).reverse();
-    let lastModifiedDate = sorted[0].toString().split("+")[0];
 
-    const date = new Date(lastModifiedDate);
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
+    );
+
+    const date = new Date(lastModifiedDate.departments.lastModified);
 
     sendLastDate(
       date
@@ -74,23 +67,6 @@ const DepartmentsByEntityTypes = ({
         })
         .toUpperCase()
     );
-
-    localStorage.setItem(
-      "department",
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          year: "numeric",
-          month: "long",
-        })
-        .toUpperCase()
-    );
-
-    var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-    if (showList.indexOf(lastModifiedDate) == -1) {
-      showList.push(lastModifiedDate);
-      localStorage.setItem("showList", JSON.stringify(showList));
-    }
   };
 
   const getDepartmentData = async () => {

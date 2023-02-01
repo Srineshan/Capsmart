@@ -39,14 +39,12 @@ const AbsenseReasonsByIndustries = ({
     setSideMenu([]);
     let allEntries = await Promise.all(industryData.map(entityAllData));
     setSideMenu(allEntries);
-    let allDates = [];
-    allEntries.forEach((e) => {
-      let dates = e.absenceReason.map((row) => new Date(row.lastModifiedDate));
-      allDates.push(...dates);
-    });
-    let sorted = allDates.sort((a, b) => a - b).reverse();
-    let lastModifiedDate = sorted[0].toString().split("+")[0];
-    const date = new Date(lastModifiedDate);
+
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
+    );
+
+    const date = new Date(lastModifiedDate.absenceResons.lastModified);
 
     sendLastDate(
       date
@@ -62,23 +60,6 @@ const AbsenseReasonsByIndustries = ({
         })
         .toUpperCase()
     );
-
-    localStorage.setItem(
-      "absenceReason",
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          year: "numeric",
-          month: "long",
-        })
-        .toUpperCase()
-    );
-
-    var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-    if (showList.indexOf(lastModifiedDate) == -1) {
-      showList.push(lastModifiedDate);
-      localStorage.setItem("showList", JSON.stringify(showList));
-    }
   };
 
   const getEntityData = async () => {

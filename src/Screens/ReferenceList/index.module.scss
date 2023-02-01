@@ -2212,3 +2212,21 @@
 .inputGroupText>input{
   text-align: center;
 }
+
+.selectDropdownInputBox{
+  border-radius: 4px;
+  background: transparent url('../../images/arrowDown.png') 0% 0% no-repeat padding-box;
+  border: 1px solid #E9E9F0;
+  background-position: right center;
+  background-repeat: no-repeat;
+  background-size: 2.5ex;
+  background-origin: content-box;
+}
+
+.holidayTableDataColor1 {
+  background-color: #F5F5F8;
+}
+
+.holidayTableDataColor2 {
+  background-color: #EFEEFC;
+}

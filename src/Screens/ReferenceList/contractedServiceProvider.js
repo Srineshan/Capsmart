@@ -62,16 +62,13 @@ const ContractedServiceProvidedByIndustries = ({
     setSelectedTitle(allEntries[0].industry);
     setSideMenu(allEntries);
 
-    let allDates = [];
-    allEntries.forEach((e) => {
-      e.entities.forEach((d) => {
-        let dates = d.CSPType.map((row) => row.lastModifiedDate);
-        allDates.push(...dates);
-      });
-    });
-    let sorted = allDates.sort((a, b) => a - b).reverse();
-    let lastModifiedDate = sorted[0].toString().split("+")[0];
-    const date = new Date(lastModifiedDate);
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
+    );
+
+    const date = new Date(
+      lastModifiedDate.contractedServiceProviders.lastModified
+    );
 
     sendLastDate(
       date
@@ -87,23 +84,6 @@ const ContractedServiceProvidedByIndustries = ({
         })
         .toUpperCase()
     );
-
-    localStorage.setItem(
-      "contractedServiceProvider",
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          year: "numeric",
-          month: "long",
-        })
-        .toUpperCase()
-    );
-
-    var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-    if (showList.indexOf(lastModifiedDate) == -1) {
-      showList.push(lastModifiedDate);
-      localStorage.setItem("showList", JSON.stringify(showList));
-    }
   };
 
   const getEntityData = async () => {

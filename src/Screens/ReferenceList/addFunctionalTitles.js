@@ -297,14 +297,12 @@ const AddFunctionalTitles = ({
         </div>
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
-            {!isEdit && (
-              <button
-                className={style.outlinedButton}
-                onClick={() => getAddEntityDialog(false)}
-              >
-                CANCEL
-              </button>
-            )}
+            <button
+              className={style.outlinedButton}
+              onClick={() => getAddEntityDialog(false)}
+            >
+              CANCEL
+            </button>
             <button
               onClick={() => saveSubmitHandler("Save & Exit")}
               className={`${style.buttonStyle} ${style.marginLeft20}`}

@@ -10,7 +10,7 @@ import EditHcFolder from "./../../images/editHcFolder.png";
 import DeleteHcFolder from "./../../images/deleteHcFolder.png";
 import DeleteHcRow from "./../../images/deleteHcRow.png";
 import EditHcRow from "./../../images/editHcRow.png";
-import { GET, DELETE } from "../dataSaver";
+import { GET, DELETE, PUT } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
 
@@ -33,6 +33,7 @@ const BoardCertification = ({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
   const [selectedBoard, setSelectedBoard] = useState({});
+  const [deleteSecondaryObj, setDeleteSecondaryObj] = useState({});
 
   const entityAllData = async (industry) => {
     const { data: entities } = await GET(
@@ -55,54 +56,26 @@ const BoardCertification = ({
     const { data: Entitydata } = await GET(`entity-service/industryMaster`);
     let allEntries = await Promise.all(Entitydata.map(entityAllData));
     setAllData(allEntries);
-    let allDates = [];
-    allEntries.forEach((e) => {
-      e.entities.forEach((d) => {
-        d.CSP.forEach(async (s) => {
-          const { data: boardData } = await GET(
-            `entity-service/boardCertificateSpecialtiesMaster?industry=${e.id}&contractedServiceProviderType=${s.id}`
-          );
-          let dates = boardData.map((row) => new Date(row.lastModifiedDate));
-          allDates.push(...dates);
-          let sorted = allDates.sort((a, b) => a - b).reverse();
-          let lastModifiedDate = sorted[0].toString().split("+")[0];
 
-          const date = new Date(lastModifiedDate);
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
+    );
 
-          sendLastDate(
-            date
-              .toLocaleString("en-US", {
-                timeZone: "America/New_York",
-                month: "short",
-                day: "2-digit",
-                hour: "numeric",
-                minute: "numeric",
-                year: "numeric",
-                timeZoneName: "short",
-                hour12: false,
-              })
-              .toUpperCase()
-          );
-
-          localStorage.setItem(
-            "boardCertification",
-            date
-              .toLocaleString("en-US", {
-                timeZone: "America/New_York",
-                year: "numeric",
-                month: "long",
-              })
-              .toUpperCase()
-          );
-
-          var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-          if (showList.indexOf(lastModifiedDate) == -1) {
-            showList.push(lastModifiedDate);
-            localStorage.setItem("showList", JSON.stringify(showList));
-          }
-        });
-      });
-    });
+    const date = new Date(lastModifiedDate.boardCertification.lastModified);
+    sendLastDate(
+      date
+        .toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          month: "short",
+          day: "2-digit",
+          hour: "numeric",
+          minute: "numeric",
+          year: "numeric",
+          timeZoneName: "short",
+          hour12: false,
+        })
+        .toUpperCase()
+    );
   };
 
   const handleToggle = (index, data) => {
@@ -139,10 +112,26 @@ const BoardCertification = ({
     setShowDeleteConfirmation(value);
   };
 
-  const getDeleteConfirmation = (value) => {
-    if (value) {
+  const getDeleteConfirmation = (value, payload) => {
+    if (!payload) {
+      deleteSecondary(deleteEntityId);
+    } else if (value) {
       deleteEntity(deleteEntityId);
     }
+  };
+
+  const deleteSecondary = async (id) => {
+    await PUT(
+      `entity-service/boardCertificateSpecialtiesMaster/${id}`,
+      JSON.stringify(deleteSecondaryObj)
+    )
+      .then((response) => {
+        SuccessToaster("Board Certification Deleted Successfully");
+        getAllData();
+      })
+      .catch((error) => {
+        ErrorToaster(error);
+      });
   };
 
   const deleteEntity = async (id) => {
@@ -154,6 +143,15 @@ const BoardCertification = ({
       .catch((error) => {
         ErrorToaster(error);
       });
+  };
+
+  const DeleteSecondaryBoardHandler = async (index, index1) => {
+    const out = boardCerticationTable.filter((bc) => bc.id === index)[0];
+    const newSecondary = out.secondaryBoards.filter((e) => e.name !== index1);
+    out.secondaryBoards = newSecondary;
+    setDeleteEntityId(out?.id);
+    setDeleteSecondaryObj(out);
+    setShowDeleteConfirmation(true);
   };
 
   useEffect(() => {
@@ -431,7 +429,10 @@ const BoardCertification = ({
                           className={style.colorFileStyle}
                           alt=""
                           onClick={() => {
-                            deleteHandler(data);
+                            DeleteSecondaryBoardHandler(
+                              data?.id,
+                              secondary?.name
+                            );
                           }}
                         />
                       </div>

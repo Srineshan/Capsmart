@@ -1,5 +1,5 @@
 /* eslint-disable no-const-assign */
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Dialog, Classes, Icon, Intent, InputGroup } from "@blueprintjs/core";
 import AddHealthcareGroup from "./../../images/addGroupBlue.png";
 import { POST, PUT } from "../dataSaver";
@@ -19,8 +19,6 @@ const AddHealthCareEntity = ({
   const [entityId, setEntityId] = useState("");
   const [entityName, setEntityName] = useState("");
   const [createdDate, setCreatedDate] = useState("");
-
-  const entityNameRef = useRef(null);
 
   const saveSubmitHandler = async (type) => {
     const isPresent = tableEntityData.find((p) => p.type === entityName);
@@ -126,7 +124,6 @@ const AddHealthCareEntity = ({
               <div className={style.displayInRow}>
                 <InputGroup
                   value={entityName}
-                  ref={entityNameRef}
                   id="entityName"
                   className={style.fullWidth}
                   onChange={(e) => setEntityName(e.target.value)}

@@ -42,15 +42,12 @@ const IndustriesWithEntityTypes = ({
     setAllData([]);
     let allEntries = await Promise.all(industryData.map(entityAllData));
     setAllData(allEntries);
-    let allDates = [];
-    allEntries.forEach((e) => {
-      let dates = e.entities.map((row) => row.lastModifiedDate);
-      allDates.push(...dates);
-    });
-    let sorted = allDates.sort((a, b) => a - b).reverse();
-    let lastModifiedDate = sorted[0].toString().split("+")[0];
 
-    const date = new Date(lastModifiedDate);
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
+    );
+
+    const date = new Date(lastModifiedDate.industries.lastModified);
     sendLastDate(
       date
         .toLocaleString("en-US", {
@@ -65,23 +62,6 @@ const IndustriesWithEntityTypes = ({
         })
         .toUpperCase()
     );
-
-    localStorage.setItem(
-      "industries",
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          year: "numeric",
-          month: "long",
-        })
-        .toUpperCase()
-    );
-
-    var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-    if (showList.indexOf(lastModifiedDate) == -1) {
-      showList.push(lastModifiedDate);
-      localStorage.setItem("showList", JSON.stringify(showList));
-    }
   };
 
   const getEntityData = async () => {
