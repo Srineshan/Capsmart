@@ -437,6 +437,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             "from": activity?.weekendFrom?.toLocaleTimeString('it-IT').toString(),
             "to": activity?.weekendTo?.toLocaleTimeString('it-IT').toString()
           },
+          "holiday": {
+            "from": activity?.holidayFrom?.toLocaleTimeString('it-IT').toString(),
+            "to": activity?.holidayTo?.toLocaleTimeString('it-IT').toString(),
+          },
           "patientMRNRequired": activity?.patientMRNRequired,
           "attendingDocRequired": activity?.attendingDocRequired,
         }

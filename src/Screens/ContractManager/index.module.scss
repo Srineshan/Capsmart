@@ -1283,6 +1283,15 @@ select {
 
 .manageServiceDialog {
     height: 75%;
+    width: 75% !important;
+}
+
+.bp4-timepicker .bp4-timepicker-input {
+    width: 23px !important;
+}
+
+
+.ScheduleDialog {
     width: 70% !important;
 }
 
@@ -2039,12 +2048,12 @@ input[type=number] {
 
 .editableTableGridStyle {
     display: grid;
-    grid-template-columns: 20% 27% 27% 10% 10%;
+    grid-template-columns: 15% 20% 20% 20% 10% 10%;
     grid-gap: 10px;
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold 13px/17px Montserrat;
+    font: normal normal bold 13px/15px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
     text-transform: uppercase;
@@ -2067,4 +2076,19 @@ input[type=number] {
     color: #52575D;
     text-transform: uppercase;
     text-align: left;
+}
+
+.scheduleTableGrid1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 2fr 1fr 2fr;
+}
+
+.scheduleTableGrid2 {
+    display: grid;
+    grid-template-columns: 2fr 0.5fr 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.flexCenter {
+    display: flex;
+    justify-content: center;
 }

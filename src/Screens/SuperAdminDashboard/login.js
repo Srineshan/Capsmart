@@ -24,6 +24,7 @@ const Login = (props) => {
   const getEntityId = async () => {
     await axios(`https://rest.timesmart.io/entity-service/entityID`, {
       method: "GET",
+      // headers: { 'X-subdomain': 'demo' }
     })
       .then((response) => {
         cookie.set("entityId", response?.data?.id);
@@ -118,7 +119,7 @@ const Login = (props) => {
           // incididunt ut labore et dolore magna aliqua
           // </div>
         }
-        <div className={style.timeSmartStyle}>© TimeSmart.AI</div>
+        <div className={style.timeSmartStyle}>© TimeSmartAI</div>
         <div className={style.termsStyle}>Term of use. Privacy policy</div>
       </div>
       <div className={style.padding100}>

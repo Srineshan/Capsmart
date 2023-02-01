@@ -174,7 +174,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
       "contractName": {
         "contractName": contractName
       },
-      "roles": [],
+      "roles": roles,
       "sites": {
         "sites": getSiteData()
       },

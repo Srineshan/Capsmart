@@ -19,7 +19,7 @@ import SaveReport from './saveReport';
 
 import style from './index.module.scss';
 
-const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpdated, dataToUseInReport, refToUse, getIsDownloadClicked }) => {
+const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpdated, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
     const { reportType } = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -87,10 +87,10 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
                             <ShareOutlinedIcon style={{color:"#52575D"}} onClick={() => setShowShareDialog(true)} />
                         </div> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
-                            onMouseEnter={(e) => setAnchorElSchedule(e.currentTarget)} onMouseLeave={() => setAnchorElSchedule(null)} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20} ${isNoData && style.disabledCursor}`}
+                            onMouseEnter={(e) => !isNoData ? setAnchorElSchedule(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElSchedule(null) : {}} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <CalendarTodayIcon style={{ color: "#52575D" }} onClick={() => setShowSaveReport(true)} />
+                            <CalendarTodayIcon style={{ color: "#52575D" }} onClick={() => !isNoData ? setShowSaveReport(true) : {}} />
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -129,11 +129,11 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                                 <div className={style.popoverStyle}>Click to Save this Report</div>
                             </Popover>
                         </div> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => getIsDownloadClicked(true)}>
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={() => !isNoData ? getIsDownloadClicked(true) : {}}>
                             <DownloadingOutlinedIcon style={{ color: "#52575D" }} />
                         </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={handlePrint}
-                            onMouseEnter={(e) => setAnchorElPrint(e.currentTarget)} onMouseLeave={() => setAnchorElPrint(null)} aria-owns={openPrint ? 'mouse-over-popover' : undefined}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={!isNoData ? handlePrint : {}}
+                            onMouseEnter={(e) => !isNoData ? setAnchorElPrint(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElPrint(null) : {}} aria-owns={openPrint ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <PrintOutlinedIcon style={{ color: "#52575D" }} />
                             <Popover
@@ -153,8 +153,8 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                                 <div className={style.popoverStyle}>Click to Print this Report</div>
                             </Popover>
                         </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} >
-                            <ZoomOutMapIcon style={{ color: "#52575D" }} onClick={handle.enter} />
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} >
+                            <ZoomOutMapIcon style={{ color: "#52575D" }} onClick={!isNoData ? handle.enter : {}} />
                         </div>
                     </div>
                 </div>

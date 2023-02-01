@@ -25,7 +25,7 @@ import ApexBarChart from './chart-data/barChart';
 import style from './index.module.scss';
 import ApexBoxChart from './chart-data/boxChart';
 import ReportsTable from '../../Components/ReportsTable';
-import NoDataBox from '../../Components/ReusableSmallComponents/noDataBox';
+import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 
 const ReportTypeOverview = () => {
     const data = [{ label: 'Done', value: 60 }, { label: 'To Do', value: 20 }, { label: 'Not Done', value: 20 }];
@@ -37,6 +37,7 @@ const ReportTypeOverview = () => {
     const onBeforeGetContentResolve = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isUpdated, setIsUpdated] = useState(false);
+    const [isNoData, setIsNoData] = useState(false);
     const [contractRenewalReport, setContractRenewalReport] = useState([]);
     const [oneTimeContract, setOneTimeContract] = useState([]);
     const [nonCompliantContract, setNonCompliantContract] = useState([]);
@@ -156,6 +157,10 @@ const ReportTypeOverview = () => {
             getNonCompliantContractReport();
         }
     }, [isNonCompliantReportTileClicked]);
+
+    useEffect(() => {
+        setIsNoData(paymentsReportLog?.paymentContracts?.length !== 0 ? false : true);
+    }, [paymentsReportLog])
 
     const reactToPrintContent = useCallback(() => {
         return componentRef.current;
@@ -321,17 +326,22 @@ const ReportTypeOverview = () => {
     const getPayments = async () => {
         const { data: chartData } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
         setPaymentsReportLog(chartData);
-        if (chartData) {
+        if (chartData?.paymentStats?.minPayment !== 0) {
             let temp = [];
+            console.log(chartData)
             Object?.keys(chartData?.timesheetProcessingStatus)?.map((data, index) => {
                 temp[index] = { key: data, value: Object?.values(chartData?.timesheetProcessingStatus)?.[index] }
             })
             setPieData(temp);
             setBarChartSeries([{
                 'data': chartData?.paymentContracts?.map(data => data?.payment),
-                'name': 'Services Performed'
+                'name': 'Dollars Paid'
             }])
             setBarChartCategories(chartData?.paymentContracts?.map(data => data?.contractId));
+        } else {
+            setPieData([]);
+            setBarChartSeries([]);
+            setBarChartCategories([]);
         }
         // setIsLoading(false);
     }
@@ -464,8 +474,8 @@ const ReportTypeOverview = () => {
                 period.push(data?.payment ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')}` : '-')
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push('-');
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment}` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment}` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment}` : '-');
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment}` : '-');
             })
         }
         if (value === 'timesheetNotPaid') {
@@ -474,8 +484,8 @@ const ReportTypeOverview = () => {
                 period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')}` : '-')
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push('-');
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment}` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment}` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment}` : '-');
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment}` : '-');
             })
         }
         if (value === 'rejectedTimesheetPayments') {
@@ -484,8 +494,8 @@ const ReportTypeOverview = () => {
                 period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')}` : '-')
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push('-');
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment}` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment}` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment}` : '-');
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment}` : '-');
             })
         }
         if (value === 'delayedTimesheetPayments') {
@@ -494,8 +504,8 @@ const ReportTypeOverview = () => {
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push('-');
                 period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')}` : '-')
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment}` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment}` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment}` : '-');
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment}` : '-');
             })
         }
         if (value === 'paymentPastDue') {
@@ -504,8 +514,8 @@ const ReportTypeOverview = () => {
                 period.push(data?.payment !== null ? `${format(new Date(data?.payment?.paymentPeriod?.startDate), 'MMM d')} - ${format(new Date(data?.payment?.paymentPeriod?.endDate), 'MMM d yyyy')}` : '-')
                 serviceProvider.push(data?.timesheet?.user?.name);
                 deptAndSite.push('-');
-                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment}` : '-');
-                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment}` : '-');
+                invoiceAmount.push(data?.payment !== null ? `$ ${data?.payment?.expectedPayment?.payment}` : '-');
+                paidAmount.push(data?.payment !== null ? `$ ${data?.payment?.actualPayment?.payment}` : '-');
             })
         }
 
@@ -619,7 +629,7 @@ const ReportTypeOverview = () => {
                     </SideBar>
                 </div>
                 <div>
-                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isLoading={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} />
+                    <ReportPerformanceAndOptions handle={handle} getIsRefresh={getIsRefresh} handlePrint={handlePrint} isLoading={isLoading} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} />
                     <FullScreen handle={handle}>
                         <div className={`Report`} ref={PDFRef}>
                             <div className={`${style.reportBackgroundCard} ${style.marginTop20}`} ref={componentRef}>
@@ -650,13 +660,9 @@ const ReportTypeOverview = () => {
                                                 )}
                                             </div>
                                         </div>
-                                        {reportType !== "paymentsProcessingSummary" && (
-                                            <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                        )}
+                                        <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
                                         <div className={style.marginTop20}>
-                                            {reportType !== "paymentsProcessingSummary" && (
-                                                <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Reporting Parameters Applied</div>
-                                            )}
+                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Reporting Parameters Applied</div>
                                             {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20}`}>
                                                     <div>
@@ -700,6 +706,13 @@ const ReportTypeOverview = () => {
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.name?.firstName}</div>
                                                     </div>
                                                 </div>
+                                            ) : (reportType === "paymentsProcessingSummary") ? (
+                                                <div className={`${style.grid2} ${style.marginTop20}`}>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Departments</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                    </div>
+                                                </div>
                                             ) : (reportType === "nonCompliant") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20}`}>
                                                     <div>
@@ -727,34 +740,32 @@ const ReportTypeOverview = () => {
                                                     </div>
                                                 </div>
                                             ) : (
-                                                reportType !== "paymentsProcessingSummary" && (
-                                                    <div className={`${style.grid2} ${style.marginTop20}`}>
-                                                        <div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Site </div>
-                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Site 1, Site 2, Site 3</div>
-                                                        </div>
-                                                        <div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Department/ Service Area </div>
-                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>All Departments</div>
-                                                        </div>
-                                                        <div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Service Provider</div>
-                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Doctor 1, Doctor 2, Doctor 3</div>
-                                                        </div>
-                                                        <div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Service/ Activity Category</div>
-                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
-                                                        </div>
-                                                        <div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Type of Service/ Activity Performed</div>
-                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
-                                                        </div>
-                                                        <div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Completion Status</div>
-                                                            <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
-                                                        </div>
+                                                <div className={`${style.grid2} ${style.marginTop20}`}>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Service Site </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Site 1, Site 2, Site 3</div>
                                                     </div>
-                                                )
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Department/ Service Area </div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>All Departments</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Service Provider</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Doctor 1, Doctor 2, Doctor 3</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Contracted Service/ Activity Category</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Type of Service/ Activity Performed</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Completion Status</div>
+                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5}`}>Medical/ Surgical Care Services</div>
+                                                    </div>
+                                                </div>
                                             )}
                                             <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
                                             {reportType === "activitiesOrServices" ? (
@@ -853,7 +864,7 @@ const ReportTypeOverview = () => {
                                                         <div>
                                                             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Payment For Services Performed By Contract</div>
                                                             <div className={style.marginTop20}>
-                                                                <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={`${format(new Date(dataToUseInReport?.from || new Date()), 'MMM d')} to ${format(new Date(dataToUseInReport?.to || new Date()), 'MMM d')}`} yAxisTitle="Dollars Paid (In thousands)" />
+                                                                <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={`${format(new Date(dataToUseInReport?.from || new Date()), 'MMM d')} to ${format(new Date(dataToUseInReport?.to || new Date()), 'MMM d')}`} yAxisTitle="Dollars Paid" />
                                                             </div>
                                                         </div>
                                                         <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
@@ -868,7 +879,7 @@ const ReportTypeOverview = () => {
                                                             <>
                                                                 <ReportsTable
                                                                     tableType={'Timesheets With Payment Past Due'}
-                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
+                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
                                                                     tableValue={paymentsReportLog?.paymentPastDue}
                                                                     activitiesServicesValues={getPaymentsValues('paymentPastDue')}
                                                                     styleName={style.grid6}
@@ -879,7 +890,7 @@ const ReportTypeOverview = () => {
                                                             <>
                                                                 <ReportsTable
                                                                     tableType={'Timesheets With Delayed Payments'}
-                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
+                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
                                                                     tableValue={paymentsReportLog?.paymentDelayed}
                                                                     activitiesServicesValues={getPaymentsValues('delayedTimesheetPayments')}
                                                                     styleName={style.grid6}
@@ -890,7 +901,7 @@ const ReportTypeOverview = () => {
                                                             <>
                                                                 <ReportsTable
                                                                     tableType={'Timesheets With Rejected Payments'}
-                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
+                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
                                                                     tableValue={paymentsReportLog?.rejected}
                                                                     activitiesServicesValues={getPaymentsValues('rejectedTimesheetPayments')}
                                                                     styleName={style.grid6}
@@ -901,7 +912,7 @@ const ReportTypeOverview = () => {
                                                             <>
                                                                 <ReportsTable
                                                                     tableType={'Timesheets Without Payment'}
-                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
+                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
                                                                     tableValue={paymentsReportLog?.paymentNotDone}
                                                                     activitiesServicesValues={getPaymentsValues('timesheetNotPaid')}
                                                                     styleName={style.grid6}
@@ -912,7 +923,7 @@ const ReportTypeOverview = () => {
                                                             <>
                                                                 <ReportsTable
                                                                     tableType={'Timesheets With Payment On Time'}
-                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Invoice Amount']}
+                                                                    tableHeader={['Timesheet', 'Period', 'Service Provider', 'Department & Site', 'Paid Amount', 'Billed Amount']}
                                                                     tableValue={paymentsReportLog?.paidOnTime}
                                                                     activitiesServicesValues={getPaymentsValues('paidOnTime')}
                                                                     styleName={style.grid6}
@@ -921,9 +932,8 @@ const ReportTypeOverview = () => {
                                                         )}
                                                     </>
                                                 ) : (
-                                                    <NoDataBox
-                                                        heading={'No Data Available For This Report For The Selected Reporting Time Period'}
-                                                    />
+                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
                                                 )
                                             ) : (reportType === "scheduledActivity" || reportType === "scheduledActivityByContract") ? (
                                                 <>

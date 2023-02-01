@@ -52,7 +52,7 @@ const SuperAdminDashboard = () => {
                 UPDATED ON FEB 16, 2022 16:45 EST
               </div>
               <div className={style.crossStyle}>
-                <Link to={"/entitySitePortal"}>
+                <Link to={"/partnerPortal"}>
                   <Icon icon="cross" size={25} intent={Intent.DANGER} />
                 </Link>
               </div>
@@ -387,8 +387,8 @@ const SuperAdminDashboard = () => {
           </div>
         </div>
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-          <p className={style.poweredBy}>© TimeSmart.AI</p>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI</p>
         </div>
       </div>
       {/* {showPodTypeForHealthcareDialog && (

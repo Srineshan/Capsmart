@@ -452,7 +452,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>NPIN*</div>
             <div className={style.grid3}>
-              <InputGroup disabled={npin?.missing || npin?.na} type="tel" maxLength={10} className={style.fullWidth} value={npin?.npin} onChange={(e) =>setNpin({ npin: e.target.value, na: false, missing: false })} />
+              <InputGroup disabled={npin?.missing || npin?.na} type="tel" maxLength={10} className={style.fullWidth} value={npin?.npin} onChange={(e) => setNpin({ npin: e.target.value, na: false, missing: false })} />
               <FormGroup>
                 <FormControlLabel control={<Checkbox value={npin?.missing} checked={npin?.missing} onChange={(e) => setNpin({ npin: '', missing: e.target.checked, na: false })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
               </FormGroup>
@@ -477,7 +477,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
               <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={(e) => {setAllowPersonalMail(!allowPersonalMail);handleUserData('email', '');}} />
+                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={(e) => { setAllowPersonalMail(!allowPersonalMail); handleUserData('email', ''); }} />
                   }
                   className={`${style.switchFontStyle}`}
                   label={allowPersonalMail ? 'YES' : 'NO'}

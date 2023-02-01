@@ -11,10 +11,10 @@ import DeleteHcRow from './../../images/deleteHcRow.png';
 import EditHcRow from './../../images/editHcRow.png';
 import CrossPink from './../../images/crossPink.png';
 import AddCompanyHolidayForCustomer from './addCompanyHolidayForCustomer';
-import {GET, DELETE, POST, TenantID} from './../dataSaver';
+import { GET, DELETE, POST, TenantID } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { Link } from 'react-router-dom';
-import {format} from 'date-fns';
+import { format } from 'date-fns';
 import DeleteConfirmation from '../../Components/DeleteConfirmation';
 
 import style from './index.module.scss';
@@ -40,18 +40,18 @@ const HolidayScheduleForCustomers = () => {
         setShowAddCompanyDialog(value);
     }
 
-    const getIndustryData = async() => {
-        const {data : data} = await GET (`entity-service/industryMaster`);
+    const getIndustryData = async () => {
+        const { data: data } = await GET(`entity-service/industryMaster`);
         setSelectedIndustry(data?.filter(data => data?.industry === 'HEALTHCARE')?.map(data => data));
     }
 
-    const getHolidayMasterData = async() => {
-        const {data : holidayData} = await GET (`entity-service/holidayMaster?industryId=${selectedIndustry[0].id}&country=${country}`);
+    const getHolidayMasterData = async () => {
+        const { data: holidayData } = await GET(`entity-service/holidayMaster?industryId=${selectedIndustry[0].id}&country=${country}`);
         setHolidayData(holidayData?.filter(data => data?.country === 'USA')?.map(data => data));
     };
 
-    const getHolidayData = async() => {
-        const {data : holidayData} = await GET (`entity-service/holiday`);
+    const getHolidayData = async () => {
+        const { data: holidayData } = await GET(`entity-service/holiday`);
         setHolidayCustomerData(holidayData?.filter(data => data?.country === 'USA')?.map(data => data));
     };
 
@@ -65,52 +65,52 @@ const HolidayScheduleForCustomers = () => {
     }
 
     const getDeleteConfirmation = (value) => {
-        if(value){
+        if (value) {
             deleteHoliday(holidayId);
         }
     }
 
-    const deleteHoliday = async(id) => {
+    const deleteHoliday = async (id) => {
         await DELETE(`entity-service/holiday/${id}`)
-        .then(response=>{
-        SuccessToaster('Holiday Deleted Successfully');
-        })
-        .catch(error => {
-            ErrorToaster(error);
-        })
+            .then(response => {
+                SuccessToaster('Holiday Deleted Successfully');
+            })
+            .catch(error => {
+                ErrorToaster(error);
+            })
         getHolidayData();
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         getHolidayMasterData()
-    },[selectedIndustry])
+    }, [selectedIndustry])
 
-    useEffect(()=>{
+    useEffect(() => {
         getIndustryData();
-    },[]);
+    }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
         getHolidayData();
-    },[showAddCompanyDialog])
+    }, [showAddCompanyDialog])
 
-    useEffect(()=>{
+    useEffect(() => {
         let allYears = [];
-        holidayData?.map(data => 
+        holidayData?.map(data =>
             allYears?.push(format(new Date(data?.eventDate), 'yyyy'))
         );
         setUniqueYears(Array.from(new Set(allYears.map((item) => item))));
-    },[holidayData])
+    }, [holidayData])
 
-    useEffect(()=>{
+    useEffect(() => {
         let allYears = [];
-        holidayCustomerData?.map(data => 
+        holidayCustomerData?.map(data =>
             allYears?.push(format(new Date(data?.eventDate), 'yyyy'))
         );
         setCustomerUniqueYears(Array.from(new Set(allYears.map((item) => item))));
-    },[holidayCustomerData])
+    }, [holidayCustomerData])
 
     const handleSelectHolidays = (e, innerData) => {
-        if(e.target.checked){
+        if (e.target.checked) {
             setSelectedHolidays([...selectedHolidays, innerData])
         } else {
             setSelectedHolidays(selectedHolidays?.filter(data => data?.eventName !== innerData?.eventName)?.map(data => data));
@@ -119,7 +119,7 @@ const HolidayScheduleForCustomers = () => {
 
     const handleSave = async () => {
         let data = [];
-        selectedHolidays?.map(holidayData => 
+        selectedHolidays?.map(holidayData =>
             data?.push({
                 "eventType": holidayData?.eventType,
                 "stateName": holidayData?.stateName,
@@ -133,13 +133,13 @@ const HolidayScheduleForCustomers = () => {
         )
         console.log(data)
         await POST('entity-service/holiday', JSON.stringify(data))
-        .then(response => {
-            SuccessToaster('Event Added Successfully');
-            getHolidayData();
-        })
-        .catch(error => {
-            ErrorToaster(error);
-        })
+            .then(response => {
+                SuccessToaster('Event Added Successfully');
+                getHolidayData();
+            })
+            .catch(error => {
+                ErrorToaster(error);
+            })
     }
 
     return (
@@ -176,7 +176,7 @@ const HolidayScheduleForCustomers = () => {
                                                             <div className={`${style.boardCertificationSideRows} ${style.displayInRow}`}>
                                                                 <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} />
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft10} ${style.marginTop10}`}>{data}</p>
-                                                                <img src={(isOpenLeftFolder && leftFolderOpenIndex === index) ? CloseFolderBlue : OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} `} onClick={() => {setIsOpenLeftFolder(!isOpenLeftFolder); setLeftFolderOpenIndex(index)}} />
+                                                                <img src={(isOpenLeftFolder && leftFolderOpenIndex === index) ? CloseFolderBlue : OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} `} onClick={() => { setIsOpenLeftFolder(!isOpenLeftFolder); setLeftFolderOpenIndex(index) }} />
                                                             </div>
                                                             {(isOpenLeftFolder && leftFolderOpenIndex === index) && holidayData?.map((innerData, index) => (
                                                                 format(new Date(innerData?.eventDate), 'yyyy') === data &&
@@ -221,14 +221,14 @@ const HolidayScheduleForCustomers = () => {
                                                                             <img src={AddNewEntity} className={`${style.colorFileStyle}`} onClick={() => getAddCompanyHolidayDialog(true)} />
                                                                         </div>
                                                                         {holidayCustomerData?.map((innerData) => (
-                                                                        format(new Date(innerData?.eventDate), 'yyyy') === data &&
+                                                                            format(new Date(innerData?.eventDate), 'yyyy') === data &&
                                                                             <div className={`${style.holidayScheduleTableData1} ${style.customersAdminBackground2} ${style.displayInRow}`}>
                                                                                 <p className={style.tableDataFontStyle}>{format(new Date(innerData?.eventDate), 'MMMM d')} </p>
                                                                                 <p className={style.tableDataFontStyle}>{innerData?.eventName}</p>
                                                                                 <p className={style.tableDataFontStyle}>{innerData?.stateName}</p>
                                                                                 <p className={style.tableDataFontStyle}>{innerData?.eventType}</p>
-                                                                                <img src={EditHcRow} className={style.colorFileStyle} onClick={() => {setIsEdit(true);setSelectedHoliday(innerData);setShowAddCompanyDialog(true)}} />
-                                                                                <img src={DeleteHcRow} className={style.colorFileStyle} onClick={() => {handleDelete(innerData?.id)}} />
+                                                                                <img src={EditHcRow} className={style.colorFileStyle} onClick={() => { setIsEdit(true); setSelectedHoliday(innerData); setShowAddCompanyDialog(true) }} />
+                                                                                <img src={DeleteHcRow} className={style.colorFileStyle} onClick={() => { handleDelete(innerData?.id) }} />
                                                                             </div>
                                                                         ))}
                                                                     </>
@@ -255,8 +255,8 @@ const HolidayScheduleForCustomers = () => {
                         </div>
                     </div>
                     <div className={style.spaceBetween}>
-                        <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                        <p className={style.poweredBy}>© TimeSmart.AI</p>
+                        <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+                        <p className={style.poweredBy}>© TimeSmartAI</p>
                     </div>
                 </div>
             </div>
