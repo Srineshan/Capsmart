@@ -116,60 +116,6 @@ const SuperAdminDashboard = () => {
                       </div>
                     </Link>
                     <Link
-                      to={"/referenceList/absenseReasonsByIndustries"}
-                      className={style.linkStyle}
-                    >
-                      <div className={style.dashboardCardStyle}>
-                        <h5 className={`${style.headingForReferenceList}`}>
-                          ABSENCE REASONS BY INDUSTRY TYPE
-                        </h5>
-                        <div
-                          className={`${style.optionsStyle} ${style.displayInCol}  `}
-                        >
-                          <span className={style.dashboardCardColorOption1}>
-                            DEFAULT LIST IS CREATED
-                          </span>
-                          <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON{" "}
-                            {new Date(lastDate.absenceResons?.lastModified)
-                              .toLocaleString("en-US", {
-                                timeZone: "America/New_York",
-                                year: "numeric",
-                                month: "long",
-                              })
-                              .toUpperCase()}{" "}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link
-                      to={"/referenceList/suffixByIndustries"}
-                      className={style.linkStyle}
-                    >
-                      <div className={style.dashboardCardStyle}>
-                        <h5 className={`${style.headingForReferenceList}`}>
-                          NAME SUFFIX BY INDUSTRY TYPE
-                        </h5>
-                        <div
-                          className={`${style.optionsStyle} ${style.displayInCol}  `}
-                        >
-                          <span className={style.dashboardCardColorOption1}>
-                            DEFAULT LIST IS CREATED
-                          </span>
-                          <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON{" "}
-                            {new Date(lastDate.nameSuffix?.lastModified)
-                              .toLocaleString("en-US", {
-                                timeZone: "America/New_York",
-                                year: "numeric",
-                                month: "long",
-                              })
-                              .toUpperCase()}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link
                       to={
                         "/referenceList/contractedServiceProviderByIndustries"
                       }
@@ -256,6 +202,61 @@ const SuperAdminDashboard = () => {
                       </div>
                     </Link>
                     <Link
+                      to={"/referenceList/absenseReasonsByIndustries"}
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          ABSENCE REASONS BY INDUSTRY TYPE
+                        </h5>
+                        <div
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
+                        >
+                          <span className={style.dashboardCardColorOption1}>
+                            DEFAULT LIST IS CREATED
+                          </span>
+                          <span className={style.dashboardCardColorOption2}>
+                            LAST UPDATED ON{" "}
+                            {new Date(lastDate.absenceResons?.lastModified)
+                              .toLocaleString("en-US", {
+                                timeZone: "America/New_York",
+                                year: "numeric",
+                                month: "long",
+                              })
+                              .toUpperCase()}{" "}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                    <Link
+                      to={"/referenceList/suffixByIndustries"}
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          NAME SUFFIX BY INDUSTRY TYPE
+                        </h5>
+                        <div
+                          className={`${style.optionsStyle} ${style.displayInCol}  `}
+                        >
+                          <span className={style.dashboardCardColorOption1}>
+                            DEFAULT LIST IS CREATED
+                          </span>
+                          <span className={style.dashboardCardColorOption2}>
+                            LAST UPDATED ON{" "}
+                            {new Date(lastDate.nameSuffix?.lastModified)
+                              .toLocaleString("en-US", {
+                                timeZone: "America/New_York",
+                                year: "numeric",
+                                month: "long",
+                              })
+                              .toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
                       to={"/referenceList/terminationReasons"}
                       className={style.linkStyle}
                     >
@@ -282,7 +283,7 @@ const SuperAdminDashboard = () => {
                         </div>
                       </div>
                     </Link>
-                    <Link
+                    {/* <Link
                       to={"/referenceList/proofOfDocumentByEntity"}
                       className={style.linkStyle}
                     >
@@ -300,7 +301,7 @@ const SuperAdminDashboard = () => {
                           </div>
                         </div>
                       </div>
-                    </Link>
+                    </Link> */}
                     <div className={style.dashboardCardStyle}>
                       <h5 className={`${style.headingForReferenceList}`}>
                         CONTRACTED SERVICES BY INDUSTRIES
@@ -342,7 +343,7 @@ const SuperAdminDashboard = () => {
                         </div>
                       </div>
                     </Link>
-                    <Link
+                    {/* <Link
                       to={"/referenceList/contractDoumentTypeForUpload"}
                       className={style.linkStyle}
                     >
@@ -360,7 +361,7 @@ const SuperAdminDashboard = () => {
                           </div>
                         </div>
                       </div>
-                    </Link>
+                    </Link> */}
                     <Link
                       to={"/referenceList/countriesSupportedWithStates"}
                       className={style.linkStyle}

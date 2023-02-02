@@ -141,6 +141,11 @@
   margin-right: 60px;
 }
 
+
+.marginBottomZero {
+  margin-bottom: 0px;
+}
+
 .marginBottom {
   margin-bottom: 10px;
 }
@@ -1258,6 +1263,16 @@
   margin-top: 10px;
   margin-bottom: -20px;
   padding: 2px;
+}
+
+.buttonStyle3 {
+  background-color: #7165e3;
+  color: white;
+  border: 1px solid #7165e3;
+  height: 40px;
+  width: 140px;
+  border-radius: 10px;
+  cursor: pointer;
 }
 
 .healthCareListData {

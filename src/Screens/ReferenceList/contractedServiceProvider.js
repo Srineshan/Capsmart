@@ -10,6 +10,7 @@ import AddContractedServiceForHealthcare from "./addContractedServiceProvider";
 import { GET, DELETE } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import format from "date-fns/format";
 
 const ContractedServiceProvidedByIndustries = ({
   getAddEntityDialog,
@@ -188,7 +189,9 @@ const ContractedServiceProvidedByIndustries = ({
           <div className={style.contractedServiceHeader}>
             <p></p>
             <p className={style.tableHeaderIndustriesFontStyle}>ENTITY TYPE</p>
-            <p className={style.tableHeaderIndustriesFontStyle}>CREATED DATE</p>
+            <p className={style.tableHeaderIndustriesFontStyle}>
+              {/* CREATED DATE */}
+            </p>
             <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
           </div>
           {!rotate &&
@@ -232,18 +235,17 @@ const ContractedServiceProvidedByIndustries = ({
                         {i.contractedServiceProviderType}
                       </p>
                       <p className={style.tableDataFontStyle}>
-                        {i.createdDate
+                        {/* {i.createdDate
                           .split("T")[0]
                           .split("-")
                           .reverse()
-                          .join("-")}
+                          .join("-")} */}
                       </p>
                       <p className={style.tableDataFontStyle}>
-                        {i.lastModifiedDate
-                          .split("T")[0]
-                          .split("-")
-                          .reverse()
-                          .join("-")}
+                        {format(
+                          new Date(`${i.lastModifiedDate}`),
+                          "MM-dd-yyyy"
+                        )}
                       </p>
                       <img
                         src={EditHcRow}

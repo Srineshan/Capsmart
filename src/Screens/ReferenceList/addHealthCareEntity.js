@@ -109,8 +109,6 @@ const AddHealthCareEntity = ({
             <div className={style.entityLableStyle}>Industry Name*</div>
             <div className={style.displayInRow}>
               <InputGroup value={selectedTitle} className={style.halfWidth} />
-              {/* <img src={AddHealthcareGroup} className={`${style.colorFileStyle} ${style.marginLeft20}`} alt="" /> */}
-              {/* <p className={`${style.marginTop} ${style.marginLeft5}`}>ADD ENTITY</p> */}
             </div>
           </div>
           <div

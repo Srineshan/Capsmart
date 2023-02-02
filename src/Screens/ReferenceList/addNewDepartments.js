@@ -21,6 +21,7 @@ const AddNewDepartments = ({
   selectedDepart,
   departmentList,
   selectedTitle,
+  isService,
 }) => {
   const [departId, setDepartId] = useState("");
   const [departName, setDepartName] = useState("");
@@ -29,19 +30,31 @@ const AddNewDepartments = ({
   const [serviceArea, setSerrviceArea] = useState("");
 
   const saveSubmitHandler = async (type) => {
-    const isPresent = departmentList.find(
-      (p) => p.departmentName.name === departName
-    );
-    if (isPresent) {
-      ErrorToaster("Already This Name Exists");
-      document.getElementById("departmentEl").focus();
-      getAddEntityDialog(true);
-      return false;
+    let ServiceAreaData = [];
+
+    if (selectedDepart?.serviceAreas) {
+      ServiceAreaData = [...selectedDepart.serviceAreas];
     }
+
+    // const isPresent = departmentList.find(
+    //   (p) => p.departmentName.name === departName
+    // );
+    // if (isPresent) {
+    //   ErrorToaster("Already This Name Exists");
+    //   document.getElementById("departmentEl").focus();
+    //   getAddEntityDialog(true);
+    //   return false;
+    // }
 
     if (!departName && departName === "") {
       document.getElementById("departmentEl").focus();
       return false;
+    }
+
+    if (serviceArea !== "") {
+      ServiceAreaData.push({
+        name: serviceArea,
+      });
     }
 
     const data = {
@@ -53,32 +66,44 @@ const AddNewDepartments = ({
       siteTypeId: {
         id: selectedEntity?.id,
       },
+      departmentGroupBy: {
+        name: departName,
+      },
+      serviceAreas: ServiceAreaData,
     };
 
-    if (!isEdit) {
-      await POST("entity-service/departmentMaster", JSON.stringify(data))
-        .then((response) => {
-          SuccessToaster("Department Added Successfully");
-          //   getAddEntityDialog(false);
-          getEntityData();
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
-    } else {
-      await PUT(
-        `entity-service/departmentMaster/${departId}`,
-        JSON.stringify(data)
-      )
-        .then((response) => {
-          SuccessToaster("Department Updated Successfully");
-          //   getAddEntityDialog(false);
-          getEntityData();
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
-    }
+    await POST("entity-service/departmentMaster", JSON.stringify(data))
+      .then((response) => {
+        SuccessToaster("Department Added Successfully");
+        getEntityData();
+      })
+      .catch((error) => {
+        ErrorToaster(error);
+      });
+
+    // if (!isEdit) {
+    //   await POST("entity-service/departmentMaster", JSON.stringify(data))
+    //     .then((response) => {
+    //       SuccessToaster("Department Added Successfully");
+    //       getEntityData();
+    //     })
+    //     .catch((error) => {
+    //       ErrorToaster(error);
+    //     });
+    // } else {
+    //   await PUT(
+    //     `entity-service/departmentMaster/${departId}`,
+    //     JSON.stringify(data)
+    //   )
+    //     .then((response) => {
+    //       SuccessToaster("Department Updated Successfully");
+    //       //   getAddEntityDialog(false);
+    //       getEntityData();
+    //     })
+    //     .catch((error) => {
+    //       ErrorToaster(error);
+    //     });
+    // }
 
     if (type !== "Add More") {
       getAddEntityDialog(false);
@@ -93,6 +118,9 @@ const AddNewDepartments = ({
       setDepartId(selectedDepart?.id);
       setDepartName(selectedDepart?.departmentName?.name);
       setCreatedDate(selectedDepart?.createdDate);
+      if (isService) {
+        setSerrviceArea(selectedDepart?.serviceAreas[0]?.name);
+      }
     }
   }, [selectedDepart]);
 
@@ -107,8 +135,6 @@ const AddNewDepartments = ({
       >
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>
-            {/* New Departments / Services Area For Hospital / Acute Care Facility
-            (ACF) */}
             {` New Departments / Services Area For ${selectedTitle}`}
           </p>
           <Icon
@@ -138,14 +164,6 @@ const AddNewDepartments = ({
                 className={` ${style.marginLeft20} ${style.marginTop}`}
                 label="ADD SERVICES"
               />
-
-              {/* <RadioGroup
-                inline={true}
-                className={` ${style.marginLeft20} ${style.marginTop}`}
-                selectedValue={"ADD SERVICES"}
-              >
-                <Radio label="ADD SERVICES" value="ADD SERVICES" />
-              </RadioGroup> */}
             </div>
           </div>
           <div
@@ -169,12 +187,23 @@ const AddNewDepartments = ({
           <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <div></div>
             {!isEdit && (
-              <div
-                className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
-                onClick={() => saveSubmitHandler("Add More")}
-              >
-                ADD MORE
-              </div>
+              <>
+                {departName.length > 0 ? (
+                  <div
+                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                    onClick={() => saveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                ) : (
+                  <div
+                    className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
+                    onClick={() => saveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

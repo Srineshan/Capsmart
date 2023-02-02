@@ -268,8 +268,12 @@ const BoardCertification = ({
                         <p className={style.tableDataFontStyle}>
                           {data.primary_reason}
                         </p>
-                        <p></p>
-                        <p></p>
+                        <p className={style.tableDataFontStyle}>
+                          {data.noticePeriodInDays}
+                        </p>
+                        <p className={style.tableDataFontStyle}>
+                          {data.curePeriodInDays}
+                        </p>{" "}
                         <img
                           src={EditHcFolder}
                           alt="EditHcFolder"
@@ -300,8 +304,12 @@ const BoardCertification = ({
                               <p className={style.tableDataFontStyle}>
                                 {secondary}
                               </p>
-                              <p></p>
-                              <p></p>
+                              <p className={style.tableDataFontStyle}>
+                                {data.noticePeriodInDays}
+                              </p>
+                              <p className={style.tableDataFontStyle}>
+                                {data.curePeriodInDays}
+                              </p>{" "}
                               <img
                                 src={EditHcRow}
                                 alt="EditHcRow"
@@ -337,8 +345,12 @@ const BoardCertification = ({
                         <p className={style.tableDataFontStyle}>
                           {data.primary_reason}
                         </p>
-                        <p></p>
-                        <p></p>
+                        <p className={style.tableDataFontStyle}>
+                          {data.noticePeriodInDays}
+                        </p>
+                        <p className={style.tableDataFontStyle}>
+                          {data.curePeriodInDays}
+                        </p>
                         <img
                           src={EditHcRow}
                           alt="EditHcRow"

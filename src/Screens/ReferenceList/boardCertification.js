@@ -13,6 +13,7 @@ import EditHcRow from "./../../images/editHcRow.png";
 import { GET, DELETE, PUT } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import format from "date-fns/format";
 
 const BoardCertification = ({
   getAddEntityDialog,
@@ -317,7 +318,7 @@ const BoardCertification = ({
             >
               BOARD CERTIFICATION SPECIALTIES BY INDUSTRIES
             </p>
-            <p className={style.tableHeaderIndustriesFontStyle}>CREATED DATE</p>
+            <p className={style.tableHeaderIndustriesFontStyle}></p>
             <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
           </div>
           {
@@ -352,19 +353,12 @@ const BoardCertification = ({
                     <p className={style.tableDataFontStyle}>
                       {data?.primaryBoard.name}
                     </p>
+                    <p className={style.tableDataFontStyle}></p>
                     <p className={style.tableDataFontStyle}>
-                      {data.createdDate
-                        .split("T")[0]
-                        .split("-")
-                        .reverse()
-                        .join("-")}
-                    </p>
-                    <p className={style.tableDataFontStyle}>
-                      {data.lastModifiedDate
-                        .split("T")[0]
-                        .split("-")
-                        .reverse()
-                        .join("-")}
+                      {format(
+                        new Date(`${data.lastModifiedDate}`),
+                        "MM-dd-yyyy"
+                      )}
                     </p>
                     <img
                       src={EditHcFolder}
@@ -399,19 +393,12 @@ const BoardCertification = ({
                         <p className={style.tableDataFontStyle}>
                           {secondary?.name}
                         </p>
+                        <p className={style.tableDataFontStyle}></p>
                         <p className={style.tableDataFontStyle}>
-                          {data.createdDate
-                            .split("T")[0]
-                            .split("-")
-                            .reverse()
-                            .join("-")}
-                        </p>
-                        <p className={style.tableDataFontStyle}>
-                          {data.lastModifiedDate
-                            .split("T")[0]
-                            .split("-")
-                            .reverse()
-                            .join("-")}
+                          {format(
+                            new Date(`${data.lastModifiedDate}`),
+                            "MM-dd-yyyy"
+                          )}
                         </p>
                         <img
                           src={EditHcRow}
@@ -454,19 +441,12 @@ const BoardCertification = ({
                     <p className={style.tableDataFontStyle}>
                       {data?.primaryBoard.name}
                     </p>
+                    <p className={style.tableDataFontStyle}></p>
                     <p className={style.tableDataFontStyle}>
-                      {data.createdDate
-                        .split("T")[0]
-                        .split("-")
-                        .reverse()
-                        .join("-")}
-                    </p>
-                    <p className={style.tableDataFontStyle}>
-                      {data.lastModifiedDate
-                        .split("T")[0]
-                        .split("-")
-                        .reverse()
-                        .join("-")}
+                      {format(
+                        new Date(`${data.lastModifiedDate}`),
+                        "MM-dd-yyyy"
+                      )}
                     </p>
                     <img
                       src={EditHcRow}

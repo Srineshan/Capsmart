@@ -11,6 +11,7 @@ import EditHcRow from "./../../images/editHcRow.png";
 import { GET, DELETE } from "./../dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import format from "date-fns/format";
 
 const FunctionalTitles = ({
   getAddEntityDialog,
@@ -178,9 +179,6 @@ const FunctionalTitles = ({
         });
       });
     });
-    // console.log(allData);
-    // console.log(getEntityDataList);
-    // console.log(updateTableData);
   }, [getEntityDataList]);
 
   return (
@@ -341,11 +339,7 @@ const FunctionalTitles = ({
                   <p className={style.tableDataFontStyle}>{data?.alias1}</p>
                   <p className={style.tableDataFontStyle}>{data?.alias2}</p>
                   <p className={style.tableDataFontStyle}>
-                    {data.lastModifiedDate
-                      .split("T")[0]
-                      .split("-")
-                      .reverse()
-                      .join("-")}
+                    {format(new Date(`${data.lastModifiedDate}`), "MM-dd-yyyy")}
                   </p>
                   <img
                     src={EditHcRow}

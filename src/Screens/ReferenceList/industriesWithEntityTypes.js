@@ -10,6 +10,7 @@ import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
 import { GET, DELETE } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import format from "date-fns/format";
 
 const IndustriesWithEntityTypes = ({
   getAddEntityDialog,
@@ -150,12 +151,10 @@ const IndustriesWithEntityTypes = ({
             <p
               className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft40}`}
             >
-              {" "}
               ENTITY NAME
             </p>
             <p className={style.tableHeaderIndustriesFontStyle}>
-              {" "}
-              CREATED DATE
+              {/* CREATED DATE */}
             </p>
             <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
           </div>
@@ -195,19 +194,9 @@ const IndustriesWithEntityTypes = ({
                 }
               >
                 <p className={style.tableDataFontStyle}>{data.type}</p>
+                <p className={style.tableDataFontStyle}></p>
                 <p className={style.tableDataFontStyle}>
-                  {data.createdDate
-                    .split("T")[0]
-                    .split("-")
-                    .reverse()
-                    .join("-")}
-                </p>
-                <p className={style.tableDataFontStyle}>
-                  {data.lastModifiedDate
-                    .split("T")[0]
-                    .split("-")
-                    .reverse()
-                    .join("-")}
+                  {format(new Date(`${data.lastModifiedDate}`), "MM-dd-yyyy")}
                 </p>
                 <img
                   src={EditHcRow}

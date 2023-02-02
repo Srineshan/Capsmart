@@ -10,6 +10,7 @@ import AddSuffixEntity from "./addSuffixEntity";
 import { GET, DELETE } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import format from "date-fns/format";
 
 const SuffixByIndustries = ({
   getAddEntityDialog,
@@ -152,6 +153,7 @@ const SuffixByIndustries = ({
             >
               {`SUFFIX FOR ${selectedTitle}`}
             </p>
+            <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
           </div>
           {
             <div className={style.healthCareIndustriesHeader}>
@@ -189,7 +191,9 @@ const SuffixByIndustries = ({
                 }
               >
                 <p className={style.tableDataFontStyle}>{data.suffix}</p>
-                <p className={style.tableDataFontStyle}></p>
+                <p className={style.tableDataFontStyle}>
+                  {format(new Date(`${data.lastModifiedDate}`), "MM-dd-yyyy")}
+                </p>
                 <p className={style.tableDataFontStyle}></p>
                 <img
                   src={EditHcRow}
@@ -214,13 +218,6 @@ const SuffixByIndustries = ({
           })}
         </div>
       </div>
-
-      {/* {showAddEntityDialog && (
-        <AddIndustryTypeEntity
-          getAddEntityDialog={getAddEntityDialog}
-          getIndustryData={getIndustryData}
-        />
-      )} */}
 
       {showAddEntityDialog && (
         <AddSuffixEntity

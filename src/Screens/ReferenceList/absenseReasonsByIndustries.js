@@ -8,6 +8,7 @@ import AddAbsenseReasonsForHealthcare from "./addAbsenseReasonsForHealthcare";
 import { GET, DELETE } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import format from "date-fns/format";
 
 const AbsenseReasonsByIndustries = ({
   getAddEntityDialog,
@@ -150,6 +151,8 @@ const AbsenseReasonsByIndustries = ({
             >
               {`ABSENCE REASONS FOR ${selectedTitle}`}
             </p>
+            <p className={style.tableHeaderIndustriesFontStyle}></p>
+            <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
           </div>
           {tableEntityData?.filter((data) => data.absenceType === "PLANNED")
             .length !== 0 ? (
@@ -173,16 +176,21 @@ const AbsenseReasonsByIndustries = ({
                   <div
                     className={
                       innerIndex % 2 !== 0
-                        ? `${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                        : `${style.absenseLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                        ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                        : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
                     }
                   >
-                    <p></p>
                     <p className={style.tableDataFontStyle}>
                       {data.absenceReason}
                     </p>
                     <p className={style.tableDataFontStyle}>
                       {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
+                    </p>
+                    <p className={style.tableDataFontStyle}>
+                      {format(
+                        new Date(`${data.lastModifiedDate}`),
+                        "MM-dd-yyyy"
+                      )}
                     </p>
                     <img
                       src={EditHcRow}
@@ -229,16 +237,21 @@ const AbsenseReasonsByIndustries = ({
                   <div
                     className={
                       innerIndex % 2 !== 0
-                        ? `${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                        : `${style.absenseLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                        ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                        : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
                     }
                   >
-                    <p></p>
                     <p className={style.tableDataFontStyle}>
                       {data.absenceReason}
                     </p>
                     <p className={style.tableDataFontStyle}>
                       {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
+                    </p>
+                    <p className={style.tableDataFontStyle}>
+                      {format(
+                        new Date(`${data.lastModifiedDate}`),
+                        "MM-dd-yyyy"
+                      )}
                     </p>
                     <img
                       src={EditHcRow}
