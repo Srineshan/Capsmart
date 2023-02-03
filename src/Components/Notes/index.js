@@ -5,6 +5,7 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { ThemeProvider } from '@mui/styles';
 import { createTheme } from '@mui/material';
+import { TenantID } from "../../Screens/dataSaver";
 import MUIRichTextEditor from "mui-rte";
 import { convertToRaw } from 'draft-js'
 import { currentUser } from '../../utils/auth';
@@ -18,6 +19,8 @@ const Notes = () => {
     const [value, setValue] = useState('');
     const [stringValue, setStringValue] = useState('');
     const currentUserDetails = currentUser();
+
+    console.log(currentUserDetails)
 
     const handleOpenNotes = (index) => {
         setIsOpenNotes(true);
@@ -41,6 +44,38 @@ const Notes = () => {
             },
         },
     });
+
+    const handleSave = () => {
+        let value = {
+            tenant: {
+                id: TenantID
+            },
+            contractId: "string",
+            referenceId: "string",
+            notes: "string",
+            createdBy: {
+                id: "string",
+                name: {
+                    firstName: "string",
+                    lastName: "string",
+                    middleName: "string",
+                    suffix: {
+                        id: "string",
+                        suffix: "string"
+                    }
+                },
+                email: {
+                    officialEmail: "string"
+                },
+                contactNumber: {
+                    number: "string",
+                    missing: true
+                }
+            },
+            createdDate: "2023-01-27T12:43:08.285Z",
+            lastModifiedDate: "2023-01-27T12:43:08.285Z"
+        }
+    }
 
     console.log(value)
     return (

@@ -36,6 +36,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
         additionalScheduleFrequency: '',
         additionalScheduleRequired: true,
         billableService: true,
+        sameOnCallScheduleForAllDays: false,
         rateType: 'HOURLY',
         sessionDuration: '0',
         sessionAmount: '0',
@@ -191,29 +192,363 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Number of On Call Duty Days*</div>
-                <div className={style.displayInRow}>
-                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                        <div className={style.textElement}>MIN</div>
-                        <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                    </div>
-                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                        <div className={style.textElement}>MAX</div>
-                        <EditableText value={metadata?.max} placeholder='' onChange={(e) => e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                    </div>
-                    <Select
-                        displayEmpty
-                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                        className={`${style.fullWidth} ${style.marginLeft20}`}
-                        value={metadata?.frequency}
-                        onChange={(e) => handleValueChange('frequency', e.target.value)}
-                    >
-                        <MenuItem value="">Select Frequecy</MenuItem>
-                        <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Per Week</MenuItem>
-                        <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTH'}>Per Month</MenuItem>
-                    </Select>
+                <div className={style.extentionLableStyle}>Same On Call Schedule For All Days</div>
+                <div className={style.onCallBillableGrid}>
+                    <ThemeProvider theme={switchTheme}>
+                        <FormControlLabel
+                            control={
+                                <Switch checked={metadata?.sameOnCallScheduleForAllDays} className={` ${style.textAlignLeft}`} />
+                            }
+                            color='primary'
+                            className={`${style.switchFontStyle} ${style.flexLeft}`}
+                            label={metadata?.sameOnCallScheduleForAllDays ? 'YES' : 'NO'}
+                            onChange={(e) => handleValueChange('sameOnCallScheduleForAllDays', !metadata?.sameOnCallScheduleForAllDays)}
+                        />
+                    </ThemeProvider>
                 </div>
             </div>
+            {!metadata?.sameOnCallScheduleForAllDays && (
+                <div className={`${style.addonAddBox} ${style.marginTop20}`}>
+                    <div className={`${style.addManagerGrid}`}>
+                        <div className={style.extentionLableStyle}>Weekday</div>
+                        <div className={style.displayInRow}>
+                            <TimePicker
+                                useAmPm={false}
+                            />
+                            <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                            <TimePicker
+                                useAmPm={false}
+                            />
+                            <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
+                                <TextField
+                                    size="small"
+                                    type="tel"
+                                    maxLength="3"
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                                    }}
+                                    inputProps={{
+                                        style: {
+                                            height: 15,
+                                        },
+                                    }}
+                                // value={metadata?.sessionDuration}
+                                // onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Number of On Call Duty Days*</div>
+                        <div className={style.displayInRow}>
+                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                <div className={style.textElement}>MIN</div>
+                                <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                            </div>
+                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                <div className={style.textElement}>MAX</div>
+                                <EditableText value={metadata?.max} placeholder='' onChange={(e) => e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
+                            </div>
+                            <Select
+                                displayEmpty
+                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                className={`${style.fullWidth} ${style.marginLeft20}`}
+                                value={metadata?.frequency}
+                                onChange={(e) => handleValueChange('frequency', e.target.value)}
+                            >
+                                <MenuItem value="">Select Frequecy</MenuItem>
+                                <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Per Week</MenuItem>
+                                <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTH'}>Per Month</MenuItem>
+                            </Select>
+                        </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Weekend</div>
+                        <div>
+                            <div className={style.displayInRow}>
+                                <div className={style.displayInRow}>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${style.selectedDay}`}>F</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>M</div>
+                                </div>
+                                <div className={style.alignCenter}>
+                                    <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop10} ${style.marginRight}`}>To</p>
+                                </div>
+                                <div className={`${style.displayInRow} ${style.marginLeft20}`}>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>F</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${style.selectedDay}`}>M</div>
+                                </div>
+
+                            </div>
+                            <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                                <TimePicker
+                                    useAmPm={false}
+                                />
+                                <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                                <TimePicker
+                                    useAmPm={false}
+                                />
+                                <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
+                                    <TextField
+                                        size="small"
+                                        type="tel"
+                                        maxLength="3"
+                                        InputProps={{
+                                            endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                                        }}
+                                        inputProps={{
+                                            style: {
+                                                height: 15,
+                                            },
+                                        }}
+                                    // value={metadata?.sessionDuration}
+                                    // onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Number of On Call Duty Days*</div>
+                        <div className={style.displayInRow}>
+                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                <div className={style.textElement}>MIN</div>
+                                <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                            </div>
+                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                <div className={style.textElement}>MAX</div>
+                                <EditableText value={metadata?.max} placeholder='' onChange={(e) => e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
+                            </div>
+                            <Select
+                                displayEmpty
+                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                className={`${style.fullWidth} ${style.marginLeft20}`}
+                                value={metadata?.frequency}
+                                onChange={(e) => handleValueChange('frequency', e.target.value)}
+                            >
+                                <MenuItem value="">Select Frequecy</MenuItem>
+                                <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Per Week</MenuItem>
+                                <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTH'}>Per Month</MenuItem>
+                            </Select>
+                        </div>
+                    </div>
+                    {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Prior To Holiday</div>
+                    <div className={style.displayInRow}>
+                        <TimePicker
+                            useAmPm={false}
+                        />
+                        <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                        <TimePicker
+                            useAmPm={false}
+                        />
+                        <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
+                            <TextField
+                                size="small"
+                                type="tel"
+                                maxLength="3"
+                                InputProps={{
+                                    endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                                }}
+                                inputProps={{
+                                    style: {
+                                        height: 15,
+                                    },
+                                }}
+                            // value={metadata?.sessionDuration}
+                            // onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
+                            />
+                        </div>
+                    </div>
+                </div> */}
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Holiday</div>
+                        <div>
+                            <Select
+                                displayEmpty
+                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                className={`${style.threeFieldWidth}`}
+                                value={'Prior'}
+                            >
+                                <MenuItem value="">Select Holiday</MenuItem>
+                                <MenuItem value={'Prior'}>Prior to Holiday</MenuItem>
+                                <MenuItem value={'WEEK'}>On Holiday</MenuItem>
+                                <MenuItem value={'MONTH'}>Next to Holiday</MenuItem>
+                            </Select>
+                            <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                                <TimePicker
+                                    useAmPm={false}
+                                />
+                                <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                                <TimePicker
+                                    useAmPm={false}
+                                />
+                                <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
+                                    <TextField
+                                        size="small"
+                                        type="tel"
+                                        maxLength="3"
+                                        InputProps={{
+                                            endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                                        }}
+                                        inputProps={{
+                                            style: {
+                                                height: 15,
+                                            },
+                                        }}
+                                    // value={metadata?.sessionDuration}
+                                    // onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Number of On Call Duty Days*</div>
+                        <div className={style.displayInRow}>
+                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                <div className={style.textElement}>MIN</div>
+                                <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                            </div>
+                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                <div className={style.textElement}>MAX</div>
+                                <EditableText value={metadata?.max} placeholder='' onChange={(e) => e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
+                            </div>
+                            <Select
+                                displayEmpty
+                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                className={`${style.fullWidth} ${style.marginLeft20}`}
+                                value={metadata?.frequency}
+                                onChange={(e) => handleValueChange('frequency', e.target.value)}
+                            >
+                                <MenuItem value="">Select Frequecy</MenuItem>
+                                <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Per Week</MenuItem>
+                                <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTH'}>Per Month</MenuItem>
+                            </Select>
+                        </div>
+                    </div>
+                    {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Next to holiday</div>
+                    <div className={style.displayInRow}>
+                        <TimePicker
+                            useAmPm={false}
+                        />
+                        <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                        <TimePicker
+                            useAmPm={false}
+                        />
+                        <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
+                            <TextField
+                                size="small"
+                                type="tel"
+                                maxLength="3"
+                                InputProps={{
+                                    endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                                }}
+                                inputProps={{
+                                    style: {
+                                        height: 15,
+                                    },
+                                }}
+                            // value={metadata?.sessionDuration}
+                            // onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
+                            />
+                        </div>
+                    </div>
+                </div> */}
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Require Patient MRN</div>
+                        <div className={style.onCallBillableGrid}>
+                            <ThemeProvider theme={switchTheme}>
+                                <FormControlLabel
+                                    control={
+                                        <Switch checked={true} className={` ${style.textAlignLeft}`} />
+                                    }
+                                    color='primary'
+                                    className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                    label={'YES'}
+                                />
+                            </ThemeProvider>
+                        </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Require Patient Doc</div>
+                        <div className={style.onCallBillableGrid}>
+                            <ThemeProvider theme={switchTheme}>
+                                <FormControlLabel
+                                    control={
+                                        <Switch checked={true} className={` ${style.textAlignLeft}`} />
+                                    }
+                                    color='primary'
+                                    className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                    label={'YES'}
+                                />
+                            </ThemeProvider>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {metadata?.sameOnCallScheduleForAllDays && (
+                <>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Number of On Call Duty Days*</div>
+                        <div className={style.displayInRow}>
+                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                <div className={style.textElement}>MIN</div>
+                                <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                            </div>
+                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                <div className={style.textElement}>MAX</div>
+                                <EditableText value={metadata?.max} placeholder='' onChange={(e) => e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
+                            </div>
+                            <Select
+                                displayEmpty
+                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                className={`${style.fullWidth} ${style.marginLeft20}`}
+                                value={metadata?.frequency}
+                                onChange={(e) => handleValueChange('frequency', e.target.value)}
+                            >
+                                <MenuItem value="">Select Frequecy</MenuItem>
+                                <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Per Week</MenuItem>
+                                <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTH'}>Per Month</MenuItem>
+                            </Select>
+                        </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Require Patient MRN</div>
+                        <div className={style.onCallBillableGrid}>
+                            <ThemeProvider theme={switchTheme}>
+                                <FormControlLabel
+                                    control={
+                                        <Switch checked={true} className={` ${style.textAlignLeft}`} />
+                                    }
+                                    color='primary'
+                                    className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                    label={'YES'}
+                                />
+                            </ThemeProvider>
+                        </div>
+                    </div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Require Patient Doc</div>
+                        <div className={style.onCallBillableGrid}>
+                            <ThemeProvider theme={switchTheme}>
+                                <FormControlLabel
+                                    control={
+                                        <Switch checked={true} className={` ${style.textAlignLeft}`} />
+                                    }
+                                    color='primary'
+                                    className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                    label={'YES'}
+                                />
+                            </ThemeProvider>
+                        </div>
+                    </div>
+                </>
+            )}
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Additional Schedule*</div>

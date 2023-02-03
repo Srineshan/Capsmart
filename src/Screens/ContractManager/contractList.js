@@ -131,6 +131,8 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   }
 
   let dot = [];
+  let dotTooltipValues = [];
+  let warningHoverText = []; 
   let notification = [];
   let contractType = [];
   let contractId = [];
@@ -158,6 +160,8 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
   const getActiveContractsValues = () => {
     dot = [];
+    dotTooltipValues = [];
+    warningHoverText = [];
     notification = [];
     contractType = [];
     contractId = [];
@@ -177,6 +181,8 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     contracts?.map(data => {
       let contractorList = getContractors(data?.id);
       dot.push('green');
+      dotTooltipValues.push('In-Progress');
+      warningHoverText.push('Submitted Timesheets not in compliance with contract terms. contract requires specific terms to be modified');
       notification.push(<WarningAmberIcon style={{ color: '#FF6562' }} />);
       contractType.push(data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id || '-');
@@ -196,8 +202,8 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     })
 
     return [
-      { "type": "dot", "value": dot },
-      { "type": "icon", "icon": notification },
+      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
+      { "type": "icon", "icon": notification, "hoverText": warningHoverText, 'isShowHoverText': true },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
       // { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
@@ -213,6 +219,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
   const getDraftContractsValues = () => {
     dot = [];
+    dotTooltipValues = [];
     icon = [];
     iconHoverText = [];
     contractType = [];
@@ -229,6 +236,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
     contracts?.map(data => {
       dot.push('yellow');
+      dotTooltipValues.push('In-Progress');
       contractType.push(data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id);
       lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
@@ -248,7 +256,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     })
 
     return isDraft ? [
-      { "type": "dot", "value": dot },
+      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
       // { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
@@ -260,7 +268,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       { "type": "text", "value": manager, "onClickFunction": onClickFunction },
       { "type": "action", "value": action },
     ] : [
-      { "type": "dot", "value": dot },
+      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
@@ -276,6 +284,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
   const getUpcomingContractsValues = () => {
     dot = [];
+    dotTooltipValues = [];
     contractType = [];
     contractId = [];
     name = [];
@@ -287,6 +296,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
     contracts?.map(data => {
       dot.push('yellow');
+      dotTooltipValues.push('In-Progress');
       contractType.push(data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id);
       name.push(data?.contractName?.contractName);
@@ -298,7 +308,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     })
 
     return [
-      { "type": "dot", "value": dot },
+      { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
@@ -317,7 +327,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   ]
 
   const draftActionsData = [
-    {'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
+    { 'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean' },
     { 'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
     // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}
   ]

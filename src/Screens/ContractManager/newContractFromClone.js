@@ -9,6 +9,7 @@ import CompletedIcon from './../../images/completedIcon.png';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import RedWarning from './../../images/redWarning.png';
+import Tooltip from '@mui/material/Tooltip';
 import ServiceSpecification from './serviceSpecification';
 import { DELETE, TenantID, GET } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
@@ -112,10 +113,14 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                 <div className={`${style.documentCard} ${style.marginTop10}`}>
                     <div className={`${style.documentGrid}`}>
                         <a className={style.documentText} href={fileFields?.[i]?.filePath} target="_blank">
-                            <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }} />
+                            <Tooltip title={'Preview'} arrow>
+                                <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }} />
+                            </Tooltip>
                         </a>
                         <div className={style.marginTop}>
-                            <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.type}</strong></p>
+                            <Tooltip title={'Preview'} arrow>
+                                <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.type}</strong></p>
+                            </Tooltip>
                             <div className={style.spaceBetween}>
                                 <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.fileName}</strong></p>
                                 <div onClick={() => { getDeleteExecutedContractDialog(true); setFileDeletionIndex(i); }} className={style.floatRight}>
