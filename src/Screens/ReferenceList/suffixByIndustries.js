@@ -17,7 +17,6 @@ const SuffixByIndustries = ({
   showAddEntityDialog,
   sendLastDate,
 }) => {
-  const [showAddHcEntityDialog, setShowAddHcEntityDialog] = useState(false);
   const [sideMenu, setSideMenu] = useState([]);
   const [seletedEntity, setSelectedEntity] = useState({});
   const [selectedTitle, setSelectedTitle] = useState(`${sideMenu?.[0]?.id}`);
@@ -26,10 +25,6 @@ const SuffixByIndustries = ({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
   const [isEdit, setIsEdit] = useState(false);
-
-  const getAddHcEntityDialog = (value) => {
-    setShowAddHcEntityDialog(value);
-  };
 
   const entityAllData = async (industry) => {
     const { data: entities } = await GET(

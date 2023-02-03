@@ -109,7 +109,7 @@ const AddTerminationReasons = ({
           getTerminationReasonData();
         })
         .catch((error) => {
-          ErrorToaster(error);  
+          ErrorToaster(error);
         });
     } else {
       await PUT(
@@ -358,12 +358,25 @@ const AddTerminationReasons = ({
 
           <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <div></div>
-            <div
-              className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
-              onClick={() => SaveSubmitHandler("Add More")}
-            >
-              ADD MORE
-            </div>
+            {!isEdit && (
+              <>
+                {primaryReason.length > 0 || secondaryReason.length > 0 ? (
+                  <div
+                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                    onClick={() => SaveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                ) : (
+                  <div
+                    className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
+                    onClick={() => SaveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
         <div>
