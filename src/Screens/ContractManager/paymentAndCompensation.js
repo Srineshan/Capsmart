@@ -121,6 +121,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setTimesheetPaymentsValue()
     }, [timeSheetTabs?.length, timesheetPayments?.length])
 
+    console.log('timesheet tabs', timeSheetTabs);
+
     const setTimesheetPaymentsValue = () => {
         if (timeSheetTabs?.length && timesheetPayments?.length === 0) {
             console.log('init', timesheetPayments)
@@ -130,7 +132,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                     timesheetLabel: {
                         label: data?.timesheetLabel?.label
                     },
-                    paymentFrequency: "",
+                    paymentFrequency: data?.servicePeriod?.value,
                     maxPaymentPerTimesheetSubmission: parseFloat(0),
                     maxPaymentPerContract: parseFloat(0),
                     reducedNumberOfServices: "",
@@ -166,6 +168,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         getPaymentFields();
     }
 
+    console.log('timesheet', timesheetPayments);
+
     const getPaymentFields = () => {
         let temp = [];
         for (let i = 0; i < timesheetPayments?.length; i++) {
@@ -182,13 +186,19 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 labelId="demo-select-small"
                                 id="demo-select-small"
                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                value={timesheetPayments?.[i]?.paymentFrequency}
-                                onChange={(e) => updateTimesheetPayment(e.target.value, 'paymentFrequency', i)}
+                                value={timesheetPayments?.[i]?.paymentFrequency || ''}
+                            // value={timesheetPayments?.[i]?.paymentFrequency}
+                            // onChange={(e) => updateTimesheetPayment(e.target.value, 'paymentFrequency', i)}
                             >
-                                <MenuItem value={''}>Select Payment Frequency</MenuItem>
+                                <MenuItem value={'ENDOFMONTH'}>End of the month</MenuItem>
+                                <MenuItem value={'ENDOFEVERYWEEK'}>End of Every Week</MenuItem>
+                                <MenuItem value={'EVERY2WEEKS'}>Every 2 Weeks</MenuItem>
+                                <MenuItem value={'EVERY4WEEKS'}>Every 4 Weeks</MenuItem>
+                                <MenuItem value={'ONDAYOFSERVICE'}>On Day of Service</MenuItem>
+                                {/* <MenuItem value={''}>Select Payment Frequency</MenuItem>
                                 <MenuItem value={'WEEK'}>Per Week</MenuItem>
                                 <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                                <MenuItem value={'YEAR'}>Per Year</MenuItem>
+                                <MenuItem value={'YEAR'}>Per Year</MenuItem> */}
                             </Select>
                         </FormControl>
                     </div>
@@ -265,7 +275,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 </FormControl>
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Max. Compensation Value Per Contract*</div>
+                                <div className={style.extentionLableStyle}>Max. Compensation Value for Contract Period*</div>
                                 <TextField
                                     className={style.twoFieldWidth}
                                     type="number"

@@ -117,7 +117,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const getContractors = (id) => {
     let contractedUsers = [];
     users?.filter(user => user?.contracts?.map(contract => contract?.roles?.map(role => role?.roleName)?.includes('Activity Logger') && contract?.id)?.includes(id))?.map(data => {
-      let name = `${data?.name?.firstName} ${data?.name?.lastName || ''}`
+      let name = `${data?.name?.firstName}, ${data?.name?.lastName?.toUpperCase() || ''} ${data?.name?.suffix?.suffix || ''}`
       contractedUsers.push(name);
     });
     return contractedUsers;
@@ -178,7 +178,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       let contractorList = getContractors(data?.id);
       dot.push('green');
       notification.push(<WarningAmberIcon style={{ color: '#FF6562' }} />);
-      contractType.push(data?.contractType);
+      contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id || '-');
       lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
       lockHoverText.push('Contract available for other contract managers to access & work on');
@@ -229,7 +229,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
     contracts?.map(data => {
       dot.push('yellow');
-      contractType.push(data?.contractType);
+      contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id);
       lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
       lockHoverText.push('Contract available for other contract managers to access & work on');
@@ -287,7 +287,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
     contracts?.map(data => {
       dot.push('yellow');
-      contractType.push(data?.contractType);
+      contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
       contractId.push(data?.contractDetail?.contractId?.id);
       name.push(data?.contractName?.contractName);
       expirationDate.push('07/19/2019');
@@ -317,7 +317,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   ]
 
   const draftActionsData = [
-    {'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean'},
+    { 'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean' },
     { 'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
     // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}
   ]

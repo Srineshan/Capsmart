@@ -71,7 +71,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     addressLine: '',
     city: '',
     state: '',
-    zipcode:''
+    zipcode: ''
   })
   const [siteLevelTitle, setSiteLevelTitle] = useState({ title: '', id: '' });
   const [departmentLevelDepartment, setDepartmentLevelDepartment] = useState('');
@@ -389,7 +389,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         "notApplicable": npinNotApplicable,
         "npin": npin
       },
-      "personalEmailAddressAllowed":allowPersonalMail,
+      "personalEmailAddressAllowed": allowPersonalMail,
     }
     if (!isUserPresent) {
       await POST('user-management-service/user/register', JSON.stringify(data))
@@ -409,10 +409,10 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           ErrorToaster('Unexpected Error');
         });
     }
-    if(buttonType==='Continue'){
+    if (buttonType === 'Continue') {
       getViewPage3(true);
       getCurrentPage('Contractor Business Entity')
-    }else{
+    } else {
       getShowAlert(true);
     }
     getTabDataStatus();
@@ -444,8 +444,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     const { data: roles } = await GET('user-management-service/roles?roleType=APP');
     setRoles(roles);
     let temp = selectedRoles;
-    if(!selectedRoles?.map(data=>data?.roleName)?.includes('Activity Logger')){
-      temp.push(roles?.filter(role=>role?.roleName === 'Activity Logger')?.map(data=>data)[0]);
+    if (!selectedRoles?.map(data => data?.roleName)?.includes('Activity Logger')) {
+      temp.push(roles?.filter(role => role?.roleName === 'Activity Logger')?.map(data => data)[0]);
       setSelectedRoles(temp);
     }
   };
@@ -542,12 +542,12 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                 type="tel"
                 maxLength={10}
                 disabled={npinMissing || npinNotApplicable}
-                onChange={(e) =>e.target.value >= 0 && setNpin(e.target.value)} />
+                onChange={(e) => e.target.value >= 0 && setNpin(e.target.value)} />
               <FormGroup>
-                <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => {setNpinMissing(e.target.checked);setNpin('');setNpinNotApplicable(false);}} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
+                <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => { setNpinMissing(e.target.checked); setNpin(''); setNpinNotApplicable(false); }} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
               </FormGroup>
               <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => {setNpinNotApplicable(e.target.checked);setNpin('');setNpinMissing(false);}} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => { setNpinNotApplicable(e.target.checked); setNpin(''); setNpinMissing(false); }} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
               </FormGroup>
             </div>
           </div>
@@ -585,7 +585,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={changePersonalMail}/>
+                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={changePersonalMail} />
                   }
                   className={`${style.switchFontStyle}`}
                   label={allowPersonalMail ? 'YES' : 'NO'}
@@ -593,7 +593,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               </ThemeProvider>
               {allowPersonalMail &&
                 <div className={`${style.fullWidth} ${style.verticalAlignCenter}`} onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
-                  <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={contractorEmail} onChange={(e)=>setContractorEmail(e.target.value)}/>
+                  <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={contractorEmail} onChange={(e) => setContractorEmail(e.target.value)} />
                 </div>
               }
 
@@ -602,9 +602,9 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           {
             !allowPersonalMail && <div className={`${style.extentionGrid} ${style.marginTop20}`}
               onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
-              <div className={style.extentionLableStyle}>Email Contractor id*</div>
+              <div className={style.extentionLableStyle}>Contract Entity Email*</div>
               <div className={style.displayInRow}>
-                <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
+                <InputGroup placeholder="Enter contract entity email" className={`${style.entityFieldWidth}`}
                   value={contractorEmail}
                   maxLength={30}
                   onChange={(e) => setContractorEmail(e.target.value)} />
@@ -620,44 +620,44 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                 <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
                 <InputGroup placeholder="Numeric" value={contractorPhone} disabled={mobileNA} maxLength={15}
-                  onChange={(e) => {setContractorPhone(FormatPhoneNumber(e.target.value)); setMobileNA(false);}} className={`${style.fullWidth}`} />
+                  onChange={(e) => { setContractorPhone(FormatPhoneNumber(e.target.value)); setMobileNA(false); }} className={`${style.fullWidth}`} />
               </div>
               <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={mobileNA} onChange={(e)=>{setMobileNA(e.target.checked);if(e.target.checked){setContractorPhone('')}}}/>} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                <FormControlLabel control={<Checkbox value="NA" checked={mobileNA} onChange={(e) => { setMobileNA(e.target.checked); if (e.target.checked) { setContractorPhone('') } }} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
               </FormGroup>
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Address*</div>
+            <div className={style.extentionLableStyle}>Address</div>
             <div>
-            <InputGroup className={style.fullWidth} placeholder="Street"
-              value={address?.addressLine}
-              onChange={(e)=>setAddress({...address, addressLine:e.target.value})}
-              onFocus={() => { checkFieldAndPopAlert(address?.addressLine, 'Address Street') }}/>
-            <div className={`${style.grid3} ${style.marginTop20}`}>
-              <InputGroup className={style.fullWidth} placeholder="City"
-                value={address?.city}
-                maxLength={50}
-                onFocus={() => { checkFieldAndPopAlert(address?.city, 'Address City') }}
-                onChange={(e) => setAddress({...address, city:e.target.value})} />
-              <InputGroup className={style.fullWidth} placeholder="State"
-                value={address?.state}
-                maxLength={20}
-                onFocus={() => { checkFieldAndPopAlert(address?.state, 'Address State') }}
-                onChange={(e) => setAddress({...address, state:e.target.value})} />
-              <InputGroup className={style.fullWidth} placeholder="Zipcode"
-                value={address?.zipcode}
-                maxLength={5}
-                onFocus={() => { checkFieldAndPopAlert(address?.zipcode, 'Address Zip Code') }}
-                onChange={(e) => setAddress({...address, zipcode:e.target.value})} />
-            </div>
+              <InputGroup className={style.fullWidth} placeholder="Street"
+                value={address?.addressLine}
+                onChange={(e) => setAddress({ ...address, addressLine: e.target.value })}
+                onFocus={() => { checkFieldAndPopAlert(address?.addressLine, 'Address Street') }} />
+              <div className={`${style.grid3} ${style.marginTop20}`}>
+                <InputGroup className={style.fullWidth} placeholder="City"
+                  value={address?.city}
+                  maxLength={50}
+                  onFocus={() => { checkFieldAndPopAlert(address?.city, 'Address City') }}
+                  onChange={(e) => setAddress({ ...address, city: e.target.value })} />
+                <InputGroup className={style.fullWidth} placeholder="State"
+                  value={address?.state}
+                  maxLength={20}
+                  onFocus={() => { checkFieldAndPopAlert(address?.state, 'Address State') }}
+                  onChange={(e) => setAddress({ ...address, state: e.target.value })} />
+                <InputGroup className={style.fullWidth} placeholder="Zipcode"
+                  value={address?.zipcode}
+                  maxLength={5}
+                  onFocus={() => { checkFieldAndPopAlert(address?.zipcode, 'Address Zip Code') }}
+                  onChange={(e) => setAddress({ ...address, zipcode: e.target.value })} />
+              </div>
             </div>
           </div>
         </div>
 
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { checkFieldAndPopAlert(siteLevel? siteTitleValues?.length : true, 'Site Level Responsibility') }}>
+          onFocus={() => { checkFieldAndPopAlert(siteLevel ? siteTitleValues?.length : true, 'Site Level Responsibility') }}>
           <div className={style.extentionLableStyle}>Site Level Responsibility*</div>
           <div>
             <div className={style.flexLeft}>
@@ -672,7 +672,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               </ThemeProvider>
             </div>
             {siteLevel && (
-              <div className={`${style.siteLevelBoxStyle}`} onFocus={()=>checkFieldAndPopAlert(siteTitleValues?.length, 'Site Level Responsibility')}>
+              <div className={`${style.siteLevelBoxStyle}`} onFocus={() => checkFieldAndPopAlert(siteTitleValues?.length, 'Site Level Responsibility')}>
                 <div className={`${style.siteLevelGrid}`}>
                   <div className={style.marginTop}>Site*</div>
                   <select
@@ -712,7 +712,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { checkFieldAndPopAlert(departmentLevel ? departmentTitleValues?.length : true,'Department Level Responsibility') }}>
+          onFocus={() => { checkFieldAndPopAlert(departmentLevel ? departmentTitleValues?.length : true, 'Department Level Responsibility') }}>
           <div className={style.extentionLableStyle}>Department Level Responsibility*</div>
           <div>
             <div className={style.flexLeft}>
@@ -814,14 +814,14 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         </div>
       </div>
       {isEditable &&
-      <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-        <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
-        <div>
-          <button className={style.newContractOutlinedButton} onClick={() => handleSave('Save In Progress')}>SAVE IN-PROGRESS</button>
-          <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => {handleSave('Continue')}}>CONTINUE</button>
+        <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+          <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
+          <div>
+            <button className={style.newContractOutlinedButton} onClick={() => handleSave('Save In Progress')}>SAVE IN-PROGRESS</button>
+            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('Continue') }}>CONTINUE</button>
+          </div>
         </div>
-      </div>
-  }
+      }
     </div>
   )
 }

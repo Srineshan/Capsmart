@@ -105,6 +105,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
         setIsMultiSiteEntity(data?.multiSiteEntity);
     }
 
+    console.log('files', fileFields);
+
     const getFileData = () => {
         let temp = [];
         for (let i = 0; i < fileFields?.length || 0; i++) {
@@ -115,7 +117,9 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }} />
                         </a>
                         <div className={style.marginTop}>
-                            <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.type}</strong></p>
+                            <a href={fileFields?.[i]?.filePath} target="_blank">
+                                <p className={`${style.documentText} ${style.leftAlign} ${style.removeUnderline}`} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }}><strong>{fileFields?.[i]?.type}</strong></p>
+                            </a>
                             <div className={style.spaceBetween}>
                                 <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.fileName}</strong></p>
                                 <div onClick={() => { getDeleteExecutedContractDialog(true); setFileDeletionIndex(i); }} className={style.floatRight}>

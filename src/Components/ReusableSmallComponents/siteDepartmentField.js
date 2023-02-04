@@ -132,7 +132,7 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
           </FormControl>
         }
         <FormControl sx={{ minWidth: 120 }} size="small">
-          <InputLabel id="demo-multiple-checkbox-label">Select Dept</InputLabel>
+          <InputLabel id="demo-multiple-checkbox-label">Select Service Area / Dept</InputLabel>
           <Select
             labelId="demo-multiple-checkbox-label"
             id="demo-select-small"
@@ -140,7 +140,7 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
             value={departmentsSelected}
             onChange={(e) => { onDepartmentSelect(e) }}
             displayEmpty
-            input={<OutlinedInput label="Select Dept" />}
+            input={<OutlinedInput label="Select Service Area / Dept" />}
             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
           >
             {

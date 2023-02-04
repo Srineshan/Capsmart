@@ -492,9 +492,9 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
           </div>
           {!allowPersonalMail &&
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              <div className={style.extentionLableStyle}>Email Contractor id*</div>
+              <div className={style.extentionLableStyle}>Contract Entity Email*</div>
               <div className={style.displayInRow}>
-                <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
+                <InputGroup placeholder="Enter contract entity email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
               </div>
             </div>
           }
@@ -519,7 +519,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Address*</div>
+            <div className={style.extentionLableStyle}>Address</div>
             <div>
               <InputGroup className={style.fullWidth} placeholder="Street"
                 value={address?.addressLine}

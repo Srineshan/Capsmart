@@ -1,5 +1,6 @@
 import React from 'react';
 import { GET } from './../dataSaver';
+import { CLINIC, SURGERY, SUPPLEMENTAL, ADDON, ADMINISTRATIVE } from '../../Constants';
 
 export const validateContractIDTermLimit = (contract) => {
   let fieldData = [{ field: 'Contract Name', value: contract?.contractName?.contractName },
@@ -48,10 +49,6 @@ export const validateContractProvider = async (contract) => {
     { field: 'Suffix', value: user?.name?.suffix?.id },
     { field: 'Contract Provider Email', value: user?.email?.officialEmail },
     { field: 'Mobile Number', value: user?.communication?.mobileNumber },
-    { field: 'Address Line', value: user?.address?.addressLine },
-    { field: 'City', value: user?.address?.city },
-    { field: 'State', value: user?.address?.state },
-    { field: 'Zipcode', value: user?.address?.zipcode }
     ];
     let temp = [];
     temp.push(user?.name?.firstName);
@@ -87,7 +84,7 @@ export const validateServices = (contract) => {
 
   }
   services?.map((service, index) => {
-    if (service?.activityType?.activityType !== 'Administrative / Miscellaneous Services' && service?.activityType?.activityType !== 'Add-On Services') {
+    if (service?.activityType?.activityType !== ADMINISTRATIVE && service?.activityType?.activityType !== ADDON) {
       let fieldData = [{ field: 'sites', value: service?.sites?.length },
       { field: 'Activities', value: service?.activities?.length },
 
@@ -96,10 +93,10 @@ export const validateServices = (contract) => {
       { field: 'Working Hours - From', value: service?.workingPeriod?.from },
       { field: 'Working Hours - To', value: service?.workingPeriod?.to }
       ];
-      if (service?.activityType?.activityType !== 'Supplemental Services') {
+      if (service?.activityType?.activityType !== SUPPLEMENTAL) {
         fieldData.push({ field: 'Duration', value: service?.duration?.hours });
       }
-      if (service?.activityType?.activityType === 'Clinic Blocks' || service?.activityType?.activityType === 'Surgery Session') {
+      if (service?.activityType?.activityType === CLINIC || service?.activityType?.activityType === SURGERY) {
         fieldData.push(...[{ field: 'Service Schedule', value: service?.contractedSchedule?.minimum?.value },
         { field: 'Service Schedule Frequency', value: service?.contractedSchedule?.frequency }])
       }

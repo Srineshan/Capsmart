@@ -27,6 +27,7 @@ import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
 import { workFlowDataGenerator } from './workflowDataGenerator';
+import { CLINIC, SURGERY, ONCALL, SUPPLEMENTAL, ADDON, ADMINISTRATIVE } from '../../Constants';
 import Notes from '../../Components/Notes';
 
 const switchTheme = createTheme({
@@ -38,9 +39,9 @@ const switchTheme = createTheme({
 });
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex, isEditable, getTabDataStatus }) => {
-  const serviceTypeList = ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days', 'Supplemental Services', 'Add-On Services', 'Administrative / Miscellaneous Services'];
+  const [serviceTypeList, setServiceTypeList] = useState([]);
   const siteTypeId = sessionStorage.getItem('entityTypeId');
-  const [serviceType, setServiceType] = useState('Clinic Blocks');
+  const [serviceType, setServiceType] = useState(CLINIC);
   const [addOnButton, setAddOnButton] = useState('');
   const [siteList, setSiteList] = useState([]);
   const [allLocation, setAllLocation] = useState([]);
@@ -80,6 +81,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [contractDocumentList, setContractDocumentList] = useState([]);
   const [notesData, setNotesData] = useState([]);
 
+  useEffect(() => {
+    getServiceList();
+  }, [])
+
+  console.log('const', CLINIC);
+
 
   useEffect(() => {
     if (editService) {
@@ -116,6 +123,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     }
   }, [metadata, isWorkFlowUpdated])
+
+  const getServiceList = async () => {
+    const { data: serviceList } = await GET(`entity-service/serviceMaster`);
+    setServiceTypeList(serviceList?.map(data => data?.service));
+  }
 
   let rightHelpArea = helpTool?.calculator || helpTool?.textArea;
 
@@ -265,7 +277,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   const addOnWorkFlow = async (buttonType) => {
     setAddOnButton(buttonType);
-    if (serviceType === 'Add-On Services' && editService && metadata?.[0]?.approver !== undefined) {
+    if (serviceType === ADDON && editService && metadata?.[0]?.approver !== undefined) {
       let dataValue = [];
       let temp = metadata;
       temp?.map((data, index) => {
@@ -319,7 +331,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
       })
     }
-    else if (serviceType === 'Add-On Services' && !editService) {
+    else if (serviceType === ADDON && !editService) {
       let dataValue = [];
       let data = [];
       let temp = metadata;
@@ -388,7 +400,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Atleast one location has to be selected if yes');
       return;
     }
-    if (serviceType === 'Clinic Blocks' && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
+    if (serviceType === CLINIC && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
       console.log('contract term periods', contractTermPeriod, metadata?.contractedSchedules?.[0]?.startDate, metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate);
       ErrorToaster('Selected Duration Should be equal to the contract strat and end date');
       return;
@@ -408,19 +420,19 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     let performingActivity = '';
     let activities = [];
     let dependentActivities = [];
-    if (serviceType !== 'Supplemental Services' && serviceType !== 'Add-On Services' && serviceType !== 'Administrative / Miscellaneous Services') {
+    if (serviceType !== SUPPLEMENTAL && serviceType !== ADDON && serviceType !== ADMINISTRATIVE) {
       performingActivity = selectedActivity?.map(data => data?.activity?.activity)?.join('-')
       selectedActivity?.map(data => {
         activities?.push({ "activity": data?.activity?.activity })
       })
     }
-    if (serviceType === 'Administrative / Miscellaneous Services') {
+    if (serviceType === ADMINISTRATIVE) {
       performingActivity = metadata?.selectedActivities?.map(data => data?.activity)?.join('-')
       metadata?.selectedActivities?.map(data => {
         activities?.push({ "activity": data?.activity })
       })
     }
-    if (serviceType === 'On Call Coverage Duty Days') {
+    if (serviceType === ONCALL) {
       console.log('data check check', metadata?.additionalActivity, metadata);
       let temp = metadata?.additionalActivity;
 
@@ -450,21 +462,21 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     console.log('in add dependent', dependentActivities);
 
-    if (serviceType === 'Supplemental Services') {
+    if (serviceType === SUPPLEMENTAL) {
       performingActivity = metadata?.supplementServiceName?.map(data => data)?.join('-') || '';
       metadata?.supplementServiceName?.map(data => (
         activities.push({ "activity": data })
       ));
     }
     let data = [];
-    if (serviceType === 'Add-On Services' && !editService) {
+    if (serviceType === ADDON && !editService) {
       console.log('inside metadata', metadata);
       data = metadata;
     }
     else {
       console.log('metadata', metadata);
       let dataValues = metadata;
-      if (serviceType === 'Add-On Services') {
+      if (serviceType === ADDON) {
         dataValues = metadata?.[0];
       }
       data = [{
@@ -479,7 +491,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         },
         "activities": activities,
 
-        ...((serviceType === 'Supplemental Services' || serviceType === 'Administrative / Miscellaneous Services') &&
+        ...((serviceType === SUPPLEMENTAL || serviceType === ADMINISTRATIVE) &&
         {
           "hoursBorrowed": {
             "activityType": {
@@ -490,8 +502,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             }
           }
         }),
-        "locations": serviceType === 'Add-On Services' ? dataValues?.locations : selectedLocation,
-        ...((serviceType === 'Clinic Blocks' && {
+        "locations": serviceType === ADDON ? dataValues?.locations : selectedLocation,
+        ...((serviceType === CLINIC && {
           "contractedSchedules": metadata?.contractedSchedules,
           "patientsSeenTargets": metadata?.patientsSeenTargets,
           "scheduledPatientsTargets": metadata?.scheduledPatientsTargets
@@ -523,7 +535,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           },
           "noTargetApplicable": dataValues?.targetNoTargetApplicable
         },
-        ...(serviceType === 'Supplemental Services' && {
+        ...(serviceType === SUPPLEMENTAL && {
           "additionalSchedule": {
             "value": parseInt(dataValues?.additionalScheduleValue),
             "frequency": dataValues?.additionalScheduleFrequency,
@@ -533,14 +545,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "rateType": dataValues?.rateType,
         "activityResponse": {
           "dataMap": {
-            ...(serviceType === 'On Call Coverage Duty Days' && {
+            ...(serviceType === ONCALL && {
               'onCallCoverageFor': dataValues?.onCallCoverageFor,
             }
             ),
-            ...(serviceType === 'Administrative / Miscellaneous Services' && {
+            ...(serviceType === ADMINISTRATIVE && {
               'adminActivities': dataValues?.selectedActivities,
             }),
-            ...(serviceType === 'Add-On Services' && {
+            ...(serviceType === ADDON && {
               'selectedActivityId': dataValues?.activityResponse?.dataMap?.selectedActivityId,
               'additionalDetails': dataValues?.activityResponse?.dataMap?.additionalDetails || [],
             })
@@ -557,7 +569,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "frequency": dataValues?.totalSessionFrequency
         },
         "serviceDays": dataValues?.serviceDays,
-        ...(serviceType === 'On Call Coverage Duty Days' && {
+        ...(serviceType === ONCALL && {
           "dependentService": {
             "payableAmount": {
               "value": parseInt(dataValues?.dependencyPayableAmount)
@@ -578,18 +590,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
           "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
         },
-        ...(serviceType === 'Add-On Services' && {
+        ...(serviceType === ADDON && {
           workFlow: dataValues?.workFlow,
         }),
         "activityApprovalWFRequired": dataValues?.activityApprovalWFRequired || false,
         "designateSpecificContractor": isDesignatedSpecificContractor,
-        "locationSpecified": serviceType === 'Add-On Services' ? dataValues?.locationSpecified : showLocation,
-        "dedicatedHoursSpecified": ['Supplemental Services', 'Administrative / Miscellaneous Services'].includes(serviceType) ? dataValues?.dedicatedHoursSpecified : false,
+        "locationSpecified": serviceType === ADDON ? dataValues?.locationSpecified : showLocation,
+        "dedicatedHoursSpecified": [SUPPLEMENTAL, ADMINISTRATIVE].includes(serviceType) ? dataValues?.dedicatedHoursSpecified : false,
         "billableService": dataValues?.billableService,
         "dependantServiceIncluded": dataValues?.dependantServiceIncluded || false,
       }]
     }
-    if (editService && serviceType === 'Add-On Services') {
+    if (editService && serviceType === ADDON) {
       data[0].activities = metadata?.[0]?.activities;
       data[0].performingActivity = { activity: metadata?.[0]?.performingActivity };
     }
@@ -874,7 +886,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   </div>
                 )}
                 {
-                  serviceType !== 'Administrative / Miscellaneous Services' && serviceType !== 'Add-On Services' && serviceType !== 'Supplemental Services' &&
+                  serviceType !== ADMINISTRATIVE && serviceType !== ADDON && serviceType !== SUPPLEMENTAL &&
                   <div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                       <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
@@ -895,31 +907,19 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 }
 
 
-                {serviceType !== 'Add-On Services' && <div>
+                {serviceType !== ADDON && <div>
                   <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                    <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
+                    <div className={style.extentionLableStyle}>Specify Service Facility / Location (Cost Center)*</div>
                     <div>
                       <div className={`${style.displayInRow} `}>
-                        <ThemeProvider theme={switchTheme}>
-                          <FormControlLabel
-                            control={
-                              <Switch className={`${style.textAlignLeft} `} />
-                            }
-                            color='primary'
-                            checked={showLocation}
-                            onChange={() => onShowLocationChange(!showLocation)}
-                            className={`${style.switchFontStyle} ${style.flexLeft} `}
-                            label={showLocation ? 'YES' : 'NO'}
-                          />
-                        </ThemeProvider>
-                        {showLocation &&
-                          <div className={`${style.addGrid} ${style.fullWidth} `}>
-                            <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
-                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
-                              <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
-                            </div>
+
+                        <div className={`${style.addGrid} ${style.fullWidth} `}>
+                          <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
+                          <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
+                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                           </div>
-                        }
+                        </div>
+
 
                       </div>
                       {
@@ -930,15 +930,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   </div>
                 </div>}
 
-                {serviceType === 'Clinic Blocks'
+                {serviceType === CLINIC
                   ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} />
-                  : serviceType === 'Surgery Session'
+                  : serviceType === SURGERY
                     ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
-                    : serviceType === 'On Call Coverage Duty Days'
+                    : serviceType === ONCALL
                       ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
-                      : serviceType === 'Supplemental Services'
+                      : serviceType === SUPPLEMENTAL
                         ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />
-                        : serviceType === 'Add-On Services'
+                        : serviceType === ADDON
                           ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} />
                           : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
               </div>

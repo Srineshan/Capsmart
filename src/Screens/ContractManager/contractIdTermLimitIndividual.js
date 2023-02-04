@@ -550,6 +550,12 @@ const ContractIdTermLimitIndividual = (
     checkFieldAndPopAlert(value ? sites?.filter(data => data?.departmentList?.departments?.length !== 0)?.map(data => data)?.length : true, 'Department Specific Contract')
   }
 
+  const changeContractFile = (value) => {
+    if (fullyExecutedContractData?.length === 0 || value) {
+      setFullyExecutedContract(value);
+    }
+  }
+
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -635,7 +641,9 @@ const ContractIdTermLimitIndividual = (
               <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch checked={fullyExecutedContract} className={`${style.floatLeft}`} onChange={() => { setFullyExecutedContract(!fullyExecutedContract) }} />
+                    <Switch checked={fullyExecutedContract} className={`${style.floatLeft}`}
+                      onChange={() => changeContractFile(!fullyExecutedContract)}
+                    />
                   }
                   color='primary'
                   className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
@@ -870,7 +878,7 @@ const ContractIdTermLimitIndividual = (
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
+          <div className={style.extentionLableStyle}>Contract Time Commitment*</div>
           <div className={style.contractedTime}>
             <InputGroup type="tel" maxLength={3} value={contractedTimeCommitment?.value} placeholder="0" onChange={(e) => e.target.value >= 0 && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value })} />
             <select
@@ -915,7 +923,7 @@ const ContractIdTermLimitIndividual = (
                   One Time Contract - Terminate On Expiration
                 </option>
                 <option value="WRITTENCONTRACTEXTENSIONFORFIXEDTERM" >
-                  Written Contract Extension For Fixed Term
+                  Extension By Mutual Written Signed Agreement.
                 </option>
               </select>
             </div>
