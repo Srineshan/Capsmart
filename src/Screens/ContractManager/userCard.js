@@ -5,6 +5,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import { GET } from '../dataSaver';
 import { formatInTimeZone } from 'date-fns-tz'
+import { Link } from 'react-router-dom';
 
 import style from './index.module.scss';
 
@@ -27,9 +28,11 @@ const UserCard = ({ getIsExpanded }) => {
     return (
         <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
             <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                <label for="file-upload">
-                    <img src={DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
-                </label>
+                <Link to={'/profile'} className={style.noFontStyle}>
+                    <label for="file-upload">
+                        <img src={DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
+                    </label>
+                </Link>
                 <input id="file-upload" type="file" />
                 <div className={style.marginLeft20}>
                     <div className={style.userNameStyle}>

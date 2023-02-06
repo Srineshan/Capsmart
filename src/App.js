@@ -26,7 +26,8 @@ const SetupComplete = React.lazy(() => import('./Screens/SuperAdminDashboard/set
 const OTPPage = React.lazy(() => import('./Screens/SuperAdminDashboard/otpPage'));
 const WelcomeToDashboard = React.lazy(() => import('./Screens/SuperAdminDashboard/welcomeToDashboard'));
 const EntryPage = React.lazy(() => import('./Screens'));
-const Users = React.lazy(() => import('./Screens/UserManagement'))
+const Profile = React.lazy(() => import('./Components/Profile'));
+const Users = React.lazy(() => import('./Screens/UserManagement'));
 const ReportsHome = React.lazy(() => import('./Screens/Reports'));
 const TimeSheetReportsBase = React.lazy(() => import('./Screens/Reports/reports'));
 const ChartPage = React.lazy(() => import('./Screens/Reports/chart'));
@@ -115,6 +116,7 @@ const App = ({ props }) => {
             <Routes>
               <Route path="/" element={<Login />} {...props} />
               <Route path="/contracts" element={<ActiveContracts />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/user" element={<Users />} />
               <Route path="/pages" element={<EntryPage />} />
               <Route path="/setPassword/:userId" element={<SetPassword />} />

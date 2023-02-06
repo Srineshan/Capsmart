@@ -3,7 +3,10 @@ import { InputGroup, RadioGroup, Radio, Tag, TagInput } from '@blueprintjs/core'
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import FormGroup from '@mui/material/FormGroup';
+import FormControl from '@mui/material/FormControl';
 import { FormatPhoneNumber } from './../../utils/formatting';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -675,7 +678,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               <div className={`${style.siteLevelBoxStyle}`} onFocus={() => checkFieldAndPopAlert(siteTitleValues?.length, 'Site Level Responsibility')}>
                 <div className={`${style.siteLevelGrid}`}>
                   <div className={style.marginTop}>Site*</div>
-                  <select
+                  {/* <select
                     name="class"
                     id="Class"
                     value={siteLevelSite?.id}
@@ -689,7 +692,21 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                         {data?.name}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
+                  <FormControl size="small">
+                    <Select
+                      labelId="demo-select-small"
+                      id="demo-select-small"
+                      value={siteLevelSite?.id}
+                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                      onChange={(e) => setSiteLevelSite({ id: e.target.value, name: sites?.filter(data => data?.id === e.target.value)?.map(data => data?.name)[0] })}
+                      SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                    >
+                      {sites?.map((data, index) => (
+                        <MenuItem key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>{data?.name}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </div>
                 {/* )} */}
                 <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
@@ -732,7 +749,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                   {/* {selectedContract === "Multiple Contractor" && ( */}
                   <div className={`${style.siteLevelGrid}`}>
                     <div className={style.marginTop}>Site*</div>
-                    <select
+                    {/* <select
                       name="class"
                       id="Class"
                       value={departmentLevelSite?.id}
@@ -746,12 +763,26 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                           {data?.name}
                         </option>
                       ))}
-                    </select>
+                    </select> */}
+                    <FormControl size="small">
+                      <Select
+                        labelId="demo-select-small"
+                        id="demo-select-small"
+                        value={departmentLevelSite?.id}
+                        onChange={(e) => handleSelectedDepartmentSite(e.target.value)}
+                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                      >
+                        {sites?.map((data, index) => (
+                          <MenuItem key={index} value={data?.id}>{data?.name}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </div>
                   {/* )} */}
                   <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                     <div className={style.marginTop}>Department*</div>
-                    <select
+                    {/* <select
                       name="class"
                       id="Class"
                       value={departmentLevelDepartment?.id}
@@ -766,7 +797,22 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                         </option>
                       )
                       }
-                    </select>
+                    </select> */}
+                    <FormControl size="small">
+                      <Select
+                        labelId="demo-select-small"
+                        id="demo-select-small"
+                        value={departmentLevelDepartment?.id}
+                        onChange={(e) => onSelectDepartment(e.target.value)}
+                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                      >
+                        <MenuItem value="Select Department">Select Department</MenuItem>
+                        {sites?.map((data, index) => (
+                          <MenuItem key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>{data?.name}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </div>
                   <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                     <div className={style.marginTop}>Title*</div>
@@ -792,8 +838,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
           onFocus={() => { checkFieldAndPopAlert(true, 'Assign Contractor With App User Role') }}>
           <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
-          <div className={`${style.reduce10Left} ${style.marginRight}`}>
-            <select
+          {/* <select
               name="class"
               id="Class"
               onChange={(e) => handleRoles(e.target.value)}
@@ -806,11 +851,24 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                   {data?.roleName}
                 </option>
               ))}
-            </select>
-            <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+            </select> */}
+          <FormControl size="small">
+            <Select
+              labelId="demo-select-small"
+              id="demo-select-small"
+              onChange={(e) => handleRoles(e.target.value)}
+              className={`${style.fullWidth}`}
+              SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+            >
+              <MenuItem value="0">Select Role-multi select</MenuItem>
+              {roles?.map((data, index) => (
+                <MenuItem key={`${data}-${index}`} value={data?.roleName}>{data?.roleName}</MenuItem>
+              ))}
+            </Select>
+            <div className={`${style.marginTop20}`}>
               {rolesTags}
             </div>
-          </div>
+          </FormControl>
         </div>
       </div>
       {isEditable &&
