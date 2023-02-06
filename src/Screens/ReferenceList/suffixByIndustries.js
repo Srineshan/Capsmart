@@ -10,13 +10,13 @@ import AddSuffixEntity from "./addSuffixEntity";
 import { GET, DELETE } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import format from "date-fns/format";
 
 const SuffixByIndustries = ({
   getAddEntityDialog,
   showAddEntityDialog,
   sendLastDate,
 }) => {
-  const [showAddHcEntityDialog, setShowAddHcEntityDialog] = useState(false);
   const [sideMenu, setSideMenu] = useState([]);
   const [seletedEntity, setSelectedEntity] = useState({});
   const [selectedTitle, setSelectedTitle] = useState(`${sideMenu?.[0]?.id}`);
@@ -25,10 +25,6 @@ const SuffixByIndustries = ({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
   const [isEdit, setIsEdit] = useState(false);
-
-  const getAddHcEntityDialog = (value) => {
-    setShowAddHcEntityDialog(value);
-  };
 
   const entityAllData = async (industry) => {
     const { data: entities } = await GET(
@@ -45,14 +41,12 @@ const SuffixByIndustries = ({
     setSideMenu([]);
     let allEntries = await Promise.all(industryData.map(entityAllData));
     setSideMenu(allEntries);
-    let allDates = [];
-    allEntries.forEach((e) => {
-      let dates = e.nameSuffix.map((row) => new Date(row.lastModifiedDate));
-      allDates.push(...dates);
-    });
-    let sorted = allDates.sort((a, b) => a - b).reverse();
-    let lastModifiedDate = sorted[0].toString().split("+")[0];
-    const date = new Date(lastModifiedDate);
+
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
+    );
+
+    const date = new Date(lastModifiedDate.nameSuffix.lastModified);
 
     sendLastDate(
       date
@@ -68,30 +62,13 @@ const SuffixByIndustries = ({
         })
         .toUpperCase()
     );
-
-    localStorage.setItem(
-      "nameSuffix",
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          year: "numeric",
-          month: "long",
-        })
-        .toUpperCase()
-    );
-
-    var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-    if (showList.indexOf(lastModifiedDate) == -1) {
-      showList.push(lastModifiedDate);
-      localStorage.setItem("showList", JSON.stringify(showList));
-    }
   };
 
   const getEntityData = async () => {
-    const { data: data } = await GET(
+    const { data: nameSuffixData } = await GET(
       `entity-service/nameSuffixMaster?industryId=${industryId}`
     );
-    setTableEntityData(data);
+    setTableEntityData(nameSuffixData);
   };
 
   const SelectedHandler = (data) => {
@@ -171,6 +148,7 @@ const SuffixByIndustries = ({
             >
               {`SUFFIX FOR ${selectedTitle}`}
             </p>
+            <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
           </div>
           {
             <div className={style.healthCareIndustriesHeader}>
@@ -208,7 +186,9 @@ const SuffixByIndustries = ({
                 }
               >
                 <p className={style.tableDataFontStyle}>{data.suffix}</p>
-                <p className={style.tableDataFontStyle}></p>
+                <p className={style.tableDataFontStyle}>
+                  {format(new Date(`${data.lastModifiedDate}`), "MM-dd-yyyy")}
+                </p>
                 <p className={style.tableDataFontStyle}></p>
                 <img
                   src={EditHcRow}
@@ -233,13 +213,6 @@ const SuffixByIndustries = ({
           })}
         </div>
       </div>
-
-      {/* {showAddEntityDialog && (
-        <AddIndustryTypeEntity
-          getAddEntityDialog={getAddEntityDialog}
-          getIndustryData={getIndustryData}
-        />
-      )} */}
 
       {showAddEntityDialog && (
         <AddSuffixEntity

@@ -1,18 +1,12 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import Navbar from "../../Components/Navbar";
-import SideBar from "./../../Components/Sidebar";
-import { Icon, Intent } from "@blueprintjs/core";
 import AddCompanyHoliday from "./addCompanyHoliday";
+import AddHolidayType from "./addHolidayType";
 import { format } from "date-fns";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import AddNewEntity from "./../../images/addEntity.png";
-import AddRefresh from "./../../images/refreshEntity.png";
 import OpenFolder from "./../../images/openFolder.png";
 import BlackBorderFolder from "./../../images/blackBorderFolder.png";
-import BlueFolder from "./../../images/blueFolder.png";
 import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
-import SemiTransparentFolder from "./../../images/semiTransparentFolder.png";
 import TransparentFolder from "./../../images/transparentFolder.png";
 import ArrowDown from "./../../images/arrowDown.png";
 import DeleteHcRow from "./../../images/deleteHcRow.png";
@@ -25,40 +19,54 @@ import style from "./index.module.scss";
 const BoardCertification = ({
   getAddEntityDialog,
   showAddEntityDialog,
-  rotate,
   sendLastDate,
 }) => {
   const [showAddCompanyHolidayDialog, setShowAddCompanyHolidayDialog] =
     useState(false);
-  const [selectedIndustry, setSelectedIndustry] = useState({});
+  const [selectedIndustry, setSelectedIndustry] = useState("");
   const [holidayData, setHolidayData] = useState([]);
   const [country, setCountry] = useState("USA");
   const [isEdit, setIsEdit] = useState(false);
   const [selectedHoliday, setSelectedHoliday] = useState({});
   const [holidayId, setHolidayId] = useState("");
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [allData, setAllData] = useState([]);
+  const [clicked, setClicked] = useState(0);
+  const [industryData, setIndustryData] = useState({});
+  const [industryId, setIndustryId] = useState("");
+  const [collapse, setCollapse] = useState(false);
+  const [selectedYear, setSelectedYear] = useState("");
+  const [year, setYear] = useState("");
+
+  const getAddHolidayDialog = (value) => {
+    setShowAddCompanyHolidayDialog(value);
+  };
+
+  const YearAllData = async (industry) => {
+    const { data: year } = await GET(
+      `entity-service/yearMaster?industryId=${industry.id}`
+    );
+    return await { ...industry, year };
+  };
 
   const getIndustryData = async () => {
-    const { data: data } = await GET(`entity-service/industryMaster`);
-    setSelectedIndustry(
-      data
-        ?.filter((data) => data?.industry === "HEALTHCARE")
-        ?.map((data) => data)
-    );
+    const { data: industryData } = await GET(`entity-service/industryMaster`);
+    setAllData([]);
+    let AllEntries = await Promise.all(industryData.map(YearAllData));
+    setAllData(AllEntries);
   };
 
   const getHolidayData = async () => {
     const { data: holidayData } = await GET(
-      `entity-service/holidayMaster?industryId=${selectedIndustry[0].id}&country=${country}`
+      `entity-service/holidayMaster?industryId=${industryId}&country=${country}&year=${selectedYear}`
     );
-    setHolidayData(
-      holidayData
-        ?.filter((data) => data?.country === "USA")
-        ?.map((data) => data)
-    );
-    let lastModifiedDate = "Fri Dec 30 2022 17:22:23 GMT";
-    const date = new Date(lastModifiedDate);
+    setHolidayData(holidayData);
 
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
+    );
+
+    const date = new Date(lastModifiedDate.holidayList.lastModified);
     sendLastDate(
       date
         .toLocaleString("en-US", {
@@ -73,23 +81,25 @@ const BoardCertification = ({
         })
         .toUpperCase()
     );
+  };
 
-    localStorage.setItem(
-      "holidayMaster",
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          year: "numeric",
-          month: "long",
-        })
-        .toUpperCase()
-    );
-
-    var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-    if (showList.indexOf(lastModifiedDate) == -1) {
-      showList.push(lastModifiedDate);
-      localStorage.setItem("showList", JSON.stringify(showList));
+  const handleToggle = (index, data) => {
+    if (clicked === index) {
+      return setClicked("0");
     }
+    setClicked(index);
+    setIndustryData(data);
+    setSelectedIndustry(data.industry);
+    setIndustryId(data.id);
+  };
+
+  const SelectedYearHandler = (data) => {
+    setSelectedYear(data.year);
+    setCollapse(!collapse);
+  };
+
+  const handleToggleYear = () => {
+    setCollapse(!collapse);
   };
 
   const handleDelete = () => {
@@ -119,126 +129,147 @@ const BoardCertification = ({
 
   useEffect(() => {
     getHolidayData();
-  }, [selectedIndustry, showAddCompanyHolidayDialog]);
+  }, [selectedYear, selectedIndustry]);
 
   useEffect(() => {
     getIndustryData();
   }, []);
 
   useEffect(() => {
-    if (rotate) {
-      getHolidayData();
-    }
-  }, [rotate]);
+    setIndustryId(allData?.[0]?.id);
+    setSelectedIndustry(allData?.[0]?.industry);
+    setSelectedYear(allData?.[0]?.year?.[0].year);
+  }, [allData]);
 
   return (
     <Fragment>
       <div className={style.departmentCardColumnsGrid}>
         <div>
-          <div
-            className={`${style.boardCertificationSideRows} ${style.displayInRow}`}
-          >
-            <img
-              src={BlackBorderFolder}
-              alt="HealthCareFolder"
-              className={`${style.colorFileStyle} ${style.marginLeft5}`}
-            />
-            <p
-              className={`${style.boardCertificationTextStyle1} ${style.marginLeft20}`}
-            >
-              HEALTHCARE
-            </p>
-            <p
-              className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}
-            >
-              -
-            </p>
-          </div>
-          <div
-            className={`${style.boardCertificationInnerFolderRows} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
-          >
-            <img
-              src={TransparentFolder}
-              className={`${style.colorFileStyle2} ${style.marginLeft15}`}
-              alt=""
-            />
-            <p
-              className={`${style.healthCareHeaderTextStyle} ${style.textColorBlue} `}
-            >
-              YEAR - 2021
-            </p>
-            <img
-              src={ArrowDown}
-              className={`${style.colorFileStyle3}`}
-              alt=""
-            />
-            <p></p>
-          </div>
-          <div
-            className={`${style.boardCertificationInnerFolderRows} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
-          >
-            <img
-              src={TransparentFolder}
-              className={`${style.colorFileStyle2} ${style.marginLeft15}`}
-              alt=""
-            />
-            <p className={style.healthCareHeaderTextStyle2}>COUNTRY</p>
-            <img
-              src={ArrowDown}
-              className={`${style.colorFileStyle3}`}
-              alt=""
-            />
-            <p></p>
-          </div>
-          <div
-            className={`${style.boardCertificationSideRows} ${style.displayInRow}`}
-          >
-            <img
-              src={BlackBorderFolder}
-              alt="FinanceFolder"
-              className={`${style.colorFileStyle} ${style.marginLeft5}`}
-            />
-            <p
-              className={`${style.boardCertificationTextStyle1} ${style.marginLeft20}`}
-            >
-              FINANCE
-            </p>
-            <img
-              src={OpenFolder}
-              alt="OpenFolder"
-              className={`${style.colorFileStyle} ${style.reduce10Left}`}
-            />
-          </div>
-          <div
-            className={`${style.boardCertificationSideRows} ${style.displayInRow}`}
-          >
-            <img
-              src={BlackBorderFolder}
-              alt="GovernmentFolder"
-              className={`${style.colorFileStyle} ${style.marginLeft5}`}
-            />
-            <p
-              className={`${style.boardCertificationTextStyle1} ${style.marginLeft20}`}
-            >
-              GOVERNMENT
-            </p>
-            <img
-              src={OpenFolder}
-              alt="OpenFolder"
-              className={`${style.colorFileStyle} ${style.reduce10Left}`}
-            />
-          </div>
+          {allData?.map((data, index) => {
+            return (
+              <>
+                <div
+                  className={`${style.boardCertificationSideRows} ${style.displayInRow}`}
+                  key={index}
+                  onClick={() => handleToggle(index, data)}
+                >
+                  <img
+                    src={BlackBorderFolder}
+                    alt="HealthCareFolder"
+                    className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                  />
+                  <p
+                    className={`${style.boardCertificationTextStyle1} ${style.marginLeft20}`}
+                  >
+                    {data.industry}
+                  </p>
+                  {clicked === index ? (
+                    <p
+                      className={`${style.boardCertificationTextStyle1} ${style.marginRight20}`}
+                    >
+                      -
+                    </p>
+                  ) : (
+                    <img
+                      src={OpenFolder}
+                      alt="OpenFolder"
+                      className={`${style.colorFileStyle} ${style.reduce10Left}`}
+                    />
+                  )}
+                </div>
+
+                <div
+                  className={
+                    clicked === index
+                      ? `${style.listWrapper} ${style.open}`
+                      : `${style.listWrapper}`
+                  }
+                >
+                  <div
+                    className={`${style.boardCertificationInnerFolderRows} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
+                    onClick={() => handleToggleYear()}
+                  >
+                    <img
+                      src={TransparentFolder}
+                      className={`${style.colorFileStyle2} ${style.marginLeft15}`}
+                      alt=""
+                    />
+                    <p
+                      className={`${style.healthCareHeaderTextStyle} ${style.textColorBlue} `}
+                    >
+                      YEAR - {selectedYear}
+                    </p>
+                    <img
+                      src={ArrowDown}
+                      className={`${style.colorFileStyle3}`}
+                      alt=""
+                    />
+                    <p></p>
+                  </div>
+                  {collapse &&
+                    data?.year.map((year, indx) => {
+                      return (
+                        <>
+                          <div
+                            className={`${style.boardCertificationInnerFolderRows} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
+                            key={indx}
+                            onClick={() => SelectedYearHandler(year)}
+                          >
+                            <img
+                              src={TransparentFolder}
+                              className={`${style.colorFileStyle2} ${style.marginLeft15}`}
+                              alt=""
+                            />
+                            <p
+                              className={
+                                year.year === selectedYear
+                                  ? `${style.healthCareHeaderTextStyle} ${style.textColorBlue} `
+                                  : `${style.healthCareHeaderTextStyle}`
+                              }
+                            >
+                              {`YEAR - ${year.year}`}
+                            </p>
+                            <p></p>
+                          </div>
+                        </>
+                      );
+                    })}
+
+                  <div
+                    className={`${style.boardCertificationInnerFolderRows} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
+                  >
+                    <img
+                      src={TransparentFolder}
+                      className={`${style.colorFileStyle2} ${style.marginLeft15}`}
+                      alt=""
+                    />
+                    <p className={style.healthCareHeaderTextStyle2}>USA</p>
+                    <img
+                      src={ArrowDown}
+                      className={`${style.colorFileStyle3}`}
+                      alt=""
+                    />
+                    <p></p>
+                  </div>
+                </div>
+              </>
+            );
+          })}
         </div>
+
         <div className={style.industriesEntityCardStyle}>
           <div className={style.tableHeaderTwoColumnsfrontRear}>
             <p
               className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft40}`}
             >
-              HOLIDAY SCHEDULE BY HEALTHCARE
+              HOLIDAY SCHEDULE BY {selectedIndustry}
             </p>
             <img
               src={AddNewEntity}
-              onClick={() => getAddEntityDialog(true)}
+              onClick={() => {
+                setIsEdit(false);
+                getAddHolidayDialog(true);
+              }}
               className={`${style.colorFileStyle}`}
               alt=""
             />
@@ -249,60 +280,75 @@ const BoardCertification = ({
               alt="IndustriesEntityFolder"
               className={`${style.colorFileStyle} ${style.marginLeft5}`}
             />
-            <p className={style.tableHeaderIndustriesFontStyle5}>USA 2022</p>
+            <p className={style.tableHeaderIndustriesFontStyle5}>
+              USA {selectedYear}
+            </p>
           </div>
-          {!rotate &&
-            holidayData?.map((data, index) => (
-              <div
-                className={`${style.holidayScheduleTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-                key={index}
-              >
-                <p></p>
-                <p className={style.tableDataFontStyle}>{data?.eventName}</p>
-                <p className={style.tableDataFontStyle}>
-                  {format(new Date(data?.eventDate), "MMMM d, yyyy")}
-                </p>
-                <p className={style.tableDataFontStyle}>
-                  {format(new Date(data?.eventDate), "EEEE")}
-                </p>
-                <p className={style.tableDataFontStyle}>{data?.eventType}</p>
-                <p className={style.tableDataFontStyle}>{data?.stateName}</p>
-                <img
-                  src={EditHcRow}
-                  className={style.colorFileStyle}
-                  onClick={() => {
-                    setIsEdit(true);
-                    setSelectedHoliday(data);
-                    setShowAddCompanyHolidayDialog(true);
-                  }}
-                  alt=""
-                />
-                <img
-                  src={DeleteHcRow}
-                  className={style.colorFileStyle}
-                  onClick={() => {
-                    handleDelete();
-                    setHolidayId(data?.id);
-                  }}
-                  alt=""
-                />
-              </div>
-            ))}
+          {holidayData?.map((data, index) => (
+            <div
+              className={
+                index % 2 !== 0
+                  ? `${style.holidayScheduleTableData} ${style.holidayTableDataColor1} ${style.displayInRow}`
+                  : `${style.holidayScheduleTableData} ${style.holidayTableDataColor2} ${style.displayInRow}`
+              }
+              key={index}
+            >
+              <p></p>
+              <p className={style.tableDataFontStyle}>{data?.eventName}</p>
+              <p className={style.tableDataFontStyle}>
+                {format(new Date(data?.eventDate), "MMMM d, yyyy")}
+              </p>
+              <p className={style.tableDataFontStyle}>
+                {format(new Date(data?.eventDate), "EEEE")}
+              </p>
+              <p className={style.tableDataFontStyle}>{data?.eventType}</p>
+              <p className={style.tableDataFontStyle}>{data?.stateName}</p>
+              <img
+                src={EditHcRow}
+                className={style.colorFileStyle}
+                onClick={() => {
+                  setIsEdit(true);
+                  setSelectedHoliday(data);
+                  setShowAddCompanyHolidayDialog(true);
+                }}
+                alt=""
+              />
+              <img
+                src={DeleteHcRow}
+                className={style.colorFileStyle}
+                onClick={() => {
+                  handleDelete();
+                  setHolidayId(data?.id);
+                }}
+                alt=""
+              />
+            </div>
+          ))}
         </div>
       </div>
+
       {showAddEntityDialog && (
+        <AddHolidayType getAddEntityDialog={getAddEntityDialog} />
+      )}
+
+      {showAddCompanyHolidayDialog && (
         <AddCompanyHoliday
-          getAddEntityDialog={getAddEntityDialog}
+          getAddHolidayDialog={getAddHolidayDialog}
           selectedIndustry={selectedIndustry}
           isEdit={isEdit}
           selectedHoliday={selectedHoliday}
+          holidayData={holidayData}
+          IndustryId={industryId}
+          getHolidayData={getHolidayData}
+          selectedYear={selectedYear}
         />
       )}
+
       {showDeleteConfirmation && (
         <DeleteConfirmation
           getShowDeleteConfirmation={getShowDeleteConfirmation}
           getDeleteConfirmation={getDeleteConfirmation}
-          confirmationText="Do you want to delete this holiday?"
+          confirmationText="Do you want to delete this Holiday ?"
         />
       )}
     </Fragment>

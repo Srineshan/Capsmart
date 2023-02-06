@@ -6,10 +6,14 @@ import TransparentFolder from "./../../images/transparentFolder.png";
 import ArrowDown from "./../../images/arrowDown.png";
 import DeleteHcRow from "./../../images/deleteHcRow.png";
 import EditHcRow from "./../../images/editHcRow.png";
+import EditHcFolder from "./../../images/editHcFolder.png";
+import DeleteHcFolder from "./../../images/deleteHcFolder.png";
+import SemiTransparentFolder from "./../../images/semiTransparentFolder.png";
 import Warning from "./../../images/warning.png";
 import { GET, DELETE } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import format from "date-fns/format";
 
 const DepartmentsByEntityTypes = ({
   getAddEntityDialog,
@@ -26,6 +30,7 @@ const DepartmentsByEntityTypes = ({
   const [selectedDepart, setSelectedDepart] = useState({});
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
+  const [isService, setIsService] = useState(false);
 
   const entityAllData = async (industry) => {
     const { data: entities } = await GET(
@@ -46,19 +51,12 @@ const DepartmentsByEntityTypes = ({
     const { data: industryData } = await GET(`entity-service/industryMaster`);
     let allEntries = await Promise.all(industryData.map(entityAllData));
     setAllData(allEntries);
-    let allDates = [];
-    allEntries.forEach((e) => {
-      e.entities.forEach((d) => {
-        let dates = d.departmentData.map(
-          (row) => new Date(row.lastModifiedDate)
-        );
-        allDates.push(...dates);
-      });
-    });
-    let sorted = allDates.sort((a, b) => a - b).reverse();
-    let lastModifiedDate = sorted[0].toString().split("+")[0];
 
-    const date = new Date(lastModifiedDate);
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
+    );
+
+    const date = new Date(lastModifiedDate.departments.lastModified);
 
     sendLastDate(
       date
@@ -74,28 +72,11 @@ const DepartmentsByEntityTypes = ({
         })
         .toUpperCase()
     );
-
-    localStorage.setItem(
-      "department",
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          year: "numeric",
-          month: "long",
-        })
-        .toUpperCase()
-    );
-
-    var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-    if (showList.indexOf(lastModifiedDate) == -1) {
-      showList.push(lastModifiedDate);
-      localStorage.setItem("showList", JSON.stringify(showList));
-    }
   };
 
   const getDepartmentData = async () => {
     const { data: departData } = await GET(
-      `entity-service/departmentMaster?siteTypeId=${selectedEntity?.id}`
+      `entity-service/departmentMaster/refListView?siteTypeId=${selectedEntity?.id}`
     );
     setDepartmentList(departData);
   };
@@ -272,7 +253,7 @@ const DepartmentsByEntityTypes = ({
                 DEPARTMENT / SERVICES AREA
               </p>
               <p className={style.tableHeaderIndustriesFontStyle}>
-                CREATED DATE
+                {/* CREATED DATE */}
               </p>
               <p className={style.tableHeaderIndustriesFontStyle}>
                 LAST UPDATED
@@ -290,54 +271,161 @@ const DepartmentsByEntityTypes = ({
                 </p>
               </div>
             }
-            {departmentList?.map((data, index) => (
-              <>
-                <div
-                  className={
-                    index % 2 === 0
-                      ? `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                      : `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                  }
-                >
-                  <p></p>
-                  <p className={style.tableDataFontStyle}>
-                    {data?.departmentName?.name}
-                  </p>
-                  <p className={style.tableDataFontStyle}>
-                    {data.createdDate
-                      .split("T")[0]
-                      .split("-")
-                      .reverse()
-                      .join("-")}
-                  </p>
-                  <p className={style.tableDataFontStyle}>
-                    {data.lastModifiedDate
-                      .split("T")[0]
-                      .split("-")
-                      .reverse()
-                      .join("-")}
-                  </p>
-                  <img
-                    src={EditHcRow}
-                    className={style.colorFileStyle}
-                    onClick={() => {
-                      setIsEdit(true);
-                      getAddEntityDialog(true);
-                      setSelectedDepart(data);
-                    }}
-                    alt=""
-                  />
-                  <img
-                    src={DeleteHcRow}
-                    className={style.colorFileStyle}
-                    onClick={() => {
-                      deleteHandler(data);
-                    }}
-                    alt=""
-                  />
-                </div>
-              </>
-            ))}
+            {departmentList?.map((data, index) => {
+              if (data?.serviceAreas.length !== 0) {
+                return (
+                  <>
+                    <div
+                      className={
+                        index % 2 === 0
+                          ? `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                          : `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                      }
+                    >
+                      <img
+                        src={SemiTransparentFolder}
+                        alt="SemiTransparentFolder"
+                        className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                      />
+                      <p className={style.tableDataFontStyle}>
+                        {data?.departmentName.name}
+                      </p>
+                      <p className={style.tableDataFontStyle}>
+                        {/* {data.createdDate
+                          .split("T")[0]
+                          .split("-")
+                          .reverse()
+                          .join("-")} */}
+                      </p>
+                      <p className={style.tableDataFontStyle}>
+                        {format(
+                          new Date(`${data.lastModifiedDate}`),
+                          "MM-dd-yyyy"
+                        )}
+                      </p>
+                      <img
+                        src={EditHcFolder}
+                        onClick={() => {
+                          getAddEntityDialog(true);
+                          setIsEdit(true);
+                          setIsService(false);
+                          setSelectedDepart(data);
+                        }}
+                        className={style.colorFileStyle}
+                        alt=""
+                      />
+                      <img
+                        src={DeleteHcFolder}
+                        className={style.colorFileStyle}
+                        alt=""
+                        // onClick={() => {
+                        //   deleteHandler(data);
+                        // }}
+                      />
+                    </div>
+                    {data?.serviceAreas.map((service, idx) => {
+                      return (
+                        <div
+                          className={
+                            idx % 2 === 0
+                              ? `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                              : `${style.departmentTableInnerFolderData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                          }
+                        >
+                          <p></p>
+                          <p className={style.tableDataFontStyle}>
+                            {service?.name}
+                          </p>
+                          <p className={style.tableDataFontStyle}>
+                            {/* {data.createdDate
+                              .split("T")[0]
+                              .split("-")
+                              .reverse()
+                              .join("-")} */}
+                          </p>
+                          <p className={style.tableDataFontStyle}>
+                            {format(
+                              new Date(`${data.lastModifiedDate}`),
+                              "MM-dd-yyyy"
+                            )}
+                          </p>
+                          <img
+                            src={EditHcRow}
+                            className={style.colorFileStyle}
+                            onClick={() => {
+                              setIsEdit(true);
+                              setIsService(true);
+                              getAddEntityDialog(true);
+                              setSelectedDepart(data);
+                            }}
+                            alt=""
+                          />
+                          <img
+                            src={DeleteHcRow}
+                            className={style.colorFileStyle}
+                            alt=""
+                            // onClick={() => {
+                            //   DeleteSecondaryBoardHandler(
+                            //     data?.id,
+                            //     secondary?.name
+                            //   );
+                            // }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </>
+                );
+              } else {
+                return (
+                  <>
+                    <div
+                      className={
+                        index % 2 === 0
+                          ? `${style.departmentTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                          : `${style.departmentTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                      }
+                    >
+                      <p></p>
+                      <p className={style.tableDataFontStyle}>
+                        {data?.departmentName?.name}
+                      </p>
+                      <p className={style.tableDataFontStyle}>
+                        {/* {data.createdDate
+                          .split("T")[0]
+                          .split("-")
+                          .reverse()
+                          .join("-")} */}
+                      </p>
+                      <p className={style.tableDataFontStyle}>
+                        {format(
+                          new Date(`${data.lastModifiedDate}`),
+                          "MM-dd-yyyy"
+                        )}
+                      </p>
+                      <img
+                        src={EditHcRow}
+                        className={style.colorFileStyle}
+                        onClick={() => {
+                          setIsEdit(true);
+                          getAddEntityDialog(true);
+                          setSelectedDepart(data);
+                        }}
+                        alt=""
+                      />
+                      <img
+                        src={DeleteHcRow}
+                        className={style.colorFileStyle}
+                        onClick={() => {
+                          deleteHandler(data);
+                        }}
+                        alt=""
+                      />
+                    </div>
+                  </>
+                );
+              }
+            })}
           </div>
         )}
       </div>
@@ -361,6 +449,7 @@ const DepartmentsByEntityTypes = ({
           selectedDepart={selectedDepart}
           departmentList={departmentList}
           selectedTitle={selectedTitle}
+          isService={isService}
         />
       )}
 

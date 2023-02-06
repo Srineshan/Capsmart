@@ -53,19 +53,12 @@ const BoardCertification = ({
     const { data: Entitydata } = await GET(`entity-service/industryMaster`);
     let allEntries = await Promise.all(Entitydata.map(entityAllData));
     setAllData(allEntries);
-    let allDates = [];
-    allEntries.forEach((e) => {
-      e.entities.forEach((d) => {
-        let dates = d.terminationType.map(
-          (row) => new Date(row.lastModifiedDate)
-        );
-        allDates.push(...dates);
-      });
-    });
-    let sorted = allDates.sort((a, b) => a - b).reverse();
-    let lastModifiedDate = sorted[0].toString().split("+")[0];
 
-    const date = new Date(lastModifiedDate);
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
+    );
+
+    const date = new Date(lastModifiedDate.terminationReason.lastModified);
 
     sendLastDate(
       date
@@ -81,23 +74,6 @@ const BoardCertification = ({
         })
         .toUpperCase()
     );
-
-    localStorage.setItem(
-      "terminationReason",
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          year: "numeric",
-          month: "long",
-        })
-        .toUpperCase()
-    );
-
-    var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-    if (showList.indexOf(lastModifiedDate) == -1) {
-      showList.push(lastModifiedDate);
-      localStorage.setItem("showList", JSON.stringify(showList));
-    }
   };
 
   const handleToggle = (index, data) => {
@@ -292,8 +268,12 @@ const BoardCertification = ({
                         <p className={style.tableDataFontStyle}>
                           {data.primary_reason}
                         </p>
-                        <p></p>
-                        <p></p>
+                        <p className={style.tableDataFontStyle}>
+                          {data.noticePeriodInDays}
+                        </p>
+                        <p className={style.tableDataFontStyle}>
+                          {data.curePeriodInDays}
+                        </p>{" "}
                         <img
                           src={EditHcFolder}
                           alt="EditHcFolder"
@@ -324,8 +304,12 @@ const BoardCertification = ({
                               <p className={style.tableDataFontStyle}>
                                 {secondary}
                               </p>
-                              <p></p>
-                              <p></p>
+                              <p className={style.tableDataFontStyle}>
+                                {data.noticePeriodInDays}
+                              </p>
+                              <p className={style.tableDataFontStyle}>
+                                {data.curePeriodInDays}
+                              </p>{" "}
                               <img
                                 src={EditHcRow}
                                 alt="EditHcRow"
@@ -361,8 +345,12 @@ const BoardCertification = ({
                         <p className={style.tableDataFontStyle}>
                           {data.primary_reason}
                         </p>
-                        <p></p>
-                        <p></p>
+                        <p className={style.tableDataFontStyle}>
+                          {data.noticePeriodInDays}
+                        </p>
+                        <p className={style.tableDataFontStyle}>
+                          {data.curePeriodInDays}
+                        </p>
                         <img
                           src={EditHcRow}
                           alt="EditHcRow"
