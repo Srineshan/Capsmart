@@ -344,7 +344,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             <img src={isTabsValid?.tab7 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Request Processing Workflow" && style.selectedContractEntityStyle}`}
+                    {/* <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Request Processing Workflow" && style.selectedContractEntityStyle}`}
                         onClick={() => {
                             setCurrentPage('Request Processing Workflow');
                             setSelectedField({ ...selectedField, fieldName: '' });
@@ -353,7 +353,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         {contractId !== '' && (
                             <img src={isTabsValid?.tab8 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
-                    </div>
+                    </div> */}
                 </div>
 
                 {currentPage === "Request Processing Workflow" ? (
@@ -374,6 +374,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         selectContractInfo={selectContractInfo}
                         contractId={contractId}
                         contractName={contractName}
+                        contract={contractSelected}
                         isEditable={isEditable}
                         getTabDataStatus={getTabDataStatus}
                     />

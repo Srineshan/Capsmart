@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { TextArea, InputGroup, Icon, Dialog, Classes, Intent, Checkbox } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import ToolBar from './toolbar';
+import { InputGroup } from '@blueprintjs/core';
 import { POST, GET, PUT } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ReviewerApproverField from './reviewerApproverField';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
+import ContractValidationCheckSummary from './contractValidationCheckSummary';
+
 
 import style from './index.module.scss';
 
-const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus }) => {
+const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus, contract }) => {
   const [timesheet, setTimesheet] = useState({ id: '', aggregator: '', reviewer: '', approver: '' });
   const [workFlowList, setWorkFlowList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +24,8 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [users, setUsers] = useState([]);
   const [provider, setProvider] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
+  const [isShowValidationCheck, setIsShowValidationCheck] = useState(false);
+
   const [selectedTimeSheet, setSelectedTimeSheet] = useState({ id: '', reviewer: '', approver: '' });
 
   useEffect(() => {
@@ -61,6 +62,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
       setUsers(userList);
     }
   }
+
+  const getContractValidationDialog = (value) => {
+    setIsShowValidationCheck(value);
+  }
+
 
   const getProviderData = async () => {
     if (contractId !== '' && selectContractInfo === 'MULTIPLE') {
@@ -330,10 +336,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
     if (buttontext === 'Continue') {
       getViewPage9(true);
-      getCurrentPage('Request Processing Workflow')
+      // getCurrentPage('Request Processing Workflow')
     } else {
       getNextTab();
     }
+    setIsShowValidationCheck(true);
   }
 
   const handleContinue = async (workflowId) => {
@@ -471,6 +478,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
           :
           <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Timesheet Submission Terms'} title={'NO TIMESHEET FOUND'} description={'No Timesheet Is Found.'} buttonText={'ADD TIMESHEET'} />
       }
+      {isShowValidationCheck && (
+        <ContractValidationCheckSummary getContractValidationDialog={getContractValidationDialog} contract={contract} />
+      )}
     </>
   )
 }
