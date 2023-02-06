@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from '../Navbar';
 import SideBar from '../Sidebar';
 import DoctorAnime from './../../images/doctorAnime.png';
@@ -7,11 +7,11 @@ import Dropzone from "react-dropzone";
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import Papa from 'papaparse';
-import { GET } from '../../Screens/dataSaver';
+import { GET, POST, PUT } from '../../Screens/dataSaver';
+import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
+import { currentUser } from '../../utils/auth';
 
 import style from './index.module.scss';
-import { currentUser } from '../../utils/auth';
-import { useEffect } from 'react';
 
 const dropzoneStyle = {
     width: "100%",
@@ -26,7 +26,13 @@ const Profile = () => {
     const [isExpanded, setIsExpanded] = useState(true);
     const [profile, setProfile] = useState({ firstName: "", lastName: "", email: "", secondaryEmail: "", username: "", password: "", newPassword: "", confirmPassword: "" });
     const [user, setUser] = useState({});
+    const [userToSend, setUserToSend] = useState({});
+    const [passwordStatus, setPasswordStatus] = useState('');
+    const [file, setFile] = useState('');
+    const [fileName, setFileName] = useState('');
+    const [profilePicToDisplay, setProfilePicToDisplay] = useState('');
     const currentUserDetails = currentUser();
+    const [isNewProfilePic, setIsNewProfilePic] = useState(true);
     const getIsExpanded = (value) => {
         setIsExpanded(value);
     }
@@ -41,16 +47,15 @@ const Profile = () => {
             lastName: user?.name?.lastName,
             email: user?.email?.officialEmail
         })
+        setUserToSend(user);
+        setIsNewProfilePic(user?.profilePic?.file?.fileURL !== null ? false : true);
     }, [user])
 
-    const changeHandler = (event) => {
-        Papa.parse(event?.[0], {
-            header: true,
-            skipEmptyLines: true,
-            complete: function (results) {
-                console.log(results.data)
-            },
-        });
+    const changeHandler = (e) => {
+        setProfilePicToDisplay(URL.createObjectURL(e.target.files[0]) || '');
+        setFileName(e.target.files?.[0]?.name);
+        setFile(e.target.files[0])
+        console.log(URL.createObjectURL(e.target.files[0]) || '', e.target.files[0], file)
     };
 
     const getUser = async () => {
@@ -58,7 +63,99 @@ const Profile = () => {
         setUser(user);
     };
 
-    // const saveProfileData 
+    const updateProfileData = async () => {
+        setUserToSend({
+            ...userToSend,
+            name: { ...userToSend.name, firstName: profile?.firstName, lastName: profile?.lastName },
+
+        })
+        if (file !== '') {
+            let data = {
+                ...(!isNewProfilePic &&
+                    { id: user?.profilePic?.id }),
+                userId: { id: user?.id },
+                file: {
+                    fileName: fileName,
+                    ...(!isNewProfilePic &&
+                        { filePath: user?.profilePic?.file?.filePath }),
+                    ...(!isNewProfilePic &&
+                        { fileURL: user?.profilePic?.file?.fileURL }),
+                },
+                ...(!isNewProfilePic &&
+                    { createdDate: user?.profilePic?.createdDate }),
+                ...(!isNewProfilePic &&
+                    { lastModifiedDate: user?.profilePic?.lastModifiedDate }),
+            }
+            const formData = new FormData();
+            formData.append('ProfilePicture', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            formData.append('pictureFile', file);
+            if (!isNewProfilePic) {
+                await PUT('user-management-service/user/profilePic', formData)
+                    .then(response => {
+                        SuccessToaster('Profile Pic Updated Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster('Unexpected Error');
+                    })
+            } else {
+                await POST('user-management-service/user/profilePic', formData)
+                    .then(response => {
+                        SuccessToaster('Profile Pic Updated Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster('Unexpected Error');
+                    })
+            }
+        }
+        await PUT('user-management-service/user', JSON.stringify({
+            ...userToSend,
+            name: { ...userToSend.name, firstName: profile?.firstName, lastName: profile?.lastName }
+        }))
+            .then(response => {
+                SuccessToaster('User Modified Successfully');
+            })
+            .catch(error => {
+                ErrorToaster('Unexpected Error');
+            })
+    }
+
+    const validatePassword = (password) => {
+        const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        return regex.test(password);
+    };
+
+    const changePassword = async () => {
+        if (profile?.newPassword !== "" && profile?.confirmPassword !== "") {
+            if (validatePassword(profile?.newPassword) && validatePassword(profile?.confirmPassword)) {
+                if (profile?.newPassword === profile?.confirmPassword) {
+                    let data = {
+                        oldPassword: {
+                            password: profile?.password
+                        },
+                        newPassword: {
+                            password: profile?.newPassword
+                        }
+                    }
+                    await PUT(`user-management-service/user/${user?.id}/changePassword`, JSON.stringify(data))
+                        .then(response => {
+                            SuccessToaster('Password Changed Successfully');
+                        })
+                        .catch(error => {
+                            ErrorToaster('Unexpected Error');
+                        })
+                } else {
+                    ErrorToaster('New Password and Confirm Password should be same');
+                }
+            } else {
+                ErrorToaster('Password must contain at least 8 characters, one letter, one number, and one special character.');
+            }
+        } else {
+            ErrorToaster('Enter New and Confirm Password')
+        }
+
+    }
 
     console.log(currentUserDetails, user, profile)
 
@@ -75,31 +172,34 @@ const Profile = () => {
                     <div className={style.profileSectionCard}>
                         <div className={style.headingStyle}>Profile Picture</div>
                         <div className={`${style.profilePictureGrid} ${style.marginTop20}`}>
-                            <img src={DoctorAnime} alt="" className={style.profileImgStyle} />
+                            <img src={profilePicToDisplay ? profilePicToDisplay : user?.profilePic?.file?.fileURL} alt="" className={style.profileImgStyle} />
                             <div className={style.marginLeft20}>
-                                <Dropzone style={dropzoneStyle} accept=".csv" onDrop={acceptedFiles => changeHandler(acceptedFiles)}>
+                                <label for="profile-upload">
+                                    <input id="profile-upload" type="file" accept="image/*" onChange={(e) => changeHandler(e)} />
+                                    {/* <Dropzone style={dropzoneStyle} accept='image/*' onDrop={acceptedFiles => changeHandler(acceptedFiles)}>
                                     {({ getRootProps, getInputProps }) => (
                                         <section>
                                             <div {...getRootProps()}>
-                                                <input {...getInputProps()} accept=".csv" />
-                                                <div className={`${style.uploadBox} ${style.alignCenter}`}>
-                                                    {/* <img src={CloudUpload} alt="cloud" className={style.uploadImgStyle} /> */}
-                                                    <div>
-                                                        <div className={style.justifyCenter}>
-                                                            <div className={`${style.uploadIconContainer} ${style.alignCenter}`}>
-                                                                <AddPhotoAlternateOutlinedIcon style={{ color: '#DBDBDB' }} />
-                                                            </div>
-                                                        </div>
-                                                        <div className={`${style.uploadTextStyle} ${style.cursorPointer}`}>
-                                                            <span className={style.blueText}>Click to upload</span> or drag and drop
-                                                        </div>
-                                                        <div className={style.uploadHelpText}>Formats: png, jpg, gif. (Max size: 800px * 400px)</div>
-                                                    </div>
+                                                <input {...getInputProps()} accept="image/*" /> */}
+                                    <div className={`${style.uploadBox} ${style.alignCenter}`}>
+                                        {/* <img src={CloudUpload} alt="cloud" className={style.uploadImgStyle} /> */}
+                                        <div>
+                                            <div className={style.justifyCenter}>
+                                                <div className={`${style.uploadIconContainer} ${style.alignCenter}`}>
+                                                    <AddPhotoAlternateOutlinedIcon style={{ color: '#DBDBDB' }} />
                                                 </div>
                                             </div>
+                                            <div className={`${style.uploadTextStyle} ${style.cursorPointer}`}>
+                                                <span className={style.blueText}>Click to upload</span> or drag and drop
+                                            </div>
+                                            <div className={style.uploadHelpText}>Formats: png, jpg, gif. (Max size: 800px * 400px)</div>
+                                        </div>
+                                    </div>
+                                    {/* </div>
                                         </section>
                                     )}
-                                </Dropzone>
+                                </Dropzone> */}
+                                </label>
                             </div>
                         </div>
                         <div className={`${style.headingStyle} ${style.marginTop50}`}>Personal Information</div>
@@ -131,7 +231,8 @@ const Profile = () => {
                         <div className={`${style.personalInformationGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.extentionLableStyle}>Username</div>
-                                <TextField size="small" className={style.fullWidth} value={profile?.username} onChange={(e) => setProfile({ ...profile, username: e.target.value })}
+                                <TextField size="small" className={style.fullWidth} value={profile?.username}
+                                    // onChange={(e) => setProfile({ ...profile, username: e.target.value })}
                                     inputProps={{
                                         style: {
                                             height: 15,
@@ -142,7 +243,8 @@ const Profile = () => {
                         <div className={`${style.personalInformationGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.extentionLableStyle}>Email</div>
-                                <TextField size="small" className={style.fullWidth} value={profile?.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                                <TextField size="small" className={style.fullWidth} value={profile?.email}
+                                    //  onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                                     inputProps={{
                                         style: {
                                             height: 15,
@@ -183,7 +285,7 @@ const Profile = () => {
                         <div className={`${style.personalInformationGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.extentionLableStyle}>New Password</div>
-                                <TextField size="small" className={style.fullWidth} value={profile?.newPassword} onChange={(e) => setProfile({ ...profile, newPassword: e.target.value })}
+                                <TextField size="small" className={style.fullWidth} value={profile?.newPassword} onChange={(e) => { setProfile({ ...profile, newPassword: e.target.value }) }}
                                     type="password"
                                     inputProps={{
                                         style: {
@@ -193,7 +295,7 @@ const Profile = () => {
                             </div>
                             <div className={style.marginLeft20}>
                                 <div className={style.extentionLableStyle}>Confirm Password</div>
-                                <TextField size="small" className={style.fullWidth} value={profile?.confirmPassword} onChange={(e) => setProfile({ ...profile, confirmPassword: e.target.value })}
+                                <TextField size="small" className={style.fullWidth} value={profile?.confirmPassword} onChange={(e) => { setProfile({ ...profile, confirmPassword: e.target.value }) }}
                                     type="password"
                                     inputProps={{
                                         style: {
@@ -202,10 +304,10 @@ const Profile = () => {
                                     }} />
                             </div>
                             <div className={`${style.displayInColRev}`}>
-                                <button onClick={() => { }} className={`${style.outlinedButton} ${style.marginLeft20} ${style.floatRight} ${style.cursorPointer} ${style.alignCenter}`} >Reset Password</button>
+                                <button onClick={() => { changePassword() }} className={`${style.outlinedButton} ${style.marginLeft20} ${style.floatRight} ${style.cursorPointer} ${style.alignCenter}`} >Reset Password</button>
                             </div>
                         </div>
-                        <button onClick={() => { }} className={`${style.normalButton} ${style.floatRight} ${style.cursorPointer} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`} >Save</button>
+                        <button onClick={() => { updateProfileData() }} className={`${style.normalButton} ${style.floatRight} ${style.cursorPointer} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`} >Save</button>
                     </div>
                 </div>
             </div>
