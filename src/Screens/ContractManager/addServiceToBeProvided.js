@@ -434,6 +434,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     if (serviceType === ONCALL) {
       console.log('data check check', metadata?.additionalActivity, metadata);
+
       let temp = metadata?.additionalActivity;
 
       temp?.map(activity => {
@@ -584,7 +585,68 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             // },
             "billableService": dataValues?.additionalActivityBillable,
             "paymentApprovalRequired": dataValues?.additionalActivityPaymentApprovalRequired,
-          }
+          },
+          ...(!dataValues?.customizeSchedule && {
+            "customschedule": {
+              "weekday": {
+                "from": dataValues?.weekdayFrom?.toLocaleTimeString('it-IT').toString(),
+                "to": dataValues?.weekdayTo?.toLocaleTimeString('it-IT').toString(),
+                "target": {
+                  "minimum": {
+                    "value": parseInt(dataValues?.weekdayMin)
+                  },
+                  "maximum": {
+                    "value": parseInt(dataValues?.weekdayMax)
+                  },
+                  "frequency": dataValues?.weekdayFrequency,
+                  // "startDate": null,
+                  // "endDate": null
+                },
+                "duration": {
+                  "hours": parseInt(dataValues?.weekdayDuration)
+                }
+              },
+              "weekend": {
+                "from": dataValues?.weekendFrom?.toLocaleTimeString('it-IT').toString(),
+                "to": dataValues?.weekendTo?.toLocaleTimeString('it-IT').toString(),
+                "startDay": dataValues?.weekendStartday,
+                "endDay": dataValues?.weekendEndday,
+                "target": {
+                  "minimum": {
+                    "value": parseInt(dataValues?.weekendMin)
+                  },
+                  "maximum": {
+                    "value": parseInt(dataValues?.weekendMax)
+                  },
+                  "frequency": dataValues?.weekendFrequency,
+                  // "startDate": null,
+                  // "endDate": null
+                },
+                "duration": {
+                  "hours": parseInt(dataValues?.weekendDuration)
+                }
+              },
+              "holiday": {
+                "from": dataValues?.holidayFrom?.toLocaleTimeString('it-IT').toString(),
+                "to": dataValues?.holidayTo?.toLocaleTimeString('it-IT').toString(),
+                "holidayTerm": dataValues?.holidayTerm,
+                "target": {
+                  "minimum": {
+                    "value": parseInt(dataValues?.holidayMin)
+                  },
+                  "maximum": {
+                    "value": parseInt(dataValues?.holidayMax)
+                  },
+                  "frequency": dataValues?.holidayFrequency,
+                  // "startDate": null,
+                  // "endDate": null
+                },
+                "duration": {
+                  "hours": parseInt(dataValues?.holidayDuration)
+                }
+              }
+            }
+          })
         }),
         "workingPeriod": {
           "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
@@ -593,12 +655,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         ...(serviceType === ADDON && {
           workFlow: dataValues?.workFlow,
         }),
+        "patientMRNRequired": dataValues?.patientMRNRequired || false,
+        "attendingDocRequired": dataValues?.attendingDocRequired || false,
         "activityApprovalWFRequired": dataValues?.activityApprovalWFRequired || false,
         "designateSpecificContractor": isDesignatedSpecificContractor,
         "locationSpecified": serviceType === ADDON ? dataValues?.locationSpecified : showLocation,
         "dedicatedHoursSpecified": [SUPPLEMENTAL, ADMINISTRATIVE].includes(serviceType) ? dataValues?.dedicatedHoursSpecified : false,
         "billableService": dataValues?.billableService,
         "dependantServiceIncluded": dataValues?.dependantServiceIncluded || false,
+        "customizedSchedule": dataValues?.customizedSchedule || false,
       }]
     }
     if (editService && serviceType === ADDON) {
@@ -638,6 +703,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setSelectedActivity([]);
     setSiteData([]);
   }
+
+  console.log('metadata', metadata);
 
   const handleUsers = (value) => {
     if (value !== '0') {

@@ -1,11 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import CloseIcon from '@mui/icons-material/Close';
-import EditIcon from '@mui/icons-material/Edit';
-import { EditableText } from '@blueprintjs/core';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import Switch from '@mui/material/Switch';
-import { TimePicker } from "@blueprintjs/datetime";
-import FormControlLabel from '@mui/material/FormControlLabel';
+import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import style from './index.module.scss';

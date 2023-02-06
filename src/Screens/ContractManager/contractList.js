@@ -180,8 +180,8 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
     contracts?.map(data => {
       let contractorList = getContractors(data?.id);
-      dot.push('green');
-      dotTooltipValues.push('In-Progress');
+      dot.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'yellow' : 'green');
+      dotTooltipValues.push(data?.subStatus === 'EXPIRING_IN_30_DAYS' ? 'Expiring in 30 days' : 'Auto Renewed');
       warningHoverText.push('Submitted Timesheets not in compliance with contract terms. contract requires specific terms to be modified');
       notification.push(<WarningAmberIcon style={{ color: '#FF6562' }} />);
       contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
