@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 import InputAdornment from '@mui/material/InputAdornment';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { CLINIC, SURGERY, ADDON } from '../../Constants';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 import { POST, GET, PUT } from './../dataSaver';
 import ReviewerApproverField from './reviewerApproverField';
@@ -94,7 +95,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
         workingTimeFrom: serviceSelected?.workingPeriod?.from,
         workingTimeTo: serviceSelected?.workingPeriod?.to,
         serviceDays: serviceSelected?.serviceDays,
-        activityType: { activityType: 'Add-On Services' },
+        activityType: { activityType: ADDON },
         performingActivity: serviceSelected?.performingActivity?.activity,
         payableAmount: { value: serviceSelected?.payableAmount?.value },
         locations: serviceSelected?.locations,
@@ -199,11 +200,11 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
 
   let serviceList = [];
   let temp = services;
-  temp?.filter(data => ['Clinic Blocks', 'Surgery Session']?.includes(data?.activityType?.activityType))?.map(data => {
+  temp?.filter(data => [CLINIC, SURGERY]?.includes(data?.activityType?.activityType))?.map(data => {
     let activityName = data?.activityType?.activityType;
     let activities = data?.activities?.map(data => data?.activity);
-    let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
-    let alreadyExist = services?.filter(data => data?.activityType?.activityType === 'Add-On Services' && data?.performingActivity?.activity === result)?.map(data => data);
+    let result = activities?.length !== 0 ? `${activityName} (${activities?.map(data => data)?.join(', ')})` : `${activityName}`;
+    let alreadyExist = services?.filter(data => data?.activityType?.activityType === ADDON && data?.performingActivity?.activity === result)?.map(data => data);
     if (alreadyExist?.length === 0) {
       serviceList.push(result);
     }
@@ -232,7 +233,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       let temp = metadata;
       const selectedData = cloneDeep(services?.filter(data => getServiceName(data?.activityType?.activityType, data?.activities?.map(data => data?.activity)) === name)?.map(data => data)[0]);
       selectedData.performingActivity = name;
-      selectedData.activityType = { activityType: 'Add-On Services' };
+      selectedData.activityType = { activityType: ADDON };
       selectedData.selectedActivityId = selectedData?.refId;
       selectedData.refId = null;
       temp.push(selectedData);
@@ -313,7 +314,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     temp.push({
       sites: [],
       activities: [{ activity: newServices?.name }],
-      activityType: { activityType: 'Add-On Services' },
+      activityType: { activityType: ADDON },
       performingActivity: newServices?.name,
       sessionAmount: newServices?.rate,
       locations: newServices?.locations,
@@ -433,7 +434,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               {metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired &&
                 <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], service) }} value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]} />
               }
-              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                 <div>
                   <div className={`${style.displayInRow} `}>
@@ -458,7 +459,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                     <MultiSelectDisplay values={getSelectedLocation(service)} removeItem={removeLocation} />
                   }
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         ))
@@ -601,7 +602,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               {data?.activityApprovalWFRequired &&
                 <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], data?.performingActivity) }} value={metadata?.[0]?.approver?.userId} />
               }
-              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                 <div>
                   <div className={`${style.displayInRow} `}>
@@ -627,7 +628,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                     <MultiSelectDisplay values={getSelectedLocation(data?.performingActivity)} removeItem={removeLocation} />
                   }
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         ))

@@ -31,6 +31,10 @@ body::-webkit-scrollbar {
     margin-top: 20px !important;
 }
 
+.removeUnderline {
+    text-decoration: none;
+}
+
 .marginTop {
     margin-top: 5px !important;
 }
@@ -2095,6 +2099,16 @@ input[type=number] {
 .flexCenter {
     display: flex;
     justify-content: center;
+}
+
+.scheduleTableGrid1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 2fr 1fr 2fr 1fr;
+}
+
+.scheduleTableGrid2 {
+    display: grid;
+    grid-template-columns: 2fr 0.5fr 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr 0.5fr;
 }
 
 .dayStyle {

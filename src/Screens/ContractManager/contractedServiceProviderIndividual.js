@@ -606,7 +606,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           {
             !allowPersonalMail && <div className={`${style.extentionGrid} ${style.marginTop20}`}
               onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
-              <div className={style.extentionLableStyle}>Email Contractor id*</div>
+              <div className={style.extentionLableStyle}>Contract Entity Email*</div>
               <div className={style.displayInRow}>
                 <CommonInputField placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
                   value={contractorEmail}
@@ -632,7 +632,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Address*</div>
+            <div className={style.extentionLableStyle}>Address</div>
             <div>
               <CommonInputField className={style.fullWidth} placeholder="Street"
                 value={address?.addressLine}

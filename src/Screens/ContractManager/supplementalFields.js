@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
+import { CLINIC, SURGERY, ONCALL } from '../../Constants';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
@@ -32,7 +33,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     const [supplementServiceName, setSupplementServiceName] = useState('');
 
     let specificDedicatedHoursList = [];
-    services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => {
+    services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
         let activities = data?.activities?.map(data => data?.activity);
         let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
@@ -40,7 +41,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     });
 
     const getAvailableActivities = () => {
-        let activitType = metadata?.dedicatedHoursActivityType !== '' ? [`${metadata?.dedicatedHoursActivityType}`] : ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days'];
+        let activitType = metadata?.dedicatedHoursActivityType !== '' ? [`${metadata?.dedicatedHoursActivityType}`] : [CLINIC, SURGERY, ONCALL];
         let temp = [];
         services?.filter(data => activitType?.includes(data?.activityType?.activityType))?.map(data => {
             let activityName = data?.activityType?.activityType;
@@ -53,7 +54,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     }
 
     const selectedHours = (index) => {
-        let temp = services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => data);
+        let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => data);
         let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
         let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
         setMetadata({

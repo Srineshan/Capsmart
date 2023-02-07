@@ -286,25 +286,34 @@ const AddFunctionalTitles = ({
           <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <div></div>
             {!isEdit && (
-              <div
-                className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
-                onClick={() => saveSubmitHandler("Add More")}
-              >
-                ADD MORE
-              </div>
+              <>
+                {title.length > 0 ? (
+                  <div
+                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                    onClick={() => saveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                ) : (
+                  <div
+                    className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
+                    onClick={() => saveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
-            {!isEdit && (
-              <button
-                className={style.outlinedButton}
-                onClick={() => getAddEntityDialog(false)}
-              >
-                CANCEL
-              </button>
-            )}
+            <button
+              className={style.outlinedButton}
+              onClick={() => getAddEntityDialog(false)}
+            >
+              CANCEL
+            </button>
             <button
               onClick={() => saveSubmitHandler("Save & Exit")}
               className={`${style.buttonStyle} ${style.marginLeft20}`}

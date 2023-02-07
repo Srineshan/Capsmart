@@ -106,6 +106,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
         setIsMultiSiteEntity(data?.multiSiteEntity);
     }
 
+    console.log('files', fileFields);
+
     const getFileData = () => {
         let temp = [];
         for (let i = 0; i < fileFields?.length || 0; i++) {
@@ -118,9 +120,13 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             </Tooltip>
                         </a>
                         <div className={style.marginTop}>
-                            <Tooltip title={'Preview'} arrow>
-                                <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.type}</strong></p>
-                            </Tooltip>
+                            <a href={fileFields?.[i]?.filePath} target="_blank">
+                                <p className={`${style.documentText} ${style.leftAlign} ${style.removeUnderline}`} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }}><strong>{fileFields?.[i]?.type}</strong></p>
+                                <Tooltip title={'Preview'} arrow>
+                                    <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.type}</strong></p>
+                                </Tooltip>
+                            </a>
+
                             <div className={style.spaceBetween}>
                                 <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.fileName}</strong></p>
                                 <div onClick={() => { getDeleteExecutedContractDialog(true); setFileDeletionIndex(i); }} className={style.floatRight}>
@@ -235,6 +241,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
         sessionStorage.setItem('isEditable', selectedContract !== 'draft' ? false : true);
     }
 
+    console.log('isTabsValid', isTabsValid);
+
     return (
         <div className={`${style.welcomePadding} ${style.addContractBody}`}>
             <div className={style.spaceBetween}>
@@ -336,7 +344,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             <img src={isTabsValid?.tab7 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Request Processing Workflow" && style.selectedContractEntityStyle}`}
+                    {/* <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Request Processing Workflow" && style.selectedContractEntityStyle}`}
                         onClick={() => {
                             setCurrentPage('Request Processing Workflow');
                             setSelectedField({ ...selectedField, fieldName: '' });
@@ -345,7 +353,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         {contractId !== '' && (
                             <img src={isTabsValid?.tab8 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
-                    </div>
+                    </div> */}
                 </div>
 
                 {currentPage === "Request Processing Workflow" ? (
@@ -366,6 +374,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         selectContractInfo={selectContractInfo}
                         contractId={contractId}
                         contractName={contractName}
+                        contract={contractSelected}
                         isEditable={isEditable}
                         getTabDataStatus={getTabDataStatus}
                     />

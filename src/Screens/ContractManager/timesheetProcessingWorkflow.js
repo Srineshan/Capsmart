@@ -5,10 +5,11 @@ import ReviewerApproverField from './reviewerApproverField';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import ContractValidationCheckSummary from './contractValidationCheckSummary';
 
 import style from './index.module.scss';
 
-const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus }) => {
+const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus, contract }) => {
   const [timesheet, setTimesheet] = useState({ id: '', aggregator: '', reviewer: '', approver: '' });
   const [workFlowList, setWorkFlowList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +23,8 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [users, setUsers] = useState([]);
   const [provider, setProvider] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
+  const [isShowValidationCheck, setIsShowValidationCheck] = useState(false);
+
   const [selectedTimeSheet, setSelectedTimeSheet] = useState({ id: '', reviewer: '', approver: '' });
 
   useEffect(() => {
@@ -59,11 +62,18 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     }
   }
 
+  const getContractValidationDialog = (value) => {
+    setIsShowValidationCheck(value);
+  }
+
+
   const getProviderData = async () => {
     if (contractId !== '' && selectContractInfo === 'MULTIPLE') {
       const { data: providerData } = await GET(`user-management-service/user?contractID=${contractId}`);
       if (providerData) {
-        setProvider(providerData);
+        let aggregatorUser = providerData?.filter(user => user?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.map(data => data);
+        console.log('aggregatorUser', aggregatorUser);
+        setProvider(aggregatorUser);
       }
     }
   }
@@ -313,11 +323,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   }
 
   const submit = async (buttontext) => {
-    if (timesheet?.reviewer === '0' || timesheet?.approver === '0') {
+    if (timesheet?.reviewer === '' || timesheet?.approver === '') {
       ErrorToaster('Select both Approver and Reviewer to save');
       return;
     }
-    if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '0') {
+    if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '') {
       ErrorToaster('Select Aggregator to save');
       return;
     }
@@ -325,10 +335,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
     if (buttontext === 'Continue') {
       getViewPage9(true);
-      getCurrentPage('Request Processing Workflow')
+      // getCurrentPage('Request Processing Workflow')
     } else {
       getNextTab();
     }
+    setIsShowValidationCheck(true);
   }
 
   const handleContinue = async (workflowId) => {
@@ -466,6 +477,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
           :
           <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Timesheet Submission Terms'} title={'NO TIMESHEET FOUND'} description={'No Timesheet Is Found.'} buttonText={'ADD TIMESHEET'} />
       }
+      {isShowValidationCheck && (
+        <ContractValidationCheckSummary getContractValidationDialog={getContractValidationDialog} contract={contract} />
+      )}
     </>
   )
 }

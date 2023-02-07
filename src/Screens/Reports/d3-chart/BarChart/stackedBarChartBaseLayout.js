@@ -61,27 +61,27 @@ import StackedBarChart from "./stackedBarChart";
 // ];
 
 // const allKeys = ["Done", "ToDo", "NotDone"];
-const allKeys = ['Medical / Surgical Care Contracted Services','Supplemental Services'];
+const allKeys = ['Medical / Surgical Care Contracted Services', 'Supplemental Services'];
 
 const colors = {
-  'Medical / Surgical Care Contracted Services':'#938AED',
-  'Supplemental Services':"#3B30AA"
+  'Medical / Surgical Care Contracted Services': '#938AED',
+  'Supplemental Services': "#3B30AA"
   // Done: "#938AED",
   // ToDo: "#3B30AA",
   // NotDone: "#0C0555"
 };
 
-const StackedBarChartBaseLayout = ({chartData}) => {
+const StackedBarChartBaseLayout = ({ chartData }) => {
   const [keys, setKeys] = useState(allKeys);
-  const [data,setData] = useState(chartData);
+  const [data, setData] = useState(chartData);
 
-  useEffect(()=>{
+  useEffect(() => {
     setData(chartData);
-  },[])
+  }, [])
 
-  useEffect(()=>{
+  useEffect(() => {
     setData(chartData);
-  },[chartData])
+  }, [chartData])
 
   return (
     <div>
@@ -101,7 +101,7 @@ const StackedBarChartBaseLayout = ({chartData}) => {
                 }
               }}
             />
-            <label htmlFor={key} style={{ color: colors[key], paddingLeft: 10, paddingRight: 20}}>
+            <label htmlFor={key} style={{ color: colors[key], paddingLeft: 10, paddingRight: 20 }}>
               {key}
             </label>
           </div>

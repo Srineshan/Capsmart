@@ -141,6 +141,11 @@
   margin-right: 60px;
 }
 
+
+.marginBottomZero {
+  margin-bottom: 0px;
+}
+
 .marginBottom {
   margin-bottom: 10px;
 }
@@ -1260,6 +1265,16 @@
   padding: 2px;
 }
 
+.buttonStyle3 {
+  background-color: #7165e3;
+  color: white;
+  border: 1px solid #7165e3;
+  height: 40px;
+  width: 140px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
 .healthCareListData {
   background: #f5f5f8 0% 0% no-repeat padding-box;
   min-height: 50px;
@@ -2211,4 +2226,22 @@
 
 .inputGroupText>input{
   text-align: center;
+}
+
+.selectDropdownInputBox{
+  border-radius: 4px;
+  background: transparent url('../../images/arrowDown.png') 0% 0% no-repeat padding-box;
+  border: 1px solid #E9E9F0;
+  background-position: right center;
+  background-repeat: no-repeat;
+  background-size: 2.5ex;
+  background-origin: content-box;
+}
+
+.holidayTableDataColor1 {
+  background-color: #F5F5F8;
+}
+
+.holidayTableDataColor2 {
+  background-color: #EFEEFC;
 }

@@ -167,7 +167,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
           "contractName": {
             "contractName": contractName
           },
-          "roles": roles?.filter(data => data?.id === '6344d59a45ca246bd12dd77b')?.map(data => data),
+          "roles": roles?.filter(data => data?.roleName === '6344d59a45ca246bd12dd77b' || data?.roleName === 'Aggregator')?.map(data => data),
           "sites": {
             "sites": []
           },
@@ -187,7 +187,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
           "mobileNumber": businessEntityUser?.contactNumber?.number,
           "landlineNumber": ""
         },
-        "roles": roles?.filter(data => data?.id === '6344d59a45ca246bd12dd77b')?.map(data => data),
+        "roles": roles?.filter(data => data?.roleName === '6344d59a45ca246bd12dd77b' || data?.roleName === 'Aggregator')?.map(data => data),
         "tenant": {
           "tenantId": TenantID
         },

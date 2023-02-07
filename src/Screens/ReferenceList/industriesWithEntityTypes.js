@@ -10,6 +10,7 @@ import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
 import { GET, DELETE } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import format from "date-fns/format";
 
 const IndustriesWithEntityTypes = ({
   getAddEntityDialog,
@@ -42,15 +43,12 @@ const IndustriesWithEntityTypes = ({
     setAllData([]);
     let allEntries = await Promise.all(industryData.map(entityAllData));
     setAllData(allEntries);
-    let allDates = [];
-    allEntries.forEach((e) => {
-      let dates = e.entities.map((row) => row.lastModifiedDate);
-      allDates.push(...dates);
-    });
-    let sorted = allDates.sort((a, b) => a - b).reverse();
-    let lastModifiedDate = sorted[0].toString().split("+")[0];
 
-    const date = new Date(lastModifiedDate);
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
+    );
+
+    const date = new Date(lastModifiedDate.industries.lastModified);
     sendLastDate(
       date
         .toLocaleString("en-US", {
@@ -65,23 +63,6 @@ const IndustriesWithEntityTypes = ({
         })
         .toUpperCase()
     );
-
-    localStorage.setItem(
-      "industries",
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          year: "numeric",
-          month: "long",
-        })
-        .toUpperCase()
-    );
-
-    var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-    if (showList.indexOf(lastModifiedDate) == -1) {
-      showList.push(lastModifiedDate);
-      localStorage.setItem("showList", JSON.stringify(showList));
-    }
   };
 
   const getEntityData = async () => {
@@ -170,12 +151,10 @@ const IndustriesWithEntityTypes = ({
             <p
               className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft40}`}
             >
-              {" "}
               ENTITY NAME
             </p>
             <p className={style.tableHeaderIndustriesFontStyle}>
-              {" "}
-              CREATED DATE
+              {/* CREATED DATE */}
             </p>
             <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
           </div>
@@ -215,19 +194,9 @@ const IndustriesWithEntityTypes = ({
                 }
               >
                 <p className={style.tableDataFontStyle}>{data.type}</p>
+                <p className={style.tableDataFontStyle}></p>
                 <p className={style.tableDataFontStyle}>
-                  {data.createdDate
-                    .split("T")[0]
-                    .split("-")
-                    .reverse()
-                    .join("-")}
-                </p>
-                <p className={style.tableDataFontStyle}>
-                  {data.lastModifiedDate
-                    .split("T")[0]
-                    .split("-")
-                    .reverse()
-                    .join("-")}
+                  {format(new Date(`${data.lastModifiedDate}`), "MM-dd-yyyy")}
                 </p>
                 <img
                   src={EditHcRow}

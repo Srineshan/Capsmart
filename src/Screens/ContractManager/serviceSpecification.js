@@ -8,7 +8,7 @@ import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import Table from '../../Components/TableDesign';
-import {validateTabs} from './contractValidation';
+import { validateTabs } from './contractValidation';
 import style from './index.module.scss';
 import AddServiceProvided from './addServiceToBeProvided';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
@@ -25,7 +25,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [userLength, setUserLength] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [servicesValid, setServicesValid] = useState([]);
-  let tableHeaderValues = ['', 'ACTIVITIES TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
+  let tableHeaderValues = ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
 
   useEffect(() => {
     getContractedServices();
@@ -113,8 +113,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
 
   const getDataStatus = () => {
     let tabsValid = validateTabs(contractId);
-    tabsValid?.then(response=>{
-      console.log('inside',response);
+    tabsValid?.then(response => {
+      console.log('inside', response);
       setServicesValid(response?.value4);
     })
   }
@@ -129,13 +129,13 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     billable = [];
     deleteIcon = [];
 
-    contractedServices?.map((data,index) => {
-      dataStatus.push(servicesValid?.[index]?.length === 0 ? <TaskAltOutlinedIcon style={{ color: "#14B15A" }} /> : <WarningAmberIcon style={{color : "#FF6562"}} />);
+    contractedServices?.map((data, index) => {
+      dataStatus.push(servicesValid?.[index]?.length === 0 ? <TaskAltOutlinedIcon style={{ color: "#14B15A" }} /> : <WarningAmberIcon style={{ color: "#FF6562" }} />);
       activityType.push(data?.activityType?.activityType);
-      specificActivity.push(data?.activities?.length  > 1 ? `${data?.activities?.[0]?.activity}...` : data?.activities?.[0]?.activity || '-');
-      specificActivityHoverText.push(data?.activities?.map(data=>data?.activity) || '-');
+      specificActivity.push(data?.activities?.length > 1 ? `${data?.activities?.[0]?.activity}...` : data?.activities?.[0]?.activity || '-');
+      specificActivityHoverText.push(data?.activities?.map(data => data?.activity) || '-');
       appliesTo.push(data?.users?.[0]?.name?.firstName || '-');
-      appliesToHoverText.push(data?.users?.map(user=>user?.name?.firstName) || '-');
+      appliesToHoverText.push(data?.users?.map(user => user?.name?.firstName) || '-');
       billable.push(data?.billableService ? 'YES' : 'NO');
       deleteIcon.push(<CloseOutlinedIcon style={{ color: "#F94848" }} />);
     })
@@ -198,7 +198,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
 
           {
             (addService || editService) &&
-            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog} isMultiSiteEntity={isMultiSiteEntity} selectedIndex={selectedContractServiceIndex} isEditable={isEditable} getTabDataStatus={getTabDataStatus}/>
+            <AddServiceProvided getAddServiceDialog={getAddServiceDialog} getAddOn={getAddOn} contractId={contractId} selectContractInfo={selectContractInfo} selectedService={selectedService} editService={editService} getEditServiceDialog={getEditServiceDialog} isMultiSiteEntity={isMultiSiteEntity} selectedIndex={selectedContractServiceIndex} isEditable={isEditable} getTabDataStatus={getTabDataStatus} />
           }
           <Dialog isOpen={showDeleteConfirmation} onClose={() => setShowDeleteConfirmation(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>

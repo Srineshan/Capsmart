@@ -30,15 +30,6 @@ const AddContractedServiceForHealthcare = ({
   const [csProviderType, setCsProviderType] = useState("");
   const [createdDate, setCreatedDate] = useState("");
 
-  const arrowDown = () => {
-    return (
-      <img
-        src={ArrowDown}
-        className={`${style.colorFileStyle3} ${style.marginRight}`}
-      />
-    );
-  };
-
   const saveSubmitHandler = async (type) => {
     const isAvailable = siteTypeTableData
       .filter((e) => e.id === entityType)[0]
@@ -176,12 +167,23 @@ const AddContractedServiceForHealthcare = ({
           <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <div></div>
             {!isEdit && (
-              <div
-                className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
-                onClick={() => saveSubmitHandler("Add More")}
-              >
-                ADD MORE
-              </div>
+              <>
+                {csProviderType.length > 0 ? (
+                  <div
+                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                    onClick={() => saveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                ) : (
+                  <div
+                    className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
+                    onClick={() => saveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

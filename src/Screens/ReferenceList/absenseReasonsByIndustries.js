@@ -8,6 +8,7 @@ import AddAbsenseReasonsForHealthcare from "./addAbsenseReasonsForHealthcare";
 import { GET, DELETE } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import format from "date-fns/format";
 
 const AbsenseReasonsByIndustries = ({
   getAddEntityDialog,
@@ -39,14 +40,12 @@ const AbsenseReasonsByIndustries = ({
     setSideMenu([]);
     let allEntries = await Promise.all(industryData.map(entityAllData));
     setSideMenu(allEntries);
-    let allDates = [];
-    allEntries.forEach((e) => {
-      let dates = e.absenceReason.map((row) => new Date(row.lastModifiedDate));
-      allDates.push(...dates);
-    });
-    let sorted = allDates.sort((a, b) => a - b).reverse();
-    let lastModifiedDate = sorted[0].toString().split("+")[0];
-    const date = new Date(lastModifiedDate);
+
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
+    );
+
+    const date = new Date(lastModifiedDate.absenceResons.lastModified);
 
     sendLastDate(
       date
@@ -62,23 +61,6 @@ const AbsenseReasonsByIndustries = ({
         })
         .toUpperCase()
     );
-
-    localStorage.setItem(
-      "absenceReason",
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          year: "numeric",
-          month: "long",
-        })
-        .toUpperCase()
-    );
-
-    var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-    if (showList.indexOf(lastModifiedDate) == -1) {
-      showList.push(lastModifiedDate);
-      localStorage.setItem("showList", JSON.stringify(showList));
-    }
   };
 
   const getEntityData = async () => {
@@ -169,6 +151,8 @@ const AbsenseReasonsByIndustries = ({
             >
               {`ABSENCE REASONS FOR ${selectedTitle}`}
             </p>
+            <p className={style.tableHeaderIndustriesFontStyle}></p>
+            <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
           </div>
           {tableEntityData?.filter((data) => data.absenceType === "PLANNED")
             .length !== 0 ? (
@@ -192,16 +176,21 @@ const AbsenseReasonsByIndustries = ({
                   <div
                     className={
                       innerIndex % 2 !== 0
-                        ? `${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                        : `${style.absenseLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                        ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                        : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
                     }
                   >
-                    <p></p>
                     <p className={style.tableDataFontStyle}>
                       {data.absenceReason}
                     </p>
                     <p className={style.tableDataFontStyle}>
                       {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
+                    </p>
+                    <p className={style.tableDataFontStyle}>
+                      {format(
+                        new Date(`${data.lastModifiedDate}`),
+                        "MM-dd-yyyy"
+                      )}
                     </p>
                     <img
                       src={EditHcRow}
@@ -248,16 +237,21 @@ const AbsenseReasonsByIndustries = ({
                   <div
                     className={
                       innerIndex % 2 !== 0
-                        ? `${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                        : `${style.absenseLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                        ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                        : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
                     }
                   >
-                    <p></p>
                     <p className={style.tableDataFontStyle}>
                       {data.absenceReason}
                     </p>
                     <p className={style.tableDataFontStyle}>
                       {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
+                    </p>
+                    <p className={style.tableDataFontStyle}>
+                      {format(
+                        new Date(`${data.lastModifiedDate}`),
+                        "MM-dd-yyyy"
+                      )}
                     </p>
                     <img
                       src={EditHcRow}

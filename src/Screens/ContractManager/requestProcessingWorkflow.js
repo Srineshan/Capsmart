@@ -184,11 +184,9 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
         return data;
     }
 
-    console.log('reviewer', addOn?.reviewer, absence?.reviewer);
-
     const submit = async () => {
         if (addOn?.reviewer === null || absence?.reviewer === null || addOn?.reviewer === '0' || absence?.reviewer === '0') {
-            ErrorToaster('Select Approver for Add-On and Absence Request');
+            ErrorToaster('Select Approver for Absence Request');
             return;
         }
         // let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`, addOn.reviewer, addOn.approver, activeTab);

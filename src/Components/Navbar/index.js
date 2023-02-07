@@ -190,11 +190,10 @@ const Navbar = () => {
             window.location.href = '/app/entitySitePortal';
         })
     };
-
-    let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' : currentUserRoles?.includes('Activity Logger') ? `/dashboardRoute` : currentUserRoles?.includes('Super Sys Admin') ? '/partnerPortal' : '/entitySitePortal';
-
+    let isFlutterRoles = currentUserRoles?.map(data => ['Activity Logger', "Accounts Payable", 'Approver', 'Reviewer']?.includes(data))
+    let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' : isFlutterRoles ? `/dashboard/#/dashboardRoute` : currentUserRoles?.includes('Super Sys Admin') ? '/partnerPortal' : '/entitySitePortal';
     const homeRoute = () => {
-        let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' : currentUserRoles?.includes('Activity Logger') ? `/` : currentUserRoles?.includes('Super Sys Admin') ? '/partnerPortal' : '/entitySitePortal';
+        let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' : isFlutterRoles ? `/` : currentUserRoles?.includes('Super Sys Admin') ? '/partnerPortal' : '/entitySitePortal';
         if (homeLink === '/') {
             window.location.href = '/dashboard/#/dashboardRoute';
         } else {

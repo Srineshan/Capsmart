@@ -28,16 +28,16 @@ const switchTheme = createTheme({
 });
 
 const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) => {
+    console.log('servce Slected', serviceSelected);
     const [metadata, setMetadata] = useState({
         min: '0',
         max: '0',
-        frequency: '',
+        frequency: 'WEEK',
         onCallCoverageFor: [],
         additionalScheduleValue: '0',
         additionalScheduleFrequency: '',
         additionalScheduleRequired: true,
         billableService: true,
-        sameOnCallScheduleForAllDays: false,
         rateType: 'HOURLY',
         sessionDuration: '0',
         sessionAmount: '0',
@@ -59,18 +59,87 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
         weekdaysCount: '0',
         weekendsCount: '0',
         dependantServiceIncluded: false,
-        additionalActivity: [{ activity: '', weekdayFrom: null, weekdayTo: null, weekendFrom: null, weekendTo: null, patientMRNRequired: false, attendingDocRequired: false }],
+        additionalActivity: [{ activity: '', weekdayFrom: null, weekdayTo: null, weekendFrom: null, weekendTo: null, holidayFrom: null, holidayTo: null, patientMRNRequired: false, attendingDocRequired: false }],
         additionalActivityBillable: false,
         additionalActivityPaymentApprovalRequired: false,
         dependencyPayableAmount: '0',
         dependencyFrequency: 'PER_DAY',
+        patientMRNRequired: false,
+        attendingDocRequired: false,
+        customizedSchedule: true,
+        weekdayFrom: null,
+        weekdayTo: null,
+        weekdayDuration: 0,
+        weekdayMin: 0,
+        weekdayMax: 0,
+        weekdayFrequency: 'WEEK',
+        weekdayStartDate: new Date(),
+        weekdayEndDate: new Date(),
+        weekendFrom: null,
+        weekendTo: null,
+        weekendStartday: '',
+        weekendEndday: '',
+        weekendDuration: 0,
+        weekendMin: 0,
+        weekendMax: 0,
+        weekendFrequency: 'WEEK',
+        weekendStartDate: new Date(),
+        weekendEndDate: new Date(),
+        holidayFrom: null,
+        holidayTo: null,
+        holidayFrequency: 'WEEK',
+        holidayTerm: 'PRIOR_DAY',
+        holidayDuration: 0,
+        holidayMin: 0,
+        holidayMax: 0,
     });
+
+    const onCustomizeFieldOptionChange = (value) => {
+        if (value) {
+            setMetadata({
+                ...metadata,
+                customizedSchedule: value,
+                weekdayFrom: null,
+                weekdayTo: null,
+                weekdayDuration: 0,
+                weekdayMin: 0,
+                weekdayMax: 0,
+                weekdayFrequency: 'WEEK',
+                weekdayStartDate: new Date(),
+                weekdayEndDate: new Date(),
+                weekendFrom: null,
+                weekendTo: null,
+                weekendStartday: '',
+                weekendEndday: '',
+                weekendDuration: 0,
+                weekendMin: 0,
+                weekendMax: 0,
+                weekendFrequency: 'WEEK',
+                weekendStartDate: new Date(),
+                weekendEndDate: new Date(),
+                holidayFrom: null,
+                holidayTo: null,
+                holidayFrequency: 'WEEK',
+                holidayTerm: 'PRIOR_DAY',
+                holidayDuration: 0,
+                holidayMin: 0,
+                holidayMax: 0,
+                patientMRNRequired: false,
+                attendingDocRequired: false,
+            })
+
+        } else {
+            setMetadata({ ...metadata, customizedSchedule: value })
+        }
+    }
 
     const getAdditionalActivityData = (value) => {
         setMetadata({ ...metadata, additionalActivity: value });
     }
 
     const [specified, setSpecified] = useState(0);
+
+    console.log('test', serviceSelected?.patientMRNRequired, serviceSelected?.attendingDocRequired, serviceSelected?.customizedSchedule);
 
     useEffect(() => {
         let additionalFreq = metadata?.additionalScheduleFrequency === 'WEEK' ? timeCommitment?.value || 0 : (timeCommitment?.value / 2) || 0;
@@ -79,18 +148,21 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     }, [metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
 
     useEffect(() => {
-        setSelectedValues();
+        if (Object.entries(serviceSelected)?.length !== 0) {
+            setSelectedValues();
+        }
     }, [serviceSelected]);
 
-    console.log('selected', serviceSelected);
 
     const setSelectedValues = () => {
+        console.log('console check', serviceSelected);
         let dependentActivities = [];
         serviceSelected?.dependentService?.additionalServices?.map(data => {
             dependentActivities.push(
-                { activity: data?.activity?.activity, weekdayFrom: GetDateFromHours(data?.weekday?.from?.toString() || ''), weekdayTo: GetDateFromHours(data?.weekday?.to?.toString() || ''), weekendFrom: GetDateFromHours(data?.weekend?.from?.toString() || ''), weekendTo: GetDateFromHours(data?.weekend?.to?.toString() || ''), patientMRNRequired: data?.patientMRNRequired, attendingDocRequired: data?.attendingDocRequired }
+                { activity: data?.activity?.activity, weekdayFrom: GetDateFromHours(data?.weekday?.from?.toString() || ''), weekdayTo: GetDateFromHours(data?.weekday?.to?.toString() || ''), weekendFrom: GetDateFromHours(data?.weekend?.from?.toString() || ''), weekendTo: GetDateFromHours(data?.weekend?.to?.toString() || ''), holidayFrom: GetDateFromHours(data?.holiday?.from?.toString() || ''), holidayTo: GetDateFromHours(data?.holiday?.to?.toString() || ''), patientMRNRequired: data?.patientMRNRequired, attendingDocRequired: data?.attendingDocRequired }
             )
         })
+
         setMetadata({
             ...metadata,
             refId: serviceSelected?.refId,
@@ -116,19 +188,43 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             dependencyPayableAmount: serviceSelected?.dependentService?.payableAmount?.value,
             dependencyFrequency: serviceSelected?.dependentService?.frequency,
             dependantServiceIncluded: serviceSelected?.dependantServiceIncluded,
+            weekdayFrom: GetDateFromHours(serviceSelected?.customschedule?.weekday?.from?.toString() || ''),
+            weekdayTo: GetDateFromHours(serviceSelected?.customschedule?.weekday?.to?.toString() || ''),
+            weekdayDuration: serviceSelected?.customschedule?.weekday?.duration?.hours,
+            weekdayMin: serviceSelected?.customschedule?.weekday?.target?.minimum?.value,
+            weekdayMax: serviceSelected?.customschedule?.weekday?.target?.maximum?.value,
+            weekdayFrequency: serviceSelected?.customschedule?.weekday?.target?.frequency,
+            weekendFrom: GetDateFromHours(serviceSelected?.customschedule?.weekend?.from?.toString() || ''),
+            weekendTo: GetDateFromHours(serviceSelected?.customschedule?.weekend?.to?.toString() || ''),
+            weekendStartday: serviceSelected?.customschedule?.weekend?.startDay,
+            weekendEndday: serviceSelected?.customschedule?.weekend?.endDay,
+            weekendDuration: serviceSelected?.customschedule?.weekend?.duration?.hours,
+            weekendMin: serviceSelected?.customschedule?.weekend?.target?.minimum?.value,
+            weekendMax: serviceSelected?.customschedule?.weekend?.target?.maximum?.value,
+            weekendFrequency: serviceSelected?.customschedule?.weekend?.target?.frequency,
+            holidayFrom: GetDateFromHours(serviceSelected?.customschedule?.holiday?.from?.toString() || ''),
+            holidayTo: GetDateFromHours(serviceSelected?.customschedule?.holiday?.to?.toString() || ''),
+            holidayFrequency: serviceSelected?.customschedule?.holiday?.target?.frequency,
+            holidayTerm: serviceSelected?.customschedule?.holiday?.holidayTerm,
+            holidayDuration: serviceSelected?.customschedule?.holiday?.duration?.hours,
+            holidayMin: serviceSelected?.customschedule?.holiday?.target?.minimum?.value,
+            holidayMax: serviceSelected?.customschedule?.holiday?.target?.maximum?.value,
+            patientMRNRequired: serviceSelected?.patientMRNRequired,
+            attendingDocRequired: serviceSelected?.attendingDocRequired,
+            customizedSchedule: serviceSelected?.customizedSchedule,
         });
     }
 
+    console.log('service Days', metadata?.serviceDays);
+
     const limit5 = 5;
 
-    console.log('data', metadata);
 
     useEffect(() => {
         getMetaData(metadata)
     }, [metadata])
 
     const handleValueChange = (name, value) => {
-        console.log('inside handle value change function');
         setMetadata({ ...metadata, [name]: value });
     }
 
@@ -155,17 +251,19 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     }
 
     const updateWorkingPeriod = (e) => {
-        // let minTime = new Date(new Date(e).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000));
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
     const addAdditionalEntry = () => {
         let temp = metadata?.additionalActivity;
-        temp.push({ activity: '', weekdayFrom: null, weekdayTo: null, weekendFrom: null, weekendTo: null, patientMRNRequired: false, attendingDocRequired: false });
+        temp.push({ activity: '', weekdayFrom: null, weekdayTo: null, weekendFrom: null, weekendTo: null, holidayfrom: null, holidayTo: null, patientMRNRequired: false, attendingDocRequired: false });
         setMetadata({ ...metadata, aditionalActivity: temp });
     }
 
-    console.log('Oncall metadata', metadata);
+    const onCustomizeFieldChange = (value, name) => {
+        setMetadata({ ...metadata, [name]: value });
+    }
+
 
     return (
         <div>
@@ -198,27 +296,37 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                     <ThemeProvider theme={switchTheme}>
                         <FormControlLabel
                             control={
-                                <Switch checked={metadata?.sameOnCallScheduleForAllDays} className={` ${style.textAlignLeft}`} />
+                                <Switch checked={metadata?.customizedSchedule} className={` ${style.textAlignLeft}`} />
                             }
                             color='primary'
                             className={`${style.switchFontStyle} ${style.flexLeft}`}
-                            label={metadata?.sameOnCallScheduleForAllDays ? 'YES' : 'NO'}
-                            onChange={(e) => handleValueChange('sameOnCallScheduleForAllDays', !metadata?.sameOnCallScheduleForAllDays)}
+                            label={metadata?.customizedSchedule ? 'YES' : 'NO'}
+                            onChange={(e) => onCustomizeFieldOptionChange(!metadata?.customizedSchedule)}
                         />
                     </ThemeProvider>
                 </div>
             </div>
-            {!metadata?.sameOnCallScheduleForAllDays && (
+            {!metadata?.customizedSchedule && (
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
                         <div className={style.extentionLableStyle}>Weekday</div>
                         <div className={style.displayInRow}>
                             <TimePicker
                                 useAmPm={false}
+                                onChange={(e) => {
+                                    onCustomizeFieldChange(e, 'weekdayFrom');
+                                }}
+                                disabled={!metadata?.serviceDays?.weekDays}
+                                value={new Date(metadata?.weekdayFrom)}
                             />
                             <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                             <TimePicker
                                 useAmPm={false}
+                                onChange={(e) => {
+                                    onCustomizeFieldChange(e, 'weekdayTo');
+                                }}
+                                disabled={!metadata?.serviceDays?.weekDays}
+                                value={new Date(metadata?.weekdayTo)}
                             />
                             <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
                                 <TextField
@@ -233,8 +341,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                             height: 15,
                                         },
                                     }}
-                                // value={metadata?.sessionDuration}
-                                // onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
+                                    disabled={!metadata?.serviceDays?.weekDays}
+                                    value={metadata?.weekdayDuration}
+                                    onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'weekdayDuration')}
                                 />
                             </div>
                         </div>
@@ -244,18 +353,19 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         <div className={style.displayInRow}>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
-                                <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                                <EditableText value={metadata?.weekdayMin} placeholder='' disabled={!metadata?.serviceDays?.weekDays} onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
                             </div>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
-                                <EditableText value={metadata?.max} placeholder='' onChange={(e) => e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
+                                <EditableText value={metadata?.weekdayMax} placeholder='' disabled={!metadata?.serviceDays?.weekDays} onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMax')} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
                             </div>
                             <Select
                                 displayEmpty
                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 className={`${style.fullWidth} ${style.marginLeft20}`}
-                                value={metadata?.frequency}
-                                onChange={(e) => handleValueChange('frequency', e.target.value)}
+                                value={metadata?.weekdayFrequency}
+                                onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayFrequency')}
+                                disabled={!metadata?.serviceDays?.weekDays}
                             >
                                 <MenuItem value="">Select Frequecy</MenuItem>
                                 <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Per Week</MenuItem>
@@ -268,29 +378,39 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         <div>
                             <div className={style.displayInRow}>
                                 <div className={style.displayInRow}>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${style.selectedDay}`}>F</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>S</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>S</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>M</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'FRIDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('FRIDAY', 'weekendStartday')}>F</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'SATURDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('SATURDAY', 'weekendStartday')}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'SUNDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('SUNDAY', 'weekendStartday')}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendStartday === 'MONDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('MONDAY', 'weekendStartday')}>M</div>
                                 </div>
                                 <div className={style.alignCenter}>
                                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop10} ${style.marginRight}`}>To</p>
                                 </div>
                                 <div className={`${style.displayInRow} ${style.marginLeft20}`}>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>F</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>S</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer}`}>S</div>
-                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${style.selectedDay}`}>M</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'FRIDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('FRIDAY', 'weekendEndday')}>F</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'SATURDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('SATURDAY', 'weekendEndday')}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'SUNDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('SUNDAY', 'weekendEndday')}>S</div>
+                                    <div className={`${style.dayStyle} ${style.alignCenter} ${style.cursorPointer} ${metadata?.weekendEndday === 'MONDAY' ? style.selectedDay : ''}`} onClick={() => onCustomizeFieldChange('MONDAY', 'weekendEndday')}>M</div>
                                 </div>
 
                             </div>
                             <div className={`${style.displayInRow} ${style.marginTop20}`}>
                                 <TimePicker
                                     useAmPm={false}
+                                    onChange={(e) => {
+                                        onCustomizeFieldChange(e, 'weekendFrom');
+                                    }}
+                                    disabled={!metadata?.serviceDays?.weekEnds}
+                                    value={new Date(metadata?.weekendFrom)}
                                 />
                                 <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                                 <TimePicker
                                     useAmPm={false}
+                                    onChange={(e) => {
+                                        onCustomizeFieldChange(e, 'weekendTo');
+                                    }}
+                                    disabled={!metadata?.serviceDays?.weekEnds}
+                                    value={new Date(metadata?.weekendTo)}
                                 />
                                 <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
                                     <TextField
@@ -305,8 +425,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                                 height: 15,
                                             },
                                         }}
-                                    // value={metadata?.sessionDuration}
-                                    // onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
+                                        disabled={!metadata?.serviceDays?.weekEnds}
+                                        value={metadata?.weekendDuration}
+                                        onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'weekendDuration')}
                                     />
                                 </div>
                             </div>
@@ -317,18 +438,19 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         <div className={style.displayInRow}>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
-                                <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                                <EditableText value={metadata?.weekendMin} disabled={!metadata?.serviceDays?.weekEnds} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekendMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
                             </div>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
-                                <EditableText value={metadata?.max} placeholder='' onChange={(e) => e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
+                                <EditableText value={metadata?.weekendMax} disabled={!metadata?.serviceDays?.weekEnds} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekendMax')} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
                             </div>
                             <Select
                                 displayEmpty
                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 className={`${style.fullWidth} ${style.marginLeft20}`}
-                                value={metadata?.frequency}
-                                onChange={(e) => handleValueChange('frequency', e.target.value)}
+                                value={metadata?.weekendFrequency}
+                                onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekendFrequency')}
+                                disabled={!metadata?.serviceDays?.weekEnds}
                             >
                                 <MenuItem value="">Select Frequecy</MenuItem>
                                 <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Per Week</MenuItem>
@@ -372,22 +494,34 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                 displayEmpty
                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 className={`${style.threeFieldWidth}`}
-                                value={'Prior'}
+                                value={metadata?.holidayTerm}
+                                disabled={!metadata?.serviceDays?.isholidays}
+                                onChange={(e) => onCustomizeFieldChange(e.target.value, 'holidayTerm')}
                             >
                                 <MenuItem value="">Select Holiday</MenuItem>
-                                <MenuItem value={'Prior'}>Prior to Holiday</MenuItem>
-                                <MenuItem value={'WEEK'}>On Holiday</MenuItem>
-                                <MenuItem value={'MONTH'}>Next to Holiday</MenuItem>
+                                <MenuItem value={'PRIOR_DAY'}>Prior to Holiday</MenuItem>
+                                <MenuItem value={'ON_DAY'}>On Holiday</MenuItem>
+                                <MenuItem value={'NEXT_DAT'}>Next to Holiday</MenuItem>
                             </Select>
                             <div className={`${style.displayInRow} ${style.marginTop20}`}>
                                 <TimePicker
                                     useAmPm={false}
+                                    onChange={(e) => {
+                                        onCustomizeFieldChange(e, 'holidayFrom');
+                                    }}
+                                    value={metadata?.holidayFrom}
+                                    disabled={!metadata?.serviceDays?.isholidays}
                                 />
                                 <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                                 <TimePicker
                                     useAmPm={false}
+                                    onChange={(e) => {
+                                        onCustomizeFieldChange(e, 'holidayTo');
+                                    }}
+                                    value={metadata?.holidayTo}
+                                    disabled={!metadata?.serviceDays?.isholidays}
                                 />
-                                <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
+                                <div className={`${style.marginLeft20} ${style.durationWidth}`}>
                                     <TextField
                                         size="small"
                                         type="tel"
@@ -400,8 +534,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                                 height: 15,
                                             },
                                         }}
-                                    // value={metadata?.sessionDuration}
-                                    // onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
+                                        disabled={!metadata?.serviceDays?.isholidays}
+                                        value={metadata?.holidayDuration}
+                                        onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(e.target.value, 'holidayDuration')}
                                     />
                                 </div>
                             </div>
@@ -412,18 +547,19 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         <div className={style.displayInRow}>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
-                                <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
+                                <EditableText value={metadata?.holidayMin} placeholder='' disabled={!metadata?.serviceDays?.isholidays} onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'holidayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
                             </div>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
-                                <EditableText value={metadata?.max} placeholder='' onChange={(e) => e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
+                                <EditableText value={metadata?.holidayMax} placeholder='' disabled={!metadata?.serviceDays?.isholidays} onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'holidayMax')} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
                             </div>
                             <Select
                                 displayEmpty
                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 className={`${style.fullWidth} ${style.marginLeft20}`}
-                                value={metadata?.frequency}
-                                onChange={(e) => handleValueChange('frequency', e.target.value)}
+                                value={metadata?.holidayFrequency}
+                                onChange={(e) => onCustomizeFieldChange('holidayFrequency', e.target.value)}
+                                disabled={!metadata?.serviceDays?.isholidays}
                             >
                                 <MenuItem value="">Select Frequecy</MenuItem>
                                 <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Per Week</MenuItem>
@@ -466,11 +602,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                             <ThemeProvider theme={switchTheme}>
                                 <FormControlLabel
                                     control={
-                                        <Switch checked={true} className={` ${style.textAlignLeft}`} />
+                                        <Switch className={` ${style.textAlignLeft}`} checked={metadata?.patientMRNRequired} onChange={() => setMetadata({ ...metadata, 'patientMRNRequired': !metadata?.patientMRNRequired })} />
                                     }
                                     color='primary'
+                                    checked={metadata?.patientMRNRequired}
                                     className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                    label={'YES'}
+                                    label={metadata?.patientMRNRequired ? 'YES' : 'NO'}
                                 />
                             </ThemeProvider>
                         </div>
@@ -481,18 +618,18 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                             <ThemeProvider theme={switchTheme}>
                                 <FormControlLabel
                                     control={
-                                        <Switch checked={true} className={` ${style.textAlignLeft}`} />
+                                        <Switch className={` ${style.textAlignLeft}`} checked={metadata?.attendingDocRequired} onChange={() => setMetadata({ ...metadata, 'attendingDocRequired': !metadata?.attendingDocRequired })} />
                                     }
                                     color='primary'
                                     className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                    label={'YES'}
+                                    label={metadata?.attendingDocRequired ? 'YES' : 'NO'}
                                 />
                             </ThemeProvider>
                         </div>
                     </div>
                 </div>
             )}
-            {metadata?.sameOnCallScheduleForAllDays && (
+            {metadata?.customizedSchedule && (
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Number of On Call Duty Days*</div>
@@ -524,26 +661,26 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                             <ThemeProvider theme={switchTheme}>
                                 <FormControlLabel
                                     control={
-                                        <Switch checked={true} className={` ${style.textAlignLeft}`} />
+                                        <Switch checked={metadata?.patientMRNRequired} className={` ${style.textAlignLeft}`} onChange={() => handleValueChange('patientMRNRequired', !metadata?.patientMRNRequired)} />
                                     }
                                     color='primary'
                                     className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                    label={'YES'}
+                                    label={metadata?.patientMRNRequired ? 'YES' : 'NO'}
                                 />
                             </ThemeProvider>
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Require Patient Doc</div>
+                        <div className={style.extentionLableStyle}>Attending Doc Required</div>
                         <div className={style.onCallBillableGrid}>
                             <ThemeProvider theme={switchTheme}>
                                 <FormControlLabel
                                     control={
-                                        <Switch checked={true} className={` ${style.textAlignLeft}`} />
+                                        <Switch checked={metadata?.attendingDocRequired} className={` ${style.textAlignLeft}`} onChange={() => handleValueChange('attendingDocRequired', !metadata?.attendingDocRequired)} />
                                     }
                                     color='primary'
                                     className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                    label={'YES'}
+                                    label={metadata?.attendingDocRequired ? 'YES' : 'NO'}
                                 />
                             </ThemeProvider>
                         </div>
@@ -700,7 +837,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Additional on call billable service specified</div>
+                <div className={style.extentionLableStyle}>Any Additional On Call Services Specified</div>
                 <div className={style.onCallBillableGrid}>
                     <ThemeProvider theme={switchTheme}>
                         <FormControlLabel
@@ -718,7 +855,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             {metadata?.dependantServiceIncluded && (
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Billable Service</div>
-                    <div className={style.onCallBillableGrid}>
+                    <div className={metadata?.additionalActivityBillable ? style.onCallBillableGrid : style.spaceBetween}>
                         <ThemeProvider theme={switchTheme}>
                             <FormControlLabel
                                 control={
@@ -730,28 +867,35 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                 label={metadata?.additionalActivityBillable ? 'YES' : 'NO'}
                             />
                         </ThemeProvider>
-                        <div className={`${style.fullWidth}`}>
-                            <TextField
-                                value={metadata?.dependencyPayableAmount}
-                                onChange={(e) => setMetadata({ ...metadata, dependencyPayableAmount: e.target.value })}
-                                size="small"
-                                type="number"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
-                                }}
-                            />
-                        </div>
-                        <Select
-                            displayEmpty
-                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                            className={`${style.fullWidth}`}
-                            value={metadata?.dependencyFrequency}
-                            onChange={(e) => setMetadata({ ...metadata, dependencyFrequency: e.target.value })}
-                        >
-                            <MenuItem value={null}>Select Payment Basis</MenuItem>
-                            <MenuItem value={'PER_DAY'} >Per On Call Day</MenuItem>
-                            <MenuItem value={'PER_SERVICE'} >Per Service Performed</MenuItem>
-                        </Select>
+                        {
+                            metadata?.additionalActivityBillable && (
+                                <>
+                                    <div className={`${style.fullWidth}`}>
+                                        <TextField
+                                            value={metadata?.dependencyPayableAmount}
+                                            onChange={(e) => setMetadata({ ...metadata, dependencyPayableAmount: e.target.value })}
+                                            size="small"
+                                            type="number"
+                                            InputProps={{
+                                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
+                                            }}
+                                        />
+                                    </div>
+                                    <Select
+                                        displayEmpty
+                                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                        className={`${style.fullWidth}`}
+                                        value={metadata?.dependencyFrequency}
+                                        onChange={(e) => setMetadata({ ...metadata, dependencyFrequency: e.target.value })}
+                                    >
+                                        <MenuItem value={null}>Select Payment Basis</MenuItem>
+                                        <MenuItem value={'PER_DAY'} >Per On Call Day</MenuItem>
+                                        <MenuItem value={'PER_SERVICE'} >Per Service Performed</MenuItem>
+                                    </Select>
+                                </>
+                            )
+                        }
+
                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={() => addAdditionalEntry()} />
                         </div>
@@ -760,7 +904,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             )}
             {metadata?.dependantServiceIncluded && (
                 <>
-                    <EditableTable additionalActivityData={metadata?.additionalActivity} getAdditionalActivityData={getAdditionalActivityData} />
+                    <EditableTable additionalActivityData={metadata?.additionalActivity} getAdditionalActivityData={getAdditionalActivityData} serviceDays={metadata?.serviceDays} />
                     <>
 
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
