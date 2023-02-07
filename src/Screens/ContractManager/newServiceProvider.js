@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Dialog, Classes, Icon, Intent, Tag, InputGroup, Button, RadioGroup, Radio, TagInput } from '@blueprintjs/core';
+import { Dialog, Classes, Icon, Intent, Tag, Button, TagInput } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DatalistInput from 'react-datalist-input';
@@ -13,7 +13,7 @@ import SuffixList from './../../Components/SuffixList';
 import ProviderTypeList from './../../Components/ProviderTypeList';
 import FunctionalTitleList from './../../Components/FunctionalTitleList';
 import { FormatPhoneNumber } from './../../utils/formatting';
-
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 import style from './index.module.scss';
 
@@ -435,9 +435,9 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
           <div className={`${style.extentionGrid}`}>
             <div className={style.extentionLableStyle}>Contractor Name*</div>
             <div className={style.grid3}>
-              <InputGroup className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e) => handleUserData('firstName', e.target.value)} />
-              <InputGroup className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e) => handleUserData('middleName', e.target.value)} />
-              <InputGroup className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e) => handleUserData('lastName', e.target.value)} />
+              <CommonInputField className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e) => handleUserData('firstName', e.target.value)} />
+              <CommonInputField className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e) => handleUserData('middleName', e.target.value)} />
+              <CommonInputField className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e) => handleUserData('lastName', e.target.value)} />
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -449,7 +449,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>NPIN*</div>
             <div className={`${style.grid3} ${style.verticalAlignCenter}`}>
-              <InputGroup type="tel" maxLength={10} className={style.fullWidth}
+              <CommonInputField type="tel" maxLength={10} className={style.fullWidth}
                 disabled={nPin?.missing || nPin?.na} value={nPin?.npin} onChange={(e) => e.target.value >= 0 && setNpin({ ...nPin, npin: e.target.value, na: false, missing: false })} />
               <FormGroup>
                 <FormControlLabel control={<Checkbox value={nPin?.missing} checked={nPin?.missing} onChange={(e) => setNpin({ ...nPin, npin: '', missing: e.target.checked, na: false })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
@@ -481,7 +481,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
               {
                 allowPersonalMail &&
                 <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
-                  <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={userDetails?.email} onChange={(e) => handleUserData('email', e.target.value)} />
+                  <CommonInputField placeholder="Enter Personal email" className={`${style.fullWidth}`} value={userDetails?.email} onChange={(e) => handleUserData('email', e.target.value)} />
                 </div>
               }
 
@@ -491,7 +491,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
               <div className={style.extentionLableStyle}>Email Contractor id*</div>
               <div className={style.displayInRow}>
-                <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
+                <CommonInputField placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
               </div>
             </div>
           }
@@ -501,12 +501,12 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
             <div className={style.twoCol}>
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                 <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
-                <InputGroup placeholder="Numeric" maxLength={15} disabled={phoneNA} value={userDetails?.phone}
+                <CommonInputField placeholder="Numeric" maxLength={15} disabled={phoneNA} value={userDetails?.phone}
                   onChange={(e) => { handleUserData('phone', FormatPhoneNumber(e.target.value)); }} className={`${style.fullWidth}`} />
               </div>
               {
                 <FormGroup>
-                  <FormControlLabel control={<Checkbox value="NA" checked={phoneNA} onChange={(e) => { setPhoneNA(e.target.checked); if (e.target.checked) { handleUserData('phone', ''); } }} checked={userDetails?.phoneNA} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                  <FormControlLabel control={<Checkbox value="NA" checked={phoneNA} onChange={(e) => { setPhoneNA(e.target.checked); if (e.target.checked) { handleUserData('phone', ''); } }} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
                 </FormGroup>
               }
             </div>
@@ -515,13 +515,13 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>Address*</div>
             <div>
-              <InputGroup className={style.fullWidth} placeholder="Street"
+              <CommonInputField className={style.fullWidth} placeholder="Street"
                 value={address?.addressLine}
                 onChange={(e) => setAddress({ ...address, addressLine: e.target.value })} />
               <div className={`${style.grid3} ${style.marginTop20}`}>
-                <InputGroup className={style.fullWidth} placeholder="City" value={address.city} onChange={(e) => handleAddress('city', e.target.value)} />
-                <InputGroup className={style.fullWidth} placeholder="State" value={address.state} onChange={(e) => handleAddress('state', e.target.value)} />
-                <InputGroup className={style.fullWidth} placeholder="Zipcode" value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value)} />
+                <CommonInputField className={style.fullWidth} placeholder="City" value={address.city} onChange={(e) => handleAddress('city', e.target.value)} />
+                <CommonInputField className={style.fullWidth} placeholder="State" value={address.state} onChange={(e) => handleAddress('state', e.target.value)} />
+                <CommonInputField className={style.fullWidth} placeholder="Zipcode" value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value)} />
               </div>
             </div>
           </div>

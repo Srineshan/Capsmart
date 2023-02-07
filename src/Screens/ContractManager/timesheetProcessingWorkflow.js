@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { TextArea, InputGroup, Icon, Dialog, Classes, Intent, Checkbox } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import ToolBar from './toolbar';
 import { POST, GET, PUT } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ReviewerApproverField from './reviewerApproverField';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 import style from './index.module.scss';
 
@@ -418,8 +415,8 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
                 <div className={`${style.addManagerGrid}`}>
                   <div className={style.extentionLableStyle}>Timesheet To Define Process*</div>
                   <div className={style.displayInRow}>
-                    <InputGroup className={style.fullWidth} placeholder={activeTab}
-                      value={activeTab} readOnly />
+                    <CommonInputField className={style.fullWidth} placeholder={activeTab}
+                      value={activeTab} readOnly={true} />
                   </div>
                 </div>
                 {selectContractInfo === 'MULTIPLE' &&

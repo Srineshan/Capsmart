@@ -10,7 +10,6 @@ import Select from '@mui/material/Select';
 import { PUT, GET, TenantID, POST } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Calculator from './../../Components/Calculator';
-import style from './index.module.scss';
 import NotesNotOpen from './../../images/notesNotOpen.png';
 import DocumentNotOpen from './../../images/documentNotOpen.png';
 import CalculatorNotOpen from './../../images/calculatorNotOpen.png';
@@ -28,6 +27,8 @@ import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
 import { workFlowDataGenerator } from './workflowDataGenerator';
 import Notes from '../../Components/Notes';
+
+import style from './index.module.scss';
 
 const switchTheme = createTheme({
   palette: {

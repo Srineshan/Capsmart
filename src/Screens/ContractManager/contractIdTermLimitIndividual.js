@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { TextArea, InputGroup, Icon, TagInput, Checkbox, FileInput, EditableText, Divider } from '@blueprintjs/core';
+import { TextArea, Icon, TagInput, Checkbox, FileInput, EditableText, Divider } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -23,6 +23,7 @@ import { format, sub, add } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { GetDateFromHours } from './../../utils/formatting';
 import axios from 'axios';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 import style from './index.module.scss';
 
@@ -508,10 +509,10 @@ const ContractIdTermLimitIndividual = (
               </option>
             </select>
           </div>
-          <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name" value={fullyExecutedContractData[i].name} onChange={(e) => handleFileChange(e, 'name')} />
+          <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name" value={fullyExecutedContractData[i].name} onChange={(e) => handleFileChange(e, 'name')} />
           <TextArea rows={4} placeholder="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} value={fullyExecutedContractData[i].desc} onChange={(e) => handleFileChange(e, 'desc')} />
           <div className={style.grid2}>
-            <InputGroup value={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : 'Choose File...'} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(i, e)} />
+            <CommonInputField value={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : 'Choose File...'} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(i, e)} />
           </div>
         </div>
       )
@@ -555,14 +556,14 @@ const ContractIdTermLimitIndividual = (
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
           <div className={style.extentionLableStyle}>Contract / Agreement Name*</div>
-          <InputGroup placeholder="Contract Name" className={style.fullWidth} value={contractName}
+          <CommonInputField placeholder="Contract Name" className={style.fullWidth} value={contractName}
             maxLength={TEXTFIELDLEN} onChange={(e) => { setContractName(e.target.value); setName(e.target.value) }}
             onFocus={() => { checkFieldAndPopAlert(contractName, 'Contract / Agreement Name') }} />
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <div className={style.extentionLableStyle}>Contract ID / Resolution No*</div>
           <div className={style.displayInRow}>
-            <InputGroup placeholder="Contract ID / Resolution No" value={contractId.id} disabled={contractId.missing}
+            <CommonInputField placeholder="Contract ID / Resolution No" value={contractId.id} disabled={contractId.missing}
               maxLength={TEXTFIELDLEN}
               onFocus={() => { checkFieldAndPopAlert(contractId?.id, 'Contract ID') }} className={`${style.entityFieldWidth}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
             <Checkbox label="Missing" checked={contractId.missing} onChange={(e) => setContractId({ ...contractId, missing: e.target.checked, id: '' })} className={`${style.marginTop10} ${style.marginLeft20}`} />
@@ -681,14 +682,14 @@ const ContractIdTermLimitIndividual = (
                     </option>
                   </select>
                 </div>
-                <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
+                <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
                   value={fileFieldData?.name}
                   maxLength={TEXTFIELDLEN}
                   onChange={(e) => handleFileChange(e, 'name')} />
                 <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc}
                   maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'desc')} />
                 <div>
-                  <InputGroup value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : 'Choose File...'} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
+                  <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : 'Choose File...'} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
                 </div>
               </div>
             )}
@@ -872,7 +873,7 @@ const ContractIdTermLimitIndividual = (
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <div className={style.extentionLableStyle}>Contracted Time Commitment*</div>
           <div className={style.contractedTime}>
-            <InputGroup type="tel" maxLength={3} value={contractedTimeCommitment?.value} placeholder="0" onChange={(e) => e.target.value >= 0 && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value })} />
+            <CommonInputField type="tel" maxLength={3} value={contractedTimeCommitment?.value} placeholder="0" onChange={(e) => e.target.value >= 0 && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value })} />
             <select
               name="class"
               id="Class"

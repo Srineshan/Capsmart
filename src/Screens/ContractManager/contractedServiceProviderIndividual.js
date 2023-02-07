@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { InputGroup, RadioGroup, Radio, Tag, TagInput } from '@blueprintjs/core';
+import { RadioGroup, Radio, Tag, TagInput } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -18,6 +18,7 @@ import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SuffixList from './../../Components/SuffixList';
 import ProviderTypeList from './../../Components/ProviderTypeList';
 import FunctionalTitleList from './../../Components/FunctionalTitleList';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 import style from './index.module.scss';
 
@@ -539,7 +540,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(npin, 'NPIN') }}>
             <div className={style.extentionLableStyle}>NPIN*</div>
             <div className={style.grid3}>
-              <InputGroup className={style.fullWidth}
+              <CommonInputField className={style.fullWidth}
                 placeholder="NPIN"
                 value={npin}
                 type="tel"
@@ -557,17 +558,17 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>Contractor Name*</div>
             <div className={style.grid3}>
-              <InputGroup className={style.fullWidth} placeholder="First"
+              <CommonInputField className={style.fullWidth} placeholder="First"
                 value={contractorFirstName}
                 maxLength={30}
                 onFocus={() => { checkFieldAndPopAlert(contractorFirstName, 'Contractor First Name') }}
                 onChange={(e) => setContractorFirstName(e.target.value)} />
-              <InputGroup className={style.fullWidth} placeholder="Middle"
+              <CommonInputField className={style.fullWidth} placeholder="Middle"
                 value={contractorMiddleName}
                 maxLength={30}
                 onFocus={() => { checkFieldAndPopAlert(contractorMiddleName, 'Contractor Middle Initials') }}
                 onChange={(e) => setContractorMiddleName(e.target.value)} />
-              <InputGroup className={style.fullWidth} placeholder="Last"
+              <CommonInputField className={style.fullWidth} placeholder="Last"
                 value={contractorLastName}
                 maxLength={30}
                 onFocus={() => { checkFieldAndPopAlert(contractorLastName, 'Contractor Last Name') }}
@@ -596,7 +597,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               </ThemeProvider>
               {allowPersonalMail &&
                 <div className={`${style.fullWidth} ${style.verticalAlignCenter}`} onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
-                  <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={contractorEmail} onChange={(e) => setContractorEmail(e.target.value)} />
+                  <CommonInputField placeholder="Enter Personal email" className={`${style.fullWidth}`} value={contractorEmail} onChange={(e) => setContractorEmail(e.target.value)} />
                 </div>
               }
 
@@ -607,7 +608,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
               <div className={style.extentionLableStyle}>Email Contractor id*</div>
               <div className={style.displayInRow}>
-                <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
+                <CommonInputField placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
                   value={contractorEmail}
                   maxLength={30}
                   onChange={(e) => setContractorEmail(e.target.value)} />
@@ -622,7 +623,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
             <div className={style.twoCol}>
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                 <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
-                <InputGroup placeholder="Numeric" value={contractorPhone} disabled={mobileNA} maxLength={15}
+                <CommonInputField placeholder="Numeric" value={contractorPhone} disabled={mobileNA} maxLength={15}
                   onChange={(e) => { setContractorPhone(FormatPhoneNumber(e.target.value)); setMobileNA(false); }} className={`${style.fullWidth}`} />
               </div>
               <FormGroup>
@@ -633,22 +634,22 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.extentionLableStyle}>Address*</div>
             <div>
-              <InputGroup className={style.fullWidth} placeholder="Street"
+              <CommonInputField className={style.fullWidth} placeholder="Street"
                 value={address?.addressLine}
                 onChange={(e) => setAddress({ ...address, addressLine: e.target.value })}
                 onFocus={() => { checkFieldAndPopAlert(address?.addressLine, 'Address Street') }} />
               <div className={`${style.grid3} ${style.marginTop20}`}>
-                <InputGroup className={style.fullWidth} placeholder="City"
+                <CommonInputField className={style.fullWidth} placeholder="City"
                   value={address?.city}
                   maxLength={50}
                   onFocus={() => { checkFieldAndPopAlert(address?.city, 'Address City') }}
                   onChange={(e) => setAddress({ ...address, city: e.target.value })} />
-                <InputGroup className={style.fullWidth} placeholder="State"
+                <CommonInputField className={style.fullWidth} placeholder="State"
                   value={address?.state}
                   maxLength={20}
                   onFocus={() => { checkFieldAndPopAlert(address?.state, 'Address State') }}
                   onChange={(e) => setAddress({ ...address, state: e.target.value })} />
-                <InputGroup className={style.fullWidth} placeholder="Zipcode"
+                <CommonInputField className={style.fullWidth} placeholder="Zipcode"
                   value={address?.zipcode}
                   maxLength={5}
                   onFocus={() => { checkFieldAndPopAlert(address?.zipcode, 'Address Zip Code') }}

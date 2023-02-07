@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import cloneDeep from 'lodash.clonedeep';
-import { InputGroup, EditableText } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
@@ -17,6 +16,7 @@ import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSe
 import { POST, GET, PUT } from './../dataSaver';
 import ReviewerApproverField from './reviewerApproverField';
 import { workFlowDataGenerator } from './workflowDataGenerator';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 import style from './index.module.scss';
 
@@ -635,7 +635,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
 
 
       {!editService && <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
-        <InputGroup className={style.fullWidth} placeholder="Enter Add-On Service" value={newServices?.name} onChange={(e) => setNewServices({ ...newServices, 'name': e.target.value })} />
+        <CommonInputField className={style.fullWidth} placeholder="Enter Add-On Service" value={newServices?.name} onChange={(e) => setNewServices({ ...newServices, 'name': e.target.value })} />
         <div className={`${style.addAddonServiceButton} ${style.alignCenter}`} onClick={handleNewServiceName}>ADD ADD-ON SERVICES</div>
       </div>}
 
@@ -643,7 +643,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
         <div className={`${style.addonAddBox} ${style.marginTop20}`}>
           <div className={`${style.addManagerGrid}`}>
             <div className={style.extentionLableStyle}>Add-On Service Name*</div>
-            <InputGroup value={newServices?.name} className={style.fullWidth} onChange={(e) => { handleNewServiceChange('name', e.target.value) }} />
+            <CommonInputField value={newServices?.name} className={style.fullWidth} onChange={(e) => { handleNewServiceChange('name', e.target.value) }} />
           </div>
 
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

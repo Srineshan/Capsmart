@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
+import { EditableText, Checkbox } from '@blueprintjs/core';
 import { TimePicker } from "@blueprintjs/datetime";
 import { format } from 'date-fns';
 import Switch from '@mui/material/Switch';
@@ -15,6 +15,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
 import { GetDateFromHours } from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 import style from './index.module.scss';
 import ScheduleAndTargetSameTable from './scheduleAndTargetSameTable';
@@ -541,7 +542,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                     </div>
                     {metadata?.additionalScheduleRequired &&
                         <>
-                            <InputGroup value={metadata?.additionalScheduleValue} type="tel" maxLength="2" onChange={(e) => e.target.value >= 0 && handleValueChange('additionalScheduleValue', e.target.value)} className={` ${style.threeFieldWidth}`} />
+                            <CommonInputField value={metadata?.additionalScheduleValue} type="tel" maxLength="2" onChange={(e) => e.target.value >= 0 && handleValueChange('additionalScheduleValue', e.target.value)} className={` ${style.threeFieldWidth}`} />
                             <Select
                                 displayEmpty
                                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}

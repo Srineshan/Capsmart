@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
+import { Checkbox } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -11,12 +11,13 @@ import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
-import Popover from '@mui/material/Popover';
 import { GET, TenantID, POST } from './../dataSaver';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+
 import style from './index.module.scss';
 
 const switchTheme = createTheme({
@@ -273,7 +274,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
                         <div className={style.extentionLableStyle}>Additional Administrative Services Name</div>
-                        <InputGroup placeholder='Add-On Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonInputField placeholder='Add-On Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -338,7 +339,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             <div>
                 {!showAdminActivity &&
                     <div className={`${style.addGrid} ${style.fullWidth} ${style.marginTop20}`}>
-                        <InputGroup className={style.fullWidth} placeholder='New Additional Administrative Services Name' onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonInputField className={style.fullWidth} placeholder='New Additional Administrative Services Name' onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`} >
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} aria-describedby={id} onClick={(e) => setShowAdminActivity(true)} />
                         </div>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup } from '@blueprintjs/core';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import MenuItem from '@mui/material/MenuItem';
@@ -17,6 +16,7 @@ import { GET, PUT } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 import style from './index.module.scss';
 
@@ -173,7 +173,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                 <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
                     <div className={`${style.extentionGrid}`}>
                         <div className={style.extentionLableStyle}>Timesheet Name*</div>
-                        <InputGroup className={style.fullWidth} value={timesheetPayments?.[i]?.timesheetLabel?.label || ''} readOnly />
+                        <CommonInputField className={style.fullWidth} value={timesheetPayments?.[i]?.timesheetLabel?.label || ''} readOnly={true} />
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Payment Processing Criteria*</div>
@@ -399,7 +399,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuQuantity?.quantity, 'RVU Quantity') }}>
                                         <div className={style.extentionLableStyle}>RVU Quantity*</div>
                                         <div className={style.displayInRow}>
-                                            <InputGroup className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0"
+                                            <CommonInputField className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0"
                                                 type='number'
                                                 min="0"
                                                 onChange={(e) => e.target.value >= 0 && setRvuQuantity({
@@ -438,7 +438,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(fteEquivalent?.value, 'FTE Equivalent') }} >
                                         <div className={style.extentionLableStyle}>FTE Equivalent</div>
-                                        <InputGroup className={style.twoFieldWidth} value={fteEquivalent?.value} placeholder="0" type="number"
+                                        <CommonInputField className={style.twoFieldWidth} value={fteEquivalent?.value} placeholder="0" type="number"
                                             min="0"
                                             onChange={(e) => setFteEquivalent({
                                                 ...fteEquivalent, value: parseFloat(e.target.value.slice(0, limit4))
@@ -446,7 +446,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuReferenceUsed?.value, 'RVU Reference Used') }}>
                                         <div className={style.extentionLableStyle}>RVU Reference Used</div>
-                                        <InputGroup className={style.fullWidth} value={rvuReferenceUsed?.value} placeholder="Enter RVU Reference Used"
+                                        <CommonInputField className={style.fullWidth} value={rvuReferenceUsed?.value} placeholder="Enter RVU Reference Used"
                                             min="0"
                                             onChange={(e) => setRvuReferenceUsed({
                                                 ...rvuReferenceUsed, value: e.target.value
@@ -454,7 +454,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuQuantityVariance?.value, 'RVU Quantity Variance (+/-)') }}>
                                         <div className={style.extentionLableStyle}>RVU Quantity Variance (+/-)</div>
-                                        <InputGroup className={style.twoFieldWidth} value={rvuQuantityVariance?.value} placeholder="0" type='number'
+                                        <CommonInputField className={style.twoFieldWidth} value={rvuQuantityVariance?.value} placeholder="0" type='number'
                                             min="0" onChange={(e) => setRvuQuantityVariance({
                                                 ...rvuQuantityVariance, value: e.target.value.slice(0, limit3)
                                             })} />

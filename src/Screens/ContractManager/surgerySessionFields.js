@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
+import { EditableText, Checkbox } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -10,6 +10,7 @@ import Select from '@mui/material/Select';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 import style from './index.module.scss';
 
@@ -146,7 +147,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Service Cases Target*</div>
                 <div className={`${style.displayInRow}`}>
-                    <InputGroup value={metadata?.withNurse} disabled={metadata?.noTargetApplicable} className={` ${style.threeFieldWidth}`} onChange={(e) => { setpatientTarget(e.target.value) }} />
+                    <CommonInputField value={metadata?.withNurse} disabled={metadata?.noTargetApplicable} className={` ${style.threeFieldWidth}`} onChange={(e) => { setpatientTarget(e.target.value) }} />
                     <Checkbox label="No Target Applicable" value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth} `} onChange={(e) => handleValueChange('noTargetApplicable', e.target.checked)} />
                 </div>
             </div>
@@ -169,7 +170,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                     {metadata?.additionalScheduleRequired &&
                         (
                             <>
-                                <InputGroup value={metadata?.additionalClinicScheduleValue}
+                                <CommonInputField value={metadata?.additionalClinicScheduleValue}
                                     onChange={(e) => handleValueChange('additionalScheduleValue', e.target.value)}
                                     className={` ${style.threeFieldWidth}`} />
 

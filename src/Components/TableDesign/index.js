@@ -5,6 +5,10 @@ import Typography from '@mui/material/Typography';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Tooltip from '@mui/material/Tooltip';
 import Pagination from './../Pagination';
+import AscendingSort from './../../images/ascendingSort.png';
+import DescendingSort from './../../images/descendingSort.png';
+import Sort from './../../images/sort.png';
+
 import style from './index.module.scss';
 
 const useStyles = makeStyles(theme => ({
@@ -17,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle }) => {
+const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -132,7 +136,16 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
             <div>
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
-                        <p className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} key={index}>{data}</p>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} key={index}>
+                            {tableSortValues?.[index] && (
+                                <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} />
+                            )
+                                //  : (
+                                //     <img src={DescendingSort} alt="" className={style.sortImgStyle} />
+                                // )
+                            }
+                            <div className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle}`}>{data}</div>
+                        </div>
                     ))}
                 </div>
                 <div className={`${scrollStyle}`}>

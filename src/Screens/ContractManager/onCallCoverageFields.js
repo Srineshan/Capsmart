@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, EditableText } from '@blueprintjs/core';
+import { EditableText } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
@@ -14,6 +14,7 @@ import Select from '@mui/material/Select';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 import style from './index.module.scss';
 import EditableTable from './editableTable';
@@ -569,7 +570,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                     {
                         metadata?.additionalScheduleRequired &&
                         <>
-                            <InputGroup value={metadata?.additionalScheduleValue}
+                            <CommonInputField value={metadata?.additionalScheduleValue}
                                 onChange={(e) => e.target.value >= 0 && handleValueChange('additionalScheduleValue', e.target.value)}
                                 className={` ${style.threeFieldWidth}`} />
                             <Select

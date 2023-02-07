@@ -43,6 +43,11 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
   const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
+  const activeColSortValues = [false, false, false, true, true, false, false, false];
+  const draftColSortValues = [false, false, true, true, false, false, false, false, false];
+  const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
+  const expiredColSortValues = [false, false, true, true, false, false, false, false];
+  const activationPendingColSortValues = [false, false, true, true, false, false, false, false, false, false, false];
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isDownloadClicked, setIsDownloadClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -132,7 +137,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
   let dot = [];
   let dotTooltipValues = [];
-  let warningHoverText = []; 
+  let warningHoverText = [];
   let notification = [];
   let contractType = [];
   let contractId = [];
@@ -353,6 +358,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   }
 
   let tableHeaderValues = selectedContract === 'activecontracts' ? activeHeaderValues : selectedContract === 'draft' ? (isDraft ? draftHeaderValues : activationPendingHeaderValues) : selectedContract === 'upcomingrenewals' ? upcomingHeaderValues : expiredHeaderValues;
+  let tableSortValues = selectedContract === 'activecontracts' ? activeColSortValues : selectedContract === 'draft' ? (isDraft ? draftColSortValues : activationPendingColSortValues) : selectedContract === 'upcomingrenewals' ? upcomingColSortValues : expiredColSortValues;
   let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : selectedContract === "draft" ? getDraftContractsValues() : getUpcomingContractsValues();
   let actions = selectedContract === 'activecontracts' ? activeActionsData : draftActionsData;
   let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGridWithoutAction : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
@@ -447,6 +453,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
               totalCount={totalCount}
               page={page}
               scrollStyle={style.contractScrollStyle}
+              tableSortValues={tableSortValues}
             />
             {/* <div className={`${style.noContractsBox} ${style.alignCenter}`}>
                       <div>

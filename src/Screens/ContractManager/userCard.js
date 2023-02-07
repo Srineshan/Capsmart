@@ -30,7 +30,7 @@ const UserCard = ({ getIsExpanded }) => {
             <div className={`${style.displayInRow} ${style.alignCenter}`}>
                 <Link to={'/profile'} className={style.noFontStyle}>
                     <label for="file-upload">
-                        <img src={DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
+                        <img src={currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
                     </label>
                 </Link>
                 <input id="file-upload" type="file" />

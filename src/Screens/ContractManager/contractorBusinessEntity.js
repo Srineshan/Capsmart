@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, Tag, Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
+import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Checkbox from '@mui/material/Checkbox';
-import InputAdornment from '@mui/material/InputAdornment';
-import TextField from '@mui/material/TextField';
 import { POST, GET, PUT, TenantID } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
 import { EmailValidator, FormatPhoneNumber, EmptyStringCheck, PhoneValidator } from './../../utils/formatting';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 import style from './index.module.scss';
 
@@ -378,7 +377,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 onFocus={() => { checkFieldAndPopAlert(contractorNPIN?.npin, 'Contractor NPIN') }}>
                 <div className={style.extentionLableStyle}>Vendor NPIN*</div>
                 <div className={style.twoCol}>
-                  <InputGroup className={style.fullWidth}
+                  <CommonInputField className={style.fullWidth}
                     type="tel"
                     maxLength={10}
                     disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
@@ -399,7 +398,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 onFocus={() => { checkFieldAndPopAlert(contractorEntityTaxId?.taxId, 'Contractor Entity Tax ID') }}>
                 <div className={style.extentionLableStyle}>Vendor Tax ID*</div>
                 <div className={style.twoCol}>
-                  <InputGroup className={style.fullWidth} disabled={contractorEntityTaxId?.missing || contractorEntityTaxId?.notApplicable} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
+                  <CommonInputField className={style.fullWidth} disabled={contractorEntityTaxId?.missing || contractorEntityTaxId?.notApplicable} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
                     onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, taxId: e.target.value, missing: false, notApplicable: false })} />
                   <div className={`${style.displayInRow}`}>
                     <FormGroup className={style.marginLeft20}>
@@ -413,7 +412,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Business Entity Name*</div>
-                <InputGroup className={style.fullWidth}
+                <CommonInputField className={style.fullWidth}
                   value={businessEntity?.name}
                   onFocus={() => { checkFieldAndPopAlert(businessEntity?.name, 'Business Entity Name') }}
                   placeholder="Enter Business Entity Name"
@@ -422,14 +421,14 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Business Point of Contact*</div>
                 <div className={style.twoCol}>
-                  <InputGroup className={style.fullWidth}
+                  <CommonInputField className={style.fullWidth}
                     onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.name?.firstName, 'Contractor Business Contact First Name') }}
                     value={businessEntityUser?.name?.firstName} placeholder="Enter First Name"
                     onChange={(e) => {
                       setBusinessEntityUser({ ...businessEntityUser, name: { firstName: e.target.value, lastName: businessEntityUser?.name?.lastName, suffix: {} } });
                       setIsUserUpdated(true);
                     }} />
-                  <InputGroup className={style.fullWidth}
+                  <CommonInputField className={style.fullWidth}
                     onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.name?.lastName, 'Contractor Business Contact Last Name') }}
                     value={businessEntityUser?.name?.lastName} placeholder="Enter Last Name"
                     onChange={(e) => {
@@ -440,7 +439,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Business Contact Email Address*</div>
-                <InputGroup className={style.fullWidth} value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
+                <CommonInputField className={style.fullWidth} value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
                   onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.email?.officialEmail, 'Business Contact Email Address') }}
                   onChange={(e) => {
                     setBusinessEntityUser({ ...businessEntityUser, email: { officialEmail: e.target.value } });
@@ -455,7 +454,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 <div className={style.twoCol}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                     <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
-                    <InputGroup placeholder="Numeric"
+                    <CommonInputField placeholder="Numeric"
                       value={businessEntityUser?.contactNumber?.number}
                       disabled={businessEntityUser?.contactNumber?.missing}
                       onChange={(e) => {
@@ -475,17 +474,17 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Mailing Address*</div>
                 <div>
-                  <InputGroup className={style.fullWidth} value={mailingAddress?.addressLine} placeholder="Enter Street"
+                  <CommonInputField className={style.fullWidth} value={mailingAddress?.addressLine} placeholder="Enter Street"
                     onFocus={() => { checkFieldAndPopAlert(mailingAddress?.addressLine, 'Mailing Address Street') }}
                     onChange={(e) => setMailingAddress({ ...mailingAddress, addressLine: e.target.value })} />
                   <div className={`${style.grid3} ${style.marginTop10}`}>
-                    <InputGroup className={style.fullWidth} value={mailingAddress?.city} placeholder="Enter City"
+                    <CommonInputField className={style.fullWidth} value={mailingAddress?.city} placeholder="Enter City"
                       onFocus={() => { checkFieldAndPopAlert(mailingAddress?.city, 'Address City') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, city: e.target.value })} />
-                    <InputGroup className={style.fullWidth} value={mailingAddress?.state} placeholder="Enter State"
+                    <CommonInputField className={style.fullWidth} value={mailingAddress?.state} placeholder="Enter State"
                       onFocus={() => { checkFieldAndPopAlert(mailingAddress?.state, 'Address State') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, state: e.target.value })} />
-                    <InputGroup className={style.fullWidth} value={mailingAddress?.zipcode} placeholder="Enter Zipcode"
+                    <CommonInputField className={style.fullWidth} value={mailingAddress?.zipcode} placeholder="Enter Zipcode"
                       onFocus={() => { checkFieldAndPopAlert(mailingAddress?.zipcode, 'Address Zip Code') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, zipcode: e.target.value })} />
                   </div>
@@ -508,7 +507,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   </div>
                   {allowBEM &&
                     <div>
-                      <InputGroup value="Business Contract Manager" className={style.fullWidth} readOnly />
+                      <CommonInputField value="Business Contract Manager" className={style.fullWidth} readOnly={true} />
                       <div className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}>
                         The Business Contract Manager role allows the registered user to access
                         contract related information and reports only for the contract associated
