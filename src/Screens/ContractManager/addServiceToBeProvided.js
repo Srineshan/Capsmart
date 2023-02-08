@@ -991,7 +991,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
                       </div>
                       {
-                        showLocation && selectedLocation?.length !== 0 &&
+                        selectedLocation?.length !== 0 &&
                         <MultiSelectDisplay values={selectedLocation?.map(data => data?.location)} removeItem={removeLocation} />
                       }
                     </div>

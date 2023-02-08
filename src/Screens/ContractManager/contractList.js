@@ -117,6 +117,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const getContractors = (id) => {
     let contractedUsers = [];
     users?.filter(user => user?.contracts?.map(contract => contract?.roles?.map(role => role?.roleName)?.includes('Activity Logger') && contract?.id)?.includes(id))?.map(data => {
+      console.log('suffix check', data)
       let name = `${data?.name?.firstName}, ${data?.name?.lastName?.toUpperCase() || ''} ${data?.name?.suffix?.suffix || ''}`
       contractedUsers.push(name);
     });
@@ -448,18 +449,21 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
               page={page}
               scrollStyle={style.contractScrollStyle}
             />
-            {/* <div className={`${style.noContractsBox} ${style.alignCenter}`}>
-                      <div>
-                        <div className={style.noContractsFontStyle}>There are no contracts for you to manage.</div>
-                        <div className={`${style.displayInRow} ${style.justifyCenter} ${style.marginTop20}`}>
-                          <div className={style.noContractsSmallFontStyle}>To add a new contract click on </div>
-                          <div className={`${style.addSmallStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => {handleAddContract()}}>
-                            <AddCircleOutlineIcon sx={{ fontSize: 15, color: 'white' }} />
-                          </div>
-                        </div>
-                        <a><div className={`${style.linkStyle} ${style.marginTop10}`}>Click To View A Short Tutorial On How To Add A Contract</div></a>
-                      </div>
-                    </div> */}
+            {
+              <div className={`${style.noContractsBox} ${style.alignCenter}`}>
+              <div>
+                <div className={style.noContractsFontStyle}>There are no contracts for you to manage.</div>
+                <div className={`${style.displayInRow} ${style.justifyCenter} ${style.marginTop20}`}>
+                  <div className={style.noContractsSmallFontStyle}>To add a new contract click on </div>
+                  <div className={`${style.addSmallStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { handleAddContract() }}>
+                    <AddCircleOutlineIcon sx={{ fontSize: 15, color: 'white' }} />
+                  </div>
+                </div>
+                <a><div className={`${style.linkStyle} ${style.marginTop10}`}>Click To View A Short Tutorial On How To Add A Contract</div></a>
+              </div>
+            </div>
+            }
+            
           </div>
         </div>
       </div>

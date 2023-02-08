@@ -29,13 +29,45 @@ const switchTheme = createTheme({
 const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, contractTermPeriod }) => {
     const [schedulesField, setSchedulesField] = useState([]);
     const [differentTargets, setDifferentTargets] = useState(false);
+    console.log('contrac time', contractTermPeriod);
+    const [contractDuration, setContractDuration] = useState({ start: contractTermPeriod?.start, end: contractTermPeriod?.end })
     const [selectedScheduleRow, setSelectedScheduleRow] = useState();
     const [addScheduleAndTargetForDifferentPeriods, setAddScheduleAndTargetForDifferentPeriods] = useState(false);
     const [newClinicRow, setNewClinicRow] = useState({ startDate: new Date(), endDate: new Date(), min: 0, max: 0, frequency: 'WEEK', seenWithNurse: 0, seenWithoutNurse: 0, seenNoTarget: false, targetWithNurse: 0, targetWithoutNurse: 0, targetNoTarget: false })
     const [metadata, setMetadata] = useState({
-        contractedSchedules: [],
-        patientsSeenTargets: [],
-        scheduledPatientsTargets: [],
+        contractedSchedules: [{
+            "minimum": {
+                "value": 0
+            },
+            "maximum": {
+                "value": 0
+            },
+            "frequency": "WEEK",
+            "startDate": contractDuration?.start,
+            "endDate": contractDuration?.end,
+        }],
+        patientsSeenTargets: [{
+            "withNurse": {
+                "value": 0
+            },
+            "withoutNurse": {
+                "value": 0
+            },
+            "startDate": contractDuration?.start,
+            "endDate": contractDuration?.end,
+            "noTargetApplicable": false
+        }],
+        scheduledPatientsTargets: [{
+            "withNurse": {
+                "value": 0
+            },
+            "withoutNurse": {
+                "value": 0
+            },
+            "startDate": contractDuration?.start,
+            "endDate": contractDuration?.end,
+            "noTargetApplicable": false
+        }],
         min: '0',
         max: '0',
         frequency: 'WEEK',
@@ -72,49 +104,15 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
         weekendsCount: '0',
     });
 
-    // useEffect(() => {
-    //     if (Object.entries(serviceSelected)?.length === 0) {
-    //         setMetadata({
-    //             ...metadata,
-    //             contractedSchedules: [{
-    //                 "minimum": {
-    //                     "value": 0
-    //                 },
-    //                 "maximum": {
-    //                     "value": 0
-    //                 },
-    //                 "frequency": "WEEK",
-    //                 "startDate": format(new Date(contractTermPeriod?.start), 'yyyy-MM-dd').toString(),
-    //                 "endDate": format(new Date(contractTermPeriod?.end), 'yyyy-MM-dd').toString()
-    //             }],
-    //             patientsSeenTargets: [{
-    //                 "withNurse": {
-    //                     "value": 0
-    //                 },
-    //                 "withoutNurse": {
-    //                     "value": 0
-    //                 },
-    //                 "startDate": format(new Date(contractTermPeriod?.start), 'yyyy-MM-dd').toString(),
-    //                 "endDate": format(new Date(contractTermPeriod?.end), 'yyyy-MM-dd').toString(),
-    //                 "noTargetApplicable": false
-    //             }],
-    //             scheduledPatientsTargets: [{
-    //                 "withNurse": {
-    //                     "value": 0
-    //                 },
-    //                 "withoutNurse": {
-    //                     "value": 0
-    //                 },
-    //                 "startDate": format(new Date(contractTermPeriod?.start), 'yyyy-MM-dd').toString(),
-    //                 "endDate": format(new Date(contractTermPeriod?.end), 'yyyy-MM-dd').toString(),
-    //                 "noTargetApplicable": false
-    //             }],
-    //         })
-    //     }
-    // }, [contractTermPeriod])
+    console.log('metadata', metadata);
+
     const [specified, setSpecified] = useState(0);
 
-    const onNewClinicChange = (value, index) => {
+    useEffect(() => {
+        setContractDuration({ start: contractTermPeriod?.start, end: contractTermPeriod?.end })
+    }, [contractTermPeriod])
+
+    const onNewClinicChange = (value, index, type) => {
         let contractedScheduleTemp = metadata?.contractedSchedules;
         contractedScheduleTemp[index] = ({
             "minimum": {
@@ -153,6 +151,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
         })
         setMetadata({ ...metadata, contractedSchedules: contractedScheduleTemp, patientsSeenTargets: patientSeenTemp, scheduledPatientsTargets: targetTemp });
         setNewClinicRow(value);
+
+        getAddScheduleAndTargetForDifferentPeriods(false);
     }
 
     console.log('contract Term period', metadata);
@@ -174,27 +174,28 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
     const setSelectedValues = () => {
         let tempContractedSchedules = serviceSelected?.contractedSchedules || [];
         tempContractedSchedules?.map(data => {
-            data.startDate = new Date(data?.startDate);
-            data.endDate = new Date(data?.endDate);
+            data.startDate = data?.startDate;
+            data.endDate = data?.endDate;
         });
         let tempPatientsSeenTargets = serviceSelected?.patientsSeenTargets || [];
         tempPatientsSeenTargets?.map(data => {
-            data.startDate = new Date(data?.startDate);
-            data.endDate = new Date(data?.endDate);
+            data.startDate = data?.startDate;
+            data.endDate = data?.endDate;
         })
         let tempScheduledPatientsTargets = serviceSelected?.scheduledPatientsTargets || [];
         tempScheduledPatientsTargets?.map(data => {
-            data.startDate = new Date(data?.startDate);
-            data.endDate = new Date(data?.endDate);
+            data.startDate = data?.startDate;
+            data.endDate = data?.endDate;
         })
 
         console.log('temp', tempContractedSchedules, tempPatientsSeenTargets, tempScheduledPatientsTargets);
         setMetadata({
             ...metadata,
             refId: serviceSelected?.refId,
-            contractedSchedules: [],
+            contractedSchedules: tempContractedSchedules,
             patientsSeenTargets: tempPatientsSeenTargets,
             scheduledPatientsTargets: tempScheduledPatientsTargets,
+            scheduleAndTargetSame: serviceSelected?.contractedschedules?.length === 1 ? true : false,
             min: serviceSelected?.contractedSchedule?.minimum?.value,
             max: serviceSelected?.contractedSchedule?.maximum?.value,
             frequency: serviceSelected?.contractedSchedule?.frequency,
@@ -247,7 +248,48 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
     }
 
     const onScheduleContractYearChange = (value) => {
-        setMetadata({ ...metadata, scheduleAndTargetSame: value, contractedSchedules: [], patientsSeenTargets: [], scheduledPatientsTargets: [] });
+        console.log('in value', value);
+        if (value) {
+            console.log('in if check');
+            setMetadata({
+                ...metadata, scheduleAndTargetSame: value, contractedSchedules: [{
+                    "minimum": {
+                        "value": 0
+                    },
+                    "maximum": {
+                        "value": 0
+                    },
+                    "frequency": "WEEK",
+                    "startDate": contractDuration?.start,
+                    "endDate": contractDuration?.end,
+                }], patientsSeenTargets: [{
+                    "withNurse": {
+                        "value": 0
+                    },
+                    "withoutNurse": {
+                        "value": 0
+                    },
+                    "startDate": contractDuration?.start,
+                    "endDate": contractDuration?.end,
+                    "noTargetApplicable": false
+                }], scheduledPatientsTargets: [{
+                    "withNurse": {
+                        "value": 0
+                    },
+                    "withoutNurse": {
+                        "value": 0
+                    },
+                    "startDate": contractDuration?.start,
+                    "endDate": contractDuration?.end,
+                    "noTargetApplicable": false
+                }]
+            });
+
+        } else {
+            console.log('in else check');
+            setMetadata({ ...metadata, scheduleAndTargetSame: value, contractedSchedules: [], patientsSeenTargets: [], scheduledPatientsTargets: [] });
+            console.log('after that');
+        }
     }
 
     const onSameTargetChange = (targetName, value, name) => {
@@ -256,6 +298,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             temp[0][name] = {
                 value: parseInt(value) || 0,
             }
+            console.log('data', temp);
         }
         else if (name === 'noTargetApplicable' && value) {
             temp[0][name] = value;
@@ -269,12 +312,13 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
         else {
             temp[0][name] = value;
         }
+        console.log('temp after value ', temp);
         setMetadata({ ...metadata, [targetName]: temp });
     }
 
     const limit5 = 5;
 
-    console.log('selected', selectedScheduleRow);
+    console.log('selected', format(new Date(contractDuration?.start), 'MMMM d, yyyy'));
 
     return (
         <div>
@@ -358,7 +402,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                             <FormControlLabel
                                 control={
                                     <Switch checked={metadata?.scheduleAndTargetSame} className={`${style.textAlignLeft}`}
-                                    // onChange={(e) => onScheduleContractYearChange(!metadata?.scheduleAndTargetSame)}
+                                        onChange={(e) => onScheduleContractYearChange(!metadata?.scheduleAndTargetSame)}
                                     />
                                 }
                                 color='primary'
@@ -375,7 +419,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                 </div>
             </div>
 
-            {metadata?.scheduleAndTargetSame && (
+            {(metadata?.scheduleAndTargetSame && metadata?.contractedSchedules?.length === 1) && (
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Regular Service Schedule*</div>
@@ -395,7 +439,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 value={metadata?.contractedSchedules?.[0]?.frequency}
                                 onChange={(e) => onSameTargetChange('contractedSchedules', e.target.value, 'frequency')}
                             >
-                                <MenuItem value={''}>Select Frequecy</MenuItem>
+                                <MenuItem value={''}>Select Frequency</MenuItem>
                                 <MenuItem value={'WEEK'}>Per Week</MenuItem>
                                 <MenuItem value={'MONTH'}>Per Month</MenuItem>
                             </Select>
@@ -433,7 +477,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                 </>
             )}
 
-            {(!metadata?.scheduleAndTargetSame || metadata?.contractedSchedules?.length > 1) && (
+            {(!metadata?.scheduleAndTargetSame || (metadata?.contractedSchedules?.length || 0) > 1) && (
                 <div>
                     <div className={`${style.tableHeader} ${style.marginTop10}`}>
                         <div className={style.scheduleTableGrid1}>
@@ -455,27 +499,31 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                             <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} ></p>
                             <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} >W / NURSE </p>
                             <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} >WO / NURSE</p>
-                            <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} ></p>
-                            <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} ></p>
+                            {/* <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} ></p>
+                            <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} ></p> */}
                         </div>
                     </div>
-                    <div className={`${style.tableData} ${style.scheduleTableGrid2} ${style.alternativeBackgroundColor}`}>
-                        <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>Jan 1 - MAR 31, 2022</p>
-                        <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>3</p>
-                        <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>-</p>
-                        <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>PER MONTH</p>
-                        <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>15</p>
-                        <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>8</p>
-                        <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}></p>
-                        <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>15</p>
-                        <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>8</p>
-                        <div className={`${style.verticalAlignCenter} ${style.flexCenter} ${style.cursorPointer}`}>
-                            <EditIcon style={{ color: "#7165E3" }} />
-                        </div>
-                        <div className={`${style.verticalAlignCenter} ${style.flexCenter} ${style.cursorPointer}`}>
-                            <CloseIcon style={{ color: "#FF6562" }} />
-                        </div>
-                    </div>
+                    {
+                        metadata?.contractedSchedules?.map((data, index) => (
+                            <div className={`${style.tableData} ${style.scheduleTableGrid2} ${style.alternativeBackgroundColor}`}>
+                                <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} >{`${format(new Date(data?.startDate), 'MMMM d, yyyy')} - ${format(new Date(data?.endDate), 'MMMM d, yyyy')}`}</p>
+                                <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{data?.minimum?.value || '-'}</p>
+                                <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{data?.maximum?.value || '-'}</p>
+                                <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}></p>
+                                <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{metadata?.patientsSeenTargets?.[index]?.withNurse?.value || '-'}</p>
+                                <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{metadata?.patientsSeenTargets?.[index]?.withoutNurse?.value || '-'}</p>
+                                <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}></p>
+                                <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{metadata?.scheduledPatientsTargets?.[index]?.withNurse?.value || '-'}</p>
+                                <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{metadata?.scheduledPatientsTargets?.[index]?.withoutNurse?.value || '-'}</p>
+                                {/* <div className={`${style.verticalAlignCenter} ${style.flexCenter} ${style.cursorPointer}`}>
+                                    <EditIcon style={{ color: "#7165E3" }} />
+                                </div>
+                                <div className={`${style.verticalAlignCenter} ${style.flexCenter} ${style.cursorPointer}`}>
+                                    <CloseIcon style={{ color: "#FF6562" }} />
+                                </div> */}
+                            </div>
+                        ))
+                    }
                 </div>
             )}
 
@@ -504,7 +552,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 value={metadata?.additionalScheduleFrequency}
                                 onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
                             >
-                                <MenuItem value={''}>Select Frequecy</MenuItem>
+                                <MenuItem value={''}>Select Frequency</MenuItem>
                                 <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Every Week</MenuItem>
                                 <MenuItem value={'EVERY_OTHER_WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Every Other Week</MenuItem>
                                 <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTH'}>Every Month</MenuItem>
@@ -540,7 +588,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                         //       value={metadata?.rateType}
                         //       onChange={(e)=>handleValueChange('rateType',e.target.value)}
                         //   >
-                        //       <MenuItem value="">Select Frequecy</MenuItem>
+                        //       <MenuItem value="">Select Frequency</MenuItem>
                         //       <MenuItem value={'HOURLY'}>Hourly</MenuItem>
                         //   </Select>
                     }

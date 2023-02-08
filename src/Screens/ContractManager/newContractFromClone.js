@@ -121,9 +121,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         </a>
                         <div className={style.marginTop}>
                             <a href={fileFields?.[i]?.filePath} target="_blank">
-                                <p className={`${style.documentText} ${style.leftAlign} ${style.removeUnderline}`} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }}><strong>{fileFields?.[i]?.type}</strong></p>
                                 <Tooltip title={'Preview'} arrow>
-                                    <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.type}</strong></p>
+                                    <p className={`${style.documentText} ${style.leftAlign} ${style.removeUnderline}`} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }}><strong>{fileFields?.[i]?.type}</strong></p>
                                 </Tooltip>
                             </a>
 

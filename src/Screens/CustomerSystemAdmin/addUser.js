@@ -11,10 +11,10 @@ import { FormatPhoneNumber } from '../../utils/formatting';
 
 import style from './index.module.scss';
 
-const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
+const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const [selectedDepartments, setSelectedDepartments] = useState([])
     const [selectedSites, setSelectedSites] = useState([])
-    const [addUser, setAddUser] = useState({firstName: "", lastName: "", email: "", phone: "", roles: [], sites: [], title: {title:"",id:""}});
+    const [addUser, setAddUser] = useState({ firstName: "", lastName: "", email: "", phone: "", roles: [], sites: [], title: { title: "", id: "" } });
     const [userDataById, setUserDataById] = useState([]);
     const [roles, setRoles] = useState([]);
     const [selectedRolesToShow, setSelectedRolesToShow] = useState([]);
@@ -23,41 +23,41 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
     const defaultProviderId = "6335e77dbb13e2088b208bb0";
     const selectedProvider = defaultProviderId;
 
-    useEffect(()=>{
+    useEffect(() => {
         getSites();
         getFunctionalTitle();
         getRoles();
-    },[]);
+    }, []);
 
     useEffect(() => {
-        if(isEdit){
+        if (isEdit) {
             getUserById();
         }
     }, [isEdit]);
 
     useEffect(() => {
-        if(selectedRolesToShow?.length !== 0){
+        if (selectedRolesToShow?.length !== 0) {
             let temp = [];
             selectedRolesToShow?.map(data => {
                 console.log(data)
-                temp.push({id: data, roleName: roles?.filter(roleData => roleData?.id === data)?.map(roleData => roleData?.roleName)?.[0]})
+                temp.push({ id: data, roleName: roles?.filter(roleData => roleData?.id === data)?.map(roleData => roleData?.roleName)?.[0] })
             })
-            setAddUser({...addUser, roles: temp});
+            setAddUser({ ...addUser, roles: temp });
         }
     }, [selectedRolesToShow]);
 
     useEffect(() => {
-        if(!isEdit){
+        if (!isEdit) {
             let temp = [];
             selectedSites?.map(data => {
                 temp.push(sites?.filter(siteData => siteData?.id === data)?.map(siteData => siteData)?.[0]);
             })
-            setAddUser({...addUser, sites: {sites: temp}});
+            setAddUser({ ...addUser, sites: { sites: temp } });
         }
     }, [selectedSites]);
 
     useEffect(() => {
-        if(isEdit) {
+        if (isEdit) {
             let tempDepartmentList = [];
             selectedSites?.map(data => {
                 addUser?.sites?.sites?.filter(siteData => siteData?.id === data)?.map(siteData => siteData)?.[0]?.departmentList?.departments?.map(deptData => {
@@ -68,18 +68,18 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
         }
     }, [selectedSites, sites, addUser]);
 
-    const getFunctionalTitle  = async() => {
+    const getFunctionalTitle = async () => {
         await GET(`entity-service/functionalTitlesForCSPType?contractedServiceProviderTypeId=${selectedProvider}`)
-        .then(response=>{
-            setFunctionalTitle(response?.data);
-        })
-        .catch(error=>{
-            console.log('error',error);
-        })
+            .then(response => {
+                setFunctionalTitle(response?.data);
+            })
+            .catch(error => {
+                console.log('error', error);
+            })
     }
 
     const handleTitle = (value) => {
-        setAddUser({...addUser, title:{id:value,title:functionalTitle?.filter(data => data?.id === value)?.map(data => data?.title)[0]}});
+        setAddUser({ ...addUser, title: { id: value, title: functionalTitle?.filter(data => data?.id === value)?.map(data => data?.title)[0] } });
     }
 
     const handleSitesChange = (value) => {
@@ -90,27 +90,28 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
         setSelectedDepartments(typeof value === 'string' ? value.split(',') : value,)
     }
 
-    const getSites = async() => {
-        const {data: sites} = await GET('entity-service/sites');
+    const getSites = async () => {
+        const { data: sites } = await GET('entity-service/sites');
         setSites(sites);
     };
 
-    const getRoles = async() => {
-        const {data: roles} = await GET('user-management-service/roles');
-        setRoles(roles?.filter(data=>data?.roleName !== 'Activity Logger')?.map(data=>data));
+    const getRoles = async () => {
+        const { data: roles } = await GET('user-management-service/roles');
+        setRoles(roles?.filter(data => data?.roleName !== 'Activity Logger')?.map(data => data));
     };
 
-    const getUserById = async() => {
-        const {data: user} = await GET(`user-management-service/user/${userId}`);
+    const getUserById = async () => {
+        const { data: user } = await GET(`user-management-service/user/${userId}`);
         setUserDataById(user);
-        if(user){
-            setAddUser({...addUser,
+        if (user) {
+            setAddUser({
+                ...addUser,
                 firstName: user?.name?.firstName,
                 lastName: user?.name?.lastName,
                 email: user?.email?.officialEmail,
                 phone: user?.communication?.mobileNumber,
                 roles: user?.roles,
-                sites: {sites: user?.sites?.sites},
+                sites: { sites: user?.sites?.sites },
                 title: user?.title
             });
             let rolesToShow = [];
@@ -134,7 +135,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
         addUser?.sites?.sites?.map(data => {
             let departments = [];
             data?.departmentList?.departments?.map(deptData => {
-                if(selectedDepartments?.includes(`${deptData?.id}-${data?.id}`)) {
+                if (selectedDepartments?.includes(`${deptData?.id}-${data?.id}`)) {
                     departments.push(deptData);
                 }
             })
@@ -147,66 +148,67 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
     // console.log(selectedRolesToShow, addUser, sites, selectedSites, selectedDepartments)
     const submitUserDetails = async () => {
 
-        if(!addUser?.email.includes('@') || !addUser?.email.includes('.')) {
-          ErrorToaster('Enter a valid mail-id');
-          return;
+        if (!addUser?.email.includes('@') || !addUser?.email.includes('.')) {
+            ErrorToaster('Enter a valid mail-id');
+            return;
         }
-        if(addUser?.firstName === '' && addUser?.email === '' && addUser?.roles?.length === 0 && getFinalSiteValueWithDepartments()?.length === 0)
-        {
-          ErrorToaster('All Fields are Mandatory');
-          return;
+        if (addUser?.firstName === '' && addUser?.email === '' && addUser?.roles?.length === 0 && getFinalSiteValueWithDepartments()?.length === 0) {
+            ErrorToaster('All Fields are Mandatory');
+            return;
         }
         const user = {
-            ...(isEdit && {'id': userId}),
-              "name": {
+            ...(isEdit && { 'id': userId }),
+            "name": {
                 "firstName": addUser?.firstName,
                 "lastName": addUser?.lastName,
-                ...(isEdit ? {"suffix": userDataById?.name?.suffix} : {"suffix": {}}),
-              },
-              "userType": "REGISTERED_USER",
-              ...(isEdit && {"contracts": userDataById?.contracts}),
-              "title":addUser?.title,
-              "email": {
+                ...(isEdit ? { "suffix": userDataById?.name?.suffix } : { "suffix": {} }),
+            },
+            "userType": "REGISTERED_USER",
+            ...(isEdit && { "contracts": userDataById?.contracts }),
+            "title": addUser?.title,
+            "email": {
                 "officialEmail": addUser?.email
-              },
-              ...( !isEdit && {"password": {
-                "password": "string"
-              }}),
-              "communication": {
+            },
+            ...(!isEdit && {
+                "password": {
+                    "password": "string"
+                }
+            }),
+            "communication": {
                 "personalEmail": addUser?.email,
                 "mobileNumber": addUser?.phone,
                 "landlineNumber": "string",
                 "mobileNumberNotApplicable": true
-              },
-              "roles": addUser?.roles,
-              ...(isEdit && {"address": userDataById?.address}),
-              "tenant": {
+            },
+            "roles": addUser?.roles,
+            ...(isEdit && { "address": userDataById?.address }),
+            "tenant": {
                 "tenantId": TenantID
-              },
-              "sites": {
+            },
+            "sites": {
                 "sites": getFinalSiteValueWithDepartments()
-              },
-              ...(isEdit && {"activated": userDataById?.activated}),
-              ...(isEdit && {"blocked": userDataById?.blocked}),
-              ...(isEdit && {"serviceProviderType": userDataById?.serviceProviderType}),
-              ...(isEdit && {"npin": userDataById?.npin}),
-            }
-        if(isEdit){
+            },
+            ...(isEdit && { "activated": userDataById?.activated }),
+            ...(isEdit && { "blocked": userDataById?.blocked }),
+            ...(isEdit && { "serviceProviderType": userDataById?.serviceProviderType }),
+            ...(isEdit && { "npin": userDataById?.npin }),
+        }
+        if (isEdit) {
             await PUT('user-management-service/user', JSON.stringify(user))
-            .then(response=>{
-            SuccessToaster('User Modified Successfully');
-            })
-            .catch(error=>{
-            ErrorToaster('Unexpected Error');
-            })
+                .then(response => {
+                    SuccessToaster('User Modified Successfully');
+                })
+                .catch(error => {
+                    ErrorToaster('Unexpected Error');
+                })
         } else {
             await POST('user-management-service/user/register', JSON.stringify(user))
-            .then(response=>{
-            SuccessToaster('User Added Successfully');
-            })
-            .catch(error=>{
-            ErrorToaster('Unexpected Error');
-            })
+                .then(response => {
+                    SuccessToaster('User Added Successfully');
+                })
+                .catch(error => {
+                    ErrorToaster('Unexpected Error');
+                })
         }
         getManageUserDialog(false);
     };
@@ -245,7 +247,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                                 onChange={(e) => setAddUser({ ...addUser, phone: FormatPhoneNumber(e.target.value) })}
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>+1</InputAdornment>,
-                                    style: {fontSize: 15}
+                                    style: { fontSize: 15 }
                                 }}
                             />
                         </div>
@@ -253,7 +255,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                     <div className={`${style.twoCol} ${style.marginTop20}`}>
                         <div>
                             <div className={style.extentionLableStyle}>ROLE*</div>
-                            <FormControl sx={{maxWidth: '300px'}} className={style.fullWidth} size="small">
+                            <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
                                 <Select
                                     labelId="demo-multiple-checkbox-label"
                                     id="demo-multiple-checkbox"
@@ -261,7 +263,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                                     value={selectedRolesToShow}
                                     onChange={(e) => handleRolesChange(e.target.value)}
                                 >
-                                    {roles?.map((data, index)=>
+                                    {roles?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.roleName}</MenuItem>
                                     )}
                                 </Select>
@@ -277,7 +279,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                                     className={style.selectFontStyle}
                                     onChange={(e) => handleTitle(e.target.value)}
                                 >
-                                    {functionalTitle?.map((data, index)=>
+                                    {functionalTitle?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
                                     )}
                                 </Select>
@@ -287,7 +289,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                     <div className={`${style.twoCol} ${style.marginTop20}`}>
                         <div>
                             <div className={style.extentionLableStyle}>SITES</div>
-                            <FormControl sx={{maxWidth: '300px'}} className={style.fullWidth} size="small">
+                            <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
                                 <Select
                                     labelId="demo-multiple-checkbox-label"
                                     id="demo-multiple-checkbox"
@@ -296,7 +298,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                                     onChange={(e) => handleSitesChange(e.target.value)}
                                     className={style.selectFontStyle}
                                 >
-                                    {sites?.map((data, index)=>
+                                    {sites?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.siteName?.siteName}</MenuItem>
                                     )}
                                 </Select>
@@ -304,7 +306,7 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                         </div>
                         <div>
                             <div className={style.extentionLableStyle}>DEPARTMENT</div>
-                            <FormControl sx={{maxWidth: '300px'}} className={style.fullWidth} size="small">
+                            <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
                                 <Select
                                     labelId="demo-multiple-checkbox-label"
                                     id="demo-multiple-checkbox"
@@ -313,10 +315,10 @@ const AddUserInCustomerAdmin = ({getManageUserDialog, isEdit, userId}) => {
                                     onChange={(e) => handleDepartmentsChange(e.target.value)}
                                     className={style.selectFontStyle}
                                 >
-                                    {sites?.filter(data => selectedSites?.includes(data?.id))?.map((data, index)=>
+                                    {sites?.filter(data => selectedSites?.includes(data?.id))?.map((data, index) =>
                                         data?.departmentList?.departments?.map((deptData, deptIndex) => (
                                             <MenuItem value={`${deptData?.id}-${data?.id}`} key={`${index}${deptIndex}`}>{`${deptData?.departmentName?.name} - ${data?.siteName?.siteName}`}</MenuItem>
-                                    )))}
+                                        )))}
                                 </Select>
                             </FormControl>
                         </div>

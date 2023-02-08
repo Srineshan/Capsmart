@@ -11,6 +11,7 @@ import style from './index.module.scss';
 
 const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDifferentPeriods, initialValue, onNewClinicChange, selectedScheduleRow, metadata }) => {
     const [serviceSchedule, setServiceSchedule] = useState();
+    console.log('metadata', metadata);
     useEffect(() => {
         if (selectedScheduleRow < metadata?.contractedSchedules?.length) {
             let contractedTemp = metadata?.contractedSchedules;
@@ -25,6 +26,8 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
         }
     }, [metadata])
 
+    console.log('service Schedule', serviceSchedule);
+
     const onScheduleChange = (name, value) => {
         setServiceSchedule({ ...serviceSchedule, [name]: value });
     }
@@ -36,7 +39,7 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                     <div className={style.spaceBetween}>
                         <p className={style.extensionStyle}>Add Schedules & Target For Different Periods</p>
                         <div className={style.displayInRow}>
-                            <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} />
+                            <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => { getAddScheduleAndTargetForDifferentPeriods(false) }} />
                         </div>
                     </div>
                     <div className={style.extensionBorder}></div>
@@ -59,7 +62,7 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                                         ...params.inputProps,
                                                         placeholder: "Start Date"
                                                     }} />}
-                                                value={new Date(serviceSchedule?.startDate)}
+                                                value={serviceSchedule?.startDate}
                                                 onChange={(newValue) => {
                                                     onScheduleChange('startDate', new Date(newValue));
                                                 }}
@@ -82,7 +85,7 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                                         ...params.inputProps,
                                                         placeholder: "End Date"
                                                     }} />}
-                                                value={new Date(serviceSchedule?.endDate)}
+                                                value={serviceSchedule?.endDate}
                                                 onChange={(newValue) => {
                                                     onScheduleChange('endDate', new Date(newValue));
                                                 }}
@@ -96,11 +99,11 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                 <div className={style.displayInRow}>
                                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                         <div className={style.textElement}>MIN</div>
-                                        <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={serviceSchedule?.min} onChange={(e) => onScheduleChange('min', e)} />
+                                        <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={serviceSchedule?.min?.toString()} onChange={(e) => onScheduleChange('min', e)} />
                                     </div>
                                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                         <div className={style.textElement}>MAX</div>
-                                        <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={serviceSchedule?.max} onChange={(e) => onScheduleChange('max', e)} />
+                                        <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={serviceSchedule?.max?.toString()} onChange={(e) => onScheduleChange('max', e)} />
                                     </div>
                                     <Select
                                         displayEmpty
@@ -108,7 +111,7 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                         className={`${style.fullWidth} ${style.marginLeft20}`}
                                         value={serviceSchedule?.frequency} onChange={(e) => onScheduleChange('frequency', e.target.value)}
                                     >
-                                        <MenuItem value={''}>Select Frequecy</MenuItem>
+                                        <MenuItem value={''}>Select Frequency</MenuItem>
                                         <MenuItem value={'WEEK'} >Per Week</MenuItem>
                                         <MenuItem value={'MONTH'} >Per Month</MenuItem>
                                     </Select>

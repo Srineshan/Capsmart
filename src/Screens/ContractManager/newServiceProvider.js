@@ -506,7 +506,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
               </div>
               {
                 <FormGroup>
-                  <FormControlLabel control={<Checkbox value="NA" checked={phoneNA} onChange={(e) => { setPhoneNA(e.target.checked); if (e.target.checked) { handleUserData('phone', ''); } }} checked={userDetails?.phoneNA} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                  <FormControlLabel control={<Checkbox value="NA" checked={phoneNA} onChange={(e) => { setPhoneNA(e.target.checked); if (e.target.checked) { handleUserData('phone', ''); } }} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
                 </FormGroup>
               }
             </div>
