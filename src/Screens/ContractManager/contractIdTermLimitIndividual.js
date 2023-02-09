@@ -141,7 +141,7 @@ const ContractIdTermLimitIndividual = (
   }, [fullyExecutedContractData])
 
   useEffect(() => {
-    setSelectContractManager(user?.filter(data => data?.id === contractData?.contractManager?.userID)?.map(data => data)[0]);
+    setSelectContractManager(user?.filter(data => data?.id === contractData?.contractManager?.userID)?.map(data => data)[0] || undefined);
   }, [user])
 
   useEffect(() => {
@@ -171,7 +171,7 @@ const ContractIdTermLimitIndividual = (
       setSiteSpecific(contractDetail?.siteSpecificContract);
       setContractTimeCommitment(contractDetail?.timeCommitment || {});
       setFullyExecutedContract(contractDetail?.fullyExecutedContract);
-      setSelectContractManager(user?.filter(data => data?.id === contractDetail?.contractManager?.userID)?.map(data => data)[0]);
+      setSelectContractManager(user?.filter(data => data?.id === contractDetail?.contractManager?.userID)?.map(data => data)[0] || undefined);
       setContractPriorId({ id: contractDetail?.priorContract?.id, na: contractDetail?.priorContract?.notApplicable });
       setContractTermPeriodFrom(contractDetail?.contractTerm?.startDate !== null ? new Date(contractDetail?.contractTerm?.startDate) : null);
       setContractTermPeriodTo(contractDetail?.contractTerm?.endDate !== null ? new Date(contractDetail?.contractTerm?.endDate) : null);
@@ -231,6 +231,10 @@ const ContractIdTermLimitIndividual = (
     let sites = getSiteData();
     if (departmentSpecific && sites?.some(data => data?.departmentList?.departments?.length === 0)) {
       ErrorToaster('Select Departments for all the selected Sites');
+      return;
+    }
+    if (selectContractManager === null || selectContractManager === undefined) {
+      ErrorToaster('Select Contract Manager');
       return;
     }
     let contractFiles = [];

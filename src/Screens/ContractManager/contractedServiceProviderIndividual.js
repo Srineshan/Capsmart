@@ -289,7 +289,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         "contractName": {
           "contractName": contractName
         },
-        "roles": [],
+        "roles": selectedRoles,
         "sites": {
           "sites": getSiteData()
         },

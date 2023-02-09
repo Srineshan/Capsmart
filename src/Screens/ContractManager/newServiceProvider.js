@@ -180,7 +180,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
       "contractName": {
         "contractName": contractName
       },
-      "roles": roles,
+      "roles": selectedRoles,
       "sites": {
         "sites": getSiteData()
       },
@@ -245,7 +245,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
         "landlineNumber": "string",
         "mobileNumberNotApplicable": userDetails?.phoneNA
       },
-      "roles": roles,
+      "roles": selectedRoles,
       "address": address,
       "tenant": {
         "tenantId": TenantID

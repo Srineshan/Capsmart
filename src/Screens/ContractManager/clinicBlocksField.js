@@ -30,7 +30,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
     const [schedulesField, setSchedulesField] = useState([]);
     const [differentTargets, setDifferentTargets] = useState(false);
     console.log('contrac time', contractTermPeriod);
-    const [contractDuration, setContractDuration] = useState({ start: contractTermPeriod?.start, end: contractTermPeriod?.end })
+    // const [contractTermPeriod, setContractDuration] = useState({ start: contractTermPeriod?.start, end: contractTermPeriod?.end })
     const [selectedScheduleRow, setSelectedScheduleRow] = useState();
     const [addScheduleAndTargetForDifferentPeriods, setAddScheduleAndTargetForDifferentPeriods] = useState(false);
     const [newClinicRow, setNewClinicRow] = useState({ startDate: new Date(), endDate: new Date(), min: 0, max: 0, frequency: 'WEEK', seenWithNurse: 0, seenWithoutNurse: 0, seenNoTarget: false, targetWithNurse: 0, targetWithoutNurse: 0, targetNoTarget: false })
@@ -43,8 +43,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                 "value": 0
             },
             "frequency": "WEEK",
-            "startDate": contractDuration?.start,
-            "endDate": contractDuration?.end,
+            "startDate": contractTermPeriod?.start,
+            "endDate": contractTermPeriod?.end,
         }],
         patientsSeenTargets: [{
             "withNurse": {
@@ -53,8 +53,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             "withoutNurse": {
                 "value": 0
             },
-            "startDate": contractDuration?.start,
-            "endDate": contractDuration?.end,
+            "startDate": contractTermPeriod?.start,
+            "endDate": contractTermPeriod?.end,
             "noTargetApplicable": false
         }],
         scheduledPatientsTargets: [{
@@ -64,8 +64,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             "withoutNurse": {
                 "value": 0
             },
-            "startDate": contractDuration?.start,
-            "endDate": contractDuration?.end,
+            "startDate": contractTermPeriod?.start,
+            "endDate": contractTermPeriod?.end,
             "noTargetApplicable": false
         }],
         min: '0',
@@ -109,7 +109,31 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
     const [specified, setSpecified] = useState(0);
 
     useEffect(() => {
-        setContractDuration({ start: contractTermPeriod?.start, end: contractTermPeriod?.end })
+        let temp = metadata;
+        // let tempPatientsSeenTargets = metada?.patientsSeenTargets;
+        // let tempScheduledPatientsTargets = metadata?.scheduledPatientsTargets;
+
+        temp.contractedSchedules?.map(data => {
+            if (data?.startDate === null) {
+                data.startDate = contractTermPeriod?.start;
+                data.endDate = contractTermPeriod?.end;
+            }
+        })
+
+        temp?.catientsSeenTargets?.map(data => {
+            if (data?.startDate === null) {
+                data.startDate = contractTermPeriod?.start;
+                data.endDate = contractTermPeriod?.end;
+            }
+        })
+
+        temp?.scheduledPatientsTargets?.map(data => {
+            if (data?.startDate === null) {
+                data.startDate = contractTermPeriod?.start;
+                data.endDate = contractTermPeriod?.end;
+            }
+        })
+        setMetadata(temp)
     }, [contractTermPeriod])
 
     const onNewClinicChange = (value, index, type) => {
@@ -195,7 +219,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             contractedSchedules: tempContractedSchedules,
             patientsSeenTargets: tempPatientsSeenTargets,
             scheduledPatientsTargets: tempScheduledPatientsTargets,
-            scheduleAndTargetSame: serviceSelected?.contractedschedules?.length === 1 ? true : false,
+            scheduleAndTargetSame: serviceSelected?.contractedSchedules?.length <= 1 ? true : false,
             min: serviceSelected?.contractedSchedule?.minimum?.value,
             max: serviceSelected?.contractedSchedule?.maximum?.value,
             frequency: serviceSelected?.contractedSchedule?.frequency,
@@ -260,8 +284,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                         "value": 0
                     },
                     "frequency": "WEEK",
-                    "startDate": contractDuration?.start,
-                    "endDate": contractDuration?.end,
+                    "startDate": contractTermPeriod?.start,
+                    "endDate": contractTermPeriod?.end,
                 }], patientsSeenTargets: [{
                     "withNurse": {
                         "value": 0
@@ -269,8 +293,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                     "withoutNurse": {
                         "value": 0
                     },
-                    "startDate": contractDuration?.start,
-                    "endDate": contractDuration?.end,
+                    "startDate": contractTermPeriod?.start,
+                    "endDate": contractTermPeriod?.end,
                     "noTargetApplicable": false
                 }], scheduledPatientsTargets: [{
                     "withNurse": {
@@ -279,8 +303,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                     "withoutNurse": {
                         "value": 0
                     },
-                    "startDate": contractDuration?.start,
-                    "endDate": contractDuration?.end,
+                    "startDate": contractTermPeriod?.start,
+                    "endDate": contractTermPeriod?.end,
                     "noTargetApplicable": false
                 }]
             });
@@ -318,7 +342,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
 
     const limit5 = 5;
 
-    console.log('selected', format(new Date(contractDuration?.start), 'MMMM d, yyyy'));
+    console.log('selected', format(new Date(contractTermPeriod?.start), 'MMMM d, yyyy'));
 
     return (
         <div>
@@ -477,7 +501,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                 </>
             )}
 
-            {(!metadata?.scheduleAndTargetSame || (metadata?.contractedSchedules?.length || 0) > 1) && (
+            {!metadata?.scheduleAndTargetSame && (
                 <div>
                     <div className={`${style.tableHeader} ${style.marginTop10}`}>
                         <div className={style.scheduleTableGrid1}>
@@ -675,7 +699,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             </div>
 
             {addScheduleAndTargetForDifferentPeriods && (
-                <AddScheduleAndTargetForDifferentPeriods getAddScheduleAndTargetForDifferentPeriods={getAddScheduleAndTargetForDifferentPeriods} initialValue={newClinicRow} onNewClinicChange={onNewClinicChange} selectedScheduleRow={selectedScheduleRow} metadata={metadata} />
+                <AddScheduleAndTargetForDifferentPeriods getAddScheduleAndTargetForDifferentPeriods={getAddScheduleAndTargetForDifferentPeriods} initialValue={newClinicRow} onNewClinicChange={onNewClinicChange} selectedScheduleRow={selectedScheduleRow} metadata={metadata} contractTermPeriod={contractTermPeriod} />
             )}
         </div>
     )

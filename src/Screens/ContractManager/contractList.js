@@ -450,20 +450,20 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
               scrollStyle={style.contractScrollStyle}
             />
             {
-              <div className={`${style.noContractsBox} ${style.alignCenter}`}>
-              <div>
-                <div className={style.noContractsFontStyle}>There are no contracts for you to manage.</div>
-                <div className={`${style.displayInRow} ${style.justifyCenter} ${style.marginTop20}`}>
-                  <div className={style.noContractsSmallFontStyle}>To add a new contract click on </div>
-                  <div className={`${style.addSmallStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { handleAddContract() }}>
-                    <AddCircleOutlineIcon sx={{ fontSize: 15, color: 'white' }} />
-                  </div>
-                </div>
-                <a><div className={`${style.linkStyle} ${style.marginTop10}`}>Click To View A Short Tutorial On How To Add A Contract</div></a>
-              </div>
-            </div>
+              //   <div className={`${style.noContractsBox} ${style.alignCenter}`}>
+              //   <div>
+              //     <div className={style.noContractsFontStyle}>There are no contracts for you to manage.</div>
+              //     <div className={`${style.displayInRow} ${style.justifyCenter} ${style.marginTop20}`}>
+              //       <div className={style.noContractsSmallFontStyle}>To add a new contract click on </div>
+              //       <div className={`${style.addSmallStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { handleAddContract() }}>
+              //         <AddCircleOutlineIcon sx={{ fontSize: 15, color: 'white' }} />
+              //       </div>
+              //     </div>
+              //     <a><div className={`${style.linkStyle} ${style.marginTop10}`}>Click To View A Short Tutorial On How To Add A Contract</div></a>
+              //   </div>
+              // </div>
             }
-            
+
           </div>
         </div>
       </div>
