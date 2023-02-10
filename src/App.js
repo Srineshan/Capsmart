@@ -54,6 +54,7 @@ const WelcomeToDashboard = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcomeToDashboard")
 );
 const EntryPage = React.lazy(() => import("./Screens"));
+const Profile = React.lazy(() => import("./Components/Profile"));
 const Users = React.lazy(() => import("./Screens/UserManagement"));
 const ReportsHome = React.lazy(() => import("./Screens/Reports"));
 const TimeSheetReportsBase = React.lazy(() =>
@@ -176,6 +177,7 @@ const App = ({ props }) => {
             <Routes>
               <Route path="/" element={<Login />} {...props} />
               <Route path="/contracts" element={<ActiveContracts />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/user" element={<Users />} />
               <Route path="/pages" element={<EntryPage />} />
               <Route path="/setPassword/:userId" element={<SetPassword />} />

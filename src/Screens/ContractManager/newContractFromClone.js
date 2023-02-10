@@ -9,6 +9,7 @@ import CompletedIcon from './../../images/completedIcon.png';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import RedWarning from './../../images/redWarning.png';
+import Tooltip from '@mui/material/Tooltip';
 import ServiceSpecification from './serviceSpecification';
 import { DELETE, TenantID, GET } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
@@ -105,6 +106,8 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
         setIsMultiSiteEntity(data?.multiSiteEntity);
     }
 
+    console.log('files', fileFields);
+
     const getFileData = () => {
         let temp = [];
         for (let i = 0; i < fileFields?.length || 0; i++) {
@@ -112,10 +115,17 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                 <div className={`${style.documentCard} ${style.marginTop10}`}>
                     <div className={`${style.documentGrid}`}>
                         <a className={style.documentText} href={fileFields?.[i]?.filePath} target="_blank">
-                            <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }} />
+                            <Tooltip title={'Preview'} arrow>
+                                <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }} />
+                            </Tooltip>
                         </a>
                         <div className={style.marginTop}>
-                            <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.type}</strong></p>
+                            <a href={fileFields?.[i]?.filePath} target="_blank">
+                                <Tooltip title={'Preview'} arrow>
+                                    <p className={`${style.documentText} ${style.leftAlign} ${style.removeUnderline}`} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }}><strong>{fileFields?.[i]?.type}</strong></p>
+                                </Tooltip>
+                            </a>
+
                             <div className={style.spaceBetween}>
                                 <p className={`${style.documentText} ${style.leftAlign}`}><strong>{fileFields?.[i]?.fileName}</strong></p>
                                 <div onClick={() => { getDeleteExecutedContractDialog(true); setFileDeletionIndex(i); }} className={style.floatRight}>
@@ -333,7 +343,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             <img src={isTabsValid?.tab7 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
                     </div>
-                    <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Request Processing Workflow" && style.selectedContractEntityStyle}`}
+                    {/* <div className={`${style.contractEntityCardStyle} ${style.contractEntityFontStyle} ${style.marginTop10} ${contractId !== '' ? style.completedEntityCardStyle : ''} ${currentPage === "Request Processing Workflow" && style.selectedContractEntityStyle}`}
                         onClick={() => {
                             setCurrentPage('Request Processing Workflow');
                             setSelectedField({ ...selectedField, fieldName: '' });
@@ -342,7 +352,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         {contractId !== '' && (
                             <img src={isTabsValid?.tab8 ? CompletedIcon : RedWarning} alt="completed" className={`${style.completedIconStyle}`} />
                         )}
-                    </div>
+                    </div> */}
                 </div>
 
                 {currentPage === "Request Processing Workflow" ? (
@@ -363,6 +373,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         selectContractInfo={selectContractInfo}
                         contractId={contractId}
                         contractName={contractName}
+                        contract={contractSelected}
                         isEditable={isEditable}
                         getTabDataStatus={getTabDataStatus}
                     />

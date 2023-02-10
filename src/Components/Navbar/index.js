@@ -190,10 +190,12 @@ const Navbar = () => {
             window.location.href = '/app/entitySitePortal';
         })
     };
-    let isFlutterRoles = currentUserRoles?.map(data => ['Activity Logger', "Accounts Payable", 'Approver', 'Reviewer']?.includes(data))
-    let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' : isFlutterRoles ? `/dashboard/#/dashboardRoute` : currentUserRoles?.includes('Super Sys Admin') ? '/partnerPortal' : '/entitySitePortal';
+    console.log('currentUserRoles', currentUserRoles);
+    let isFlutterRoles = currentUserRoles?.filter(data => ['Activity Logger', "Accounts Payable", 'Approver', 'Reviewer']?.includes(data))?.map(data => data);
+    let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' : isFlutterRoles?.length !== 0 ? `/dashboard/#/dashboardRoute` : currentUserRoles?.includes('Super Sys Admin') ? '/partnerPortal' : currentUserRoles?.includes('Entity Sys Admin') ? '/entitySitePortal' : '/entitySitePortal';
     const homeRoute = () => {
-        let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' : isFlutterRoles ? `/` : currentUserRoles?.includes('Super Sys Admin') ? '/partnerPortal' : '/entitySitePortal';
+        let homeLink = currentUserRoles?.includes('Contract Manager') ? '/contracts' : isFlutterRoles?.length !== 0 ? `/` : currentUserRoles?.includes('Super Sys Admin') ? '/partnerPortal' : currentUserRoles?.includes('Entity Sys Admin') ? '/entitySitePortal' : '/entitySitePortal';
+        console.log(homeLink);
         if (homeLink === '/') {
             window.location.href = '/dashboard/#/dashboardRoute';
         } else {

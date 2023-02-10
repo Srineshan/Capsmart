@@ -24,16 +24,31 @@ const ServiceDays = ({ setMetaData, selectedService }) => {
     weekendsSpecific: false,
   });
   const [weekdayLabel, setWeekdayLabel] = useState('Weekdays');
+  const [weekendLabel, setWeekendLabel] = useState('Weekends')
 
   useEffect(() => {
-    setServiceDays(selectedService?.serviceDays);
+    if (selectedService !== {}) {
+      setServiceDays(selectedService?.serviceDays);
+    }
   }, [selectedService])
 
   useEffect(() => {
-    if (!serviceDays?.monday || !serviceDays?.tuesday || !serviceDays?.wednesday || !serviceDays?.thursday || !serviceDays?.friday) {
+    if (serviceDays?.monday && serviceDays?.tuesday && serviceDays?.wednesday && serviceDays?.thursday && serviceDays?.friday) {
+      setWeekdayLabel('Any Weekday');
+    }
+    else if (serviceDays?.monday || serviceDays?.tuesday || serviceDays?.wednesday || serviceDays?.thursday || serviceDays?.friday) {
       setWeekdayLabel('Weekdays Specific');
     } else {
       setWeekdayLabel('Weekdays');
+    }
+
+    if (serviceDays?.saturday && serviceDays?.sunday) {
+      setWeekendLabel('Full Weekend');
+    }
+    else if (serviceDays?.saturday || serviceDays?.sunday) {
+      setWeekendLabel('Partial Weekend');
+    } else {
+      setWeekendLabel('Weekends');
     }
     setMetaData(serviceDays);
   }, [serviceDays])
@@ -95,10 +110,14 @@ const ServiceDays = ({ setMetaData, selectedService }) => {
     }
   }
 
+  console.log('weekdays checking console', serviceDays);
+
   const getLabel = (days) => {
     if (days === 'Weekdays') {
-      if (!serviceDays?.monday || !serviceDays?.tuesday || !serviceDays?.wednesday || !serviceDays?.thursday || !serviceDays?.friday) {
+      if (serviceDays?.monday || serviceDays?.tuesday || serviceDays?.wednesday || serviceDays?.thursday || serviceDays?.friday) {
         return 'Weekdays Specific';
+      } else if (serviceDays?.monday && serviceDays?.tuesday && serviceDays?.wednesday && serviceDays?.thursday && serviceDays?.friday) {
+        return 'Any Weekday';
       } else {
         return 'Weekdays';
       }
@@ -120,7 +139,7 @@ const ServiceDays = ({ setMetaData, selectedService }) => {
         </div>
         <div className={`${style.displayInRow} ${style.fullWidth}`}>
           <FormGroup className={`${style.marginLeft10}`}>
-            <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekEnds} onChange={(e) => onWeekEndsCheck(e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">Weekends</Typography>} />
+            <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekEnds} onChange={(e) => onWeekEndsCheck(e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">{weekendLabel}</Typography>} />
           </FormGroup>
         </div>
         <div className={`${style.displayInRow} ${style.fullWidth}`}>

@@ -16,6 +16,7 @@ import { GET, TenantID, POST } from './../dataSaver';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { CLINIC, SURGERY, ONCALL } from '../../Constants';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import style from './index.module.scss';
 
@@ -41,7 +42,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
 
     let specificDedicatedHoursList = [];
-    services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => {
+    services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
         let activities = data?.activities?.map(data => data?.activity);
         let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
@@ -158,7 +159,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const selectedHours = (index) => {
-        let temp = services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => data);
+        let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => data);
         let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
         let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
         setMetadata({ ...metadata, dedicatedHoursActivityType: dedicatedHoursActivityType, dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity, sessionAmount: temp[index]?.payableAmount?.value });
