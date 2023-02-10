@@ -241,6 +241,7 @@ const IndustriesWithEntityTypes = ({
           setTableEntityData={setTableEntityData}
         />
       )}
+      
       {showDeleteConfirmation && (
         <DeleteConfirmation
           getShowDeleteConfirmation={getShowDeleteConfirmation}

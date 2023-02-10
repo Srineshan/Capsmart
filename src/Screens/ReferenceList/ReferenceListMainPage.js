@@ -13,6 +13,8 @@ import TerminationReasons from "./terminationReasons";
 import ProofOfDocumentationByEntity from "./proofOfDocumentationByEntity";
 import HolidayListByIndustries from "./holidayListByIndustries";
 import CountriesSupportedWithStates from "./countriesSupportedWithStates";
+import ContractedServicesByIndustries from "./contractedServicesByIndustries";
+
 import style from "./index.module.scss";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 
@@ -117,6 +119,13 @@ const ReferenceListMainPage = () => {
       pathName: "/referenceList/countriesSupportedWithStates",
       tableComponent: CountriesSupportedWithStates,
       Title: "ADD COUNTRY",
+    },
+    {
+      name: "CONTRACTED SERVICES BY INDUSTRY",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/contractedServicesByIndustries",
+      tableComponent: ContractedServicesByIndustries,
+      Title: "ADD CONTRACTED SERVICES",
     },
   ];
 
