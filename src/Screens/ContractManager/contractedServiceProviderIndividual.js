@@ -505,9 +505,9 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         <div>
           <div className={`${style.extentionGrid}`} onFocus={() => { checkFieldAndPopAlert(serviceProviderType?.id, 'Service Provider Type') }}>
             <CommonLabel value='Service Provider Type*' />
-            <div className={style.grid3}>
-              <ProviderTypeList value={serviceProviderType?.id} onChangeFunc={(id, value) => setServiceProviderType({ id: id, contractedServiceProviderType: value })} className={[style.fullWidth]} />
-            </div>
+            {/* <div className={style.grid2}> */}
+            <ProviderTypeList value={serviceProviderType?.id} onChangeFunc={(id, value) => setServiceProviderType({ id: id, contractedServiceProviderType: value })} className={[style.fullWidth]} />
+            {/* </div> */}
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(npin, 'NPIN') }}>
             <CommonLabel value='NPIN*' />
