@@ -170,6 +170,8 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
+    console.log('metadata', metadata);
+
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

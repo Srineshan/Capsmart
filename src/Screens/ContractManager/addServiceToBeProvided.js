@@ -208,12 +208,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }
 
+  console.log('activity', activity);
+
   const activityToAdd = async () => {
     if (newActivity === '') {
       ErrorToaster('Enter valid Acitivty name');
       return;
     }
-    if (activity?.map(data => data?.activity?.activity.includes(newActivity))) {
+    if (activity?.map(data => data?.activity?.activity)?.includes(newActivity)) {
       ErrorToaster('Activity Already Exists');
       return;
     }
