@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup } from '@blueprintjs/core';
 import { POST, GET, PUT } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ReviewerApproverField from './reviewerApproverField';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import ContractValidationCheckSummary from './contractValidationCheckSummary';
-
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
 
 import style from './index.module.scss';
 
@@ -425,10 +425,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             <div className={`${style.timeSheetBoxStyle} ${style.verticalSpaceBetween}`}>
               <div>
                 <div className={`${style.addManagerGrid}`}>
-                  <div className={style.extentionLableStyle}>Timesheet To Define Process*</div>
+                  <CommonLabel value='Timesheet To Define Process*' />
                   <div className={style.displayInRow}>
-                    <InputGroup className={style.fullWidth} placeholder={activeTab}
-                      value={activeTab} readOnly />
+                    <CommonInputField className={style.fullWidth} placeholder={activeTab}
+                      value={activeTab} readOnly={true} />
                   </div>
                 </div>
                 {selectContractInfo === 'MULTIPLE' &&

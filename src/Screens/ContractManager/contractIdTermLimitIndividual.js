@@ -1,28 +1,29 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { TextArea, InputGroup, Icon, TagInput, Checkbox, FileInput, EditableText, Divider } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import { TextArea, Icon, TagInput, FileInput, EditableText, Divider } from '@blueprintjs/core';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import cloneDeep from 'lodash.clonedeep';
 import TextField from '@mui/material/TextField';
 import { TimePicker } from "@blueprintjs/datetime";
 import InputAdornment from '@mui/material/InputAdornment';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import DatalistInput from 'react-datalist-input';
 import { GET, PUT, POST, role, TenantID } from './../dataSaver';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
 import AddNewContractManager from './addNewContractManager';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Auth } from './../../utils/auth'
 import { format, sub, add } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { GetDateFromHours } from './../../utils/formatting';
 import axios from 'axios';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonDateField from '../../Components/CommonFields/CommonDateField';
+import CommonTextField from '../../Components/CommonFields/CommonTextField';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
 
@@ -30,14 +31,6 @@ const VALUES = ['Site 1', "Site 2"];
 const VALUES2 = ['Department 1', "Department 2", "Department 3"];
 const TEXTFIELDLEN = 100;
 const DESCLEN = 250;
-
-const switchTheme = createTheme({
-  palette: {
-    primary: {
-      main: '#7165E3',
-    },
-  },
-});
 
 const ContractIdTermLimitIndividual = (
   { contracts,
@@ -442,19 +435,13 @@ const ContractIdTermLimitIndividual = (
             <div className={`${style.marginTop10} ${style.marginLeft20}`}>Days</div>
           </div> */}
           <div className={style.renewalWidth}>
-            <TextField
-              size="small"
+            <CommonTextField
               InputProps={{
                 endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
               }}
               onChange={(e) => handleReminder(e, i)}
               key={`days${i}${renewalReminder?.[i]?.days}`}
               defaultValue={renewalReminder?.[i]?.days}
-              inputProps={{
-                style: {
-                  height: 10,
-                },
-              }}
             />
           </div>
           <div className={style.verticalAlignCenter}>
@@ -512,10 +499,10 @@ const ContractIdTermLimitIndividual = (
               </option>
             </select>
           </div>
-          <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name" value={fullyExecutedContractData[i].name} onChange={(e) => handleFileChange(e, 'name')} />
+          <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name" value={fullyExecutedContractData[i].name} onChange={(e) => handleFileChange(e, 'name')} />
           <TextArea rows={4} placeholder="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} value={fullyExecutedContractData[i].desc} onChange={(e) => handleFileChange(e, 'desc')} />
           <div className={style.grid2}>
-            <InputGroup value={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : 'Choose File...'} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(i, e)} />
+            <CommonInputField value={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : 'Choose File...'} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(i, e)} />
           </div>
         </div>
       )
@@ -564,36 +551,36 @@ const ContractIdTermLimitIndividual = (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
-          <div className={style.extentionLableStyle}>Contract / Agreement Name*</div>
-          <InputGroup placeholder="Contract Name" className={style.fullWidth} value={contractName}
+          <CommonLabel value='Contract / Agreement Name*' />
+          <CommonInputField placeholder="Contract Name" className={style.fullWidth} value={contractName}
             maxLength={TEXTFIELDLEN} onChange={(e) => { setContractName(e.target.value); setName(e.target.value) }}
             onFocus={() => { checkFieldAndPopAlert(contractName, 'Contract / Agreement Name') }} />
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contract ID / Resolution No*</div>
+          <CommonLabel value='Contract ID / Resolution No*' />
           <div className={style.displayInRow}>
-            <InputGroup placeholder="Contract ID / Resolution No" value={contractId.id} disabled={contractId.missing}
+            <CommonInputField placeholder="Contract ID / Resolution No" value={contractId.id} disabled={contractId.missing}
               maxLength={TEXTFIELDLEN}
               onFocus={() => { checkFieldAndPopAlert(contractId?.id, 'Contract ID') }} className={`${style.entityFieldWidth}`} onChange={(e) => setContractId({ ...contractId, id: e.target.value, missing: false })} />
-            <Checkbox label="Missing" checked={contractId.missing} onChange={(e) => setContractId({ ...contractId, missing: e.target.checked, id: '' })} className={`${style.marginTop10} ${style.marginLeft20}`} />
+            <CommonCheckBox label="Missing" checked={contractId.missing} onChange={(e) => setContractId({ ...contractId, missing: e.target.checked, id: '' })} className={` ${style.marginLeft20}`} />
           </div>
         </div>
         {selectedContractType !== "New Contract" && (
           <div className={contracts?.length !== 0 ? `${style.extentionGrid} ${style.marginTop20}` : `${style.extentionGrid} ${style.marginTop20} ${style.disabledView} `}>
-            <div className={style.extentionLableStyle}>Prior Contract ID*</div>
+            <CommonLabel value='Prior Contract ID*' />
             <div className={style.displayInRow}>
               <DatalistInput items={priorContractItems || []}
                 onSelect={onSelectContractId} className={style.selectFieldWidth}
                 maxLength={TEXTFIELDLEN}
                 onChange={(e) => setContractPriorId({ ...contractPriorId, id: e.target.value })} placeholder="Search by CID / Name" value={contractPriorId?.id}
               />
-              <Checkbox label="NA" checked={contractPriorId.na} onChange={(e) => setContractPriorId({ ...contractPriorId, id: '', na: e.target.checked })} className={`${style.marginTop10} ${style.marginLeft20}`} />
+              <CommonCheckBox label="NA" checked={contractPriorId.na} onChange={(e) => setContractPriorId({ ...contractPriorId, id: '', na: e.target.checked })} className={` ${style.marginLeft20}`} />
 
             </div>
           </div>
         )}
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Assigned Contract Manager*</div>
+          <CommonLabel value='Assigned Contract Manager*' />
           <div className={style.displayInRow}>
             <div>
               <DatalistInput items={items || []} onSelect={onSelect}
@@ -639,21 +626,13 @@ const ContractIdTermLimitIndividual = (
         }
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contract Documents On File*</div>
+          <CommonLabel value='Contract Documents On File*' />
           <div onFocus={() => { checkFieldAndPopAlert(fullyExecutedContractData?.length, 'Fully Executed Contract on File') }}>
             <div className={`${style.spaceBetween}`}>
-              <ThemeProvider theme={switchTheme}>
-                <FormControlLabel
-                  control={
-                    <Switch checked={fullyExecutedContract} className={`${style.floatLeft}`}
-                      onChange={() => changeContractFile(!fullyExecutedContract)}
-                    />
-                  }
-                  color='primary'
-                  className={`${style.switchFontStyle} ${style.marginTop} ${style.flexLeft}`}
-                  label={fullyExecutedContract ? 'YES' : "NO"}
-                />
-              </ThemeProvider>
+              <CommonSwitch checked={fullyExecutedContract} className={`${style.switchFontStyle} ${style.flexLeft}`}
+                label={fullyExecutedContract ? 'YES' : "NO"}
+                onChange={() => changeContractFile(!fullyExecutedContract)}
+              />
               {fullyExecutedContract && (
                 <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
               )}
@@ -661,46 +640,20 @@ const ContractIdTermLimitIndividual = (
             {fullyExecutedContract && (
               <div>
                 <div>
-                  <select
-                    name="class"
-                    id="Class"
-                    value={fileFieldData?.type || 'Select...'}
-                    onChange={(e) => handleFileChange(e, 'type')}
-                    className={`${style.fullWidth}`}>
-                    <option value="Select...">
-                      Select...
-                    </option>
-                    <option value="Agreement Draft">
-                      Agreement Draft
-                    </option>
-                    <option value="Executed Agreement">
-                      Executed Agreement
-                    </option>
-                    <option value="Contract Amendment">
-                      Contract Amendment
-                    </option>
-                    <option value="Exhibit">
-                      Exhibit
-                    </option>
-                    <option value="Appendix Addendum">
-                      Appendix Addendum
-                    </option>
-                    <option value="Schedule">
-                      Schedule
-                    </option>
-                    <option value="Attachment">
-                      Attachment
-                    </option>
-                  </select>
+                  <CommonSelectField value={fileFieldData?.type || 'Select...'} onChange={(e) => handleFileChange(e, 'type')}
+                    className={`${style.fullWidth}`} firstOptionLabel={'Select...'} firstOptionValue={'Select...'}
+                    valueList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
+                    labelList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
+                    disabledList={[false, false]} />
                 </div>
-                <InputGroup className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
+                <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
                   value={fileFieldData?.name}
                   maxLength={TEXTFIELDLEN}
                   onChange={(e) => handleFileChange(e, 'name')} />
                 <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc}
                   maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'desc')} />
                 <div>
-                  <InputGroup value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : 'Choose File...'} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
+                  <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : 'Choose File...'} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
                 </div>
               </div>
             )}
@@ -709,18 +662,10 @@ const ContractIdTermLimitIndividual = (
         {isMultiSiteEntity &&
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
             onFocus={() => siteFieldCheck(siteSpecific)}>
-            <div className={style.extentionLableStyle}>Site Specific Contract*</div>
+            <CommonLabel value='Site Specific Contract*' />
             <div>
               <div className={style.displayInRow}>
-                <ThemeProvider theme={switchTheme}>
-                  <FormControlLabel
-                    control={
-                      <Switch checked={siteSpecific} color={'primary'} className={`${style.textAlignLeft}`} onChange={() => { setSiteSpecific(!siteSpecific); siteFieldCheck(!siteSpecific); }} />
-                    }
-                    className={`${style.switchFontStyle}`}
-                    label={siteSpecific ? 'YES' : "NO"}
-                  />
-                </ThemeProvider>
+                <CommonSwitch checked={siteSpecific} className={`${style.textAlignLeft} ${style.switchFontStyle}`} label={siteSpecific ? 'YES' : "NO"} onChange={() => { setSiteSpecific(!siteSpecific); siteFieldCheck(!siteSpecific); }} />
                 {siteSpecific && (
                   <div className={style.displayInRow}>
                     <DatalistInput items={siteItems || []} placeholder="Select Sites" onSelect={onSelectSite} className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
@@ -747,20 +692,9 @@ const ContractIdTermLimitIndividual = (
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
           onFocus={() => { deptFieldCheck(departmentSpecific) }}>
-          <div className={style.extentionLableStyle}>Department Specific Contract*</div>
-          <div>
-            <div className={style.displayInRow}>
-              <ThemeProvider theme={switchTheme}>
-                <FormControlLabel
-                  control={
-                    <Switch checked={departmentSpecific} className={` ${style.textAlignLeft}`} onChange={() => { handleDepartmentSpecific(); deptFieldCheck(!departmentSpecific) }} />
-                  }
-                  className={`${style.switchFontStyle}`}
-                  label={departmentSpecific ? 'YES' : "NO"}
-                />
-              </ThemeProvider>
-            </div>
-          </div>
+          <CommonLabel value='Department Specific Contract*' />
+          <CommonSwitch checked={departmentSpecific} className={` ${style.textAlignLeft} ${style.switchFontStyle}`}
+            label={departmentSpecific ? 'YES' : "NO"} onChange={() => { handleDepartmentSpecific(); deptFieldCheck(!departmentSpecific) }} />
         </div>
 
         {
@@ -772,88 +706,19 @@ const ContractIdTermLimitIndividual = (
         }
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contract Term Period*</div>
+          <CommonLabel value='Contract Term Period*' />
           <div className={style.termPeriodGrid}>
             <div onFocus={() => { checkFieldAndPopAlert(contractTermPeriodFrom, 'Contract Term Period Start Date') }}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  open={calendarStart}
-                  onOpen={() => setCalendarStart(true)}
-                  onClose={() => setCalendarStart(false)}
-                  minDate={sub(new Date(), { years: 3 })}
-                  maxDate={add(new Date(), { months: 6 })}
-                  value={contractTermPeriodFrom}
-                  onChange={(newValue) => {
-                    setCalendarStart(true);
-                    setContractTermPeriodFrom(newValue);
-                    setContractEffectiveDate(newValue);
-                  }}
-                  InputProps={{
-                    style: {
-                      fontSize: 14,
-                      height: 30,
-                    },
-                    onFocus: e => {
-                      setCalendarStart(true);
-                    },
-                    onBlur: e => {
-                      setCalendarStart(false);
-                    }
-                  }}
-                  renderInput={(params) => <TextField {...params}
-                    onClick={() => setCalendarStart(true)}
-                    inputProps={{
-                      ...params.inputProps,
-                      placeholder: "Start Date"
-                    }} />}
-                />
-              </LocalizationProvider>
-            </div>
-            <p className={`${style.toStyle} ${style.alignCenter}`}>To</p>
-            <div onFocus={() => { checkFieldAndPopAlert(contractTermPeriodTo, 'Contract Term Period End Date') }}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  open={calendarEnd}
-                  onOpen={() => setCalendarEnd(true)}
-                  onClose={() => setCalendarEnd(false)}
-                  value={contractTermPeriodTo}
-                  onChange={(newValue) => {
-                    setContractTermPeriodTo(newValue);
-                  }}
-                  InputProps={{
-                    style: {
-                      fontSize: 14,
-                      height: 30,
-                    },
-                    onFocus: e => {
-                      setCalendarEnd(true);
-                    },
-                    onBlur: e => {
-                      setCalendarEnd(false);
-                    }
-                  }}
-                  minDate={contractTermPeriodFrom}
-                  maxDate={add(new Date(), { years: 5 })}
-                  renderInput={(params) => <TextField  {...params} onClick={() => setCalendarEnd(true)}
-                    inputProps={{
-                      ...params.inputProps,
-                      placeholder: "End Date"
-                    }} />}
-                />
-              </LocalizationProvider>
-            </div>
-          </div>
-        </div>
-        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contracted Services Effective Date*</div>
-          <div className={`${style.leftAlign} ${style.effectiveDateWidth}`} onFocus={() => { checkFieldAndPopAlert(contractEffectiveDate, 'Contracted Services Effective Date') }}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                open={calendarEffective}
-                onOpen={() => setCalendarEffective(true)}
-                onClose={() => setCalendarEffective(false)}
-                value={contractEffectiveDate}
+              <CommonDateField
+                open={calendarStart}
+                onOpen={() => setCalendarStart(true)}
+                onClose={() => setCalendarStart(false)}
+                minDate={sub(new Date(), { years: 3 })}
+                maxDate={add(new Date(), { months: 6 })}
+                value={contractTermPeriodFrom}
                 onChange={(newValue) => {
+                  setCalendarStart(true);
+                  setContractTermPeriodFrom(newValue);
                   setContractEffectiveDate(newValue);
                 }}
                 InputProps={{
@@ -862,96 +727,123 @@ const ContractIdTermLimitIndividual = (
                     height: 30,
                   },
                   onFocus: e => {
-                    setCalendarEffective(true);
+                    setCalendarStart(true);
                   },
                   onBlur: e => {
-                    setCalendarEffective(false);
+                    setCalendarStart(false);
+                  }
+                }}
+                renderInput={(params) => <TextField {...params}
+                  onClick={() => setCalendarStart(true)}
+                  inputProps={{
+                    ...params.inputProps,
+                    placeholder: "Start Date"
+                  }} />}
+              />
+            </div>
+            <p className={`${style.toStyle} ${style.alignCenter}`}>To</p>
+            <div onFocus={() => { checkFieldAndPopAlert(contractTermPeriodTo, 'Contract Term Period End Date') }}>
+              <CommonDateField
+                open={calendarEnd}
+                onOpen={() => setCalendarEnd(true)}
+                onClose={() => setCalendarEnd(false)}
+                value={contractTermPeriodTo}
+                onChange={(newValue) => {
+                  setContractTermPeriodTo(newValue);
+                }}
+                InputProps={{
+                  style: {
+                    fontSize: 14,
+                    height: 30,
+                  },
+                  onFocus: e => {
+                    setCalendarEnd(true);
+                  },
+                  onBlur: e => {
+                    setCalendarEnd(false);
                   }
                 }}
                 minDate={contractTermPeriodFrom}
-                maxDate={contractTermPeriodTo}
-                renderInput={(params) => <TextField  {...params}
-                  onClick={() => setCalendarEffective(true)}
+                maxDate={add(new Date(), { years: 5 })}
+                renderInput={(params) => <TextField  {...params} onClick={() => setCalendarEnd(true)}
                   inputProps={{
                     ...params.inputProps,
-                    placeholder: "Effective Date"
+                    placeholder: "End Date"
                   }} />}
               />
-            </LocalizationProvider>
+            </div>
+          </div>
+        </div>
+        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+          <CommonLabel value='Contracted Services Effective Date*' />
+          <div className={`${style.leftAlign} ${style.effectiveDateWidth}`} onFocus={() => { checkFieldAndPopAlert(contractEffectiveDate, 'Contracted Services Effective Date') }}>
+            <CommonDateField
+              open={calendarEffective}
+              onOpen={() => setCalendarEffective(true)}
+              onClose={() => setCalendarEffective(false)}
+              value={contractEffectiveDate}
+              onChange={(newValue) => {
+                setContractEffectiveDate(newValue);
+              }}
+              InputProps={{
+                style: {
+                  fontSize: 14,
+                  height: 30,
+                },
+                onFocus: e => {
+                  setCalendarEffective(true);
+                },
+                onBlur: e => {
+                  setCalendarEffective(false);
+                }
+              }}
+              minDate={contractTermPeriodFrom}
+              maxDate={contractTermPeriodTo}
+              renderInput={(params) => <TextField  {...params}
+                onClick={() => setCalendarEffective(true)}
+                inputProps={{
+                  ...params.inputProps,
+                  placeholder: "Effective Date"
+                }} />}
+            />
           </div>
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contract Time Commitment*</div>
+          <CommonLabel value='Contract Time Commitment*' />
           <div className={style.contractedTime}>
-            <InputGroup type="tel" maxLength={3} value={contractedTimeCommitment?.value} placeholder="0" onChange={(e) => e.target.value >= 0 && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value })} />
-            <select
-              name="class"
-              id="Class"
-              value={contractedTimeCommitment?.frequency}
+            <CommonInputField type="tel" maxLength={3} value={contractedTimeCommitment?.value} placeholder="0" onChange={(e) => e.target.value >= 0 && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value })} />
+            <CommonSelectField value={contractedTimeCommitment?.frequency || 'Select...'}
               onChange={(e) => setContractTimeCommitment({ ...contractedTimeCommitment, frequency: e.target.value })}
-              className={`${style.timeCommitment}`}>
-              <option value="Select...">
-                Select...
-              </option>
-              <option value="WEEK">
-                Weeks Per Contract Year
-              </option>
-              <option value="MONTH">
-                Months Per Contract Year
-              </option>
-            </select>
+              className={`${style.timeCommitment}`} firstOptionLabel={'Select...'} firstOptionValue={'Select...'}
+              valueList={['WEEK', 'MONTH']}
+              labelList={['Weeks Per Contract Year', 'Months Per Contract Year']}
+              disabledList={[false, false]} />
           </div>
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Contract Continuation Policy*</div>
+          <CommonLabel value='Contract Continuation Policy*' />
           <div>
             <div onFocus={() => { checkFieldAndPopAlert(selectedContractContinuationPolicy, 'Contract Continuation Policy') }}>
-              <select
-                name="class"
-                id="Class"
-                value={selectedContractContinuationPolicy || 'Select...'}
+              <CommonSelectField value={selectedContractContinuationPolicy || ''}
                 onChange={(e) => setSelectedContractContinuationPolicy(e.target.value)}
-                className={`${style.fullWidth}`}>
-                <option value="" >
-                  Choose Your Contract Continuation Policy
-                </option>
-                <option value="AUTORENEWAL" >
-                  Auto Renewal
-                </option>
-                <option value="NEWCONTRACTONEXPIRATION" >
-                  New Contract On Expiration
-                </option>
-                <option value="ONETIMECONTRACTTERMINATEONEXPIRATION" >
-                  One Time Contract - Terminate On Expiration
-                </option>
-                <option value="WRITTENCONTRACTEXTENSIONFORFIXEDTERM" >
-                  Extension By Mutual Written Signed Agreement.
-                </option>
-              </select>
+                className={`${style.fullWidth}`} firstOptionLabel={'Choose Your Contract Continuation Policy'} firstOptionValue={''}
+                valueList={['AUTORENEWAL', 'NEWCONTRACTONEXPIRATION', 'ONETIMECONTRACTTERMINATEONEXPIRATION', 'WRITTENCONTRACTEXTENSIONFORFIXEDTERM']}
+                labelList={['Auto Renewal', 'New Contract On Expiration', 'One Time Contract - Terminate On Expiration', 'Extension By Mutual Written Signed Agreement.']}
+                disabledList={[false, false]} />
             </div>
             {selectedContractContinuationPolicy === "AUTORENEWAL" && (
               <div className={`${style.renewalBoxStyle}`}>
                 <div className={`${style.renewalBoxGrid}`} onFocus={() => { checkFieldAndPopAlert(autoRenewal.renewalTerm, 'Auto Renewal - Auto Renewal Term') }}>
                   <div className={style.marginTop}>Auto Renewal Term*</div>
                   <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e) => (e <= 52 && setAutoRenewal({ ...autoRenewal, renewalTerm: e, calendar: '' }))} type="tel" />
-                  <select
-                    name="class"
-                    id="Class"
-                    value={autoRenewal.calendar}
+                  <CommonSelectField value={autoRenewal.calendar}
                     onChange={(e) => setAutoRenewal({ ...autoRenewal, calendar: e.target.value })}
-                    className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                    <option value="" >
-                      Select Frequecy
-                    </option>
-                    <option value="WEEKS" >
-                      Weeks
-                    </option>
-                    <option disabled={autoRenewal?.renewalTerm > 12} value="MONTHS" >
-                      Months
-                    </option>
-                  </select>
+                    className={`${style.marginLeft20} ${style.weekSelectStyle}`} firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                    valueList={['WEEKS', 'MONTHS']}
+                    labelList={['Weeks', 'Months']}
+                    disabledList={[false, autoRenewal?.renewalTerm > 12]} />
                 </div>
                 <div className={`${style.renewalBoxGrid}`} onFocus={() => { checkFieldAndPopAlert(autoRenewal.allowableRenewalTerm, 'Auto Renewal - Allowable Auto Renewal Terms') }}>
                   <div className={style.marginTop10}>Allowable Auto Renewal Terms*</div>

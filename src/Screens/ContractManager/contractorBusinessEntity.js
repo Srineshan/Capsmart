@@ -1,29 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, Tag, Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
-import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Checkbox from '@mui/material/Checkbox';
-import InputAdornment from '@mui/material/InputAdornment';
-import TextField from '@mui/material/TextField';
+import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import { POST, GET, PUT, TenantID } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
 import { EmailValidator, FormatPhoneNumber, EmptyStringCheck, PhoneValidator } from './../../utils/formatting';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
 
 import style from './index.module.scss';
-
-const switchTheme = createTheme({
-  palette: {
-    primary: {
-      main: '#7165E3',
-    },
-  },
-});
-
 
 const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus }) => {
   const [isUserUpdated, setIsUserUpdated] = useState(false);
@@ -361,75 +348,57 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               {selectContractInfo === "INDIVIDUAL" && (
                 <div className={`${style.extentionGrid}`}
                   onFocus={() => { checkFieldAndPopAlert(true, 'Contractor Business Contact Same As Contractor') }}>
-                  <div className={style.extentionLableStyle}>Contractor Business Contact Same As Contractor*</div>
-                  <ThemeProvider theme={switchTheme}>
-                    <FormControlLabel
-                      control={
-                        <Switch checked={sameAsContractor} className={`${style.textAlignLeft}`} onChange={() => setShowAlert(true)} />
-                      }
-                      color='primary'
-                      className={`${style.switchFontStyle} ${style.marginTop}`}
-                      label={sameAsContractor ? 'YES' : 'NO'}
-                    />
-                  </ThemeProvider>
+                  <CommonLabel value='Contractor Business Contact Same As Contractor*' />
+                  <CommonSwitch checked={sameAsContractor} className={`${style.textAlignLeft} ${style.switchFontStyle}`} onChange={() => setShowAlert(true)} label={sameAsContractor ? 'YES' : 'NO'} />
                 </div>
               )}
               <div className={`${style.extentionGrid} ${selectContractInfo === "INDIVIDUAL" && style.marginTop20}`}
                 onFocus={() => { checkFieldAndPopAlert(contractorNPIN?.npin, 'Contractor NPIN') }}>
-                <div className={style.extentionLableStyle}>Vendor NPIN*</div>
+                <CommonLabel value='Vendor NPIN*' />
                 <div className={style.twoCol}>
-                  <InputGroup className={style.fullWidth}
+                  <CommonInputField className={style.fullWidth}
                     type="tel"
                     maxLength={10}
                     disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
                     value={contractorNPIN?.npin} placeholder="Enter Vendor NPIN"
                     onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value, missing: false, notApplicable: false })} />
                   <div className={`${style.displayInRow}`}>
-                    <FormGroup className={style.marginLeft20}>
-                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked, notApplicable: false, npin: '' })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
-                    </FormGroup>
-                    <FormGroup>
-                      <FormControlLabel control={<Checkbox value="NA" checked={contractorNPIN?.notApplicable} onChange={(e) => setContractorNPIN({ ...contractorNPIN, notApplicable: e.target.checked, missing: false, npin: '' })} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
-                    </FormGroup>
-
+                    <CommonCheckBox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked, notApplicable: false, npin: '' })} label="Missing" />
+                    <CommonCheckBox value="NA" checked={contractorNPIN?.notApplicable} onChange={(e) => setContractorNPIN({ ...contractorNPIN, notApplicable: e.target.checked, missing: false, npin: '' })} label="NA" />
                   </div>
                 </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
                 onFocus={() => { checkFieldAndPopAlert(contractorEntityTaxId?.taxId, 'Contractor Entity Tax ID') }}>
-                <div className={style.extentionLableStyle}>Vendor Tax ID*</div>
+                <CommonLabel value='Vendor Tax ID*' />
                 <div className={style.twoCol}>
-                  <InputGroup className={style.fullWidth} disabled={contractorEntityTaxId?.missing || contractorEntityTaxId?.notApplicable} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
+                  <CommonInputField className={style.fullWidth} disabled={contractorEntityTaxId?.missing || contractorEntityTaxId?.notApplicable} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
                     onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, taxId: e.target.value, missing: false, notApplicable: false })} />
                   <div className={`${style.displayInRow}`}>
-                    <FormGroup className={style.marginLeft20}>
-                      <FormControlLabel control={<Checkbox value="Missing" checked={contractorEntityTaxId?.missing} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, missing: e.target.checked, notApplicable: false, taxId: '' })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
-                    </FormGroup>
-                    <FormGroup>
-                      <FormControlLabel control={<Checkbox value="NA" checked={contractorEntityTaxId?.notApplicable} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, notApplicable: e.target.checked, missing: false, taxId: '' })} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
-                    </FormGroup>
+                    <CommonCheckBox value="Missing" checked={contractorEntityTaxId?.missing} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, missing: e.target.checked, notApplicable: false, taxId: '' })} label="Missing" />
+                    <CommonCheckBox value="NA" checked={contractorEntityTaxId?.notApplicable} onChange={(e) => setContractorEntityTaxId({ ...contractorEntityTaxId, notApplicable: e.target.checked, missing: false, taxId: '' })} label="NA" />
                   </div>
                 </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Business Entity Name*</div>
-                <InputGroup className={style.fullWidth}
+                <CommonLabel value='Business Entity Name*' />
+                <CommonInputField className={style.fullWidth}
                   value={businessEntity?.name}
                   onFocus={() => { checkFieldAndPopAlert(businessEntity?.name, 'Business Entity Name') }}
                   placeholder="Enter Business Entity Name"
                   onChange={(e) => setBusinessEntity({ ...businessEntity, name: e.target.value })} />
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Business Point of Contact*</div>
+                <CommonLabel value='Business Point of Contact*' />
                 <div className={style.twoCol}>
-                  <InputGroup className={style.fullWidth}
+                  <CommonInputField className={style.fullWidth}
                     onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.name?.firstName, 'Contractor Business Contact First Name') }}
                     value={businessEntityUser?.name?.firstName} placeholder="Enter First Name"
                     onChange={(e) => {
                       setBusinessEntityUser({ ...businessEntityUser, name: { firstName: e.target.value, lastName: businessEntityUser?.name?.lastName, suffix: {} } });
                       setIsUserUpdated(true);
                     }} />
-                  <InputGroup className={style.fullWidth}
+                  <CommonInputField className={style.fullWidth}
                     onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.name?.lastName, 'Contractor Business Contact Last Name') }}
                     value={businessEntityUser?.name?.lastName} placeholder="Enter Last Name"
                     onChange={(e) => {
@@ -439,8 +408,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Business Contact Email Address*</div>
-                <InputGroup className={style.fullWidth} value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
+                <CommonLabel value='Business Contact Email Address*' />
+                <CommonInputField className={style.fullWidth} value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
                   onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.email?.officialEmail, 'Business Contact Email Address') }}
                   onChange={(e) => {
                     setBusinessEntityUser({ ...businessEntityUser, email: { officialEmail: e.target.value } });
@@ -451,11 +420,11 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
                 onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.contactNumber?.number, 'Cell Phone') }}
               >
-                <div className={style.extentionLableStyle}>Cell Phone*</div>
+                <CommonLabel value='Cell Phone*' />
                 <div className={style.twoCol}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                     <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
-                    <InputGroup placeholder="Numeric"
+                    <CommonInputField placeholder="Numeric"
                       value={businessEntityUser?.contactNumber?.number}
                       disabled={businessEntityUser?.contactNumber?.missing}
                       onChange={(e) => {
@@ -464,51 +433,40 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                       }}
                       className={`${style.fullWidth}`} />
                   </div>
-                  <FormGroup className={style.marginLeft20}>
-                    <FormControlLabel control={<Checkbox value="NA"
-                      checked={businessEntityUser?.contactNumber?.missing}
-                      onChange={(e) => handleNumberMissing(e.target.checked)}
-                    />} label={<Typography variant="body2" color="textSecondary">Not Available</Typography>} />
-                  </FormGroup>
+                  <CommonCheckBox value="NA"
+                    checked={businessEntityUser?.contactNumber?.missing}
+                    onChange={(e) => handleNumberMissing(e.target.checked)}
+                    label="Not Available" />
                 </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Mailing Address*</div>
+                <CommonLabel value='Mailing Address*' />
                 <div>
-                  <InputGroup className={style.fullWidth} value={mailingAddress?.addressLine} placeholder="Enter Street"
+                  <CommonInputField className={style.fullWidth} value={mailingAddress?.addressLine} placeholder="Enter Street"
                     onFocus={() => { checkFieldAndPopAlert(mailingAddress?.addressLine, 'Mailing Address Street') }}
                     onChange={(e) => setMailingAddress({ ...mailingAddress, addressLine: e.target.value })} />
                   <div className={`${style.grid3} ${style.marginTop10}`}>
-                    <InputGroup className={style.fullWidth} value={mailingAddress?.city} placeholder="Enter City"
+                    <CommonInputField className={style.fullWidth} value={mailingAddress?.city} placeholder="Enter City"
                       onFocus={() => { checkFieldAndPopAlert(mailingAddress?.city, 'Address City') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, city: e.target.value })} />
-                    <InputGroup className={style.fullWidth} value={mailingAddress?.state} placeholder="Enter State"
+                    <CommonInputField className={style.fullWidth} value={mailingAddress?.state} placeholder="Enter State"
                       onFocus={() => { checkFieldAndPopAlert(mailingAddress?.state, 'Address State') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, state: e.target.value })} />
-                    <InputGroup className={style.fullWidth} value={mailingAddress?.zipcode} placeholder="Enter Zipcode"
+                    <CommonInputField className={style.fullWidth} value={mailingAddress?.zipcode} placeholder="Enter Zipcode"
                       onFocus={() => { checkFieldAndPopAlert(mailingAddress?.zipcode, 'Address Zip Code') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, zipcode: e.target.value })} />
                   </div>
                 </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Register Business POC with App User Role*</div>
+                <CommonLabel value='Register Business POC with App User Role*' />
                 <div className={style.displayInRow}>
                   <div>
-                    <ThemeProvider theme={switchTheme}>
-                      <FormControlLabel
-                        control={
-                          <Switch className={`${style.textAlignLeft}`} checked={allowBEM} onChange={(e) => onAllowBEMChange(!allowBEM)} />
-                        }
-                        color='primary'
-                        className={`${style.switchFontStyle} ${style.marginTop}`}
-                        label={allowBEM ? 'YES' : 'NO'}
-                      />
-                    </ThemeProvider>
+                    <CommonSwitch className={`${style.switchFontStyle} ${style.textAlignLeft}`} checked={allowBEM} onChange={(e) => onAllowBEMChange(!allowBEM)} label={allowBEM ? 'YES' : 'NO'} />
                   </div>
                   {allowBEM &&
                     <div>
-                      <InputGroup value="Business Contract Manager" className={style.fullWidth} readOnly />
+                      <CommonInputField value="Business Contract Manager" className={style.fullWidth} readOnly={true} />
                       <div className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}>
                         The Business Contract Manager role allows the registered user to access
                         contract related information and reports only for the contract associated
@@ -527,17 +485,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 selectContractInfo !== 'INDIVIDUAL' &&
                 (
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Allow user as Aggregator*</div>
-                    <ThemeProvider theme={switchTheme}>
-                      <FormControlLabel
-                        control={
-                          <Switch checked={allowAggregator} className={`${style.textAlignLeft}`} onChange={() => onAllowAggregatorChange(!allowAggregator)} />
-                        }
-                        color='primary'
-                        className={`${style.switchFontStyle} ${style.marginTop}`}
-                        label={allowAggregator ? 'YES' : 'NO'}
-                      />
-                    </ThemeProvider>
+                    <CommonLabel value='Allow user as Aggregator*' />
+                    <CommonSwitch checked={allowAggregator} className={`${style.switchFontStyle} ${style.textAlignLeft}`} onChange={() => onAllowAggregatorChange(!allowAggregator)} label={allowAggregator ? 'YES' : 'NO'} />
                   </div>
                 )
               }
@@ -546,17 +495,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 selectContractInfo !== 'INDIVIDUAL' &&
                 (
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Keep Contract Payment Data Confidential*</div>
-                    <ThemeProvider theme={switchTheme}>
-                      <FormControlLabel
-                        control={
-                          <Switch checked={keepConfidential} className={`${style.textAlignLeft}`} onChange={() => setKeepConfidential(!keepConfidential)} />
-                        }
-                        color='primary'
-                        className={`${style.switchFontStyle} ${style.marginTop}`}
-                        label={keepConfidential ? 'YES' : 'NO'}
-                      />
-                    </ThemeProvider>
+                    <CommonLabel value='Keep Contract Payment Data Confidential*' />
+                    <CommonSwitch checked={keepConfidential} className={`${style.switchFontStyle} ${style.textAlignLeft}`} onChange={() => setKeepConfidential(!keepConfidential)} label={keepConfidential ? 'YES' : 'NO'} />
                   </div>
                 )
               }

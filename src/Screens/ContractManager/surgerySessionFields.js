@@ -1,25 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
+import { EditableText } from '@blueprintjs/core';
 import InputAdornment from '@mui/material/InputAdornment';
-import Select from '@mui/material/Select';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonTextField from '../../Components/CommonFields/CommonTextField';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
-
-const switchTheme = createTheme({
-    palette: {
-        primary: {
-            main: '#7165E3',
-        },
-    },
-});
 
 const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) => {
     const limit5 = 5;
@@ -119,7 +111,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Regular Service Schedule*</div>
+                <CommonLabel value='Regular Service Schedule*' />
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
@@ -129,63 +121,43 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         <div className={style.textElement}>MAX</div>
                         <EditableText value={metadata?.max} placeholder='' type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} onChange={(e) => e >= 0 && handleValueChange('max', e)} />
                     </div>
-                    <Select
-                        displayEmpty
-                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                        className={`${style.fullWidth} ${style.marginLeft20}`}
+                    <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                         onChange={(e) => handleValueChange('frequency', e.target.value)}
                         value={metadata?.frequency}
-                    >
-                        <MenuItem value={''}>Select Frequecy</MenuItem>
-                        <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Per Week</MenuItem>
-                        <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTH'}>Per Month</MenuItem>
-                    </Select>
+                        firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                        valueList={['WEEK', 'MONTH']}
+                        labelList={['Per Week', 'Per Month']}
+                        disabledList={[false, false]} />
                 </div>
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Service Cases Target*</div>
+                <CommonLabel value='Service Cases Target*' />
                 <div className={`${style.displayInRow}`}>
-                    <InputGroup value={metadata?.withNurse} disabled={metadata?.noTargetApplicable} className={` ${style.threeFieldWidth}`} onChange={(e) => { setpatientTarget(e.target.value) }} />
-                    <Checkbox label="No Target Applicable" value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth} `} onChange={(e) => handleValueChange('noTargetApplicable', e.target.checked)} />
+                    <CommonInputField value={metadata?.withNurse} disabled={metadata?.noTargetApplicable} className={` ${style.threeFieldWidth}`} onChange={(e) => { setpatientTarget(e.target.value) }} />
+                    <CommonCheckBox label="No Target Applicable" value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth} `} onChange={(e) => handleValueChange('noTargetApplicable', e.target.checked)} />
                 </div>
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Additional Schedule*</div>
-                <div className={style.displayInRow}>
-                    <div className={`${style.threeFieldWidth}`} >
-                        <ThemeProvider theme={switchTheme}>
-                            <FormControlLabel
-                                control={
-                                    <Switch checked={metadata?.additionalScheduleRequired} className={` ${style.textAlignLeft}`} onChange={(e) => setMetadata({ ...metadata, additionalScheduleRequired: !metadata?.additionalScheduleRequired, additionalScheduleValue: '0', additionalScheduleFrequency: '' })} />
-                                }
-                                color='primary'
-                                className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                label={metadata?.additionalScheduleRequired ? 'YES' : 'NO'}
-                            />
-                        </ThemeProvider>
+                <CommonLabel value='Additional Schedule*' />
+                <div className={style.grid3}>
+                    <div className={`${style.fullWidth}`} >
+                        <CommonSwitch checked={metadata?.additionalScheduleRequired} label={metadata?.additionalScheduleRequired ? 'YES' : 'NO'} className={`${style.textAlignLeft} ${style.switchFontStyle} ${style.flexLeft}`} onChange={(e) => setMetadata({ ...metadata, additionalScheduleRequired: !metadata?.additionalScheduleRequired, additionalScheduleValue: '0', additionalScheduleFrequency: '' })} />
                     </div>
                     {metadata?.additionalScheduleRequired &&
                         (
                             <>
-                                <InputGroup value={metadata?.additionalClinicScheduleValue}
+                                <CommonInputField value={metadata?.additionalClinicScheduleValue}
                                     onChange={(e) => handleValueChange('additionalScheduleValue', e.target.value)}
-                                    className={` ${style.threeFieldWidth}`} />
-
-                                <Select
-                                    displayEmpty
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                    className={`${style.threeFieldWidth} ${style.marginLeft20}`}
-                                    value={metadata?.additionalScheduleFrequency}
+                                    className={` ${style.fullWidth} ${style.marginLeft20}`} />
+                                <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
+                                    value={metadata?.additionalScheduleFrequency || ''}
                                     onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
-                                >
-                                    <MenuItem value="">Select Frequecy</MenuItem>
-                                    <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Every Week</MenuItem>
-                                    <MenuItem value={'EVERY_OTHER_WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Every Other Week</MenuItem>
-                                    <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTH'}>Every Month</MenuItem>
-                                    <MenuItem value={'EVERY_OTHER_MONTH'} disabled={timeCommitment?.frequency !== 'MONTH'}>Every Other Month</MenuItem>
-                                </Select>
+                                    firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                    valueList={['WEEK', 'EVERY_OTHER_WEEK', 'MONTH', 'EVERY_OTHER_MONTH']}
+                                    labelList={['Every Week', 'Every Other Week', 'Every Month', 'Every Other Month']}
+                                    disabledList={[timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'MONTH', timeCommitment?.frequency !== 'MONTH']} />
                             </>
                         )}
 
@@ -193,21 +165,13 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Billable Service*</div>
+                <CommonLabel value='Billable Service*' />
                 <div className={style.displayInRow}>
                     <div className={`${style.threeFieldWidth}`} >
-                        <ThemeProvider theme={switchTheme}>
-                            <FormControlLabel
-                                control={
-                                    <Switch checked={metadata?.billableService} className={` ${style.textAlignLeft}`}
-                                        onChange={(e) => setMetadata({ ...metadata, billableService: !metadata?.billableService, sessionAmount: '0' })}
-                                    />
-                                }
-                                color='primary'
-                                className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                label={metadata?.billableService ? 'YES' : 'NO'}
-                            />
-                        </ThemeProvider>
+                        <CommonSwitch checked={metadata?.billableService} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+                            onChange={(e) => setMetadata({ ...metadata, billableService: !metadata?.billableService, sessionAmount: '0' })}
+                            label={metadata?.billableService ? 'YES' : 'NO'}
+                        />
                     </div>
                     {
                         // metadata?.billableService &&
@@ -226,10 +190,9 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Service Session Duration</div>
+                <CommonLabel value='Service Session Duration' />
                 <div className={`${style.threeFieldWidth}`}>
-                    <TextField
-                        size="small"
+                    <CommonTextField
                         InputProps={{
                             endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                         }}
@@ -241,11 +204,10 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             {
                 metadata?.billableService &&
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Service Session payment Amount*</div>
+                    <CommonLabel value='Service Session payment Amount*' />
                     <div className={`${style.displayInRow}`}>
                         <div className={`${style.threeFieldWidth}`}>
-                            <TextField
-                                size="small"
+                            <CommonTextField
                                 disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
@@ -255,13 +217,13 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                             />
                         </div>
                         <div className={style.verticalAlignCenter}>
-                            <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ {(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)</p>
+                            <CommonLabel className={`${style.marginLeft20}`} value={`$ ${(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)`} />
                         </div>
                     </div>
                 </div>
             }
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
+                <CommonLabel value='Total Contracted Service Sessions*' />
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <EditableText placeholder='' value={metadata?.totalSession} type='number' min="0"
@@ -273,18 +235,18 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle}`}>For {timeCommitment?.value} {timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year</p>
+                        <CommonLabel value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year`} />
                     </div>
                 </div>
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Service Days*</div>
+                <CommonLabel value='Service Days*' />
                 <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
+                <CommonLabel value='Allowable Working Day Hours For Service*' />
                 <div className={style.displayInRow}>
                     <TimePicker
                         useAmPm={false}
@@ -304,7 +266,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
             </div>
 
 
-        </div>
+        </div >
     )
 }
 
