@@ -8,7 +8,7 @@ import { GET, TenantID, POST } from './../dataSaver';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import { CLINIC, SURGERY, ONCALL } from '../../Constants';
+import { CLINIC, SURGERY, ONCALL, PROCEDUREREADING } from '../../Constants';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
@@ -33,7 +33,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
 
     let specificDedicatedHoursList = [];
-    services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => {
+    services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
         let activities = data?.activities?.map(data => data?.activity);
         let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
@@ -60,8 +60,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         selectedActivities: [],
         weekdaysCount: '0',
         weekendsCount: '0',
-        workingTimeFrom: new Date(),
-        workingTimeTo: new Date(),
+        workingTimeFrom: null,
+        workingTimeTo: null,
     })
 
     useEffect(() => {
@@ -150,7 +150,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const selectedHours = (index) => {
-        let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => data);
+        let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => data);
         let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
         let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
         setMetadata({ ...metadata, dedicatedHoursActivityType: dedicatedHoursActivityType, dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity, sessionAmount: temp[index]?.payableAmount?.value });
@@ -186,7 +186,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         }
     }
 
-    console.log('date', metadata.selectedActivities);
+    console.log('test', showAdminActivity, editAdminActivitySelected);
     const updateWorkingPeriod = (e) => {
         // let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
         setMetadata({ ...metadata, workingTimeFrom: e });
@@ -240,6 +240,19 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                 <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
                                 {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                 {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                {
+                                    // metadata?.selectedActivities?.map(data => data?.id).includes(data?.id) ? <>
+                                    //     <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.schedule)?.[0] || ''}</div>
+                                    //     {metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.billable)?.[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                    //     {metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.podRequired)?.[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                    // </> :
+                                    //     <>
+                                    //         <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
+                                    //         {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                    //         {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                    //     </>
+                                }
+
                                 {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={() => {
                                     setEditAdminActivitySelected(true);
                                     setAdminActivity({
@@ -257,7 +270,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             </div>
 
             {
-                showAdminActivity || editAdminActivitySelected &&
+                (showAdminActivity || editAdminActivitySelected) &&
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
                         <CommonLabel value='Additional Administrative Services Name' />
@@ -417,13 +430,13 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         onChange={(e) => {
                             updateWorkingPeriod(e);
                         }}
-                        value={new Date(metadata?.workingTimeFrom)}
+                        value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
                     />
                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                     <TimePicker
                         useAmPm={false}
                         onChange={(e) => handleValueChange('workingTimeTo', e)}
-                        value={new Date(metadata?.workingTimeTo)}
+                        value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
                     // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                     />
                 </div>

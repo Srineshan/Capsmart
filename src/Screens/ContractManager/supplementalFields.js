@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import InputAdornment from '@mui/material/InputAdornment';
-import { CLINIC, SURGERY, ONCALL } from '../../Constants';
+import { CLINIC, SURGERY, ONCALL, PROCEDUREREADING } from '../../Constants';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
@@ -23,7 +23,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     const [supplementServiceName, setSupplementServiceName] = useState('');
 
     let specificDedicatedHoursList = [];
-    services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => {
+    services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
         let activities = data?.activities?.map(data => data?.activity);
         let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
@@ -31,7 +31,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     });
 
     const getAvailableActivities = () => {
-        let activitType = metadata?.dedicatedHoursActivityType !== '' ? [`${metadata?.dedicatedHoursActivityType}`] : [CLINIC, SURGERY, ONCALL];
+        let activitType = metadata?.dedicatedHoursActivityType !== '' ? [`${metadata?.dedicatedHoursActivityType}`] : [CLINIC, SURGERY, ONCALL, PROCEDUREREADING];
         let temp = [];
         services?.filter(data => activitType?.includes(data?.activityType?.activityType))?.map(data => {
             let activityName = data?.activityType?.activityType;
@@ -44,23 +44,30 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     }
 
     const selectedHours = (index) => {
-        let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => data);
-        let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
-        let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
-        setMetadata({
-            ...metadata,
-            dedicatedHoursActivityType: dedicatedHoursActivityType,
-            dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
-            billableService: temp[index]?.billableService,
-            rateType: temp[index]?.rateType,
-            sessionAmount: temp[index]?.payableAmount?.value,
-            sessionDuration: temp[index]?.duration?.hours,
-            totalSession: temp[index]?.totalSessions?.value,
-            totalSessionFrequency: temp[index]?.totalSessions?.frequency,
-            workingTimeFrom: GetDateFromHours(temp[index]?.workingPeriod?.from?.toString() || ''),
-            workingTimeTo: GetDateFromHours(temp[index]?.workingPeriod?.to?.toString() || ''),
-            serviceDays: temp[index]?.serviceDays,
+        // let temp = services?.findIndexOf(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType));
+        // let temp;
+        services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
+            let activityName = data?.activityType?.activityType;
+            let activities = data?.activities?.map(data => data?.activity);
+            if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
+                let dedicatedHoursActivityType = data?.activityType?.activityType;
+                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join('-');
+                setMetadata({
+                    ...metadata,
+                    dedicatedHoursActivityType: dedicatedHoursActivityType,
+                    dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
+                    billableService: data?.billableService,
+                    rateType: data?.rateType,
+                    sessionAmount: data?.payableAmount?.value,
+                    sessionDuration: data?.duration?.hours,
+                    totalSession: data?.totalSessions?.value,
+                    totalSessionFrequency: data?.totalSessions?.frequency,
+                });
+            }
         });
+
+        // console.log('activity type', temp, index);
+
     }
 
     const [metadata, setMetadata] = useState({
@@ -73,9 +80,9 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         totalSession: '0',
         totalSessionFrequency: '',
         sessionAmount: '',
-        sessionDuration: '-1',
-        workingTimeFrom: new Date(),
-        workingTimeTo: new Date(),
+        sessionDuration: '0',
+        workingTimeFrom: null,
+        workingTimeTo: null,
         serviceDays: {
             tuesday: false,
             wednesday: false,
@@ -146,17 +153,11 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             temp?.push(value);
             setMetadata({ ...metadata, supplementServiceName: temp });
         }
-        // setSupplementServiceName('');
     }
 
     const removeSupplementServiceName = (index) => {
         let temp = metadata?.supplementServiceName;
         setMetadata({ ...metadata, supplementServiceName: temp?.filter((data, indexValue) => index !== indexValue)?.map(data => data) });
-    }
-
-    const updateWorkingPeriod = (e) => {
-        // let minTime = new Date(new Date(e).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000));
-        setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
     console.log('metadata', metadata);
@@ -194,94 +195,98 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                 </div>
             </div>
             <>
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <CommonLabel value='Billable Service*' />
-                    <div className={style.displayInRow}>
-                        <div className={`${style.threeFieldWidth}`} >
-                            <CommonSwitch checked={metadata?.billableService} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft} `}
-                                onChange={() => setMetadata({ ...metadata, billableService: !metadata?.billableService, sessionAmount: '0' })}
-                                label={metadata?.billableService ? 'YES' : 'NO'} />
+                {metadata?.dedicatedHoursSpecified &&
+                    <>
+                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                            <CommonLabel value='Billable Service*' />
+                            <div className={style.displayInRow}>
+                                <div className={`${style.threeFieldWidth}`} >
+                                    <CommonSwitch checked={metadata?.billableService} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft} `}
+                                        onChange={() => setMetadata({ ...metadata, billableService: !metadata?.billableService, sessionAmount: '0' })}
+                                        label={metadata?.billableService ? 'YES' : 'NO'} />
+                                </div>
+                                {
+                                    // metadata?.billableService &&
+                                    //   <Select
+                                    //       displayEmpty
+                                    //       SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    //       className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                                    //       value={metadata?.rateType}
+                                    //       onChange={(e)=>handleValueChange('rateType', e.target.value)}
+                                    //   >
+                                    //       <MenuItem value={'HOURLY'}>Hourly</MenuItem>
+                                    //   </Select>
+                                }
+                            </div>
                         </div>
+
+                        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                            <CommonLabel value='Separate Service Hours Specified*' />
+                            <div className={style.grid3WithoutGap}>
+                                <div className={`${style.fullWidth}`}>
+                                    <CommonTextField
+                                        type="tel"
+                                        maxLength="3"
+                                        InputProps={{
+                                            endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                                        }}
+                                        onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
+                                        value={metadata?.totalSession}
+                                    />
+                                </div>
+                                <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
+                                    onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
+                                    value={metadata?.totalSessionFrequency || ''}
+                                    firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                    valueList={['WEEK', 'MONTH', 'YEAR']}
+                                    labelList={['Per Week', 'Per Month', 'Per Contract Year']}
+                                    disabledList={[false, false, false]} />
+                            </div>
+                        </div>
+
                         {
-                            // metadata?.billableService &&
-                            //   <Select
-                            //       displayEmpty
-                            //       SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                            //       className={`${style.threeFieldWidth} ${style.marginLeft20}`}
-                            //       value={metadata?.rateType}
-                            //       onChange={(e)=>handleValueChange('rateType', e.target.value)}
-                            //   >
-                            //       <MenuItem value={'HOURLY'}>Hourly</MenuItem>
-                            //   </Select>
+                            // <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                            //     <div className={style.extentionLableStyle}>Service Session Duration</div>
+                            //     <div className={`${style.threeFieldWidth}`}>
+                            //         <TextField
+                            //             size="small"
+                            //             type="tel"
+                            //             maxLength="3"
+                            //             InputProps={{
+                            //                 endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                            //             }}
+                            //             onChange={(e) =>e.target.value >= 0 && setMetadata({...metadata, sessionDuration:e.target.value, sessionAmount:'0'})}
+                            //             value={metadata?.sessionDuration}
+                            //         />
+                            //     </div>
+                            // </div>
                         }
-                    </div>
-                </div>
 
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <CommonLabel value='Separate Service Hours Specified*' />
-                    <div className={style.grid3WithoutGap}>
-                        <div className={`${style.fullWidth}`}>
-                            <CommonTextField
-                                type="tel"
-                                maxLength="3"
-                                InputProps={{
-                                    endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
-                                }}
-                                onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
-                                value={metadata?.totalSession}
-                            />
-                        </div>
-                        <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
-                            onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
-                            value={metadata?.totalSessionFrequency || ''}
-                            firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                            valueList={['WEEK', 'MONTH', 'YEAR']}
-                            labelList={['Per Week', 'Per Month', 'Per Contract Year']}
-                            disabledList={[false, false, false]} />
-                    </div>
-                </div>
+                        {
+                            metadata?.billableService &&
+                            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                                <CommonLabel value='Supplemental Service Payment Amount*' />
+                                <div className={`${style.displayInRow}`}>
+                                    <div className={`${style.threeFieldWidth}`}>
+                                        <CommonTextField
+                                            type="tel"
+                                            maxLength="5"
+                                            disabled={metadata?.totalSession === '' || metadata?.totalSession === '0' || metadata?.totalSession === undefined}
+                                            InputProps={{
+                                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                            }}
+                                            value={metadata?.sessionAmount}
+                                            onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
+                                        />
+                                    </div>
 
-                {
-                    // <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    //     <div className={style.extentionLableStyle}>Service Session Duration</div>
-                    //     <div className={`${style.threeFieldWidth}`}>
-                    //         <TextField
-                    //             size="small"
-                    //             type="tel"
-                    //             maxLength="3"
-                    //             InputProps={{
-                    //                 endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
-                    //             }}
-                    //             onChange={(e) =>e.target.value >= 0 && setMetadata({...metadata, sessionDuration:e.target.value, sessionAmount:'0'})}
-                    //             value={metadata?.sessionDuration}
-                    //         />
-                    //     </div>
-                    // </div>
-                }
-
-                {
-                    metadata?.billableService &&
-                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Supplemental Service Payment Amount*' />
-                        <div className={`${style.displayInRow}`}>
-                            <div className={`${style.threeFieldWidth}`}>
-                                <CommonTextField
-                                    type="tel"
-                                    maxLength="5"
-                                    disabled={metadata?.totalSession === '' || metadata?.totalSession === '0' || metadata?.totalSession === undefined}
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                                    }}
-                                    value={metadata?.sessionAmount}
-                                    onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
-                                />
+                                    <div className={style.verticalAlignCenter}>
+                                        <CommonLabel className={`${style.marginLeft20}`} value={`$ ${(metadata?.sessionAmount / metadata?.totalSession || 0).toFixed(2)} per Hour (Pro Rata)`} />
+                                    </div>
+                                </div>
                             </div>
-
-                            <div className={style.verticalAlignCenter}>
-                                <CommonLabel className={`${style.marginLeft20}`} value={`$ ${(metadata?.sessionAmount / metadata?.totalSession || 0).toFixed(2)} per Hour (Pro Rata)`} />
-                            </div>
-                        </div>
-                    </div>
+                        }
+                    </>
                 }
 
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -290,15 +295,15 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                         <TimePicker
                             useAmPm={false}
                             onChange={(e) => {
-                                updateWorkingPeriod(e);
+                                handleValueChange('workingTimeFrom', e)
                             }}
-                            value={new Date(metadata?.workingTimeFrom)}
+                            value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
                         />
                         <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                         <TimePicker
                             useAmPm={false}
                             onChange={(e) => handleValueChange('workingTimeTo', e)}
-                            value={new Date(metadata?.workingTimeTo)}
+                            value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
                         // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                         />
                     </div>

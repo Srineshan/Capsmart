@@ -5,7 +5,7 @@ import DatalistInput from 'react-datalist-input';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import InputAdornment from '@mui/material/InputAdornment';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import { CLINIC, SURGERY, ADDON } from '../../Constants';
+import { CLINIC, PROCEDUREREADING, SURGERY, ADDON } from '../../Constants';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 import { POST, GET, PUT } from './../dataSaver';
 import ReviewerApproverField from './reviewerApproverField';
@@ -189,7 +189,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
 
   let serviceList = [];
   let temp = services;
-  temp?.filter(data => [CLINIC, SURGERY]?.includes(data?.activityType?.activityType))?.map(data => {
+  temp?.filter(data => [CLINIC, SURGERY, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
     let activityName = data?.activityType?.activityType;
     let activities = data?.activities?.map(data => data?.activity);
     let result = activities?.length !== 0 ? `${activityName} (${activities?.map(data => data)?.join(', ')})` : `${activityName}`;

@@ -15,13 +15,14 @@ import Popover from '@mui/material/Popover';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 import ClinicBlocksFields from './clinicBlocksField';
+import ProcedureReading from './procedureReading';
 import OnCallCoverageFields from './onCallCoverageFields';
 import SupplementalFields from './supplementalFields';
 import AddonClinicFields from './addonClinicFields';
 import AdministrativeFields from './administrativeFields';
 import SurgerySessionFields from './surgerySessionFields';
 import { workFlowDataGenerator } from './workflowDataGenerator';
-import { CLINIC, SURGERY, ONCALL, SUPPLEMENTAL, ADDON, ADMINISTRATIVE } from '../../Constants';
+import { CLINIC, SURGERY, ONCALL, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING } from '../../Constants';
 import Notes from '../../Components/Notes';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
@@ -75,9 +76,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   useEffect(() => {
     getServiceList();
   }, [])
-
-  console.log('const', CLINIC);
-
 
   useEffect(() => {
     if (editService) {
@@ -393,7 +391,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Atleast one location has to be selected if yes');
       return;
     }
-    if (serviceType === CLINIC && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
+    if ((serviceType === CLINIC || serviceType === PROCEDUREREADING) && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
       console.log('contract term periods', contractTermPeriod, metadata?.contractedSchedules?.[0]?.startDate, metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate);
       ErrorToaster('Selected Duration Should be equal to the contract strat and end date');
       return;
@@ -497,7 +495,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           }
         }),
         "locations": serviceType === ADDON ? dataValues?.locations : selectedLocation,
-        ...((serviceType === CLINIC && {
+        ...(((serviceType === CLINIC || serviceType === PROCEDUREREADING) && {
           "contractedSchedules": metadata?.contractedSchedules,
           "patientsSeenTargets": metadata?.patientsSeenTargets,
           "scheduledPatientsTargets": metadata?.scheduledPatientsTargets
@@ -802,7 +800,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setAnchorElDoc(null);
   };
 
-  console.log('contract services', existingServices);
+  console.log('contract services', serviceTypeList);
 
   return (
     <div>
@@ -981,7 +979,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                         ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />
                         : serviceType === ADDON
                           ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} />
-                          : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
+                          : serviceType === PROCEDUREREADING
+                            ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} />
+                            : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
               </div>
             </div>
           ) : (

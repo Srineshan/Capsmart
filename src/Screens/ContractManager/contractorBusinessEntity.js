@@ -328,12 +328,12 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       <Dialog isOpen={showAlert} className={`${style.cloneDialog}`} canOutsideClickClose={false}>
         <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
           <div className={style.spaceBetween}>
-            <p className={style.extensionStyle}>Alert</p>
+            <p className={style.extensionStyle}>Data Entry Alert</p>
             <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowAlert(false)} />
           </div>
           <div className={style.extensionBorder}></div>
           <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
-            Business Contact Change Alert
+            {sameAsContractor ? 'The data entry within the form will be reset if you continue' : 'The contractor Service Provider data from previous tab will automatically entered in the below field. Review and enter additional detail required.'}
           </p>
           <div className={`${style.positionCenter} ${style.marginTop20}`}>
             <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => { setShowAlert(false); handleSameContact(!sameAsContractor); }}>OK</button>

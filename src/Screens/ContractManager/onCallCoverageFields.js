@@ -31,8 +31,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
         sessionAmount: '0',
         totalSession: '0',
         totalSessionFrequency: 'YEAR',
-        workingTimeFrom: new Date(),
-        workingTimeTo: new Date(),
+        workingTimeFrom: null,
+        workingTimeTo: null,
         serviceDays: {
             tuesday: false,
             wednesday: false,
@@ -287,7 +287,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                     onCustomizeFieldChange(e, 'weekdayFrom');
                                 }}
                                 disabled={!metadata?.serviceDays?.weekDays}
-                                value={new Date(metadata?.weekdayFrom)}
+                                value={metadata?.weekdayFrom === null ? null : new Date(metadata?.weekdayFrom)}
                             />
                             <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                             <TimePicker
@@ -296,7 +296,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                     onCustomizeFieldChange(e, 'weekdayTo');
                                 }}
                                 disabled={!metadata?.serviceDays?.weekDays}
-                                value={new Date(metadata?.weekdayTo)}
+                                value={metadata?.weekdayTo === null ? null : new Date(metadata?.weekdayTo)}
                             />
                             <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
                                 <CommonTextField
@@ -361,7 +361,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                         onCustomizeFieldChange(e, 'weekendFrom');
                                     }}
                                     disabled={!metadata?.serviceDays?.weekEnds}
-                                    value={new Date(metadata?.weekendFrom)}
+                                    value={metadata?.weekendFrom === null ? null : new Date(metadata?.weekendFrom)}
                                 />
                                 <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                                 <TimePicker
@@ -370,7 +370,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                         onCustomizeFieldChange(e, 'weekendTo');
                                     }}
                                     disabled={!metadata?.serviceDays?.weekEnds}
-                                    value={new Date(metadata?.weekendTo)}
+                                    value={metadata?.weekendTo === null ? null : new Date(metadata?.weekendTo)}
                                 />
                                 <div className={` ${style.marginLeft20} ${style.durationWidth}`}>
                                     <CommonTextField
@@ -454,7 +454,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                     onChange={(e) => {
                                         onCustomizeFieldChange(e, 'holidayFrom');
                                     }}
-                                    value={metadata?.holidayFrom}
+                                    value={metadata?.holidayFrom === null ? null : new Date(metadata?.holidayFrom)}
                                     disabled={!metadata?.serviceDays?.isholidays}
                                 />
                                 <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
@@ -463,7 +463,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                     onChange={(e) => {
                                         onCustomizeFieldChange(e, 'holidayTo');
                                     }}
-                                    value={metadata?.holidayTo}
+                                    value={metadata?.holidayTo === null ? null : new Date(metadata?.holidayTo)}
                                     disabled={!metadata?.serviceDays?.isholidays}
                                 />
                                 <div className={`${style.marginLeft20} ${style.durationWidth}`}>
@@ -695,13 +695,13 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         onChange={(e) => {
                             updateWorkingPeriod(e);
                         }}
-                        value={new Date(metadata?.workingTimeFrom)}
+                        value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
                     />
                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                     <TimePicker
                         useAmPm={false}
                         onChange={(e) => handleValueChange('workingTimeTo', e)}
-                        value={new Date(metadata?.workingTimeTo)}
+                        value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
                     // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                     />
                 </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { GET } from './../dataSaver';
-import { CLINIC, SURGERY, SUPPLEMENTAL, ADDON, ADMINISTRATIVE } from '../../Constants';
+import { CLINIC, SURGERY, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING } from '../../Constants';
 
 export const validateContractIDTermLimit = (contract) => {
   let fieldData = [{ field: 'Contract Name', value: contract?.contractName?.contractName },
@@ -96,7 +96,7 @@ export const validateServices = (contract) => {
       if (service?.activityType?.activityType !== SUPPLEMENTAL) {
         fieldData.push({ field: 'Duration', value: service?.duration?.hours });
       }
-      if (service?.activityType?.activityType === CLINIC || service?.activityType?.activityType === SURGERY) {
+      if (service?.activityType?.activityType === CLINIC || service?.activityType?.activityType === SURGERY || service?.activityType?.activityType === PROCEDUREREADING) {
         fieldData.push(...[{ field: 'Service Schedule', value: service?.contractedSchedule?.minimum?.value },
         { field: 'Service Schedule Frequency', value: service?.contractedSchedule?.frequency }])
       }
