@@ -16,6 +16,7 @@ import { GET, TenantID, POST } from './../dataSaver';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { CLINIC, SURGERY, ONCALL } from '../../Constants';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import style from './index.module.scss';
 
@@ -41,7 +42,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
 
     let specificDedicatedHoursList = [];
-    services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => {
+    services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
         let activities = data?.activities?.map(data => data?.activity);
         let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
@@ -81,6 +82,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     const setSelectedValues = () => {
         setMetadata({
             ...metadata,
+            refId: serviceSelected?.refId,
             dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
             dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
             dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
@@ -115,7 +117,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     const limit5 = 5;
 
     const getServiceDaysMetadata = (serviceDays) => {
-        setMetadata({ ...metadata, serviceDays: serviceDays})
+        setMetadata({ ...metadata, serviceDays: serviceDays })
     }
 
     const getAdminActivityList = async () => {
@@ -128,14 +130,14 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const activityToAdd = async () => {
-      if(adminActivity?.activity === ''){
-        ErrorToaster('Administrative Service Name is Mandatory');
-        return;
-      }
-      if(activity?.map(data=>data?.activity).includes(adminActivity?.activity)){
-        ErrorToaster('Administrative Service Name Already Exists');
-        return;
-      }
+        if (adminActivity?.activity === '') {
+            ErrorToaster('Administrative Service Name is Mandatory');
+            return;
+        }
+        if (activity?.map(data => data?.activity).includes(adminActivity?.activity)) {
+            ErrorToaster('Administrative Service Name Already Exists');
+            return;
+        }
         let data = {
             "activity": adminActivity?.activity,
             "tenant": {
@@ -153,11 +155,11 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             .catch(error => {
                 ErrorToaster('Adding Activity To List Failed');
             })
-        setAdminActivity({...adminActivity, activity:''})
+        setAdminActivity({ ...adminActivity, activity: '' })
     }
 
     const selectedHours = (index) => {
-        let temp = services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => data);
+        let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => data);
         let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
         let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
         setMetadata({ ...metadata, dedicatedHoursActivityType: dedicatedHoursActivityType, dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity, sessionAmount: temp[index]?.payableAmount?.value });
@@ -179,24 +181,24 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const editActivitySelected = () => {
-      let editableData = metadata?.selectedActivities?.filter(data=>data?.activity === adminActivity?.activity)?.map(data=>data)[0];
-      let temp = metadata?.selectedActivities?.filter(data=>data?.activity !== adminActivity?.activity)?.map(data=>data);
-      temp.push({activity: adminActivity?.activity, billable: adminActivity?.billable, podRequired: adminActivity?.podRequired, id:editableData?.id, tenant:editableData?.tenant, schedule: adminActivity?.schedule});
-      setMetadata({...metadata, selectedActivities: temp});
+        let editableData = metadata?.selectedActivities?.filter(data => data?.activity === adminActivity?.activity)?.map(data => data)[0];
+        let temp = metadata?.selectedActivities?.filter(data => data?.activity !== adminActivity?.activity)?.map(data => data);
+        temp.push({ activity: adminActivity?.activity, billable: adminActivity?.billable, podRequired: adminActivity?.podRequired, id: editableData?.id, tenant: editableData?.tenant, schedule: adminActivity?.schedule });
+        setMetadata({ ...metadata, selectedActivities: temp });
     }
 
     const submit = () => {
-      if(showAdminActivity){
-        activityToAdd();
-      }else{
-        editActivitySelected();
-      }
+        if (showAdminActivity) {
+            activityToAdd();
+        } else {
+            editActivitySelected();
+        }
     }
 
     console.log('date', metadata.selectedActivities);
     const updateWorkingPeriod = (e) => {
-      let minTime= new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
-      setMetadata({...metadata, workingTimeFrom:e, workingTimeTo:minTime});
+        // let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
+        setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
     return (
@@ -251,13 +253,15 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                 <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
                                 {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                 {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
-                                {metadata?.selectedActivities?.map(selectedActivity=>selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={()=>{setEditAdminActivitySelected(true);
-                                  setAdminActivity({
-                                    activity: data?.activity,
-                                    podRequired: data?.podRequired,
-                                    schedule: data?.schedule,
-                                    billable: data?.billable,
-                                });}} />}
+                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={() => {
+                                    setEditAdminActivitySelected(true);
+                                    setAdminActivity({
+                                        activity: data?.activity,
+                                        podRequired: data?.podRequired,
+                                        schedule: data?.schedule,
+                                        billable: data?.billable,
+                                    });
+                                }} />}
                             </div>
 
                         ))
@@ -324,7 +328,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
                     <div>
                         <div className={`${style.twoCol} ${style.marginTop20}`}>
-                            <button className={`${style.outlinedButton} ${style.fullWidth}`} onClick={(e) => {setShowAdminActivity(false); setEditAdminActivitySelected(false);}}>CANCEL</button>
+                            <button className={`${style.outlinedButton} ${style.fullWidth}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
                             <button className={`${style.buttonStyle} ${style.fullWidth}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
                         <br />
@@ -397,7 +401,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         InputProps={{
                             endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                         }}
-                        onChange={(e) =>e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
+                        onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
                         value={metadata?.totalSession}
                     />
                 </div>
@@ -415,7 +419,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                 }}
-                                onChange={(e) =>e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
+                                onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
                                 value={metadata?.sessionAmount}
                             />
                         </div>
@@ -437,7 +441,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     <TimePicker
                         useAmPm={false}
                         onChange={(e) => {
-                          updateWorkingPeriod(e);
+                            updateWorkingPeriod(e);
                         }}
                         value={new Date(metadata?.workingTimeFrom)}
                     />
@@ -446,10 +450,11 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         useAmPm={false}
                         onChange={(e) => handleValueChange('workingTimeTo', e)}
                         value={new Date(metadata?.workingTimeTo)}
-                        minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
+                    // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                     />
                 </div>
             </div>
+
         </div>
     )
 }

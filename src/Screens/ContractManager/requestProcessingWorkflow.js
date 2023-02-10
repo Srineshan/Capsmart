@@ -188,16 +188,14 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
         return data;
     }
 
-    console.log('reviewer', addOn?.reviewer, absence?.reviewer);
-
     const submit = async () => {
-      if(addOn?.reviewer === null || absence?.reviewer === null || addOn?.reviewer === '0' || absence?.reviewer === '0'){
-        ErrorToaster('Select Approver for Add-On and Absence Request');
-        return;
-      }
-        let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`, addOn.reviewer, addOn.approver, activeTab);
+        if (addOn?.reviewer === null || absence?.reviewer === null || addOn?.reviewer === '0' || absence?.reviewer === '0') {
+            ErrorToaster('Select Approver for Absence Request');
+            return;
+        }
+        // let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`, addOn.reviewer, addOn.approver, activeTab);
         let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, activeTab);
-        await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
+        // await updateTimeSheetWorkflow(addOnData, `AddOn-${contractName}`, 'AddOn');
         await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
         SuccessToaster('Workflow Updated Successfully');
         setIsShowValidationCheck(true);
@@ -207,13 +205,14 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
         <div className={style.cloneBlockStyle}>
             <div className={`${style.timeSheetBoxStyle}`}>
                 <div>
-                    <div>
+
+                    {/* <div>
                         <div className={style.purpleTitle}>
                             ADD-ON ACTIVITY / SERVICE REQUESTS
                         </div>
                         <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setAddOn({ ...addOn, reviewer: value }) }} value={addOn?.reviewer} />
-                    </div>
-                    <div className={style.marginTop50}>
+                    </div> */}
+                    <div>
                         <div className={style.purpleTitle}>
                             PLANNED ABSENCE REQUESTS
                         </div>
@@ -222,16 +221,16 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
                 </div>
             </div>
             {isEditable &&
-              <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                  <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Timesheet Processing Workflow') }}>BACK</button>
-                  <div>
-                      <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                          onClick={() => {
-                              submit();
-                          }}
-                      >CONTINUE</button>
-                  </div>
-              </div>
+                <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                    <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Timesheet Processing Workflow') }}>BACK</button>
+                    <div>
+                        <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
+                            onClick={() => {
+                                submit();
+                            }}
+                        >CONTINUE</button>
+                    </div>
+                </div>
             }
             {isShowValidationCheck && (
                 <ContractValidationCheckSummary getContractValidationDialog={getContractValidationDialog} contract={contract} />

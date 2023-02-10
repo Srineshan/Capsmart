@@ -175,11 +175,12 @@
 }
 
 .specificActionCard {
-    height: 35px;
-    padding: 0 10px;
+    min-height: 35px;
+    padding: 10px;
     display: flex;
     align-items: center;
     color: #F5F9FD;
+    max-width: 250px;
 }
 
 .siteCard {

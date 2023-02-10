@@ -25,7 +25,7 @@ const switchTheme = createTheme({
 });
 
 
-const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, getSelectedField, getShowAlert, isEditable, getTabDataStatus }) => {
+const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContractInfo, contractId, contractName, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus }) => {
   const [isUserUpdated, setIsUserUpdated] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,8 +60,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       missing: false
     }
   });
-  const [roles, setRoles] = useState([])
-  const [selectedRoles, setSelectedRoles] = useState([])
+  const [roles, setRoles] = useState([]);
   const [mailingAddress, setMailingAddress] = useState({
     addressLine: "",
     city: "",
@@ -72,6 +71,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   const [contractorBusinessEntity, setContractorBusinessEntity] = useState({});
   const [userId, setUserId] = useState('0');
   const [showAlert, setShowAlert] = useState(false);
+  const [allowAggregator, setAllowAggregator] = useState(false);
+  const [selectedRoles, setSelectedRoles] = useState([]);
 
   useEffect(() => {
     getUserData();
@@ -95,6 +96,30 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       }
     }
     setIsLoading(false);
+  }
+
+
+  const onAllowBEMChange = (value) => {
+    let temp = selectedRoles;
+    if (value) {
+      temp.push(roles?.filter(role => role?.roleName === 'Contract Business Entity Manager')?.map(data => data)[0]);
+      setAllowBEM(value);
+    } else {
+      setAllowBEM([])
+    }
+    setSelectedRoles(temp);
+  }
+
+  const onAllowAggregatorChange = (value) => {
+    let temp = selectedRoles;
+    if (value) {
+      temp.push(roles?.filter(role => role?.roleName === 'Aggregator')?.map(data => data)[0]);
+      setAllowAggregator(value);
+    } else {
+      temp = selectedRoles?.filter(role => role?.roleName === 'Aggregator')?.map(data => data);
+      setAllowAggregator(value)
+    }
+    setSelectedRoles(temp);
   }
 
   const handleContinue = async (buttonType) => {
@@ -128,7 +153,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       ErrorToaster('Unexpected Error');
     }
 
-    if (allowBEM) {
+
+    if (allowBEM || allowAggregator) {
       const userData = {
         ...(userId !== '0' && { 'id': userId }),
         "name": {
@@ -142,7 +168,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
           "contractName": {
             "contractName": contractName
           },
-          "roles": roles?.filter(data => data?.id === '6344d59a45ca246bd12dd77b')?.map(data => data),
+          "roles": roles?.filter(data => data?.roleName === '6344d59a45ca246bd12dd77b' || data?.roleName === 'Aggregator')?.map(data => data),
           "sites": {
             "sites": []
           },
@@ -162,7 +188,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
           "mobileNumber": businessEntityUser?.contactNumber?.number,
           "landlineNumber": ""
         },
-        "roles": roles?.filter(data => data?.id === '6344d59a45ca246bd12dd77b')?.map(data => data),
+        "roles": roles?.filter(data => data?.roleName === '6344d59a45ca246bd12dd77b' || data?.roleName === 'Aggregator')?.map(data => data),
         "tenant": {
           "tenantId": TenantID
         },
@@ -190,34 +216,11 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     if (buttonType === 'Continue') {
       getViewPage5(true);
       getCurrentPage('Contracted Services Specification');
-    }else{
+    } else {
       getShowAlert(true);
     }
     getTabDataStatus();
   }
-
-  const handleRoles = (value) => {
-    if (value !== '0') {
-      const selectedValue = roles?.filter(data => data?.roleName === value)?.map(data => data)[0];
-
-      if (!selectedRoles?.map(data => data?.roleName)?.includes(value)) {
-        setSelectedRoles([...selectedRoles, selectedValue]);
-      }
-    }
-  }
-
-  const rolesTags = selectedRoles
-    ?.filter(data => roles?.map(role => role.id === data?.id))
-    .map((tag, index) => {
-      const onRemove = () => {
-        setSelectedRoles(selectedRoles.filter((t) => t?.roleName !== tag?.roleName)?.map(data => data));
-      };
-      return (
-        <Tag key={index} onRemove={onRemove} large={true} className={style.tagStyle}>
-          {tag?.roleName}
-        </Tag>
-      );
-    });
 
   const getRoles = async () => {
     const { data: roles } = await GET('user-management-service/roles');
@@ -229,7 +232,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     setContractorBusinessEntity(contractorBusinessEntity);
   };
 
-const setBusinessEntityData = () => {
+  const setBusinessEntityData = () => {
     setSameAsContractor(contractorBusinessEntity?.contractorContact);
     setBusinessEntity(contractorBusinessEntity?.businessEntity || {});
     setContractorNPIN(contractorBusinessEntity?.contractorNPIN || {});
@@ -242,7 +245,6 @@ const setBusinessEntityData = () => {
     setKeepConfidential(contractorBusinessEntity?.paymentDataConfidential);
   }
 
-  console.log('npin', contractorNPIN);
 
   useEffect(() => {
     getRoles();
@@ -251,7 +253,7 @@ const setBusinessEntityData = () => {
   }, [])
 
   useEffect(() => {
-  setBusinessEntityData();
+    setBusinessEntityData();
   }, [contractorBusinessEntity])
 
 
@@ -281,15 +283,15 @@ const setBusinessEntityData = () => {
         npin: contractUser?.npin?.npin || '',
         missing: contractUser?.npin?.missing,
       });
-    }else{
+    } else {
       setBusinessEntityUser({
         name: {
-          firstName:'',
-          lastName : '',
+          firstName: '',
+          lastName: '',
           middleName: '',
           suffix: {},
         },
-        email: {officialEmail:''},
+        email: { officialEmail: '' },
         contactNumber: {
           number: '',
           missing: false
@@ -302,7 +304,7 @@ const setBusinessEntityData = () => {
         zipcode: ''
       });
       setContractorNPIN({
-        notApplicable:'',
+        notApplicable: '',
         npin: '',
         missing: false,
       });
@@ -330,33 +332,35 @@ const setBusinessEntityData = () => {
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
 
+  console.log('roles', selectedRoles);
+
   console.log('name', contractorNPIN);
 
   return (
     <>
-    <Dialog isOpen={showAlert} className={`${style.cloneDialog}`} canOutsideClickClose={false}>
-      <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
-        <div className={style.spaceBetween}>
-          <p className={style.extensionStyle}>Alert</p>
-          <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowAlert(false)} />
+      <Dialog isOpen={showAlert} className={`${style.cloneDialog}`} canOutsideClickClose={false}>
+        <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
+          <div className={style.spaceBetween}>
+            <p className={style.extensionStyle}>Alert</p>
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowAlert(false)} />
+          </div>
+          <div className={style.extensionBorder}></div>
+          <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
+            Business Contact Change Alert
+          </p>
+          <div className={`${style.positionCenter} ${style.marginTop20}`}>
+            <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => { setShowAlert(false); handleSameContact(!sameAsContractor); }}>OK</button>
+          </div>
+          <br />
         </div>
-        <div className={style.extensionBorder}></div>
-        <p className={`${style.deleteDescriptionStyle} ${style.marginTop20}`}>
-        Business Contact Change Alert
-        </p>
-        <div className={`${style.positionCenter} ${style.marginTop20}`}>
-          <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => {setShowAlert(false); handleSameContact(!sameAsContractor);}}>OK</button>
-        </div>
-        <br />
-      </div>
-    </Dialog>
+      </Dialog>
       {
         userCount !== 0 ?
           <div className={style.cloneBlockStyle}>
             <div className={`${style.newContractFromCloneBoxStyle}`}>
               {selectContractInfo === "INDIVIDUAL" && (
                 <div className={`${style.extentionGrid}`}
-                  onFocus={() => { getSelectedField('Contractor Business Contact Same As Contractor') }}>
+                  onFocus={() => { checkFieldAndPopAlert(true, 'Contractor Business Contact Same As Contractor') }}>
                   <div className={style.extentionLableStyle}>Contractor Business Contact Same As Contractor*</div>
                   <ThemeProvider theme={switchTheme}>
                     <FormControlLabel
@@ -371,7 +375,7 @@ const setBusinessEntityData = () => {
                 </div>
               )}
               <div className={`${style.extentionGrid} ${selectContractInfo === "INDIVIDUAL" && style.marginTop20}`}
-                onFocus={() => { getSelectedField('Contractor NPIN') }}>
+                onFocus={() => { checkFieldAndPopAlert(contractorNPIN?.npin, 'Contractor NPIN') }}>
                 <div className={style.extentionLableStyle}>Vendor NPIN*</div>
                 <div className={style.twoCol}>
                   <InputGroup className={style.fullWidth}
@@ -379,7 +383,7 @@ const setBusinessEntityData = () => {
                     maxLength={10}
                     disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
                     value={contractorNPIN?.npin} placeholder="Enter Vendor NPIN"
-                    onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value, missing:false, notApplicable:false })} />
+                    onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value, missing: false, notApplicable: false })} />
                   <div className={`${style.displayInRow}`}>
                     <FormGroup className={style.marginLeft20}>
                       <FormControlLabel control={<Checkbox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked, notApplicable: false, npin: '' })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
@@ -392,7 +396,7 @@ const setBusinessEntityData = () => {
                 </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
-                onFocus={() => { getSelectedField('Contractor Entity Tax ID') }}>
+                onFocus={() => { checkFieldAndPopAlert(contractorEntityTaxId?.taxId, 'Contractor Entity Tax ID') }}>
                 <div className={style.extentionLableStyle}>Vendor Tax ID*</div>
                 <div className={style.twoCol}>
                   <InputGroup className={style.fullWidth} disabled={contractorEntityTaxId?.missing || contractorEntityTaxId?.notApplicable} value={contractorEntityTaxId?.taxId} placeholder="Enter Vendor Tax ID"
@@ -411,7 +415,7 @@ const setBusinessEntityData = () => {
                 <div className={style.extentionLableStyle}>Business Entity Name*</div>
                 <InputGroup className={style.fullWidth}
                   value={businessEntity?.name}
-                  onFocus={() => { getSelectedField('Business Entity Name') }}
+                  onFocus={() => { checkFieldAndPopAlert(businessEntity?.name, 'Business Entity Name') }}
                   placeholder="Enter Business Entity Name"
                   onChange={(e) => setBusinessEntity({ ...businessEntity, name: e.target.value })} />
               </div>
@@ -419,14 +423,14 @@ const setBusinessEntityData = () => {
                 <div className={style.extentionLableStyle}>Business Point of Contact*</div>
                 <div className={style.twoCol}>
                   <InputGroup className={style.fullWidth}
-                    onFocus={() => { getSelectedField('Contractor Business Contact First Name') }}
+                    onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.name?.firstName, 'Contractor Business Contact First Name') }}
                     value={businessEntityUser?.name?.firstName} placeholder="Enter First Name"
                     onChange={(e) => {
                       setBusinessEntityUser({ ...businessEntityUser, name: { firstName: e.target.value, lastName: businessEntityUser?.name?.lastName, suffix: {} } });
                       setIsUserUpdated(true);
                     }} />
                   <InputGroup className={style.fullWidth}
-                    onFocus={() => { getSelectedField('Contractor Business Contact Last Name') }}
+                    onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.name?.lastName, 'Contractor Business Contact Last Name') }}
                     value={businessEntityUser?.name?.lastName} placeholder="Enter Last Name"
                     onChange={(e) => {
                       setBusinessEntityUser({ ...businessEntityUser, name: { lastName: e.target.value, firstName: businessEntityUser?.name?.firstName, suffix: {} } });
@@ -436,16 +440,16 @@ const setBusinessEntityData = () => {
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Business Contact Email Address*</div>
-                  <InputGroup className={style.fullWidth} value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
-                    onFocus={() => { getSelectedField('Business Contact Email Address') }}
-                    onChange={(e) => {
-                      setBusinessEntityUser({ ...businessEntityUser, email: { officialEmail: e.target.value } });
-                      setIsUserUpdated(true);
-                    }}
-                  />
+                <InputGroup className={style.fullWidth} value={businessEntityUser?.email?.officialEmail} placeholder="Enter Email"
+                  onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.email?.officialEmail, 'Business Contact Email Address') }}
+                  onChange={(e) => {
+                    setBusinessEntityUser({ ...businessEntityUser, email: { officialEmail: e.target.value } });
+                    setIsUserUpdated(true);
+                  }}
+                />
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
-                onFocus={() => { getSelectedField('Cell Phone') }}
+                onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.contactNumber?.number, 'Cell Phone') }}
               >
                 <div className={style.extentionLableStyle}>Cell Phone*</div>
                 <div className={style.twoCol}>
@@ -472,48 +476,71 @@ const setBusinessEntityData = () => {
                 <div className={style.extentionLableStyle}>Mailing Address*</div>
                 <div>
                   <InputGroup className={style.fullWidth} value={mailingAddress?.addressLine} placeholder="Enter Street"
-                    onFocus={() => { getSelectedField('Mailing Address Street') }}
+                    onFocus={() => { checkFieldAndPopAlert(mailingAddress?.addressLine, 'Mailing Address Street') }}
                     onChange={(e) => setMailingAddress({ ...mailingAddress, addressLine: e.target.value })} />
                   <div className={`${style.grid3} ${style.marginTop10}`}>
                     <InputGroup className={style.fullWidth} value={mailingAddress?.city} placeholder="Enter City"
-                      onFocus={() => { getSelectedField('Address City') }}
+                      onFocus={() => { checkFieldAndPopAlert(mailingAddress?.city, 'Address City') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, city: e.target.value })} />
                     <InputGroup className={style.fullWidth} value={mailingAddress?.state} placeholder="Enter State"
-                      onFocus={() => { getSelectedField('Address State') }}
+                      onFocus={() => { checkFieldAndPopAlert(mailingAddress?.state, 'Address State') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, state: e.target.value })} />
                     <InputGroup className={style.fullWidth} value={mailingAddress?.zipcode} placeholder="Enter Zipcode"
-                      onFocus={() => { getSelectedField('Address Zip Code') }}
+                      onFocus={() => { checkFieldAndPopAlert(mailingAddress?.zipcode, 'Address Zip Code') }}
                       onChange={(e) => setMailingAddress({ ...mailingAddress, zipcode: e.target.value })} />
                   </div>
                 </div>
               </div>
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                  <div className={style.extentionLableStyle}>Register Business POC with App User Role*</div>
-                  <div className={style.displayInRow}>
-                    <div>
-                      <ThemeProvider theme={switchTheme}>
-                        <FormControlLabel
-                          control={
-                            <Switch className={`${style.textAlignLeft}`} checked={allowBEM} onChange={(e)=>setAllowBEM(!allowBEM)}/>
-                          }
-                          color='primary'
-                          className={`${style.switchFontStyle} ${style.marginTop}`}
-                          label={allowBEM ? 'YES' : 'NO'}
-                        />
-                      </ThemeProvider>
-                    </div>
-                    {allowBEM &&
-                      <div>
-                        <InputGroup value="Business Contract Manager" className={style.fullWidth} readOnly/>
-                        <div className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}>
-                          The Business Contract Manager role allows the registered user to access
-                          contract related information and reports only for the contract associated
-                          with their business entity.
-                        </div>
-                      </div>
-                    }
+              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={style.extentionLableStyle}>Register Business POC with App User Role*</div>
+                <div className={style.displayInRow}>
+                  <div>
+                    <ThemeProvider theme={switchTheme}>
+                      <FormControlLabel
+                        control={
+                          <Switch className={`${style.textAlignLeft}`} checked={allowBEM} onChange={(e) => onAllowBEMChange(!allowBEM)} />
+                        }
+                        color='primary'
+                        className={`${style.switchFontStyle} ${style.marginTop}`}
+                        label={allowBEM ? 'YES' : 'NO'}
+                      />
+                    </ThemeProvider>
                   </div>
+                  {allowBEM &&
+                    <div>
+                      <InputGroup value="Business Contract Manager" className={style.fullWidth} readOnly />
+                      <div className={`${style.businessContractManagerRoleInfo} ${style.marginTop10}`}>
+                        The Business Contract Manager role allows the registered user to access
+                        contract related information and reports only for the contract associated
+                        with their business entity.
+                      </div>
+                    </div>
+                  }
+
+
+
+
                 </div>
+              </div>
+
+              {
+                selectContractInfo !== 'INDIVIDUAL' &&
+                (
+                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Allow user as Aggregator*</div>
+                    <ThemeProvider theme={switchTheme}>
+                      <FormControlLabel
+                        control={
+                          <Switch checked={allowAggregator} className={`${style.textAlignLeft}`} onChange={() => onAllowAggregatorChange(!allowAggregator)} />
+                        }
+                        color='primary'
+                        className={`${style.switchFontStyle} ${style.marginTop}`}
+                        label={allowAggregator ? 'YES' : 'NO'}
+                      />
+                    </ThemeProvider>
+                  </div>
+                )
+              }
 
               {
                 selectContractInfo !== 'INDIVIDUAL' &&

@@ -3,7 +3,10 @@ import { InputGroup, RadioGroup, Radio, Tag, TagInput } from '@blueprintjs/core'
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import FormGroup from '@mui/material/FormGroup';
+import FormControl from '@mui/material/FormControl';
 import { FormatPhoneNumber } from './../../utils/formatting';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -47,7 +50,7 @@ const MenuProps = {
   },
 };
 
-const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, getSelectedField, getShowAlert, isEditable, getTabDataStatus }) => {
+const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus }) => {
   const testContractId = contractId;
   const [user, setUsers] = useState([]);
   const [userName, setUserName] = useState('');
@@ -71,7 +74,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     addressLine: '',
     city: '',
     state: '',
-    zipcode:''
+    zipcode: ''
   })
   const [siteLevelTitle, setSiteLevelTitle] = useState({ title: '', id: '' });
   const [departmentLevelDepartment, setDepartmentLevelDepartment] = useState('');
@@ -389,7 +392,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         "notApplicable": npinNotApplicable,
         "npin": npin
       },
-      "personalEmailAddressAllowed":allowPersonalMail,
+      "personalEmailAddressAllowed": allowPersonalMail,
     }
     if (!isUserPresent) {
       await POST('user-management-service/user/register', JSON.stringify(data))
@@ -409,10 +412,10 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           ErrorToaster('Unexpected Error');
         });
     }
-    if(buttonType==='Continue'){
+    if (buttonType === 'Continue') {
       getViewPage3(true);
       getCurrentPage('Contractor Business Entity')
-    }else{
+    } else {
       getShowAlert(true);
     }
     getTabDataStatus();
@@ -444,8 +447,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     const { data: roles } = await GET('user-management-service/roles?roleType=APP');
     setRoles(roles);
     let temp = selectedRoles;
-    if(!selectedRoles?.map(data=>data?.roleName)?.includes('Activity Logger')){
-      temp.push(roles?.filter(role=>role?.roleName === 'Activity Logger')?.map(data=>data)[0]);
+    if (!selectedRoles?.map(data => data?.roleName)?.includes('Activity Logger')) {
+      temp.push(roles?.filter(role => role?.roleName === 'Activity Logger')?.map(data => data)[0]);
       setSelectedRoles(temp);
     }
   };
@@ -527,13 +530,13 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div>
-          <div className={`${style.extentionGrid}`} onFocus={() => { getSelectedField('Service Provider Type') }}>
+          <div className={`${style.extentionGrid}`} onFocus={() => { checkFieldAndPopAlert(serviceProviderType?.id, 'Service Provider Type') }}>
             <div className={style.extentionLableStyle}>Service Provider Type*</div>
             <div className={style.grid3}>
               <ProviderTypeList value={serviceProviderType?.id} onChangeFunc={(id, value) => setServiceProviderType({ id: id, contractedServiceProviderType: value })} className={[style.fullWidth]} />
             </div>
           </div>
-          <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('NPIN') }}>
+          <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(npin, 'NPIN') }}>
             <div className={style.extentionLableStyle}>NPIN*</div>
             <div className={style.grid3}>
               <InputGroup className={style.fullWidth}
@@ -542,12 +545,12 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                 type="tel"
                 maxLength={10}
                 disabled={npinMissing || npinNotApplicable}
-                onChange={(e) =>e.target.value >= 0 && setNpin(e.target.value)} />
+                onChange={(e) => e.target.value >= 0 && setNpin(e.target.value)} />
               <FormGroup>
-                <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => {setNpinMissing(e.target.checked);setNpin('');setNpinNotApplicable(false);}} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
+                <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => { setNpinMissing(e.target.checked); setNpin(''); setNpinNotApplicable(false); }} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
               </FormGroup>
               <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => {setNpinNotApplicable(e.target.checked);setNpin('');setNpinMissing(false);}} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => { setNpinNotApplicable(e.target.checked); setNpin(''); setNpinMissing(false); }} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
               </FormGroup>
             </div>
           </div>
@@ -557,43 +560,43 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               <InputGroup className={style.fullWidth} placeholder="First"
                 value={contractorFirstName}
                 maxLength={30}
-                onFocus={() => { getSelectedField('Contractor First Name') }}
+                onFocus={() => { checkFieldAndPopAlert(contractorFirstName, 'Contractor First Name') }}
                 onChange={(e) => setContractorFirstName(e.target.value)} />
               <InputGroup className={style.fullWidth} placeholder="Middle"
                 value={contractorMiddleName}
                 maxLength={30}
-                onFocus={() => { getSelectedField('Contractor Middle Initials') }}
+                onFocus={() => { checkFieldAndPopAlert(contractorMiddleName, 'Contractor Middle Initials') }}
                 onChange={(e) => setContractorMiddleName(e.target.value)} />
               <InputGroup className={style.fullWidth} placeholder="Last"
                 value={contractorLastName}
                 maxLength={30}
-                onFocus={() => { getSelectedField('Contractor Last Name') }}
+                onFocus={() => { checkFieldAndPopAlert(contractorLastName, 'Contractor Last Name') }}
                 onChange={(e) => setContractorLastName(e.target.value)} />
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
-            onFocus={() => { getSelectedField('Suffix') }}>
+            onFocus={() => { checkFieldAndPopAlert(contractorNameSuffix?.id, 'Suffix') }}>
             <div className={style.extentionLableStyle}>Suffix*</div>
             <div className={style.grid3}>
               <SuffixList value={contractorNameSuffix?.id} onChangeFunc={(id, value) => setContractorNameSuffix({ ...contractorNameSuffix, id: id, suffix: value })} className={[style.fullWidth]} />
             </div>
           </div>
 
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+          <div className={`${style.extentionGrid} ${style.marginTop20}`} >
             <div className={style.extentionLableStyle}>Allow Use of Alternate/ Personal Email Address</div>
             <div className={style.displayInRow}>
               <ThemeProvider theme={switchTheme}>
                 <FormControlLabel
                   control={
-                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={changePersonalMail}/>
+                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={changePersonalMail} />
                   }
                   className={`${style.switchFontStyle}`}
                   label={allowPersonalMail ? 'YES' : 'NO'}
                 />
               </ThemeProvider>
               {allowPersonalMail &&
-                <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
-                  <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={contractorEmail} onChange={(e)=>setContractorEmail(e.target.value)}/>
+                <div className={`${style.fullWidth} ${style.verticalAlignCenter}`} onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
+                  <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={contractorEmail} onChange={(e) => setContractorEmail(e.target.value)} />
                 </div>
               }
 
@@ -601,10 +604,10 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           </div>
           {
             !allowPersonalMail && <div className={`${style.extentionGrid} ${style.marginTop20}`}
-              onFocus={() => { getSelectedField('Email Contractor id') }}>
-              <div className={style.extentionLableStyle}>Email Contractor id*</div>
+              onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
+              <div className={style.extentionLableStyle}>Contract Entity Email*</div>
               <div className={style.displayInRow}>
-                <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
+                <InputGroup placeholder="Enter contract entity email" className={`${style.entityFieldWidth}`}
                   value={contractorEmail}
                   maxLength={30}
                   onChange={(e) => setContractorEmail(e.target.value)} />
@@ -614,50 +617,50 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
 
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
-            onFocus={() => { getSelectedField('Cell Phone') }}>
+            onFocus={() => { checkFieldAndPopAlert(contractorPhone, 'Cell Phone') }}>
             <div className={style.extentionLableStyle}>Cell Phone*</div>
             <div className={style.twoCol}>
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                 <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
                 <InputGroup placeholder="Numeric" value={contractorPhone} disabled={mobileNA} maxLength={15}
-                  onChange={(e) => {setContractorPhone(FormatPhoneNumber(e.target.value)); setMobileNA(false);}} className={`${style.fullWidth}`} />
+                  onChange={(e) => { setContractorPhone(FormatPhoneNumber(e.target.value)); setMobileNA(false); }} className={`${style.fullWidth}`} />
               </div>
               <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={mobileNA} onChange={(e)=>{setMobileNA(e.target.checked);if(e.target.checked){setContractorPhone('')}}}/>} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
+                <FormControlLabel control={<Checkbox value="NA" checked={mobileNA} onChange={(e) => { setMobileNA(e.target.checked); if (e.target.checked) { setContractorPhone('') } }} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
               </FormGroup>
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Address*</div>
+            <div className={style.extentionLableStyle}>Address</div>
             <div>
-            <InputGroup className={style.fullWidth} placeholder="Street"
-              value={address?.addressLine}
-              onChange={(e)=>setAddress({...address, addressLine:e.target.value})}
-              onFocus={() => { getSelectedField('Address Street') }}/>
-            <div className={`${style.grid3} ${style.marginTop20}`}>
-              <InputGroup className={style.fullWidth} placeholder="City"
-                value={address?.city}
-                maxLength={50}
-                onFocus={() => { getSelectedField('Address City') }}
-                onChange={(e) => setAddress({...address, city:e.target.value})} />
-              <InputGroup className={style.fullWidth} placeholder="State"
-                value={address?.state}
-                maxLength={20}
-                onFocus={() => { getSelectedField('Address State') }}
-                onChange={(e) => setAddress({...address, state:e.target.value})} />
-              <InputGroup className={style.fullWidth} placeholder="Zipcode"
-                value={address?.zipcode}
-                maxLength={5}
-                onFocus={() => { getSelectedField('Address Zip Code') }}
-                onChange={(e) => setAddress({...address, zipcode:e.target.value})} />
-            </div>
+              <InputGroup className={style.fullWidth} placeholder="Street"
+                value={address?.addressLine}
+                onChange={(e) => setAddress({ ...address, addressLine: e.target.value })}
+                onFocus={() => { checkFieldAndPopAlert(address?.addressLine, 'Address Street') }} />
+              <div className={`${style.grid3} ${style.marginTop20}`}>
+                <InputGroup className={style.fullWidth} placeholder="City"
+                  value={address?.city}
+                  maxLength={50}
+                  onFocus={() => { checkFieldAndPopAlert(address?.city, 'Address City') }}
+                  onChange={(e) => setAddress({ ...address, city: e.target.value })} />
+                <InputGroup className={style.fullWidth} placeholder="State"
+                  value={address?.state}
+                  maxLength={20}
+                  onFocus={() => { checkFieldAndPopAlert(address?.state, 'Address State') }}
+                  onChange={(e) => setAddress({ ...address, state: e.target.value })} />
+                <InputGroup className={style.fullWidth} placeholder="Zipcode"
+                  value={address?.zipcode}
+                  maxLength={5}
+                  onFocus={() => { checkFieldAndPopAlert(address?.zipcode, 'Address Zip Code') }}
+                  onChange={(e) => setAddress({ ...address, zipcode: e.target.value })} />
+              </div>
             </div>
           </div>
         </div>
 
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { getSelectedField('Site Level Responsibility') }}>
+          onFocus={() => { checkFieldAndPopAlert(siteLevel ? siteTitleValues?.length : true, 'Site Level Responsibility') }}>
           <div className={style.extentionLableStyle}>Site Level Responsibility*</div>
           <div>
             <div className={style.flexLeft}>
@@ -672,10 +675,10 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               </ThemeProvider>
             </div>
             {siteLevel && (
-              <div className={`${style.siteLevelBoxStyle}`}>
+              <div className={`${style.siteLevelBoxStyle}`} onFocus={() => checkFieldAndPopAlert(siteTitleValues?.length, 'Site Level Responsibility')}>
                 <div className={`${style.siteLevelGrid}`}>
                   <div className={style.marginTop}>Site*</div>
-                  <select
+                  {/* <select
                     name="class"
                     id="Class"
                     value={siteLevelSite?.id}
@@ -689,7 +692,21 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                         {data?.name}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
+                  <FormControl size="small">
+                    <Select
+                      labelId="demo-select-small"
+                      id="demo-select-small"
+                      value={siteLevelSite?.id}
+                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                      onChange={(e) => setSiteLevelSite({ id: e.target.value, name: sites?.filter(data => data?.id === e.target.value)?.map(data => data?.name)[0] })}
+                      SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                    >
+                      {sites?.map((data, index) => (
+                        <MenuItem key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>{data?.name}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </div>
                 {/* )} */}
                 <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
@@ -712,7 +729,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { getSelectedField('Department Level Responsibility') }}>
+          onFocus={() => { checkFieldAndPopAlert(departmentLevel ? departmentTitleValues?.length : true, 'Department Level Responsibility') }}>
           <div className={style.extentionLableStyle}>Department Level Responsibility*</div>
           <div>
             <div className={style.flexLeft}>
@@ -728,11 +745,11 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
             </div>
             <div>
               {departmentLevel && (
-                <div className={`${style.departmentLevelBoxStyle}`}>
+                <div className={`${style.departmentLevelBoxStyle}`} onFocus={() => { checkFieldAndPopAlert(departmentTitleValues?.length, 'Department Level Responsibility') }}>
                   {/* {selectedContract === "Multiple Contractor" && ( */}
                   <div className={`${style.siteLevelGrid}`}>
                     <div className={style.marginTop}>Site*</div>
-                    <select
+                    {/* <select
                       name="class"
                       id="Class"
                       value={departmentLevelSite?.id}
@@ -746,12 +763,26 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                           {data?.name}
                         </option>
                       ))}
-                    </select>
+                    </select> */}
+                    <FormControl size="small">
+                      <Select
+                        labelId="demo-select-small"
+                        id="demo-select-small"
+                        value={departmentLevelSite?.id}
+                        onChange={(e) => handleSelectedDepartmentSite(e.target.value)}
+                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                      >
+                        {sites?.map((data, index) => (
+                          <MenuItem key={index} value={data?.id}>{data?.name}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </div>
                   {/* )} */}
                   <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                     <div className={style.marginTop}>Department*</div>
-                    <select
+                    {/* <select
                       name="class"
                       id="Class"
                       value={departmentLevelDepartment?.id}
@@ -766,7 +797,22 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                         </option>
                       )
                       }
-                    </select>
+                    </select> */}
+                    <FormControl size="small">
+                      <Select
+                        labelId="demo-select-small"
+                        id="demo-select-small"
+                        value={departmentLevelDepartment?.id}
+                        onChange={(e) => onSelectDepartment(e.target.value)}
+                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                      >
+                        <MenuItem value="Select Department">Select Department</MenuItem>
+                        {sites?.map((data, index) => (
+                          <MenuItem key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>{data?.name}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </div>
                   <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                     <div className={style.marginTop}>Title*</div>
@@ -790,10 +836,9 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { getSelectedField('Assign Contractor With App User Role') }}>
+          onFocus={() => { checkFieldAndPopAlert(true, 'Assign Contractor With App User Role') }}>
           <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
-          <div className={`${style.reduce10Left} ${style.marginRight}`}>
-            <select
+          {/* <select
               name="class"
               id="Class"
               onChange={(e) => handleRoles(e.target.value)}
@@ -806,22 +851,35 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                   {data?.roleName}
                 </option>
               ))}
-            </select>
-            <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+            </select> */}
+          <FormControl size="small">
+            <Select
+              labelId="demo-select-small"
+              id="demo-select-small"
+              onChange={(e) => handleRoles(e.target.value)}
+              className={`${style.fullWidth}`}
+              SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+            >
+              <MenuItem value="0">Select Role-multi select</MenuItem>
+              {roles?.map((data, index) => (
+                <MenuItem key={`${data}-${index}`} value={data?.roleName}>{data?.roleName}</MenuItem>
+              ))}
+            </Select>
+            <div className={`${style.marginTop20}`}>
               {rolesTags}
             </div>
-          </div>
+          </FormControl>
         </div>
       </div>
       {isEditable &&
-      <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-        <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
-        <div>
-          <button className={style.newContractOutlinedButton} onClick={() => handleSave('Save In Progress')}>SAVE IN-PROGRESS</button>
-          <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => {handleSave('Continue')}}>CONTINUE</button>
+        <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+          <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
+          <div>
+            <button className={style.newContractOutlinedButton} onClick={() => handleSave('Save In Progress')}>SAVE IN-PROGRESS</button>
+            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('Continue') }}>CONTINUE</button>
+          </div>
         </div>
-      </div>
-  }
+      }
     </div>
   )
 }

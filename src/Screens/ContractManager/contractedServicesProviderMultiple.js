@@ -4,7 +4,7 @@ import EditServiceProvider from './editServiceProviderDialog';
 import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import Table from '../../Components/TableDesign';
-import {validateTabs} from './contractValidation';
+import { validateTabs } from './contractValidation';
 
 import style from './index.module.scss';
 
@@ -29,24 +29,21 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
     getTabDataStatus();
   }, [editServiceProviderDialog, newServiceProviderDialog])
 
-  useEffect(()=>{
-    if(tabValidation){
+  useEffect(() => {
+    if (tabValidation) {
       let temp = tabValidation?.value2;
-      temp.then(value=>{
-        console.log('value testing', value)
+      temp.then(value => {
         setProviderDataStatus(value);
       })
     }
   }, [tabValidation])
-
-  console.log('provider Status', providerDataStatus);
 
 
   const getUserData = async () => {
     if (contractId !== '') {
       const { data: userData } = await GET(`user-management-service/user?contractID=${contractID}`);
       if (userData) {
-        setUsers(userData);
+        setUsers(userData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Activity Logger')));
       }
     }
   }
@@ -61,21 +58,20 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
 
   const getDataStatus = () => {
     let tabsValid = validateTabs(contractId);
-    tabsValid?.then(response=>{
-      console.log('inside',response);
+    tabsValid?.then(response => {
       setTabValidation(response);
     })
   }
 
   const getSiteLevel = (contractSites) => {
-    let siteTitle = contractSites?.filter(site=>site?.siteResponsibility?.title)?.map(site=>site?.siteResponsibility?.title);
+    let siteTitle = contractSites?.filter(site => site?.siteResponsibility?.title)?.map(site => site?.siteResponsibility?.title);
     return siteTitle;
   }
 
   const getDeptTitle = (contractSites) => {
     let depts = [];
-    let departments = contractSites?.map(data=>data?.departmentList?.departments?.map(dept=>{
-      if(dept?.departmentResponsibility?.title !== ''){
+    let departments = contractSites?.map(data => data?.departmentList?.departments?.map(dept => {
+      if (dept?.departmentResponsibility?.title !== '') {
         depts.push(dept?.departmentResponsibility?.title);
       }
     }));
@@ -100,9 +96,9 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
     deptLevelHoverText = [];
 
     users?.map((data, index) => {
-      let siteLevelTitle = getSiteLevel(data?.contracts?.filter(contract=>contract?.id === contractId)?.map(data=>data?.sites?.sites)[0]);
-      let deptLevelTitle = getDeptTitle(data?.contracts?.filter(contract=>contract?.id === contractId)?.map(data=>data?.sites?.sites)[0]);
-      dataStatus.push(providerDataStatus?.[index]?.[1]?.length === 0 ? <TaskAltOutlinedIcon style={{ color: "#14B15A" }} /> :  <WarningAmberIcon style={{color : "#FF6562"}} />);
+      let siteLevelTitle = getSiteLevel(data?.contracts?.filter(contract => contract?.id === contractId)?.map(data => data?.sites?.sites)[0]);
+      let deptLevelTitle = getDeptTitle(data?.contracts?.filter(contract => contract?.id === contractId)?.map(data => data?.sites?.sites)[0]);
+      dataStatus.push(providerDataStatus?.[index]?.[1]?.length === 0 ? <TaskAltOutlinedIcon style={{ color: "#14B15A" }} /> : <WarningAmberIcon style={{ color: "#FF6562" }} />);
       name.push(`${data?.name?.firstName} ${data?.name?.lastName}`);
       contractType.push(data?.serviceProviderType?.contractedServiceProviderType || '-');
       siteLevel.push(siteLevelTitle?.[0] || '-');

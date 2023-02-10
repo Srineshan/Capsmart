@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Icon, Intent, Dialog, Classes, TextArea } from '@blueprintjs/core';
 import { TextField } from '@mui/material';
-// import { PDFDownloadLink } from '@react-pdf/renderer';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import DownloadingOutlinedIcon from '@mui/icons-material/DownloadingOutlined';
@@ -10,7 +8,6 @@ import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import CachedOutlinedIcon from '@mui/icons-material/CachedOutlined';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
-import ZoomInMapIcon from '@mui/icons-material/ZoomInMap';
 import Popover from '@mui/material/Popover';
 import { useParams } from 'react-router-dom';
 import UserLogo1 from './../../images/userLogo3.png';
@@ -18,15 +15,11 @@ import UserLogo2 from './../../images/userLogo4.png';
 import UserLogo3 from './../../images/userLogo5.png';
 import UserLogo4 from './../../images/userLogo6.png';
 import Search from './../../images/search.png';
-import Info from './../../images/info.png';
 import SaveReport from './saveReport';
-import ReactToPdf from "react-to-pdf";
 
 import style from './index.module.scss';
-// import PDFDocument from './pdf';
 
-
-const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpdated, isLoading, dataToUseInReport, refToUse, getIsDownloadClicked }) => {
+const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpdated, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
     const { reportType } = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -63,14 +56,14 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                 <div className={` ${style.margin20}`}>
                     <div className={style.displayInRow}>
                         {/* <img src={Info} className={`${style.infoStyle} ${style.marginTop5}`} /> */}
-                        <div className={`${style.displayInRow} ${style.marginLeft20}`}>
+                        {/* <div className={`${style.displayInRow} ${style.marginLeft20}`}>
                             <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
-                        </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
+                        </div> */}
+                        {/* <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
                             onMouseEnter={(e) => setAnchorElRefresh(e.currentTarget)} onMouseLeave={() => setAnchorElRefresh(null)} aria-owns={openRefresh ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <CachedOutlinedIcon style={{ color: isUpdated ? '#F46044' : '#52575D' }} onClick={() => { setShowReportRefreshingDialog(true); getIsRefresh(true) }} />
@@ -90,14 +83,14 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                             >
                                 <div className={style.popoverStyle}>Click to Refresh this Report</div>
                             </Popover>
-                        </div>
+                        </div> */}
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
                             <ShareOutlinedIcon style={{color:"#52575D"}} onClick={() => setShowShareDialog(true)} />
                         </div> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`}
-                            onMouseEnter={(e) => setAnchorElSchedule(e.currentTarget)} onMouseLeave={() => setAnchorElSchedule(null)} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20} ${isNoData && style.disabledCursor}`}
+                            onMouseEnter={(e) => !isNoData ? setAnchorElSchedule(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElSchedule(null) : {}} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <CalendarTodayIcon style={{ color: "#52575D" }} onClick={() => setShowSaveReport(true)} />
+                            <CalendarTodayIcon style={{ color: "#52575D" }} onClick={() => !isNoData ? setShowSaveReport(true) : {}} />
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -115,7 +108,7 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                                 <div className={style.popoverStyle}>Click to Schedule this Report</div>
                             </Popover>
                         </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => setShowSaveReportOutput(true)}
+                        {/* <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => setShowSaveReportOutput(true)}
                             onMouseEnter={(e) => setAnchorElSave(e.currentTarget)} onMouseLeave={() => setAnchorElSave(null)} aria-owns={openSave ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <SaveOutlinedIcon style={{ color: "#52575D" }} />
@@ -135,26 +128,13 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                             >
                                 <div className={style.popoverStyle}>Click to Save this Report</div>
                             </Popover>
-                        </div>
-                        {/* <PDFDownloadLink
-                        document={
-                            <PDFDocument />
-                        }
-                        fileName={`report.pdf`}>
-                        {({ blob, url, loading, error }) => ( */}
-                        {/* <ReactToPdf targetRef={refToUse} filename="sample.pdf" x={.5} y={.5} scale={0.8}>
-                            {({ toPdf }) =>  */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => getIsDownloadClicked(true)}>
+                        </div> */}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={() => !isNoData ? getIsDownloadClicked(true) : {}}>
                             <DownloadingOutlinedIcon style={{ color: "#52575D" }} />
                         </div>
-                        {/* }
-                        </ReactToPdf> */}
-                        {/* )}
-                        </PDFDownloadLink> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={handlePrint}
-                            onMouseEnter={(e) => setAnchorElPrint(e.currentTarget)} onMouseLeave={() => setAnchorElPrint(null)} aria-owns={openPrint ? 'mouse-over-popover' : undefined}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={!isNoData ? handlePrint : {}}
+                            onMouseEnter={(e) => !isNoData ? setAnchorElPrint(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElPrint(null) : {}} aria-owns={openPrint ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            {/* <Link to={'/chart'} className={style.noFontStyle}> */}
                             <PrintOutlinedIcon style={{ color: "#52575D" }} />
                             <Popover
                                 id={'mouse-over-popover'}
@@ -172,14 +152,9 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                             >
                                 <div className={style.popoverStyle}>Click to Print this Report</div>
                             </Popover>
-                            {/* </Link> */}
                         </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer}`} >
-                            {/* {showExpandedView ? ( */}
-                            <ZoomOutMapIcon style={{ color: "#52575D" }} onClick={handle.enter} />
-                            {/* ) : (
-                                <ZoomOutMapIcon style={{color:"#52575D"}} onClick={()=> getShowExpandedView(true)} />
-                            )} */}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} >
+                            <ZoomOutMapIcon style={{ color: "#52575D" }} onClick={!isNoData ? handle.enter : {}} />
                         </div>
                     </div>
                 </div>
@@ -221,14 +196,14 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                     <div className={style.reportSavedStyle}>Report Saved</div>
                 </div>
             </Dialog>
-            <Dialog isOpen={isLoading} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
+            {/* <Dialog isOpen={isLoading} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
                     <div className={style.justifyCenter}>
                         <CachedOutlinedIcon sx={{ fontSize: 60 }} style={{ color: "#7165E3" }} className={style.reportIconStyle} />
                     </div>
                     <div className={style.reportSavedStyle}>Refreshing Report</div>
                 </div>
-            </Dialog>
+            </Dialog> */}
             <Dialog isOpen={showShareDialog} onClose={() => setShowShareDialog(false)} className={`${style.sendMailUserDialog} ${style.dialogPaddingBottom}`}>
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
                     <div className={style.spaceBetween}>

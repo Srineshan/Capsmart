@@ -273,7 +273,7 @@ const HelpHome = () => {
                 {showChatView && (
                     <div className={style.chatContainer}>
                         <div className={style.blueChatPart}>
-                            <div className={style.justifyCenter}>TimeSmart.AI Team</div>
+                            <div className={style.justifyCenter}>TimeSmartAI Team</div>
                             <div className={`${style.justifyCenter}`}>
                                 <div className={`${style.displayInRow} ${style.marginTop10}`}>
                                     <div>
@@ -312,7 +312,7 @@ const HelpHome = () => {
                                     </div>
                                     <div className={style.messageContainer}>
                                         Hi there, <br /><br />
-                                        Welcome to TimeSmart.AI Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
+                                        Welcome to TimeSmartAI Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
                                     </div>
                                 </div>
                             </div>
@@ -326,14 +326,14 @@ const HelpHome = () => {
                         </div>
                     </div>
                 )}
-                <div className={`${style.displayInRow} ${style.blueCircleContainer}`}>
+                {/* <div className={`${style.displayInRow} ${style.blueCircleContainer}`}>
                     <div className={style.blueCircle} onClick={() => setShowChatView(!showChatView)}>
                         {showChatView ? <CloseOutlinedIcon /> : <ChatOutlinedIcon />}
                     </div>
                     <div className={style.blueCircle} onClick={() => setShowVideoOptions(true)}>
                         <VideocamOutlinedIcon />
                     </div>
-                </div>
+                </div> */}
             </div>
             <Dialog isOpen={showVideoOptions} onClose={() => setShowVideoOptions(false)} className={`${style.videoOptionsDialogStyle} ${style.dialogPaddingBottom}`}>
                 <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>

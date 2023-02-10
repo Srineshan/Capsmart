@@ -148,8 +148,8 @@ const DepartmentsForCustomersMultiSite = () => {
                             </div>
 
                             <div className={style.spaceBetween}>
-                                <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                                <p className={style.poweredBy}>© TimeSmart.AI</p>
+                                <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+                                <p className={style.poweredBy}>© TimeSmartAI</p>
                             </div>
                         </div>
                     </div>

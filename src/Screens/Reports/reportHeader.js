@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz'
 import Cookie from 'universal-cookie';
 import { TenantID, GET } from './../../Screens/dataSaver';
 import jwt from 'jwt-decode';
@@ -12,7 +12,8 @@ const ReportHeader = () => {
     const userDetail = jwt(userDetails);
 
     const [logo, setLogo] = useState({ logo: sessionStorage?.getItem('logo'), title: sessionStorage.getItem('title') });
-    const [currentTime] = useState(format(new Date(), 'MMM d yyyy, H:mm'));
+    const [corsedLogo, setCorsedLogo] = useState('');
+    const [currentTime, setCurrentTime] = useState(formatInTimeZone(new Date(), 'America/New_York', 'MMM d yyyy, H:mm zzz'));
 
     useEffect(() => {
         getLogo();
@@ -21,6 +22,7 @@ const ReportHeader = () => {
     const getLogo = async () => {
         const { data: data } = await GET(`entity-service/entity/${TenantID}`);
         setLogo({ logo: data?.logo?.file?.fileURL, title: data?.entityName?.entityName });
+        setCorsedLogo(`https://cors-anywhere-solai.fly.dev/${data?.logo?.file?.fileURL}`)
     }
 
     return (
@@ -30,11 +32,12 @@ const ReportHeader = () => {
                     <div className={style.confidentialBoxStyle}>
                         <div className={style.confidentialTextStyle}>CONFIDENTIAL</div>
                         <div className={style.doNotDisturbTextStyle}>Do Not Distribute</div>
+                        <div className={style.doNotDisturbTextStyle}>Without Permission</div>
                     </div>
                 </div>
                 <div>
                     {logo.logo && (
-                        <img src={logo.logo} alt="" className={style.headerLogo} />
+                        <img src={corsedLogo} alt="" className={`${style.headerLogo}`} />
                     )}
                     <div className={style.entityNameBolderStyle}>{logo.title}</div>
                 </div>

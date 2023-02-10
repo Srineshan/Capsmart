@@ -58,10 +58,10 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     });
     const [specified, setSpecified] = useState(0);
 
-    useEffect(()=>{
-      let additionalFreq = metadata?.additionalScheduleFrequency === 'WEEK' ? timeCommitment?.value || 0 : (timeCommitment?.value/2) || 0;
-      let value = (parseInt(metadata?.min || '0') * timeCommitment?.value || 0) + (parseInt(metadata?.additionalScheduleValue || '0')  * additionalFreq);
-      setSpecified(value);
+    useEffect(() => {
+        let additionalFreq = metadata?.additionalScheduleFrequency === 'WEEK' ? timeCommitment?.value || 0 : (timeCommitment?.value / 2) || 0;
+        let value = (parseInt(metadata?.min || '0') * timeCommitment?.value || 0) + (parseInt(metadata?.additionalScheduleValue || '0') * additionalFreq);
+        setSpecified(value);
     }, [metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
 
 
@@ -72,6 +72,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     const setSelectedValues = () => {
         setMetadata({
             ...metadata,
+            refId: serviceSelected?.refId,
             min: serviceSelected?.contractedSchedule?.minimum?.value,
             max: serviceSelected?.contractedSchedule?.maximum?.value,
             frequency: serviceSelected?.contractedSchedule?.frequency,
@@ -103,7 +104,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     }
 
     const getServiceDaysMetadata = (serviceDays) => {
-        setMetadata({ ...metadata, serviceDays: serviceDays})
+        setMetadata({ ...metadata, serviceDays: serviceDays })
     }
 
     const setpatientTarget = (value) => {
@@ -111,8 +112,8 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     }
 
     const updateWorkingPeriod = (e) => {
-      let minTime= new Date(new Date(e).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000));
-      setMetadata({...metadata, workingTimeFrom:e, workingTimeTo:minTime});
+        // let minTime = new Date(new Date(e).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000));
+        setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
     return (
@@ -122,11 +123,11 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                 <div className={style.displayInRow}>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
-                        <EditableText type='tel' maxLength="2" placeholder='' value={metadata?.min} className={style.serviceProvidedEditableTextStyle} onChange={(e) =>e >= 0 && handleValueChange('min', e)} />
+                        <EditableText type='tel' maxLength="2" placeholder='' value={metadata?.min} className={style.serviceProvidedEditableTextStyle} onChange={(e) => e >= 0 && handleValueChange('min', e)} />
                     </div>
                     <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MAX</div>
-                        <EditableText value={metadata?.max} placeholder='' type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} onChange={(e) =>e >= 0 && handleValueChange('max', e)} />
+                        <EditableText value={metadata?.max} placeholder='' type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} onChange={(e) => e >= 0 && handleValueChange('max', e)} />
                     </div>
                     <Select
                         displayEmpty
@@ -157,7 +158,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         <ThemeProvider theme={switchTheme}>
                             <FormControlLabel
                                 control={
-                                    <Switch checked={metadata?.additionalScheduleRequired} className={` ${style.textAlignLeft}`} onChange={(e) => setMetadata({...metadata, additionalScheduleRequired: !metadata?.additionalScheduleRequired, additionalScheduleValue: '0' , additionalScheduleFrequency: ''})}/>
+                                    <Switch checked={metadata?.additionalScheduleRequired} className={` ${style.textAlignLeft}`} onChange={(e) => setMetadata({ ...metadata, additionalScheduleRequired: !metadata?.additionalScheduleRequired, additionalScheduleValue: '0', additionalScheduleFrequency: '' })} />
                                 }
                                 color='primary'
                                 className={`${style.switchFontStyle} ${style.flexLeft}`}
@@ -199,7 +200,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                             <FormControlLabel
                                 control={
                                     <Switch checked={metadata?.billableService} className={` ${style.textAlignLeft}`}
-                                        onChange={(e) => setMetadata({...metadata, billableService:!metadata?.billableService, sessionAmount: '0' })}
+                                        onChange={(e) => setMetadata({ ...metadata, billableService: !metadata?.billableService, sessionAmount: '0' })}
                                     />
                                 }
                                 color='primary'
@@ -233,32 +234,32 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                             endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                         }}
                         value={metadata?.sessionDuration}
-                        onChange={(e) => e.target.value >= 0 && setMetadata({...metadata, sessionDuration:e.target.value, sessionAmount:'0'})}
+                        onChange={(e) => e.target.value >= 0 && setMetadata({ ...metadata, sessionDuration: e.target.value, sessionAmount: '0' })}
                     />
                 </div>
             </div>
             {
-              metadata?.billableService &&
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Service Session payment Amount*</div>
-                <div className={`${style.displayInRow}`}>
-                    <div className={`${style.threeFieldWidth}`}>
-                        <TextField
-                            size="small"
-                            disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                            }}
-                            value={metadata?.sessionAmount}
-                            onChange={(e) => handleValueChange('sessionAmount', e.target.value)}
-                        />
-                    </div>
-                    <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ {(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)</p>
+                metadata?.billableService &&
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <div className={style.extentionLableStyle}>Service Session payment Amount*</div>
+                    <div className={`${style.displayInRow}`}>
+                        <div className={`${style.threeFieldWidth}`}>
+                            <TextField
+                                size="small"
+                                disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                }}
+                                value={metadata?.sessionAmount}
+                                onChange={(e) => handleValueChange('sessionAmount', e.target.value)}
+                            />
+                        </div>
+                        <div className={style.verticalAlignCenter}>
+                            <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ {(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-          }
+            }
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
                 <div className={style.twoCol}>
@@ -272,7 +273,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle}`}>For {timeCommitment?.value} {timeCommitment?.frequency === 'WEEK' ? 'Weeks' :'Months'} Per Contract Year</p>
+                        <p className={`${style.extentionLableStyle}`}>For {timeCommitment?.value} {timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year</p>
                     </div>
                 </div>
             </div>
@@ -297,10 +298,12 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                         useAmPm={false}
                         onChange={(e) => handleValueChange('workingTimeTo', e)}
                         value={new Date(metadata?.workingTimeTo)}
-                        minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+                    // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                     />
                 </div>
             </div>
+
+
         </div>
     )
 }

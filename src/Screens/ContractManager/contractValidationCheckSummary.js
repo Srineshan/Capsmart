@@ -2,34 +2,11 @@ import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import { useReactToPrint } from "react-to-print";
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
-import DraftsOutlinedIcon from '@mui/icons-material/DraftsOutlined';
-import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
+import ValidationHeader from './validationHeader.js';
 
-import { validateTabs} from './contractValidation';
+import { validateTabs } from './contractValidation';
 
 import style from './index.module.scss';
-
-const ValidationHeader = ({ heading, result }) => {
-    return (
-        <div>
-            <div className={`${style.validationBoxHeader} ${style.spaceBetween} ${style.verticalAlignCenter} ${result === 'FAIL' && style.redBorder}`}>
-                <div className={style.validationHeaderText}>{heading}</div>
-                {result === 'PASS' ? (
-                    <TaskAltOutlinedIcon style={{ color: "#14B15A" }} />
-                ) : (
-                    <div className={style.displayInRow}>
-                        <DraftsOutlinedIcon style={{ color: "#52575D" }} />
-                        <div className={style.marginLeft20}>
-                            <EditOutlinedIcon style={{ color: "#F94848" }} />
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
-    )
-}
 
 const ContractValidationCheckSummary = ({ getContractValidationDialog, contract }) => {
     const componentRef = useRef(null);
@@ -89,30 +66,31 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                 }
 
                 <div className={style.marginTop20}>
-                    <ValidationHeader heading={'CONTRACT IDENTIFICATION & TERM LIMIT'} result={isTabsValid?.tab1?.length === 0 ? 'PASS' : 'FAIL'} />
+                    <ValidationHeader heading={'CONTRACT IDENTIFICATION & TERM LIMIT'} result={isTabsValid?.tab1 ? 'PASS' : 'FAIL'} />
                     <div className={style.validationPadding}>
-                    {
-                      isTabsValid?.value1?.map(data=>(
-                        <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>{data}</div>
-                            <div className={style.statusText}>FAIL</div>
-                        </div>
-                      ))
-                    }
+                        {
+                            isTabsValid?.value1?.map(data => (
+                                <div className={style.spaceBetween}>
+                                    <div className={style.validationTopicText}>{data}</div>
+                                    <div className={style.statusText}>FAIL</div>
+                                </div>
+                            ))
+                        }
                     </div>
                 </div>
-                {providerDetails?.length === 1 &&
+                {
+                    providerDetails?.length === 1 &&
                     <div className={style.marginTop20}>
                         <ValidationHeader heading={'CONTRACTED SERVICES PROVIDER(S)'} result={providerDetails?.[0]?.[1]?.length === 0 ? 'PASS' : 'FAIL'} />
                         <div className={style.validationPadding}>
-                        {
-                          providerDetails?.[0]?.[1]?.map(data=>(
-                            <div className={style.spaceBetween}>
-                                <div className={style.validationTopicText}>{data}</div>
-                                <div className={style.statusText}>FAIL</div>
-                            </div>
-                          ))
-                        }
+                            {
+                                providerDetails?.[0]?.[1]?.map(data => (
+                                    <div className={style.spaceBetween}>
+                                        <div className={style.validationTopicText}>{data}</div>
+                                        <div className={style.statusText}>FAIL</div>
+                                    </div>
+                                ))
+                            }
 
                         </div>
                     </div>
@@ -121,7 +99,7 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                 {
                     providerDetails?.length > 1 &&
                     <div className={style.marginTop20}>
-                        <ValidationHeader heading={'CONTRACTED SERVICES PROVIDER(S)'} result={providerDetails?.data?.filter(data => data?.length !== 0)?.map(data => data)?.length === 0 ? 'PASS' : 'FAIL'} />
+                        <ValidationHeader heading={'CONTRACTED SERVICES PROVIDER(S)'} result={providerDetails?.filter(data => data?.[1]?.length !== 0)?.map(data => data)?.length === 0 ? 'PASS' : 'FAIL'} />
                         <div className={style.marginTop20}>
                             <div className={style.grid5}>
                                 <div className={`${style.validationTopicText} ${style.textAlignCenter}`}>SERVICES PROVIDER(S) NAME</div>
@@ -149,14 +127,14 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                 <div className={style.marginTop20}>
                     <ValidationHeader heading={'CONTRACTOR BUSINESS ENTITY'} result={isTabsValid?.tab3 ? 'PASS' : 'FAIL'} />
                     <div className={style.validationPadding}>
-                    {
-                      isTabsValid?.value3?.map(data=>(
-                        <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>{data}</div>
-                            <div className={style.statusText}>FAIL</div>
-                        </div>
-                      ))
-                    }
+                        {
+                            isTabsValid?.value3?.map(data => (
+                                <div className={style.spaceBetween}>
+                                    <div className={style.validationTopicText}>{data}</div>
+                                    <div className={style.statusText}>FAIL</div>
+                                </div>
+                            ))
+                        }
 
                     </div>
                 </div>
@@ -217,27 +195,27 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                 <div className={style.marginTop20}>
                     <ValidationHeader heading={'TIMESHEET SUBMISSION TERMS'} result={isTabsValid?.tab5 ? "PASS" : "FAIL"} />
                     <div className={style.validationPadding}>
-                    {
-                      isTabsValid?.value5?.map(data=>(
-                        <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>{data}</div>
-                            <div className={style.statusText}>FAIL</div>
-                        </div>
-                      ))
-                    }
+                        {
+                            isTabsValid?.value5?.map(data => (
+                                <div className={style.spaceBetween}>
+                                    <div className={style.validationTopicText}>{data}</div>
+                                    <div className={style.statusText}>FAIL</div>
+                                </div>
+                            ))
+                        }
                     </div>
                 </div>
                 <div className={style.marginTop20}>
                     <ValidationHeader heading={'PAYMENT & COMPENSATION'} result={'PASS'} />
                     <div className={style.validationPadding}>
-                    {
-                      isTabsValid?.value6?.map(data=>(
-                        <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>{data}</div>
-                            <div className={style.statusText}>FAIL</div>
-                        </div>
-                      ))
-                    }
+                        {
+                            isTabsValid?.value6?.map(data => (
+                                <div className={style.spaceBetween}>
+                                    <div className={style.validationTopicText}>{data}</div>
+                                    <div className={style.statusText}>FAIL</div>
+                                </div>
+                            ))
+                        }
 
                     </div>
                 </div>

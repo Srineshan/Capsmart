@@ -433,7 +433,7 @@
 
 .reportsTableGrid {
     display: grid;
-    grid-template-columns: 25px 20% 20% 15% 13% 10% 10%;
+    grid-template-columns: 25px 15% 30% 12% 12% 10% 10%;
     grid-gap: 10px;
 }
 
@@ -452,7 +452,6 @@
 }
 
 .tableDataReportsFontStyle {
-    width: 80%;
     text-align: left;
     font: normal normal 600 13px/18px Montserrat;
     letter-spacing: 0px;
@@ -1177,7 +1176,7 @@
 }
 
 .doNotDisturbTextStyle {
-    font: normal normal 600 12px/20px Montserrat;
+    font: normal normal 600 12px/15px Montserrat;
     letter-spacing: 2.24px;
     color: #F46044;
     text-transform: capitalize;
@@ -1386,3 +1385,30 @@
     size: auto;
     margin: 3mm 0mm 10mm 0mm;
 }
+
+.summaryGrid {
+    display: grid;
+    grid-template-columns: 1fr 150px;
+    grid-gap: 20px;
+}
+
+.summaryTextStyle {
+    font: normal normal bold 15px/20px Montserrat;
+    color: #858c93;
+}
+
+.disabledCursor {
+    cursor: not-allowed;
+}
+
+// #pageFooter {
+//     page-break-before: always;
+//     counter-increment: page;
+// }
+
+// #pageFooter:after {
+//     display: block;
+//     text-align: right;
+//     // counter-increment: page;
+//     content: "Page " counter(page);
+// }

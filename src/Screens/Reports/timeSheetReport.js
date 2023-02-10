@@ -9,6 +9,7 @@ import { Link, useParams } from 'react-router-dom';
 import { GET } from '../dataSaver';
 import { format } from 'date-fns';
 import { currentUser } from '../../utils/auth';
+import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 
 export const Run = ({ link }) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -51,6 +52,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const [tabName, setTabName] = useState('Standard Report Templates');
     const { reportType } = useParams();
     const [myReports, setMyReports] = useState([]);
+    const [savedReports, setSavedReports] = useState([]);
     const currentUserDetails = currentUser();
     const [isExpanded, setIsExpanded] = useState(true);
     const category = (reportType === 'servicesOrActivities') ?
@@ -60,7 +62,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             (reportType === 'contractCompliance') ?
                 'CONTRACT_COMPLIANCE' :
                 (reportType === 'contractPerformance') ?
-                    'CONTRACT_PERFORMANCE' : '';
+                    'CONTRACT_PERFORMANCE' :
+                    (reportType === 'payments') ?
+                        'PAYMENT' : '';
 
     useEffect(() => {
         sessionStorage.removeItem('reportFilter');
@@ -69,13 +73,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const showMyReport = (data) => {
         let reportURL = getMyReportURL(data?.report?.type);
         sessionStorage.setItem('reportFilter', JSON.stringify(data?.report?.filters?.dataMap));
+        console.log(data, reportURL, data?.report?.type)
         navigate(`/reportTypeOverview/${reportURL}`);
     };
 
     const getMyReportURL = (value) => {
         if (value === 'ACTIVITES_SERVICES_LOG_SUMMARY') {
             return 'activitiesOrServices';
-        } else if (value === 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY ') {
+        } else if (value === 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY') {
             return 'addOnActivities';
         } else {
             return '';
@@ -83,12 +88,23 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     useEffect(() => {
-        getMyReports();
-    }, [])
+        if (tabName === 'My Reports') {
+            getMyReports();
+        } else if (tabName === 'Saved Report Outputs') {
+            getSavedReports();
+        } else {
+            return;
+        }
+    }, [tabName])
 
     const getMyReports = async () => {
         const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${category}`);
         setMyReports(myReport);
+    }
+
+    const getSavedReports = async () => {
+        const { data: savedReport } = await GET(`timesheet-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${category}`);
+        setSavedReports(savedReport);
     }
 
     const getIsExpanded = (value) => {
@@ -307,10 +323,10 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                     <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>1</div>
                                         <Link to="/reportTypeOverview/paymentsProcessingSummary" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Payments Processing Summary</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>This report provides a comprehensive summary of statistics with regards to status of payemnts being made to contracted service providers</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
-                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
+                                        <div className={style.tableDataReportsFontStyle}>This report provides a comprehensive summary of statistics with regards to status of payments being made to contracted service providers</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
+                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
                                         <Link to={"/reportTypeOverview/paymentsProcessingSummary"} className={style.linkStyle}>
                                             <Run />
                                         </Link>
@@ -369,17 +385,19 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                         </div>
                     ) : tabName === "My Reports" ? (
                         <div className={`${style.marginLeft20} ${style.marginTop20}`}>
-                            <div className={style.timeSheetTableGrid}>
-                                <p className={style.headingStyle}>No.</p>
-                                <p className={style.headingStyle}>Report Title</p>
-                                <p className={style.headingStyle}>Description</p>
-                                <p className={style.headingStyle}>Last Run Date</p>
-                                <p className={style.headingStyle}>Schedule</p>
-                                <p className={style.headingStyle}>Owner</p>
-                                <p className={style.headingStyle}>Last Updated</p>
-                            </div>
+                            {myReports?.length !== 0 && (
+                                <div className={style.timeSheetTableGrid}>
+                                    <p className={style.headingStyle}>No.</p>
+                                    <p className={style.headingStyle}>Report Title</p>
+                                    <p className={style.headingStyle}>Description</p>
+                                    <p className={style.headingStyle}>Last Run Date</p>
+                                    <p className={style.headingStyle}>Schedule</p>
+                                    <p className={style.headingStyle}>Owner</p>
+                                    <p className={style.headingStyle}>Last Updated</p>
+                                </div>
+                            )}
                             <div className={style.scrollStyle}>
-                                {myReports?.map((data, index) => (
+                                {myReports?.length !== 0 ? myReports?.map((data, index) => (
                                     <div className={`${style.timeSheetTableGrid} ${style.marginTop20}`} key={index}>
                                         <div className={style.tableDataReportsFontStyle}>{index + 1}</div>
                                         <div className={style.tableDataReportsFontStyle}>{data?.report?.title}</div>
@@ -393,25 +411,35 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         </div>
                                         {/* <div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div> */}
                                     </div>
-                                ))}
+                                )) : (
+                                    <ReportNoDataBox heading={'There are no scheduled reports for you to run.'}
+                                        subHeading={'Try again by scheduling the standard report'} />
+                                )}
                             </div>
                         </div>
                     ) : tabName === "Saved Report Outputs" ? (
                         <div className={`${style.marginLeft20} ${style.marginTop20}`}>
-                            <div className={style.savedReportTableGrid}>
-                                <p className={style.headingStyle}>No.</p>
-                                <p className={style.headingStyle}>Report Output Name</p>
-                                <p className={style.headingStyle}>Notes</p>
-                                <p className={style.headingStyle}>Run Date</p>
-                            </div>
-                            <div className={style.scrollStyle}>
-                                <div className={`${style.savedReportTableGrid} ${style.marginTop20}`}>
-                                    <div className={style.tableDataReportsFontStyle}>1</div>
-                                    <div className={style.tableDataReportsFontStyle}>Report Name</div>
-                                    <div className={style.tableDataReportsFontStyle}>Notes</div>
-                                    <div className={style.tableDataReportsFontStyle}>30 Dec 2021</div>
-                                    <div className={`${style.reportStyle} ${style.redCard} ${style.cursorPointer}`}>Delete</div>
+                            {savedReports?.length !== 0 && (
+                                <div className={style.savedReportTableGrid}>
+                                    <p className={style.headingStyle}>No.</p>
+                                    <p className={style.headingStyle}>Report Output Name</p>
+                                    <p className={style.headingStyle}>Notes</p>
+                                    <p className={style.headingStyle}>Run Date</p>
                                 </div>
+                            )}
+                            <div className={style.scrollStyle}>
+                                {savedReports?.length !== 0 ? savedReports?.map((data, index) => (
+                                    <div className={`${style.savedReportTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>{index + 1}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{data?.savedReport?.reportName}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{data?.savedReport?.reportNotes}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(data?.savedReport?.runDate), 'd MMM yyyy')}</div>
+                                        <div className={`${style.reportStyle} ${style.redCard} ${style.cursorPointer}`}>Delete</div>
+                                    </div>
+                                )) : (
+                                    <ReportNoDataBox heading={'There are no Saved reports for you to run.'}
+                                        subHeading={'Try again by saving the standard report'} />
+                                )}
                             </div>
                         </div>
                     ) : ''}

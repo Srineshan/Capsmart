@@ -26,7 +26,7 @@ const MenuProps = {
         },
     },
 };
-const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
+const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     const [showSaveReport, setShowSaveReport] = useState(false);
     const { reportType } = useParams();
     const [activityType, setActivityType] = useState('Outpatient Clinic Service');
@@ -113,8 +113,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
             setReportingTimePeriod(reportFilter?.reportingTimePeriod);
         }
     }, [currentUserDetails])
-
-    console.log(reportFilter)
 
     useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
@@ -219,7 +217,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
         const {
             target: { value },
         } = event;
-        getIsUpdated(true);
         setSelectedSites(
             typeof value === 'string' ? value.split(',') : value
         );
@@ -232,7 +229,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
         const {
             target: { value },
         } = event;
-        getIsUpdated(true);
         setSelectedDepartments(
             typeof value === 'string' ? value.split(',') : value
         );
@@ -245,7 +241,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
         const {
             target: { value },
         } = event;
-        getIsUpdated(true);
         setSelectedContracts(
             typeof value === 'string' ? value.split(',') : value
         );
@@ -258,7 +253,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
         const {
             target: { value },
         } = event;
-        getIsUpdated(true);
         setSelectedContractedServiceProvider(
             typeof value === 'string' ? value.split(',') : value
         );
@@ -279,7 +273,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                 labelId="demo-simple-select-standard-label1"
                                 id="demo-simple-select-standard1"
                                 value={renewalreportingTimePeriod}
-                                onChange={(e) => { setRenewalreportingTimePeriod(e.target.value); getIsUpdated(true) }}
+                                onChange={(e) => { setRenewalreportingTimePeriod(e.target.value) }}
                                 label="Renewal Time Frame"
                             >
                                 <MenuItem value={30}>Renewal within Next 30 days</MenuItem>
@@ -297,7 +291,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                 onChange={handleChangeSites}
                                 MenuProps={MenuProps}
                             >
-                                {sites.map((data) => (
+                                {sites?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
@@ -317,7 +311,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
                             >
-                                {departments.map((data) => (
+                                {departments?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
@@ -334,7 +328,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                     labelId="demo-simple-select-standard-label4"
                                     id="demo-simple-select-standard4"
                                     value={contractContinuationPolicy}
-                                    onChange={(e) => { setContractContinuationPolicy(e.target.value); getIsUpdated(true) }}
+                                    onChange={(e) => { setContractContinuationPolicy(e.target.value) }}
                                     label="Contract Continuation Policy"
                                     MenuProps={MenuProps}
                                 >
@@ -355,7 +349,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                 id="demo-multiple-name1"
                                 MenuProps={MenuProps}
                                 value={reportingTimePeriod}
-                                onChange={(e) => { setReportingTimePeriod(e.target.value); getIsUpdated(true) }}
+                                onChange={(e) => { setReportingTimePeriod(e.target.value) }}
                             >
                                 <MenuItem value={'Current Week'}>Current Week</MenuItem>
                                 <MenuItem value={'Last Week'}>Last Week</MenuItem>
@@ -380,7 +374,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                                 }
                                             }}
                                             value={from}
-                                            onChange={(e) => { setFrom(e); getIsUpdated(true) }}
+                                            onChange={(e) => { setFrom(e) }}
                                             renderInput={(params) => <TextField {...params} inputProps={{
                                                 ...params.inputProps,
                                                 placeholder: "From"
@@ -398,7 +392,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                                 }
                                             }}
                                             value={to}
-                                            onChange={(e) => { setTo(e); getIsUpdated(true) }}
+                                            onChange={(e) => { setTo(e) }}
                                             renderInput={(params) => <TextField {...params} inputProps={{
                                                 ...params.inputProps,
                                                 placeholder: "To"
@@ -408,85 +402,104 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                 </div>
                             </>
                         )}
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label2"
-                                id="demo-multiple-name2"
-                                multiple
-                                value={selectedSites}
-                                onChange={handleChangeSites}
-                                MenuProps={MenuProps}
-                            >
-                                {sites?.map((data) => (
-                                    <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
-                                    >
-                                        {data?.siteName?.siteName}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label2"
-                                id="demo-multiple-name2"
-                                multiple
-                                value={selectedDepartments}
-                                onChange={handleChangeDepartments}
-                                MenuProps={MenuProps}
-                            >
-                                {departments?.map((data) => (
-                                    <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
-                                    >
-                                        {data?.departmentName?.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        {reportType === "activitiesOrServices" && (
+                        {reportType === "paymentsProcessingSummary" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-multiple-name-label5">Contract</InputLabel>
+                                <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
                                 <Select
-                                    labelId="demo-multiple-name-label5"
-                                    id="demo-multiple-name5"
-                                    multiple
-                                    value={selectedContracts}
-                                    onChange={handleChangeContracts}
+                                    labelId="demo-multiple-name-label2"
+                                    id="demo-multiple-name2"
+                                    readOnly
+                                    disabled
+                                    value={'All Departments'}
                                     MenuProps={MenuProps}
                                 >
-                                    {contracts?.map((data) => (
-                                        <MenuItem
-                                            key={data?.id}
-                                            value={data?.id}
-                                        >
-                                            {data?.contractName?.contractName}
-                                        </MenuItem>
-                                    ))}
+                                    <MenuItem
+                                        value={'All Departments'}
+                                    >
+                                        All Departments
+                                    </MenuItem>
                                 </Select>
                             </FormControl>
                         )}
                         {reportType === "activitiesOrServices" && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
-                                <Select
-                                    labelId="demo-multiple-name-label5"
-                                    id="demo-multiple-name5"
-                                    value={selectedContractedServiceProvider}
-                                    onChange={handleChangeContractedServiceProviders}
-                                    MenuProps={MenuProps}
-                                >
-                                    <MenuItem
-                                        value={currentUserDetails?.id}
+                            <>
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label2"
+                                        id="demo-multiple-name2"
+                                        multiple
+                                        value={selectedSites}
+                                        onChange={handleChangeSites}
+                                        MenuProps={MenuProps}
                                     >
-                                        {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
-                                    </MenuItem>
-                                </Select>
-                            </FormControl>
+                                        {sites?.map((data) => (
+                                            <MenuItem
+                                                key={data?.id}
+                                                value={data?.id}
+                                            >
+                                                {data?.siteName?.siteName}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label2"
+                                        id="demo-multiple-name2"
+                                        multiple
+                                        value={selectedDepartments}
+                                        onChange={handleChangeDepartments}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {departments?.map((data) => (
+                                            <MenuItem
+                                                key={data?.id}
+                                                value={data?.id}
+                                            >
+                                                {data?.departmentName?.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label5">Contract</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label5"
+                                        id="demo-multiple-name5"
+                                        multiple
+                                        value={selectedContracts}
+                                        onChange={handleChangeContracts}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {contracts?.map((data) => (
+                                            <MenuItem
+                                                key={data?.id}
+                                                value={data?.id}
+                                            >
+                                                {data?.contractName?.contractName}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label5"
+                                        id="demo-multiple-name5"
+                                        value={selectedContractedServiceProvider}
+                                        onChange={handleChangeContractedServiceProviders}
+                                        MenuProps={MenuProps}
+                                    >
+                                        <MenuItem
+                                            value={currentUserDetails?.id}
+                                        >
+                                            {`${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </>
                         )}
                     </>
                 ) : reportType === "nonCompliant" ? (
@@ -557,7 +570,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                 labelId="demo-simple-select-standard-label3"
                                 id="demo-simple-select-standard3"
                                 value={contractStatus}
-                                onChange={(e) => { setContractStatus(e.target.value); getIsUpdated(true) }}
+                                onChange={(e) => { setContractStatus(e.target.value) }}
                                 label="Contract Continuation Policy"
                                 MenuProps={MenuProps}
                             >
@@ -573,7 +586,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, getIsUpdated }) => {
                                 labelId="demo-simple-select-standard-label4"
                                 id="demo-simple-select-standard4"
                                 value={podType}
-                                onChange={(e) => { setPodType(e.target.value); getIsUpdated(true) }}
+                                onChange={(e) => { setPodType(e.target.value) }}
                                 label="Proof of Documentation"
                                 MenuProps={MenuProps}
                             >
