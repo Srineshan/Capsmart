@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Dialog, Classes, Icon, Intent, Tag } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
 import AddIcon from '@mui/icons-material/Add';
 import DatalistInput from 'react-datalist-input';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import MenuItem from '@mui/material/MenuItem';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Select from '@mui/material/Select';
 import { PUT, GET, TenantID, POST } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Calculator from './../../Components/Calculator';
@@ -28,16 +23,11 @@ import SurgerySessionFields from './surgerySessionFields';
 import { workFlowDataGenerator } from './workflowDataGenerator';
 import { CLINIC, SURGERY, ONCALL, SUPPLEMENTAL, ADDON, ADMINISTRATIVE } from '../../Constants';
 import Notes from '../../Components/Notes';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
-
-const switchTheme = createTheme({
-  palette: {
-    primary: {
-      main: '#7165E3',
-    },
-  },
-});
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex, isEditable, getTabDataStatus }) => {
   const [serviceTypeList, setServiceTypeList] = useState([]);
@@ -895,54 +885,34 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             <div>
               <div className={style.proofBorder}>
                 <div className={`${style.addManagerGrid} `}>
-                  <div className={style.extentionLableStyle}>Primary Sites/ Department Affiliation</div>
+                  <CommonLabel value='Primary Sites/ Department Affiliation' />
                   <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData} isMultiSiteEntity={isMultiSiteEntity} />
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                  <div className={style.extentionLableStyle}>Activity /Service Type Contracted for*</div>
+                  <CommonLabel value='Activity /Service Type Contracted for*' />
                   <div>
-                    <Select
-                      displayEmpty
-                      value={serviceType}
+                    <CommonSelectField value={serviceType}
                       onChange={(e) => { setServiceType(e.target.value) }}
-                      SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                       className={`${style.fullWidth} `}
-                    >
-                      <MenuItem value="">Select Activity /Service Type</MenuItem>
-                      {serviceTypeList?.map(data => (
-                        <MenuItem value={data}>{data}</MenuItem>
-                      ))}
-                    </Select>
+                      firstOptionLabel={'Select Activity /Service Type'} firstOptionValue={''}
+                      valueList={serviceTypeList}
+                      labelList={serviceTypeList}
+                      disabledList={serviceTypeList?.map(data => false)} />
                   </div>
                 </div>
                 {selectContractInfo !== "INDIVIDUAL" && (
                   <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                    <div className={style.extentionLableStyle}>Designate Specific Contractor*</div>
+                    <CommonLabel value='Designate Specific Contractor*' />
                     <div>
                       <div className={`${style.displayInRow} `}>
-                        <ThemeProvider theme={switchTheme}>
-                          <FormControlLabel
-                            control={
-                              <Switch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.textAlignLeft} `} onChange={() => handleDesignateContractor()} />
-                            }
-                            color='primary'
-                            className={`${style.switchFontStyle} ${style.flexLeft} `}
-                            label={isDesignatedSpecificContractor ? 'YES' : 'NO'}
-                          />
-                        </ThemeProvider>
-
+                        <CommonSwitch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.switchFontStyle} ${style.textAlignLeft} ${style.flexLeft}`} onChange={() => handleDesignateContractor()} label={isDesignatedSpecificContractor ? 'YES' : 'NO'} />
                         {isDesignatedSpecificContractor ? (
-                          <Select
-                            displayEmpty
-                            onChange={(e) => handleUsers(e.target.value)}
-                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                          <CommonSelectField onChange={(e) => handleUsers(e.target.value)}
                             className={`${style.fullWidth} `}
-                          >
-                            <MenuItem value="">Select Contractors for Services to be Provided</MenuItem>
-                            {users?.map((data, index) => (
-                              <MenuItem value={data?.id} key={index}> {data?.name?.firstName} {data?.name?.lastName}</MenuItem>
-                            ))}
-                          </Select>
+                            firstOptionLabel={'Select Contractors for Services to be Provided'} firstOptionValue={''}
+                            valueList={users?.map(data => data?.id)}
+                            labelList={users?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`)}
+                            disabledList={users?.map(data => false)} />
                         ) : <p className={` ${style.marginTop10} `}>Any Contractor</p>
                         }
                       </div>
@@ -958,7 +928,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   serviceType !== ADMINISTRATIVE && serviceType !== ADDON && serviceType !== SUPPLEMENTAL &&
                   <div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                      <div className={style.extentionLableStyle}>Activities To Be Performed*</div>
+                      <CommonLabel value='Activities To Be Performed*' />
                       <div>
                         <div className={style.addGrid}>
                           <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e) => setNewActivity(e.target.value)} />
@@ -978,7 +948,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
                 {serviceType !== ADDON && <div>
                   <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                    <div className={style.extentionLableStyle}>Specify Service Facility / Location (Cost Center)*</div>
+                    <CommonLabel value='Specify Service Facility / Location (Cost Center)*' />
                     <div>
                       <div className={`${style.displayInRow} `}>
 

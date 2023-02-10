@@ -1,32 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
 import MenuItem from '@mui/material/MenuItem';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import FormGroup from '@mui/material/FormGroup';
-import Typography from '@mui/material/Typography';
-import Checkbox from '@mui/material/Checkbox';
 import Select from '@mui/material/Select';
-import TextField from '@mui/material/TextField';
-import Switch from '@mui/material/Switch';
 import InputAdornment from '@mui/material/InputAdornment';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import { GET, PUT } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonRadio from '../../Components/CommonFields/CommonRadio';
+import CommonTextField from '../../Components/CommonFields/CommonTextField';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
 
 import style from './index.module.scss';
-
-const switchTheme = createTheme({
-    palette: {
-        primary: {
-            main: '#7165E3',
-        },
-    },
-});
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPage, contractId, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus }) => {
     const [compensation, setCompensation] = useState('RVUBASED');
@@ -176,12 +165,12 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
             temp[i] = (
                 <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
                     <div className={`${style.extentionGrid}`}>
-                        <div className={style.extentionLableStyle}>Timesheet Name*</div>
+                        <CommonLabel value='Timesheet Name*' />
                         <CommonInputField className={style.fullWidth} value={timesheetPayments?.[i]?.timesheetLabel?.label || ''} readOnly={true} />
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Payment Processing Criteria*</div>
-                        <FormControl size="small">
+                        <CommonLabel value='Payment Processing Criteria*' />
+                        {/* <FormControl size="small">
                             <Select
                                 labelId="demo-select-small"
                                 id="demo-select-small"
@@ -195,26 +184,24 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <MenuItem value={'EVERY2WEEKS'}>Every 2 Weeks</MenuItem>
                                 <MenuItem value={'EVERY4WEEKS'}>Every 4 Weeks</MenuItem>
                                 <MenuItem value={'ONDAYOFSERVICE'}>On Day of Service</MenuItem>
-                                {/* <MenuItem value={''}>Select Payment Frequency</MenuItem>
+                                <MenuItem value={''}>Select Payment Frequency</MenuItem>
                                 <MenuItem value={'WEEK'}>Per Week</MenuItem>
                                 <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                                <MenuItem value={'YEAR'}>Per Year</MenuItem> */}
+                                <MenuItem value={'YEAR'}>Per Year</MenuItem> 
                             </Select>
-                        </FormControl>
+                        </FormControl> */}
+                        <CommonSelectField
+                            value={timesheetPayments?.[i]?.paymentFrequency || ''}
+                            // onChange={(e) => updateTimesheetPayment(e.target.value, 'paymentFrequency', i)}
+                            firstOptionLabel={''} firstOptionValue={''}
+                            valueList={['ENDOFMONTH', 'ENDOFEVERYWEEK', 'EVERY2WEEKS', 'EVERY4WEEKS', 'ONDAYOFSERVICE']}
+                            labelList={['End of the month', 'End of Every Week', 'Every 2 Weeks', 'Every 4 Weeks', 'On Day of Service']}
+                            disabledList={[false, false, false, false, false]} />
                     </div>
-                    <div className={`${style.extentionGrid}`}>
-                        <div className={`${style.extentionLableStyle} ${style.marginTop20}`}>Payment Based On Fixed Hours Vs Actual *</div>
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Payment Based On Fixed Hours Vs Actual *' />
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
-                            <ThemeProvider theme={switchTheme}>
-                                <FormControlLabel
-                                    control={
-                                        <Switch className={`${style.textAlignLeft}`} checked={timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual} onChange={(e) => updateTimesheetPayment(e.target.checked, 'paymentBasedonFixedHoursVsActual', i)} />
-                                    }
-                                    color='primary'
-                                    className={`${style.switchFontStyle} ${style.marginTop20}`}
-                                    label={timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual ? 'YES' : 'NO'}
-                                />
-                            </ThemeProvider>
+                            <CommonSwitch label={timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.textAlignLeft}`} checked={timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual} onChange={(e) => updateTimesheetPayment(e.target.checked, 'paymentBasedonFixedHoursVsActual', i)} />
                             {
                                 //   timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual &&
                                 //   <div className={`${style.twoFieldWidth} ${style.marginLeft20}`}>
@@ -241,73 +228,51 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                     {timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual &&
                         <>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Max. Compensation Value Per Timesheet Submission*</div>
-                                <TextField
+                                <CommonLabel value='Max. Compensation Value Per Timesheet Submission*' />
+                                <CommonTextField
                                     className={style.twoFieldWidth}
                                     type="number"
                                     min="0"
-                                    size="small"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
                                     onChange={(e) => updateTimesheetPayment(parseFloat(e.target.value), 'maxPaymentPerTimesheetSubmission', i)}
                                     value={timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission}
-                                    inputProps={{
-                                        style: {
-                                            height: 15,
-                                        },
-                                    }}
                                 />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Compensation Offset Criteria For Reduced Number Of Agreed To Services*</div>
-                                <FormControl size="small">
-                                    <Select
-                                        labelId="demo-select-small"
-                                        id="demo-select-small"
-                                        value={timesheetPayments?.[i]?.reducedNumberOfServices}
-                                        onChange={(e) => updateTimesheetPayment(e.target.value, 'reducedNumberOfServices', i)}
-                                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                    >
-                                        <MenuItem value={'TIMESHEET'}>Per Timesheet Period</MenuItem>
-                                        <MenuItem value={'CONTRACT_END'}>On Last Invoice For Contract Year</MenuItem>
-                                    </Select>
-                                </FormControl>
+                                <CommonLabel value='Compensation Offset Criteria For Reduced Number Of Agreed To Services*' />
+                                <CommonSelectField
+                                    value={timesheetPayments?.[i]?.reducedNumberOfServices}
+                                    onChange={(e) => updateTimesheetPayment(e.target.value, 'reducedNumberOfServices', i)}
+                                    firstOptionLabel={''} firstOptionValue={''}
+                                    valueList={['TIMESHEET', 'CONTRACT_END']}
+                                    labelList={['Per Timesheet Period', 'On Last Invoice For Contract Year']}
+                                    disabledList={[false, false]} />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Max. Compensation Value for Contract Period*</div>
-                                <TextField
+                                <CommonLabel value='Max. Compensation Value for Contract Period*' />
+                                <CommonTextField
                                     className={style.twoFieldWidth}
                                     type="number"
                                     min="0"
-                                    size="small"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
                                     onChange={(e) => updateTimesheetPayment(parseFloat(e.target.value), 'maxPaymentPerContract', i)}
                                     value={timesheetPayments?.[i]?.maxPaymentPerContract}
-                                    inputProps={{
-                                        style: {
-                                            height: 15,
-                                        },
-                                    }}
                                 />
                             </div>
 
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Compensation Offset Criteria For Providing Additional Services To The Agreed To Services*</div>
-                                <FormControl size="small">
-                                    <Select
-                                        labelId="demo-select-small"
-                                        id="demo-select-small"
-                                        value={timesheetPayments?.[i]?.providingAdditionalServices}
-                                        onChange={(e) => updateTimesheetPayment(e.target.value, 'providingAdditionalServices', i)}
-                                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                    >
-                                        <MenuItem value={'TIMESHEET'}>Per Timesheet Period</MenuItem>
-                                        <MenuItem value={'CONTRACT_END'}>On Last Invoice For Contract Year</MenuItem>
-                                    </Select>
-                                </FormControl>
+                                <CommonLabel value='Compensation Offset Criteria For Providing Additional Services To The Agreed To Services*' />
+                                <CommonSelectField
+                                    value={timesheetPayments?.[i]?.providingAdditionalServices}
+                                    onChange={(e) => updateTimesheetPayment(e.target.value, 'providingAdditionalServices', i)}
+                                    firstOptionLabel={''} firstOptionValue={''}
+                                    valueList={['TIMESHEET', 'CONTRACT_END']}
+                                    labelList={['Per Timesheet Period', 'On Last Invoice For Contract Year']}
+                                    disabledList={[false, false]} />
                             </div>
 
                             {
@@ -375,7 +340,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                     <div className={style.cloneBlockStyle}>
                         <div className={`${style.newContractFromCloneBoxStyle}`}>
                             <div className={`${style.extentionGrid} ${selectContractInfo === "Individual Contractor" && style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(compensation, 'Compensation Basis') }}>
-                                <div className={style.extentionLableStyle}>Compensation Basis*</div>
+                                <CommonLabel value='Compensation Basis*' />
                                 {/* <div>
                         <RadioGroup
                             inline={true}
@@ -387,27 +352,18 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             <Radio label="Dollar Based Rate" value="DOLLARBASEDRATE" />
                         </RadioGroup>
                     </div> */}
-                                <FormControl>
-                                    <RadioGroup
-                                        row className={`${style.leftAlign}`}
-                                        value={compensation}
-                                        onChange={(e) => onCompensationUpdate(e.target.value)}
-                                        sx={{ color: '#52575D' }}
-                                    >
-                                        <FormControlLabel value="RVUBASED"
-                                            control={<Radio sx={{ color: '#B3B8BD', '&.Mui-checked': { color: '#7165E3' } }} size='small' />}
-                                            label="RVU Based" componentsProps={{ typography: { variant: 'subtitle2' } }} />
-                                        <FormControlLabel
-                                            value="DOLLARBASEDRATE"
-                                            control={<Radio sx={{ color: '#B3B8BD', '&.Mui-checked': { color: '#7165E3' } }} size='small' />}
-                                            label="Dollar Based Rate" componentsProps={{ typography: { variant: 'subtitle2' } }} />
-                                    </RadioGroup>
-                                </FormControl>
+                                <CommonRadio
+                                    className={`${style.leftAlign}`}
+                                    value={compensation}
+                                    onChange={(e) => onCompensationUpdate(e.target.value)}
+                                    radioValue={['RVUBASED', 'DOLLARBASEDRATE']}
+                                    label={['RVU Based', 'Dollar Based Rate']}
+                                />
                             </div>
                             {compensation === "RVUBASED" && (
                                 <div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuQuantity?.quantity, 'RVU Quantity') }}>
-                                        <div className={style.extentionLableStyle}>RVU Quantity*</div>
+                                        <CommonLabel value='RVU Quantity*' />
                                         <div className={style.displayInRow}>
                                             <CommonInputField className={style.fourFieldWidth} value={rvuQuantity?.quantity} placeholder="0"
                                                 type='number'
@@ -415,39 +371,17 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                                 onChange={(e) => e.target.value >= 0 && setRvuQuantity({
                                                     ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
                                                 })} />
-                                            {/* <select
-                                                name="class"
-                                                id="Class"
+                                            <CommonSelectField className={`${style.twoFieldWidth} ${style.marginLeft} ${style.reduceTop}`}
                                                 value={frequency}
                                                 onChange={(e) => setFrequency(e.target.value)}
-                                                className={`${style.twoFieldWidth} ${style.marginLeft20} ${style.reduceTop}`}>
-                                                <option value="WEEK" >
-                                                    Per Week
-                                                </option>
-                                                <option value="MONTH" >
-                                                    Per Month
-                                                </option>
-                                                <option value="YEAR" >
-                                                    Per Contract Year
-                                                </option>
-                                            </select> */}
-                                            <FormControl className={`${style.twoFieldWidth} ${style.marginLeft} ${style.reduceTop}`} size="small">
-                                                <Select
-                                                    labelId="demo-simple-select-label"
-                                                    id="demo-simple-select"
-                                                    value={frequency}
-                                                    onChange={(e) => setFrequency(e.target.value)}
-                                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                                >
-                                                    <MenuItem value={'WEEK'}>Per Week</MenuItem>
-                                                    <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                                                    <MenuItem value={'YEAR'}>Per Contract Year</MenuItem>
-                                                </Select>
-                                            </FormControl>
+                                                firstOptionLabel={''} firstOptionValue={''}
+                                                valueList={['WEEK', 'MONTH', 'YEAR']}
+                                                labelList={['Per Week', 'Per Month', 'Per Contract Year']}
+                                                disabledList={[false, false, false]} />
                                         </div>
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(fteEquivalent?.value, 'FTE Equivalent') }} >
-                                        <div className={style.extentionLableStyle}>FTE Equivalent</div>
+                                        <CommonLabel value='FTE Equivalent' />
                                         <CommonInputField className={style.twoFieldWidth} value={fteEquivalent?.value} placeholder="0" type="number"
                                             min="0"
                                             onChange={(e) => setFteEquivalent({
@@ -455,7 +389,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             })} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuReferenceUsed?.value, 'RVU Reference Used') }}>
-                                        <div className={style.extentionLableStyle}>RVU Reference Used</div>
+                                        <CommonLabel value='RVU Reference Used' />
                                         <CommonInputField className={style.fullWidth} value={rvuReferenceUsed?.value} placeholder="Enter RVU Reference Used"
                                             min="0"
                                             onChange={(e) => setRvuReferenceUsed({
@@ -463,16 +397,15 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             })} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(rvuQuantityVariance?.value, 'RVU Quantity Variance (+/-)') }}>
-                                        <div className={style.extentionLableStyle}>RVU Quantity Variance (+/-)</div>
+                                        <CommonLabel value='RVU Quantity Variance (+/-)' />
                                         <CommonInputField className={style.twoFieldWidth} value={rvuQuantityVariance?.value} placeholder="0" type='number'
                                             min="0" onChange={(e) => setRvuQuantityVariance({
                                                 ...rvuQuantityVariance, value: e.target.value.slice(0, limit3)
                                             })} />
                                     </div>
                                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                        <div className={style.extentionLableStyle}>RVU Quantity Period</div>
-                                        <TextField
-                                            size="small"
+                                        <CommonLabel value='RVU Quantity Period' />
+                                        <CommonTextField
                                             InputProps={{
                                                 endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
                                             }}
@@ -481,22 +414,16 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             })}
                                             className={style.renewalWidth}
                                             value={rvuQuantityPeriod?.days}
-                                            inputProps={{
-                                                style: {
-                                                    height: 20,
-                                                },
-                                            }}
                                         />
                                     </div>
                                 </div>
                             )}
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <div className={style.extentionLableStyle}>Dollar Hourly Rate*</div>
+                                <CommonLabel value='Dollar Hourly Rate*' />
                                 <div className={style.twoCol}>
-                                    <TextField
+                                    <CommonTextField
                                         type="number"
                                         min="0"
-                                        size="small"
                                         disabled={dollarRate?.notApplicable}
                                         value={dollarRate?.hour}
                                         InputProps={{
@@ -505,15 +432,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         onChange={(e) => setDollarRate({
                                             ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7)), notApplicable: false
                                         })}
-                                        inputProps={{
-                                            style: {
-                                                height: 15,
-                                            },
-                                        }}
                                     />
-                                    <FormGroup>
-                                        <FormControlLabel control={<Checkbox value="NA" checked={dollarRate?.notApplicable} onChange={(e) => setDollarRate({ ...dollarRate, notApplicable: e.target.checked, hour: parseFloat(0) })} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
-                                    </FormGroup>
+                                    <CommonCheckBox value="NA" checked={dollarRate?.notApplicable} onChange={(e) => setDollarRate({ ...dollarRate, notApplicable: e.target.checked, hour: parseFloat(0) })} label="NA" />
                                 </div>
                             </div>
 

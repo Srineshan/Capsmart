@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
-import Checkbox from '@mui/material/Checkbox';
+import CommonCheckBox from '../CommonFields/CommonCheckBox';
 
 import style from './index.module.scss';
 
@@ -132,21 +127,9 @@ const ServiceDays = ({ setMetaData, selectedService }) => {
   return (
     <div>
       <div className={`${style.serviceDaysGrid}`}>
-        <div className={`${style.displayInRow} ${style.fullWidth}`}>
-          <FormGroup >
-            <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekDays} onChange={(e) => onWeekDaysCheck(e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">{weekdayLabel}</Typography>} />
-          </FormGroup>
-        </div>
-        <div className={`${style.displayInRow} ${style.fullWidth}`}>
-          <FormGroup className={`${style.marginLeft10}`}>
-            <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.weekEnds} onChange={(e) => onWeekEndsCheck(e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">{weekendLabel}</Typography>} />
-          </FormGroup>
-        </div>
-        <div className={`${style.displayInRow} ${style.fullWidth}`}>
-          <FormGroup className={`${style.marginLeft10}`}>
-            <FormControlLabel control={<Checkbox value="NA" checked={serviceDays?.isholidays} onChange={(e) => setServiceDays({ ...serviceDays, isholidays: e.target.checked })} />} label={<Typography variant="body2" color="textSecondary">Holidays</Typography>} />
-          </FormGroup>
-        </div>
+        <CommonCheckBox value="NA" checked={serviceDays?.weekDays} onChange={(e) => onWeekDaysCheck(e.target.checked)} label={weekdayLabel} />
+        <CommonCheckBox value="NA" checked={serviceDays?.weekEnds} onChange={(e) => onWeekEndsCheck(e.target.checked)} label={weekendLabel} />
+        <CommonCheckBox value="NA" checked={serviceDays?.isholidays} onChange={(e) => setServiceDays({ ...serviceDays, isholidays: e.target.checked })} label="Holidays" />
       </div>
       <div className={`${style.serviceDaysGrid} ${style.marginTop10}`}>
         <div className={style.displayInRow}>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { RadioGroup, Radio, Tag, TagInput } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
+import { Tag, TagInput } from '@blueprintjs/core';
 import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Select from '@mui/material/Select';
@@ -8,48 +7,21 @@ import MenuItem from '@mui/material/MenuItem';
 import FormGroup from '@mui/material/FormGroup';
 import FormControl from '@mui/material/FormControl';
 import { FormatPhoneNumber } from './../../utils/formatting';
-import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Typography from '@mui/material/Typography';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
-import Checkbox from '@mui/material/Checkbox';
+import { useTheme } from '@mui/material/styles';
 import { POST, GET, PUT, TenantID } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SuffixList from './../../Components/SuffixList';
 import ProviderTypeList from './../../Components/ProviderTypeList';
 import FunctionalTitleList from './../../Components/FunctionalTitleList';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
-
-function getStyles(role, personName, theme) {
-  return {
-    fontWeight:
-      personName.indexOf(role) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
-
-const switchTheme = createTheme({
-  palette: {
-    primary: {
-      main: '#7165E3',
-    },
-  },
-});
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
 
 const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus }) => {
   const testContractId = contractId;
@@ -532,13 +504,13 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div>
           <div className={`${style.extentionGrid}`} onFocus={() => { checkFieldAndPopAlert(serviceProviderType?.id, 'Service Provider Type') }}>
-            <div className={style.extentionLableStyle}>Service Provider Type*</div>
+            <CommonLabel value='Service Provider Type*' />
             <div className={style.grid3}>
               <ProviderTypeList value={serviceProviderType?.id} onChangeFunc={(id, value) => setServiceProviderType({ id: id, contractedServiceProviderType: value })} className={[style.fullWidth]} />
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(npin, 'NPIN') }}>
-            <div className={style.extentionLableStyle}>NPIN*</div>
+            <CommonLabel value='NPIN*' />
             <div className={style.grid3}>
               <CommonInputField className={style.fullWidth}
                 placeholder="NPIN"
@@ -547,16 +519,12 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                 maxLength={10}
                 disabled={npinMissing || npinNotApplicable}
                 onChange={(e) => e.target.value >= 0 && setNpin(e.target.value)} />
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => { setNpinMissing(e.target.checked); setNpin(''); setNpinNotApplicable(false); }} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
-              </FormGroup>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => { setNpinNotApplicable(e.target.checked); setNpin(''); setNpinMissing(false); }} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
-              </FormGroup>
+              <CommonCheckBox value="Missing" checked={npinMissing} onChange={(e) => { setNpinMissing(e.target.checked); setNpin(''); setNpinNotApplicable(false); }} label="Missing" />
+              <CommonCheckBox value="NA" checked={npinNotApplicable} onChange={(e) => { setNpinNotApplicable(e.target.checked); setNpin(''); setNpinMissing(false); }} label="NA" />
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Contractor Name*</div>
+            <CommonLabel value='Contractor Name*' />
             <div className={style.grid3}>
               <CommonInputField className={style.fullWidth} placeholder="First"
                 value={contractorFirstName}
@@ -577,24 +545,16 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
             onFocus={() => { checkFieldAndPopAlert(contractorNameSuffix?.id, 'Suffix') }}>
-            <div className={style.extentionLableStyle}>Suffix*</div>
+            <CommonLabel value='Suffix*' />
             <div className={style.grid3}>
               <SuffixList value={contractorNameSuffix?.id} onChangeFunc={(id, value) => setContractorNameSuffix({ ...contractorNameSuffix, id: id, suffix: value })} className={[style.fullWidth]} />
             </div>
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`} >
-            <div className={style.extentionLableStyle}>Allow Use of Alternate/ Personal Email Address</div>
+            <CommonLabel value='Allow Use of Alternate/ Personal Email Address' />
             <div className={style.displayInRow}>
-              <ThemeProvider theme={switchTheme}>
-                <FormControlLabel
-                  control={
-                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={changePersonalMail} />
-                  }
-                  className={`${style.switchFontStyle}`}
-                  label={allowPersonalMail ? 'YES' : 'NO'}
-                />
-              </ThemeProvider>
+              <CommonSwitch className={`${style.flexLeft} ${style.switchFontStyle}`} label={allowPersonalMail ? 'YES' : 'NO'} checked={allowPersonalMail} onChange={changePersonalMail} />
               {allowPersonalMail &&
                 <div className={`${style.fullWidth} ${style.verticalAlignCenter}`} onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
                   <CommonInputField placeholder="Enter Personal email" className={`${style.fullWidth}`} value={contractorEmail} onChange={(e) => setContractorEmail(e.target.value)} />
@@ -606,7 +566,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           {
             !allowPersonalMail && <div className={`${style.extentionGrid} ${style.marginTop20}`}
               onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
-              <div className={style.extentionLableStyle}>Contract Entity Email*</div>
+              <CommonLabel value='Contract Entity Email*' />
               <div className={style.displayInRow}>
                 <CommonInputField placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
                   value={contractorEmail}
@@ -619,20 +579,18 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
             onFocus={() => { checkFieldAndPopAlert(contractorPhone, 'Cell Phone') }}>
-            <div className={style.extentionLableStyle}>Cell Phone*</div>
+            <CommonLabel value='Cell Phone*' />
             <div className={style.twoCol}>
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                 <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
                 <CommonInputField placeholder="Numeric" value={contractorPhone} disabled={mobileNA} maxLength={15}
                   onChange={(e) => { setContractorPhone(FormatPhoneNumber(e.target.value)); setMobileNA(false); }} className={`${style.fullWidth}`} />
               </div>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={mobileNA} onChange={(e) => { setMobileNA(e.target.checked); if (e.target.checked) { setContractorPhone('') } }} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
-              </FormGroup>
+              <CommonCheckBox value="NA" checked={mobileNA} onChange={(e) => { setMobileNA(e.target.checked); if (e.target.checked) { setContractorPhone('') } }} label="NA" />
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Address</div>
+            <CommonLabel value='Address' />
             <div>
               <CommonInputField className={style.fullWidth} placeholder="Street"
                 value={address?.addressLine}
@@ -662,52 +620,22 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
           onFocus={() => { checkFieldAndPopAlert(siteLevel ? siteTitleValues?.length : true, 'Site Level Responsibility') }}>
-          <div className={style.extentionLableStyle}>Site Level Responsibility*</div>
+          <CommonLabel value='Site Level Responsibility*' />
           <div>
             <div className={style.flexLeft}>
-              <ThemeProvider theme={switchTheme}>
-                <FormControlLabel
-                  control={
-                    <Switch checked={siteLevel} className={`${style.flexLeft}`} color='primary' onChange={() => { setSiteLevel(!siteLevel); resetSiteLevel(!siteLevel); }} />
-                  }
-                  className={`${style.switchFontStyle} ${style.marginTop}`}
-                  label={siteLevel ? 'YES' : "NO"}
-                />
-              </ThemeProvider>
+              <CommonSwitch checked={siteLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} label={siteLevel ? 'YES' : "NO"} onChange={() => { setSiteLevel(!siteLevel); resetSiteLevel(!siteLevel); }} />
             </div>
             {siteLevel && (
               <div className={`${style.siteLevelBoxStyle}`} onFocus={() => checkFieldAndPopAlert(siteTitleValues?.length, 'Site Level Responsibility')}>
                 <div className={`${style.siteLevelGrid}`}>
                   <div className={style.marginTop}>Site*</div>
-                  {/* <select
-                    name="class"
-                    id="Class"
-                    value={siteLevelSite?.id}
+                  <CommonSelectField value={siteLevelSite?.id}
+                    className={`${style.marginLeft20} ${style.weekSelectStyle}`}
                     onChange={(e) => setSiteLevelSite({ id: e.target.value, name: sites?.filter(data => data?.id === e.target.value)?.map(data => data?.name)[0] })}
-                    className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                    <option value="Select Site" >
-                      Select Site
-                    </option>
-                    {sites?.map((data, index) => (
-                      <option key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>
-                        {data?.name}
-                      </option>
-                    ))}
-                  </select> */}
-                  <FormControl size="small">
-                    <Select
-                      labelId="demo-select-small"
-                      id="demo-select-small"
-                      value={siteLevelSite?.id}
-                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}
-                      onChange={(e) => setSiteLevelSite({ id: e.target.value, name: sites?.filter(data => data?.id === e.target.value)?.map(data => data?.name)[0] })}
-                      SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                    >
-                      {sites?.map((data, index) => (
-                        <MenuItem key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>{data?.name}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                    firstOptionLabel={''} firstOptionValue={''}
+                    valueList={sites?.map(data => data?.id)}
+                    labelList={sites?.map(data => data?.name)}
+                    disabledList={sites?.map(data => data?.title !== '' ? true : false)} />
                 </div>
                 {/* )} */}
                 <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
@@ -731,18 +659,10 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
           onFocus={() => { checkFieldAndPopAlert(departmentLevel ? departmentTitleValues?.length : true, 'Department Level Responsibility') }}>
-          <div className={style.extentionLableStyle}>Department Level Responsibility*</div>
+          <CommonLabel value='Department Level Responsibility*' />
           <div>
             <div className={style.flexLeft}>
-              <ThemeProvider theme={switchTheme}>
-                <FormControlLabel
-                  control={
-                    <Switch checked={departmentLevel} className={`${style.flexLeft}`} color='primary' onChange={() => { setDepartmentLevel(!departmentLevel); resetDeptvalue(!departmentLevel) }} />
-                  }
-                  className={`${style.switchFontStyle} ${style.marginTop}`}
-                  label={departmentLevel ? 'YES' : "NO"}
-                />
-              </ThemeProvider>
+              <CommonSwitch checked={departmentLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} label={departmentLevel ? 'YES' : "NO"} onChange={() => { setDepartmentLevel(!departmentLevel); resetDeptvalue(!departmentLevel) }} />
             </div>
             <div>
               {departmentLevel && (
@@ -750,70 +670,24 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                   {/* {selectedContract === "Multiple Contractor" && ( */}
                   <div className={`${style.siteLevelGrid}`}>
                     <div className={style.marginTop}>Site*</div>
-                    {/* <select
-                      name="class"
-                      id="Class"
-                      value={departmentLevelSite?.id}
+                    <CommonSelectField value={departmentLevelSite?.id}
                       onChange={(e) => handleSelectedDepartmentSite(e.target.value)}
-                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                      <option value="Select Site" >
-                        Select Site
-                      </option>
-                      {sites?.map((data, index) => (
-                        <option key={index} value={data?.id}>
-                          {data?.name}
-                        </option>
-                      ))}
-                    </select> */}
-                    <FormControl size="small">
-                      <Select
-                        labelId="demo-select-small"
-                        id="demo-select-small"
-                        value={departmentLevelSite?.id}
-                        onChange={(e) => handleSelectedDepartmentSite(e.target.value)}
-                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}
-                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                      >
-                        {sites?.map((data, index) => (
-                          <MenuItem key={index} value={data?.id}>{data?.name}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                      firstOptionLabel={''} firstOptionValue={''}
+                      valueList={sites?.map(data => data?.id)}
+                      labelList={sites?.map(data => data?.name)}
+                      disabledList={sites?.map(data => false)} />
                   </div>
                   {/* )} */}
                   <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                     <div className={style.marginTop}>Department*</div>
-                    {/* <select
-                      name="class"
-                      id="Class"
-                      value={departmentLevelDepartment?.id}
+                    <CommonSelectField value={departmentLevelDepartment?.id}
                       onChange={(e) => onSelectDepartment(e.target.value)}
-                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                      <option value="Select Department" >
-                        Select Department
-                      </option>
-                      {selectedSitesDept?.map((data, index) =>
-                        <option key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>
-                          {data?.name}
-                        </option>
-                      )
-                      }
-                    </select> */}
-                    <FormControl size="small">
-                      <Select
-                        labelId="demo-select-small"
-                        id="demo-select-small"
-                        value={departmentLevelDepartment?.id}
-                        onChange={(e) => onSelectDepartment(e.target.value)}
-                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}
-                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                      >
-                        <MenuItem value="Select Department">Select Department</MenuItem>
-                        {sites?.map((data, index) => (
-                          <MenuItem key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>{data?.name}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                      firstOptionLabel={'Select Department'} firstOptionValue={'Select Department'}
+                      valueList={selectedSitesDept?.map(data => data?.id)}
+                      labelList={selectedSitesDept?.map(data => data?.name)}
+                      disabledList={selectedSitesDept?.map(data => data?.title !== '' ? true : false)} />
                   </div>
                   <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                     <div className={style.marginTop}>Title*</div>
@@ -838,41 +712,22 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
           onFocus={() => { checkFieldAndPopAlert(true, 'Assign Contractor With App User Role') }}>
-          <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
-          {/* <select
-              name="class"
-              id="Class"
-              onChange={(e) => handleRoles(e.target.value)}
-              className={`${style.fullWidth} ${style.marginLeft20} `}>
-              <option value="0" >
-                Select Role-multi select
-              </option>
-              {roles?.map((data, index) => (
-                <option key={`${data}-${index}`} value={data?.roleName} >
-                  {data?.roleName}
-                </option>
-              ))}
-            </select> */}
-          <FormControl size="small">
-            <Select
-              labelId="demo-select-small"
-              id="demo-select-small"
-              onChange={(e) => handleRoles(e.target.value)}
+          <CommonLabel value='Assign Contractor With App User Role*' />
+          <div>
+            <CommonSelectField onChange={(e) => handleRoles(e.target.value)}
               className={`${style.fullWidth}`}
-              SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-            >
-              <MenuItem value="0">Select Role-multi select</MenuItem>
-              {roles?.map((data, index) => (
-                <MenuItem key={`${data}-${index}`} value={data?.roleName}>{data?.roleName}</MenuItem>
-              ))}
-            </Select>
+              firstOptionLabel={'Select Role-multi select'} firstOptionValue={'0'}
+              valueList={roles?.map(data => data?.roleName)}
+              labelList={roles?.map(data => data?.roleName)}
+              disabledList={roles?.map(data => false)} />
             <div className={`${style.marginTop20}`}>
               {rolesTags}
             </div>
-          </FormControl>
+          </div>
         </div>
       </div>
-      {isEditable &&
+      {
+        isEditable &&
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
           <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
           <div>
@@ -881,7 +736,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           </div>
         </div>
       }
-    </div>
+    </div >
   )
 }
 

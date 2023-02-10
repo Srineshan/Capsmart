@@ -2,9 +2,9 @@ import React from 'react';
 
 import style from './index.module.scss';
 
-const CommonLabel = ({ value }) => {
+const CommonLabel = ({ value, className }) => {
     return (
-        <div className={style.lableStyle}>{value}</div>
+        <div className={`${style.lableStyle} ${className}`}>{value}</div>
     )
 }
 

@@ -237,7 +237,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     lastUpdatedBy = [];
     action = [];
 
-    console.log('validateContractIDTermLimit', validateTimesheetSubmission(contracts?.[0]))
+    console.log('validateContractIDTermLimit', validateTimesheetSubmission(contracts?.[0]), contracts)
 
     contracts?.map(data => {
       dot.push('yellow');

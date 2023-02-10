@@ -2,9 +2,8 @@ import React from 'react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import TextField from '@mui/material/TextField';
 
-const CommonDateField = ({ onChange, value, onClick, onOpen, onClose, open, onFocus, onBlur, minDate, maxDate, placeholder }) => {
+const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, renderInput, minDate, maxDate }) => {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
@@ -13,26 +12,10 @@ const CommonDateField = ({ onChange, value, onClick, onOpen, onClose, open, onFo
                 onClose={onClose}
                 value={value}
                 onChange={onChange}
-                InputProps={{
-                    style: {
-                        fontSize: 14,
-                        height: 30,
-                    },
-                    onFocus: e => {
-                        onFocus;
-                    },
-                    onBlur: e => {
-                        onBlur;
-                    }
-                }}
+                InputProps={InputProps}
                 minDate={minDate}
                 maxDate={maxDate}
-                renderInput={(params) => <TextField  {...params}
-                    onClick={onClick}
-                    inputProps={{
-                        ...params.inputProps,
-                        placeholder: placeholder
-                    }} />}
+                renderInput={renderInput}
             />
         </LocalizationProvider>
     )
