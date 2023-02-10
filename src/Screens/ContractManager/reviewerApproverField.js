@@ -11,7 +11,7 @@ const ReviewerApproverField = ({ data, label, onValueChange, selectLabel, value 
     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
       <CommonLabel value={label} />
       <div className={style.fullWidth}>
-        <select
+        {/* <select
           name="class"
           id={selectedValue}
           className={`${style.fullWidth} `}
@@ -33,14 +33,14 @@ const ReviewerApproverField = ({ data, label, onValueChange, selectLabel, value 
             ))
           }
 
-        </select>
-        {/* <CommonSelectField className={`${style.fullWidth} `}
+        </select> */}
+        <CommonSelectField className={`${style.fullWidth} `}
           value={value || '0'}
           onChange={e => onValueChange(e.target.value)}
           firstOptionLabel={selectLabel} firstOptionValue={'0'}
           valueList={label?.includes('Aggregator') ? data?.map(data => data?.id) : data?.map(data => data?.userId)}
           labelList={label?.includes('Aggregator') ? data?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`) : data?.map(data => data?.title?.title)}
-          disabledList={data?.map(data => false)} /> */}
+          disabledList={data?.map(data => false)} />
       </div>
     </div>
   )
