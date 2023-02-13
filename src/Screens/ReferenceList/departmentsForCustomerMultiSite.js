@@ -9,8 +9,6 @@ import OpenFolderBlue from './../../images/openFolderBlue.png';
 import Minusicon from './../../images/minus-icon.jpg';
 import IndustriesEntityFolder from './../../images/industriesEntityFolder.png';
 import AddDepartmentAreaForBannerHealthcare from './addDepartmentAreaForBannerHealthCare';
-import CrossPink from './../../images/crossPink.png';
-import { Link } from 'react-router-dom';
 
 
 
@@ -18,7 +16,6 @@ import { Link } from 'react-router-dom';
 const DepartmentsForCustomersMultiSite = () => {
     const [isSelected, setIsSelected] = useState(false);
     const [showAdddepartmentForHealthcareDialog, setShowAdddepartmentForHealthcareDialog] = useState(false);
-    const [multiSiteList,setMultiSiteList] = useState([]);
 
     const getAddDepartmentforHealthcareDialog = (value) => {
         setShowAdddepartmentForHealthcareDialog(value);
@@ -49,8 +46,7 @@ const DepartmentsForCustomersMultiSite = () => {
                                             UPDATED ON FEB 16, 2022 16:45 EST
                                         </div>
                                         <div className={style.crossStyle}>
-                                        <Link to="/Screens/ReferenceList/customerAdminDashboard" className={style.linkStyle}> <img src={CrossPink} className={`${style.colorFileStyle2} ${style.marginLeft5}`} /></Link>
-                                            {/* <Icon icon="cross" size={25} intent={Intent.DANGER} /> */}
+                                            <Icon icon="cross" size={25} intent={Intent.DANGER} />
                                         </div>
                                     </div>
                                     <div className={style.marginTop35}>
@@ -68,19 +64,19 @@ const DepartmentsForCustomersMultiSite = () => {
                                                                 <img src={Minusicon} alt="OpenFolder" className={`${style.colorFileStyle6} ${style.marginLeft10}`} />
                                                             </div>
                                                             <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}>
-                                                                <Checkbox onChange={(e) => e.target.checked ? setMultiSiteList([...multiSiteList, "Anesthesiology"]) : setMultiSiteList(multiSiteList.filter((e) => e != "Anesthesiology"))} />
+                                                                <Checkbox />
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft5}`}>Anesthesiology</p>
                                                             </div>
                                                             <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}>
-                                                                <Checkbox onChange={(e) => e.target.checked ? setMultiSiteList([...multiSiteList, "Blood Bank"]) : setMultiSiteList(multiSiteList.filter((e) => e != "Blood Bank"))} />
+                                                                <Checkbox checked />
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft5}`}>Blood Bank</p>
                                                             </div>
                                                             <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}>
-                                                                <Checkbox onChange={(e) => e.target.checked ? setMultiSiteList([...multiSiteList, "Dermatology"]) : setMultiSiteList(multiSiteList.filter((e) => e != "Dermatology"))} />
+                                                                <Checkbox />
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft5}`}>Dermatology</p>
                                                             </div>
                                                             <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}>
-                                                                <Checkbox onChange={(e) => e.target.checked ? setMultiSiteList([...multiSiteList, "Gastroenterology"]) : setMultiSiteList(multiSiteList.filter((e) => e != "Gastroenterology"))} />
+                                                                <Checkbox />
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft5}`}>Gastroenterology</p>
                                                             </div>
                                                             <div className={`${style.customersAdminSideRows1} ${style.customersAdminBackground1} ${style.displayInRow} ${style.marginLeft5}`}>
@@ -88,31 +84,27 @@ const DepartmentsForCustomersMultiSite = () => {
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft10}`}>Intensive Care Services</p>
                                                                 <img src={OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2}`} />
                                                             </div>
-                                                            <div className={`${style.customersAdminSideRows1} ${style.customersAdminBackground1} ${style.displayInRow} ${style.marginLeft5}`}>
-                                                                <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                                <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft10}`}>Laboratory & Testing</p>
-                                                                <img src={OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2}`} />
-                                                            </div>
+
                                                             <div className={`${style.customersAdminInnerRowsStyleLightColor} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                                <Checkbox onChange={(e) => e.target.checked ? setMultiSiteList([...multiSiteList, "Bacteriology"]) : setMultiSiteList(multiSiteList.filter((e) => e != "Bacteriology"))} className={`${style.marginLeft10} ${style.marginTop}`} />
+                                                                <Checkbox checked className={`${style.marginLeft10} ${style.marginTop}`} />
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft5}`}>Bacteriology</p>
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft20}`}>a.k.a lorem Ipsum</p>
                                                             </div>
                                                             <div className={`${style.customersAdminInnerRowsStyleLightColor} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                                <Checkbox onChange={(e) => e.target.checked ? setMultiSiteList([...multiSiteList, "Hematology"]) : setMultiSiteList(multiSiteList.filter((e) => e != "Hematology"))} className={`${style.marginLeft10} ${style.marginTop}`} />
+                                                                <Checkbox checked className={`${style.marginLeft10} ${style.marginTop}`} />
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft5}`}>Hematology</p>
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft20}`}>a.k.a lorem Ipsum</p>
                                                             </div>
                                                             <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}>
-                                                                <Checkbox onChange={(e) => e.target.checked ? setMultiSiteList([...multiSiteList, "Nursing"]) : setMultiSiteList(multiSiteList.filter((e) => e != "Nursing"))} />
+                                                                <Checkbox checked />
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft5}`}>Nursing</p>
                                                             </div>
                                                             <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}>
-                                                                <Checkbox onChange={(e) => e.target.checked ? setMultiSiteList([...multiSiteList, "Oncology"]) : setMultiSiteList(multiSiteList.filter((e) => e != "Oncology"))} />
+                                                                <Checkbox />
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft5}`}>Oncology</p>
                                                             </div>
                                                             <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}>
-                                                                <Checkbox onChange={(e) => e.target.checked ? setMultiSiteList([...multiSiteList, "Other"]) : setMultiSiteList(multiSiteList.filter((e) => e != "Other"))} />
+                                                                <Checkbox checked />
                                                                 <p className={`${style.boardCertificationTextStyle2} ${style.marginLeft5}`}>Other</p>
                                                             </div>
                                                         </div>

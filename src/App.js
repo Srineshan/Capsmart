@@ -2,115 +2,54 @@ import React, { useEffect, useState, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 import history from "./routes/history";
-import Loader from "./Components/LoadingScreen";
+import Loader from './Components/LoadingScreen';
 import Cookie from "universal-cookie";
 import { Auth, GetEntityDetails } from "./utils/auth";
 import { TenantID, GET } from "./Screens/dataSaver";
 
-const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
-const ReportTypeOverview = React.lazy(() =>
-  import("./Screens/Reports/reportTypeOverview")
-);
-const Home = React.lazy(() => import("./Screens/CustomerSystemAdmin"));
-const ReferenceListMainPage = React.lazy(() =>
-  import("./Screens/ReferenceList/ReferenceListMainPage")
-);
-const FunctionalTitleForCustomer = React.lazy(() =>
-  import("./Screens/ReferenceList/functionalTitleForCustomer")
-);
-const ActiveContracts = React.lazy(() => import("./Screens/ContractManager"));
-const Welcome = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/welcome")
-);
-const Login = React.lazy(() => import("./Screens/SuperAdminDashboard/login"));
-const SetPassword = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/setPassword")
-);
-const SetPasswordWithoutEmail = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/setPasswordWithoutEmail")
-);
-const EntitySetup = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/entitySetup")
-);
-const EntitySystemAdmin = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/entitySystemAdmin")
-);
-const SiteInformation = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/siteInformation")
-);
-const SiteUsers = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/siteUsers")
-);
-const AppSubscription = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/appSubscription")
-);
-const SetupComplete = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/setupComplete")
-);
-const OTPPage = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/otpPage")
-);
-const WelcomeToDashboard = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/welcomeToDashboard")
-);
-const EntryPage = React.lazy(() => import("./Screens"));
-const Profile = React.lazy(() => import("./Components/Profile"));
-const Users = React.lazy(() => import("./Screens/UserManagement"));
-const ReportsHome = React.lazy(() => import("./Screens/Reports"));
-const TimeSheetReportsBase = React.lazy(() =>
-  import("./Screens/Reports/reports")
-);
-const ChartPage = React.lazy(() => import("./Screens/Reports/chart"));
-const HelpHome = React.lazy(() => import("./Screens/HelpManagement"));
-const TasksAndAlerts = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/tasksAndAlerts")
-);
-const ReferenceList = React.lazy(() => import("./Screens/ReferenceList"));
-const HolidayScheduleForCustomers = React.lazy(() =>
-  import("./Screens/ReferenceList/holidayScheduleForCustomers")
-);
-const DepartmentsForCustomers = React.lazy(() =>
-  import("./Screens/ReferenceList/departmentsForCustomers")
-);
-const CustomerManagement = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/customerManagement")
-);
-const CustomerSetup = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/customerSetup")
-);
-const DepartmentsForCustomersMultiSite = React.lazy(() =>
-  import("./Screens/ReferenceList/absenceReasonsForCustomer")
-);
-const AbsenceReasonsForCustomer = React.lazy(() =>
-  import("./Screens/ReferenceList/absenceReasonsForCustomer")
-);
-const SuffixByCustomer = React.lazy(() =>
-  import("./Screens/ReferenceList/suffixByCustomer")
-);
-const ContractDocumentUploadForCustomer = React.lazy(() =>
-  import("./Screens/ReferenceList/contractDocumentTypeUploadForCustomer")
-);
-const ContractServiceProviderBySite = React.lazy(() =>
-  import("./Screens/ReferenceList/contractServiceProviderBySiteType")
-);
-const ContractServiceProviderForMultiSite = React.lazy(() =>
-  import("./Screens/ReferenceList/contractServiceProviderMultiSite")
-);
-const FunctionalTitleMultiSitesForCustomer = React.lazy(() =>
-  import("./Screens/ReferenceList/functionalTitleMultiSitesForCustomer")
-);
-const TerminationReasonForCustomer = React.lazy(() =>
-  import("./Screens/ReferenceList/contractTerminationReasonForCustomer")
-);
-const SuperAdminDashboard = React.lazy(() =>
-  import("./Screens/ReferenceList/superAdminDashboard")
-);
-const ClientAdminDashboard = React.lazy(() =>
-  import("./Screens/ReferenceList/customerAdminDashboard")
-);
-const Thankyou = React.lazy(() =>
-  import("./Screens/SuperAdminDashboard/thankyou")
-);
+const ReportType = React.lazy(() => import('./Screens/Reports/reportType'));
+const ReportTypeOverview = React.lazy(() => import('./Screens/Reports/reportTypeOverview'));
+const Home = React.lazy(() => import('./Screens/CustomerSystemAdmin'));
+const ReferenceListMainPage = React.lazy(() => import('./Screens/ReferenceList/ReferenceListMainPage'));
+const FunctionalTitleForCustomer = React.lazy(() => import('./Screens/ReferenceList/functionalTitleForCustomer'));
+const ActiveContracts = React.lazy(() => import('./Screens/ContractManager'));
+const Welcome = React.lazy(() => import('./Screens/SuperAdminDashboard/welcome'));
+const Login = React.lazy(() => import('./Screens/SuperAdminDashboard/login'));
+const SetPassword = React.lazy(() => import('./Screens/SuperAdminDashboard/setPassword'));
+const SetPasswordWithoutEmail = React.lazy(() => import('./Screens/SuperAdminDashboard/setPasswordWithoutEmail'));
+const EntitySetup = React.lazy(() => import('./Screens/SuperAdminDashboard/entitySetup'));
+const EntitySystemAdmin = React.lazy(() => import('./Screens/SuperAdminDashboard/entitySystemAdmin'));
+const SiteInformation = React.lazy(() => import('./Screens/SuperAdminDashboard/siteInformation'));
+const SiteUsers = React.lazy(() => import('./Screens/SuperAdminDashboard/siteUsers'));
+const AppSubscription = React.lazy(() => import('./Screens/SuperAdminDashboard/appSubscription'));
+const SetupComplete = React.lazy(() => import('./Screens/SuperAdminDashboard/setupComplete'));
+const OTPPage = React.lazy(() => import('./Screens/SuperAdminDashboard/otpPage'));
+const WelcomeToDashboard = React.lazy(() => import('./Screens/SuperAdminDashboard/welcomeToDashboard'));
+const EntryPage = React.lazy(() => import('./Screens'));
+const Profile = React.lazy(() => import('./Components/Profile'));
+const Users = React.lazy(() => import('./Screens/UserManagement'));
+const ReportsHome = React.lazy(() => import('./Screens/Reports'));
+const TimeSheetReportsBase = React.lazy(() => import('./Screens/Reports/reports'));
+const ChartPage = React.lazy(() => import('./Screens/Reports/chart'));
+const HelpHome = React.lazy(() => import('./Screens/HelpManagement'));
+const TasksAndAlerts = React.lazy(() => import('./Screens/SuperAdminDashboard/tasksAndAlerts'));
+const ReferenceList = React.lazy(() => import('./Screens/ReferenceList'));
+const HolidayScheduleForCustomers = React.lazy(() => import('./Screens/ReferenceList/holidayScheduleForCustomers'));
+const DepartmentsForCustomers = React.lazy(() => import('./Screens/ReferenceList/departmentsForCustomers'));
+const CustomerManagement = React.lazy(() => import('./Screens/SuperAdminDashboard/customerManagement'));
+const CustomerSetup = React.lazy(() => import('./Screens/SuperAdminDashboard/customerSetup'))
+const DepartmentsForCustomersMultiSite = React.lazy(() => import('./Screens/ReferenceList/absenceReasonsForCustomer'))
+const AbsenceReasonsForCustomer = React.lazy(() => import('./Screens/ReferenceList/absenceReasonsForCustomer'))
+const SuffixByCustomer = React.lazy(() => import('./Screens/ReferenceList/suffixByCustomer'))
+const ContractDocumentUploadForCustomer = React.lazy(() => import('./Screens/ReferenceList/contractDocumentTypeUploadForCustomer'))
+const ContractServiceProviderBySite = React.lazy(() => import('./Screens/ReferenceList/contractServiceProviderBySiteType'))
+const ContractServiceProviderForMultiSite = React.lazy(() => import('./Screens/ReferenceList/contractServiceProviderMultiSite'))
+const FunctionalTitleMultiSitesForCustomer = React.lazy(() => import('./Screens/ReferenceList/functionalTitleMultiSitesForCustomer'))
+const TerminationReasonForCustomer = React.lazy(() => import('./Screens/ReferenceList/contractTerminationReasonForCustomer'))
+const SuperAdminDashboard = React.lazy(() => import('./Screens/ReferenceList/superAdminDashboard'))
+const ClientAdminDashboard = React.lazy(() => import('./Screens/ReferenceList/customerAdminDashboard'))
+const Thankyou = React.lazy(() => import('./Screens/SuperAdminDashboard/thankyou'))
+
 
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
@@ -181,16 +120,10 @@ const App = ({ props }) => {
               <Route path="/user" element={<Users />} />
               <Route path="/pages" element={<EntryPage />} />
               <Route path="/setPassword/:userId" element={<SetPassword />} />
-              <Route
-                path="/setPassword"
-                element={<SetPasswordWithoutEmail />}
-              />
+              <Route path="/setPassword" element={<SetPasswordWithoutEmail />} />
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/entitySetup/:id" element={<EntitySetup />} />
-              <Route
-                path="/entitySystemAdmin"
-                element={<EntitySystemAdmin />}
-              />
+              <Route path="/entitySystemAdmin" element={<EntitySystemAdmin />} />
               <Route path="/siteInformation" element={<SiteInformation />} />
               <Route path="/siteUsers" element={<SiteUsers />} />
               <Route path="/appSubscription" element={<AppSubscription />} />
@@ -233,7 +166,6 @@ const App = ({ props }) => {
                 "/referenceList/holidayListByIndustries",
                 "/referenceList/contractDoumentTypeForUpload",
                 "/referenceList/countriesSupportedWithStates",
-                "/referenceList/contractedServicesByIndustries",
               ].map((path) => (
                 <Route
                   key={path}

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { InputGroup, TagInput, EditableText } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
+import { EditableText } from '@blueprintjs/core';
 import ArrowDown from './../../images/arrowDown.png';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
@@ -14,7 +13,12 @@ import Typography from '@mui/material/Typography';
 import { POST, GET, PUT, TenantID } from './../dataSaver';
 import ReviewerApproverField from './reviewerApproverField';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+
 import style from './index.module.scss';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert, isEditable, getTabDataStatus }) => {
   const [timeSheetCount, setTimeSheetCount] = useState(0);
@@ -270,12 +274,12 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       temp[i] = (
         <div key={`${i}temp${timeSheetCount + 1}`} className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20}`}>
           <div className={`${style.extentionGrid}`}>
-            <div className={style.extentionLableStyle}>{`Timesheets label ${i + 1} for processing`}</div>
-            <InputGroup className={style.fullWidth} value={timeSheetLabelData?.[i]?.label} onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)} />
+            <CommonLabel value={`Timesheets label ${i + 1} for processing`} />
+            <CommonInputField className={style.fullWidth} value={timeSheetLabelData?.[i]?.label} onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)} />
           </div>
           {timeSheetCount > 1 && (
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              <div className={style.extentionLableStyle}>{`Contracted Activity to include for timesheet ${i + 1}*`}</div>
+              <CommonLabel value={`Contracted Activity to include for timesheet ${i + 1}*`} />
               <div>
                 {
                   // <select
@@ -302,16 +306,12 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
                 {(showSelectBox && i === selectBoxIndex) && (
                   <div className={style.selectOptionsBox} ref={menuRef}>
                     <div className={`${style.selectOptionsMenuStyle}`}>
-                      <FormGroup>
-                        <FormControlLabel control={<Checkbox disabled={contractedServices?.length === contractedActivityTags?.length} checked={contractedServices?.length === contractedActivityTags?.length} onChange={() => handleContractedActivityTagsAdd('all', 'all', i)} />} label={<Typography variant="body2">All Activities</Typography>} />
-                      </FormGroup>
+                      <CommonCheckBox disabled={contractedServices?.length === contractedActivityTags?.length} checked={contractedServices?.length === contractedActivityTags?.length} onChange={() => handleContractedActivityTagsAdd('all', 'all', i)} label="All Activities" />
                     </div>
                     {activityTypes?.map(data => (
                       <>
                         <div className={`${style.selectOptionsMenuStyle} ${style.selectedOptionstyle}`}>
-                          <FormGroup>
-                            <FormControlLabel control={<Checkbox onChange={() => handleContractedActivityTagsAdd(data, 'all', i)} disabled={isGroupChecked(data)} checked={isGroupChecked(data)} />} label={<Typography variant="body2" color="#7165E3">{data}</Typography>} />
-                          </FormGroup>
+                          <CommonCheckBox onChange={() => handleContractedActivityTagsAdd(data, 'all', i)} disabled={isGroupChecked(data)} checked={isGroupChecked(data)} label={data} />
                         </div>
                         {
                           contractedServices?.filter(service => service?.activityType?.activityType === data)?.map(service => (
@@ -344,29 +344,20 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           )}
           <div>
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              <div className={style.extentionLableStyle}>Payment Source*</div>
+              <CommonLabel value='Payment Source*' />
               <SiteDepartmentField sites={sites} getSelectedSites={onSelectSite} selectedSites={paymentSource?.[i] ? new Array(1).fill(paymentSource?.[i]) : []} isMultiSiteEntity={isMultiSiteEntity} />
             </div>
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Service log Period for timesheet submission*</div>
-            <FormControl size="small">
-              <Select
-                labelId="demo-select-small"
-                id="demo-select-small"
-                key={`timesheetlabeldata ${timeSheetLabelData?.[i]?.value}`}
-                value={timeSheetLabelData?.[i]?.value}
-                onChange={(e) => handleTimesheetValue(i, 'value', e.target.value)}
-                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-              >
-                <MenuItem value={'ENDOFMONTH'}>End of the month</MenuItem>
-                <MenuItem value={'ENDOFEVERYWEEK'}>End of Every Week</MenuItem>
-                <MenuItem value={'EVERY2WEEKS'}>Every 2 Weeks</MenuItem>
-                <MenuItem value={'EVERY4WEEKS'}>Every 4 Weeks</MenuItem>
-                <MenuItem value={'ONDAYOFSERVICE'}>On Day of Service</MenuItem>
-              </Select>
-            </FormControl>
+            <CommonLabel value='Service log Period for timesheet submission*' />
+            <CommonSelectField
+              value={timeSheetLabelData?.[i]?.value}
+              onChange={(e) => handleTimesheetValue(i, 'value', e.target.value)}
+              firstOptionLabel={''} firstOptionValue={''}
+              valueList={['ENDOFMONTH', 'ENDOFEVERYWEEK', 'EVERY2WEEKS', 'EVERY4WEEKS', 'ONDAYOFSERVICE']}
+              labelList={['End of the month', 'End of Every Week', 'Every 2 Weeks', 'Every 4 Weeks', 'On Day of Service']}
+              disabledList={[false, false, false, false, false]} />
           </div>
         </div>
       )
@@ -566,16 +557,16 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
-          <div className={style.extentionLableStyle}>Number of Timesheets to Submit for Services Performed</div>
-          <InputGroup className={style.fourFieldWidth} type="number" min="0" value={timeSheetCount} onChange={(e) => setTimeSheetCount(parseInt(e.target.value))} />
+          <CommonLabel value='Number of Timesheets to Submit for Services Performed' />
+          <CommonInputField className={style.fourFieldWidth} type="number" min="0" value={timeSheetCount} onChange={(e) => setTimeSheetCount(parseInt(e.target.value))} />
         </div>
         <div>
           {timesheetFields}
         </div>
         {timeSheetCount <= 1 &&
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Contracted Activity to include for timesheet*</div>
-            <InputGroup placeholder="All Activities" className={style.fullWidth} readOnly />
+            <CommonLabel value='Contracted Activity to include for timesheet*' />
+            <CommonInputField placeholder="All Activities" className={style.fullWidth} readOnly />
           </div>
         }
 
@@ -591,21 +582,21 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         {/* <div className={`${style.welcomeBorder} ${style.marginTop20}`}></div> */}
 
         < div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Planned Absence Notification Days limit*</div>
+          <CommonLabel value='Planned Absence Notification Days limit*' />
           <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
             <EditableText value={plannedAbsence} placeholder="0" type='number' onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>
         </div>
         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Maximum Unplanned Absence Days Allowed *</div>
+          <CommonLabel value='Maximum Unplanned Absence Days Allowed *' />
           <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
             <EditableText value={maxUnplannedAbsence} placeholder="0" type='number' onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>
         </div>
         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Invoice Processing Day Range Goal*</div>
+          <CommonLabel value='Invoice Processing Day Range Goal*' />
           <div className={style.displayInRow}>
             <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
               <EditableText value={invoiceProcessingDay} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
@@ -623,14 +614,14 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         </div>
 
         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on activity service date *</div>
+          <CommonLabel value='Day limit for submission of timesheet based on activity service date *' />
           <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
             <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>
         </div>
         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-          <div className={style.extentionLableStyle}>Day limit for submission of timesheet based on contract end date *</div>
+          <CommonLabel value='Day limit for submission of timesheet based on contract end date *' />
           <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
             <EditableText value={dayLimitForSubmissionBasedOnContractEndDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>

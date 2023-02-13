@@ -1,36 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
+import { EditableText, Checkbox } from '@blueprintjs/core';
 import { TimePicker } from "@blueprintjs/datetime";
 import { format } from 'date-fns';
-import Switch from '@mui/material/Switch';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
-import Select from '@mui/material/Select';
 import { GetDateFromHours } from './../../utils/formatting';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonTextField from '../../Components/CommonFields/CommonTextField';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+
 import style from './index.module.scss';
 import ScheduleAndTargetSameTable from './scheduleAndTargetSameTable';
 import AddScheduleAndTargetForDifferentPeriods from './addScheduleAndTrgetForDifferentPeriods';
-
-const switchTheme = createTheme({
-    palette: {
-        primary: {
-            main: '#7165E3',
-        },
-    },
-});
 
 const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, contractTermPeriod }) => {
     const [schedulesField, setSchedulesField] = useState([]);
     const [differentTargets, setDifferentTargets] = useState(false);
     console.log('contrac time', contractTermPeriod);
-    const [contractDuration, setContractDuration] = useState({ start: contractTermPeriod?.start, end: contractTermPeriod?.end })
+    // const [contractTermPeriod, setContractDuration] = useState({ start: contractTermPeriod?.start, end: contractTermPeriod?.end })
     const [selectedScheduleRow, setSelectedScheduleRow] = useState();
     const [addScheduleAndTargetForDifferentPeriods, setAddScheduleAndTargetForDifferentPeriods] = useState(false);
     const [newClinicRow, setNewClinicRow] = useState({ startDate: new Date(), endDate: new Date(), min: 0, max: 0, frequency: 'WEEK', seenWithNurse: 0, seenWithoutNurse: 0, seenNoTarget: false, targetWithNurse: 0, targetWithoutNurse: 0, targetNoTarget: false })
@@ -43,8 +36,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                 "value": 0
             },
             "frequency": "WEEK",
-            "startDate": contractDuration?.start,
-            "endDate": contractDuration?.end,
+            "startDate": contractTermPeriod?.start,
+            "endDate": contractTermPeriod?.end,
         }],
         patientsSeenTargets: [{
             "withNurse": {
@@ -53,8 +46,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             "withoutNurse": {
                 "value": 0
             },
-            "startDate": contractDuration?.start,
-            "endDate": contractDuration?.end,
+            "startDate": contractTermPeriod?.start,
+            "endDate": contractTermPeriod?.end,
             "noTargetApplicable": false
         }],
         scheduledPatientsTargets: [{
@@ -64,8 +57,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             "withoutNurse": {
                 "value": 0
             },
-            "startDate": contractDuration?.start,
-            "endDate": contractDuration?.end,
+            "startDate": contractTermPeriod?.start,
+            "endDate": contractTermPeriod?.end,
             "noTargetApplicable": false
         }],
         min: '0',
@@ -87,8 +80,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
         sessionAmount: '0',
         totalSession: '0',
         totalSessionFrequency: 'YEAR',
-        workingTimeFrom: new Date(),
-        workingTimeTo: new Date(),
+        workingTimeFrom: null,
+        workingTimeTo: null,
         serviceDays: {
             tuesday: false,
             wednesday: false,
@@ -109,7 +102,31 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
     const [specified, setSpecified] = useState(0);
 
     useEffect(() => {
-        setContractDuration({ start: contractTermPeriod?.start, end: contractTermPeriod?.end })
+        let temp = metadata;
+        // let tempPatientsSeenTargets = metada?.patientsSeenTargets;
+        // let tempScheduledPatientsTargets = metadata?.scheduledPatientsTargets;
+
+        temp.contractedSchedules?.map(data => {
+            if (data?.startDate === null) {
+                data.startDate = contractTermPeriod?.start;
+                data.endDate = contractTermPeriod?.end;
+            }
+        })
+
+        temp?.catientsSeenTargets?.map(data => {
+            if (data?.startDate === null) {
+                data.startDate = contractTermPeriod?.start;
+                data.endDate = contractTermPeriod?.end;
+            }
+        })
+
+        temp?.scheduledPatientsTargets?.map(data => {
+            if (data?.startDate === null) {
+                data.startDate = contractTermPeriod?.start;
+                data.endDate = contractTermPeriod?.end;
+            }
+        })
+        setMetadata(temp)
     }, [contractTermPeriod])
 
     const onNewClinicChange = (value, index, type) => {
@@ -195,7 +212,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             contractedSchedules: tempContractedSchedules,
             patientsSeenTargets: tempPatientsSeenTargets,
             scheduledPatientsTargets: tempScheduledPatientsTargets,
-            scheduleAndTargetSame: serviceSelected?.contractedschedules?.length === 1 ? true : false,
+            scheduleAndTargetSame: serviceSelected?.contractedSchedules?.length <= 1 ? true : false,
             min: serviceSelected?.contractedSchedule?.minimum?.value,
             max: serviceSelected?.contractedSchedule?.maximum?.value,
             frequency: serviceSelected?.contractedSchedule?.frequency,
@@ -260,8 +277,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                         "value": 0
                     },
                     "frequency": "WEEK",
-                    "startDate": contractDuration?.start,
-                    "endDate": contractDuration?.end,
+                    "startDate": contractTermPeriod?.start,
+                    "endDate": contractTermPeriod?.end,
                 }], patientsSeenTargets: [{
                     "withNurse": {
                         "value": 0
@@ -269,8 +286,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                     "withoutNurse": {
                         "value": 0
                     },
-                    "startDate": contractDuration?.start,
-                    "endDate": contractDuration?.end,
+                    "startDate": contractTermPeriod?.start,
+                    "endDate": contractTermPeriod?.end,
                     "noTargetApplicable": false
                 }], scheduledPatientsTargets: [{
                     "withNurse": {
@@ -279,8 +296,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                     "withoutNurse": {
                         "value": 0
                     },
-                    "startDate": contractDuration?.start,
-                    "endDate": contractDuration?.end,
+                    "startDate": contractTermPeriod?.start,
+                    "endDate": contractTermPeriod?.end,
                     "noTargetApplicable": false
                 }]
             });
@@ -318,7 +335,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
 
     const limit5 = 5;
 
-    console.log('selected', format(new Date(contractDuration?.start), 'MMMM d, yyyy'));
+    console.log('selected', format(new Date(contractTermPeriod?.start), 'MMMM d, yyyy'));
 
     return (
         <div>
@@ -395,21 +412,13 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
 
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Schedule And Target Are Same For Full Contract Year</div>
+                <CommonLabel value='Schedule And Target Are Same For Full Contract Year' />
                 <div className={style.spaceBetween}>
                     <div className={`${style.threeFieldWidth}`} >
-                        <ThemeProvider theme={switchTheme}>
-                            <FormControlLabel
-                                control={
-                                    <Switch checked={metadata?.scheduleAndTargetSame} className={`${style.textAlignLeft}`}
-                                        onChange={(e) => onScheduleContractYearChange(!metadata?.scheduleAndTargetSame)}
-                                    />
-                                }
-                                color='primary'
-                                className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                label={metadata?.scheduleAndTargetSame ? 'YES' : 'NO'}
-                            />
-                        </ThemeProvider>
+                        <CommonSwitch checked={metadata?.scheduleAndTargetSame} className={`${style.textAlignLeft} ${style.switchFontStyle} ${style.flexLeft}`}
+                            label={metadata?.scheduleAndTargetSame ? 'YES' : 'NO'}
+                            onChange={(e) => onScheduleContractYearChange(!metadata?.scheduleAndTargetSame)}
+                        />
                     </div>
                     {!metadata?.scheduleAndTargetSame && (
                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
@@ -422,7 +431,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             {(metadata?.scheduleAndTargetSame && metadata?.contractedSchedules?.length === 1) && (
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Regular Service Schedule*</div>
+                        <CommonLabel value='Regular Service Schedule*' />
                         <div className={style.displayInRow}>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
@@ -432,21 +441,17 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 <div className={style.textElement}>MAX</div>
                                 <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.contractedSchedules?.[0]?.maximum?.value} onChange={(e) => onSameTargetChange('contractedSchedules', e, 'maximum')} />
                             </div>
-                            <Select
-                                displayEmpty
-                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                className={`${style.fullWidth} ${style.marginLeft20}`}
-                                value={metadata?.contractedSchedules?.[0]?.frequency}
+                            <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
+                                value={metadata?.contractedSchedules?.[0]?.frequency || ''}
                                 onChange={(e) => onSameTargetChange('contractedSchedules', e.target.value, 'frequency')}
-                            >
-                                <MenuItem value={''}>Select Frequency</MenuItem>
-                                <MenuItem value={'WEEK'}>Per Week</MenuItem>
-                                <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                            </Select>
+                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                valueList={['WEEK', 'MONTH']}
+                                labelList={['Per Week', 'Per Month']}
+                                disabledList={[false, false]} />
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Patients Seen Target*</div>
+                        <CommonLabel value='Patients Seen Target*' />
                         <div className={style.withNurseGrid}>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                                 <div className={style.textElement}>WITH NURSE</div>
@@ -456,12 +461,12 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 <div className={style.textElement}>WITHOUT NURSE</div>
                                 <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value} onChange={(e) => onSameTargetChange('patientsSeenTargets', e, 'withoutNurse')} />
                             </div>
-                            <Checkbox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} checked={metadata?.patientsSeenTargets?.[0]?.noTargetApplicable} onChange={(e) => onSameTargetChange('patientsSeenTargets', e.target.checked, 'noTargetApplicable')} />
+                            <CommonCheckBox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} checked={metadata?.patientsSeenTargets?.[0]?.noTargetApplicable} onChange={(e) => onSameTargetChange('patientsSeenTargets', e.target.checked, 'noTargetApplicable')} />
                         </div>
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Scheduled Patient Target*</div>
+                        <CommonLabel value='Scheduled Patient Target*' />
                         <div className={`${style.withNurseGrid} ${style.fullWidth}`}>
                             <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                                 <div className={style.textElement}>WITH NURSE</div>
@@ -471,13 +476,13 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 <div className={style.textElement}>WITHOUT NURSE</div>
                                 <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.scheduledPatientsTargets?.[0]?.withoutNurse?.value} onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e, 'withoutNurse')} />
                             </div>
-                            <Checkbox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} checked={metadata?.scheduledPatientsTargets?.[0]?.noTargetApplicable} onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e.target.checked, 'noTargetApplicable')} />
+                            <CommonCheckBox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} checked={metadata?.scheduledPatientsTargets?.[0]?.noTargetApplicable} onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e.target.checked, 'noTargetApplicable')} />
                         </div>
                     </div>
                 </>
             )}
 
-            {(!metadata?.scheduleAndTargetSame || (metadata?.contractedSchedules?.length || 0) > 1) && (
+            {!metadata?.scheduleAndTargetSame && (
                 <div>
                     <div className={`${style.tableHeader} ${style.marginTop10}`}>
                         <div className={style.scheduleTableGrid1}>
@@ -528,56 +533,34 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             )}
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Additional Schedule*</div>
-                <div className={style.displayInRow}>
-                    <div className={`${style.threeFieldWidth}`} >
-                        <ThemeProvider theme={switchTheme}>
-                            <FormControlLabel
-                                control={
-                                    <Switch checked={metadata?.additionalScheduleRequired} className={`${style.textAlignLeft}`} onChange={() => onAdditionalScheduleChange(!metadata?.additionalScheduleRequired)} />
-                                }
-                                color='primary'
-                                className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                label={metadata?.additionalScheduleRequired ? 'YES' : 'NO'}
-                            />
-                        </ThemeProvider>
+                <CommonLabel value='Additional Schedule*' />
+                <div className={`${style.grid3}`}>
+                    <div className={`${style.fullWidth}`} >
+                        <CommonSwitch checked={metadata?.additionalScheduleRequired} label={metadata?.additionalScheduleRequired ? 'YES' : 'NO'} className={`${style.textAlignLeft} ${style.switchFontStyle} ${style.flexLeft}`} onChange={() => onAdditionalScheduleChange(!metadata?.additionalScheduleRequired)} />
                     </div>
                     {metadata?.additionalScheduleRequired &&
                         <>
-                            <InputGroup value={metadata?.additionalScheduleValue} type="tel" maxLength="2" onChange={(e) => e.target.value >= 0 && handleValueChange('additionalScheduleValue', e.target.value)} className={` ${style.threeFieldWidth}`} />
-                            <Select
-                                displayEmpty
-                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                className={`${style.threeFieldWidth} ${style.marginLeft20}`}
-                                value={metadata?.additionalScheduleFrequency}
+                            <CommonInputField value={metadata?.additionalScheduleValue} type="tel" maxLength="2" onChange={(e) => e.target.value >= 0 && handleValueChange('additionalScheduleValue', e.target.value)} className={` ${style.fullWidth}`} />
+                            <CommonSelectField className={`${style.fullWidth}`}
+                                value={metadata?.additionalScheduleFrequency || ''}
                                 onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
-                            >
-                                <MenuItem value={''}>Select Frequency</MenuItem>
-                                <MenuItem value={'WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Every Week</MenuItem>
-                                <MenuItem value={'EVERY_OTHER_WEEK'} disabled={timeCommitment?.frequency !== 'WEEK'}>Every Other Week</MenuItem>
-                                <MenuItem value={'MONTH'} disabled={timeCommitment?.frequency !== 'MONTH'}>Every Month</MenuItem>
-                                <MenuItem value={'EVERY_OTHER_MONTH'} disabled={timeCommitment?.frequency !== 'MONTH'}>Every Other Month</MenuItem>
-                            </Select>
+                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                valueList={['WEEK', 'EVERY_OTHER_WEEK', 'MONTH', 'EVERY_OTHER_MONTH']}
+                                labelList={['Every Week', 'Every Other Week', 'Every Month', 'Every Other Month']}
+                                disabledList={[timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'MONTH', timeCommitment?.frequency !== 'MONTH']} />
                         </>
                     }
                 </div>
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Billable Service*</div>
+                <CommonLabel value='Billable Service*' />
                 <div className={style.displayInRow}>
                     <div className={`${style.threeFieldWidth}`} >
-                        <ThemeProvider theme={switchTheme}>
-                            <FormControlLabel
-                                control={
-                                    <Switch checked={metadata?.billableService} className={` ${style.textAlignLeft}`} />
-                                }
-                                color='primary'
-                                onChange={(e) => handleValueChange('billableService', !metadata?.billableService)}
-                                className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                label={metadata?.billableService ? 'YES' : 'NO'}
-                            />
-                        </ThemeProvider>
+                        <CommonSwitch checked={metadata?.billableService}
+                            onChange={(e) => handleValueChange('billableService', !metadata?.billableService)}
+                            className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+                            label={metadata?.billableService ? 'YES' : 'NO'} />
                     </div>
                     {
                         // metadata?.billableService &&
@@ -597,10 +580,9 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Service Session Duration</div>
+                <CommonLabel value='Service Session Duration' />
                 <div className={`${style.threeFieldWidth}`}>
-                    <TextField
-                        size="small"
+                    <CommonTextField
                         type="tel"
                         maxLength="3"
                         InputProps={{
@@ -614,11 +596,10 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             {
                 metadata?.billableService &&
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Service Session payment Amount*</div>
+                    <CommonLabel value='Service Session payment Amount*' />
                     <div className={`${style.displayInRow}`}>
                         <div className={`${style.threeFieldWidth}`}>
-                            <TextField
-                                size="small"
+                            <CommonTextField
                                 type="tel"
                                 maxLength="5"
                                 disabled={metadata?.sessionDuration === '' || metadata?.sessionDuration === '0' || metadata?.sessionDuration === undefined}
@@ -630,13 +611,13 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                             />
                         </div>
                         <div className={style.verticalAlignCenter}>
-                            <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>$ {(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)</p>
+                            <CommonLabel className={`${style.marginLeft20}`} value={`$ ${(metadata?.sessionAmount / metadata?.sessionDuration || 0).toFixed(2)} per Hour (Pro Rata)`} />
                         </div>
                     </div>
                 </div>
             }
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Total Contracted Service Sessions*</div>
+                <CommonLabel value='Total Contracted Service Sessions*' />
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <EditableText value={metadata?.totalSession} placeholder="" type='tel' maxLength="3" onChange={(e) => onTotalSessionChange(e)}
@@ -644,38 +625,38 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                         <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase} `}>{specified} Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>
-                        <p className={`${style.extentionLableStyle}`}>For {timeCommitment?.value} {timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year</p>
+                        <CommonLabel value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year`} />
                     </div>
                 </div>
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Service Days*</div>
+                <CommonLabel value='Service Days*' />
                 <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
+                <CommonLabel value='Allowable Working Day Hours For Service*' />
                 <div className={style.displayInRow}>
                     <TimePicker
                         useAmPm={false}
                         onChange={(e) => {
                             updateWorkingPeriod(e);
                         }}
-                        value={new Date(metadata?.workingTimeFrom)}
+                        value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeFrom)}
                     />
                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                     <TimePicker
                         useAmPm={false}
                         onChange={(e) => handleValueChange('workingTimeTo', e)}
-                        value={new Date(metadata?.workingTimeTo)}
+                        value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo) || null}
                     // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                     />
                 </div>
             </div>
 
             {addScheduleAndTargetForDifferentPeriods && (
-                <AddScheduleAndTargetForDifferentPeriods getAddScheduleAndTargetForDifferentPeriods={getAddScheduleAndTargetForDifferentPeriods} initialValue={newClinicRow} onNewClinicChange={onNewClinicChange} selectedScheduleRow={selectedScheduleRow} metadata={metadata} />
+                <AddScheduleAndTargetForDifferentPeriods getAddScheduleAndTargetForDifferentPeriods={getAddScheduleAndTargetForDifferentPeriods} initialValue={newClinicRow} onNewClinicChange={onNewClinicChange} selectedScheduleRow={selectedScheduleRow} metadata={metadata} contractTermPeriod={contractTermPeriod} />
             )}
         </div>
     )

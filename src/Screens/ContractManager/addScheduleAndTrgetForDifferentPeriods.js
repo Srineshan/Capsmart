@@ -9,7 +9,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import style from './index.module.scss';
 
-const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDifferentPeriods, initialValue, onNewClinicChange, selectedScheduleRow, metadata }) => {
+const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDifferentPeriods, initialValue, onNewClinicChange, selectedScheduleRow, metadata, contractTermPeriod }) => {
     const [serviceSchedule, setServiceSchedule] = useState();
     console.log('metadata', metadata);
     useEffect(() => {
@@ -63,6 +63,8 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                                         placeholder: "Start Date"
                                                     }} />}
                                                 value={serviceSchedule?.startDate}
+                                                minDate={new Date(contractTermPeriod?.start)}
+                                                maxDate={new Date(contractTermPeriod?.end)}
                                                 onChange={(newValue) => {
                                                     onScheduleChange('startDate', new Date(newValue));
                                                 }}
@@ -86,6 +88,8 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                                         placeholder: "End Date"
                                                     }} />}
                                                 value={serviceSchedule?.endDate}
+                                                minDate={new Date(contractTermPeriod?.start)}
+                                                maxDate={new Date(contractTermPeriod?.end)}
                                                 onChange={(newValue) => {
                                                     onScheduleChange('endDate', new Date(newValue));
                                                 }}

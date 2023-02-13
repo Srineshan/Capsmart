@@ -72,13 +72,14 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
             temp[i] = (
                 <div className={`${style.tableData} ${style.editableTableGridStyle} ${style.alternativeBackgroundColor} ${style.verticalAlignCenter}`} key={i}>
                     <EditableText placeholder='Enter Service' value={additionalActivity?.[i]?.activity} onChange={(e) => handleActivityChange(e, i, 'activity')} />
-                    <div className={style.displayInRow}>
+                    <div className={`${style.displayInRow}`}>
                         <TimePicker
                             useAmPm={false}
                             disabled={!serviceDays?.weekDays}
                             onChange={(e) => {
                                 handleActivityChange(e, i, 'weekdayFrom');
                             }}
+                            className={style.reducedTimeWidth}
                             value={new Date(additionalActivity?.[i]?.weekdayFrom || new Date())}
                         />
                         <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>

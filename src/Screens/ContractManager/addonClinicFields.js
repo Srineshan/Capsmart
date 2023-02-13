@@ -1,33 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import cloneDeep from 'lodash.clonedeep';
-import { InputGroup, EditableText } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import DatalistInput from 'react-datalist-input';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import Typography from '@mui/material/Typography';
-import Checkbox from '@mui/material/Checkbox';
 import InputAdornment from '@mui/material/InputAdornment';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import { CLINIC, SURGERY, ADDON } from '../../Constants';
+import { CLINIC, PROCEDUREREADING, SURGERY, ADDON } from '../../Constants';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 import { POST, GET, PUT } from './../dataSaver';
 import ReviewerApproverField from './reviewerApproverField';
 import { workFlowDataGenerator } from './workflowDataGenerator';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonTextField from '../../Components/CommonFields/CommonTextField';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
 
 import style from './index.module.scss';
-
-const switchTheme = createTheme({
-  palette: {
-    primary: {
-      main: '#7165E3',
-    },
-  },
-});
 
 const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected }) => {
   const limit5 = 5;
@@ -200,7 +189,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
 
   let serviceList = [];
   let temp = services;
-  temp?.filter(data => [CLINIC, SURGERY]?.includes(data?.activityType?.activityType))?.map(data => {
+  temp?.filter(data => [CLINIC, SURGERY, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
     let activityName = data?.activityType?.activityType;
     let activities = data?.activities?.map(data => data?.activity);
     let result = activities?.length !== 0 ? `${activityName} (${activities?.map(data => data)?.join(', ')})` : `${activityName}`;
@@ -414,22 +403,11 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       {
         !editService && serviceList?.map((service, i) => (
           <div className={style.marginTop20} onClick={() => setSelectedService(service || '')}>
-            <FormGroup>
-              <FormControlLabel control={<Checkbox onChange={(e) => selectService(service, e.target.checked)} checked={selectedServices?.filter(data => data === service)?.map(data => data)?.length !== 0 ? true : false} />} label={<Typography variant="body2">{service}</Typography>} />
-            </FormGroup>
+            <CommonCheckBox onChange={(e) => selectService(service, e.target.checked)} checked={selectedServices?.filter(data => data === service)?.map(data => data)?.length !== 0 ? true : false} label={service} />
             <div className={`${style.addonBoxStyle}`}>
               <div className={`${style.addManagerGrid}`}>
-                <div className={style.extentionLableStyle}>Only Allow Upon Request / Notification Approval</div>
-                <ThemeProvider theme={switchTheme}>
-                  <FormControlLabel
-                    control={
-                      <Switch className={`${style.textAlignLeft}`} onChange={() => handleRequestApprovalChange(service)} checked={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired} />
-                    }
-                    color='primary'
-                    className={`${style.switchFontStyle} ${style.flexLeft} `}
-                    label={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired ? 'YES' : 'NO'}
-                  />
-                </ThemeProvider>
+                <CommonLabel value='Only Allow Upon Request / Notification Approval' />
+                <CommonSwitch label={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={() => handleRequestApprovalChange(service)} checked={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired} />
               </div>
               {metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired &&
                 <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], service) }} value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]} />
@@ -468,31 +446,19 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       {
         metadata?.[0]?.activityResponse?.dataMap?.selectedActivityId === undefined && metadata?.filter(data => !serviceList?.map(service => service)?.includes(data?.performingActivity) || editService)?.map(data => (
           <div className={style.marginTop20} onClick={() => setSelectedService(data?.performingActivity)}>
-            <FormGroup>
-              <FormControlLabel control={<Checkbox checked={selectedServices?.includes(data?.performingActivity)} onChange={(e) => selectService(data?.performingActivity, e.target.checked)} />} label={<Typography variant="body2">{data?.performingActivity?.activity || data?.performingActivity}</Typography>} />
-            </FormGroup>
+            <CommonCheckBox checked={selectedServices?.includes(data?.performingActivity)} onChange={(e) => selectService(data?.performingActivity, e.target.checked)} label={data?.performingActivity?.activity || data?.performingActivity} />
             <div className={`${style.addonBoxStyle} ${style.marginTop20}`}>
               <div className={`${style.addManagerGrid}`}>
-                <div className={style.extentionLableStyle}>Billable Service*</div>
-                <ThemeProvider theme={switchTheme}>
-                  <FormControlLabel
-                    control={
-                      <Switch className={`${style.textAlignLeft}`} checked={data?.billableService} onChange={() => UpdateBillable(data?.performingActivity, !data?.billableService)} />
-                    }
-                    color='primary'
-                    className={`${style.switchFontStyle} ${style.flexLeft} `}
-                    label={data?.billableService ? 'YES' : 'NO'}
-                  />
-                </ThemeProvider>
+                <CommonLabel value='Billable Service*' />
+                <CommonSwitch label={data?.billableService ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={data?.billableService} onChange={() => UpdateBillable(data?.performingActivity, !data?.billableService)} />
               </div>
               {
                 data?.billableService &&
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                  <div className={style.extentionLableStyle}>ADD-ON Payment Rate*</div>
+                  <CommonLabel value='ADD-ON Payment Rate*' />
                   <div className={`${style.displayInRow}`}>
                     <div className={`${style.threeFieldWidth}`}>
-                      <TextField
-                        size="small"
+                      <CommonTextField
                         InputProps={{
                           startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                         }}
@@ -501,37 +467,24 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                       />
                     </div>
                     <div className={style.verticalAlignCenter}>
-                      <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Per Hour</p>
+                      <CommonLabel className={`${style.marginLeft20}`} value='Per Hour' />
                     </div>
                   </div>
                 </div>
               }
 
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Add-On Working Hours*</div>
+                <CommonLabel value='Allowable Add-On Working Hours*' />
                 <div className={style.twoCol}>
-                  <FormGroup className={`${style.marginLeft10}`}>
-                    <FormControlLabel control={<Checkbox checked={data?.workingHours?.normalWorkingHours} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'normalWorkingHours')} />} label={<Typography variant="body2" color="textSecondary">During Normal Working Hours</Typography>} />
-                  </FormGroup>
-                  <FormGroup className={`${style.marginLeft10}`}>
-                    <FormControlLabel control={<Checkbox checked={data?.workingHours?.afterWorkingHours} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'afterWorkingHours')} />} label={<Typography variant="body2" color="textSecondary">After Working Hours</Typography>} />
-                  </FormGroup>
+                  <CommonCheckBox checked={data?.workingHours?.normalWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'normalWorkingHours')} label="During Normal Working Hours" />
+                  <CommonCheckBox checked={data?.workingHours?.afterWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'afterWorkingHours')} label="After Working Hours" />
                 </div>
               </div>
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
+                <CommonLabel value='Specify Service Facility / Location' />
                 <div>
                   <div className={`${style.displayInRow} `}>
-                    <ThemeProvider theme={switchTheme}>
-                      <FormControlLabel
-                        control={
-                          <Switch className={`${style.textAlignLeft}`} checked={data?.locationSpecified} onChange={() => switchShowLocation(data?.performingActivity)} />
-                        }
-                        color='primary'
-                        className={`${style.switchFontStyle} ${style.flexLeft} `}
-                        label={data?.locationSpecified ? 'YES' : 'NO'}
-                      />
-                    </ThemeProvider>
+                    <CommonSwitch label={data?.locationSpecified ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={data?.locationSpecified} onChange={() => switchShowLocation(data?.performingActivity)} />
                     {
                       data?.locationSpecified &&
                       <div className={`${style.addGrid} ${style.fullWidth}`}>
@@ -549,7 +502,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                 </div>
               </div>
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Additional Details*</div>
+                <CommonLabel value='Additional Details*' />
                 <div >
                   {
                     additionalDetails?.map((details, index) => (
@@ -582,22 +535,11 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       {
         editService && metadata?.filter(data => data?.activityResponse?.dataMap?.selectedActivityId)?.map(data => (
           <div className={style.marginTop20}>
-            <FormGroup>
-              <FormControlLabel control={<Checkbox checked={true} />} label={<Typography variant="body2">{data?.performingActivity}</Typography>} />
-            </FormGroup>
+            <CommonCheckBox checked={true} label={data?.performingActivity} />
             <div className={`${style.addonBoxStyle}`}>
               <div className={`${style.addManagerGrid}`}>
-                <div className={style.extentionLableStyle}>Only Allow Upon Request / Notification Approval</div>
-                <ThemeProvider theme={switchTheme}>
-                  <FormControlLabel
-                    control={
-                      <Switch className={`${style.textAlignLeft}`} checked={data?.activityApprovalWFRequired} onChange={() => handleRequestApprovalChange(data?.performingActivity)} />
-                    }
-                    color='primary'
-                    className={`${style.switchFontStyle} ${style.flexLeft} `}
-                    label={data?.activityApprovalWFRequired ? 'YES' : 'NO'}
-                  />
-                </ThemeProvider>
+                <CommonLabel value='Only Allow Upon Request / Notification Approval' />
+                <CommonSwitch label={data?.activityApprovalWFRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={data?.activityApprovalWFRequired} onChange={() => handleRequestApprovalChange(data?.performingActivity)} />
               </div>
               {data?.activityApprovalWFRequired &&
                 <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], data?.performingActivity) }} value={metadata?.[0]?.approver?.userId} />
@@ -636,38 +578,28 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
 
 
       {!editService && <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
-        <InputGroup className={style.fullWidth} placeholder="Enter Add-On Service" value={newServices?.name} onChange={(e) => setNewServices({ ...newServices, 'name': e.target.value })} />
+        <CommonInputField className={style.fullWidth} placeholder="Enter Add-On Service" value={newServices?.name} onChange={(e) => setNewServices({ ...newServices, 'name': e.target.value })} />
         <div className={`${style.addAddonServiceButton} ${style.alignCenter}`} onClick={handleNewServiceName}>ADD ADD-ON SERVICES</div>
       </div>}
 
       {showNewService &&
         <div className={`${style.addonAddBox} ${style.marginTop20}`}>
           <div className={`${style.addManagerGrid}`}>
-            <div className={style.extentionLableStyle}>Add-On Service Name*</div>
-            <InputGroup value={newServices?.name} className={style.fullWidth} onChange={(e) => { handleNewServiceChange('name', e.target.value) }} />
+            <CommonLabel value='Add-On Service Name*' />
+            <CommonInputField value={newServices?.name} className={style.fullWidth} onChange={(e) => { handleNewServiceChange('name', e.target.value) }} />
           </div>
 
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Billable Service*</div>
-            <ThemeProvider theme={switchTheme}>
-              <FormControlLabel
-                control={
-                  <Switch className={`${style.textAlignLeft}`} checked={newServices?.billableService} onChange={() => handleNewServiceChange('billableService', !newServices?.billableService)} />
-                }
-                color='primary'
-                className={`${style.switchFontStyle} ${style.flexLeft} `}
-                label={newServices?.billableService ? 'YES' : 'NO'}
-              />
-            </ThemeProvider>
+            <CommonLabel value='Billable Service*' />
+            <CommonSwitch label={newServices?.billableService ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={newServices?.billableService} onChange={() => handleNewServiceChange('billableService', !newServices?.billableService)} />
           </div>
           {
             newServices?.billableService &&
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-              <div className={style.extentionLableStyle}>ADD-ON Payment Rate*</div>
+              <CommonLabel value='ADD-ON Payment Rate*' />
               <div className={`${style.displayInRow}`}>
                 <div className={`${style.threeFieldWidth}`}>
-                  <TextField
-                    size="small"
+                  <CommonTextField
                     InputProps={{
                       startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>
                     }}
@@ -676,7 +608,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   />
                 </div>
                 <div className={style.verticalAlignCenter}>
-                  <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Per Hour</p>
+                  <CommonLabel className={`${style.marginLeft20}`} value='Per Hour' />
                 </div>
               </div>
             </div>
@@ -684,31 +616,18 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
 
 
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Allowable Add-On Working Hours*</div>
+            <CommonLabel value='Allowable Add-On Working Hours*' />
             <div className={style.twoCol}>
-              <FormGroup className={`${style.marginLeft10}`}>
-                <FormControlLabel control={<Checkbox checked={newServices?.duringNormalWorkingHours} onChange={(e) => { handleNewServiceChange('duringNormalWorkingHours', e.target.checked) }} />} label={<Typography variant="body2" color="textSecondary">During Normal Working Hours</Typography>} />
-              </FormGroup>
-              <FormGroup className={`${style.marginLeft10}`}>
-                <FormControlLabel control={<Checkbox checked={newServices?.afterWorkingHours} onChange={(e => handleNewServiceChange('afterWorkingHours', e.target.checked))} />} label={<Typography variant="body2" color="textSecondary">After Working Hours</Typography>} />
-              </FormGroup>
+              <CommonCheckBox checked={newServices?.duringNormalWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => { handleNewServiceChange('duringNormalWorkingHours', e.target.checked) }} label="During Normal Working Hours" />
+              <CommonCheckBox checked={newServices?.afterWorkingHours} className={`${style.marginLeft10}`} onChange={(e => handleNewServiceChange('afterWorkingHours', e.target.checked))} label="After Working Hours" />
             </div>
           </div>
 
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
+            <CommonLabel value='Specify Service Facility / Location' />
             <div>
               <div className={`${style.displayInRow} `}>
-                <ThemeProvider theme={switchTheme}>
-                  <FormControlLabel
-                    control={
-                      <Switch className={`${style.textAlignLeft}`} checked={newServices?.showLocation} onChange={e => handleNewServiceChange('showLocation', !newServices?.showLocation)} />
-                    }
-                    color='primary'
-                    className={`${style.switchFontStyle} ${style.flexLeft} `}
-                    label={newServices?.showLocation ? 'YES' : 'NO'}
-                  />
-                </ThemeProvider>
+                <CommonSwitch label={newServices?.showLocation ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={newServices?.showLocation} onChange={e => handleNewServiceChange('showLocation', !newServices?.showLocation)} />
                 {
                   newServices?.showLocation &&
                   <div className={`${style.addGrid} ${style.fullWidth}`}>
@@ -727,7 +646,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
           </div>
 
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Additional Details*</div>
+            <CommonLabel value='Additional Details*' />
             <div >
               {
                 additionalDetails?.map((data, index) => (

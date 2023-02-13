@@ -514,8 +514,8 @@ body::-webkit-scrollbar {
 
 .contractedTime {
     display: grid;
-    grid-template-columns: 45% 45%;
-    grid-column-gap: 10%;
+    grid-template-columns: 30% 65%;
+    grid-column-gap: 5%;
 }
 
 .effectiveDateWidth {
@@ -537,7 +537,7 @@ body::-webkit-scrollbar {
     height: 60vh;
     overflow: scroll;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 10px;
     padding: 20px;
 }
 
@@ -1156,7 +1156,7 @@ select {
     display: flex;
     align-items: center;
     padding-left: 10px;
-    padding-top: 8px;
+    // padding-top: 8px;
     width: 40%;
     border-radius: 4px !important;
 }
@@ -1167,7 +1167,7 @@ select {
     align-items: center;
     text-align: left;
     padding-left: 15px;
-    padding-top: 8px;
+    // padding-top: 8px;
     width: 60px;
     border-radius: 4px !important;
 }
@@ -1177,7 +1177,7 @@ select {
     display: flex;
     align-items: center;
     text-align: left;
-    padding-top: 8px;
+    // padding-top: 8px;
     padding-left: 10px;
     width: 50px;
     border-radius: 4px !important;
@@ -1294,10 +1294,15 @@ select {
     width: 75% !important;
 }
 
-.bp4-timepicker .bp4-timepicker-input {
-    width: 23px !important;
+.bp4-timepicker.reducedTimeWidth .bp4-timepicker-input {
+    width: 20px !important;
 }
 
+// .bp4-timepicker.reducedTimeWidth {
+//     & .bp4-timepicker-input {
+//         width: 20px !important;
+//     }
+// }
 
 .ScheduleDialog {
     width: 70% !important;
@@ -1391,6 +1396,11 @@ select {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 20px;
+}
+
+.grid3WithoutGap {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .withNurseGrid {
@@ -2056,8 +2066,8 @@ input[type=number] {
 
 .editableTableGridStyle {
     display: grid;
-    grid-template-columns: 15% 20% 20% 20% 10% 10%;
-    grid-gap: 10px;
+    grid-template-columns: 11% 23% 23% 23% 9% 9%;
+    grid-gap: 5px;
 }
 
 .tableHeaderFontStyle {

@@ -44,10 +44,8 @@ const ProofOfDocumentationByEntity = () => {
                           </p>
                           <p className={style.industriesCardTextStyle1}>7</p>
                         </div>
-                      </div>
-                      <div
-                        className={`${style.industriesCardStyle} ${style.marginTop10}`}
-                      >
+                    </div>
+                    <div className={`${style.industriesCardStyle} ${style.marginTop10}`}>
                         <div className={style.spaceBetween}>
                           <p className={`${style.industriesCardTextStyle1}`}>
                             FINANCE
@@ -61,220 +59,52 @@ const ProofOfDocumentationByEntity = () => {
                         className={`${style.industriesCardStyle} ${style.marginTop10}`}
                       >
                         <div className={style.spaceBetween}>
-                          <p className={style.industriesCardTextStyle1}>
-                            GOVERNMENT
-                          </p>
-                          <p className={style.industriesCardTextStyle1}>0</p>
+                            <p className={style.industriesCardTextStyle1}>GOVERNMENT</p>
+                            <p className={style.industriesCardTextStyle1}>0</p>
                         </div>
-                      </div>
                     </div>
-                    <div>
-                      <div className={style.tableHeaderIndustriesEntity}>
-                        <p className={style.tableHeaderIndustriesFontStyle}>
-                          POD BY HEALTHCARE
-                        </p>
-                      </div>
-                      <div
-                        className={`${style.proofLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-                      >
+                </div>
+                <div>
+                    <div className={style.tableHeaderIndustriesEntity}>
+                        <p className={style.tableHeaderIndustriesFontStyle}>POD BY HEALTHCARE</p>
+                    </div>
+                    <div className={`${style.proofLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
                         <p></p>
-                        <p className={style.tableDataFontStyle}>
-                          Liability Insurance Certificate
-                        </p>
+                        <p className={style.tableDataFontStyle}>Liability Insurance Certificate</p>
                         <p className={style.tableDataFontStyle1}>All</p>
                         <img src={EditBlue} className={style.colorFileStyle} />
-                        <img
-                          src={PodPreview}
-                          className={style.colorFileStyle}
-                        />
-                        <img
-                          src={DeleteHcRow}
-                          className={style.colorFileStyle}
-                        />
-                      </div>
-                      <div
-                        className={`${style.proofLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-                      >
+                        <img src={PodPreview} className={style.colorFileStyle} />
+                        <img src={DeleteHcRow} className={style.colorFileStyle} />
+                    </div>
+                    <div className={`${style.proofLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
                         <p></p>
-                        <p className={style.tableDataFontStyle}>
-                          Worker Compensation Insurance Certificate
-                        </p>
+                        <p className={style.tableDataFontStyle}>Worker Compensation Insurance Certificate</p>
                         <p className={style.tableDataFontStyle1}>All</p>
                         <img src={EditBlue} className={style.colorFileStyle} />
-                        <img
-                          src={PodPreview}
-                          className={style.colorFileStyle}
-                        />
-                        <img
-                          src={DeleteHcRow}
-                          className={style.colorFileStyle}
-                        />
-                      </div>
-                      <div
-                        className={`${style.proofLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-                      >
+                        <img src={PodPreview} className={style.colorFileStyle} />
+                        <img src={DeleteHcRow} className={style.colorFileStyle} />
+                    </div>
+                    <div className={`${style.proofLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
                         <p></p>
-                        <p className={style.tableDataFontStyle}>
-                          Tail Insurance Coverage Certificate
-                        </p>
+                        <p className={style.tableDataFontStyle}>Tail Insurance Coverage Certificate</p>
                         <p className={style.tableDataFontStyle1}>All</p>
                         <img src={EditBlue} className={style.colorFileStyle} />
-                        <img
-                          src={PodPreview}
-                          className={style.colorFileStyle}
-                        />
-                        <img
-                          src={DeleteHcRow}
-                          className={style.colorFileStyle}
-                        />
-                      </div>
-                      <div
-                        className={`${style.proofLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-                      >
+                        <img src={PodPreview} className={style.colorFileStyle} />
+                        <img src={DeleteHcRow} className={style.colorFileStyle} />
+                    </div>
+                    <div className={`${style.proofLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
                         <p></p>
-                        <p className={style.tableDataFontStyle}>
-                          Medical License Certificate
-                        </p>
+                        <p className={style.tableDataFontStyle}>Medical License Certificate</p>
                         <p className={style.tableDataFontStyle1}>Doctor</p>
                         <img src={EditBlue} className={style.colorFileStyle} />
-                        <img
-                          src={PodPreview}
-                          className={style.colorFileStyle}
-                        />
-                        <img
-                          src={DeleteHcRow}
-                          className={style.colorFileStyle}
-                        />
-                      </div>
+                        <img src={PodPreview} className={style.colorFileStyle} />
+                        <img src={DeleteHcRow} className={style.colorFileStyle} />
                     </div>
-                    <Titlebar />
-                    {/* <div className={style.displayInCol}>
-                                            <div className={`${style.industriesCardStyle} ${style.selectedIndustriesBackground}`}>
-                                                <div className={style.spaceBetween}>
-                                                    <p className={style.industriesCardTextStyle1}>HEALTHCARE</p>
-                                                    <p className={style.industriesCardTextStyle1}>7</p>
-                                                </div>
-                                            </div>
-                                            <div className={`${style.industriesCardStyle} ${style.marginTop10}`}>
-                                                <div className={style.spaceBetween}>
-                                                    <p className={`${style.industriesCardTextStyle1}`}>FINANCE</p>
-                                                    <p className={`${style.industriesCardTextStyle1}`}>0</p>
-                                                </div>
-                                            </div>
-                                            <div className={`${style.industriesCardStyle} ${style.marginTop10}`}>
-                                                <div className={style.spaceBetween}>
-                                                    <p className={style.industriesCardTextStyle1}>GOVERNMENT</p>
-                                                    <p className={style.industriesCardTextStyle1}>0</p>
-                                                </div>
-                                            </div>
-                                        </div> */}
-                    {/* Right side Table */}
-                    {/* <div>
-                                            <div className={style.tableHeaderIndustriesEntity}>
-                                                <p className={style.tableHeaderIndustriesFontStyle}>POD BY HEALTHCARE</p>
-                                            </div>
-                                            <div className={`${style.proofLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Liability Insurance Certificate</p>
-                                                <p className={style.tableDataFontStyle1}>All</p>
-                                                <img src={EditBlue} className={style.colorFileStyle} />
-                                                <img src={PodPreview} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={`${style.proofLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Worker Compensation Insurance Certificate</p>
-                                                <p className={style.tableDataFontStyle1}>All</p>
-                                                <img src={EditBlue} className={style.colorFileStyle} />
-                                                <img src={PodPreview} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={`${style.proofLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Tail Insurance Coverage Certificate</p>
-                                                <p className={style.tableDataFontStyle1}>All</p>
-                                                <img src={EditBlue} className={style.colorFileStyle} />
-                                                <img src={PodPreview} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                            <div className={`${style.proofLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
-                                                <p></p>
-                                                <p className={style.tableDataFontStyle}>Medical License Certificate</p>
-                                                <p className={style.tableDataFontStyle1}>Doctor</p>
-                                                <img src={EditBlue} className={style.colorFileStyle} />
-                                                <img src={PodPreview} className={style.colorFileStyle} />
-                                                <img src={DeleteHcRow} className={style.colorFileStyle} />
-                                            </div>
-                                        </div> */}
-                  </div>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
-        <div>
-          <div className={style.tableHeaderIndustriesEntity}>
-            <p className={style.tableHeaderIndustriesFontStyle}>
-              POD BY HEALTHCARE
-            </p>
-          </div>
-          <div
-            className={`${style.proofLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Liability Insurance Certificate
-            </p>
-            <p className={style.tableDataFontStyle1}>All</p>
-            <img src={EditBlue} className={style.colorFileStyle} />
-            <img src={PodPreview} className={style.colorFileStyle} />
-            <img src={DeleteHcRow} className={style.colorFileStyle} />
-          </div>
-          <div
-            className={`${style.proofLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Worker Compensation Insurance Certificate
-            </p>
-            <p className={style.tableDataFontStyle1}>All</p>
-            <img src={EditBlue} className={style.colorFileStyle} />
-            <img src={PodPreview} className={style.colorFileStyle} />
-            <img src={DeleteHcRow} className={style.colorFileStyle} />
-          </div>
-          <div
-            className={`${style.proofLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Tail Insurance Coverage Certificate
-            </p>
-            <p className={style.tableDataFontStyle1}>All</p>
-            <img src={EditBlue} className={style.colorFileStyle} />
-            <img src={PodPreview} className={style.colorFileStyle} />
-            <img src={DeleteHcRow} className={style.colorFileStyle} />
-          </div>
-          <div
-            className={`${style.proofLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-          >
-            <p></p>
-            <p className={style.tableDataFontStyle}>
-              Medical License Certificate
-            </p>
-            <p className={style.tableDataFontStyle1}>Doctor</p>
-            <img src={EditBlue} className={style.colorFileStyle} />
-            <img src={PodPreview} className={style.colorFileStyle} />
-            <img src={DeleteHcRow} className={style.colorFileStyle} />
-          </div>
-        </div>
-      </div>
-      {showPodTypeForHealthcareDialog && (
-        <NewPodTypeForHealthcare
-          getPodTypeForHealthcareDialog={getPodTypeForHealthcareDialog}
-        />
-      )}
-    </Fragment>
-  );
-};
+            {showPodTypeForHealthcareDialog && <NewPodTypeForHealthcare getPodTypeForHealthcareDialog={getPodTypeForHealthcareDialog} />}
+        </Fragment>
+    )
+}
 
 export default ProofOfDocumentationByEntity;

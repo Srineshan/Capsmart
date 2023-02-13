@@ -302,7 +302,20 @@ const SuperAdminDashboard = () => {
                         </div>
                       </div>
                     </Link> */}
-
+                    <div className={style.dashboardCardStyle}>
+                      <h5 className={`${style.headingForReferenceList}`}>
+                        CONTRACTED SERVICES BY INDUSTRIES
+                      </h5>
+                      <div
+                        className={`${style.optionsStyle} ${style.displayInCol}  `}
+                      >
+                        <div className={`${style.dashboardInsideCardStyle} `}>
+                          <span className={style.dashboardCardColorOption1}>
+                            DEFAULT LIST SETUP REQUIRED
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                     <Link
                       to={"/referenceList/holidayListByIndustries"}
                       className={style.linkStyle}
@@ -330,34 +343,6 @@ const SuperAdminDashboard = () => {
                         </div>
                       </div>
                     </Link>
-                    <Link
-                      to={"/referenceList/contractedServicesByIndustries"}
-                      className={style.linkStyle}
-                    >
-                      <div className={style.dashboardCardStyle}>
-                        <h5 className={`${style.headingForReferenceList}`}>
-                          CONTRACTED SERVICES BY INDUSTRIES
-                        </h5>
-                        <div
-                          className={`${style.optionsStyle} ${style.displayInCol}  `}
-                        >
-                          <span className={style.dashboardCardColorOption1}>
-                            DEFAULT LIST IS CREATED
-                          </span>
-                          <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON{" "}
-                            {new Date(lastDate.absenceResons?.lastModified)
-                              .toLocaleString("en-US", {
-                                timeZone: "America/New_York",
-                                year: "numeric",
-                                month: "long",
-                              })
-                              .toUpperCase()}{" "}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-
                     {/* <Link
                       to={"/referenceList/contractDoumentTypeForUpload"}
                       className={style.linkStyle}

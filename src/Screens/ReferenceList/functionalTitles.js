@@ -61,7 +61,7 @@ const FunctionalTitles = ({
     const { data: industryData } = await GET(`entity-service/industryMaster`);
     let allEntries = await Promise.all(industryData.map(entityAllData));
     setAllData(allEntries);
-    console.log(allEntries);
+
     const { data: lastModifiedDate } = await GET(
       `entity-service/referenceList/master`
     );
@@ -256,7 +256,7 @@ const FunctionalTitles = ({
                                   setSelectedTitle(
                                     siteType.contractedServiceProviderType
                                   );
-                                  setIsEdit(false)  ;
+                                  setIsEdit(false);
                                   setSelectedEntity(siteType);
                                 }}
                               >

@@ -1,32 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import FormGroup from '@mui/material/FormGroup';
-import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
-import Popover from '@mui/material/Popover';
 import { GET, TenantID, POST } from './../dataSaver';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import { CLINIC, SURGERY, ONCALL } from '../../Constants';
+import { CLINIC, SURGERY, ONCALL, PROCEDUREREADING } from '../../Constants';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
-import style from './index.module.scss';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonTextField from '../../Components/CommonFields/CommonTextField';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
 
-const switchTheme = createTheme({
-    palette: {
-        primary: {
-            main: '#7165E3',
-        },
-    },
-});
+import style from './index.module.scss';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const AdministrativeFields = ({ getMetaData, services, serviceSelected, editService }) => {
     const [activity, setActivity] = useState([]);
@@ -42,7 +33,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
 
     let specificDedicatedHoursList = [];
-    services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => {
+    services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
         let activities = data?.activities?.map(data => data?.activity);
         let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
@@ -69,8 +60,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         selectedActivities: [],
         weekdaysCount: '0',
         weekendsCount: '0',
-        workingTimeFrom: new Date(),
-        workingTimeTo: new Date(),
+        workingTimeFrom: null,
+        workingTimeTo: null,
     })
 
     useEffect(() => {
@@ -159,7 +150,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const selectedHours = (index) => {
-        let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL]?.includes(data?.activityType?.activityType))?.map(data => data);
+        let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => data);
         let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
         let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
         setMetadata({ ...metadata, dedicatedHoursActivityType: dedicatedHoursActivityType, dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity, sessionAmount: temp[index]?.payableAmount?.value });
@@ -195,7 +186,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         }
     }
 
-    console.log('date', metadata.selectedActivities);
+    console.log('test', showAdminActivity, editAdminActivitySelected);
     const updateWorkingPeriod = (e) => {
         // let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
         setMetadata({ ...metadata, workingTimeFrom: e });
@@ -204,23 +195,14 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Dedicated Hours For Administrative Services*</div>
+                <CommonLabel value='Dedicated Hours For Administrative Services*' />
                 <div className={style.displayInRow}>
                     <div className={`${style.threeFieldWidth}`} >
-                        <ThemeProvider theme={switchTheme}>
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        className={` ${style.textAlignLeft}`}
-                                        checked={metadata?.dedicatedHoursSpecified}
-                                        onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)}
-                                    />
-                                }
-                                color='primary'
-                                className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'}
-                            />
-                        </ThemeProvider>
+                        <CommonSwitch
+                            className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+                            checked={metadata?.dedicatedHoursSpecified} label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'}
+                            onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)}
+                        />
                     </div>
                     {!metadata?.dedicatedHoursSpecified && (
                         <Select
@@ -237,22 +219,40 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                 ))
                             }
                         </Select>
+                        // <CommonSelectField className={`${style.fullWidth}`}
+                        // onChange={(e) => selectedHours(e.target.value)}
+                        // value={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})` || ''}
+                        //  firstOptionLabel={'Select Dedicated Hours'} firstOptionValue={''}
+                        // valueList={specificDedicatedHoursList}
+                        // labelList={specificDedicatedHoursList}
+                        // disabledList={specificDedicatedHoursList?.map(data => false)} />
                     )}
                 </div>
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Administrative Duties & Function To Perform</div>
+                <CommonLabel value='Allowable Administrative Duties & Function To Perform' />
                 <div>
                     {
                         activity?.map((data, index) => (
                             <div className={`${style.displayInRow} ${style.marginBottom10}`}>
-                                <FormGroup className={`${style.marginLeft10}`}>
-                                    <FormControlLabel control={<Checkbox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">{data?.activity}</Typography>} />
-                                </FormGroup>
+                                <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={data?.activity} />
                                 <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
                                 {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                 {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                {
+                                    // metadata?.selectedActivities?.map(data => data?.id).includes(data?.id) ? <>
+                                    //     <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.schedule)?.[0] || ''}</div>
+                                    //     {metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.billable)?.[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                    //     {metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.podRequired)?.[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                    // </> :
+                                    //     <>
+                                    //         <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
+                                    //         {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                    //         {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                    //     </>
+                                }
+
                                 {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={() => {
                                     setEditAdminActivitySelected(true);
                                     setAdminActivity({
@@ -270,47 +270,29 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             </div>
 
             {
-                showAdminActivity || editAdminActivitySelected &&
+                (showAdminActivity || editAdminActivitySelected) &&
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
-                        <div className={style.extentionLableStyle}>Additional Administrative Services Name</div>
-                        <InputGroup placeholder='Add-On Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonLabel value='Additional Administrative Services Name' />
+                        <CommonInputField placeholder='Add-On Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Classify As Billable Activity</div>
+                        <CommonLabel value='Classify As Billable Activity' />
                         <div className={`${style.threeFieldWidth} `}>
-                            <ThemeProvider theme={switchTheme}>
-                                <FormControlLabel
-                                    control={
-                                        <Switch className={`${style.textAlignLeft}`} checked={adminActivity?.billable} onChange={(e) => handleAdminActivity('billable', !adminActivity?.billable)} />
-                                    }
-                                    color='primary'
-                                    className={`${style.switchFontStyle} ${style.flexLeft} `}
-                                    label={adminActivity?.billable ? 'YES' : 'NO'}
-                                />
-                            </ThemeProvider>
+                            <CommonSwitch label={adminActivity?.billable ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={adminActivity?.billable} onChange={(e) => handleAdminActivity('billable', !adminActivity?.billable)} />
                         </div>
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Proof Of Completion / Documentation Required</div>
+                        <CommonLabel value='Proof Of Completion / Documentation Required' />
                         <div className={style.displayInRow}>
                             <div className={`${style.threeFieldWidth} `}>
-                                <ThemeProvider theme={switchTheme}>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch className={`${style.textAlignLeft}`} checked={adminActivity?.podRequired} onChange={(e) => handleAdminActivity('podRequired', !adminActivity?.podRequired)} />
-                                        }
-                                        color='primary'
-                                        className={`${style.switchFontStyle} ${style.flexLeft} `}
-                                        label={adminActivity?.podRequired ? 'YES' : 'NO'}
-                                    />
-                                </ThemeProvider>
+                                <CommonSwitch label={adminActivity?.podRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={adminActivity?.podRequired} onChange={(e) => handleAdminActivity('podRequired', !adminActivity?.podRequired)} />
                             </div>
                             <div className={style.threeFieldWidth}>
-                                <div className={style.extentionLableStyle}>Contracted Schedule*</div>
-                                <Select
+                                <CommonLabel value='Contracted Schedule*' />
+                                {/* <Select
                                     displayEmpty
                                     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                     className={`${style.fullWidth}`}
@@ -321,7 +303,14 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     <MenuItem value={'WEEK'}>Per Week</MenuItem>
                                     <MenuItem value={'MONTH'}>Per Month</MenuItem>
                                     <MenuItem value={'YEAR'}>Per Contract Year</MenuItem>
-                                </Select>
+                                </Select> */}
+                                <CommonSelectField className={`${style.fullWidth}`}
+                                    value={adminActivity?.schedule || ''}
+                                    onChange={(e) => handleAdminActivity('schedule', e.target.value)}
+                                    firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                    valueList={['WEEK', 'MONTH', 'YEAR']}
+                                    labelList={['Per Week', 'Per Month', 'Per Contract Year']}
+                                    disabledList={[false, false, false]} />
                             </div>
                         </div>
                     </div>
@@ -339,7 +328,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             <div>
                 {!showAdminActivity &&
                     <div className={`${style.addGrid} ${style.fullWidth} ${style.marginTop20}`}>
-                        <InputGroup className={style.fullWidth} placeholder='New Additional Administrative Services Name' onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonInputField className={style.fullWidth} placeholder='New Additional Administrative Services Name' onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`} >
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} aria-describedby={id} onClick={(e) => setShowAdminActivity(true)} />
                         </div>
@@ -392,10 +381,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Separate Administrative Hours Specified*</div>
+                <CommonLabel value='Separate Administrative Hours Specified*' />
                 <div className={`${style.threeFieldWidth}`}>
-                    <TextField
-                        size="small"
+                    <CommonTextField
                         type="tel"
                         maxLength="3"
                         InputProps={{
@@ -409,11 +397,10 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             {
                 metadata?.dedicatedHoursSpecified &&
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Administrative Services Payment Amount*</div>
+                    <CommonLabel value='Administrative Services Payment Amount*' />
                     <div className={`${style.displayInRow}`}>
                         <div className={`${style.threeFieldWidth}`}>
-                            <TextField
-                                size="small"
+                            <CommonTextField
                                 type="tel"
                                 maxLength="5"
                                 InputProps={{
@@ -424,32 +411,32 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                             />
                         </div>
                         <div className={style.verticalAlignCenter}>
-                            <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>per Hour</p>
+                            <CommonLabel className={` ${style.marginLeft20}`} value='per Hour' />
                         </div>
                     </div>
                 </div>
             }
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Service Days*</div>
+                <CommonLabel value='Service Days*' />
                 <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
+                <CommonLabel value='Allowable Working Day Hours For Service*' />
                 <div className={style.displayInRow}>
                     <TimePicker
                         useAmPm={false}
                         onChange={(e) => {
                             updateWorkingPeriod(e);
                         }}
-                        value={new Date(metadata?.workingTimeFrom)}
+                        value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
                     />
                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                     <TimePicker
                         useAmPm={false}
                         onChange={(e) => handleValueChange('workingTimeTo', e)}
-                        value={new Date(metadata?.workingTimeTo)}
+                        value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
                     // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                     />
                 </div>
