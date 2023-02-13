@@ -219,11 +219,12 @@ const SuffixByIndustries = ({
           getAddEntityDialog={getAddEntityDialog}
           IndustryId={industryId}
           isEdit={isEdit}
-          seletedEntity={seletedEntity}
+          selectedEntity={seletedEntity}
           selectedTitle={selectedTitle}
           getEntityData={getEntityData}
           tableEntityData={tableEntityData}
           getIndustryData={getIndustryData}
+          callingFrom={'Super Admin'}
         />
       )}
 

@@ -12,20 +12,32 @@ import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
 import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
 import EditBlue from "./../../images/editBlue.png";
+import EditHcBlue from './../../images/editHCBlue.png';
 import DeleteHcRow from "./../../images/deleteHcRow.png";
 import OpenFolderBlue from "./../../images/openFolderBlue.png";
+import AddSuffixEntity from "./addSuffixEntity";
 
 const SuffixByCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
+  const [addEditDialog, setAddEditDialog] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [nameList, setNameList] = useState([]);
+  const [selectedSuffixList, setSelectedSuffixList] = useState([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [allNameSuffix, setAllNameSuffix] = useState([]);
-  const [selectedNameSuffix, setSelectedNameSuffix] = useState([]);
-  const [selectedIndustry, setSelectedIndustry] = useState({});
+  const [masterNameSuffix, setMasterNameSuffix] = useState([]);
+  const [entityNameSuffix, setEntityNameSuffix] = useState([]);
+  const [selectedIndustry, setSelectedIndustry] = useState();
   const [selectedSuffix, setSelectedSuffix] = useState([]);
   const [suffixId, setSuffixId] = useState([]);
   const [suffixData, setSuffixData] = useState([]);
+  const [selectedItem, setSelectedItem] = useState('');
+
+  useEffect(() => {
+    if (selectedIndustry !== undefined) {
+      getIndustryData();
+      getSuffixData();
+    }
+  }, [selectedIndustry])
 
   const handleDelete = (id) => {
     setSuffixId(id);
@@ -38,26 +50,22 @@ const SuffixByCustomer = () => {
   };
 
   const getIndustryData = async () => {
-    const { data: data } = await GET(`entity-service/industryMaster`);
-    setSelectedIndustry(
-      data
-        ?.filter((data) => data?.industry === "HEALTHCARE")
-        ?.map((data) => data)
-    );
+    const { data: data } = await GET(`entity-service/entity/${TenantID}`);
+    setSelectedIndustry(data?.industryId?.id);
   };
 
   const getSuffixData = async () => {
     const { data: suffixData } = await GET(
-      `entity-service/nameSuffixMaster?industryId=${selectedIndustry[0].id}`
+      `entity-service/nameSuffixMaster?industryId=${selectedIndustry}`
     );
-    setAllNameSuffix(suffixData);
+    setMasterNameSuffix(suffixData);
   };
 
   const getSuffixType = async () => {
     const { data: suffixData } = await GET(
-      `entity-service/nameSuffix?industryId=${selectedIndustry[0].id}`
+      `entity-service/nameSuffix?industryId=${selectedIndustry}`
     );
-    setSelectedNameSuffix(suffixData);
+    setEntityNameSuffix(suffixData);
   };
 
   const getDeleteConfirmation = (value) => {
@@ -93,39 +101,39 @@ const SuffixByCustomer = () => {
     let allSuffix = [];
   }, [suffixData]);
 
-  const handleSave = async () => {
-    let datatemp = [];
-    if (nameList.length == 0) {
-      return;
-    }
-    nameList?.map((suffixData) =>
-      datatemp?.push({
-        suffix: suffixData?.suffix,
-        industryId: {
-          id: selectedIndustry[0].id,
+
+  const getAddEntityDialog = (value) => {
+    setAddEditDialog(value);
+    setIsEdit(value);
+  }
+
+  const onSuffixSelect = (data) => {
+    if (!selectedSuffixList?.map(data => data?.suffix)?.includes(data?.suffix)) {
+      let temp = selectedSuffixList;
+      temp.push({
+        "suffix": data?.suffix,
+        "entityId": {
+          "id": TenantID
         },
-        entityId: {
-          id: TenantID,
+        "industryId": {
+          "id": selectedIndustry
         },
+        "customized": true
       })
-    );
-    setNameList([]);
-    setNameList([]);
-    setNameList([]);
-    await setNameList([]);
-    // // return;
-    let data = Array.from(new Set(datatemp));
-    console.log(datatemp);
-    console.log(data);
-    // await POST(`entity-service/nameSuffix`, JSON.stringify(data))
-    //   .then((response) => {
-    //     SuccessToaster("Name Suffix Added Successfully");
-    //     getSuffixType();
-    //   })
-    //   .catch((error) => {
-    //     ErrorToaster(error);
-    //   });
-  };
+      setSelectedSuffixList(temp);
+    }
+  }
+
+  const handleSave = async () => {
+    await POST(`entity-service/nameSuffix`, JSON.stringify(selectedSuffixList))
+      .then((response) => {
+        SuccessToaster("Suffix Added Successfully");
+        getSuffixType();
+      })
+      .catch((error) => {
+        ErrorToaster(error);
+      });
+  }
 
   return (
     <Fragment>
@@ -175,77 +183,18 @@ const SuffixByCustomer = () => {
                       <div
                         className={`${style.customersAdminCardStyle1} ${style.scrollbar}`}
                       >
-                        <div
-                          className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}
-                        >
-                          <Checkbox />
-                          <p className={`${style.TextStyle4}`}>MD</p>
-                        </div>
-                        <div
-                          className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}
-                        >
-                          <Checkbox checked />
-                          <p className={`${style.TextStyle4}`}>DO</p>
-                        </div>
-                        <div
-                          className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}
-                        >
-                          <Checkbox checked />
-                          <p className={`${style.TextStyle4}`}>MS</p>
-                        </div>
-                        <div
-                          className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}
-                        >
-                          <Checkbox />
-                          <p className={`${style.TextStyle4}`}>BD</p>
-                        </div>
-                        <div
-                          className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}
-                        >
-                          <Checkbox />
-                          <p className={`${style.TextStyle4}`}>RN</p>
-                        </div>
-                        <div
-                          className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}
-                        >
-                          <Checkbox checked />
-                          <p className={`${style.TextStyle4}`}>PA</p>
-                        </div>
-                        <div
-                          className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}
-                        >
-                          <Checkbox />
-                          <p className={`${style.TextStyle4}`}>RPA</p>
-                        </div>
-                        <div
-                          className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}
-                        >
-                          <Checkbox />
-                          <p className={`${style.TextStyle4}`}>PHD</p>
-                        </div>
-                        <div
-                          className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}
-                        >
-                          <Checkbox />
-                          <p className={`${style.TextStyle4}`}>CISCO</p>
-                        </div>
-                        <div
-                          className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}
-                        >
-                          <Checkbox />
-                          <p className={`${style.TextStyle4}`}>CEO</p>
-                        </div>
-                        <div
-                          className={`${style.customersAdminInnerRowsStyle2}  ${style.marginBottom50} ${style.customersAdminBackground2} ${style.displayInRow}`}
-                        >
-                          <Checkbox />
-                          <p className={`${style.TextStyle4}`}>CFO</p>
-                        </div>
+                        {masterNameSuffix?.filter(data => !entityNameSuffix?.map(suffix => suffix?.suffix)?.includes(data?.suffix))?.map(data => (
+                          <div
+                            className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}
+                          >
+                            <Checkbox onChange={() => onSuffixSelect(data)} />
+                            <p className={`${style.TextStyle4}`}>{data?.suffix}</p>
+                          </div>))}
                       </div>
                     </div>
                     <div
                       className={style.customersAdminCardStyle2}
-                      onClick={() => setIsSelected(true)}
+                      onClick={() => { setIsSelected(true); handleSave(); }}
                     >
                       <p
                         className={`${style.holidayScheduleHeadertextStyle1} ${style.colorWhite} ${style.marginTop3}`}
@@ -268,17 +217,38 @@ const SuffixByCustomer = () => {
                         <img
                           src={AddNewEntity}
                           className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          onClick={() => { setAddEditDialog(true); }}
                         ></img>
                       </div>
-                      <div className={style.customersAdminCardStyle3}>
-                        <p className={style.holidayScheduleCardtextStyle1}>
-                          if you would like to setup your custom list for your
-                          site(s) you can select from the default list on the
-                          left, edit to change labels as needed, and also add
-                          new departments/ service area by clicking on the add
-                          icon
-                        </p>
-                      </div>
+                      {
+                        entityNameSuffix?.length !== 0 ? (
+                          <div
+                            className={`${style.customersAdminCardStyle1} ${style.scrollbar}`}
+                          >
+                            {entityNameSuffix?.map(data => (
+                              <div >
+                                <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
+                                  <p></p>
+                                  <p className={style.tableDataFontStyle}>{data?.suffix}</p>
+                                  <p className={style.tableDataFontStyle}></p>
+                                  <img src={EditBlue} className={style.colorFileStyle} onClick={() => { setAddEditDialog(true); setIsEdit(true); setSelectedItem(data) }} />
+                                  <img src={DeleteHcRow} className={style.colorFileStyle} onClick={() => { handleDelete(data?.id) }} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>)
+                          : (<div className={style.customersAdminCardStyle3}>
+                            <p className={style.holidayScheduleCardtextStyle1}>
+                              if you would like to setup your custom list for your
+                              site(s) you can select from the default list on the
+                              left, edit to change labels as needed, and also add
+                              new departments/ service area by clicking on the add
+                              icon
+                            </p>
+                          </div>
+                          )
+                      }
+
                     </div>
                   </div>
                 </div>
@@ -286,12 +256,24 @@ const SuffixByCustomer = () => {
             </div>
           </div>
         </div>
-        <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-          <p className={style.poweredBy}>© TimeSmartAI</p>
-        </div>
       </div>
-    </Fragment>
+      <div className={style.spaceBetween}>
+        <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+        <p className={style.poweredBy}>© TimeSmartAI</p>
+      </div>
+
+      {showDeleteConfirmation && (
+        <DeleteConfirmation
+          getShowDeleteConfirmation={getShowDeleteConfirmation}
+          getDeleteConfirmation={getDeleteConfirmation}
+          confirmationText="Do you want to delete this Suffix?"
+        />
+      )}
+
+      {
+        addEditDialog && <AddSuffixEntity getAddEntityDialog={getAddEntityDialog} getIndustryData={getSuffixType} selectedEntity={selectedItem} IndustryId={selectedIndustry} isEdit={isEdit} getEntityData={getSuffixType} tableEntityData={entityNameSuffix} callingFrom={'Customer Admin'} />
+      }
+    </Fragment >
   );
 };
 
