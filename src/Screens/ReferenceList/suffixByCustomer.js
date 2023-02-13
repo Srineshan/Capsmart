@@ -115,14 +115,16 @@ const SuffixByCustomer = () => {
     await setNameList([]);
     // // return;
     let data = Array.from(new Set(datatemp));
-    await POST(`entity-service/nameSuffix`, JSON.stringify(data))
-      .then((response) => {
-        SuccessToaster("Name Suffix Added Successfully");
-        getSuffixType();
-      })
-      .catch((error) => {
-        ErrorToaster(error);
-      });
+    console.log(datatemp);
+    console.log(data);
+    // await POST(`entity-service/nameSuffix`, JSON.stringify(data))
+    //   .then((response) => {
+    //     SuccessToaster("Name Suffix Added Successfully");
+    //     getSuffixType();
+    //   })
+    //   .catch((error) => {
+    //     ErrorToaster(error);
+    //   });
   };
 
   return (

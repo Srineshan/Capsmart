@@ -37,6 +37,10 @@
   margin-top: 5px;
 }
 
+.marginAuto{
+  margin: auto;
+}
+
 .margin10 {
   margin: 10px;
 }
@@ -1726,6 +1730,17 @@
   border-radius: 10px;
   opacity: 1;
   margin-top: 10px;
+  padding: 5px;
+}
+
+.customersAdminCardStyle4 {
+  height: 70px;
+  width: 100px;
+  background: #7165e3 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 11px #7165e3;
+  border-radius: 8px;
+  opacity: 1;
+  margin-top: auto;
   padding: 5px;
 }
 

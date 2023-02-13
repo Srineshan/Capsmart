@@ -208,4 +208,4 @@ const AddContractedServiceForHealthcare = ({
   );
 };
 
-export default AddContractedServiceProvider;
+export default AddContractedServiceForHealthcare;
