@@ -22,6 +22,7 @@ import GreenPage from "./../../images/greenPage.png";
 import { Link } from "react-router-dom";
 import { GET, DELETE, POST, TenantID } from "./../dataSaver";
 import { index } from "d3";
+import AddNewDepartments from "./addNewDepartments";
 
 const DepartmentsForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -30,6 +31,7 @@ const DepartmentsForCustomers = () => {
   const [showIconDiv, setShowIconDiv] = useState(false);
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
 
   const [industryData, setIndustryData] = useState([]);
   const [entityData, setEntityData] = useState([]);
@@ -43,6 +45,10 @@ const DepartmentsForCustomers = () => {
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
+  };
+
+  const getAddEntityDialog = (value) => {
+    setShowAddEntityDialog(value);
   };
 
   const getIndustryData = async () => {
@@ -305,6 +311,9 @@ const DepartmentsForCustomers = () => {
                           src={AddNewEntity}
                           alt="OpenFolder"
                           className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          onClick={() => {
+                            getAddEntityDialog(true);
+                          }}
                         ></img>
                       </div>
 
@@ -610,6 +619,11 @@ const DepartmentsForCustomers = () => {
             </div>
           </div>
         </div>
+
+        {showAddEntityDialog && (
+          <AddNewDepartments getAddEntityDialog={getAddEntityDialog} />
+        )}
+
         <div className={style.spaceBetween}>
           <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
           <p className={style.poweredBy}>© TimeSmartAI</p>

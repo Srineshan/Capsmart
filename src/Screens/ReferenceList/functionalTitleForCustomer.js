@@ -82,6 +82,7 @@ const FunctionalTitleForCustomer = () => {
                         >
                           <img
                             src={IndustriesEntityFolder}
+                            alt=""
                             className={`${style.colorFileStyle} ${style.marginLeft5}`}
                           />
                           <p
@@ -140,6 +141,7 @@ const FunctionalTitleForCustomer = () => {
                       <img
                         src={SelectArrow}
                         className={`${style.colorFileStyle4}`}
+                        alt=""
                       />
                     </div>
                     <div>
@@ -152,14 +154,13 @@ const FunctionalTitleForCustomer = () => {
                         </p>
                         <img
                           src={AddNewEntity}
+                          alt={"AddNewEntity"}
                           className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          onClick={() => getAddFunctionalTitlesDialog(true)}
                         ></img>
                       </div>
                       <div className={style.customersAdminCardStyle3}>
-                        <p
-                          className={style.holidayScheduleCardtextStyle1}
-                          onClick={() => getAddFunctionalTitlesDialog(true)}
-                        >
+                        <p className={style.holidayScheduleCardtextStyle1}>
                           if you would like to setup your custom list for your
                           site(s) you can select from the default list on the
                           left, edit to change labels as needed, and also add

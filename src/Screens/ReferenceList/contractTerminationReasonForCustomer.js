@@ -13,12 +13,11 @@ import { Link } from "react-router-dom";
 
 const TerminationReasonForCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
-  const [showAddTerminationReasonsDialog, setAddTerminationReasonsDialog] =
-    useState(false);
+  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const getAddTerminationReasonsDialog = (value) => {
-    setAddTerminationReasonsDialog(value);
+  const getAddEntityDialog = (value) => {
+    setShowAddEntityDialog(value);
   };
 
   const getIsExpanded = (value) => {
@@ -43,7 +42,7 @@ const TerminationReasonForCustomer = () => {
               <div
                 className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}
               >
-                FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS BY SITE TYPES
+                TERMINATION REASONS BY ENTITY / SITES
               </div>
               <div
                 className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
@@ -83,6 +82,7 @@ const TerminationReasonForCustomer = () => {
                         >
                           <img
                             src={IndustriesEntityFolder}
+                            ALT="SelectArrow"
                             className={`${style.colorFileStyle} ${style.marginLeft5}`}
                           />
                           <p
@@ -101,6 +101,7 @@ const TerminationReasonForCustomer = () => {
                         >
                           <img
                             src={IndustriesEntityFolder}
+                            ALT="SelectArrow"
                             className={`${style.colorFileStyle} ${style.marginLeft5}`}
                           />
                           <p
@@ -119,6 +120,7 @@ const TerminationReasonForCustomer = () => {
                         >
                           <img
                             src={IndustriesEntityFolder}
+                            ALT="SelectArrow"
                             className={`${style.colorFileStyle} ${style.marginLeft5}`}
                           />
                           <p
@@ -137,6 +139,7 @@ const TerminationReasonForCustomer = () => {
                         >
                           <img
                             src={IndustriesEntityFolder}
+                            ALT="SelectArrow"
                             className={`${style.colorFileStyle} ${style.marginLeft5}`}
                           />
                           <p
@@ -198,6 +201,7 @@ const TerminationReasonForCustomer = () => {
                       </p>
                       <img
                         src={SelectArrow}
+                        ALT="SelectArrow"
                         className={`${style.colorFileStyle4}`}
                       />
                     </div>
@@ -211,8 +215,9 @@ const TerminationReasonForCustomer = () => {
                         </p>
                         <img
                           src={AddNewEntity}
+                          ALT="SelectArrow"
                           className={`${style.colorFileStyle} ${style.marginLeft150} `}
-                          onClick={() => getAddTerminationReasonsDialog(true)}
+                          onClick={() => getAddEntityDialog(true)}
                         ></img>
                       </div>
                       <div className={style.customersAdminCardStyle3}>
@@ -232,10 +237,8 @@ const TerminationReasonForCustomer = () => {
           </div>
         </div>
       </div>
-      {showAddTerminationReasonsDialog && (
-        <AddTerminationReasons
-          getAddTerminationReasonsDialog={getAddTerminationReasonsDialog}
-        />
+      {showAddEntityDialog && (
+        <AddTerminationReasons getAddEntityDialog={getAddEntityDialog} />
       )}
     </Fragment>
   );

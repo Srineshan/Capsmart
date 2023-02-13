@@ -178,6 +178,7 @@ const ContractServiceProviderBySite = () => {
                       <img
                         src={SelectArrow}
                         className={`${style.colorFileStyle4}`}
+                        alt="SelectArrow"
                       />
                     </div>
                     <div>

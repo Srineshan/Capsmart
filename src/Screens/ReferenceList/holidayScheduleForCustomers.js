@@ -202,6 +202,7 @@ const HolidayScheduleForCustomers = () => {
                     <img
                       src={CrossPink}
                       className={`${style.colorFileStyle2} ${style.marginLeft20}`}
+                      alt=""
                     />
                   </Link>
                 </div>
@@ -227,6 +228,7 @@ const HolidayScheduleForCustomers = () => {
                                 <img
                                   src={IndustriesEntityFolder}
                                   className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                                  alt=""
                                 />
                                 <p
                                   className={`${style.boardCertificationTextStyle2} ${style.marginLeft10} ${style.marginTop10}`}
@@ -303,6 +305,7 @@ const HolidayScheduleForCustomers = () => {
                         </p>
                         <img
                           src={SelectArrow}
+                          alt=""
                           className={`${style.colorFileStyle4}`}
                         />
                       </div>
@@ -319,7 +322,9 @@ const HolidayScheduleForCustomers = () => {
                             </p>
                             <img
                               src={AddNewEntity}
+                              alt=""
                               className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                              onClick={() => getAddCompanyHolidayDialog(true)}
                             ></img>
                           </div>
                         )}
@@ -359,6 +364,7 @@ const HolidayScheduleForCustomers = () => {
                                       <p></p>
                                       <img
                                         src={AddNewEntity}
+                                        alt=""
                                         className={`${style.colorFileStyle}`}
                                         onClick={() =>
                                           getAddCompanyHolidayDialog(true)
@@ -407,6 +413,7 @@ const HolidayScheduleForCustomers = () => {
                                             </p>
                                             <img
                                               src={EditHcRow}
+                                              alt=""
                                               className={style.colorFileStyle}
                                               onClick={() => {
                                                 setIsEdit(true);
@@ -416,6 +423,7 @@ const HolidayScheduleForCustomers = () => {
                                             />
                                             <img
                                               src={DeleteHcRow}
+                                              alt=""
                                               className={style.colorFileStyle}
                                               onClick={() => {
                                                 handleDelete(innerData?.id);
