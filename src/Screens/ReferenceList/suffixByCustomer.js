@@ -22,6 +22,7 @@ const SuffixByCustomer = () => {
   const [addEditDialog, setAddEditDialog] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [nameList, setNameList] = useState([]);
+  const [selectedTitle, setSelectedTitle] = useState('');
   const [selectedSuffixList, setSelectedSuffixList] = useState([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [masterNameSuffix, setMasterNameSuffix] = useState([]);
@@ -52,6 +53,7 @@ const SuffixByCustomer = () => {
   const getIndustryData = async () => {
     const { data: data } = await GET(`entity-service/entity/${TenantID}`);
     setSelectedIndustry(data?.industryId?.id);
+    setSelectedTitle(data?.industryId?.name || '');
   };
 
   const getSuffixData = async () => {
@@ -183,8 +185,8 @@ const SuffixByCustomer = () => {
                       <div
                         className={`${style.customersAdminCardStyle1} ${style.scrollbar}`}
                       >
-                        {masterNameSuffix?.filter(data => !entityNameSuffix?.map(suffix => suffix?.suffix)?.includes(data?.suffix))?.map(data => (
-                          <div
+                        {masterNameSuffix?.filter(data => !entityNameSuffix?.map(suffix => suffix?.suffix)?.includes(data?.suffix))?.map((data, index) => (
+                          <div key={`${data?.suffix} ${index}`}
                             className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}
                           >
                             <Checkbox onChange={() => onSuffixSelect(data)} />
@@ -271,7 +273,7 @@ const SuffixByCustomer = () => {
       )}
 
       {
-        addEditDialog && <AddSuffixEntity getAddEntityDialog={getAddEntityDialog} getIndustryData={getSuffixType} selectedEntity={selectedItem} IndustryId={selectedIndustry} isEdit={isEdit} getEntityData={getSuffixType} tableEntityData={entityNameSuffix} callingFrom={'Customer Admin'} />
+        addEditDialog && <AddSuffixEntity getAddEntityDialog={getAddEntityDialog} getIndustryData={getSuffixType} selectedEntity={selectedItem} IndustryId={selectedIndustry} isEdit={isEdit} getEntityData={getSuffixType} tableEntityData={entityNameSuffix} callingFrom={'Customer Admin'} selectedTitle={selectedTitle} />
       }
     </Fragment >
   );
