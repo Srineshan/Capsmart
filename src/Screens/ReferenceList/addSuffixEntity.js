@@ -29,6 +29,8 @@ const AddSuffixEntity = ({
   const [createdDate, setCreatedDate] = useState("");
   const [addSuffix, setAddSuffix] = useState(true);
 
+  console.log('selectedEntiy', selectedEntity);
+
   const saveSubmitHandler = async (type) => {
     const isPresent = tableEntityData.find((p) => p.suffix === entityName);
     if (isPresent) {
@@ -43,7 +45,7 @@ const AddSuffixEntity = ({
     }
 
     const data = {
-      ...(isEdit && { id: entityId }),
+      ...(isEdit && { id: selectedEntity?.id }),
       ...(isEdit && { createdDate: createdDate }),
       suffix: entityName,
       industryId: {
@@ -71,7 +73,7 @@ const AddSuffixEntity = ({
         });
     } else {
       await PUT(
-        ApiUrl,
+        `${ApiUrl}/${data?.id}`,
         JSON.stringify(ApiData)
       )
         .then((response) => {

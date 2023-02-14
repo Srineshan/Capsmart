@@ -192,7 +192,7 @@ const AbsenceReasonsForCustomer = () => {
                                                                 <img src={DeleteHcRow} className={style.colorFileStyle} onClick={() => handleDeleteAbsenceReason(data?.id)} />
                                                             </div>
                                                         ))}
-                                                        <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor3} ${style.displayInRow}`}>
+                                                        {/* <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor3} ${style.displayInRow}`}>
                                                             <p></p>
                                                             <p className={style.tableDataFontStyle}>Other Reason for your Planned Absence</p>
                                                             <p className={style.tableDataFontStyle}>14 Days Prior</p>
@@ -202,7 +202,7 @@ const AbsenceReasonsForCustomer = () => {
                                                         <div className={`${style.customerAdminTableData3} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
                                                             <p></p>
                                                             <p className={`${style.tableDataFontStyle} ${style.specifyOtherBox}`}> Specify Other</p>
-                                                        </div>
+                                                        </div> */}
                                                         <div className={style.terminationHeader}>
                                                             <img src={IndustriesEntityFolder} alt="IndustriesEntityFolder" className={`${style.colorFileStyle} ${style.marginLeft5}`} />
                                                             <p className={style.tableHeaderIndustriesFontStyle}>UNPLANNED ABSENCE REASONS</p>
@@ -218,7 +218,7 @@ const AbsenceReasonsForCustomer = () => {
                                                                 <img src={DeleteHcRow} className={style.colorFileStyle} />
                                                             </div>
                                                         ))}
-                                                        <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor3} ${style.displayInRow}`}>
+                                                        {/* <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor3} ${style.displayInRow}`}>
                                                             <p></p>
                                                             <p className={style.tableDataFontStyle}>Other Reason for your UnPlanned Absence</p>
                                                             <p className={style.tableDataFontStyle}>14 Days Prior</p>
@@ -228,7 +228,7 @@ const AbsenceReasonsForCustomer = () => {
                                                         <div className={`${style.customerAdminTableData3} ${style.healthCareTableDataColor2} ${style.displayInRow}`}>
                                                             <p></p>
                                                             <p className={`${style.tableDataFontStyle} ${style.specifyOtherBox}`}> Specify Other</p>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                     :
                                                     <p className={style.holidayScheduleCardtextStyle1}>

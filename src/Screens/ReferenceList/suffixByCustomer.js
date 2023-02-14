@@ -22,7 +22,7 @@ const SuffixByCustomer = () => {
   const [addEditDialog, setAddEditDialog] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [nameList, setNameList] = useState([]);
-  const [selectedTitle, setSelectedTitle] = useState('');
+  const [selectedTitle, setSelectedTitle] = useState('HEALTHCARE');
   const [selectedSuffixList, setSelectedSuffixList] = useState([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [masterNameSuffix, setMasterNameSuffix] = useState([]);
@@ -53,7 +53,7 @@ const SuffixByCustomer = () => {
   const getIndustryData = async () => {
     const { data: data } = await GET(`entity-service/entity/${TenantID}`);
     setSelectedIndustry(data?.industryId?.id);
-    setSelectedTitle(data?.industryId?.name || '');
+    setSelectedTitle(data?.industryId?.name || 'HEALTHCARE');
   };
 
   const getSuffixData = async () => {
