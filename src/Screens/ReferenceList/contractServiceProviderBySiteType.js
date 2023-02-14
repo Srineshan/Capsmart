@@ -27,6 +27,7 @@ const ContractServiceProviderBySite = () => {
     const [selectedContractedServiceProvider, setSelectedContractedServiceProvider] = useState({});
     const [selectedContractedServiceProviders, setSelectedContractedServiceProviders] = useState([]);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [siteTypeId, setSiteTypeId] = useState('');
 
     useEffect(() => {
         getEntity();
@@ -36,6 +37,11 @@ const ContractServiceProviderBySite = () => {
         getContractedServiceProviderMaster();
         getContractedServiceProvider();
     }, [entityDetails]);
+
+    useEffect(() => {
+        setSiteTypeId(entityDetails?.[0]?.entityType?.id);
+    }, [entityDetails])
+
 
     const getIsExpanded = (value) => {
         setIsExpanded(value);
@@ -47,7 +53,7 @@ const ContractServiceProviderBySite = () => {
 
     const getEntity = async () => {
         const { data: entity } = await GET(`entity-service/entity`);
-        setEntityDetails(entity)
+        setEntityDetails(entity);
     };
 
     const getContractedServiceProviderMaster = async () => {
