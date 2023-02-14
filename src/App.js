@@ -43,6 +43,7 @@ const AbsenceReasonsForCustomer = React.lazy(() => import('./Screens/ReferenceLi
 const SuffixByCustomer = React.lazy(() => import('./Screens/ReferenceList/suffixByCustomer'))
 const ContractDocumentUploadForCustomer = React.lazy(() => import('./Screens/ReferenceList/contractDocumentTypeUploadForCustomer'))
 const ContractServicesByEntityType = React.lazy(() => import('./Screens/ReferenceList/contractedServicesByEntityType'))
+const ContractServiceProviderBySiteType = React.lazy(() => import('./Screens/ReferenceList/contractServiceProviderBySiteType'))
 const ContractServiceProviderForMultiSite = React.lazy(() => import('./Screens/ReferenceList/contractServiceProviderMultiSite'))
 const FunctionalTitleMultiSitesForCustomer = React.lazy(() => import('./Screens/ReferenceList/functionalTitleMultiSitesForCustomer'))
 const TerminationReasonForCustomer = React.lazy(() => import('./Screens/ReferenceList/contractTerminationReasonForCustomer'))
@@ -219,6 +220,10 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/contractedServicesByEntityType"
                 element={<ContractServicesByEntityType />}
+              />
+              <Route
+                path="/referenceList/contractServiceProviderBySiteType"
+                element={<ContractServiceProviderBySiteType />}
               />
               <Route
                 path="/referenceList/contractServiceProviderMultiSite"

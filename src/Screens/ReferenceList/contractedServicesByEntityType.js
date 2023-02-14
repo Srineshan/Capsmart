@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import { DELETE, GET, POST, TenantID } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteHcRow from './../../images/deleteHcRow.png';
+import AddContractedServices from "./addContractedServices";
 
 
 const ContractServicesByEntityType = () => {
@@ -23,8 +24,8 @@ const ContractServicesByEntityType = () => {
     const [contractedServiceType, setContractedServiceType] = useState([]);
     const [showAddContractedServiceDialog, setAddContractedServiceDialog] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
-    const [selectedContractedServiceProvider, setSelectedContractedServiceProvider] = useState({});
-    const [selectedContractedServiceProviders, setSelectedContractedServiceProviders] = useState([]);
+    const [selectedContractedService, setSelectedContractedService] = useState({});
+    const [selectedContractedServiceTypes, setSelectedContractedServiceTypes] = useState([]);
     const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
@@ -36,7 +37,7 @@ const ContractServicesByEntityType = () => {
         setIsExpanded(value);
     };
 
-    const getAddContractedServiceDialog = (value) => {
+    const getAddContractedServicesDialog = (value) => {
         setAddContractedServiceDialog(value);
     }
 
@@ -50,10 +51,10 @@ const ContractServicesByEntityType = () => {
         setContractedServiceType(contractedServiceType);
     };
 
-    const handleDeleteContractedServiceProvider = async (id) => {
-        await DELETE(`entity-service/contractedServiceProvider/${id}`)
+    const handleDeleteContractedServiceType = async (id) => {
+        await DELETE(`entity-service/contractedServiceType/${id}`)
             .then((response) => {
-                SuccessToaster("Customer Service Provider Deleted Successfully");
+                SuccessToaster("Customer Services Deleted Successfully");
                 getContractedServiceType();
             })
             .catch((error) => {
@@ -63,26 +64,28 @@ const ContractServicesByEntityType = () => {
 
     const handleSelectContractedServiceProvider = (e, innerData) => {
         if (e.target.checked) {
-            setSelectedContractedServiceProviders([...selectedContractedServiceProviders, innerData])
+            setSelectedContractedServiceTypes([...selectedContractedServiceTypes, innerData])
         } else {
-            setSelectedContractedServiceProviders(selectedContractedServiceProviders?.filter(data => data?.id !== innerData?.id)?.map(data => data));
+            setSelectedContractedServiceTypes(selectedContractedServiceTypes?.filter(data => data?.service !== innerData?.service)?.map(data => data));
         }
     }
 
+    console.log(selectedContractedServiceTypes)
+
     const handlePostContractedServiceType = async () => {
-        let data = selectedContractedServiceProviders?.map(data => ({ ...data, customized: true, entityId: { id: TenantID } }));
-        if (selectedContractedServiceProviders?.length !== 0) {
-            await POST("entity-service/contractedServiceProvider", JSON.stringify(data))
+        let data = selectedContractedServiceTypes?.map(data => ({ ...data, entityId: { id: TenantID } }));
+        if (selectedContractedServiceTypes?.length !== 0) {
+            await POST("entity-service/contractedServiceType", JSON.stringify(data))
                 .then((response) => {
-                    SuccessToaster("Contracted Service Provider Added Successfully");
+                    SuccessToaster("Contracted Services Added Successfully");
                     getContractedServiceType();
-                    setSelectedContractedServiceProviders([]);
+                    setSelectedContractedServiceTypes([]);
                 })
                 .catch((error) => {
                     ErrorToaster(error);
                 });
         } else {
-            ErrorToaster('Select some Contracted Service Provider from Standard List to add in My Custom List');
+            ErrorToaster('Select some Contracted Services from Standard List to add in My Custom List');
         }
     }
 
@@ -102,7 +105,7 @@ const ContractServicesByEntityType = () => {
                         {/* <SubNavbar/> */}
                         <div className={`${style.displayInRow} ${style.marginTop10}`}>
                             <div className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}>
-                                CONTRACTED SERVICE PROVIDERS BY ENTITY / SITE TYPES
+                                CONTRACTED SERVICES FOR HEALTHCARE
                             </div>
                             <div className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}>
                                 UPDATED ON FEB 16, 2022 16:45 EST
@@ -120,10 +123,10 @@ const ContractServicesByEntityType = () => {
                                                 <p className={`${style.holidayScheduleHeadertextStyle1} ${style.marginLeft20}`}> STANDARD LIST IN USE- DEFAULT </p>
                                             </div>
                                             <div className={style.customersAdminCardStyle1}>
-                                                {contractedServiceTypeMaster?.filter(data => !contractedServiceType.some(customerData => customerData?.contractedServiceProviderType === data?.contractedServiceProviderType))?.map((data, index) => (
+                                                {contractedServiceTypeMaster?.filter(data => !contractedServiceType.some(customerData => customerData?.service === data?.service))?.map((data, index) => (
                                                     <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`} key={index}>
-                                                        <Checkbox checked={selectedContractedServiceProviders?.filter(innerData => innerData?.id === data?.id)?.length !== 0} onChange={(e) => handleSelectContractedServiceProvider(e, data)} />
-                                                        <p className={`${style.TextStyle4} ${style.marginLeft5}`}>{data?.contractedServiceProviderType}</p>
+                                                        <Checkbox checked={selectedContractedServiceTypes?.filter(innerData => innerData?.service === data?.service)?.length !== 0} onChange={(e) => handleSelectContractedServiceProvider(e, data)} />
+                                                        <p className={`${style.TextStyle4} ${style.marginLeft5}`}>{data?.service}</p>
                                                     </div>
                                                 ))}
                                             </div>
@@ -136,15 +139,15 @@ const ContractServicesByEntityType = () => {
                                             <div className={`${style.holidayScheduleHeader2}`}>
                                                 <p></p>
                                                 <p className={`${style.holidayScheduleHeadertextStyle1}`}>MY CUSTOM LIST TO USE</p>
-                                                <img src={AddNewEntity} className={`${style.colorFileStyle} ${style.marginLeft150} `} onClick={() => { getAddContractedServiceDialog(true); setIsEdit(false) }} ></img>
+                                                <img src={AddNewEntity} className={`${style.colorFileStyle} ${style.marginLeft150} `} onClick={() => { getAddContractedServicesDialog(true); setIsEdit(false) }} ></img>
                                             </div>
                                             <div className={style.customersAdminCardStyle3} >
                                                 {contractedServiceType?.length !== 0 ? contractedServiceType?.map((data, index) => (
                                                     <div className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`} key={index}>
-                                                        <p className={style.tableDataFontStyle}>{data?.contractedServiceProviderType}</p>
+                                                        <p className={style.tableDataFontStyle}>{data?.service}</p>
                                                         <div className={style.displayInRow}>
-                                                            <img src={EditBlue} className={style.colorFileStyle} onClick={() => { setIsEdit(true); getAddContractedServiceDialog(true); setSelectedContractedServiceProvider(data) }} />
-                                                            <img src={DeleteHcRow} className={`${style.colorFileStyle} ${style.marginLeft20}`} onClick={() => handleDeleteContractedServiceProvider(data?.id)} />
+                                                            <img src={EditBlue} className={style.colorFileStyle} onClick={() => { setIsEdit(true); getAddContractedServicesDialog(true); setSelectedContractedService(data) }} />
+                                                            <img src={DeleteHcRow} className={`${style.colorFileStyle} ${style.marginLeft20}`} onClick={() => handleDeleteContractedServiceType(data?.id)} />
                                                         </div>
                                                     </div>
                                                 )) :
@@ -164,8 +167,8 @@ const ContractServicesByEntityType = () => {
                     </div>
                 </div>
             </div>
-            {/* {showAddContractedServiceDialog && <AddContractedServiceForHospital getAddContractedServiceDialog={getAddContractedServiceDialog} isEdit={isEdit} selectedContractedServiceProvider={selectedContractedServiceProvider}
-                entityType={selectedEntityType} siteTypeId={siteTypeId} getContractedServiceProvider={getContractedServiceProvider} />} */}
+            {showAddContractedServiceDialog && <AddContractedServices getAddContractedServicesDialog={getAddContractedServicesDialog} isEdit={isEdit} selectedContractedService={selectedContractedService}
+                getContractedServiceType={getContractedServiceType} />}
         </Fragment>
     )
 }
