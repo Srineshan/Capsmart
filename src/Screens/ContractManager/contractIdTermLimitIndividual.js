@@ -876,7 +876,7 @@ const ContractIdTermLimitIndividual = (
       {isEditable &&
         (<div className={`${style.floatRight} ${style.marginTop20}`}>
           <button className={style.newContractOutlinedButton} onClick={() => addContract('Save In Progress')}>SAVE IN-PROGRESS</button>
-          <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { addContract('Continue'); getViewPage2(true); getViewPage1(false); getCurrentPage('Contracted Services Provider(s)') }}>CONTINUE</button>
+          <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { addContract('Continue'); }}>CONTINUE</button>
         </div>)
       }
 

@@ -29,13 +29,19 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
 
   useEffect(() => {
     setSiteData(selectedSites);
-    setDepartmentsSelected(selectedSites);
+    // setDepartmentsSelected(selectedSites);
     if (sites?.length === 1) {
       console.log('inside selected SIte');
       setDefaultSelected({ ...defaultSelected, site: selectedSites?.[0]?.id });
       onSiteSelected(sites?.[0]?.id);
     }
   }, [selectedSites])
+
+  useEffect(() => {
+    if (selectedSite !== undefined && departmentsSelected?.length !== 0) {
+      onAdd();
+    }
+  }, [departmentsSelected])
 
 
   const onDepartmentSelect = (e) => {
@@ -161,9 +167,10 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
             }}
           />
         </FormControl> */}
-        <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+
+        {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
           <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={onAdd} />
-        </div>
+        </div> */}
       </div>
       {
         siteData?.filter(site => site?.departmentList?.departments?.length !== 0)?.map((site, siteIndex) => (

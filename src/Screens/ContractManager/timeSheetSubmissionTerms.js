@@ -106,6 +106,8 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     }
   }, [selectedSites])
 
+  console.log('paymentSource', paymentSource);
+
   const getTimeSheetWorkFlow = async () => {
     const { data: timesheetWorkFlow } = await GET('timesheet-management-service/workflow');
     if (timesheetWorkFlow) {
@@ -220,6 +222,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           }
         })
       })
+      console.log('paymentSource', paymentSource);
       let value = Array.isArray(paymentSource?.[index]) ? paymentSource?.[index]?.[0] : paymentSource?.[index];
       let site = value !== null ? { "site": value } : undefined;
       if (timeSheetCount > 1) {
@@ -265,7 +268,6 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
   const onSelectSite = (value) => {
     setSelectedSites(value);
-
   }
 
   const getTimesheetFields = () => {
@@ -275,7 +277,9 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         <div key={`${i}temp${timeSheetCount + 1}`} className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20}`}>
           <div className={`${style.extentionGrid}`}>
             <CommonLabel value={`Timesheets label ${i + 1} for processing`} />
-            <CommonInputField className={style.fullWidth} value={timeSheetLabelData?.[i]?.label} onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)} />
+            <CommonInputField className={style.fullWidth} value={timeSheetLabelData?.[i]?.label}
+            // onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)} 
+            />
           </div>
           {timeSheetCount > 1 && (
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
