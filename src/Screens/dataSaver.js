@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {Auth, GetEntityDetails, GetRoles} from './../utils/auth';
+import React, { useEffect } from 'react';
+import { Auth, GetEntityDetails, GetRoles } from './../utils/auth';
 import Cookie from 'universal-cookie';
 import axios from "axios";
 import jwt from 'jwt-decode';
@@ -13,28 +13,28 @@ const baseUrl = 'https://rest.timesmart.io';
 let cookie = new Cookie();
 let tenantId = cookie.get('entityId');
 const headers = {
-'Content-Type': 'application/json',
-'X-tenantID' : TenantID,
-'Authorization': `Bearer ${accessToken}`
+    'Content-Type': 'application/json',
+    'X-tenantID': TenantID,
+    'Authorization': `Bearer ${accessToken}`
 }
 
 export const GET = (url) => {
-return axios(`${baseUrl}/${url}`,{
-    method: 'GET',
-    headers: headers,
-});
+    return axios(`${baseUrl}/${url}`, {
+        method: 'GET',
+        headers: headers,
+    });
 }
 
-export const PUT = (url,data) => {
-return axios(`${baseUrl}/${url}`,{
-    method: 'PUT',
-    headers: headers,
-    data,
-})
+export const PUT = (url, data) => {
+    return axios(`${baseUrl}/${url}`, {
+        method: 'PUT',
+        headers: headers,
+        data,
+    })
 }
 
-export const POST = (url,data) => {
-    return axios(`${baseUrl}/${url}`,{
+export const POST = (url, data) => {
+    return axios(`${baseUrl}/${url}`, {
         method: 'POST',
         headers: headers,
         data,
@@ -42,7 +42,7 @@ export const POST = (url,data) => {
 }
 
 export const DELETE = (url) => {
-    return axios(`${baseUrl}/${url}`,{
+    return axios(`${baseUrl}/${url}`, {
         method: 'DELETE',
         headers: headers,
     })
