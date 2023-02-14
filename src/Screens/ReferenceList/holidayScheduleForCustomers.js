@@ -26,16 +26,16 @@ const HolidayScheduleForCustomers = () => {
   const [holidayCustomerData, setHolidayCustomerData] = useState([]);
   const [selectedIndustry, setSelectedIndustry] = useState({});
   const [country, setCountry] = useState("USA");
+  const [years, setYears] = useState([]);
   const [isOpenLeftFolder, setIsOpenLeftFolder] = useState(false);
   const [leftFolderOpenIndex, setLeftFolderOpenIndex] = useState(0);
-  const [uniqueYears, setUniqueYears] = useState([]);
-  const [customerUniqueYears, setCustomerUniqueYears] = useState([]);
-  const [selectedHolidays, setSelectedHolidays] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedHoliday, setSelectedHoliday] = useState({});
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [holidayId, setHolidayId] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedHolidayList, setSelectedHolidayList] = useState([]);
 
   const getAddCompanyHolidayDialog = (value) => {
     setShowAddCompanyDialog(value);
@@ -45,33 +45,39 @@ const HolidayScheduleForCustomers = () => {
     setIsExpanded(value);
   };
 
+  useEffect(() => {
+    if (selectedIndustry !== undefined) {
+      getIndustryData();
+      getYearMasterData();
+      getHolidayData();
+    }
+  }, [selectedIndustry]);
+
   const getIndustryData = async () => {
-    const { data: data } = await GET(`entity-service/industryMaster`);
-    setSelectedIndustry(
-      data
-        ?.filter((data) => data?.industry === "HEALTHCARE")
-        ?.map((data) => data)
-    );
+    const { data: Industry } = await GET(`entity-service/entity/${TenantID}`);
+    setSelectedIndustry(Industry?.industryId?.id);
   };
 
-  const getHolidayMasterData = async () => {
+  const getYearMasterData = async () => {
+    const { data: yearsData } = await GET(
+      `entity-service/yearMaster?industryId=${selectedIndustry}`
+    );
+    setYears(yearsData);
+    setSelectedYear(yearsData?.[0]?.year);
+  };
+
+  const getHolidayMasterData = async (selectedYear) => {
     const { data: holidayData } = await GET(
-      `entity-service/holidayMaster?industryId=${selectedIndustry[0].id}&country=${country}`
+      `entity-service/holidayMaster?industryId=${selectedIndustry}&country=${country}&year=${selectedYear}`
     );
-    setHolidayData(
-      holidayData
-        ?.filter((data) => data?.country === "USA")
-        ?.map((data) => data)
-    );
+    setHolidayData(holidayData);
   };
 
   const getHolidayData = async () => {
-    const { data: holidayData } = await GET(`entity-service/holiday`);
-    setHolidayCustomerData(
-      holidayData
-        ?.filter((data) => data?.country === "USA")
-        ?.map((data) => data)
+    const { data: holidayData } = await GET(
+      `entity-service/holiday?country=${country}&&year=${selectedYear}`
     );
+    setHolidayCustomerData(holidayData);
   };
 
   const handleDelete = (id) => {
@@ -101,8 +107,8 @@ const HolidayScheduleForCustomers = () => {
   };
 
   useEffect(() => {
-    getHolidayMasterData();
-  }, [selectedIndustry]);
+    getHolidayMasterData(selectedYear);
+  }, [selectedYear]);
 
   useEffect(() => {
     getIndustryData();
@@ -110,54 +116,35 @@ const HolidayScheduleForCustomers = () => {
 
   useEffect(() => {
     getHolidayData();
-  }, [showAddCompanyDialog]);
+  }, [selectedIndustry, selectedYear]);
 
-  useEffect(() => {
-    let allYears = [];
-    holidayData?.map((data) =>
-      allYears?.push(format(new Date(data?.eventDate), "yyyy"))
-    );
-    setUniqueYears(Array.from(new Set(allYears.map((item) => item))));
-  }, [holidayData]);
-
-  useEffect(() => {
-    let allYears = [];
-    holidayCustomerData?.map((data) =>
-      allYears?.push(format(new Date(data?.eventDate), "yyyy"))
-    );
-    setCustomerUniqueYears(Array.from(new Set(allYears.map((item) => item))));
-  }, [holidayCustomerData]);
-
-  const handleSelectHolidays = (e, innerData) => {
-    if (e.target.checked) {
-      setSelectedHolidays([...selectedHolidays, innerData]);
-    } else {
-      setSelectedHolidays(
-        selectedHolidays
-          ?.filter((data) => data?.eventName !== innerData?.eventName)
-          ?.map((data) => data)
-      );
+  const handleSelectHolidays = (innerData) => {
+    if (
+      !selectedHolidayList
+        ?.map((innerData) => innerData?.eventName)
+        ?.includes(innerData?.eventName)
+    ) {
+      let temp = selectedHolidayList;
+      temp.push({
+        eventType: innerData?.eventType,
+        stateName: innerData?.stateName,
+        eventName: innerData?.eventName,
+        eventDate: innerData?.eventDate,
+        country: innerData?.country,
+        year: innerData?.year,
+        entityId: {
+          id: TenantID,
+        },
+        customized: true,
+      });
+      setSelectedHolidayList(temp);
     }
   };
 
   const handleSave = async () => {
-    let data = [];
-    selectedHolidays?.map((holidayData) =>
-      data?.push({
-        eventType: holidayData?.eventType,
-        stateName: holidayData?.stateName,
-        eventName: holidayData?.eventName,
-        eventDate: holidayData?.eventDate,
-        country: holidayData?.country,
-        entityId: {
-          id: TenantID,
-        },
-      })
-    );
-    console.log(data);
-    await POST("entity-service/holiday", JSON.stringify(data))
+    await POST("entity-service/holiday", JSON.stringify(selectedHolidayList))
       .then((response) => {
-        SuccessToaster("Event Added Successfully");
+        SuccessToaster("Holiday Added Successfully");
         getHolidayData();
       })
       .catch((error) => {
@@ -220,7 +207,7 @@ const HolidayScheduleForCustomers = () => {
                           </p>
                         </div>
                         <div className={style.customersAdminCardStyle1}>
-                          {uniqueYears?.map((data, index) => (
+                          {years?.map((data, index) => (
                             <>
                               <div
                                 className={`${style.boardCertificationSideRows} ${style.displayInRow}`}
@@ -233,7 +220,7 @@ const HolidayScheduleForCustomers = () => {
                                 <p
                                   className={`${style.boardCertificationTextStyle2} ${style.marginLeft10} ${style.marginTop10}`}
                                 >
-                                  {data}
+                                  {data.year}
                                 </p>
                                 <img
                                   src={
@@ -247,49 +234,46 @@ const HolidayScheduleForCustomers = () => {
                                   onClick={() => {
                                     setIsOpenLeftFolder(!isOpenLeftFolder);
                                     setLeftFolderOpenIndex(index);
+                                    setSelectedYear(data.year);
                                   }}
                                 />
                               </div>
+
                               {isOpenLeftFolder &&
                                 leftFolderOpenIndex === index &&
-                                holidayData?.map(
-                                  (innerData, index) =>
-                                    format(
-                                      new Date(innerData?.eventDate),
-                                      "yyyy"
-                                    ) === data && (
-                                      <div
-                                        className={`${style.holidayInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}  ${style.customersAdminBackground2} `}
-                                        key={index}
-                                      >
-                                        <Checkbox
-                                          checked={selectedHolidays?.some(
-                                            (data) =>
-                                              data?.eventName ===
-                                              innerData?.eventName
+                                holidayData
+                                  ?.filter(
+                                    (data) =>
+                                      !holidayCustomerData
+                                        ?.map((event) => event?.eventName)
+                                        ?.includes(data?.eventName)
+                                  )
+                                  ?.map((data) => (
+                                    <div
+                                      className={`${style.holidayInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}  ${style.customersAdminBackground2} `}
+                                    >
+                                      <Checkbox
+                                        onChange={() =>
+                                          handleSelectHolidays(data)
+                                        }
+                                      />
+                                      <div className={style.spaceBetween}>
+                                        <p
+                                          className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft10}`}
+                                        >
+                                          {data?.eventName}
+                                        </p>
+                                        <p
+                                          className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}
+                                        >
+                                          {format(
+                                            new Date(data?.eventDate),
+                                            "MMMM d, yyyy"
                                           )}
-                                          onChange={(e) =>
-                                            handleSelectHolidays(e, innerData)
-                                          }
-                                        />
-                                        <div className={style.spaceBetween}>
-                                          <p
-                                            className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft10}`}
-                                          >
-                                            {innerData?.eventName}
-                                          </p>
-                                          <p
-                                            className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}
-                                          >
-                                            {format(
-                                              new Date(innerData?.eventDate),
-                                              "MMMM d, yyyy"
-                                            )}
-                                          </p>
-                                        </div>
+                                        </p>
                                       </div>
-                                    )
-                                )}
+                                    </div>
+                                  ))}
                             </>
                           ))}
                         </div>
@@ -345,7 +329,7 @@ const HolidayScheduleForCustomers = () => {
                                     HOLIDAY SCHEDULE BY HEALTHCARE
                                   </p>
                                 </div>
-                                {customerUniqueYears?.map((data, index) => (
+                                {holidayCustomerData?.map((data, index) => (
                                   <>
                                     <div
                                       className={`${style.holidayFolderHeader} ${style.marginTop2}`}
