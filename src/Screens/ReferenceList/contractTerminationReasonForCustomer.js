@@ -135,7 +135,7 @@ const TerminationReasonForCustomer = () => {
                           />
                         </div>
                         <div
-                          className={`${style.customersAdminInnerRowsStyle3} ${style.customersAdminBackground2} ${style.displayInRow}`}
+                          className={`${style.customersAdminInnerRowsStyle4} ${style.customersAdminBackground2} ${style.displayInRow}`}
                         >
                           <img
                             src={IndustriesEntityFolder}
@@ -143,47 +143,47 @@ const TerminationReasonForCustomer = () => {
                             className={`${style.colorFileStyle} ${style.marginLeft5}`}
                           />
                           <p
-                            className={`${style.TextStyle2} ${style.marginLeft5}`}
+                            className={`${style.TextStyle5} ${style.marginLeft5}`}
                           >
                             Detrimental Professional Competance / Conduct{" "}
                           </p>
                         </div>
                         <div
-                          className={`${style.customersAdminInnerRowsStyle3} ${style.customersAdminBackground3} ${style.displayInRow}`}
+                          className={`${style.customersAdminInnerRowsStyle4} ${style.customersAdminBackground3} ${style.displayInRow}`}
                         >
                           <Checkbox checked />
                           <p
-                            className={`${style.TextStyle2} ${style.marginLeft5}`}
+                            className={`${style.TextStyle5} ${style.marginLeft5}`}
                           >
                             Complaint or Report Concerning Contractor's Comp
                           </p>
                         </div>
                         <div
-                          className={`${style.customersAdminInnerRowsStyle3} ${style.customersAdminBackground3} ${style.displayInRow}`}
+                          className={`${style.customersAdminInnerRowsStyle4} ${style.customersAdminBackground3} ${style.displayInRow}`}
                         >
                           <Checkbox checked />
                           <p
-                            className={`${style.TextStyle2} ${style.marginLeft5}`}
+                            className={`${style.TextStyle5} ${style.marginLeft5}`}
                           >
                             Complaint or Report Concerning Contractor's Conduct
                           </p>
                         </div>
                         <div
-                          className={`${style.customersAdminInnerRowsStyle3} ${style.customersAdminBackground3} ${style.displayInRow}`}
+                          className={`${style.customersAdminInnerRowsStyle4} ${style.customersAdminBackground3} ${style.displayInRow}`}
                         >
                           <Checkbox />
                           <p
-                            className={`${style.TextStyle2} ${style.marginLeft5}`}
+                            className={`${style.TextStyle5} ${style.marginLeft5}`}
                           >
                             Sexual Misconduct or Sexual Abuse Allegation(s)
                           </p>
                         </div>
                         <div
-                          className={`${style.customersAdminInnerRowsStyle3} ${style.customersAdminBackground3} ${style.displayInRow}`}
+                          className={`${style.customersAdminInnerRowsStyle4} ${style.customersAdminBackground3} ${style.displayInRow}`}
                         >
                           <Checkbox checked />
                           <p
-                            className={`${style.TextStyle2} ${style.marginLeft5}`}
+                            className={`${style.TextStyle5} ${style.marginLeft5}`}
                           >
                             Discrimination and/or Harassment Allegation(s)
                           </p>
