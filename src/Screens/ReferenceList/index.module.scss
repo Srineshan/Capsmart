@@ -37,7 +37,7 @@
   margin-top: 5px;
 }
 
-.marginAuto{
+.marginAuto {
   margin: auto;
 }
 
@@ -370,21 +370,21 @@
   margin-top: 5px !important;
   height: calc(100% - 60px);
 
-  @media (min-width: 768px) and (max-width: 991px) {       
+  @media (min-width: 768px) and (max-width: 991px) {
     font: normal normal bolder 9px/12px Montserrat !important;
- }
-
-  @media (min-width: 992px) and (max-width: 1199px) { 
-      font: normal normal bolder 10px/12px Montserrat !important;
   }
 
-  @media (min-width: 1224px) { 
-         font: normal normal bolder 12px/16px Montserrat !important;
-   }
+  @media (min-width: 992px) and (max-width: 1199px) {
+    font: normal normal bolder 10px/12px Montserrat !important;
+  }
 
-   @media (min-width: 1824px) { 
+  @media (min-width: 1224px) {
+    font: normal normal bolder 12px/16px Montserrat !important;
+  }
+
+  @media (min-width: 1824px) {
     font: normal normal bolder 16px/18px Montserrat !important;
-}
+  }
 
 }
 
@@ -394,24 +394,24 @@
   display: flex;
   justify-content: center;
   font: normal normal normal 12px/14px Montserrat;
-  
-  @media (min-width: 768px) and (max-width: 991px) {       
-    font: normal normal bolder 8px/12px Montserrat !important;
- }
 
-  @media (min-width: 992px) and (max-width: 1199px) { 
-      font: normal normal bolder 10px/12px Montserrat !important;
+  @media (min-width: 768px) and (max-width: 991px) {
+    font: normal normal bolder 8px/12px Montserrat !important;
   }
 
-  @media (min-width: 1224px) { 
-         font: normal normal bolder 12px/16px Montserrat !important;
-         margin-top: 5px !important;
+  @media (min-width: 992px) and (max-width: 1199px) {
+    font: normal normal bolder 10px/12px Montserrat !important;
+  }
 
-   }
+  @media (min-width: 1224px) {
+    font: normal normal bolder 12px/16px Montserrat !important;
+    margin-top: 5px !important;
 
-   @media (min-width: 1824px) { 
+  }
+
+  @media (min-width: 1824px) {
     font: normal normal bolder 14px/16px Montserrat !important;
-}
+  }
 }
 
 .dashboardCardColorOption1 {
@@ -739,6 +739,17 @@
   align-items: center;
   margin-top: 5px;
   grid-template-columns: 3% 40% 47% 5% 5%;
+}
+
+.contractedServiceProviderCard {
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 98%;
+  margin-left: 2%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
 }
 
 .proofLayer3Card {
@@ -1445,6 +1456,18 @@
   font-weight: normal;
   height: 50px;
   width: 90%;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 2%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 7% 84% 5%;
+}
+
+.ContractedServiceProviderHeaderInsideContainer {
+  background: #a097f5 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 50px;
   border-radius: 6px;
   margin-top: 1%;
   margin-left: 2%;
@@ -2212,7 +2235,7 @@
   margin-left: 10px;
 }
 
-.displayTerminationPeriod{
+.displayTerminationPeriod {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2226,24 +2249,24 @@
   color: #52575D;
 }
 
-.inputBoxStyle{
+.inputBoxStyle {
   display: flex;
   gap: 10%;
 }
 
-.labelTextAlignCenter{
+.labelTextAlignCenter {
   text-align: center;
 }
 
-.labelTextAlignColor{
+.labelTextAlignColor {
   color: #7165e3;
 }
 
-.inputGroupText>input{
+.inputGroupText>input {
   text-align: center;
 }
 
-.selectDropdownInputBox{
+.selectDropdownInputBox {
   border-radius: 4px;
   background: transparent url('../../images/arrowDown.png') 0% 0% no-repeat padding-box;
   border: 1px solid #E9E9F0;

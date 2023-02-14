@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, Classes, Icon, Intent, InputGroup } from "@blueprintjs/core";
 import ArrowDown from "./../../images/arrowDown.png";
 import style from "./index.module.scss";
-import { POST, PUT } from "../dataSaver";
+import { POST, PUT, TenantID } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 
 const AddAbsenseReasonsForHealthcare = ({
@@ -14,6 +14,8 @@ const AddAbsenseReasonsForHealthcare = ({
   tableEntityData,
   selectedTitle,
   getIndustryData,
+  absenceReasonCustomer,
+  getAbsenceReason
 }) => {
   const [absenseId, setAbsenseId] = useState("");
   const [absenseType, setAbsenseType] = useState("Planned");
@@ -32,60 +34,111 @@ const AddAbsenseReasonsForHealthcare = ({
   };
 
   const saveSubmitHandler = async (type) => {
-    const isPresent = tableEntityData
-      .filter((e) => e.absenceType === absenseType.toUpperCase())
-      .find((p) => p.absenceReason === absenceReason);
-    if (isPresent) {
-      ErrorToaster("Already This Absence Reason Exists");
-      document.getElementById("absenceEl").focus();
-      getAddEntityDialog(true);
-      return;
-    }
+    if (!absenceReasonCustomer) {
+      const isPresent = tableEntityData
+        .filter((e) => e.absenceType === absenseType.toUpperCase())
+        .find((p) => p.absenceReason === absenceReason);
+      if (isPresent) {
+        ErrorToaster("Already This Absence Reason Exists");
+        document.getElementById("absenceEl").focus();
+        getAddEntityDialog(true);
+        return;
+      }
 
-    if (!absenceReason && absenceReason === "") {
-      document.getElementById("absenceEl").focus();
-      return;
-    }
+      if (!absenceReason && absenceReason === "") {
+        document.getElementById("absenceEl").focus();
+        return;
+      }
 
-    const data = {
-      ...(isEdit && { id: absenseId }),
-      ...(isEdit && { createdDate: createdDate }),
-      absenceType: absenseType.toUpperCase(),
-      absenceReason: absenceReason,
-      notificationPeriod: {
-        numberOfDays: parseInt(notificationPeriod),
-      },
-      industryId: {
-        id: IndustryId,
-      },
-    };
+      const data = {
+        ...(isEdit && { id: absenseId }),
+        ...(isEdit && { createdDate: createdDate }),
+        absenceType: absenseType.toUpperCase(),
+        absenceReason: absenceReason,
+        notificationPeriod: {
+          numberOfDays: parseInt(notificationPeriod),
+        },
+        industryId: {
+          id: IndustryId,
+        },
+      };
 
-    if (!isEdit) {
-      await POST("entity-service/absenceReasonMaster", JSON.stringify(data))
-        .then((response) => {
-          SuccessToaster("Absence Added Successfully");
-          getIndustryData();
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
+      if (!isEdit) {
+        await POST("entity-service/absenceReasonMaster", JSON.stringify(data))
+          .then((response) => {
+            SuccessToaster("Absence Added Successfully");
+            getIndustryData();
+          })
+          .catch((error) => {
+            ErrorToaster(error);
+          });
+      } else {
+        await PUT(
+          `entity-service/absenceReasonMaster/${absenseId}`,
+          JSON.stringify(data)
+        )
+          .then((response) => {
+            SuccessToaster("Absence Updated Successfully");
+            getIndustryData();
+          })
+          .catch((error) => {
+            ErrorToaster(error);
+          });
+      }
+
+      if (type !== "Add More") {
+        getAddEntityDialog(false);
+        getIndustryData();
+      } else {
+        setAbsenseReason("");
+        document.getElementById("absenceEl").focus();
+      }
     } else {
-      await PUT(
-        `entity-service/absenceReasonMaster/${absenseId}`,
-        JSON.stringify(data)
-      )
-        .then((response) => {
-          SuccessToaster("Absence Updated Successfully");
-          getIndustryData();
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
-    }
+      const data = {
+        ...(isEdit && { id: selectedAbsence?.id }),
+        ...(isEdit && { createdDate: selectedAbsence?.createdDate }),
+        ...(isEdit && { lastModifiedDate: new Date() }),
+        absenceType: absenseType.toUpperCase(),
+        absenceReason: absenceReason,
+        notificationPeriod: {
+          numberOfDays: parseInt(notificationPeriod),
+        },
+        industryId: {
+          id: IndustryId,
+        },
+        entityId: {
+          id: TenantID
+        },
+        customized: true
+      };
 
+      if (!isEdit) {
+        await POST("entity-service/absenceReason", JSON.stringify([data]))
+          .then((response) => {
+            SuccessToaster("Absence Added Successfully");
+            getAbsenceReason();
+          })
+          .catch((error) => {
+            ErrorToaster(error);
+          });
+      } else {
+        await PUT(
+          `entity-service/absenceReason/${selectedAbsence?.id}`,
+          JSON.stringify(data)
+        )
+          .then((response) => {
+            SuccessToaster("Absence Updated Successfully");
+            getAbsenceReason();
+          })
+          .catch((error) => {
+            ErrorToaster(error);
+          });
+
+      }
+    }
     if (type !== "Add More") {
       getAddEntityDialog(false);
-      getIndustryData();
+      getAbsenceReason();
     } else {
       setAbsenseReason("");
       document.getElementById("absenceEl").focus();
@@ -97,7 +150,7 @@ const AddAbsenseReasonsForHealthcare = ({
       setAbsenseId(selectedAbsence?.id);
       setAbsenseType(
         selectedAbsence?.absenceType.charAt(0).toUpperCase() +
-          selectedAbsence?.absenceType.slice(1).toLowerCase()
+        selectedAbsence?.absenceType.slice(1).toLowerCase()
       );
       setAbsenseReason(selectedAbsence?.absenceReason);
       setNotificationPeriod(selectedAbsence?.notificationPeriod?.numberOfDays);
@@ -174,8 +227,9 @@ const AddAbsenseReasonsForHealthcare = ({
                   ? "Request Notification Period*"
                   : "Notification Period"}
               </div>
+              {absenceReasonCustomer && (
               <div className={style.displayInRow}>
-                <div className={style.entityLableStyle}>Not more than</div>
+                <div className={style.entityLableStyle}>Notification Period</div>
                 <InputGroup
                   value={notificationPeriod}
                   name="notificationPeriod"
@@ -189,6 +243,7 @@ const AddAbsenseReasonsForHealthcare = ({
                   Days
                 </div>
               </div>
+            )}
             </div> */}
           </div>
 
