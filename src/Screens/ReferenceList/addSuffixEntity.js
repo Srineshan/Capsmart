@@ -42,8 +42,6 @@ const AddSuffixEntity = ({
       return false;
     }
 
-    console.log('selected entity', selectedEntity);
-
     const data = {
       ...(isEdit && { id: entityId }),
       ...(isEdit && { createdDate: createdDate }),
@@ -127,26 +125,26 @@ const AddSuffixEntity = ({
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
-          {callingFrom === 'Super Admin' &&
-            <>
-              <div className={`${style.editHealthCareGrid1} ${style.marginTop20}`}>
-                <div className={style.entityLableStyle}>Industry Name*</div>
-                <div className={style.displayInRow}>
-                  <InputGroup value={selectedTitle} className={style.halfWidth} />
-                  <Checkbox
-                    value="ADD SUFFIX"
-                    checked={addSuffix}
-                    onChange={(e) => setAddSuffix(e.target.checked)}
-                    className={` ${style.marginLeft20} ${style.marginTop}`}
-                    label="ADD SUFFIX"
-                  />
-                </div>
+
+          <>
+            <div className={`${style.editHealthCareGrid1} ${style.marginTop20}`}>
+              <div className={style.entityLableStyle}>Industry Name*</div>
+              <div className={style.displayInRow}>
+                <InputGroup value={selectedTitle} className={style.halfWidth} />
+                <Checkbox
+                  value="ADD SUFFIX"
+                  checked={addSuffix}
+                  onChange={(e) => setAddSuffix(e.target.checked)}
+                  className={` ${style.marginLeft20} ${style.marginTop}`}
+                  label="ADD SUFFIX"
+                />
               </div>
-              <div
-                className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
-              ></div>
-            </>
-          }
+            </div>
+            <div
+              className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
+            ></div>
+          </>
+
 
 
           {addSuffix && (
