@@ -22,12 +22,16 @@ import GreenPage from "./../../images/greenPage.png";
 import { Link } from "react-router-dom";
 import { GET, DELETE, POST, TenantID } from "./../dataSaver";
 import { index } from "d3";
+import AddNewDepartments from "./addNewDepartments";
 
 const DepartmentsForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isClick, setIsClick] = useState(false);
   const [isIconClick, setIsIconclick] = useState(false);
   const [showIconDiv, setShowIconDiv] = useState(false);
+
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
 
   const [industryData, setIndustryData] = useState([]);
   const [entityData, setEntityData] = useState([]);
@@ -38,6 +42,14 @@ const DepartmentsForCustomers = () => {
   const [checkedSite, setCheckedSite] = useState([]);
   const [unCheckedSite, SetUnCheckedSite] = useState([]);
   const [selectedSiteType, setSelectedSiteType] = useState({});
+
+  const getIsExpanded = (value) => {
+    setIsExpanded(value);
+  };
+
+  const getAddEntityDialog = (value) => {
+    setShowAddEntityDialog(value);
+  };
 
   const getIndustryData = async () => {
     const { data: Industries } = await GET(`entity-service/industryMaster`);
@@ -154,8 +166,15 @@ const DepartmentsForCustomers = () => {
     <Fragment>
       <Navbar />
       <div className={style.margin20}>
-        <div className={style.bigCardGrid}>
-          <SideBar />
+        <div
+          className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid}`}
+        >
+          <div>
+            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+              <div></div>
+            </SideBar>
+          </div>
+
           <div>
             <div className={`${style.displayInRow} ${style.marginTop10}`}>
               <div
@@ -292,6 +311,9 @@ const DepartmentsForCustomers = () => {
                           src={AddNewEntity}
                           alt="OpenFolder"
                           className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          onClick={() => {
+                            getAddEntityDialog(true);
+                          }}
                         ></img>
                       </div>
 
@@ -597,6 +619,11 @@ const DepartmentsForCustomers = () => {
             </div>
           </div>
         </div>
+
+        {showAddEntityDialog && (
+          <AddNewDepartments getAddEntityDialog={getAddEntityDialog} />
+        )}
+
         <div className={style.spaceBetween}>
           <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
           <p className={style.poweredBy}>© TimeSmartAI</p>

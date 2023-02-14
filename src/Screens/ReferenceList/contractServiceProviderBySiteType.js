@@ -2,13 +2,13 @@ import React, { Fragment, useState, useEffect } from "react";
 import Navbar from '../../Components/Navbar';
 import SideBar from './../../Components/Sidebar';
 import { Icon, Intent, Checkbox } from "@blueprintjs/core";
-import style from './index.module.scss';
+import style from "./index.module.scss";
 import SubNavbar from "../../Components/SubNavbar";
-import CrossPink from './../../images/crossPink.png';
-import OpenFolderBlue from './../../images/openFolderBlue.png';
-import IndustriesEntityFolder from './../../images/industriesEntityFolder.png';
-import SelectArrow from './../../images/selectArrow.png';
-import AddNewEntity from './../../images/addEntity.png';
+import CrossPink from "./../../images/crossPink.png";
+import OpenFolderBlue from "./../../images/openFolderBlue.png";
+import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
+import SelectArrow from "./../../images/selectArrow.png";
+import AddNewEntity from "./../../images/addEntity.png";
 import AddContractedServiceForHospital from "./addContractServiceProviderForHospital";
 import EditBlue from './../../images/editBlue.png';
 import { Link } from 'react-router-dom';
@@ -26,6 +26,7 @@ const ContractServiceProviderBySite = () => {
     const [isEdit, setIsEdit] = useState(false);
     const [selectedContractedServiceProvider, setSelectedContractedServiceProvider] = useState({});
     const [selectedContractedServiceProviders, setSelectedContractedServiceProviders] = useState([]);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
         getEntity();
@@ -35,6 +36,10 @@ const ContractServiceProviderBySite = () => {
         getContractedServiceProviderMaster();
         getContractedServiceProvider();
     }, [entityDetails]);
+
+    const getIsExpanded = (value) => {
+        setIsExpanded(value);
+    };
 
     const getAddContractedServiceDialog = (value) => {
         setAddContractedServiceDialog(value);
@@ -95,8 +100,14 @@ const ContractServiceProviderBySite = () => {
         <Fragment>
             <Navbar />
             <div className={style.margin20}>
-                <div className={style.bigCardGrid}>
-                    <SideBar />
+                <div
+                    className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid}`}
+                >
+                    <div>
+                        <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+                            <div></div>
+                        </SideBar>
+                    </div>
                     <div>
                         {/* <SubNavbar/> */}
                         <div className={`${style.displayInRow} ${style.marginTop10}`}>
