@@ -138,7 +138,7 @@ const AbsenceReasonsForCustomer = () => {
                                                         <p className={`${style.TextStyle2} ${style.marginLeft5}`}> PLANNED </p>
                                                         <img src={showPlanned ? CloseFolderBlue : OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} ${style.marginLeft5}`} onClick={() => setShowPlanned(!showPlanned)} />
                                                     </div>
-                                                    {showPlanned && absenceReasonMaster?.filter(data => data?.absenceType === 'PLANNED')?.map((data, index) => (
+                                                    {showPlanned && absenceReasonMaster?.filter(data => data?.absenceType === 'PLANNED' && !absenceReason.some(customerData => customerData?.absenceReason === data?.absenceReason))?.map((data, index) => (
                                                         <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground3} ${style.displayInRow}`} key={index}>
                                                             <Checkbox checked={selectedAbsenceReasons?.filter(innerData => innerData?.id === data?.id)?.length !== 0} onChange={(e) => handleSelectAbsenceReasons(e, data)} />
                                                             <p className={`${style.TextStyle4} ${style.marginLeft5}`}> {data?.absenceReason} </p>
@@ -150,7 +150,7 @@ const AbsenceReasonsForCustomer = () => {
                                                         <p className={`${style.TextStyle2} ${style.marginLeft5}`}> UNPLANNED </p>
                                                         <img src={showUnPlanned ? CloseFolderBlue : OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} ${style.marginLeft5}`} onClick={() => setShowUnPlanned(!showUnPlanned)} />
                                                     </div>
-                                                    {showUnPlanned && absenceReasonMaster?.filter(data => data?.absenceType === 'UNPLANNED')?.map((data, index) => (
+                                                    {showUnPlanned && absenceReasonMaster?.filter(data => data?.absenceType === 'UNPLANNED' && !absenceReason.some(customerData => customerData?.absenceReason === data?.absenceReason))?.map((data, index) => (
                                                         <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground3} ${style.displayInRow}`} key={index}>
                                                             <Checkbox checked={selectedAbsenceReasons?.filter(innerData => innerData?.id === data?.id)?.length !== 0} onChange={(e) => handleSelectAbsenceReasons(e, data)} />
                                                             <p className={`${style.TextStyle4} ${style.marginLeft5}`}> {data?.absenceReason} </p>

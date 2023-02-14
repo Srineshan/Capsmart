@@ -6,6 +6,7 @@ import style from "./index.module.scss";
 import SubNavbar from "../../Components/SubNavbar";
 import CrossPink from "./../../images/crossPink.png";
 import OpenFolderBlue from "./../../images/openFolderBlue.png";
+import CloseFolderBlue from './../../images/closeFolderBlue.png';
 import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
 import SelectArrow from "./../../images/selectArrow.png";
 import AddNewEntity from "./../../images/addEntity.png";
@@ -20,6 +21,7 @@ import DeleteHcRow from './../../images/deleteHcRow.png';
 const ContractServiceProviderBySite = () => {
     const [isSelected, setIsSelected] = useState(false);
     const [entityDetails, setEntityDetails] = useState({});
+    const [entityTypes, setEntityTypes] = useState([]);
     const [contractedServiceProviderMaster, setContractedServiceProviderMaster] = useState([]);
     const [contractedServiceProvider, setContractedServiceProvider] = useState([]);
     const [showAddContractedServiceDialog, setAddContractedServiceDialog] = useState(false);
@@ -28,19 +30,25 @@ const ContractServiceProviderBySite = () => {
     const [selectedContractedServiceProviders, setSelectedContractedServiceProviders] = useState([]);
     const [isExpanded, setIsExpanded] = useState(false);
     const [siteTypeId, setSiteTypeId] = useState('');
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedEntityType, setSelectedEntityType] = useState('');
 
     useEffect(() => {
         getEntity();
+        getEntityTypes();
     }, []);
 
     useEffect(() => {
-        getContractedServiceProviderMaster();
-        getContractedServiceProvider();
-    }, [entityDetails]);
+        if (siteTypeId !== "" && siteTypeId !== undefined) {
+            getContractedServiceProviderMaster();
+            getContractedServiceProvider();
+        }
+    }, [siteTypeId, entityDetails]);
 
-    useEffect(() => {
-        setSiteTypeId(entityDetails?.[0]?.entityType?.id);
-    }, [entityDetails])
+    // useEffect(() => {
+    //     setSiteTypeId(entityDetails?.[0]?.entityType?.id);
+    //     setSelectedEntityType(entityDetails?.[0]?.entityType?.type);
+    // }, [entityDetails])
 
 
     const getIsExpanded = (value) => {
@@ -56,13 +64,23 @@ const ContractServiceProviderBySite = () => {
         setEntityDetails(entity);
     };
 
+    const getEntityTypes = async () => {
+        const { data: entityTypes } = await GET(`entity-service/entity/entityType`);
+        if (entityTypes?.length !== 0) {
+            console.log(entityTypes, entityTypes?.[0]?.entityType?.id)
+            setSiteTypeId(entityTypes?.[0]?.siteTypeId);
+            setSelectedEntityType(entityTypes?.[0]?.siteTypeName);
+            setEntityTypes(entityTypes);
+        }
+    };
+
     const getContractedServiceProviderMaster = async () => {
-        const { data: contractedServiceProviderMaster } = await GET(`entity-service/contractedServiceProviderMaster?siteTypeId=${entityDetails?.[0]?.entityType?.id}`);
+        const { data: contractedServiceProviderMaster } = await GET(`entity-service/contractedServiceProviderMaster?siteTypeId=${siteTypeId}`);
         setContractedServiceProviderMaster(contractedServiceProviderMaster);
     };
 
     const getContractedServiceProvider = async () => {
-        const { data: contractedServiceProvider } = await GET(`entity-service/contractedServiceProvider?siteTypeId=${entityDetails?.[0]?.entityType?.id}`);
+        const { data: contractedServiceProvider } = await GET(`entity-service/contractedServiceProvider?siteTypeId=${siteTypeId}`);
         setContractedServiceProvider(contractedServiceProvider);
     };
 
@@ -136,17 +154,22 @@ const ContractServiceProviderBySite = () => {
                                                 <p className={`${style.holidayScheduleHeadertextStyle1} ${style.marginLeft20}`}> STANDARD LIST IN USE- DEFAULT </p>
                                             </div>
                                             <div className={style.customersAdminCardStyle1}>
-                                                <div className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}>
-                                                    <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                    <p className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}>{entityDetails?.[0]?.entityType?.type}</p>
-                                                    <img src={OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} ${style.marginLeft5}`} />
-                                                </div>
-                                                {contractedServiceProviderMaster?.map((data, index) => (
-                                                    <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`} key={index}>
-                                                        <Checkbox checked={selectedContractedServiceProviders?.filter(innerData => innerData?.id === data?.id)?.length !== 0} onChange={(e) => handleSelectContractedServiceProvider(e, data)} />
-                                                        <p className={`${style.TextStyle4} ${style.marginLeft5}`}>{data?.contractedServiceProviderType}</p>
-                                                    </div>
-                                                ))}
+                                                {entityTypes?.map((data, index) =>
+                                                    <>
+                                                        <div className={`${style.boardCertificationSideRows1} ${style.displayInRow}`} key={index}>
+                                                            <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} />
+                                                            <p className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}>{data?.siteTypeName}</p>
+                                                            <img src={selectedIndex === index ? CloseFolderBlue : OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} ${style.marginLeft5}`} onClick={() => { setSelectedIndex(index); setSiteTypeId(data?.siteTypeId); setSelectedEntityType(data?.siteTypeName) }} />
+                                                        </div>
+                                                        {selectedIndex === index && contractedServiceProviderMaster?.filter(data => !contractedServiceProvider.some(customerData => customerData?.contractedServiceProviderType === data?.contractedServiceProviderType))?.map((data, index) => (
+                                                            <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`} key={index}>
+                                                                <Checkbox checked={selectedContractedServiceProviders?.filter(innerData => innerData?.id === data?.id)?.length !== 0} onChange={(e) => handleSelectContractedServiceProvider(e, data)} />
+                                                                <p className={`${style.TextStyle4} ${style.marginLeft5}`}>{data?.contractedServiceProviderType}</p>
+                                                            </div>
+                                                        ))}
+                                                    </>
+                                                )}
+
                                             </div>
                                         </div>
                                         <div className={style.customersAdminCardStyle2}>
@@ -160,23 +183,26 @@ const ContractServiceProviderBySite = () => {
                                                 <img src={AddNewEntity} className={`${style.colorFileStyle} ${style.marginLeft150} `} onClick={() => { getAddContractedServiceDialog(true); setIsEdit(false) }} ></img>
                                             </div>
                                             <div className={style.customersAdminCardStyle3} >
-                                                {contractedServiceProvider?.length !== 0 ?
-                                                    <div >
-                                                        <div className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}>
-                                                            <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} />
-                                                            <p className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}>{entityDetails?.[0]?.entityType?.type}</p>
-                                                            <img src={OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} ${style.marginLeft5}`} />
-                                                        </div>
-                                                        {contractedServiceProvider?.map((data, index) => (
-                                                            <div className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`} key={index}>
-                                                                <p className={style.tableDataFontStyle}>{data?.contractedServiceProviderType}</p>
-                                                                <div className={style.displayInRow}>
-                                                                    <img src={EditBlue} className={style.colorFileStyle} onClick={() => { setIsEdit(true); getAddContractedServiceDialog(true); setSelectedContractedServiceProvider(data) }} />
-                                                                    <img src={DeleteHcRow} className={`${style.colorFileStyle} ${style.marginLeft20}`} onClick={() => handleDeleteContractedServiceProvider(data?.id)} />
-                                                                </div>
+                                                {contractedServiceProvider?.length !== 0 ? entityTypes?.map((data, index) =>
+                                                    <>
+                                                        <div>
+                                                            <div className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}>
+                                                                <img src={IndustriesEntityFolder} className={`${style.colorFileStyle} ${style.marginLeft5}`} />
+                                                                <p className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}>{data?.siteTypeName}</p>
+                                                                <img src={selectedIndex === index ? CloseFolderBlue : OpenFolderBlue} alt="OpenFolder" className={`${style.colorFileStyle2} ${style.marginLeft5}`} onClick={() => { setSelectedIndex(index); setSiteTypeId(data?.siteTypeId); setSelectedEntityType(data?.siteTypeName) }} />
                                                             </div>
-                                                        ))}
-                                                    </div> :
+                                                            {selectedIndex === index && contractedServiceProvider?.map((data, index) => (
+                                                                <div className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`} key={index}>
+                                                                    <p className={style.tableDataFontStyle}>{data?.contractedServiceProviderType}</p>
+                                                                    <div className={style.displayInRow}>
+                                                                        <img src={EditBlue} className={style.colorFileStyle} onClick={() => { setIsEdit(true); getAddContractedServiceDialog(true); setSelectedContractedServiceProvider(data) }} />
+                                                                        <img src={DeleteHcRow} className={`${style.colorFileStyle} ${style.marginLeft20}`} onClick={() => handleDeleteContractedServiceProvider(data?.id)} />
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </>
+                                                ) :
                                                     <p className={style.holidayScheduleCardtextStyle1}>
                                                         if you would like to setup your custom list for your
                                                         site(s) you can select from the default list on the left,
@@ -194,7 +220,7 @@ const ContractServiceProviderBySite = () => {
                 </div>
             </div>
             {showAddContractedServiceDialog && <AddContractedServiceForHospital getAddContractedServiceDialog={getAddContractedServiceDialog} isEdit={isEdit} selectedContractedServiceProvider={selectedContractedServiceProvider}
-                entityType={entityDetails?.[0]?.entityType?.type} siteTypeId={entityDetails?.[0]?.entityType?.id} getContractedServiceProvider={getContractedServiceProvider} />}
+                entityType={selectedEntityType} siteTypeId={siteTypeId} getContractedServiceProvider={getContractedServiceProvider} />}
         </Fragment>
     )
 }

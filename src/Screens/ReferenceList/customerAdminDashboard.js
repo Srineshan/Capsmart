@@ -186,21 +186,26 @@ const ClientAdminDashboard = () => {
                         </span>
                       </div>
                     </div>
-                    <div className={style.dashboardCardStyle}>
-                      <h5 className={`${style.headingForReferenceList}`}>
-                        CONTRACTED SERVICES BY ENTITY TYPE
-                      </h5>
-                      <div
-                        className={`${style.optionsStyle} ${style.displayInCol}`}
-                      >
-                        <span className={style.dashboardCardColorOption1}>
-                          STANDARD LIST IN USE
-                        </span>
-                        <span className={style.dashboardCardColorOption2}>
-                          LAST UPDATED ON JULY 2022
-                        </span>
+                    <Link
+                      to={"/referenceList/contractedServicesByEntityType"}
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          CONTRACTED SERVICES BY ENTITY TYPE
+                        </h5>
+                        <div
+                          className={`${style.optionsStyle} ${style.displayInCol}`}
+                        >
+                          <span className={style.dashboardCardColorOption1}>
+                            STANDARD LIST IN USE
+                          </span>
+                          <span className={style.dashboardCardColorOption2}>
+                            LAST UPDATED ON JULY 2022
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                 </div>
                 <div className={style.margin20}>
