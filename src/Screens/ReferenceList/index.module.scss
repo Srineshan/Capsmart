@@ -1571,6 +1571,15 @@
   height: 24px;
 }
 
+.TextStyle5 {
+  text-align: left;
+  font: normal normal normal 14px/16px Proxima Nova;
+  letter-spacing: 0px;
+  color: #050505;
+  margin-top: 10px;
+  height: 24px;
+}
+
 .holidayScheduleLeftCardTextStyle {
   text-align: left;
   font: normal normal normal 12px/15px Montserrat;
@@ -1836,6 +1845,24 @@
   display: grid;
   grid-template-columns: 10% 50% 40%;
   padding: 10px;
+ 
+}
+
+.customersAdminInnerRowsStyle4 {
+  font-weight: normal;
+  min-height: 50px;
+  height: 50px;
+  width: 87%;
+  border: 0.4000000059604645px solid #887ee7af;
+  border-radius: 6px;
+  opacity: 0.75;
+  border-radius: 6px;
+  margin-top: 3px;
+  margin-left: 8%;
+  align-items: center;
+  display: flex;
+  padding: 10px;
+  
 }
 
 .holidayInnerRowsStyle1 {
@@ -2175,16 +2202,6 @@
   margin-top: 10px;
   margin-left: 10px;
   text-transform: uppercase;
-}
-
-.healthCareHeaderTextStyle5 {
-  font: normal normal 600 16px/20px Montserrat;
-  letter-spacing: 0px;
-  color: #333131;
-  text-align: left;
-  text-transform: uppercase;
-  margin-top: 10px;
-  margin-left: 10px;
 }
 
 .HealthCareListBackground5 {
