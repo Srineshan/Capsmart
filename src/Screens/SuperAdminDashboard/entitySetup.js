@@ -539,7 +539,7 @@ const EntitySetup = () => {
                   <div className={`${style.extentionGrid} ${style.marginTop30}`}>
                     <div className={style.extentionLableStyle}>Entity Type*</div>
                     <div className={`${style.leftAlign} `}>
-                      <EntityTypeList value={entity?.type?.id} onChangeFunc={(id, value) => handleEntityTypeChange(id, value)} className={[style.twoFieldWidth]} />
+                      <EntityTypeList value={entity?.type?.id} onChangeFunc={(id, value) => handleEntityTypeChange(id, value)} className={[style.twoFieldWidth]} industryId={entity?.customerType} />
                     </div>
                   </div>
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>

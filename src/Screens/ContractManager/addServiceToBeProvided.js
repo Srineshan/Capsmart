@@ -114,7 +114,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }, [metadata, isWorkFlowUpdated])
 
   const getServiceList = async () => {
-    const { data: serviceList } = await GET(`entity-service/serviceMaster`);
+    const { data: serviceList } = await GET(`entity-service/contractedServiceType`);
     setServiceTypeList(serviceList?.map(data => data?.service));
   }
 
