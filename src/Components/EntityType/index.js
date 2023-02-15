@@ -16,6 +16,10 @@ const EntityTypeList = ({ onChangeFunc, value, className, industryId }) => {
     setIndustry(industryId);
   }, [industryId])
 
+  useEffect(() => {
+    getEntityTypeList();
+  }, [industry])
+
   const getEntityTypeList = async () => {
     await GET(`entity-service/entityTypeMaster?industryId=${industry}`)
       .then(response => {
