@@ -66,7 +66,7 @@ const ContractServicesByEntityType = () => {
         if (e.target.checked) {
             setSelectedContractedServiceTypes([...selectedContractedServiceTypes, innerData])
         } else {
-            setSelectedContractedServiceTypes(selectedContractedServiceTypes?.filter(data => data?.service !== innerData?.service)?.map(data => data));
+            setSelectedContractedServiceTypes(selectedContractedServiceTypes?.filter(data => data?.serviceType !== innerData?.serviceType)?.map(data => data));
         }
     }
 
@@ -123,10 +123,10 @@ const ContractServicesByEntityType = () => {
                                                 <p className={`${style.holidayScheduleHeadertextStyle1} ${style.marginLeft20}`}> STANDARD LIST IN USE- DEFAULT </p>
                                             </div>
                                             <div className={style.customersAdminCardStyle1}>
-                                                {contractedServiceTypeMaster?.filter(data => !contractedServiceType.some(customerData => customerData?.service === data?.service))?.map((data, index) => (
+                                                {contractedServiceTypeMaster?.filter(data => !contractedServiceType.some(customerData => customerData?.serviceTypeTemplate === data?.serviceTypeTemplate))?.map((data, index) => (
                                                     <div className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`} key={index}>
-                                                        <Checkbox checked={selectedContractedServiceTypes?.filter(innerData => innerData?.service === data?.service)?.length !== 0} onChange={(e) => handleSelectContractedServiceProvider(e, data)} />
-                                                        <p className={`${style.TextStyle4} ${style.marginLeft5}`}>{data?.service}</p>
+                                                        <Checkbox checked={selectedContractedServiceTypes?.filter(innerData => innerData?.serviceType === data?.serviceType)?.length !== 0} onChange={(e) => handleSelectContractedServiceProvider(e, data)} />
+                                                        <p className={`${style.TextStyle4} ${style.marginLeft5}`}>{data?.serviceType}</p>
                                                     </div>
                                                 ))}
                                             </div>
@@ -144,7 +144,7 @@ const ContractServicesByEntityType = () => {
                                             <div className={style.customersAdminCardStyle3} >
                                                 {contractedServiceType?.length !== 0 ? contractedServiceType?.map((data, index) => (
                                                     <div className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`} key={index}>
-                                                        <p className={style.tableDataFontStyle}>{data?.service}</p>
+                                                        <p className={style.tableDataFontStyle}>{data?.serviceType}</p>
                                                         <div className={style.displayInRow}>
                                                             <img src={EditBlue} className={style.colorFileStyle} onClick={() => { setIsEdit(true); getAddContractedServicesDialog(true); setSelectedContractedService(data) }} />
                                                             <img src={DeleteHcRow} className={`${style.colorFileStyle} ${style.marginLeft20}`} onClick={() => handleDeleteContractedServiceType(data?.id)} />
