@@ -1845,7 +1845,7 @@
   display: grid;
   grid-template-columns: 10% 50% 40%;
   padding: 10px;
- 
+
 }
 
 .customersAdminInnerRowsStyle4 {
@@ -1862,7 +1862,7 @@
   align-items: center;
   display: flex;
   padding: 10px;
-  
+
 }
 
 .holidayInnerRowsStyle1 {
@@ -1985,6 +1985,33 @@
   grid-template-columns: 5% 90%;
 }
 
+.customListHeaderTermiantion {
+  background: #a097f5 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  height: 55px;
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 5% 90% 5%;
+}
+
+.customListHeaderTermiantionLevel2 {
+  background: #a097f5 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  height: 55px;
+  width: 95%;
+  border-radius: 6px;
+  margin-top: 5px;
+  margin-left: 5%;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 5% 90% 5%;
+}
+
 .customerAdminTableData3 {
   min-height: 50px;
   width: 90%;
@@ -2011,6 +2038,21 @@
   grid-template-columns: 3% 88% 5% 5%;
 }
 
+.customTerminationPrimaryReason {
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  min-height: 50px;
+  width: 93%;
+  border-radius: 6px;
+  margin-top: 2px;
+  margin-left: 4%;
+  align-items: center;
+  display: flex;
+  display: grid;
+  grid-template-columns: 3% 88% 5% 5%;
+  padding: 0 10px;
+}
+
 .customerAdminTableData {
   min-height: 50px;
   width: 87%;
@@ -2021,6 +2063,7 @@
   align-items: center;
   margin-top: 4px;
   grid-template-columns: 3% 58% 15% 15% 5% 5%;
+  padding: 0 10px;
 }
 
 .holidayScheduletabledataForCustomer {
