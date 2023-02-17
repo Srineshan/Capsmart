@@ -54,7 +54,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [sites, setSites] = useState([]);
   const [selectedSites, setSelectedSites] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState();
-  const [paymentSource, setPaymentSource] = useState();
+  const [paymentSource, setPaymentSource] = useState(new Array(timeSheetCount || 0));
   const [contractName, setContractName] = useState('');
 
   const menuRef = useRef(null);
@@ -80,12 +80,14 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getUserData();
     getTimeSheetWorkFlow();
     getAbsenceRequestWorkFlow();
+    setPaymentSource(new Array(timeSheetCount || 0));
   }, [])
 
   useEffect(() => {
     getTimesheetFields();
     setContractedActivityTags([]);
     setTimeSheetLabelData([]);
+    setPaymentSource(new Array(timeSheetCount || 0));
   }, [timeSheetCount])
 
   useEffect(() => {
@@ -97,14 +99,18 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getAbsenceRequestWorkFlow();
   }, [timesheetWorkFlow])
 
-  useEffect(() => {
-    if (selectedIndex !== undefined) {
-      let temp = paymentSource;
-      temp[selectedIndex] = selectedSites;
-      setPaymentSource(temp);
-      formatActivities();
-    }
-  }, [selectedSites])
+  // useEffect(() => {
+  //   if (selectedIndex !== undefined) {
+  //     let temp = paymentSource;
+  //     temp[selectedIndex] = selectedSites;
+  //     setPaymentSource(temp);
+  //     formatActivities();
+  //   }
+  // }, [selectedSites])
+
+  // useEffect(() => {
+
+  // }, [paymentSource])
 
   console.log('paymentSource', paymentSource);
 
@@ -222,7 +228,6 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           }
         })
       })
-      console.log('paymentSource', paymentSource);
       let value = Array.isArray(paymentSource?.[index]) ? paymentSource?.[index]?.[0] : paymentSource?.[index];
       let site = value !== null ? { "site": value } : undefined;
       if (timeSheetCount > 1) {
@@ -266,19 +271,24 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     }
   }
 
-  const onSelectSite = (value) => {
-    setSelectedSites(value);
+  const onSelectSite = (value, index) => {
+    let temp = paymentSource;
+    temp[index] = value;
+    setPaymentSource(temp);
+    formatActivities();
+    getTimesheetFields();
   }
 
   const getTimesheetFields = () => {
     let temp = [];
     for (let i = 0; i < timeSheetCount; i++) {
+      console.log('data check', timeSheetLabelData?.[i]?.value);
       temp[i] = (
         <div key={`${i}temp${timeSheetCount + 1}`} className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20}`}>
           <div className={`${style.extentionGrid}`}>
             <CommonLabel value={`Timesheets label ${i + 1} for processing`} />
             <CommonInputField className={style.fullWidth} value={timeSheetLabelData?.[i]?.label}
-            // onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)} 
+              onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)}
             />
           </div>
           {timeSheetCount > 1 && (
@@ -347,9 +357,9 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
             </div>
           )}
           <div>
-            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+            <div className={`${style.extentionGrid} ${style.marginTop20}`} key={`sites${i}`}>
               <CommonLabel value='Payment Source*' />
-              <SiteDepartmentField sites={sites} getSelectedSites={onSelectSite} selectedSites={paymentSource?.[i] ? new Array(1).fill(paymentSource?.[i]) : []} isMultiSiteEntity={isMultiSiteEntity} />
+              <SiteDepartmentField sites={sites} getSelectedSites={(value) => onSelectSite(value, i)} selectedSites={Array.isArray(paymentSource?.[i]) ? paymentSource?.[i] : paymentSource?.[i] ? new Array(1).fill(paymentSource?.[i]) : []} isMultiSiteEntity={isMultiSiteEntity} />
             </div>
           </div>
 
@@ -369,8 +379,6 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     setTimesheetFields(temp);
   }
 
-  console.log('data', timeSheetLabelData?.[0]?.value);
-
   const getTimeSheetSubmissionTerms = async () => {
     const { data: timesheetSubmissionTerms } = await GET(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`);
     if (timesheetSubmissionTerms) {
@@ -389,6 +397,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       setContractedActivityTags(temp);
       setPaymentSource(paymentSourceTemp);
     }
+    getTimesheetFields();
   };
 
   const getSelectedUserDetails = (id) => {
@@ -537,6 +546,9 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     }
     if (buttonType !== 'Continue') {
       getShowAlert(true);
+    } else {
+      getViewPage7(true);
+      getCurrentPage('Payment & Compensation');
     }
   }
 
@@ -638,7 +650,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contracted Services Specification') }}>BACK</button>
           <div>
             <button className={style.newContractOutlinedButton} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
-            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleContinue('Continue'); getViewPage7(true); getCurrentPage('Payment & Compensation') }}>CONTINUE</button>
+            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleContinue('Continue'); }}>CONTINUE</button>
           </div>
         </div>
       }

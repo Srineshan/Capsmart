@@ -43,6 +43,7 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     }
   }, [departmentsSelected])
 
+  console.log('sites selected from payment source', selectedSites);
 
   const onDepartmentSelect = (e) => {
     const {
@@ -109,6 +110,8 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     setSiteData(temp);
     getSelectedSites(temp);
   }
+
+  console.log('dept', departmentsSelected);
 
   return (
     <div>
