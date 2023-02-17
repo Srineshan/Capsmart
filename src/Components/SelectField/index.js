@@ -2,7 +2,7 @@ import React from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-
+import style from './index.module.scss';
 const SelectField = ({ dataList, valueList, displayList, value, selectLabel, onChangeFunc, className }) => {
 
   return (
@@ -24,7 +24,7 @@ const SelectField = ({ dataList, valueList, displayList, value, selectLabel, onC
     //       ))
     //     }
     // </select>
-    <FormControl size="small">
+    <FormControl size="small" className={style.fullWidth}>
       <Select
         labelId="demo-select-small"
         id="demo-select-small"
