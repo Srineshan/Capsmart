@@ -123,8 +123,8 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             sessionDuration: serviceSelected?.duration?.hours || '0',
             totalSession: serviceSelected?.totalSessions?.value,
             totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
-            workingTimeFrom: serviceSelected?.workingPeriod?.from,
-            workingTimeTo: serviceSelected?.workingPeriod?.to,
+            workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+            workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
             serviceDays: serviceSelected?.serviceDays,
         });
     }
@@ -136,8 +136,12 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     }, [metadata])
 
     const handleValueChange = (name, value) => {
-        if (name === 'dedicatedHoursSpecified' && value) {
-            setMetadata({ ...metadata, dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+        if (name === 'dedicatedHoursSpecified') {
+            if (value) {
+                setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: '', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+            } else {
+                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+            }
         } else {
             setMetadata({ ...metadata, [name]: value });
         }

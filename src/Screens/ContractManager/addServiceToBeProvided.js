@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Dialog, Classes, Icon, Intent, Tag } from '@blueprintjs/core';
 import AddIcon from '@mui/icons-material/Add';
-import DatalistInput from 'react-datalist-input';
+import DatalistInput, { useComboboxControls } from 'react-datalist-input';
 import { PUT, GET, TenantID, POST } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import Calculator from './../../Components/Calculator';
@@ -32,8 +32,10 @@ import style from './index.module.scss';
 
 const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectContractInfo, selectedService, editService, getEditServiceDialog, isMultiSiteEntity, selectedIndex, isEditable, getTabDataStatus }) => {
   const [serviceTypeList, setServiceTypeList] = useState([]);
+  const [serviceTypeId, setServiceTypeId] = useState('');
   const siteTypeId = sessionStorage.getItem('entityTypeId');
   const [serviceType, setServiceType] = useState(CLINIC);
+  const [serviceTypeTemplate, setServiceTypeTemplate] = useState(CLINIC);
   const [addOnButton, setAddOnButton] = useState('');
   const [siteList, setSiteList] = useState([]);
   const [allLocation, setAllLocation] = useState([]);
@@ -83,6 +85,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       getSelectedSites(selectedService?.sites);
       getNewLocation(selectedService?.locations);
       setServiceType(selectedService?.activityType?.activityType);
+      setServiceTypeTemplate(selectedService?.activityTypeTemplate?.activityTypeTemplate);
       setIsDesignatedSpecificContractor(selectedService?.designateSpecificContractor);
       setSelectedUsers(selectedService?.users || []);
       let temp = [];
@@ -115,7 +118,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   const getServiceList = async () => {
     const { data: serviceList } = await GET(`entity-service/contractedServiceType`);
-    setServiceTypeList(serviceList?.map(data => data?.service));
+    setServiceTypeList(serviceList);
+    if (!editService) {
+      setServiceType(serviceList?.filter(data => data?.serviceTypeTemplate === CLINIC)?.map(data => data?.serviceType)[0]);
+      setServiceTypeId(serviceList?.filter(data => data?.serviceTypeTemplate === CLINIC)?.map(data => data?.id)[0]);
+    }
   }
 
   let rightHelpArea = helpTool?.calculator || helpTool?.textArea;
@@ -150,6 +157,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }, [])
 
   useEffect(() => {
+    getActivityList();
+  }, [serviceTypeId])
+
+  useEffect(() => {
     if (selectContractInfo === "INDIVIDUAL") {
       setSelectedUser(users);
       setContractedServiceProvider(users[0]?.id);
@@ -169,7 +180,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const getActivityList = async () => {
-    const { data: activityList } = await GET(`contract-managment-service/contracts/siteType/${siteTypeId}/activity`);
+    const { data: activityList } = await GET(`contract-managment-service/contracts/activities?siteTypeId=${siteTypeId}&&contractedServiceTypeId=${serviceTypeId}`);
     setActivity(activityList);
   }
 
@@ -197,8 +208,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }
 
-  console.log('activity', activity);
-
   const activityToAdd = async () => {
     if (newActivity === '') {
       ErrorToaster('Enter valid Acitivty name');
@@ -210,14 +219,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     let data = {
       "activity": {
-        "activity": newActivity
+        "activity": newActivity,
       },
+      "contractedServiceTypeId": serviceTypeId,
       "siteTypeId": siteTypeId,
       "tenant": {
         "id": TenantID
       }
     }
-    await POST(`contract-managment-service/contracts/siteType/${siteTypeId}/activity`, data)
+    await POST(`contract-managment-service/contracts/activities`, data)
       .then(response => {
         getActivityList();
       })
@@ -268,12 +278,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   const addOnWorkFlow = async (buttonType) => {
     setAddOnButton(buttonType);
-    if (serviceType === ADDON && editService && metadata?.[0]?.approver !== undefined) {
+    if (serviceTypeTemplate === ADDON && editService && metadata?.[0]?.approver !== undefined) {
       let dataValue = [];
       let temp = metadata;
       temp?.map((data, index) => {
         if (data?.approver !== undefined) {
           let workFlowData;
+          data.activityType.activityType = serviceType;
+          data.activityType.id = serviceTypeId;
+          data.activityTypeTemplate.activityTypeTemplate = serviceTypeTemplate;
           if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
             let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
             workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.userId, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
@@ -319,16 +332,19 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           }
         } else {
           data.workFlow = null;
+          data.activityType.activityType = serviceType;
+          data.activityType.id = serviceTypeId;
+          data.activityTypeTemplate.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
         }
       })
     }
-    else if (serviceType === ADDON && !editService) {
+    else if (serviceTypeTemplate === ADDON && !editService) {
       let dataValue = [];
       let data = [];
       let temp = metadata;
       data = temp;
       temp?.map((data, index) => {
-        data.refId = (new Date()).getTime();
+        data.refId = (new Date()).getTime()?.toString();
         let dataMap = {
           selectedActivityId: data?.selectedActivityId,
           additionalDetails: data?.activityResponse?.dataMap?.additionalDetails,
@@ -338,6 +354,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
         data.activityResponse = { dataMap: dataMap };
         data.sites = siteData;
+        data.activityType.activityType = serviceType;
+        data.activityType.id = serviceTypeId;
+        data.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
         data.performingActivity = { activity: data?.performingActivity };
         data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
         if (data?.approver !== undefined) {
@@ -391,7 +410,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Atleast one location has to be selected if yes');
       return;
     }
-    if ((serviceType === CLINIC || serviceType === PROCEDUREREADING) && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
+    if ((serviceTypeTemplate === CLINIC || serviceTypeTemplate === PROCEDUREREADING) && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
       console.log('contract term periods', contractTermPeriod, metadata?.contractedSchedules?.[0]?.startDate, metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate);
       ErrorToaster('Selected Duration Should be equal to the contract strat and end date');
       return;
@@ -411,19 +430,19 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     let performingActivity = '';
     let activities = [];
     let dependentActivities = [];
-    if (serviceType !== SUPPLEMENTAL && serviceType !== ADDON && serviceType !== ADMINISTRATIVE) {
+    if (serviceTypeTemplate !== SUPPLEMENTAL && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== ADMINISTRATIVE) {
       performingActivity = selectedActivity?.map(data => data?.activity?.activity)?.join('-')
       selectedActivity?.map(data => {
         activities?.push({ "activity": data?.activity?.activity })
       })
     }
-    if (serviceType === ADMINISTRATIVE) {
+    if (serviceTypeTemplate === ADMINISTRATIVE) {
       performingActivity = metadata?.selectedActivities?.map(data => data?.activity)?.join('-')
       metadata?.selectedActivities?.map(data => {
         activities?.push({ "activity": data?.activity })
       })
     }
-    if (serviceType === ONCALL) {
+    if (serviceTypeTemplate === ONCALL) {
       console.log('data check check', metadata?.additionalActivity, metadata);
 
       let temp = metadata?.additionalActivity;
@@ -454,28 +473,32 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
     console.log('in add dependent', dependentActivities);
 
-    if (serviceType === SUPPLEMENTAL) {
+    if (serviceTypeTemplate === SUPPLEMENTAL) {
       performingActivity = metadata?.supplementServiceName?.map(data => data)?.join('-') || '';
       metadata?.supplementServiceName?.map(data => (
         activities.push({ "activity": data })
       ));
     }
     let data = [];
-    if (serviceType === ADDON && !editService) {
+    if (serviceTypeTemplate === ADDON && !editService) {
       console.log('inside metadata', metadata);
       data = metadata;
     }
     else {
       console.log('metadata', metadata);
       let dataValues = metadata;
-      if (serviceType === ADDON) {
+      if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
       }
       data = [{
-        "refId": dataValues?.refId ? dataValues?.refId : (new Date()).getTime(),
+        "refId": dataValues?.refId?.toString() ? dataValues?.refId?.toString() : (new Date()).getTime()?.toString(),
         "sites": siteData,
         "activityType": {
+          "id": serviceTypeId,
           "activityType": serviceType
+        },
+        "activityTypeTemplate": {
+          "activityTypeTemplate": serviceTypeTemplate,
         },
         "users": selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers,
         "performingActivity": {
@@ -483,7 +506,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         },
         "activities": activities,
 
-        ...((serviceType === SUPPLEMENTAL || serviceType === ADMINISTRATIVE) &&
+        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) &&
         {
           "hoursBorrowed": {
             "activityType": {
@@ -494,40 +517,42 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             }
           }
         }),
-        "locations": serviceType === ADDON ? dataValues?.locations : selectedLocation,
-        ...(((serviceType === CLINIC || serviceType === PROCEDUREREADING) && {
+        "locations": serviceTypeTemplate === ADDON ? dataValues?.locations : selectedLocation,
+        ...(((serviceTypeTemplate === CLINIC || serviceTypeTemplate === PROCEDUREREADING) && {
           "contractedSchedules": metadata?.contractedSchedules,
           "patientsSeenTargets": metadata?.patientsSeenTargets,
           "scheduledPatientsTargets": metadata?.scheduledPatientsTargets
         })),
-        "contractedSchedule": {
-          "minimum": {
-            "value": parseInt(dataValues?.min || '0')
-          },
-          "maximum": {
-            "value": parseInt(dataValues?.max || '0')
-          },
-          "frequency": dataValues?.frequency
-        },
-        "patientsSeenTarget": {
-          "withNurse": {
-            "value": parseInt(dataValues?.withNurse || '0')
-          },
-          "withoutNurse": {
-            "value": parseInt(dataValues?.withoutNurse || "0")
-          },
-          "noTargetApplicable": dataValues?.noTargetApplicable
-        },
-        "scheduledPatientsTarget": {
-          "withNurse": {
-            "value": parseInt(dataValues?.targetWithNurse || '0')
-          },
-          "withoutNurse": {
-            "value": parseInt(dataValues?.targetWithoutNurse || '0')
-          },
-          "noTargetApplicable": dataValues?.targetNoTargetApplicable
-        },
-        ...(serviceType === SUPPLEMENTAL && {
+        ...(((serviceTypeTemplate !== CLINIC && serviceTypeTemplate !== PROCEDUREREADING) && {
+          "contractedSchedules": [{
+            "minimum": {
+              "value": parseInt(dataValues?.min || '0')
+            },
+            "maximum": {
+              "value": parseInt(dataValues?.max || '0')
+            },
+            "frequency": dataValues?.frequency
+          }],
+          "patientsSeenTargets": [{
+            "withNurse": {
+              "value": parseInt(dataValues?.withNurse || '0')
+            },
+            "withoutNurse": {
+              "value": parseInt(dataValues?.withoutNurse || "0")
+            },
+            "noTargetApplicable": dataValues?.noTargetApplicable
+          }],
+          "scheduledPatientsTargets": [{
+            "withNurse": {
+              "value": parseInt(dataValues?.targetWithNurse || '0')
+            },
+            "withoutNurse": {
+              "value": parseInt(dataValues?.targetWithoutNurse || '0')
+            },
+            "noTargetApplicable": dataValues?.targetNoTargetApplicable
+          }]
+        })),
+        ...(serviceTypeTemplate === SUPPLEMENTAL && {
           "additionalSchedule": {
             "value": parseInt(dataValues?.additionalScheduleValue),
             "frequency": dataValues?.additionalScheduleFrequency,
@@ -537,14 +562,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "rateType": dataValues?.rateType,
         "activityResponse": {
           "dataMap": {
-            ...(serviceType === ONCALL && {
+            ...(serviceTypeTemplate === ONCALL && {
               'onCallCoverageFor': dataValues?.onCallCoverageFor,
             }
             ),
-            ...(serviceType === ADMINISTRATIVE && {
+            ...(serviceTypeTemplate === ADMINISTRATIVE && {
               'adminActivities': dataValues?.selectedActivities,
             }),
-            ...(serviceType === ADDON && {
+            ...(serviceTypeTemplate === ADDON && {
               'selectedActivityId': dataValues?.activityResponse?.dataMap?.selectedActivityId,
               'additionalDetails': dataValues?.activityResponse?.dataMap?.additionalDetails || [],
             })
@@ -561,7 +586,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "frequency": dataValues?.totalSessionFrequency
         },
         "serviceDays": dataValues?.serviceDays,
-        ...(serviceType === ONCALL && {
+        ...(serviceTypeTemplate === ONCALL && {
           "dependentService": {
             "payableAmount": {
               "value": parseInt(dataValues?.dependencyPayableAmount)
@@ -590,18 +615,20 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     "value": parseInt(dataValues?.weekdayMax)
                   },
                   "frequency": dataValues?.weekdayFrequency,
-                  // "startDate": null,
-                  // "endDate": null
                 },
                 "duration": {
                   "hours": parseInt(dataValues?.weekdayDuration)
-                }
+                },
+                "payableAmount": {
+                  "value": parseFloat(dataValues?.weekdayPayment)
+                },
+                "paymentNotApplicable": dataValues?.weekdayPaymentNa
               },
               "weekend": {
                 "from": dataValues?.weekendFrom?.toLocaleTimeString('it-IT').toString(),
                 "to": dataValues?.weekendTo?.toLocaleTimeString('it-IT').toString(),
-                "startDay": dataValues?.weekendStartday,
-                "endDay": dataValues?.weekendEndday,
+                ... (dataValues?.weekendStartday !== "" && { "startDay": dataValues?.weekendStartday }),
+                ...(dataValues?.weekendEndday !== "" && { "endDay": dataValues?.weekendEndday }),
                 "target": {
                   "minimum": {
                     "value": parseInt(dataValues?.weekendMin)
@@ -610,12 +637,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     "value": parseInt(dataValues?.weekendMax)
                   },
                   "frequency": dataValues?.weekendFrequency,
-                  // "startDate": null,
-                  // "endDate": null
                 },
                 "duration": {
                   "hours": parseInt(dataValues?.weekendDuration)
-                }
+                },
+                "payableAmount": {
+                  "value": parseFloat(dataValues?.weekendPayment)
+                },
+                "paymentNotApplicable": dataValues?.weekendPaymentNa
               },
               "holiday": {
                 "from": dataValues?.holidayFrom?.toLocaleTimeString('it-IT').toString(),
@@ -629,12 +658,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     "value": parseInt(dataValues?.holidayMax)
                   },
                   "frequency": dataValues?.holidayFrequency,
-                  // "startDate": null,
-                  // "endDate": null
                 },
                 "duration": {
                   "hours": parseInt(dataValues?.holidayDuration)
-                }
+                },
+                "payableAmount": {
+                  "value": parseFloat(dataValues?.holidayPayment)
+                },
+                "paymentNotApplicable": dataValues?.holidayPaymentNa
               }
             }
           })
@@ -643,21 +674,21 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
           "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
         },
-        ...(serviceType === ADDON && {
+        ...(serviceTypeTemplate === ADDON && {
           workFlow: dataValues?.workFlow,
         }),
         "patientMRNRequired": dataValues?.patientMRNRequired || false,
         "attendingDocRequired": dataValues?.attendingDocRequired || false,
         "activityApprovalWFRequired": dataValues?.activityApprovalWFRequired || false,
         "designateSpecificContractor": isDesignatedSpecificContractor,
-        "locationSpecified": serviceType === ADDON ? dataValues?.locationSpecified : showLocation,
-        "dedicatedHoursSpecified": [SUPPLEMENTAL, ADMINISTRATIVE].includes(serviceType) ? dataValues?.dedicatedHoursSpecified : false,
+        "locationSpecified": serviceTypeTemplate === ADDON ? dataValues?.locationSpecified : showLocation,
+        "dedicatedHoursSpecified": [SUPPLEMENTAL, ADMINISTRATIVE].includes(serviceTypeTemplate) ? dataValues?.dedicatedHoursSpecified : false,
         "billableService": dataValues?.billableService,
         "dependantServiceIncluded": dataValues?.dependantServiceIncluded || false,
         "customizedSchedule": dataValues?.customizedSchedule || false,
       }]
     }
-    if (editService && serviceType === ADDON) {
+    if (editService && serviceTypeTemplate === ADDON) {
       data[0].activities = metadata?.[0]?.activities;
       data[0].performingActivity = { activity: metadata?.[0]?.performingActivity };
     }
@@ -800,7 +831,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setAnchorElDoc(null);
   };
 
-  console.log('contract services', serviceTypeList);
+  console.log('contract services', serviceTypeList, serviceTypeId);
 
   return (
     <div>
@@ -892,11 +923,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   <CommonLabel value='Activity /Service Type Contracted for*' />
                   <div>
                     <CommonSelectField value={serviceType}
-                      onChange={(e) => { setServiceType(e.target.value) }}
+                      onChange={(e) => {
+                        setServiceType(e.target.value);
+                        setServiceTypeTemplate(serviceTypeList?.filter(type => type?.serviceType === e.target.value)?.map(data => data?.serviceTypeTemplate)?.[0]);
+                        setSelectedActivity([]);
+                        setServiceTypeId(serviceTypeList?.filter(data => data?.serviceType === e.target.value)?.map(data => data?.id)[0]);
+                      }}
                       className={`${style.fullWidth} `}
                       firstOptionLabel={'Select Activity /Service Type'} firstOptionValue={''}
-                      valueList={serviceTypeList}
-                      labelList={serviceTypeList}
+                      valueList={serviceTypeList?.map(data => data?.serviceType)}
+                      labelList={serviceTypeList?.map(data => data?.serviceType)}
                       disabledList={serviceTypeList?.map(data => false)} />
                   </div>
                 </div>
@@ -925,7 +961,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   </div>
                 )}
                 {
-                  serviceType !== ADMINISTRATIVE && serviceType !== ADDON && serviceType !== SUPPLEMENTAL &&
+                  serviceTypeTemplate !== ADMINISTRATIVE && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== SUPPLEMENTAL &&
                   <div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                       <CommonLabel value='Activities To Be Performed*' />
@@ -946,7 +982,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 }
 
 
-                {serviceType !== ADDON && <div>
+                {serviceTypeTemplate !== ADDON && <div>
                   <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <CommonLabel value='Specify Service Facility / Location (Cost Center)*' />
                     <div>
@@ -958,8 +994,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                           </div>
                         </div>
-
-
                       </div>
                       {
                         selectedLocation?.length !== 0 &&
@@ -969,17 +1003,17 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   </div>
                 </div>}
 
-                {serviceType === CLINIC
+                {serviceTypeTemplate === CLINIC
                   ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} />
-                  : serviceType === SURGERY
+                  : serviceTypeTemplate === SURGERY
                     ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
-                    : serviceType === ONCALL
+                    : serviceTypeTemplate === ONCALL
                       ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
-                      : serviceType === SUPPLEMENTAL
+                      : serviceTypeTemplate === SUPPLEMENTAL
                         ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />
-                        : serviceType === ADDON
+                        : serviceTypeTemplate === ADDON
                           ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} />
-                          : serviceType === PROCEDUREREADING
+                          : serviceTypeTemplate === PROCEDUREREADING
                             ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} />
                             : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
               </div>

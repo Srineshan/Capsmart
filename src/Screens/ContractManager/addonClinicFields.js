@@ -74,9 +74,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       let data = {
         refId: serviceSelected?.refId,
         activities: serviceSelected?.activities,
-        min: serviceSelected?.contractedSchedule?.minimum?.value,
-        max: serviceSelected?.contractedSchedule?.maximum?.value,
-        frequency: serviceSelected?.contractedSchedule?.frequency,
+        min: serviceSelected?.contractedSchedules?.[0]?.minimum?.value,
+        max: serviceSelected?.contractedSchedules?.[0]?.maximum?.value,
+        frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
         sessionDuration: serviceSelected?.duration?.hours,
         sessionAmount: serviceSelected?.payableAmount?.value,
         totalSession: serviceSelected?.totalSessions?.value,
@@ -189,11 +189,11 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
 
   let serviceList = [];
   let temp = services;
-  temp?.filter(data => [CLINIC, SURGERY, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
+  temp?.filter(data => [CLINIC, SURGERY, PROCEDUREREADING]?.includes(data?.activityTypeTemplate?.activityTypeTemplate))?.map(data => {
     let activityName = data?.activityType?.activityType;
     let activities = data?.activities?.map(data => data?.activity);
     let result = activities?.length !== 0 ? `${activityName} (${activities?.map(data => data)?.join(', ')})` : `${activityName}`;
-    let alreadyExist = services?.filter(data => data?.activityType?.activityType === ADDON && data?.performingActivity?.activity === result)?.map(data => data);
+    let alreadyExist = services?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === ADDON && data?.performingActivity?.activity === result)?.map(data => data);
     if (alreadyExist?.length === 0) {
       serviceList.push(result);
     }
@@ -247,8 +247,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     setMetadata(temp);
     getFields();
   }
-
-  console.log('metadata', metadata);
 
   const handleSessionAmountChange = (name, value) => {
     let temp = metadata;
@@ -366,9 +364,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     getFields();
   }
 
-  console.log('metadata', metadata, newServices);
-
-
   const handleWorkingHoursChange = (serviceName, value, name) => {
     let temp = metadata;
     temp?.filter(data => data?.performingActivity === serviceName)?.map(data => {
@@ -381,6 +376,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   const onAdditionalServiceApproverChange = (name, value) => {
     let temp = metadata;
     temp?.filter(data => data?.performingActivity === name)?.map(data => {
+      console.log('temp check', data?.performingActivity);
       data.approver = value;
     });
     setMetadata(temp);
@@ -390,13 +386,14 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   const onAdditionalServicePaymentApproverChange = (name, value) => {
     let temp = metadata;
     temp?.filter(data => data?.performingActivity === name)?.map(data => {
+      console.log('temp check', data?.performingActivity);
       data.paymentApprover = value;
     });
     setMetadata(temp);
     getFields();
   }
 
-  console.log('location', locationItems);
+  console.log('metadata', metadata);
 
   return (
     <div>

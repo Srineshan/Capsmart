@@ -25,6 +25,7 @@ import IndustryList from './../../Components/IndustryList';
 import EntityTypeList from './../../Components/EntityType';
 import DepartmentList from './../../Components/DepartmentList';
 import SaveInProgress from './saveInProgressAlert';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 
 const EntitySetup = () => {
   let { id } = useParams();
@@ -530,7 +531,12 @@ const EntitySetup = () => {
                   </div>
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>NPIN*</div>
-                    <InputGroup className={style.fourFieldWidth} value={entity?.npin} onChange={(e) => handleEntity('npin', e.target.value)} />
+                    <div className={style.displayInRow}>
+                      <InputGroup className={style.fourFieldWidth} value={entity?.npin} onChange={(e) => handleEntity('npin', e.target.value)} />
+                      <CommonCheckBox value="NA" className={style.marginLeft20}
+                        // checked={serviceDays?.weekDays} onChange={(e) => onWeekDaysCheck(e.target.checked)} 
+                        label="NA" />
+                    </div>
                   </div>
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <div className={style.extentionLableStyle}>Entity Name*</div>
@@ -547,10 +553,10 @@ const EntitySetup = () => {
                     <div>
                       <InputGroup value={address.addressLine} className={`${style.fullWidth}`} onChange={(e) => handleAddress('addressLine', e.target.value)} />
                       <div className={`${style.marginTop20} ${style.displayInRow}`}>
-                        <InputGroup placeholder="City Value" className={`${style.fourFieldWidth}`} value={address.city} onChange={(e) => handleAddress('city', e.target.value)} />
-                        <InputGroup placeholder="State Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.state} onChange={(e) => handleAddress('state', e.target.value)} />
-                        <InputGroup placeholder="Country Value" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.country} onChange={(e) => handleAddress('country', e.target.value)} />
-                        <InputGroup placeholder="Pincode Value" className={`${style.fourFieldWidth}`} value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value)} />
+                        <InputGroup placeholder="City" className={`${style.fourFieldWidth}`} value={address.city} onChange={(e) => handleAddress('city', e.target.value)} />
+                        <InputGroup placeholder="State" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.state} onChange={(e) => handleAddress('state', e.target.value)} />
+                        <InputGroup placeholder="Country" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.country} onChange={(e) => handleAddress('country', e.target.value)} />
+                        <InputGroup placeholder="Zipcode" className={`${style.fourFieldWidth}`} value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value)} />
                       </div>
                     </div>
                   </div>
@@ -569,14 +575,18 @@ const EntitySetup = () => {
                           className={style.switchFontStyle}
                           label={entity?.multiSiteEntity ? 'YES' : 'NO'}
                         />
-                        <div className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Primary Site To Use App*</div>
-                        <FormControlLabel
-                          control={
-                            <Switch checked={entity.primarySiteToUseApp} onChange={(e) => handleEntity('primarySiteToUseApp', e.target.checked)} className={` ${style.textAlignLeft} ${style.marginLeft20}`} />
-                          }
-                          className={style.switchFontStyle}
-                          label={entity?.primarySiteToUseApp ? 'YES' : 'NO'}
-                        />
+                        {entity.multiSiteEntity && (
+                          <>
+                            <div className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Primary Site To Use App*</div>
+                            <FormControlLabel
+                              control={
+                                <Switch checked={entity.primarySiteToUseApp} onChange={(e) => handleEntity('primarySiteToUseApp', e.target.checked)} className={` ${style.textAlignLeft} ${style.marginLeft20}`} />
+                              }
+                              className={style.switchFontStyle}
+                              label={entity?.primarySiteToUseApp ? 'YES' : 'NO'}
+                            />
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

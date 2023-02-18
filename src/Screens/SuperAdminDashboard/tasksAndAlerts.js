@@ -22,7 +22,7 @@ import ContractExtension from './../../images/contractExtension.png';
 import ProgressBar from "@ramonak/react-progress-bar";
 import SearchBar from './../../Components/SearchBar';
 import { GET } from '../dataSaver';
-import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import style from './index.module.scss';
 
 const TasksAndAlerts = () => {
@@ -167,7 +167,7 @@ const TasksAndAlerts = () => {
                         </div>
                         <div className={`${style.bigCardStyleEntryPage} ${style.marginTop20}`}>
                             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                                <p className={`${style.marginLeft30} ${style.activeContractsWidth}`}>{`{{Today Date}}`}</p>
+                                <p className={`${style.marginLeft30} ${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yyyy H:m zzz')}</p>
                                 <div className={`${style.displayInRow}`}>
                                     <SearchBar />
                                     <img src={Bell} alt="Bell" className={style.smallIcons} />

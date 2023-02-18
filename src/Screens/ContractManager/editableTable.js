@@ -80,7 +80,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
                                 handleActivityChange(e, i, 'weekdayFrom');
                             }}
                             className={style.reducedTimeWidth}
-                            value={new Date(additionalActivity?.[i]?.weekdayFrom || new Date())}
+                            value={additionalActivity?.[i]?.weekdayFrom === null ? null : new Date(additionalActivity?.[i]?.weekdayFrom)}
                         />
                         <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                         <TimePicker
@@ -89,7 +89,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
                             onChange={(e) => {
                                 handleActivityChange(e, i, 'weekdayTo');
                             }}
-                            value={new Date(additionalActivity?.[i]?.weekdayTo || new Date())}
+                            value={additionalActivity?.[i]?.weekdayTo === null ? null : new Date(additionalActivity?.[i]?.weekdayTo)}
                         />
                     </div>
 
@@ -101,7 +101,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
                             onChange={(e) => {
                                 handleActivityChange(e, i, 'weekendFrom');
                             }}
-                            value={new Date(additionalActivity?.[i]?.weekendFrom || new Date())}
+                            value={additionalActivity?.[i]?.weekendFrom === null ? null : new Date(additionalActivity?.[i]?.weekendFrom)}
                         />
                         <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                         <TimePicker
@@ -110,7 +110,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
                             onChange={(e) => {
                                 handleActivityChange(e, i, 'weekendTo');
                             }}
-                            value={new Date(additionalActivity?.[i]?.weekendTo || new Date())}
+                            value={additionalActivity?.[i]?.weekendTo === null ? null : new Date(additionalActivity?.[i]?.weekendTo)}
                         />
                     </div>
 
@@ -121,7 +121,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
                             onChange={(e) => {
                                 handleActivityChange(e, i, 'holidayFrom');
                             }}
-                            value={new Date(additionalActivity?.[i]?.holidayFrom || new Date())}
+                            value={additionalActivity?.[i]?.holidayFrom === null ? null : new Date(additionalActivity?.[i]?.holidayFrom)}
                         />
                         <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                         <TimePicker
@@ -130,7 +130,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
                             onChange={(e) => {
                                 handleActivityChange(e, i, 'holidayTo');
                             }}
-                            value={new Date(additionalActivity?.[i]?.holidayFrom || new Date())}
+                            value={additionalActivity?.[i]?.holidayTo === null ? null : new Date(additionalActivity?.[i]?.holidayTo)}
                         />
                     </div>
 
