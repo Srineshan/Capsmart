@@ -249,6 +249,23 @@ const ClientAdminDashboard = () => {
                         </div>
                       </div>
                     </Link>
+                    <Link
+                      to={"/referenceList/organizationCostCenters"}
+                      className={style.linkStyle}
+                    >
+                      <div className={style.dashboardCardStyle}>
+                        <h5 className={`${style.headingForReferenceList}`}>
+                          ORGANIZATION COST CENTERS & SERVICE LOCATIONS
+                        </h5>
+                        <div
+                          className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                        >
+                          <span className={style.dashboardCardColorOption1}>
+                            SETUP REQUIRED
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
                   </div>
                 </div>
               </div>

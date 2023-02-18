@@ -35,6 +35,7 @@ const HelpHome = React.lazy(() => import('./Screens/HelpManagement'));
 const TasksAndAlerts = React.lazy(() => import('./Screens/SuperAdminDashboard/tasksAndAlerts'));
 const ReferenceList = React.lazy(() => import('./Screens/ReferenceList'));
 const HolidayScheduleForCustomers = React.lazy(() => import('./Screens/ReferenceList/holidayScheduleForCustomers'));
+const CostCenterAndLocations = React.lazy(() => import('./Screens/ReferenceList/costCenterAndLocations'));
 const DepartmentsForCustomers = React.lazy(() => import('./Screens/ReferenceList/departmentsForCustomers'));
 const CustomerManagement = React.lazy(() => import('./Screens/SuperAdminDashboard/customerManagement'));
 const CustomerSetup = React.lazy(() => import('./Screens/SuperAdminDashboard/customerSetup'))
@@ -244,6 +245,10 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/holidayScheduleForCustomers"
                 element={<HolidayScheduleForCustomers />}
+              />
+              <Route
+                path="/referenceList/organizationCostCenters"
+                element={<CostCenterAndLocations />}
               />
               <Route
                 path="/referenceList/departmentsForCustomers"
