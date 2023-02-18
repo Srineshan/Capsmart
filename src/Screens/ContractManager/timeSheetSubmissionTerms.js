@@ -366,7 +366,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <CommonLabel value='Service log Period for timesheet submission*' />
             <CommonSelectField
-              value={timeSheetLabelData?.[i]?.value}
+              value={timeSheetLabelData?.[i]?.value ? timeSheetLabelData?.[i]?.value : ''}
               onChange={(e) => handleTimesheetValue(i, 'value', e.target.value)}
               firstOptionLabel={''} firstOptionValue={''}
               valueList={['ENDOFMONTH', 'ENDOFEVERYWEEK', 'EVERY2WEEKS', 'EVERY4WEEKS', 'ONDAYOFSERVICE']}
