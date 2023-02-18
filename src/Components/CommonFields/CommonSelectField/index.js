@@ -5,13 +5,14 @@ import { FormControl } from '@mui/material';
 
 import style from './index.module.scss';
 
-const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect }) => {
+const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue }) => {
     return (
         <FormControl size="small" className={style.fullWidth}>
             <Select
                 labelId="demo-select-small"
                 id="demo-select-small"
                 displayEmpty
+                defaultValue={defaultValue}
                 value={value}
                 onChange={onChange}
                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}

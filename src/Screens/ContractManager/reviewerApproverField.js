@@ -35,6 +35,7 @@ const ReviewerApproverField = ({ data, label, onValueChange, selectLabel, value 
 
         </select> */}
         <CommonSelectField className={`${style.fullWidth} `}
+          defaultValue={value}
           value={value}
           onChange={e => onValueChange(e.target.value)}
           firstOptionLabel={selectLabel} firstOptionValue={'0'}
