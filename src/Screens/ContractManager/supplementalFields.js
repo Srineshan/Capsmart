@@ -43,6 +43,13 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         setAvailableActivities(temp);
     }
 
+    const getSelectedActivity = () => {
+        let activityName = metadata?.dedicatedHoursActivityType;
+        let activities = metadata?.dedicatedHoursPerformingActivity;
+        let result = `${activityName} (${activities})`
+        return result
+    }
+
     const selectedHours = (index) => {
         // let temp = services?.findIndexOf(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType));
         // let temp;
@@ -56,6 +63,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                     ...metadata,
                     dedicatedHoursActivityType: dedicatedHoursActivityType,
                     dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
+                    supplementServiceName: [],
                     billableService: data?.billableService,
                     rateType: data?.rateType,
                     sessionAmount: data?.payableAmount?.value,
@@ -65,9 +73,6 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                 });
             }
         });
-
-        // console.log('activity type', temp, index);
-
     }
 
     const [metadata, setMetadata] = useState({
@@ -100,7 +105,6 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
 
     useEffect(() => {
         getAvailableActivities();
-        setMetadata({ ...metadata, supplementServiceName: [] });
     }, [metadata?.dedicatedHoursActivityType])
 
     useEffect(() => {
@@ -142,7 +146,11 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             } else {
                 setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
-        } else {
+        }
+        //  else if (name === 'dedicatedHoursActivityType') {
+        //     setMetadata({ ...metadata, supplementServiceName: [], [name]: value });
+        // } 
+        else {
             setMetadata({ ...metadata, [name]: value });
         }
     }
@@ -164,8 +172,6 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         setMetadata({ ...metadata, supplementServiceName: temp?.filter((data, indexValue) => index !== indexValue)?.map(data => data) });
     }
 
-    console.log('metadata', metadata);
-
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -174,6 +180,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                     <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'} checked={metadata?.dedicatedHoursSpecified} onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)} />
                     {!metadata?.dedicatedHoursSpecified && (
                         <CommonSelectField className={`${style.fullWidth}`}
+                            value={getSelectedActivity() || ''}
                             onChange={(e) => selectedHours(e.target.value)}
                             firstOptionLabel={'Select source of hours for this service'} firstOptionValue={''}
                             valueList={specificDedicatedHoursList}

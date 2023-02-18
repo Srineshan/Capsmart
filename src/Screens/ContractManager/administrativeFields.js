@@ -46,6 +46,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         dedicatedHoursPerformingActivity: '',
         totalSession: '0',
         sessionAmount: '0',
+        sessionDuration: '0',
         serviceDays: {
             tuesday: false,
             wednesday: false,
@@ -83,6 +84,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
             serviceDays: serviceSelected?.serviceDays,
             sessionAmount: serviceSelected?.payableAmount?.value,
+            sessionDuration: serviceSelected?.duration?.hours || '0',
         });
     }
 
@@ -117,7 +119,16 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const handleValueChange = (name, value) => {
-        setMetadata({ ...metadata, [name]: value });
+        if (name === 'dedicatedHoursSpecified') {
+            if (value) {
+                setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: '', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+            } else {
+                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+            }
+        }
+        else {
+            setMetadata({ ...metadata, [name]: value });
+        }
     }
 
     const activityToAdd = async () => {
@@ -150,11 +161,32 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const selectedHours = (index) => {
-        let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => data);
-        let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
-        let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
-        setMetadata({ ...metadata, dedicatedHoursActivityType: dedicatedHoursActivityType, dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity, sessionAmount: temp[index]?.payableAmount?.value });
+        // let temp = services?.findIndexOf(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType));
+        // let temp;
+        services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
+            let activityName = data?.activityType?.activityType;
+            let activities = data?.activities?.map(data => data?.activity);
+            if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
+                let dedicatedHoursActivityType = data?.activityType?.activityType;
+                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join('-');
+                setMetadata({
+                    ...metadata,
+                    dedicatedHoursActivityType: dedicatedHoursActivityType,
+                    dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
+                    sessionDuration: data?.duration?.hours,
+                });
+            }
+        });
     }
+
+    // const selectedHours = (index) => {
+    //     console.log('check', index)
+    //     let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => data);
+    //     let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
+    //     let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
+    //     console.log('check', dedicatedHoursActivityType, dedicatedHoursPerformingActivity);
+    //     setMetadata({ ...metadata, dedicatedHoursActivityType: dedicatedHoursActivityType, dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity, sessionAmount: temp[index]?.payableAmount?.value });
+    // }
 
     const handleAdminActivity = (name, value) => {
         setAdminActivity({ ...adminActivity, [name]: value });

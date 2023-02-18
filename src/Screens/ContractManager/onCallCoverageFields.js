@@ -10,6 +10,7 @@ import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import { SpecifiedCountCalculator } from './specifiedCountCalculator';
 
 import style from './index.module.scss';
 import EditableTable from './editableTable';
@@ -142,13 +143,14 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
 
     const [specified, setSpecified] = useState(0);
 
-    console.log('test', serviceSelected?.patientMRNRequired, serviceSelected?.attendingDocRequired, serviceSelected?.customizedSchedule);
-
     useEffect(() => {
-        let additionalFreq = metadata?.additionalScheduleFrequency === 'WEEK' ? timeCommitment?.value || 0 : (timeCommitment?.value / 2) || 0;
-        let value = (parseInt(metadata?.min || '0') * timeCommitment?.value || 0) + (parseInt(metadata?.additionalScheduleValue || '0') * additionalFreq);
-        setSpecified(value);
-    }, [metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
+        let contractedSchedules = [{
+            minimum: { value: metadata?.min },
+            maximum: { value: metadata?.max },
+            frequency: metadata?.frequency
+        }]
+        setSpecified(SpecifiedCountCalculator(contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue));
+    }, [metadata?.frequency, metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
 
     useEffect(() => {
         if (Object.entries(serviceSelected)?.length !== 0) {
@@ -158,7 +160,6 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
 
 
     const setSelectedValues = () => {
-        console.log('console check', serviceSelected);
         let dependentActivities = [];
         serviceSelected?.dependentService?.additionalServices?.map(data => {
             dependentActivities.push(
@@ -367,7 +368,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH']}
                                 labelList={['Not Applicable', 'Per Week', 'Per Month']}
-                                disabledList={[timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'MONTH']} />
+                                disabledList={[false, false, false]} />
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -464,7 +465,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH']}
                                 labelList={['Not Applicable', 'Per Week', 'Per Month']}
-                                disabledList={[timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'MONTH']} />
+                                disabledList={[false, false, false]} />
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -580,7 +581,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH']}
                                 labelList={['Not Applicable', 'Per Week', 'Per Month']}
-                                disabledList={[timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'MONTH']} />
+                                disabledList={[false, false, false]} />
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -638,7 +639,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
                                 valueList={['WEEK', 'MONTH']}
                                 labelList={['Per Week', 'Per Month']}
-                                disabledList={[timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'MONTH']} />
+                                disabledList={[false, false]} />
                         </div>
                     </div>
 
@@ -740,7 +741,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
                                 valueList={['WEEK', 'EVERY_OTHER_WEEK', 'MONTH', 'EVERY_OTHER_MONTH']}
                                 labelList={['Every Week', 'Every Other Week', 'Every Month', 'Every Other Month']}
-                                disabledList={[timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'MONTH', timeCommitment?.frequency !== 'MONTH']} />
+                                disabledList={[false, false, false, false]} />
                         </>
                     }
                 </div>

@@ -34,6 +34,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [serviceTypeList, setServiceTypeList] = useState([]);
   const [serviceTypeId, setServiceTypeId] = useState('');
   const siteTypeId = sessionStorage.getItem('entityTypeId');
+  const [selectedDeptId, setSelectedDeptId] = useState([]);
   const [serviceType, setServiceType] = useState(CLINIC);
   const [serviceTypeTemplate, setServiceTypeTemplate] = useState(CLINIC);
   const [addOnButton, setAddOnButton] = useState('');
@@ -99,13 +100,31 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }, [selectedService]);
 
+  useEffect(() => {
+    if (siteData?.length !== 0) {
+      let temp = [];
+      siteData?.map(data => data?.departmentList?.departments?.map(dept => {
+        temp.push(dept?.id);
+      }))
+      setSelectedDeptId(temp);
+    }
+  }, [siteData])
+
   const removeSelectedLocationFromList = () => {
     setLocationList(allLocation?.filter(data => !selectedLocation?.map(location => location?.location).includes(data?.location))?.map(data => data));
   }
 
+  console.log('selected site', siteData);
+
   useEffect(() => {
     removeSelectedLocationFromList();
   }, [selectedLocation])
+
+  useEffect(() => {
+    if (newActivity !== '') {
+      onActivitySelect(activity?.filter(data => data?.activity?.activity === newActivity)?.map(data => data)[0]);
+    }
+  }, [activity])
 
   useEffect(() => {
     if (isWorkFlowUpdated) {
@@ -145,7 +164,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   useEffect(() => {
     getLocations();
-  }, [siteData])
+  }, [selectedDeptId, siteData])
 
   useEffect(() => {
     getContractedServices();
@@ -157,6 +176,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }, [])
 
   useEffect(() => {
+    setNewActivity('');
     getActivityList();
   }, [serviceTypeId])
 
@@ -185,7 +205,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const getLocations = async () => {
-    const { data: location } = await GET(`contract-managment-service/contracts/site/${siteData?.map(data => data?.id)[0]}/location`);
+    const { data: location } = await GET(`entity-service/servicelocation?departments=${selectedDeptId}`);
     setAllLocation(location);
     setLocationList(location?.filter(data => !selectedLocation?.map(location => location?.location).includes(data?.location))?.map(data => data));
   }
@@ -209,6 +229,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const activityToAdd = async () => {
+    if (activity?.some(data => data?.activity?.activity?.replace(' ', '')?.toLowerCase()?.includes(newActivity?.replace(' ', '')?.toLowerCase()))) {
+      return;
+    }
     if (newActivity === '') {
       ErrorToaster('Enter valid Acitivty name');
       return;
@@ -510,6 +533,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         {
           "hoursBorrowed": {
             "activityType": {
+              "id": serviceTypeId,
               "activityType": dataValues?.dedicatedHoursActivityType || ''
             },
             "performingActivity": {
@@ -726,8 +750,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setSiteData([]);
   }
 
-  console.log('metadata', metadata);
-
   const handleUsers = (value) => {
     if (value !== '0') {
       const selectedValue = users?.filter(data => data?.id === value)?.map(data => data)[0];
@@ -768,6 +790,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       })),
     [locationList],
   )
+
+  console.log('selected activity', selectedActivity);
 
   const onActivitySelect = (selectedItem) => {
     setItem(selectedItem);
@@ -968,7 +992,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                       <div>
                         <div className={style.addGrid}>
                           <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e) => setNewActivity(e.target.value)} />
-                          <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
+                          <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${(newActivity === '' || activity?.some(data => data?.activity?.activity?.replace(' ', '')?.toLowerCase()?.includes(newActivity?.replace(' ', '')?.toLowerCase()))) ? style.disabledUploadButton : ''}`}>
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
                           </div>
                         </div>
