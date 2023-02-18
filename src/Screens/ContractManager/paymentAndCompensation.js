@@ -354,7 +354,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                     </div> */}
                                 <CommonRadio
                                     className={`${style.leftAlign}`}
-                                    value={compensation}
+                                    value={compensation ? compensation : 'RVUBASED'}
                                     onChange={(e) => onCompensationUpdate(e.target.value)}
                                     radioValue={['RVUBASED', 'DOLLARBASEDRATE']}
                                     label={['RVU Based', 'Dollar Based Rate']}
