@@ -556,7 +556,7 @@ const EntitySetup = () => {
                         <InputGroup placeholder="City" className={`${style.fourFieldWidth}`} value={address.city} onChange={(e) => handleAddress('city', e.target.value)} />
                         <InputGroup placeholder="State" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.state} onChange={(e) => handleAddress('state', e.target.value)} />
                         <InputGroup placeholder="Country" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.country} onChange={(e) => handleAddress('country', e.target.value)} />
-                        <InputGroup placeholder="Zipcode" className={`${style.fourFieldWidth}`} value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value)} />
+                        <InputGroup placeholder="Zipcode" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value)} />
                       </div>
                     </div>
                   </div>
