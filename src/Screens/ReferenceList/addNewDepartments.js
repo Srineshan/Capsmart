@@ -22,6 +22,8 @@ const AddNewDepartments = ({
   departmentList,
   selectedTitle,
   isService,
+  callingFrom,
+  siteTypeId,
 }) => {
   const [departId, setDepartId] = useState("");
   const [departName, setDepartName] = useState("");
@@ -63,16 +65,31 @@ const AddNewDepartments = ({
       departmentName: {
         name: departName,
       },
-      siteTypeId: {
-        id: selectedEntity?.id,
-      },
       departmentGroupBy: {
         name: departName,
       },
       serviceAreas: ServiceAreaData,
+      ...(callingFrom === "Super Admin" && {
+        siteTypeId: {
+          id: selectedEntity?.id,
+        },
+      }),
+      ...(callingFrom === "Customer Admin" && {
+        customized: true,
+        siteTypeId: {
+          id: siteTypeId,
+        },
+      }),
     };
 
-    await POST("entity-service/departmentMaster", JSON.stringify(data))
+    let ApiData = callingFrom === "Customer Admin" && !isEdit ? [data] : data;
+
+    let ApiUrl =
+      callingFrom === "Super Admin"
+        ? "entity-service/departmentMaster"
+        : `entity-service/department`;
+
+    await POST(ApiUrl, JSON.stringify(ApiData))
       .then((response) => {
         SuccessToaster("Department Added Successfully");
         getEntityData();

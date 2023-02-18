@@ -450,6 +450,7 @@ const DepartmentsByEntityTypes = ({
           departmentList={departmentList}
           selectedTitle={selectedTitle}
           isService={isService}
+          callingFrom={"Super Admin"}
         />
       )}
 

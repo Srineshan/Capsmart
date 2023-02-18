@@ -22,20 +22,21 @@ import style from "./index.module.scss";
 const HolidayScheduleForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [showAddCompanyDialog, setShowAddCompanyDialog] = useState(false);
-  const [holidayData, setHolidayData] = useState([]);
+
+  const [holidayDataMaster, setHolidayDataMaster] = useState([]);
   const [holidayCustomerData, setHolidayCustomerData] = useState([]);
-  const [selectedIndustry, setSelectedIndustry] = useState({});
+
+  const [selectedIndustry, setSelectedIndustry] = useState("");
   const [country, setCountry] = useState("USA");
   const [years, setYears] = useState([]);
-  const [isOpenLeftFolder, setIsOpenLeftFolder] = useState(false);
-  const [leftFolderOpenIndex, setLeftFolderOpenIndex] = useState(0);
   const [isEdit, setIsEdit] = useState(false);
-  const [selectedHoliday, setSelectedHoliday] = useState({});
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [holidayId, setHolidayId] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
-  const [selectedHolidayList, setSelectedHolidayList] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedHolidayMaster, setSelectedHolidayMaster] = useState({});
+  const [selectedHolidayItems, setSelectedHolidayItems] = useState([]);
 
   const getAddCompanyHolidayDialog = (value) => {
     setShowAddCompanyDialog(value);
@@ -46,10 +47,13 @@ const HolidayScheduleForCustomers = () => {
   };
 
   useEffect(() => {
+    getIndustryData();
+  }, []);
+
+  useEffect(() => {
     if (selectedIndustry !== undefined) {
       getIndustryData();
       getYearMasterData();
-      getHolidayData();
     }
   }, [selectedIndustry]);
 
@@ -66,18 +70,66 @@ const HolidayScheduleForCustomers = () => {
     setSelectedYear(yearsData?.[0]?.year);
   };
 
-  const getHolidayMasterData = async (selectedYear) => {
-    const { data: holidayData } = await GET(
+  const getHolidayMasterData = async () => {
+    const { data: holidayDataMaster } = await GET(
       `entity-service/holidayMaster?industryId=${selectedIndustry}&country=${country}&year=${selectedYear}`
     );
-    setHolidayData(holidayData);
+    setHolidayDataMaster(holidayDataMaster);
   };
 
   const getHolidayData = async () => {
     const { data: holidayData } = await GET(
-      `entity-service/holiday?country=${country}&&year=${selectedYear}`
+      `entity-service/holiday?country=${country}&year=${selectedYear}`
     );
     setHolidayCustomerData(holidayData);
+  };
+
+  const handleSelectHolidayMaster = (e, innerData) => {
+    if (e.target.checked) {
+      setSelectedHolidayItems([...selectedHolidayItems, innerData]);
+    } else {
+      setSelectedHolidayItems(
+        selectedHolidayItems
+          ?.filter((data) => data?.id !== innerData?.id)
+          ?.map((data) => data)
+      );
+    }
+  };
+
+  const handlePostHoliday = async () => {
+    setIsSelected(true);
+
+    let data = selectedHolidayItems?.map((data) => ({
+      ...data,
+      customized: true,
+      entityId: { id: TenantID },
+    }));
+    if (selectedHolidayItems?.length !== 0) {
+      await POST("entity-service/holiday", JSON.stringify(data))
+        .then((response) => {
+          SuccessToaster("Holiday Added Successfully");
+          getHolidayData();
+          setSelectedHolidayItems([]);
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      ErrorToaster(
+        "Select some Holiday from Standard List to add in My Custom List"
+      );
+    }
+  };
+
+  const handleDeleteHoliday = async (id) => {
+    await DELETE(`entity-service/holiday/${id}`)
+      .then((response) => {
+        SuccessToaster("Holiday Deleted Successfully");
+        getHolidayData();
+      })
+      .catch((error) => {
+        ErrorToaster(error);
+      });
   };
 
   const handleDelete = (id) => {
@@ -91,66 +143,16 @@ const HolidayScheduleForCustomers = () => {
 
   const getDeleteConfirmation = (value) => {
     if (value) {
-      deleteHoliday(holidayId);
+      // deleteHoliday(holidayId);
     }
   };
 
-  const deleteHoliday = async (id) => {
-    await DELETE(`entity-service/holiday/${id}`)
-      .then((response) => {
-        SuccessToaster("Holiday Deleted Successfully");
-      })
-      .catch((error) => {
-        ErrorToaster(error);
-      });
-    getHolidayData();
-  };
-
   useEffect(() => {
-    getHolidayMasterData(selectedYear);
+    if (selectedYear !== undefined) {
+      getHolidayMasterData();
+      getHolidayData();
+    }
   }, [selectedYear]);
-
-  useEffect(() => {
-    getIndustryData();
-  }, []);
-
-  useEffect(() => {
-    getHolidayData();
-  }, [selectedIndustry, selectedYear]);
-
-  const handleSelectHolidays = (innerData) => {
-    if (
-      !selectedHolidayList
-        ?.map((innerData) => innerData?.eventName)
-        ?.includes(innerData?.eventName)
-    ) {
-      let temp = selectedHolidayList;
-      temp.push({
-        eventType: innerData?.eventType,
-        stateName: innerData?.stateName,
-        eventName: innerData?.eventName,
-        eventDate: innerData?.eventDate,
-        country: innerData?.country,
-        year: innerData?.year,
-        entityId: {
-          id: TenantID,
-        },
-        customized: true,
-      });
-      setSelectedHolidayList(temp);
-    }
-  };
-
-  const handleSave = async () => {
-    await POST("entity-service/holiday", JSON.stringify(selectedHolidayList))
-      .then((response) => {
-        SuccessToaster("Holiday Added Successfully");
-        getHolidayData();
-      })
-      .catch((error) => {
-        ErrorToaster(error);
-      });
-  };
 
   return (
     <Fragment>
@@ -210,68 +212,72 @@ const HolidayScheduleForCustomers = () => {
                           {years?.map((data, index) => (
                             <>
                               <div
-                                className={`${style.boardCertificationSideRows} ${style.displayInRow}`}
+                                className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}
+                                key={index}
                               >
                                 <img
                                   src={IndustriesEntityFolder}
-                                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                   alt=""
+                                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                 />
                                 <p
-                                  className={`${style.boardCertificationTextStyle2} ${style.marginLeft10} ${style.marginTop10}`}
+                                  className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
                                 >
-                                  {data.year}
+                                  {data?.year}
                                 </p>
                                 <img
                                   src={
-                                    isOpenLeftFolder &&
-                                    leftFolderOpenIndex === index
+                                    selectedIndex === index
                                       ? CloseFolderBlue
                                       : OpenFolderBlue
                                   }
                                   alt="OpenFolder"
-                                  className={`${style.colorFileStyle2} `}
+                                  className={`${style.colorFileStyle2} ${style.marginLeft5}`}
                                   onClick={() => {
-                                    setIsOpenLeftFolder(!isOpenLeftFolder);
-                                    setLeftFolderOpenIndex(index);
-                                    setSelectedYear(data.year);
+                                    setSelectedIndex(index);
+                                    setSelectedYear(data?.year);
                                   }}
                                 />
                               </div>
-
-                              {isOpenLeftFolder &&
-                                leftFolderOpenIndex === index &&
-                                holidayData
+                              {selectedIndex === index &&
+                                holidayDataMaster
                                   ?.filter(
                                     (data) =>
-                                      !holidayCustomerData
-                                        ?.map((event) => event?.eventName)
-                                        ?.includes(data?.eventName)
+                                      !holidayCustomerData.some(
+                                        (customerData) =>
+                                          customerData?.eventName ===
+                                          data?.eventName
+                                      )
                                   )
-                                  ?.map((data) => (
+                                  ?.map((data, index) => (
                                     <div
-                                      className={`${style.holidayInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}  ${style.customersAdminBackground2} `}
+                                      className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                      key={index}
                                     >
                                       <Checkbox
-                                        onChange={() =>
-                                          handleSelectHolidays(data)
+                                        checked={
+                                          selectedHolidayItems?.filter(
+                                            (innerData) =>
+                                              innerData?.id === data?.id
+                                          )?.length !== 0
+                                        }
+                                        onChange={(e) =>
+                                          handleSelectHolidayMaster(e, data)
                                         }
                                       />
-                                      <div className={style.spaceBetween}>
-                                        <p
-                                          className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft10}`}
-                                        >
-                                          {data?.eventName}
-                                        </p>
-                                        <p
-                                          className={`${style.holidayScheduleLeftCardTextStyle1} ${style.marginLeft5}`}
-                                        >
-                                          {format(
-                                            new Date(data?.eventDate),
-                                            "MMMM d, yyyy"
-                                          )}
-                                        </p>
-                                      </div>
+                                      <p
+                                        className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                      >
+                                        {data?.eventName}
+                                      </p>
+                                      <p
+                                        className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                      >
+                                        {format(
+                                          new Date(data?.eventDate),
+                                          "MMMM d, yyyy"
+                                        )}
+                                      </p>
                                     </div>
                                   ))}
                             </>
@@ -280,7 +286,9 @@ const HolidayScheduleForCustomers = () => {
                       </div>
                       <div
                         className={style.customersAdminCardStyle2}
-                        onClick={() => handleSave()}
+                        onClick={() => {
+                          handlePostHoliday();
+                        }}
                       >
                         <p
                           className={`${style.holidayScheduleHeadertextStyle1} ${style.colorWhite} ${style.marginTop3}`}
@@ -308,130 +316,132 @@ const HolidayScheduleForCustomers = () => {
                               src={AddNewEntity}
                               alt=""
                               className={`${style.colorFileStyle} ${style.marginLeft150} `}
-                              onClick={() => getAddCompanyHolidayDialog(true)}
+                              onClick={() => {
+                                getAddCompanyHolidayDialog(true);
+                                setIsEdit(false);
+                              }}
                             ></img>
                           </div>
                         )}
-                        <div>
+
+                        <div className={style.customersAdminCardStyle3}>
                           {holidayCustomerData?.length !== 0 ? (
-                            <div>
-                              <div className={style.holidayRightCardStyle}>
-                                <div
-                                  className={
-                                    style.tableHeaderTwoColumnsfrontRear
-                                  }
-                                >
-                                  <p
-                                    className={
-                                      style.tableHeaderIndustriesFontStyle2
-                                    }
-                                  >
-                                    HOLIDAY SCHEDULE BY HEALTHCARE
-                                  </p>
-                                </div>
-                                {holidayCustomerData?.map((data, index) => (
-                                  <>
+                            years?.map((data, index) => {
+                              return (
+                                <>
+                                  <div>
                                     <div
-                                      className={`${style.holidayFolderHeader} ${style.marginTop2}`}
+                                      className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}
                                     >
                                       <img
                                         src={IndustriesEntityFolder}
-                                        alt="IndustriesEntityFolder"
-                                        className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                                        alt=""
+                                        className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                       />
                                       <p
-                                        className={`${style.tableHeaderIndustriesFontStyle3}  ${style.marginLeft20}`}
+                                        className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
                                       >
-                                        {" "}
-                                        {data}
+                                        {data?.year}
                                       </p>
-                                      <p></p>
                                       <img
-                                        src={AddNewEntity}
-                                        alt=""
-                                        className={`${style.colorFileStyle}`}
-                                        onClick={() =>
-                                          getAddCompanyHolidayDialog(true)
+                                        src={
+                                          selectedIndex === index
+                                            ? CloseFolderBlue
+                                            : OpenFolderBlue
                                         }
+                                        alt="OpenFolder"
+                                        className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                                        onClick={() => {
+                                          setSelectedIndex(index);
+                                        }}
                                       />
                                     </div>
-                                    {holidayCustomerData?.map(
-                                      (innerData) =>
-                                        format(
-                                          new Date(innerData?.eventDate),
-                                          "yyyy"
-                                        ) === data && (
-                                          <div
-                                            className={`${style.holidayScheduleTableData1} ${style.customersAdminBackground2} ${style.displayInRow}`}
-                                          >
-                                            <p
-                                              className={
-                                                style.tableDataFontStyle
-                                              }
+                                    {selectedIndex === index &&
+                                      holidayCustomerData?.map(
+                                        (data, index) => {
+                                          return (
+                                            <div
+                                              className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
+                                              key={index}
                                             >
-                                              {format(
-                                                new Date(innerData?.eventDate),
-                                                "MMMM d"
-                                              )}{" "}
-                                            </p>
-                                            <p
-                                              className={
-                                                style.tableDataFontStyle
-                                              }
-                                            >
-                                              {innerData?.eventName}
-                                            </p>
-                                            <p
-                                              className={
-                                                style.tableDataFontStyle
-                                              }
-                                            >
-                                              {innerData?.stateName}
-                                            </p>
-                                            <p
-                                              className={
-                                                style.tableDataFontStyle
-                                              }
-                                            >
-                                              {innerData?.eventType}
-                                            </p>
-                                            <img
-                                              src={EditHcRow}
-                                              alt=""
-                                              className={style.colorFileStyle}
-                                              onClick={() => {
-                                                setIsEdit(true);
-                                                setSelectedHoliday(innerData);
-                                                setShowAddCompanyDialog(true);
-                                              }}
-                                            />
-                                            <img
-                                              src={DeleteHcRow}
-                                              alt=""
-                                              className={style.colorFileStyle}
-                                              onClick={() => {
-                                                handleDelete(innerData?.id);
-                                              }}
-                                            />
-                                          </div>
-                                        )
-                                    )}
-                                  </>
-                                ))}
-                              </div>
-                            </div>
+                                              <p
+                                                className={
+                                                  style.tableDataFontStyle
+                                                }
+                                              >
+                                                {format(
+                                                  new Date(data?.eventDate),
+                                                  "MMMM d"
+                                                )}{" "}
+                                              </p>
+                                              <p
+                                                className={
+                                                  style.tableDataFontStyle
+                                                }
+                                              >
+                                                {data?.eventName}
+                                              </p>
+                                              <p
+                                                className={
+                                                  style.tableDataFontStyle
+                                                }
+                                              >
+                                                {data?.stateName}
+                                              </p>
+                                              <p
+                                                className={
+                                                  style.tableDataFontStyle
+                                                }
+                                              >
+                                                {data?.eventType}
+                                              </p>
+
+                                              <div
+                                                className={style.displayInRow}
+                                              >
+                                                <img
+                                                  src={EditHcRow}
+                                                  alt=""
+                                                  className={
+                                                    style.colorFileStyle
+                                                  }
+                                                  onClick={() => {
+                                                    setIsEdit(true);
+                                                    getAddCompanyHolidayDialog(
+                                                      true
+                                                    );
+                                                    setSelectedHolidayMaster(
+                                                      data
+                                                    );
+                                                  }}
+                                                />
+                                                <img
+                                                  src={DeleteHcRow}
+                                                  alt=""
+                                                  className={`${style.colorFileStyle} ${style.marginLeft20}`}
+                                                  onClick={() =>
+                                                    handleDeleteHoliday(
+                                                      data?.id
+                                                    )
+                                                  }
+                                                />
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+                                      )}
+                                  </div>
+                                </>
+                              );
+                            })
                           ) : (
-                            <div className={style.customersAdminCardStyle3}>
-                              <p
-                                className={style.holidayScheduleCardtextStyle1}
-                              >
-                                if you would like to setup your custom list for
-                                your site(s) you can select from the default
-                                list on the left, edit to change labels as
-                                needed, and also add new departments/ service
-                                area by clicking on the add icon
-                              </p>
-                            </div>
+                            <p className={style.holidayScheduleCardtextStyle1}>
+                              if you would like to setup your custom list for
+                              your site(s) you can select from the default list
+                              on the left, edit to change labels as needed, and
+                              also add new departments/ service area by clicking
+                              on the add icon
+                            </p>
                           )}
                         </div>
                       </div>
@@ -452,7 +462,9 @@ const HolidayScheduleForCustomers = () => {
         <AddCompanyHolidayForCustomer
           getAddCompanyHolidayDialog={getAddCompanyHolidayDialog}
           isEdit={isEdit}
-          selectedHoliday={selectedHoliday}
+          selectedHoliday={selectedHolidayMaster}
+          selectedYear={selectedYear}
+          getHolidayData={getHolidayData}
         />
       )}
       {showDeleteConfirmation && (
