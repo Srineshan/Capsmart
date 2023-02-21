@@ -157,7 +157,7 @@ const ClientAdminDashboard = () => {
                       {" "}
                       <div className={style.dashboardCardStyle}>
                         <h5 className={`${style.headingForReferenceList}`}>
-                          CONTRACT TERMINATION PREASONS BY ENTITY TYPE
+                          CONTRACT TERMINATION REASONS BY ENTITY TYPE
                         </h5>
                         <div
                           className={`${style.optionsStyle} ${style.displayInCol}`}
@@ -176,13 +176,10 @@ const ClientAdminDashboard = () => {
                         PROOF OF DOCUMENTATION BY ENTITY TYPE
                       </h5>
                       <div
-                        className={`${style.optionsStyle} ${style.displayInCol}`}
+                        className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                       >
                         <span className={style.dashboardCardColorOption1}>
-                          STANDARD LIST IN USE
-                        </span>
-                        <span className={style.dashboardCardColorOption2}>
-                          LAST UPDATED ON JULY 2022
+                          SETUP REQUIRED
                         </span>
                       </div>
                     </div>
@@ -219,10 +216,13 @@ const ClientAdminDashboard = () => {
                           HOLIDAY LIST BY ENTITY TYPE
                         </h5>
                         <div
-                          className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
+                          className={`${style.optionsStyle} ${style.displayInCol}`}
                         >
                           <span className={style.dashboardCardColorOption1}>
-                            SETUP REQUIRED
+                            STANDARD LIST IN USE
+                          </span>
+                          <span className={style.dashboardCardColorOption2}>
+                            LAST UPDATED ON JULY 2022
                           </span>
                         </div>
                       </div>
@@ -238,13 +238,10 @@ const ClientAdminDashboard = () => {
                           CONTRACT DOCUMENT TYPES FOR UPLOAD BY ENTITY TYPE
                         </h5>
                         <div
-                          className={`${style.optionsStyle} ${style.displayInCol}`}
+                          className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                         >
                           <span className={style.dashboardCardColorOption1}>
-                            STANDARD LIST IN USE
-                          </span>
-                          <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON JULY 2022
+                            SETUP REQUIRED
                           </span>
                         </div>
                       </div>
