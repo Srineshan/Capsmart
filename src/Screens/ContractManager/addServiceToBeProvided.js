@@ -95,7 +95,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       });
       setSelectedActivity(temp);
       setShowLocation(selectedService?.locationSpecified);
-      setSelectedLocation(selectedService?.locations?.map(data => data));
+      setSelectedLocation(selectedService?.serviceLocations?.map(data => data));
       removeSelectedLocationFromList();
     }
   }, [selectedService]);
@@ -164,7 +164,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   useEffect(() => {
     getLocations();
-  }, [selectedDeptId, siteData])
+  }, [selectedDeptId])
 
   useEffect(() => {
     getContractedServices();
@@ -205,7 +205,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const getLocations = async () => {
-    const { data: location } = await GET(`entity-service/servicelocation?departments=${selectedDeptId}`);
+    let deptId = ''
+    selectedDeptId?.map((data, index) => {
+      if (index === 0) {
+        deptId = deptId + `departments=${data}`
+      } else {
+        deptId = deptId + `&departments=${data}`
+      }
+    })
+
+    const { data: location } = await GET(`entity-service/servicelocation?${deptId}`);
     setAllLocation(location);
     setLocationList(location?.filter(data => !selectedLocation?.map(location => location?.location).includes(data?.location))?.map(data => data));
   }
@@ -308,8 +317,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         if (data?.approver !== undefined) {
           let workFlowData;
           data.activityType.activityType = serviceType;
-          data.activityType.id = serviceTypeId;
-          data.activityTypeTemplate.activityTypeTemplate = serviceTypeTemplate;
+          // data.activityType.id = serviceTypeId;
+          data.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
           if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
             let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
             workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.userId, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
@@ -356,7 +365,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         } else {
           data.workFlow = null;
           data.activityType.activityType = serviceType;
-          data.activityType.id = serviceTypeId;
+          // data.activityType.id = serviceTypeId;
           data.activityTypeTemplate.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
         }
       })
@@ -378,7 +387,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         data.activityResponse = { dataMap: dataMap };
         data.sites = siteData;
         data.activityType.activityType = serviceType;
-        data.activityType.id = serviceTypeId;
+        // data.activityType.id = serviceTypeId;
         data.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
         data.performingActivity = { activity: data?.performingActivity };
         data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
@@ -435,7 +444,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     if ((serviceTypeTemplate === CLINIC || serviceTypeTemplate === PROCEDUREREADING) && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
       console.log('contract term periods', contractTermPeriod, metadata?.contractedSchedules?.[0]?.startDate, metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate);
-      ErrorToaster('Selected Duration Should be equal to the contract strat and end date');
+      ErrorToaster('Selected Duration Should be equal to the contract start and end date');
       return;
     }
     if (selectContractInfo !== "INDIVIDUAL" && isDesignatedSpecificContractor && selectedUsers?.length === 0) {
@@ -517,7 +526,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "refId": dataValues?.refId?.toString() ? dataValues?.refId?.toString() : (new Date()).getTime()?.toString(),
         "sites": siteData,
         "activityType": {
-          "id": serviceTypeId,
           "activityType": serviceType
         },
         "activityTypeTemplate": {
@@ -533,7 +541,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         {
           "hoursBorrowed": {
             "activityType": {
-              "id": serviceTypeId,
               "activityType": dataValues?.dedicatedHoursActivityType || ''
             },
             "performingActivity": {
@@ -541,7 +548,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             }
           }
         }),
-        "locations": serviceTypeTemplate === ADDON ? dataValues?.locations : selectedLocation,
+        "serviceLocations": serviceTypeTemplate === ADDON ? dataValues?.locations : selectedLocation,
         ...(((serviceTypeTemplate === CLINIC || serviceTypeTemplate === PROCEDUREREADING) && {
           "contractedSchedules": metadata?.contractedSchedules,
           "patientsSeenTargets": metadata?.patientsSeenTargets,
@@ -785,13 +792,12 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const locationItems = useMemo(
     () =>
       locationList?.map((data) => data?.location && ({
+        ...data,
         value: data?.location,
         location: data?.location
       })),
     [locationList],
   )
-
-  console.log('selected activity', selectedActivity);
 
   const onActivitySelect = (selectedItem) => {
     setItem(selectedItem);
@@ -1010,14 +1016,15 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <CommonLabel value='Specify Service Facility / Location (Cost Center)*' />
                     <div>
-                      <div className={`${style.displayInRow} `}>
+                      {/* <div className={`${style.displayInRow} `}> */}
 
-                        <div className={`${style.addGrid} ${style.fullWidth} `}>
-                          <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
-                          <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
+                      {/* <div className={`${style.addGrid} ${style.fullWidth} `}> */}
+                      <div className={style.fullWidth}>
+                        <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
+                        {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                       {
                         selectedLocation?.length !== 0 &&

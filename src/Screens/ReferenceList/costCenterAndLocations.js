@@ -84,7 +84,7 @@ const CostCenterAndLocations = () => {
         console.log(selectedData, temp, selectedSecondaryReasonListPerTerminationReasons)
         await PUT(`entity-service/terminationReason/${selectedData?.id}`, JSON.stringify(temp))
             .then((response) => {
-                SuccessToaster("Termination Reason Updated Successfully");
+                SuccessToaster("Cost Center & Service Locations Updated Successfully");
                 getCostCenterData();
                 selectedCostCenterLocation({});
             })
@@ -131,7 +131,7 @@ const CostCenterAndLocations = () => {
                             <div
                                 className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}
                             >
-                                TERMINATION REASONS BY ENTITY / SITES
+                                COST CENTER & SERVICE LOCATIONS
                             </div>
                             <div
                                 className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}

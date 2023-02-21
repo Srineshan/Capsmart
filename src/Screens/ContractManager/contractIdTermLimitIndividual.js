@@ -222,6 +222,10 @@ const ContractIdTermLimitIndividual = (
 
   const addContract = async (buttonType) => {
     let sites = getSiteData();
+    if (contractName === '') {
+      ErrorToaster('Enter Contract Name to proceed');
+      return;
+    }
     if (departmentSpecific && sites?.some(data => data?.departmentList?.departments?.length === 0)) {
       ErrorToaster('Select Departments for all the selected Sites');
       return;
@@ -230,6 +234,7 @@ const ContractIdTermLimitIndividual = (
       ErrorToaster('Select Contract Manager');
       return;
     }
+
     let contractFiles = [];
     fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
       contractFiles?.push({
