@@ -8,9 +8,10 @@ import {
   RadioGroup,
   Radio,
   Checkbox,
+  Tag,
 } from "@blueprintjs/core";
 import style from "./index.module.scss";
-import { POST, PUT } from "./../dataSaver";
+import { POST, PUT, GET, TenantID } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 
 const AddNewDepartments = ({
@@ -30,12 +31,64 @@ const AddNewDepartments = ({
   const [createdDate, setCreatedDate] = useState("");
   const [addService, setAddService] = useState(true);
   const [serviceArea, setSerrviceArea] = useState("");
+  const [serviceLocation, setServiceLocation] = useState([]);
+  const [selectedLocations, setSelectedLocations] = useState([]);
+
+  const getServiceLocation = async () => {
+    const { data: serviceLocation } = await GET(
+      "entity-service/servicelocation"
+    );
+    setServiceLocation(serviceLocation);
+  };
+
+  useEffect(() => {
+    getServiceLocation();
+  }, []);
+
+  const handleSelectLocation = (value) => {
+    if (value !== "0") {
+      const tempSelectedLocation = serviceLocation
+        .filter((data) => data?.location === value)
+        .map((data) => data)[0];
+
+      if (
+        !selectedLocations
+          .map((data) => data?.id)
+          .includes(tempSelectedLocation?.id)
+      ) {
+        setSelectedLocations([...selectedLocations, tempSelectedLocation]);
+      }
+    }
+  };
+
+  const locationTags = selectedLocations
+    .filter((data) =>
+      serviceLocation.map((location) => location).includes(data)
+    )
+    .map((tag, index) => {
+      const onRemoveLocation = () => {
+        setSelectedLocations(
+          selectedLocations.filter((t) => t?.location !== tag?.location)
+        );
+      };
+      return (
+        <Tag
+          key={index}
+          onRemove={onRemoveLocation}
+          large={true}
+          className={style.tagStyle}
+        >
+          {tag?.location}
+        </Tag>
+      );
+    });
 
   const saveSubmitHandler = async (type) => {
     let ServiceAreaData = [];
+    let ServiceLocation = [];
 
     if (selectedDepart?.serviceAreas) {
-      ServiceAreaData = [...selectedDepart.serviceAreas];
+      ServiceAreaData = [...selectedDepart?.serviceAreas];
     }
 
     // const isPresent = departmentList.find(
@@ -56,6 +109,7 @@ const AddNewDepartments = ({
     if (serviceArea !== "") {
       ServiceAreaData.push({
         name: serviceArea,
+        serviceLocations: selectedLocations,
       });
     }
 
@@ -69,6 +123,7 @@ const AddNewDepartments = ({
         name: departName,
       },
       serviceAreas: ServiceAreaData,
+      serviceLocations: addService ? ServiceLocation : selectedLocations,
       ...(callingFrom === "Super Admin" && {
         siteTypeId: {
           id: selectedEntity?.id,
@@ -82,7 +137,7 @@ const AddNewDepartments = ({
       }),
     };
 
-    let ApiData = callingFrom === "Customer Admin" && !isEdit ? [data] : data;
+    let ApiData = callingFrom === "Customer Admin" && !isEdit ? data : [data];
 
     let ApiUrl =
       callingFrom === "Super Admin"
@@ -186,8 +241,8 @@ const AddNewDepartments = ({
           <div
             className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
           ></div>
-          {addService && (
-            <div className={`${style.addHealthCareBoxStyle}`}>
+          <div className={`${style.addHealthCareBoxStyle}`}>
+            {addService && callingFrom === "Super Admin" && (
               <div className={`${style.editHealthCareGrid2}`}>
                 <div className={style.entityLableStyle}>Service Area*</div>
                 <div className={style.displayInRow}>
@@ -198,8 +253,56 @@ const AddNewDepartments = ({
                   />
                 </div>
               </div>
+            )}
+
+            {addService && callingFrom === "Customer Admin" && (
+              <div
+                className={`${style.editHealthCareGrid2} ${style.marginTop20}`}
+              >
+                <div className={`${style.entityLableStyle}`}>
+                  Service Line /
+                  <div className={style.entityLableStyle}>Speciality*</div>
+                </div>
+
+                <div className={`${style.displayInRow} ${style.marginTop10}`}>
+                  <InputGroup
+                    value={serviceArea}
+                    className={style.fullWidth}
+                    onChange={(e) => setSerrviceArea(e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div
+              className={`${style.editHealthCareGrid2} ${style.marginTop20}`}
+            >
+              <div className={`${style.entityLableStyle}`}>
+                Assign Service
+                <div className={style.entityLableStyle}>Location</div>
+              </div>
+              <div className={`${style.displayInRow} ${style.marginTop10}`}>
+                <select
+                  name="class"
+                  id="Class"
+                  onChange={(e) => handleSelectLocation(e.target.value)}
+                  className={`${style.fullWidth} ${style.marginLeft20} `}
+                >
+                  <option value="0">Select Service Location</option>
+                  {serviceLocation?.map((data, index) => {
+                    return (
+                      <option key={`${data}-${index}`} value={data?.location}>
+                        {data?.location}
+                      </option>
+                    );
+                  })}
+                </select>
+                <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                  {locationTags}
+                </div>
+              </div>
             </div>
-          )}
+          </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <div></div>
