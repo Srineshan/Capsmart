@@ -25,7 +25,8 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
   const [userData, setUserData] = useState({ firstName: '', lastName: '', title: '', email: '', phone: '' });
   const [selectedRoles, setSelectedRoles] = useState(roles?.filter(data => data?.roleName === 'Entity Sys Admin')?.map(data => data));
   const [accountManager, setAccountManager] = useState('');
-  const [entity, setEntity] = useState()
+  const [entity, setEntity] = useState();
+  const [partnerId, setPartnerId] = useState(sessionStorage.getItem('selectedPartner'));
   const handleBillingData = (name, value) => {
     setBillingAddress({ ...billingAddress, [name]: value });
   }
@@ -39,21 +40,27 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
   const getEntityData = async () => {
     const { data: entity } = await GET(`entity-service/entity/${id}`);
     setEntity(entity);
+    if (entity?.accountManager?.id) {
+      setAccountManager(entity?.accountManager?.id);
+    }
   }
 
   const getUserData = async () => {
-    await axios(`https://rest.timesmart.io/user-management-service/user`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-tenantID': id,
-        'Authorization': `Bearer ${Auth()}`
-      },
-    }).then(response => {
-      setUsers(response?.data);
-    }).catch(error => {
-      console.log('error', error)
-    })
+    // await axios(`https://rest.timesmart.io/user-management-service/user?partnerId=${partnerId}&userType=PARTNER_USER`, {
+    //   method: 'GET',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'X-tenantID': id,
+    //     'Authorization': `Bearer ${Auth()}`
+    //   },
+    // }).then(response => {
+    //   setUsers(response?.data);
+    // }).catch(error => {
+    //   console.log('error', error)
+    // })
+
+    const { data: users } = await GET(`user-management-service/user?partnerId=${partnerId}&userType=PARTNER_USER`);
+    setUsers(users);
   };
 
   const getRolesData = async () => {
@@ -223,6 +230,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
                   <select
                     name="class"
                     id="Class"
+                    value={accountManager}
                     className={style.fullWidth}
                     onChange={(e) => setAccountManager(e.target.value)}>
                     <option value="Select Account Manager" >
