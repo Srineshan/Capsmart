@@ -316,6 +316,12 @@ body {
     cursor: pointer;
 }
 
+.crossStyleWelcomePage {
+    color: linear-gradient(#7165E3, #FF6562) !important;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
 .floatRight {
     float: right;
 }
@@ -2061,4 +2067,80 @@ body {
     font: normal normal normal 25px/27px Montserrat;
     letter-spacing: 0px;
     color: #7165E3;
+}
+
+.welcomePadding {
+    padding: 30px 40px;
+}
+
+.welcomeMessage {
+    background: #ebe9fb 0% 0% no-repeat padding-box;
+    text-align: left;
+    font: normal normal 300 13px/15px Montserrat;
+    letter-spacing: 0.9px;
+    color: #52575D;
+    padding: 20px;
+}
+
+.addContractBody {
+    background-color: white;
+    height: 100vh;
+    overflow: scroll;
+}
+
+.welcomeStyle {
+    text-align: left;
+    font: normal normal bold 20px/18px Montserrat;
+    letter-spacing: 0px;
+    color: #7165E3;
+}
+
+.welcomeBorder {
+    background: #EBF2F7 0% 0% no-repeat padding-box;
+    opacity: 1;
+    height: 4px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.contractOptions {
+    height: 350px;
+}
+
+.addContractTextFieldWidth {
+    width: 400px;
+}
+
+.nextButton {
+    border-radius: 12px;
+    opacity: 1;
+    background-color: #7165E3;
+    color: white;
+    border: none;
+    height: 40px;
+    width: 180px;
+    cursor: pointer;
+}
+
+.nextButtonDisabled {
+    border-radius: 12px;
+    opacity: 1;
+    background-color: #cccccc;
+    color: #666666;
+    border: none;
+    height: 40px;
+    width: 180px;
+    cursor: not-allowed;
+}
+
+.nextButtonPosition {
+    display: flex;
+    float: right;
+}
+
+.selectLable {
+    text-align: left;
+    font: normal normal normal 17px/16px Montserrat;
+    letter-spacing: 0px;
+    color: #52575D;
 }
