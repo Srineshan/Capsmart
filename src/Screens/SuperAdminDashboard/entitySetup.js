@@ -506,15 +506,16 @@ const EntitySetup = () => {
                         <div className={style.displayInRow}>
                           <img src={logo?.url || UploadImg} alt="Upload" className={`${style.companyLogoUpload} ${style.cursor}`} />
 
-                          <input id="logo-upload" type="file" onChange={handleLogoFile} />
+                          <input id="logo-upload" type="file" onChange={handleLogoFile} className={style.hidden} />
                           <p className={style.uploadText}>Click To Upload Company Logo</p>
                         </div>
                       </label>
+
                       <label for="thumbnail-upload">
                         <div className={style.displayInRow}>
                           <img src={thumbnail?.url || UploadImg} alt="Upload" className={`${style.logoThumbnailUpload} ${style.cursor}`} />
 
-                          <input id="thumbnail-upload" type="file" onChange={handleThumbnailFile} />
+                          <input id="thumbnail-upload" type="file" onChange={handleThumbnailFile} className={style.hidden} />
                           <p className={style.uploadText}>Click To Upload Logo Thumbnail</p>
                         </div>
                       </label>
