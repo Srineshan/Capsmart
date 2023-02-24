@@ -18,6 +18,7 @@ import { format } from "date-fns";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
 
 import style from "./index.module.scss";
+import LevelTwoHeader from "../../Components/LevelTwoHeader";
 
 const HolidayScheduleForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -32,11 +33,13 @@ const HolidayScheduleForCustomers = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [holidayId, setHolidayId] = useState("");
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedHolidayMaster, setSelectedHolidayMaster] = useState({});
   const [selectedHolidayItems, setSelectedHolidayItems] = useState([]);
+  const [entityId, setEntityId] = useState("");
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
 
   const getAddCompanyHolidayDialog = (value) => {
     setShowAddCompanyDialog(value);
@@ -57,9 +60,24 @@ const HolidayScheduleForCustomers = () => {
     }
   }, [selectedIndustry]);
 
+  useEffect(() => {
+    if (entityId !== "" && entityId !== undefined) {
+      getLastModifiedDate();
+    }
+  }, [entityId]);
+
   const getIndustryData = async () => {
-    const { data: Industry } = await GET(`entity-service/entity/${TenantID}`);
-    setSelectedIndustry(Industry?.industryId?.id);
+    const { data: entity } = await GET(`entity-service/entity/${TenantID}`);
+    setSelectedIndustry(entity?.industryId?.id);
+    setEntityId(entity?.id);
+  };
+
+  const getLastModifiedDate = async () => {
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/entity/${entityId}`
+    );
+    const date = new Date(lastModifiedDate.holidayList?.lastModified);
+    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
   const getYearMasterData = async () => {
@@ -110,6 +128,7 @@ const HolidayScheduleForCustomers = () => {
           SuccessToaster("Holiday Added Successfully");
           getHolidayData();
           setSelectedHolidayItems([]);
+          getLastModifiedDate();
         })
         .catch((error) => {
           ErrorToaster(error);
@@ -126,6 +145,7 @@ const HolidayScheduleForCustomers = () => {
       .then((response) => {
         SuccessToaster("Holiday Deleted Successfully");
         getHolidayData();
+        getLastModifiedDate();
       })
       .catch((error) => {
         ErrorToaster(error);
@@ -170,32 +190,14 @@ const HolidayScheduleForCustomers = () => {
               </SideBar>
             </div>
             <div>
-              <div className={`${style.displayInRow} ${style.marginTop10}`}>
-                <div
-                  className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}
-                >
-                  HOLIDAY SCHEDULE FOR HEALTHCARE
-                </div>
-                <div></div>
-                <div
-                  className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
-                >
-                  UPDATED ON FEB 16, 2022 16:45 EST
-                </div>
-                <div className={style.crossStyle}>
-                  <Link
-                    to="/Screens/ReferenceList/customerAdminDashboard"
-                    className={style.linkStyle}
-                  >
-                    {" "}
-                    <img
-                      src={CrossPink}
-                      className={`${style.colorFileStyle2} ${style.marginLeft20}`}
-                      alt=""
-                    />
-                  </Link>
-                </div>
-              </div>
+              <LevelTwoHeader
+                heading={"HOLIDAY SCHEDULE FOR HEALTHCARE"}
+                updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+                path={"/Screens/ReferenceList/customerAdminDashboard"}
+                callingFrom={"Customer Admin"}
+                needHeader={true}
+              />
+
               <div className={style.marginTop35}>
                 <div className={style.centreCardStyle}>
                   <div className={style.margin20}>

@@ -274,12 +274,10 @@ const AppSubscription = ({ getActiveStep }) => {
     setShowSaveInProgress(value);
   }
 
-  console.log('date', contract?.startDate);
-
   return (
     <>
       {isSetupComplete ? <SetupComplete data={plan?.planName === 'TRIAL' ? 'Trial' : 'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess ? 'Created' : 'Updated'} /> : <div className={style.entitySetupBackground}>
-        <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/user')} />
+        <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/activeCustomers')} />
         <div className={style.stepperMargin}>
           <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
             <div onClick={() => getActiveStep('entitySetup')}>

@@ -161,7 +161,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
 
   return (
     <div className={style.entitySetupBackground}>
-      <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/user')} />
+      <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/activeCustomers')} />
       <div className={style.stepperMargin}>
         <div className={style.stepperGrid}>
           <div onClick={() => getActiveStep('entitySetup')}>

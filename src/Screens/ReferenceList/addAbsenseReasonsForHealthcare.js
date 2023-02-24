@@ -15,7 +15,7 @@ const AddAbsenseReasonsForHealthcare = ({
   selectedTitle,
   getIndustryData,
   absenceReasonCustomer,
-  getAbsenceReason
+  getAbsenceReason,
 }) => {
   const [absenseId, setAbsenseId] = useState("");
   const [absenseType, setAbsenseType] = useState("Planned");
@@ -23,6 +23,7 @@ const AddAbsenseReasonsForHealthcare = ({
   const [notificationPeriod, setNotificationPeriod] = useState("14");
   const [createdDate, setCreatedDate] = useState("");
 
+  console.log(selectedAbsence);
   const arrowDown = () => {
     return (
       <img
@@ -107,9 +108,9 @@ const AddAbsenseReasonsForHealthcare = ({
           id: IndustryId,
         },
         entityId: {
-          id: TenantID
+          id: TenantID,
         },
-        customized: true
+        customized: true,
       };
 
       if (!isEdit) {
@@ -133,7 +134,6 @@ const AddAbsenseReasonsForHealthcare = ({
           .catch((error) => {
             ErrorToaster(error);
           });
-
       }
     }
     if (type !== "Add More") {
@@ -150,7 +150,7 @@ const AddAbsenseReasonsForHealthcare = ({
       setAbsenseId(selectedAbsence?.id);
       setAbsenseType(
         selectedAbsence?.absenceType.charAt(0).toUpperCase() +
-        selectedAbsence?.absenceType.slice(1).toLowerCase()
+          selectedAbsence?.absenceType.slice(1).toLowerCase()
       );
       setAbsenseReason(selectedAbsence?.absenceReason);
       setNotificationPeriod(selectedAbsence?.notificationPeriod?.numberOfDays);

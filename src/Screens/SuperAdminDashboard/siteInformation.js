@@ -247,7 +247,7 @@ const SiteInformation = ({ getActiveStep }) => {
 
   return (
     <div className={style.entitySetupBackground}>
-      <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/user')} />
+      <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/activeCustomers')} />
       <div className={style.stepperMargin}>
         <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
           <div onClick={() => getActiveStep('entitySetup')}>
