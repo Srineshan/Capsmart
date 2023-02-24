@@ -14,6 +14,7 @@ import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+import { SpecifiedCountCalculator } from './specifiedCountCalculator';
 
 import style from './index.module.scss';
 import ScheduleAndTargetSameTable from './scheduleAndTargetSameTable';
@@ -97,14 +98,8 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
         weekendsCount: '0',
     });
 
-    console.log('metadata', metadata);
-
-    const [specified, setSpecified] = useState(0);
-
     useEffect(() => {
         let temp = metadata;
-        // let tempPatientsSeenTargets = metada?.patientsSeenTargets;
-        // let tempScheduledPatientsTargets = metadata?.scheduledPatientsTargets;
 
         temp.contractedSchedules?.map(data => {
             if (data?.startDate === null) {
@@ -113,7 +108,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             }
         })
 
-        temp?.catientsSeenTargets?.map(data => {
+        temp?.patientsSeenTargets?.map(data => {
             if (data?.startDate === null) {
                 data.startDate = contractTermPeriod?.start;
                 data.endDate = contractTermPeriod?.end;
@@ -172,8 +167,6 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
         getAddScheduleAndTargetForDifferentPeriods(false);
     }
 
-    console.log('contract Term period', metadata);
-
     useEffect(() => {
         if (Object.entries(serviceSelected)?.length !== 0) {
             setSelectedValues();
@@ -205,7 +198,6 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             data.endDate = data?.endDate;
         })
 
-        console.log('temp', tempContractedSchedules, tempPatientsSeenTargets, tempScheduledPatientsTargets);
         setMetadata({
             ...metadata,
             refId: serviceSelected?.refId,
@@ -339,78 +331,6 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
 
     return (
         <div>
-            {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-
-                <div className={style.extentionLableStyle}></div>
-                <div className={style.termPeriodWithAddGrid}>
-                    <div>
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                                InputProps={{
-                                    style: {
-                                        fontSize: 14,
-                                        height: 30,
-                                    },
-                                    onFocus: e => {
-                                        // setCalendarStart(true);
-                                    },
-                                    onBlur: e => {
-                                        // setCalendarStart(false);
-                                    }
-                                }}
-                                renderInput={(params) => <TextField {...params}
-                                    // onClick={() => setCalendarStart(true)}
-                                    inputProps={{
-                                        ...params.inputProps,
-                                        placeholder: "Start Date"
-                                    }} />}
-                            />
-                        </LocalizationProvider>
-                    </div>
-                    <p className={`${style.toStyle} ${style.alignCenter}`}></p>
-                    <div >
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                                // open={calendarEnd}
-                                // onOpen={() => setCalendarEnd(true)}
-                                // onClose={() => setCalendarEnd(false)}
-                                // value={contractTermPeriodTo}
-                                // onChange={(newValue) => {
-                                //     setContractTermPeriodTo(newValue);
-                                // }}
-                                InputProps={{
-                                    style: {
-                                        fontSize: 14,
-                                        height: 30,
-                                    },
-                                    onFocus: e => {
-                                        // setCalendarEnd(true);
-                                    },
-                                    onBlur: e => {
-                                        // setCalendarEnd(false);
-                                    }
-                                }}
-                                // minDate={contractTermPeriodFrom}
-                                // maxDate={add(new Date(), { years: 5 })}
-                                renderInput={(params) => <TextField  {...params}
-                                    //  onClick={() => setCalendarEnd(true)}
-                                    inputProps={{
-                                        ...params.inputProps,
-                                        placeholder: "End Date"
-                                    }} />}
-                            />
-                        </LocalizationProvider>
-                    </div>
-                    <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                        <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={incrementScheduleSet} />
-                    </div>
-                </div>
-            </div> */}
-            {/* {
-                schedulesField
-            } */}
-
-
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Schedule And Target Are Same For Full Contract Year' />
                 <div className={style.spaceBetween}>
@@ -547,7 +467,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
                                 valueList={['WEEK', 'EVERY_OTHER_WEEK', 'MONTH', 'EVERY_OTHER_MONTH']}
                                 labelList={['Every Week', 'Every Other Week', 'Every Month', 'Every Other Month']}
-                                disabledList={[timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'WEEK', timeCommitment?.frequency !== 'MONTH', timeCommitment?.frequency !== 'MONTH']} />
+                                disabledList={[]} />
                         </>
                     }
                 </div>
@@ -622,7 +542,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <EditableText value={metadata?.totalSession} placeholder="" type='tel' maxLength="3" onChange={(e) => onTotalSessionChange(e)}
                             className={style.editableSessionTextStyle} />
-                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase} `}>{specified} Specified</div>
+                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue) ? style.greenBase : style.redBase} `}>{SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue)} Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>
                         <CommonLabel value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year`} />

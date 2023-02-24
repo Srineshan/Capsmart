@@ -229,7 +229,6 @@ const EntitySetup = () => {
 
   const updateEntity = async (type) => {
     console.log('entity depts', entityDepartments);
-    let id = '';
     if (isUpdated) {
       let filteredValue = entityData?.sites?.filter(data => data.primarySite !== true)?.map(data => data) || [];
       let primarySiteValue = entityData?.sites?.filter(data => data.primarySite === true)?.map(data => data)[0];
@@ -292,6 +291,7 @@ const EntitySetup = () => {
         "logoThumbnail": entityData?.logoThumbnail,
       }
       if (id !== 'new') {
+        console.log('inside put')
         await PUT('entity-service/entity', updatedValue)
           .then(response => {
             SuccessToaster('Entity Updated Successfully');
@@ -305,7 +305,7 @@ const EntitySetup = () => {
       } else {
         await POST('entity-service/entity', updatedValue)
           .then(response => {
-            id = response?.data?.id;
+            console.log('id testing here', id);
             handleLogoUpload(response?.data?.id);
             handleThumbnailUplaod(response?.data?.id);
             let newEntityId = response?.data?.id;

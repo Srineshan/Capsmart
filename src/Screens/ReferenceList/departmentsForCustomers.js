@@ -3,7 +3,6 @@ import Navbar from "../../Components/Navbar";
 import SideBar from "./../../Components/Sidebar";
 import { Checkbox, Icon, Intent } from "@blueprintjs/core";
 import style from "./index.module.scss";
-import AddBoardCertifcation from "./addBoardCertifcation";
 import AddNewEntity from "./../../images/addEntity.png";
 import SelectArrow from "./../../images/selectArrow.png";
 import OpenFolderBlue from "./../../images/openFolderBlue.png";
@@ -23,6 +22,7 @@ import { Link } from "react-router-dom";
 import { GET, DELETE, POST, TenantID } from "./../dataSaver";
 import { index } from "d3";
 import AddNewDepartments from "./addNewDepartments";
+import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 
 const DepartmentsForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -33,15 +33,20 @@ const DepartmentsForCustomers = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
 
-  const [industryData, setIndustryData] = useState([]);
-  const [entityData, setEntityData] = useState([]);
-  const [siteTypeData, setSiteTypeData] = useState([]);
-  const [clicked, setClicked] = useState(0);
+  const [entityDetails, setEntityDetails] = useState({});
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const [tableData, setTableData] = useState([]);
-  const [checkedSite, setCheckedSite] = useState([]);
-  const [unCheckedSite, SetUnCheckedSite] = useState([]);
-  const [selectedSiteType, setSelectedSiteType] = useState({});
+  const [siteTypeId, setSiteTypeId] = useState("");
+  const [selectedEntityType, setSelectedEntityType] = useState("");
+  const [entityTypes, setEntityTypes] = useState([]);
+  const [departmentServiceMaster, setDepartmentServiceMaster] = useState([]);
+  const [departmentService, setDepartmentService] = useState([]);
+  const [selectedDepartmentServiceArea, setSelectedDepartmentServiceArea] =
+    useState([]);
+  const [selectedDepartmentService, setSelectedDepartmentService] = useState(
+    {}
+  );
+  const [isEdit, setIsEdit] = useState(false);
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -51,116 +56,95 @@ const DepartmentsForCustomers = () => {
     setShowAddEntityDialog(value);
   };
 
-  const getIndustryData = async () => {
-    const { data: Industries } = await GET(`entity-service/industryMaster`);
-    setIndustryData(Industries);
+  const getEntity = async () => {
+    const { data: entity } = await GET(`entity-service/entity`);
+    setEntityDetails(entity);
   };
 
-  const entityAllData = () => {
-    let entityArray = [];
-    industryData.forEach(async (industry) => {
-      const { data: entity } = await GET(
-        `entity-service/entityTypeMaster?industryId=${industry.id}`
-      );
-      entityArray = [...entityArray, ...entity];
-      setEntityData(entityArray);
-    });
-  };
-
-  const getSelectedSiteTypeData = async () => {
-    const { data: departmentList } = await GET(
-      `entity-service/departmentMaster?X-tenantID=${TenantID}&siteTypeId=${selectedSiteType.id}`
-    );
-    console.log(departmentList);
-  };
-
-  const siteTypeAllData = async () => {
-    let siteTypeArray = await Promise.all(entityData.map(EntityAllData));
-    setSiteTypeData(siteTypeArray);
-    SetUnCheckedSite(siteTypeArray);
-  };
-
-  const EntityAllData = async (entity) => {
-    const { data: department } = await GET(
-      `entity-service/departmentMaster?siteTypeId=${entity.id}`
-    );
-    return await { ...entity, department };
-  };
-
-  const handleIconClick = () => {
-    setIsIconclick(true);
-    setShowIconDiv(true);
-  };
-
-  const handleToggle = (index, data) => {
-    if (clicked === index) {
-      return setClicked("0");
+  const getEntityTypes = async () => {
+    const { data: entityTypes } = await GET(`entity-service/entity/entityType`);
+    if (entityTypes?.length !== 0) {
+      setSiteTypeId(entityTypes?.[0]?.siteTypeId);
+      setSelectedEntityType(entityTypes?.[0]?.siteTypeName);
+      setEntityTypes(entityTypes);
     }
-    setClicked(index);
-    setSelectedSiteType(data);
   };
 
-  const handleClickCheck = (id, checked) => {
-    if (checked === true) {
-      setTableData([...tableData, id]);
+  const getDepartmentServiceMaster = async () => {
+    const { data: departmentServiceMaster } = await GET(
+      `entity-service/departmentMaster/refListView?siteTypeId=${siteTypeId}`
+    );
+    setDepartmentServiceMaster(departmentServiceMaster);
+  };
+
+  const getDepartmentService = async () => {
+    const { data: departmentService } = await GET(
+      `entity-service/department/refListView?siteTypeId=${siteTypeId}`
+    );
+    setDepartmentService(departmentService);
+  };
+
+  const handleSelectDepartmentService = (e, innerData) => {
+    if (e.target.checked) {
+      setSelectedDepartmentServiceArea([
+        ...selectedDepartmentServiceArea,
+        innerData,
+      ]);
     } else {
-      setTableData([...tableData.filter((data) => data !== id)]);
+      setSelectedDepartmentServiceArea(
+        selectedDepartmentServiceArea
+          ?.filter((data) => data?.id !== innerData?.id)
+          ?.map((data) => data)
+      );
     }
   };
 
-  const selectSaveHandler = () => {
-    setIsSelected(true);
-    let checkedSiteType = [],
-      unCheckedSiteType = [];
+  const handlePostDepartmentServiceArea = async () => {
+    // setIsSelected(true);
+    let data = selectedDepartmentServiceArea?.map((data) => ({
+      ...data,
+      customized: true,
+      entityId: { id: TenantID },
+    }));
+    if (selectedDepartmentServiceArea?.length !== 0) {
+      await POST("entity-service/department", JSON.stringify(data))
+        .then((response) => {
+          SuccessToaster("Department Service Area Added Successfully");
+          getDepartmentService();
+          setSelectedDepartmentServiceArea([]);
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      ErrorToaster(
+        "Select some Department Service Area from Standard List to add in My Custom List"
+      );
+    }
+  };
 
-    siteTypeData.forEach((siteType) => {
-      let checkedDepartment = [],
-        unCheckedDepartment = [];
-
-      siteType.department.forEach((depart) => {
-        if (tableData.includes(depart.id)) {
-          checkedDepartment = [...checkedDepartment, depart];
-        } else {
-          unCheckedDepartment = [...unCheckedDepartment, depart];
-        }
+  const handleDeleteDepartmentService = async (id) => {
+    await DELETE(`entity-service/department/${id}`)
+      .then((response) => {
+        SuccessToaster("Customer Department Service Deleted Successfully");
+        getDepartmentService();
+      })
+      .catch((error) => {
+        ErrorToaster(error);
       });
-
-      if (checkedDepartment.length > 0) {
-        checkedSiteType = [
-          ...checkedSiteType,
-          { ...siteType, department: checkedDepartment },
-        ];
-      }
-
-      unCheckedSiteType = [
-        ...unCheckedSiteType,
-        { ...siteType, department: unCheckedDepartment },
-      ];
-    });
-    setCheckedSite(checkedSiteType);
-    SetUnCheckedSite(unCheckedSiteType);
-    setTableData([]);
   };
 
   useEffect(() => {
-    getIndustryData();
+    getEntity();
+    getEntityTypes();
   }, []);
 
   useEffect(() => {
-    entityAllData();
-  }, [industryData]);
-
-  useEffect(() => {
-    siteTypeAllData();
-  }, [entityData]);
-
-  useEffect(() => {
-    getSelectedSiteTypeData();
-  }, [selectedSiteType]);
-
-  // console.log(checkedSite);
-  // console.log(unCheckedSite);
-  console.log(selectedSiteType);
+    if (siteTypeId !== "" && siteTypeId !== undefined) {
+      getDepartmentServiceMaster();
+      getDepartmentService();
+    }
+  }, [siteTypeId, entityDetails]);
 
   return (
     <Fragment>
@@ -214,77 +198,79 @@ const DepartmentsForCustomers = () => {
                         </p>
                       </div>
                       <div className={style.customersAdminCardStyle1}>
-                        {unCheckedSite?.map((siteType, index) => {
-                          return (
-                            <>
-                              <div
-                                className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}
-                                key={index}
-                                onClick={() => handleToggle(index, siteType)}
+                        {entityTypes?.map((data, index) => (
+                          <>
+                            <div
+                              className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}
+                              key={index}
+                            >
+                              <img
+                                src={IndustriesEntityFolder}
+                                alt=""
+                                className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                              />
+                              <p
+                                className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
                               >
-                                <img
-                                  src={IndustriesEntityFolder}
-                                  alt="OpenFolder"
-                                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                                />
-                                <p
-                                  className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
-                                >
-                                  {siteType.type.toUpperCase()}
-                                </p>
-                                <img
-                                  src={
-                                    clicked === index
-                                      ? CloseFolderBlue
-                                      : OpenFolderBlue
-                                  }
-                                  alt="OpenFolder"
-                                  className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                                />
-                              </div>
-                              <div
-                                className={
-                                  clicked === index
-                                    ? `${style.listWrapper} ${style.open}`
-                                    : `${style.listWrapper}`
+                                {data?.siteTypeName}
+                              </p>
+                              <img
+                                src={
+                                  selectedIndex === index
+                                    ? CloseFolderBlue
+                                    : OpenFolderBlue
                                 }
-                              >
-                                {siteType.department.map((depart) => {
-                                  return (
-                                    <>
-                                      <div
-                                        className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
-                                      >
-                                        <Checkbox
-                                          checked={tableData.includes(
-                                            depart.id
-                                          )}
-                                          onChange={(e) => {
-                                            handleClickCheck(
-                                              depart.id,
-                                              e.target.checked
-                                            );
-                                          }}
-                                        />
-                                        <p
-                                          className={`${style.boardCertificationTextStyle2} ${style.marginLeft5}`}
-                                        >
-                                          {depart.departmentName.name}
-                                        </p>
-                                      </div>
-                                    </>
-                                  );
-                                })}
-                              </div>
-                            </>
-                          );
-                        })}
+                                alt="OpenFolder"
+                                className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                                onClick={() => {
+                                  setSelectedIndex(index);
+                                  setSiteTypeId(data?.siteTypeId);
+                                  setSelectedEntityType(data?.siteTypeName);
+                                }}
+                              />
+                            </div>
+                            {selectedIndex === index &&
+                              departmentServiceMaster
+                                ?.filter(
+                                  (data) =>
+                                    !departmentService.some(
+                                      (customerData) =>
+                                        customerData?.departmentGroupBy.name ===
+                                        data?.departmentGroupBy.name
+                                    )
+                                )
+                                ?.map((data, index) => (
+                                  <div
+                                    className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                    key={index}
+                                  >
+                                    <Checkbox
+                                      checked={
+                                        selectedDepartmentServiceArea?.filter(
+                                          (innerData) =>
+                                            innerData?.id === data?.id
+                                        )?.length !== 0
+                                      }
+                                      onChange={(e) =>
+                                        handleSelectDepartmentService(e, data)
+                                      }
+                                    />
+                                    <p
+                                      className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                    >
+                                      {data?.departmentGroupBy.name}
+                                    </p>
+                                  </div>
+                                ))}
+                          </>
+                        ))}
                       </div>
                     </div>
                     <div
                       className={`${style.customersAdminCardStyle4} ${style.marginAuto}`}
-                      // onClick={() => setIsSelected(true)}
-                      onClick={() => selectSaveHandler()}
+                      onClick={() => {
+                        handlePostDepartmentServiceArea();
+                      }}
                     >
                       <p
                         className={`${style.holidayScheduleHeadertextStyle1} ${style.colorWhite} ${style.marginTop3}`}
@@ -313,277 +299,81 @@ const DepartmentsForCustomers = () => {
                           className={`${style.colorFileStyle} ${style.marginLeft150} `}
                           onClick={() => {
                             getAddEntityDialog(true);
+                            setIsEdit(false);
                           }}
                         ></img>
                       </div>
 
                       <div className={style.customersAdminCardStyle3}>
-                        {checkedSite.map((data) => {
-                          return (
+                        {departmentService?.length !== 0 ? (
+                          entityTypes?.map((data, index) => (
                             <>
-                              <div className={style.customerAdminEntityHeader}>
-                                <img
-                                  src={IndustriesEntityFolder}
-                                  alt="IndustriesEntityFolder"
-                                  className={`${style.colorFileStyle} ${style.marginLeft10}`}
-                                />
-                                <p
-                                  className={
-                                    style.tableHeaderIndustriesFontStyle
-                                  }
+                              <div>
+                                <div
+                                  className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}
                                 >
-                                  {data.type.toUpperCase()}
-                                </p>
-                              </div>
-                              {data.department.map((depart) => {
-                                return (
-                                  <>
+                                  <img
+                                    src={IndustriesEntityFolder}
+                                    alt=""
+                                    className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                                  />
+                                  <p
+                                    className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
+                                  >
+                                    {data?.siteTypeName}
+                                  </p>
+                                  <img
+                                    src={
+                                      selectedIndex === index
+                                        ? CloseFolderBlue
+                                        : OpenFolderBlue
+                                    }
+                                    alt="OpenFolder"
+                                    className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                                    onClick={() => {
+                                      setSelectedIndex(index);
+                                      setSiteTypeId(data?.siteTypeId);
+                                      setSelectedEntityType(data?.siteTypeName);
+                                    }}
+                                  />
+                                </div>
+                                {selectedIndex === index &&
+                                  departmentService?.map((data, index) => (
                                     <div
-                                      className={
-                                        style.customerAdminTableHeader2
-                                      }
+                                      className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
+                                      key={index}
                                     >
-                                      <p></p>
-                                      <p
-                                        className={
-                                          style.customersAdminTableFontStyle
-                                        }
-                                      >
-                                        {depart.departmentName.name}
+                                      <p className={style.tableDataFontStyle}>
+                                        {data?.departmentGroupBy.name}
                                       </p>
-                                      <img
-                                        src={EditHcFolder}
-                                        alt="OpenFolder"
-                                        className={style.colorFileStyle}
-                                      />
-                                      <img
-                                        src={DeleteHcRow}
-                                        alt="OpenFolder"
-                                        className={style.colorFileStyle}
-                                      />
+                                      <div className={style.displayInRow}>
+                                        <img
+                                          src={EditHcRow}
+                                          alt=""
+                                          className={style.colorFileStyle}
+                                          onClick={() => {
+                                            setIsEdit(true);
+                                            getAddEntityDialog(true);
+                                            setSelectedDepartmentService(data);
+                                          }}
+                                        />
+                                        <img
+                                          src={DeleteHcRow}
+                                          alt=""
+                                          className={`${style.colorFileStyle} ${style.marginLeft20}`}
+                                          onClick={() =>
+                                            handleDeleteDepartmentService(
+                                              data?.id
+                                            )
+                                          }
+                                        />
+                                      </div>
                                     </div>
-                                  </>
-                                );
-                              })}
+                                  ))}
+                              </div>
                             </>
-                          );
-                        })}
-
-                        {/* {isSelected ? (
-                          <div>
-                            <div>
-                              <div className={style.customerAdminEntityHeader}>
-                                <img
-                                  src={IndustriesEntityFolder}
-                                  alt="IndustriesEntityFolder"
-                                  className={`${style.colorFileStyle} ${style.marginLeft10}`}
-                                />
-                                <p
-                                  className={
-                                    style.tableHeaderIndustriesFontStyle
-                                  }
-                                >
-                                  METROPOLITAN HOSPITAL (ACUTE CARE FACILITY)
-                                </p>
-                              </div>
-                              <div className={style.customerAdminTableHeader2}>
-                                <p></p>
-                                <p
-                                  className={style.customersAdminTableFontStyle}
-                                >
-                                  Blood Bank
-                                </p>
-                                <img
-                                  src={EditHcFolder}
-                                  alt="OpenFolder"
-                                  className={style.colorFileStyle}
-                                />
-                                <img
-                                  src={DeleteHcRow}
-                                  alt="OpenFolder"
-                                  className={style.colorFileStyle}
-                                />
-                              </div>
-                              <div className={style.customerAdminTableHeader2}>
-                                <img
-                                  src={IndustriesEntityFolder}
-                                  alt="IndustriesEntityFolder"
-                                  className={`${style.colorFileStyle} ${style.marginLeft10}`}
-                                />
-                                <p
-                                  className={`${style.customersAdminTableFontStyle1} ${style.marginLeft20}`}
-                                >
-                                  Laboratory & Testing
-                                </p>
-                                <img
-                                  src={EditHcFolder}
-                                  alt="OpenFolder"
-                                  className={style.colorFileStyle}
-                                />
-                                <img
-                                  src={DeleteHcRow}
-                                  alt="OpenFolder"
-                                  className={style.colorFileStyle}
-                                />
-                              </div>
-                              <div
-                                className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-                              >
-                                <p></p>
-                                <p className={style.tableDataFontStyle}>
-                                  Bacteriologyy
-                                </p>
-                                <p></p>
-                                <p></p>
-                                <img
-                                  src={EditHcRow}
-                                  alt="OpenFolder"
-                                  className={style.colorFileStyle}
-                                />
-                                <img
-                                  src={DeleteHcRow}
-                                  alt="OpenFolder"
-                                  className={style.colorFileStyle}
-                                />
-                              </div>
-                              <div
-                                className={`${style.customerAdminTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`}
-                              >
-                                <p></p>
-                                <p className={style.tableDataFontStyle}>
-                                  Hematology
-                                </p>
-                                <p></p>
-                                <p></p>
-                                <img
-                                  src={EditHcRow}
-                                  alt="OpenFolder"
-                                  className={style.colorFileStyle}
-                                />
-                                <img
-                                  src={DeleteHcRow}
-                                  alt="OpenFolder"
-                                  className={style.colorFileStyle}
-                                />
-                              </div>
-                              <div className={style.customerAdminTableHeader2}>
-                                <p></p>
-                                <p
-                                  className={style.customersAdminTableFontStyle}
-                                >
-                                  Nursing
-                                </p>
-                                <img
-                                  src={EditHcFolder}
-                                  alt="OpenFolder"
-                                  className={style.colorFileStyle}
-                                />
-                                <img
-                                  src={DeleteHcRow}
-                                  alt="OpenFolder"
-                                  className={style.colorFileStyle}
-                                />
-                              </div>
-                              {isClick ? (
-                                <div>
-                                  <div
-                                    className={style.customerAdminTableHeader2}
-                                  >
-                                    <p></p>
-                                    <p
-                                      className={
-                                        style.customersAdminTableFontStyle
-                                      }
-                                    >
-                                      {isIconClick ? "Nursing Test" : "Other"}
-                                    </p>
-                                    <img
-                                      src={EditHcFolder}
-                                      alt="OpenFolder"
-                                      className={style.colorFileStyle}
-                                    />
-                                    <img
-                                      src={DeleteHcRow}
-                                      alt="OpenFolder"
-                                      className={style.colorFileStyle}
-                                    />
-                                  </div>
-                                  {showIconDiv ? (
-                                    ""
-                                  ) : (
-                                    <div
-                                      className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-                                    >
-                                      <p></p>
-                                      <p
-                                        className={`${style.tableDataFontStyle} ${style.specifyOtherBox}`}
-                                      >
-                                        {" "}
-                                        Nursing Test{" "}
-                                      </p>
-                                      <p></p>
-                                      <p></p>
-                                      <p></p>
-                                      <img
-                                        src={GreenPage}
-                                        alt="OpenFolder"
-                                        className={`${style.colorFileStyle} ${style.marginRight20}`}
-                                        onClick={handleIconClick}
-                                      />
-                                    </div>
-                                  )}
-                                </div>
-                              ) : (
-                                <div>
-                                  <div
-                                    className={style.customerAdminTableHeader2}
-                                  >
-                                    <p></p>
-                                    <p
-                                      className={
-                                        style.customersAdminTableFontStyle
-                                      }
-                                    >
-                                      Other Department / Service Area
-                                    </p>
-                                    <img
-                                      src={EditHcFolder}
-                                      alt="OpenFolder"
-                                      className={style.colorFileStyle}
-                                    />
-                                    <img
-                                      src={DeleteHcRow}
-                                      alt="OpenFolder"
-                                      className={style.colorFileStyle}
-                                    />
-                                  </div>
-                                  <div
-                                    className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow} ${style.marginLeft35}`}
-                                  >
-                                    <p></p>
-                                    <p
-                                      className={`${style.tableDataFontStyle} ${style.specifyOtherBox}`}
-                                      onClick={() => setIsClick(true)}
-                                    >
-                                      {" "}
-                                      Specify Other
-                                    </p>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
+                          ))
                         ) : (
-                          <p className={style.holidayScheduleCardtextStyle1}>
-                            if you would like to setup your custom list for your
-                            site(s) you can select from the default list on the
-                            left, edit to change labels as needed, and also add
-                            new departments/ service area by clicking on the add
-                            icon
-                          </p>
-                        )} */}
-
-                        {!isSelected && (
                           <p className={style.holidayScheduleCardtextStyle1}>
                             if you would like to setup your custom list for your
                             site(s) you can select from the default list on the
@@ -621,7 +411,16 @@ const DepartmentsForCustomers = () => {
         </div>
 
         {showAddEntityDialog && (
-          <AddNewDepartments getAddEntityDialog={getAddEntityDialog} />
+          <AddNewDepartments
+            getAddEntityDialog={getAddEntityDialog}
+            callingFrom={"Customer Admin"}
+            isEdit={isEdit}
+            getEntityData={getDepartmentService}
+            selectedDepart={selectedDepartmentService}
+            selectedTitle={selectedEntityType}
+            siteTypeId={siteTypeId}
+            // isService={isService}
+          />
         )}
 
         <div className={style.spaceBetween}>

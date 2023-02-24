@@ -22,14 +22,18 @@ const AddCompanyHolidayForCustomer = ({
   getAddCompanyHolidayDialog,
   isEdit,
   selectedHoliday,
+  selectedYear,
+  getHolidayData,
 }) => {
   const [eventType, setEventType] = useState("");
   const [eventName, setEventName] = useState("");
   const [eventDate, setEventDate] = useState(new Date());
   const [country, setCountry] = useState("USA");
+  const [year, setYear] = useState("");
   const [stateName, setStateName] = useState("");
   const [holidayId, setHolidayId] = useState("");
 
+  console.log(selectedHoliday);
   useEffect(() => {
     if (isEdit) {
       setEventType(selectedHoliday?.eventType);
@@ -38,12 +42,14 @@ const AddCompanyHolidayForCustomer = ({
       setStateName(selectedHoliday?.stateName);
       setCountry(selectedHoliday?.country);
       setHolidayId(selectedHoliday?.id);
+      setYear(selectedHoliday?.year);
     }
   }, [isEdit, selectedHoliday]);
 
   const handleSave = async () => {
     if (isEdit) {
       let data = {
+        id: holidayId,
         eventType: eventType,
         stateName: stateName,
         eventName: eventName,
@@ -52,11 +58,14 @@ const AddCompanyHolidayForCustomer = ({
         entityId: {
           id: TenantID,
         },
+        year: year,
+        customized: true,
       };
       await PUT(`entity-service/holiday/${holidayId}`, JSON.stringify(data))
         .then((response) => {
           SuccessToaster("Event Updated Successfully");
           getAddCompanyHolidayDialog(false);
+          getHolidayData();
         })
         .catch((error) => {
           ErrorToaster(error);
@@ -72,12 +81,15 @@ const AddCompanyHolidayForCustomer = ({
           entityId: {
             id: TenantID,
           },
+          year: selectedYear,
+          customized: true,
         },
       ];
       await POST("entity-service/holiday", JSON.stringify(data))
         .then((response) => {
           SuccessToaster("Event Added Successfully");
           getAddCompanyHolidayDialog(false);
+          getHolidayData();
         })
         .catch((error) => {
           ErrorToaster(error);

@@ -224,6 +224,10 @@ const ContractIdTermLimitIndividual = (
   const addContract = async (buttonType) => {
     setContinueLoading(true);
     let sites = getSiteData();
+    if (contractName === '') {
+      ErrorToaster('Enter Contract Name to proceed');
+      return;
+    }
     if (departmentSpecific && sites?.some(data => data?.departmentList?.departments?.length === 0)) {
       ErrorToaster('Select Departments for all the selected Sites');
       return;
@@ -232,6 +236,7 @@ const ContractIdTermLimitIndividual = (
       ErrorToaster('Select Contract Manager');
       return;
     }
+
     let contractFiles = [];
     fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
       contractFiles?.push({
@@ -636,9 +641,6 @@ const ContractIdTermLimitIndividual = (
                 label={fullyExecutedContract ? 'YES' : "NO"}
                 onChange={() => changeContractFile(!fullyExecutedContract)}
               />
-              {fullyExecutedContract && (
-                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
-              )}
             </div>
             {fullyExecutedContract && (
               <div>
@@ -660,6 +662,12 @@ const ContractIdTermLimitIndividual = (
                 </div>
               </div>
             )}
+            <div className={`${style.spaceBetween} ${style.marginTop}`}>
+              <div></div>
+              {fullyExecutedContract && (
+                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
+              )}
+            </div>
           </div>
         </div>
         {isMultiSiteEntity &&

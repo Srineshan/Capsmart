@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import cloneDeep from 'lodash.clonedeep';
 import AddIcon from '@mui/icons-material/Add';
+import { TimePicker } from "@blueprintjs/datetime";
 import DatalistInput from 'react-datalist-input';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import InputAdornment from '@mui/material/InputAdornment';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { CLINIC, PROCEDUREREADING, SURGERY, ADDON } from '../../Constants';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
+import { GetDateFromHours } from './../../utils/formatting';
 import { POST, GET, PUT } from './../dataSaver';
 import ReviewerApproverField from './reviewerApproverField';
 import { workFlowDataGenerator } from './workflowDataGenerator';
@@ -19,6 +21,7 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import style from './index.module.scss';
 
 const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected }) => {
+  console.log('locationItems', locationItems);
   const limit5 = 5;
   let additionalDetails = ['Require Patient Data', 'Prior Pre-Authorization Required', 'Administrative Approval For Payment Required', 'Require Reason For Add-On Service'];
   const [fields, setFields] = useState();
@@ -37,6 +40,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     approver: undefined,
     paymentApprover: undefined,
     billableService: false,
+    workingTimeFrom: null,
+    workingTimeTo: null,
   });
   const [currentServiceData, setCurrentServiceData] = useState();
   const [metadata, setMetadata] = useState([]);
@@ -100,6 +105,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
         workflowId: serviceSelected?.workFlow?.id,
         workflowName: serviceSelected?.workFlow?.workFlowName?.name,
         billableService: serviceSelected?.billableService,
+        workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+        workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || '')
       };
       let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
       let workFlowValues = Object?.values(workflowData);
@@ -130,7 +137,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       additionalDetails: [],
       approver: undefined,
       paymentApprover: undefined,
-      billableService: false
+      billableService: false,
+      workingTimeFrom: null,
+      workingTimeTo: null,
     })
   }
 
@@ -204,7 +213,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     if (!locationTemp.map(data => data?.location)?.includes(location?.location)) {
       let temp = metadata;
       temp?.filter(data => data?.performingActivity === name)?.map(data => {
-        locationTemp.push({ 'location': location?.location });
+        locationTemp.push(location);
         data.locations = locationTemp;
       })
       setMetadata(temp)
@@ -263,6 +272,17 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     } else {
       setNewServices({ ...newServices, [name]: value });
     }
+  }
+
+  console.log('metadata', metadata);
+
+  const updateWorkingHours = (name, value) => {
+    console.log('name', name, value);
+    let temp = metadata;
+    temp?.map(data => {
+      data[name] = value;
+    })
+    setMetadata(temp);
   }
 
   const handleNewServiceLocation = (selectedItem) => {
@@ -523,6 +543,25 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   }
                 </div>
               </div>
+              {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Allowable Working Day Hours For Service*' />
+                <div className={style.displayInRow}>
+                  <TimePicker
+                    useAmPm={false}
+                    onChange={(e) => {
+                      updateWorkingHours('workingTimeFrom', e);
+                    }}
+                    value={metadata?.[0]?.workingTimeTo === null ? null : new Date(metadata?.[0]?.workingTimeFrom)}
+                  />
+                  <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+                  <TimePicker
+                    useAmPm={false}
+                    onChange={(e) => updateWorkingHours('workingTimeTo', e)}
+                    value={metadata?.[0]?.workingTimeTo === null ? null : new Date(metadata?.[0]?.workingTimeTo) || null}
+                  // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+                  />
+                </div>
+              </div> */}
             </div>
           </div>
         ))
@@ -667,6 +706,28 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               }
             </div>
           </div>
+
+          {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <CommonLabel value='Allowable Working Day Hours For Service*' />
+            <div className={style.displayInRow}>
+              <TimePicker
+                useAmPm={false}
+                onChange={(e) => {
+                  handleNewServiceChange('workingTimeFrom', e);
+                }}
+                value={newServices?.workingTimeTo === null ? null : new Date(newServices?.workingTimeFrom)}
+              />
+              <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
+              <TimePicker
+                useAmPm={false}
+                onChange={(e) => handleNewServiceChange('workingTimeTo', e)}
+                value={newServices?.workingTimeTo === null ? null : new Date(newServices?.workingTimeTo) || null}
+              // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
+              />
+            </div>
+          </div> */}
+
+
           <div>
 
 
