@@ -36,7 +36,7 @@ const HelpHome = () => {
     const [showChatView, setShowChatView] = useState(false);
     const [selectedOption, setSelectedOption] = useState('TICKETS');
     const [showFeedbackTicketResolution, setShowFeedbackTicketResolution] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
     const [ticketId, setTicketId] = useState('');
     const [isEdit, setIsEdit] = useState(false);
     const [users, setUsers] = useState([]);

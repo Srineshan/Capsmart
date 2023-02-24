@@ -62,7 +62,7 @@ body::-webkit-scrollbar {
 }
 
 .bigCardStyle {
-    height: calc(100vh - 265px);
+    height: calc(100vh - 255px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -256,7 +256,7 @@ body::-webkit-scrollbar {
 .draftContractGrid {
     display: grid;
     grid-template-columns: 6% 11% 11% 16% 11% 10% 11% 11% 6%;
-    grid-gap: 10px;
+    grid-gap: 0.4%;
 }
 
 .activationPendingContractGrid {
@@ -391,8 +391,10 @@ body::-webkit-scrollbar {
 }
 
 .addMoreButton {
-    color: rgba(143, 153, 168, 0.5);
-    background-color: #f1f2f3;
+    // color: rgba(143, 153, 168, 0.5);
+    // background-color: #f1f2f3;
+    color: white !important;
+    background-color: #7165E3;
     height: 32px;
     width: 130px;
     border: none;
@@ -1845,7 +1847,7 @@ input[type="file"] {
 }
 
 .contractScrollStyle {
-    height: calc(100vh - 435px);
+    height: calc(100vh - 415px);
     overflow: scroll;
 }
 

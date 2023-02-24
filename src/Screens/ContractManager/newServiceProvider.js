@@ -45,6 +45,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
   const [contracts, setContracts] = useState([]);
   const [allowPersonalMail, setAllowPersonalMail] = useState(false);
   const [phoneNA, setPhoneNA] = useState(false);
+  const [continueLoading, setContinueLoading] = useState(false);
 
   const leftElement = () => {
     return (
@@ -165,6 +166,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
   });
 
   const handleSave = async (type) => {
+    setContinueLoading(true);
     let contractData = [];
     contractData.push({
       "id": contractId,
@@ -188,26 +190,32 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
     });
     if (userDetails?.firstName === '') {
       ErrorToaster('First Name is Mandatory');
+      setContinueLoading(false);
       return;
     }
     if (userDetails?.lastName === '') {
       ErrorToaster('Last Name is Mandatory');
+      setContinueLoading(false);
       return;
     }
     if (!nPin?.missing && !nPin?.na && nPin.npin === '') {
       ErrorToaster('NPIN is Mandatory if not Missing/NA');
+      setContinueLoading(false);
       return;
     }
     if (!userDetails?.email?.includes('@') || !userDetails?.email?.includes('.')) {
       ErrorToaster('Enter a Valid Email');
+      setContinueLoading(false);
       return;
     }
     if (!phoneNA && userDetails?.phone?.length !== 14) {
       ErrorToaster('Enter Valid Phone Number');
+      setContinueLoading(false);
       return;
     }
     if (roles?.length === 0) {
       ErrorToaster('Select User Role');
+      setContinueLoading(false);
       return;
     }
 
@@ -260,6 +268,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
       .catch(error => {
         ErrorToaster('Unexpected Error');
       })
+    setContinueLoading(false);
     setUserDetails({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '' });
     setProviderType({});
     setAddress({ city: '', state: '', zipcode: '' });
@@ -606,8 +615,8 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
         </div>
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
-            <button className={`${style.buttonStyle}`} onClick={() => handleSave('Add More')}>ADD MORE</button>
-            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => handleSave('Save & Exit')}>SAVE & EXIT</button>
+            <button className={`${style.buttonStyle} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleSave('Add More') : {}}>ADD MORE</button>
+            <button className={`${style.buttonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleSave('Save & Exit') : {}}>SAVE & EXIT</button>
           </div>
         </div>
       </div>

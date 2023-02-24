@@ -60,6 +60,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   const [showAlert, setShowAlert] = useState(false);
   const [allowAggregator, setAllowAggregator] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
+  const [continueLoading, setContinueLoading] = useState(false);
 
   console.log('contractorNPIN', contractorNPIN);
 
@@ -112,7 +113,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   }
 
   const handleContinue = async (buttonType) => {
-
+    setContinueLoading(true);
 
     if (allowBEM || allowAggregator) {
       if (businessEntityUser?.email?.officialEmail === contractUser?.email?.officialEmail) {
@@ -207,6 +208,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     else {
       ErrorToaster('Unexpected Error');
     }
+    setContinueLoading(false);
 
     if (buttonType === 'Continue') {
       getViewPage5(true);
@@ -511,9 +513,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contracted Services Provider(s)') }}>BACK</button>
                 <div>
-                  <button className={style.newContractOutlinedButton} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
-                  <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                    onClick={() => { handleContinue('Continue'); }}
+                  <button className={`${style.newContractOutlinedButton} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleContinue('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
+                  <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
+                    onClick={!continueLoading ? () => { handleContinue('Continue') } : {}}
                   >CONTINUE</button>
                 </div>
               </div>

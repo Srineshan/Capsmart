@@ -378,7 +378,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
             metadata={metadata} />
           <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
             <div className={`${style.spaceBetween} ${style.marginLeftRight20}`}>
-              <div className={`${style.displayInRow} ${style.marginTop20}`}>
+              <div className={`${style.displayInRow} ${style.marginTop10}`}>
                 {selectedContract === 'activecontracts' ? (
                   <>
                     <button className={isMyContract ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsMyContract(true)}>My Active Contracts ( {metadata?.activeContract?.activeContractCount} )</button>
@@ -404,7 +404,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
                   </>
                 )}
               </div>
-              <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginLeft}`}>
+              <div className={`${style.displayInRow} ${style.marginTop10} ${style.marginLeft} ${style.verticalAlignCenter}`}>
                 <div className={style.marginLeft}>
                   <SearchBar getSearchKey={getSearchKey} />
                 </div>
