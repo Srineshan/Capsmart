@@ -14,18 +14,18 @@ import { SpecifiedCountCalculator } from './specifiedCountCalculator';
 
 import style from './index.module.scss';
 
-const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) => {
+const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, isReset, getIsReset }) => {
     const limit5 = 5;
 
     const [metadata, setMetadata] = useState({
         min: '0',
         max: '0',
-        frequency: '',
+        frequency: 'NA',
         withNurse: '0',
         withoutNurse: '0',
         noTargetApplicable: false,
         additionalScheduleValue: '0',
-        additionalScheduleFrequency: '',
+        additionalScheduleFrequency: 'NA',
         additionalScheduleRequired: true,
         billableService: true,
         rateType: 'HOURLY',
@@ -64,6 +64,50 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
     useEffect(() => {
         setSelectedValues();
     }, [serviceSelected]);
+
+    useEffect(() => {
+        if (isReset) {
+            resetMetadata();
+            getIsReset(false);
+        }
+        resetMetadata();
+
+    }, [isReset])
+
+    const resetMetadata = () => {
+        setMetadata({
+            min: '0',
+            max: '0',
+            frequency: 'NA',
+            withNurse: '0',
+            withoutNurse: '0',
+            noTargetApplicable: false,
+            additionalScheduleValue: '0',
+            additionalScheduleFrequency: 'NA',
+            additionalScheduleRequired: true,
+            billableService: true,
+            rateType: 'HOURLY',
+            sessionDuration: '0',
+            sessionAmount: '0',
+            totalSession: '0',
+            totalSessionFrequency: 'YEAR',
+            workingTimeFrom: null,
+            workingTimeTo: null,
+            serviceDays: {
+                tuesday: false,
+                wednesday: false,
+                thursday: false,
+                friday: false,
+                saturday: false,
+                sunday: false,
+                weekDays: false,
+                weekEnds: false,
+                monday: false
+            },
+            weekdaysCount: '0',
+            weekendsCount: '0',
+        });
+    }
 
     const setSelectedValues = () => {
         setMetadata({
@@ -152,7 +196,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                     {metadata?.additionalScheduleRequired &&
                         (
                             <>
-                                <CommonInputField value={metadata?.additionalClinicScheduleValue}
+                                <CommonInputField value={metadata?.additionalScheduleValue}
                                     onChange={(e) => handleValueChange('additionalScheduleValue', e.target.value)}
                                     className={` ${style.fullWidth} ${style.marginLeft20}`} />
                                 <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
@@ -236,7 +280,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
                                 let value = e.slice(0, e.slice());
                                 handleValueChange('totalSession', value);
                             }} />
-                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Specified</div>
+                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>
                         <CommonLabel value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year`} />
@@ -246,7 +290,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment }) 
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Service Days*' />
-                <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
+                <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

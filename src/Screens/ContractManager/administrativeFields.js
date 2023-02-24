@@ -19,7 +19,7 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const AdministrativeFields = ({ getMetaData, services, serviceSelected, editService }) => {
+const AdministrativeFields = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset }) => {
     const [activity, setActivity] = useState([]);
     const [showAdminActivity, setShowAdminActivity] = useState(false);
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
@@ -45,6 +45,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         dedicatedHoursActivityType: '',
         dedicatedHoursPerformingActivity: '',
         totalSession: '0',
+        totalSessionFrequency: 'NA',
         sessionAmount: '0',
         sessionDuration: '0',
         serviceDays: {
@@ -66,10 +67,46 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     })
 
     useEffect(() => {
+        if (isReset) {
+            resetMetadata();
+            getIsReset(false);
+        }
+        resetMetadata();
+    }, [isReset])
+
+    useEffect(() => {
         if (serviceSelected !== {}) {
             setSelectedValues();
         }
     }, [serviceSelected]);
+
+    const resetMetadata = () => {
+        setMetadata({
+            dedicatedHoursSpecified: false,
+            dedicatedHoursActivityType: '',
+            dedicatedHoursPerformingActivity: '',
+            totalSession: '0',
+            totalSessionFrequency: 'NA',
+            sessionAmount: '0',
+            sessionDuration: '0',
+            serviceDays: {
+                tuesday: false,
+                wednesday: false,
+                thursday: false,
+                friday: false,
+                saturday: false,
+                sunday: false,
+                weekDays: false,
+                weekEnds: false,
+                monday: false
+            },
+            selectedActivities: [],
+            weekdaysCount: '0',
+            weekendsCount: '0',
+            workingTimeFrom: null,
+            workingTimeTo: null,
+        })
+    }
 
     const setSelectedValues = () => {
         setMetadata({
@@ -121,9 +158,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     const handleValueChange = (name, value) => {
         if (name === 'dedicatedHoursSpecified') {
             if (value) {
-                setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: '', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+                setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             } else {
-                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
         }
         else {
@@ -306,7 +343,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
                         <CommonLabel value='Additional Administrative Services Name' />
-                        <CommonInputField placeholder='Add-On Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonInputField placeholder='Administrative Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -451,7 +488,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Service Days*' />
-                <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
+                <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

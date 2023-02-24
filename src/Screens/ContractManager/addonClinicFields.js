@@ -20,7 +20,7 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 
 import style from './index.module.scss';
 
-const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected }) => {
+const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected, isReset, getIsReset }) => {
   console.log('locationItems', locationItems);
   const limit5 = 5;
   let additionalDetails = ['Require Patient Data', 'Prior Pre-Authorization Required', 'Administrative Approval For Payment Required', 'Require Reason For Add-On Service'];
@@ -56,6 +56,14 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   }, [metadata])
 
   useEffect(() => {
+    if (isReset) {
+      resetMetadata();
+      getIsReset(false);
+    }
+    resetMetadata();
+  }, [isReset])
+
+  useEffect(() => {
     getUserData();
     getTimeSheetWorkFlow();
   }, [])
@@ -63,6 +71,10 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   useEffect(() => {
     setSelectedValues();
   }, [serviceSelected, addOnWorkFlow]);
+
+  const resetMetadata = () => {
+    setMetadata([]);
+  }
 
   const getTimeSheetWorkFlow = async () => {
     const { data: timesheetWorkFlow } = await GET('timesheet-management-service/workflow');

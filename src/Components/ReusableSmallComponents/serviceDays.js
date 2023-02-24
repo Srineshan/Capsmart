@@ -3,7 +3,7 @@ import CommonCheckBox from '../CommonFields/CommonCheckBox';
 
 import style from './index.module.scss';
 
-const ServiceDays = ({ setMetaData, selectedService }) => {
+const ServiceDays = ({ setMetaData, selectedService, isReset, setIsReset }) => {
   const [serviceDays, setServiceDays] = useState({
     tuesday: false,
     wednesday: false,
@@ -19,7 +19,27 @@ const ServiceDays = ({ setMetaData, selectedService }) => {
     weekendsSpecific: false,
   });
   const [weekdayLabel, setWeekdayLabel] = useState('Weekdays');
-  const [weekendLabel, setWeekendLabel] = useState('Weekends')
+  const [weekendLabel, setWeekendLabel] = useState('Weekends');
+
+  useEffect(() => {
+    if (isReset) {
+      setServiceDays({
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
+        saturday: false,
+        sunday: false,
+        weekDays: false,
+        weekEnds: false,
+        isholidays: false,
+        monday: false,
+        weekdaysSpecific: false,
+        weekendsSpecific: false,
+      })
+      setIsReset(false);
+    }
+  }, [isReset])
 
   useEffect(() => {
     if (selectedService !== {}) {

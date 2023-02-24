@@ -42,9 +42,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [allLocation, setAllLocation] = useState([]);
   const [siteData, setSiteData] = useState([]);
   const [activity, setActivity] = useState([]);
+  const [isReset, setIsReset] = useState(false);
   const [newActivity, setNewActivity] = useState('');
   const [selectedActivity, setSelectedActivity] = useState([]);
   const [item, setItem] = useState();
+  const [isRecent, setIsRecent] = useState(false);
   const [locationList, setLocationList] = useState([]);
   const [newLocation, setNewLocation] = useState('');
   const [showLocation, setShowLocation] = useState(false);
@@ -114,8 +116,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setLocationList(allLocation?.filter(data => !selectedLocation?.map(location => location?.location).includes(data?.location))?.map(data => data));
   }
 
-  console.log('selected site', siteData);
-
   useEffect(() => {
     removeSelectedLocationFromList();
   }, [selectedLocation])
@@ -129,7 +129,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   useEffect(() => {
     if (isWorkFlowUpdated) {
       setIsWorkFlowUpdated(false);
-      console.log('inside useEffect', metadata);
       handleSave(addOnButton);
 
     }
@@ -227,7 +226,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   const getContractNotes = async () => {
     const { data: contractNotes } = await GET(`contract-managment-service/contracts/notes?contractId=${contractId}&&referenceId=${selectedService?.refId}`);
-    console.log('notes', contractNotes);
   }
 
   const getUserData = async () => {
@@ -338,7 +336,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 }
                 dataValue.push(data);
                 if (temp?.length - 1 === index) {
-                  console.log('dataValue', dataValue);
                   setMetadata(dataValue);
                   setIsWorkFlowUpdated(true);
                 }
@@ -413,7 +410,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 }
                 dataValue.push(data);
                 if (temp?.length - 1 === index) {
-                  console.log('dataValue', dataValue);
                   setMetadata(dataValue);
                   setIsWorkFlowUpdated(true);
                 }
@@ -433,7 +429,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const handleSave = async (buttonType) => {
-    console.log('billable', metadata?.[0]?.billableService, metadata?.[0]?.sessionAmount);
     if (serviceType === '') {
       ErrorToaster('Activity Type Selection is Mandatory');
       return;
@@ -443,7 +438,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       return;
     }
     if ((serviceTypeTemplate === CLINIC || serviceTypeTemplate === PROCEDUREREADING) && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
-      console.log('contract term periods', contractTermPeriod, metadata?.contractedSchedules?.[0]?.startDate, metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate);
       ErrorToaster('Selected Duration Should be equal to the contract start and end date');
       return;
     }
@@ -475,8 +469,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       })
     }
     if (serviceTypeTemplate === ONCALL) {
-      console.log('data check check', metadata?.additionalActivity, metadata);
-
       let temp = metadata?.additionalActivity;
 
       temp?.map(activity => {
@@ -503,7 +495,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       })
     }
 
-    console.log('in add dependent', dependentActivities);
 
     if (serviceTypeTemplate === SUPPLEMENTAL) {
       performingActivity = metadata?.supplementServiceName?.map(data => data)?.join('-') || '';
@@ -513,11 +504,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     let data = [];
     if (serviceTypeTemplate === ADDON && !editService) {
-      console.log('inside metadata', metadata);
       data = metadata;
     }
     else {
-      console.log('metadata', metadata);
       let dataValues = metadata;
       if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
@@ -583,7 +572,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             "noTargetApplicable": dataValues?.targetNoTargetApplicable
           }]
         })),
-        ...(serviceTypeTemplate === SUPPLEMENTAL && {
+        ...(serviceTypeTemplate !== SUPPLEMENTAL && {
           "additionalSchedule": {
             "value": parseInt(dataValues?.additionalScheduleValue),
             "frequency": dataValues?.additionalScheduleFrequency,
@@ -746,8 +735,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       getAddServiceDialog(false);
       getEditServiceDialog(false);
     }
+    else {
+      reset();
+      getIsReset(true);
+    }
     // getTabDataStatus();
-    reset();
+
+  }
+
+  const getIsReset = (value) => {
+    setIsReset(value);
   }
 
   const reset = () => {
@@ -861,7 +858,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setAnchorElDoc(null);
   };
 
-  console.log('contract services', serviceTypeList, serviceTypeId);
 
   return (
     <div>
@@ -1035,18 +1031,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 </div>}
 
                 {serviceTypeTemplate === CLINIC
-                  ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} />
+                  ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
                   : serviceTypeTemplate === SURGERY
-                    ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
+                    ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} isReset={isReset} getIsReset={getIsReset} />
                     : serviceTypeTemplate === ONCALL
-                      ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} />
+                      ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} isReset={isReset} getIsReset={getIsReset} />
                       : serviceTypeTemplate === SUPPLEMENTAL
-                        ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />
+                        ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
                         : serviceTypeTemplate === ADDON
-                          ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} />
+                          ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
                           : serviceTypeTemplate === PROCEDUREREADING
-                            ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} />
-                            : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} />}
+                            ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
+                            : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />}
               </div>
             </div>
           ) : (

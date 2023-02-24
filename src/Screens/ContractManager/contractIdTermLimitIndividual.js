@@ -507,7 +507,7 @@ const ContractIdTermLimitIndividual = (
           <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name" value={fullyExecutedContractData[i].name} onChange={(e) => handleFileChange(e, 'name')} />
           <TextArea rows={4} placeholder="Document Description" className={`${style.fullWidth} ${style.marginTop10}`} value={fullyExecutedContractData[i].desc} onChange={(e) => handleFileChange(e, 'desc')} />
           <div className={style.grid2}>
-            <CommonInputField value={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : 'Choose File...'} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(i, e)} />
+            <CommonInputField value={fullyExecutedContractData?.[i]?.fileName !== '' ? fullyExecutedContractData?.[i]?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(i, e)} />
           </div>
         </div>
       )
@@ -655,7 +655,7 @@ const ContractIdTermLimitIndividual = (
                 <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc}
                   maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'desc')} />
                 <div>
-                  <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : 'Choose File...'} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
+                  <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
                 </div>
               </div>
             )}

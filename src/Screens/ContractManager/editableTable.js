@@ -11,6 +11,8 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
     const [additionalActivity, setAdditionalActivity] = useState(additionalActivityData);
     const [activityTableRows, setActivityTableRows] = useState([]);
 
+    console.log('additional', additionalActivityData, serviceDays);
+
     useEffect(() => {
         if (additionalActivity?.length === 0) {
             setAdditionalActivity(additionalActivityData);
@@ -31,7 +33,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
                 data.weekendTo = null;
             });
         }
-        if (!ServiceDays?.isholidays) {
+        if (!serviceDays?.isholidays) {
             temp?.map(data => {
                 data.holidayFrom = null;
                 data.holidayTo = null;
@@ -48,6 +50,8 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
     useEffect(() => {
         getActivitytableRows();
     }, [additionalActivity, additionalActivity?.length, serviceDays])
+
+    console.log('actiity', additionalActivity);
 
     const switchTheme = createTheme({
         palette: {

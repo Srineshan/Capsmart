@@ -13,7 +13,7 @@ import style from './index.module.scss';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const SupplementalFields = ({ getMetaData, services, serviceSelected, editService }) => {
+const SupplementalFields = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset }) => {
     const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
     const [totalContractedService, setTotalContractedService] = useState(0);
@@ -102,6 +102,46 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         weekdaysCount: '0',
         weekendsCount: '0'
     })
+
+    const resetMetadata = () => {
+        setMetadata({
+            dedicatedHoursSpecified: false,
+            dedicatedHoursActivityType: '',
+            dedicatedHoursPerformingActivity: '',
+            supplementServiceName: [],
+            billableService: true,
+            rateType: 'HOURLY',
+            totalSession: '0',
+            totalSessionFrequency: '',
+            sessionAmount: '',
+            sessionDuration: '0',
+            workingTimeFrom: null,
+            workingTimeTo: null,
+            serviceDays: {
+                tuesday: false,
+                wednesday: false,
+                thursday: false,
+                friday: false,
+                saturday: false,
+                sunday: false,
+                weekDays: false,
+                weekEnds: false,
+                monday: false
+            },
+            weekdaysCount: '0',
+            weekendsCount: '0'
+        })
+    }
+
+    useEffect(() => {
+        if (isReset) {
+            console.log('inside reset function')
+            resetMetadata();
+            getIsReset(false);
+        }
+        resetMetadata();
+
+    }, [isReset])
 
     useEffect(() => {
         getAvailableActivities();
@@ -322,7 +362,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
 
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                     <CommonLabel value='Applicable Supplemental Workdays*' />
-                    <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
+                    <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
                 </div>
             </>
 

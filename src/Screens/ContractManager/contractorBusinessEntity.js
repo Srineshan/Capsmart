@@ -61,6 +61,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   const [allowAggregator, setAllowAggregator] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
 
+  console.log('contractorNPIN', contractorNPIN);
+
   useEffect(() => {
     getUserData();
   }, [])
@@ -110,38 +112,13 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   }
 
   const handleContinue = async (buttonType) => {
-    if (EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory') ||
-      !contractorNPIN?.notApplicable && !contractorNPIN?.missing && EmptyStringCheck(contractorNPIN?.npin, 'NPIN is Mandatory') ||
-      !contractorEntityTaxId?.missing && !contractorEntityTaxId?.notApplicable && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory') ||
-      EmptyStringCheck(businessEntityUser?.name?.firstName, 'First Name is Mandatory') ||
-      EmptyStringCheck(businessEntityUser?.name?.lastName, 'Last Name is Mandatory') ||
-      EmailValidator(businessEntityUser?.email?.officialEmail) ||
-      !businessEntityUser?.contactNumber?.missing && PhoneValidator(businessEntityUser?.contactNumber?.number)) {
-      return;
-    }
-
-    const data = {
-      contractorNPIN: contractorNPIN,
-      contractorEntityTaxId: contractorEntityTaxId,
-      businessEntity: businessEntity,
-      businessEntityUser: businessEntityUser,
-      roles: roles?.filter(data => data?.id === '6344d59a45ca246bd12dd77b')?.map(data => data),
-      mailingAddress: mailingAddress,
-      contractorContact: sameAsContractor,
-      appRoleRequired: appRoleRequired,
-      accessAllowedForBusinessEntityUser: allowBEM,
-      paymentDataConfidential: keepConfidential,
-    }
-    const response = await PUT(`contract-managment-service/contracts/${contractId}/contractorBusinessEntity`, JSON.stringify(data));
-    if (response) {
-      SuccessToaster('Business Entity Updated Successfully');
-    }
-    else {
-      ErrorToaster('Unexpected Error');
-    }
 
 
     if (allowBEM || allowAggregator) {
+      if (businessEntityUser?.email?.officialEmail === contractUser?.email?.officialEmail) {
+        ErrorToaster('Enter Different Email to register with App User Role');
+        return;
+      }
       const userData = {
         ...(userId !== '0' && { 'id': userId }),
         "name": {
@@ -200,6 +177,37 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
           });
       }
     }
+
+    if (EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory') ||
+      !contractorNPIN?.notApplicable && !contractorNPIN?.missing && EmptyStringCheck(contractorNPIN?.npin, 'NPIN is Mandatory') ||
+      !contractorEntityTaxId?.missing && !contractorEntityTaxId?.notApplicable && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory') ||
+      EmptyStringCheck(businessEntityUser?.name?.firstName, 'First Name is Mandatory') ||
+      EmptyStringCheck(businessEntityUser?.name?.lastName, 'Last Name is Mandatory') ||
+      EmailValidator(businessEntityUser?.email?.officialEmail) ||
+      !businessEntityUser?.contactNumber?.missing && PhoneValidator(businessEntityUser?.contactNumber?.number)) {
+      return;
+    }
+
+    const data = {
+      contractorNPIN: contractorNPIN,
+      contractorEntityTaxId: contractorEntityTaxId,
+      businessEntity: businessEntity,
+      businessEntityUser: businessEntityUser,
+      roles: roles?.filter(data => data?.id === '6344d59a45ca246bd12dd77b')?.map(data => data),
+      mailingAddress: mailingAddress,
+      contractorContact: sameAsContractor,
+      appRoleRequired: appRoleRequired,
+      accessAllowedForBusinessEntityUser: allowBEM,
+      paymentDataConfidential: keepConfidential,
+    }
+    const response = await PUT(`contract-managment-service/contracts/${contractId}/contractorBusinessEntity`, JSON.stringify(data));
+    if (response) {
+      SuccessToaster('Business Entity Updated Successfully');
+    }
+    else {
+      ErrorToaster('Unexpected Error');
+    }
+
     if (buttonType === 'Continue') {
       getViewPage5(true);
       getCurrentPage('Contracted Services Specification');
@@ -237,7 +245,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     getRoles();
     getContractorBusinessEntity();
     setBusinessEntityData();
-  }, [])
+  }, [contractId])
 
   useEffect(() => {
     setBusinessEntityData();
@@ -311,6 +319,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   }
 
   const handleSameContact = (value) => {
+    setContractorNPIN({ ...contractorNPIN, missing: false, notApplicable: false });
+    setContractorEntityTaxId({ ...contractorEntityTaxId, missing: false, notApplicable: false });
     setSameAsContractor(value);
     getContractorData(value);
   }
@@ -318,10 +328,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   if (isLoading) {
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
-
-  console.log('roles', selectedRoles);
-
-  console.log('name', contractorNPIN);
 
   return (
     <>

@@ -18,7 +18,7 @@ import style from './index.module.scss';
 import ScheduleAndTargetSameTable from './scheduleAndTargetSameTable';
 import AddScheduleAndTargetForDifferentPeriods from './addScheduleAndTrgetForDifferentPeriods';
 
-const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contractTermPeriod }) => {
+const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contractTermPeriod, isReset, getIsReset }) => {
     const [schedulesField, setSchedulesField] = useState([]);
     const [differentTargets, setDifferentTargets] = useState(false);
     console.log('contrac time', contractTermPeriod);
@@ -34,7 +34,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
             "maximum": {
                 "value": 0
             },
-            "frequency": "WEEK",
+            "frequency": "NA",
             "startDate": contractTermPeriod?.start,
             "endDate": contractTermPeriod?.end,
         }],
@@ -70,7 +70,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
         targetWithoutNurse: '0',
         targetNoTargetApplicable: false,
         additionalScheduleValue: '0',
-        additionalScheduleFrequency: '',
+        additionalScheduleFrequency: 'NA',
         additionalScheduleRequired: true,
         scheduleAndTargetSame: true,
         billableService: true,
@@ -96,9 +96,87 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
         weekendsCount: '0',
     });
 
-    console.log('metadata', metadata);
+    const resetMetadata = () => {
+        setMetadata({
+            contractedSchedules: [{
+                "minimum": {
+                    "value": 0
+                },
+                "maximum": {
+                    "value": 0
+                },
+                "frequency": "NA",
+                "startDate": contractTermPeriod?.start,
+                "endDate": contractTermPeriod?.end,
+            }],
+            patientsSeenTargets: [{
+                "withNurse": {
+                    "value": 0
+                },
+                "withoutNurse": {
+                    "value": 0
+                },
+                "startDate": contractTermPeriod?.start,
+                "endDate": contractTermPeriod?.end,
+                "noTargetApplicable": false
+            }],
+            scheduledPatientsTargets: [{
+                "withNurse": {
+                    "value": 0
+                },
+                "withoutNurse": {
+                    "value": 0
+                },
+                "startDate": contractTermPeriod?.start,
+                "endDate": contractTermPeriod?.end,
+                "noTargetApplicable": false
+            }],
+            min: '0',
+            max: '0',
+            frequency: 'WEEK',
+            withNurse: '0',
+            withoutNurse: '0',
+            noTargetApplicable: false,
+            targetWithNurse: '0',
+            targetWithoutNurse: '0',
+            targetNoTargetApplicable: false,
+            additionalScheduleValue: '0',
+            additionalScheduleFrequency: 'NA',
+            additionalScheduleRequired: true,
+            scheduleAndTargetSame: true,
+            billableService: true,
+            rateType: 'HOURLY',
+            sessionDuration: '0',
+            sessionAmount: '0',
+            totalSession: '0',
+            totalSessionFrequency: 'YEAR',
+            workingTimeFrom: null,
+            workingTimeTo: null,
+            serviceDays: {
+                tuesday: false,
+                wednesday: false,
+                thursday: false,
+                friday: false,
+                saturday: false,
+                sunday: false,
+                weekDays: false,
+                weekEnds: false,
+                monday: false
+            },
+            weekdaysCount: '0',
+            weekendsCount: '0',
+        });
+    }
 
-    const [specified, setSpecified] = useState(0);
+    useEffect(() => {
+        if (isReset) {
+            resetMetadata();
+            getIsReset(false);
+        }
+        resetMetadata();
+
+    }, [isReset])
+
 
     useEffect(() => {
         let temp = metadata;
@@ -621,7 +699,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                         <EditableText value={metadata?.totalSession} placeholder="" type='tel' maxLength="3" onChange={(e) => onTotalSessionChange(e)}
                             className={style.editableSessionTextStyle} />
-                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue) ? style.greenBase : style.redBase} `}>{SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue)} Specified</div>
+                        <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue) ? style.greenBase : style.redBase} `}>{SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue)} Minimum Specified</div>
                     </div>
                     <div className={style.verticalAlignCenter}>
                         <CommonLabel value={`For ${timeCommitment?.value} ${timeCommitment?.frequency === 'WEEK' ? 'Weeks' : 'Months'} Per Contract Year`} />
@@ -631,7 +709,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Service Days*' />
-                <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
+                <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>

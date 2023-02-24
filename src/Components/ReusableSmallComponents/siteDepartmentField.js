@@ -173,7 +173,11 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
               site?.departmentList?.departments?.filter(dept => dept?.departmentName?.name !== undefined)?.map((dept, deptIndex) => (
                 <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
                   <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{dept?.departmentName?.name}-{site?.siteName?.siteName}</div>
-                  <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => { onRemoveDept(siteIndex, deptIndex, dept?.id) }} />
+                  {
+                    (siteData?.length > 1 || site?.departmentList?.departments?.length > 1) &&
+                    <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => { onRemoveDept(siteIndex, deptIndex, dept?.id) }} />
+
+                  }
                 </div>
               ))
             }
