@@ -156,6 +156,8 @@ const ReferenceListMainPage = () => {
                 setIsEdit={setIsEdit}
                 needHeader={true}
                 Title={data.Title}
+                path={"/Screens/ReferenceList/superAdminDashboard"}
+                callingFrom={"Super Admin"}
               />
             ))}
 

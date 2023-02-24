@@ -23,6 +23,8 @@ import { GET, DELETE, POST, TenantID } from "./../dataSaver";
 import { index } from "d3";
 import AddNewDepartments from "./addNewDepartments";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
+import { format } from "date-fns";
+import LevelTwoHeader from "../../Components/LevelTwoHeader";
 
 const DepartmentsForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -30,7 +32,7 @@ const DepartmentsForCustomers = () => {
   const [isIconClick, setIsIconclick] = useState(false);
   const [showIconDiv, setShowIconDiv] = useState(false);
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
 
   const [entityDetails, setEntityDetails] = useState({});
@@ -47,6 +49,14 @@ const DepartmentsForCustomers = () => {
     {}
   );
   const [isEdit, setIsEdit] = useState(false);
+  const [entityId, setEntityId] = useState("");
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+
+  useEffect(() => {
+    if (entityId !== "" && entityId !== undefined) {
+      getLastModifiedDate();
+    }
+  }, [entityId]);
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -59,6 +69,15 @@ const DepartmentsForCustomers = () => {
   const getEntity = async () => {
     const { data: entity } = await GET(`entity-service/entity`);
     setEntityDetails(entity);
+    setEntityId(entity?.[0]?.id);
+  };
+
+  const getLastModifiedDate = async () => {
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/entity/${entityId}`
+    );
+    const date = new Date(lastModifiedDate.departments?.lastModified);
+    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
   const getEntityTypes = async () => {
@@ -112,6 +131,7 @@ const DepartmentsForCustomers = () => {
           SuccessToaster("Department Service Area Added Successfully");
           getDepartmentService();
           setSelectedDepartmentServiceArea([]);
+          getLastModifiedDate();
         })
         .catch((error) => {
           ErrorToaster(error);
@@ -128,6 +148,7 @@ const DepartmentsForCustomers = () => {
       .then((response) => {
         SuccessToaster("Customer Department Service Deleted Successfully");
         getDepartmentService();
+        getLastModifiedDate();
       })
       .catch((error) => {
         ErrorToaster(error);
@@ -160,31 +181,14 @@ const DepartmentsForCustomers = () => {
           </div>
 
           <div>
-            <div className={`${style.displayInRow} ${style.marginTop10}`}>
-              <div
-                className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}
-              >
-                DEPARTMENTS / SERVICE AREAS FOR CUSTOMER SITE
-              </div>
-              <div></div>
-              <div
-                className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
-              >
-                UPDATED ON FEB 16, 2022 16:45 EST
-              </div>
-              <div className={style.crossStyle}>
-                <Link
-                  to="/Screens/ReferenceList/customerAdminDashboard"
-                  className={style.linkStyle}
-                >
-                  <img
-                    src={CrossPink}
-                    alt="OpenFolder"
-                    className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                  />
-                </Link>
-              </div>
-            </div>
+            <LevelTwoHeader
+              heading={"DEPARTMENTS / SERVICE AREAS FOR CUSTOMER SITE"}
+              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              path={"/Screens/ReferenceList/customerAdminDashboard"}
+              callingFrom={"Customer Admin"}
+              needHeader={true}
+            />
+
             <div className={style.marginTop35}>
               <div className={style.centreCardStyle}>
                 <div className={style.margin20}>

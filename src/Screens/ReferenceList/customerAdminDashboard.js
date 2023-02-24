@@ -1,16 +1,59 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import Navbar from "../../Components/Navbar";
 import SideBar from "./../../Components/Sidebar";
 import style from "./index.module.scss";
 import { Icon, Intent } from "@blueprintjs/core";
 import { Link } from "react-router-dom";
+import { GET, TenantID } from "../dataSaver";
+import { format } from "date-fns";
 
 const ClientAdminDashboard = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [lastUpdatedDate, setLastUpdatedDate] = useState([]);
+  const [entityId, setEntityId] = useState("");
+  const [letestParentDate, setLatestParentDate] = useState("");
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
   };
+
+  const getReferenceListEntity = async () => {
+    const { data: entity } = await GET(`entity-service/entity/${TenantID}`);
+    setEntityId(entity?.id);
+  };
+
+  const getLastModifiedDate = async () => {
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/entity/${entityId}`
+    );
+    setLastUpdatedDate(lastModifiedDate);
+
+    //Parent LastModifiedDate get value
+    const mappedDataArray = [];
+    for (const key in lastModifiedDate) {
+      const mappedData = {
+        ...lastModifiedDate[key],
+      };
+      mappedDataArray.push(mappedData);
+    }
+
+    let latestParentModifiedDate = mappedDataArray.reduce((a, b) => {
+      return new Date(a.lastModified) > new Date(b.lastModified) ? a : b;
+    });
+
+    const date = new Date(latestParentModifiedDate?.lastModified);
+    setLatestParentDate(format(date, "MMM d, yyyy HH:mm"));
+  };
+
+  useEffect(() => {
+    getReferenceListEntity();
+  }, []);
+
+  useEffect(() => {
+    if (entityId !== "" && entityId !== undefined) {
+      getLastModifiedDate();
+    }
+  }, [entityId]);
 
   return (
     <Fragment>
@@ -19,9 +62,11 @@ const ClientAdminDashboard = () => {
         <div
           className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid}`}
         >
-          <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            <div></div>
-          </SideBar>
+          <div>
+            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+              <div></div>
+            </SideBar>
+          </div>
           <div>
             <div className={`${style.displayInRow} ${style.marginTop10}`}>
               <div
@@ -32,7 +77,8 @@ const ClientAdminDashboard = () => {
               <div
                 className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
               >
-                UPDATED ON FEB 16, 2022 16:45 EST
+                {/* UPDATED ON FEB 16, 2022 16:45 EST */}
+                {`UPDATED ON ${letestParentDate.toUpperCase()} EST`}
               </div>
               <div className={style.crossStyle}>
                 <Icon icon="cross" size={25} intent={Intent.DANGER} />
@@ -57,7 +103,15 @@ const ClientAdminDashboard = () => {
                             STANDARD LIST IN USE
                           </span>
                           <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON JULY 2022
+                            {`LAST UPDATED ON ${new Date(
+                              lastUpdatedDate.departments?.lastModified
+                            )
+                              .toLocaleString("en-US", {
+                                timeZone: "America/New_York",
+                                year: "numeric",
+                                month: "long",
+                              })
+                              .toUpperCase()}`}
                           </span>
                         </div>
                       </div>
@@ -74,12 +128,20 @@ const ClientAdminDashboard = () => {
                           className={`${style.optionsStyle} ${style.displayInCol}`}
                         >
                           <span
-                            className={`${style.dashboardCardColorOption1}`}
+                            className={`${style.dashboardCardColorOption3}`}
                           >
                             MY CUSTOM LIST IN USE
                           </span>
                           <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON JULY 2022
+                            {`LAST UPDATED ON ${new Date(
+                              lastUpdatedDate.absenceResons?.lastModified
+                            )
+                              .toLocaleString("en-US", {
+                                timeZone: "America/New_York",
+                                year: "numeric",
+                                month: "long",
+                              })
+                              .toUpperCase()}`}
                           </span>
                         </div>
                       </div>
@@ -99,7 +161,15 @@ const ClientAdminDashboard = () => {
                             STANDARD LIST IN USE
                           </span>
                           <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON JULY 2022
+                            {`LAST UPDATED ON ${new Date(
+                              lastUpdatedDate.nameSuffix?.lastModified
+                            )
+                              .toLocaleString("en-US", {
+                                timeZone: "America/New_York",
+                                year: "numeric",
+                                month: "long",
+                              })
+                              .toUpperCase()}`}
                           </span>
                         </div>
                       </div>
@@ -120,7 +190,15 @@ const ClientAdminDashboard = () => {
                             STANDARD LIST IN USE
                           </span>
                           <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON JULY 2022
+                            {`LAST UPDATED ON ${new Date(
+                              lastUpdatedDate.contractedServiceProviders?.lastModified
+                            )
+                              .toLocaleString("en-US", {
+                                timeZone: "America/New_York",
+                                year: "numeric",
+                                month: "long",
+                              })
+                              .toUpperCase()}`}
                           </span>
                         </div>
                       </div>
@@ -145,7 +223,15 @@ const ClientAdminDashboard = () => {
                             STANDARD LIST IN USE
                           </span>
                           <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON JULY 2022
+                            {`LAST UPDATED ON ${new Date(
+                              lastUpdatedDate.functionalTitles?.lastModified
+                            )
+                              .toLocaleString("en-US", {
+                                timeZone: "America/New_York",
+                                year: "numeric",
+                                month: "long",
+                              })
+                              .toUpperCase()}`}
                           </span>
                         </div>
                       </div>
@@ -166,7 +252,15 @@ const ClientAdminDashboard = () => {
                             STANDARD LIST IN USE
                           </span>
                           <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON JULY 2022
+                            {`LAST UPDATED ON ${new Date(
+                              lastUpdatedDate.terminationReason?.lastModified
+                            )
+                              .toLocaleString("en-US", {
+                                timeZone: "America/New_York",
+                                year: "numeric",
+                                month: "long",
+                              })
+                              .toUpperCase()}`}
                           </span>
                         </div>
                       </div>
@@ -198,7 +292,15 @@ const ClientAdminDashboard = () => {
                             STANDARD LIST IN USE
                           </span>
                           <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON JULY 2022
+                            {`LAST UPDATED ON ${new Date(
+                              lastUpdatedDate.contractedService?.lastModified
+                            )
+                              .toLocaleString("en-US", {
+                                timeZone: "America/New_York",
+                                year: "numeric",
+                                month: "long",
+                              })
+                              .toUpperCase()}`}
                           </span>
                         </div>
                       </div>
@@ -222,7 +324,15 @@ const ClientAdminDashboard = () => {
                             STANDARD LIST IN USE
                           </span>
                           <span className={style.dashboardCardColorOption2}>
-                            LAST UPDATED ON JULY 2022
+                            {`LAST UPDATED ON ${new Date(
+                              lastUpdatedDate.holidayList?.lastModified
+                            )
+                              .toLocaleString("en-US", {
+                                timeZone: "America/New_York",
+                                year: "numeric",
+                                month: "long",
+                              })
+                              .toUpperCase()}`}
                           </span>
                         </div>
                       </div>

@@ -12,48 +12,63 @@ import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
 import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
 import EditBlue from "./../../images/editBlue.png";
-import EditHcBlue from './../../images/editHCBlue.png';
+import EditHcBlue from "./../../images/editHCBlue.png";
 import DeleteHcRow from "./../../images/deleteHcRow.png";
 import OpenFolderBlue from "./../../images/openFolderBlue.png";
 import AddSuffixEntity from "./addSuffixEntity";
+import { format } from "date-fns";
+import LevelTwoHeader from "../../Components/LevelTwoHeader";
 
 const SuffixByCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [addEditDialog, setAddEditDialog] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [nameList, setNameList] = useState([]);
-  const [selectedTitle, setSelectedTitle] = useState('HEALTHCARE');
+  const [selectedTitle, setSelectedTitle] = useState("HEALTHCARE");
   const [selectedSuffixList, setSelectedSuffixList] = useState([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [masterNameSuffix, setMasterNameSuffix] = useState([]);
   const [entityNameSuffix, setEntityNameSuffix] = useState([]);
   const [selectedIndustry, setSelectedIndustry] = useState();
   const [selectedSuffix, setSelectedSuffix] = useState([]);
+  const [selectedCustomerData, setSelectedCustomerData] = useState({});
   const [suffixId, setSuffixId] = useState([]);
   const [suffixData, setSuffixData] = useState([]);
-  const [selectedItem, setSelectedItem] = useState('');
+  const [selectedItem, setSelectedItem] = useState("");
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [entityId, setEntityId] = useState("");
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+
+  const getIsExpanded = (value) => {
+    setIsExpanded(value);
+  };
 
   useEffect(() => {
     if (selectedIndustry !== undefined) {
       getIndustryData();
       getSuffixData();
     }
-  }, [selectedIndustry])
+  }, [selectedIndustry]);
 
-  const handleDelete = (id) => {
-    setSuffixId(id);
-    setShowDeleteConfirmation(true);
-  };
-
-  const getShowDeleteConfirmation = (value) => {
-    setShowDeleteConfirmation(value);
-    getSuffixType();
-  };
+  useEffect(() => {
+    if (entityId !== "" && entityId !== undefined) {
+      getLastModifiedDate();
+    }
+  }, [entityId]);
 
   const getIndustryData = async () => {
-    const { data: data } = await GET(`entity-service/entity/${TenantID}`);
-    setSelectedIndustry(data?.industryId?.id);
-    setSelectedTitle(data?.industryId?.name || 'HEALTHCARE');
+    const { data: entity } = await GET(`entity-service/entity/${TenantID}`);
+    setSelectedIndustry(entity?.industryId?.id);
+    setSelectedTitle(entity?.industryId?.name || "HEALTHCARE");
+    setEntityId(entity?.id);
+  };
+
+  const getLastModifiedDate = async () => {
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/entity/${entityId}`
+    );
+    const date = new Date(lastModifiedDate.nameSuffix?.lastModified);
+    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
   const getSuffixData = async () => {
@@ -70,23 +85,6 @@ const SuffixByCustomer = () => {
     setEntityNameSuffix(suffixData);
   };
 
-  const getDeleteConfirmation = (value) => {
-    if (value) {
-      deleteSuffix(suffixId);
-    }
-  };
-
-  const deleteSuffix = async (id) => {
-    await DELETE(`entity-service/nameSuffix/${id}`)
-      .then((response) => {
-        SuccessToaster("Name Suffix Deleted Successfully");
-      })
-      .catch((error) => {
-        ErrorToaster(error);
-      });
-    getSuffixType();
-  };
-
   useEffect(() => {
     getIndustryData();
   }, []);
@@ -99,52 +97,80 @@ const SuffixByCustomer = () => {
     getSuffixData();
   }, [selectedIndustry]);
 
-  useEffect(() => {
-    let allSuffix = [];
-  }, [suffixData]);
-
-
   const getAddEntityDialog = (value) => {
     setAddEditDialog(value);
     setIsEdit(value);
-  }
+  };
 
-  const onSuffixSelect = (data) => {
-    if (!selectedSuffixList?.map(data => data?.suffix)?.includes(data?.suffix)) {
-      let temp = selectedSuffixList;
-      temp.push({
-        "suffix": data?.suffix,
-        "entityId": {
-          "id": TenantID
-        },
-        "industryId": {
-          "id": selectedIndustry
-        },
-        "customized": true
-      })
-      setSelectedSuffixList(temp);
+  const handleSelectSuffix = (e, innerData) => {
+    if (e.target.checked) {
+      setSelectedSuffix([...selectedSuffix, innerData]);
+    } else {
+      setSelectedSuffix(
+        selectedSuffix
+          ?.filter((data) => data?.id !== innerData?.id)
+          ?.map((data) => data)
+      );
     }
-  }
+  };
 
-  const handleSave = async () => {
-    await POST(`entity-service/nameSuffix`, JSON.stringify(selectedSuffixList))
+  const handlePostSuffix = async () => {
+    let data = selectedSuffix?.map((data) => ({
+      ...data,
+      customized: true,
+      entityId: { id: TenantID },
+    }));
+    if (selectedSuffix?.length !== 0) {
+      await POST("entity-service/nameSuffix", JSON.stringify(data))
+        .then((response) => {
+          SuccessToaster("Suffix Added Successfully");
+          getSuffixType();
+          setSelectedSuffix([]);
+          getLastModifiedDate();
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      ErrorToaster(
+        "Select some Suffix from Standard List to add in My Custom List"
+      );
+    }
+  };
+
+  const handleDeleteSuffix = async (id) => {
+    await DELETE(`entity-service/nameSuffix/${id}`)
       .then((response) => {
-        SuccessToaster("Suffix Added Successfully");
+        SuccessToaster("Suffix Deleted Successfully");
         getSuffixType();
+        getLastModifiedDate();
       })
       .catch((error) => {
         ErrorToaster(error);
       });
-  }
+  };
 
   return (
     <Fragment>
       <Navbar />
       <div className={style.margin20}>
-        <div className={style.bigCardGrid}>
-          <SideBar />
+        <div
+          className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid}`}
+        >
           <div>
-            <div className={`${style.displayInRow} ${style.marginTop10}`}>
+            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+              <div></div>
+            </SideBar>
+          </div>
+          <div>
+            <LevelTwoHeader
+              heading={"NAME SUFFIX"}
+              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              path={"/Screens/ReferenceList/customerAdminDashboard"}
+              callingFrom={"Customer Admin"}
+              needHeader={true}
+            />
+            {/* <div className={`${style.displayInRow} ${style.marginTop10}`}>
               <div
                 className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}
               >
@@ -163,11 +189,12 @@ const SuffixByCustomer = () => {
                   {" "}
                   <img
                     src={CrossPink}
+                    alt=""
                     className={`${style.colorFileStyle2} ${style.marginLeft20}`}
                   />
                 </Link>
               </div>
-            </div>
+            </div> */}
 
             <div className={style.marginTop35}>
               <div className={style.centreCardStyle}>
@@ -178,25 +205,49 @@ const SuffixByCustomer = () => {
                         <p
                           className={`${style.holidayScheduleHeadertextStyle1} ${style.marginLeft20}`}
                         >
-                          {" "}
-                          DEFAULT LIST IN USE{" "}
+                          DEFAULT LIST IN USE
                         </p>
                       </div>
                       <div
                         className={`${style.customersAdminCardStyle1} ${style.scrollbar}`}
                       >
-                        {masterNameSuffix?.filter(data => !entityNameSuffix?.map(suffix => suffix?.suffix)?.includes(data?.suffix))?.map((data, index) => (
-                          <div key={`${data?.suffix} ${index}`}
-                            className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`}
-                          >
-                            <Checkbox onChange={() => onSuffixSelect(data)} />
-                            <p className={`${style.TextStyle4}`}>{data?.suffix}</p>
-                          </div>))}
+                        {masterNameSuffix
+                          ?.filter(
+                            (data) =>
+                              !entityNameSuffix?.some(
+                                (suffix) => suffix?.suffix === data?.suffix
+                              )
+                          )
+                          ?.map((data, index) => (
+                            <div
+                              key={index}
+                              className={
+                                index % 2 !== 0
+                                  ? `${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`
+                                  : `${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`
+                              }
+                            >
+                              <Checkbox
+                                checked={
+                                  selectedSuffix?.filter(
+                                    (innerData) => innerData?.id === data?.id
+                                  )?.length !== 0
+                                }
+                                onChange={(e) => handleSelectSuffix(e, data)}
+                              />
+                              <p className={`${style.TextStyle4}`}>
+                                {data?.suffix}
+                              </p>
+                            </div>
+                          ))}
                       </div>
                     </div>
                     <div
                       className={style.customersAdminCardStyle2}
-                      onClick={() => { setIsSelected(true); handleSave(); }}
+                      onClick={() => {
+                        setIsSelected(true);
+                        handlePostSuffix();
+                      }}
                     >
                       <p
                         className={`${style.holidayScheduleHeadertextStyle1} ${style.colorWhite} ${style.marginTop3}`}
@@ -205,6 +256,7 @@ const SuffixByCustomer = () => {
                       </p>
                       <img
                         src={SelectArrow}
+                        alt=""
                         className={`${style.colorFileStyle4}`}
                       />
                     </div>
@@ -218,39 +270,64 @@ const SuffixByCustomer = () => {
                         </p>
                         <img
                           src={AddNewEntity}
+                          alt=""
                           className={`${style.colorFileStyle} ${style.marginLeft150} `}
-                          onClick={() => { setAddEditDialog(true); }}
+                          onClick={() => {
+                            setAddEditDialog(true);
+                          }}
                         ></img>
                       </div>
-                      {
-                        entityNameSuffix?.length !== 0 ? (
-                          <div
-                            className={`${style.customersAdminCardStyle1} ${style.scrollbar}`}
-                          >
-                            {entityNameSuffix?.map(data => (
-                              <div >
-                                <div className={`${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`}>
-                                  <p></p>
-                                  <p className={style.tableDataFontStyle}>{data?.suffix}</p>
-                                  <p className={style.tableDataFontStyle}></p>
-                                  <img src={EditBlue} className={style.colorFileStyle} onClick={() => { setAddEditDialog(true); setIsEdit(true); setSelectedItem(data) }} />
-                                  <img src={DeleteHcRow} className={style.colorFileStyle} onClick={() => { handleDelete(data?.id) }} />
-                                </div>
+                      {entityNameSuffix?.length !== 0 ? (
+                        <div
+                          className={`${style.customersAdminCardStyle1} ${style.scrollbar}`}
+                        >
+                          {entityNameSuffix?.map((data, index) => (
+                            <div>
+                              <div
+                                className={
+                                  index % 2 !== 0
+                                    ? `${style.absenseLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                    : `${style.absenseLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                }
+                              >
+                                <p></p>
+                                <p className={style.tableDataFontStyle}>
+                                  {data?.suffix}
+                                </p>
+                                <p className={style.tableDataFontStyle}></p>
+                                <img
+                                  src={EditBlue}
+                                  alt=""
+                                  className={style.colorFileStyle}
+                                  onClick={() => {
+                                    setAddEditDialog(true);
+                                    setIsEdit(true);
+                                    setSelectedCustomerData(data);
+                                  }}
+                                />
+                                <img
+                                  src={DeleteHcRow}
+                                  alt=""
+                                  className={style.colorFileStyle}
+                                  onClick={() => {
+                                    handleDeleteSuffix(data?.id);
+                                  }}
+                                />
                               </div>
-                            ))}
-                          </div>)
-                          : (<div className={style.customersAdminCardStyle3}>
-                            <p className={style.holidayScheduleCardtextStyle1}>
-                              if you would like to setup your custom list for your
-                              site(s) you can select from the default list on the
-                              left, edit to change labels as needed, and also add
-                              new departments/ service area by clicking on the add
-                              icon
-                            </p>
-                          </div>
-                          )
-                      }
-
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className={style.customersAdminCardStyle3}>
+                          <p className={style.holidayScheduleCardtextStyle1}>
+                            if you would like to setup your custom list for your
+                            site(s) you can select from the default list on the
+                            left, edit to change labels as needed, and also add
+                            new departments/ service area by clicking on the add
+                            icon
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -266,16 +343,26 @@ const SuffixByCustomer = () => {
 
       {showDeleteConfirmation && (
         <DeleteConfirmation
-          getShowDeleteConfirmation={getShowDeleteConfirmation}
-          getDeleteConfirmation={getDeleteConfirmation}
+          // getShowDeleteConfirmation={getShowDeleteConfirmation}
+          // getDeleteConfirmation={getDeleteConfirmation}
           confirmationText="Do you want to delete this Suffix?"
         />
       )}
 
-      {
-        addEditDialog && <AddSuffixEntity getAddEntityDialog={getAddEntityDialog} getIndustryData={getSuffixType} selectedEntity={selectedItem} IndustryId={selectedIndustry} isEdit={isEdit} getEntityData={getSuffixType} tableEntityData={entityNameSuffix} callingFrom={'Customer Admin'} selectedTitle={selectedTitle} />
-      }
-    </Fragment >
+      {addEditDialog && (
+        <AddSuffixEntity
+          getAddEntityDialog={getAddEntityDialog}
+          getIndustryData={getSuffixType}
+          selectedEntity={selectedCustomerData}
+          IndustryId={selectedIndustry}
+          isEdit={isEdit}
+          getEntityData={getSuffixType}
+          tableEntityData={entityNameSuffix}
+          callingFrom={"Customer Admin"}
+          selectedTitle={selectedTitle}
+        />
+      )}
+    </Fragment>
   );
 };
 

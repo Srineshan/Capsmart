@@ -16,6 +16,8 @@ import AddFunctionalTitlesForCustomer from "./addFunctionalTitleForCustomer";
 import { Link } from "react-router-dom";
 import { DELETE, GET, POST, TenantID } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
+import { format } from "date-fns";
+import LevelTwoHeader from "../../Components/LevelTwoHeader";
 
 const FunctionalTitleForCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -45,6 +47,8 @@ const FunctionalTitleForCustomer = () => {
     selectedFunctionalTitlesCSPTypeCustomer,
     setSelectedFunctionalTitlesCSPTypeCutomer,
   ] = useState({});
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+  const [entityId, setEntityId] = useState("");
 
   const getAddFunctionalTitlesDialog = (value) => {
     setShowFunctionalTitleDialog(value);
@@ -72,9 +76,24 @@ const FunctionalTitleForCustomer = () => {
     }
   }, [CSPTypeId]);
 
+  useEffect(() => {
+    if (entityId !== "" && entityId !== undefined) {
+      getLastModifiedDate();
+    }
+  }, [entityId]);
+
   const getEntity = async () => {
     const { data: entity } = await GET(`entity-service/entity`);
     setEntityDetails(entity);
+    setEntityId(entity?.[0]?.id);
+  };
+
+  const getLastModifiedDate = async () => {
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/entity/${entityId}`
+    );
+    const date = new Date(lastModifiedDate.functionalTitles?.lastModified);
+    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
   const getEntityTypes = async () => {
@@ -141,6 +160,7 @@ const FunctionalTitleForCustomer = () => {
           SuccessToaster("Functional Titles CSPType Added Successfully");
           getFunctionalTitlesCustometData();
           setSelectedFunctionalTitlesCSPType([]);
+          getLastModifiedDate();
         })
         .catch((error) => {
           ErrorToaster(error);
@@ -157,6 +177,7 @@ const FunctionalTitleForCustomer = () => {
       .then((response) => {
         SuccessToaster("Functional Titles CSPType Deleted Successfully");
         getFunctionalTitlesCustometData();
+        getLastModifiedDate();
       })
       .catch((error) => {
         ErrorToaster(error);
@@ -177,31 +198,15 @@ const FunctionalTitleForCustomer = () => {
           </div>
 
           <div>
-            <div className={`${style.displayInRow} ${style.marginTop10}`}>
-              <div
-                className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}
-              >
-                FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS FOR HOSPITAL
-                / ACUTE CARE FACILITY (ACF)
-              </div>
-              <div
-                className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
-              >
-                UPDATED ON FEB 16, 2022 16:45 EST
-              </div>
-              <div className={style.crossStyle}>
-                <Link
-                  to="/Screens/ReferenceList/customerAdminDashboard"
-                  className={style.linkStyle}
-                >
-                  <img
-                    src={CrossPink}
-                    className={`${style.colorFileStyle2} ${style.marginLeft20}`}
-                    alt="CrossPink"
-                  />
-                </Link>
-              </div>
-            </div>
+            <LevelTwoHeader
+              heading={`FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS FOR HOSPITAL
+              / ACUTE CARE FACILITY (ACF)`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              path={"/Screens/ReferenceList/customerAdminDashboard"}
+              callingFrom={"Customer Admin"}
+              needHeader={true}
+            />
+
             <div className={style.marginTop35}>
               <div className={style.centreCardStyle}>
                 <div className={style.margin20}>
