@@ -1,6 +1,6 @@
 @import '../../styles/mixins.scss';
 
-.navbarStyle{
+.navbarStyle {
     top: 0px;
     left: 0px;
     width: 100%;
@@ -9,12 +9,12 @@
     opacity: 1;
 }
 
-.displayInRow{
+.displayInRow {
     display: flex;
     flex-direction: row;
 }
 
-.logo{
+.logo {
     top: 0px;
     left: 42px;
     width: 184px;
@@ -23,16 +23,17 @@
     margin-right: 80px;
 }
 
-.sanmateoLogo{
-    top: 0px;
-    left: 42px;
+.sanmateoLogo {
+    position: relative;
+    top: 10px;
+    left: 22px;
     width: 220px;
-    height: 80px;
+    height: 60px;
     object-fit: contain;
     margin-right: 80px;
 }
 
-.menuStyle{
+.menuStyle {
     margin-top: 30px;
     padding: 0 15px;
     font: normal normal bold 12px/20px Montserrat;
@@ -40,7 +41,7 @@
     color: #646D82;
 }
 
-.logoutStyle{
+.logoutStyle {
     margin: 25px 0 0 30px;
     padding: 0 15px;
     font: normal normal bold 15px/25px Montserrat;
@@ -48,36 +49,36 @@
     color: #646D82;
 }
 
-.activeMenuColor{
+.activeMenuColor {
     color: #7165E3;
-    border-bottom:2px solid #7165E3;
-    padding-bottom:15px;
-    font: normal normal 600 15px/25px Montserrat;
-    margin-top: 27px;
+    border-bottom: 2px solid #7165E3;
+    padding-bottom: 15px;
+    font: normal normal 600 12px/20px Montserrat;
+    margin-top: 30px;
 }
 
-.icons{
+.icons {
     width: 40px;
     height: 40px;
     margin: 20px 0 0 20px;
     cursor: pointer;
 }
 
-.logoutIcons{
+.logoutIcons {
     width: 40px;
     height: 40px;
     margin: 20px 20px 0 -10px;
     cursor: pointer;
 }
 
-.notificationIcon{
+.notificationIcon {
     margin-top: 20px;
     margin-left: -10px;
     width: 20px;
     height: 20px;
 }
 
-.notificationCount{
+.notificationCount {
     margin-top: 23px;
     margin-left: -16px;
     width: 12px;
@@ -85,30 +86,34 @@
     object-fit: cover;
 }
 
-.spaceBetween{
+.spaceBetween {
     display: flex;
     justify-content: space-between;
 }
 
-.optionsCardStyle{
+.optionsCardStyle {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 11px #52575D;
     border-radius: 4px 4px 0px 0px;
     width: 200px;
 }
 
-.options{
+.options {
     padding: 10px;
     font: normal normal 600 12px/15px Montserrat;
     text-align: left;
 }
 
-.options:hover{
+.options:hover {
     background: #EBF2F7 0% 0% no-repeat padding-box;
     color: #7064DE;
 }
 
-.noFontStyle{
+.noFontStyle {
     text-decoration: none !important;
     color: black;
+}
+
+.cursorPointer {
+    cursor: pointer !important;
 }

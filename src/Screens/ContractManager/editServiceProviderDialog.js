@@ -39,6 +39,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   const [departmentTitleValues, setDepartmentTitleValues] = useState([]);
   const [allowPersonalMail, setAllowPersonalMail] = useState(false);
   const [phoneNA, setPhoneNA] = useState(false);
+  const [continueLoading, setContinueLoading] = useState(false);
 
   useEffect(() => {
     getRolesData();
@@ -290,6 +291,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   }
 
   const handleSave = async () => {
+    setContinueLoading(true);
     let contractData = userProviderData?.contracts;
     contractData?.filter(data => data?.id === contractId)?.map(data => {
       let site = {
@@ -316,26 +318,32 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
 
     if (!npin?.missing && !npin?.na && npin.npin === '') {
       ErrorToaster('NPIN is Mandatory if not Missing/NA');
+      setContinueLoading(false);
       return;
     }
     if (userDetails?.firstName === '') {
       ErrorToaster('First Name is Mandatory');
+      setContinueLoading(false);
       return;
     }
     if (userDetails?.lastName === '') {
       ErrorToaster('Last Name is Mandatory');
+      setContinueLoading(false);
       return;
     }
     if (!userDetails?.email?.includes('@') || !userDetails?.email?.includes('.')) {
       ErrorToaster('Enter a Valid Email');
+      setContinueLoading(false);
       return;
     }
     if (!phoneNA && userDetails?.phone?.length !== 14) {
       ErrorToaster('Enter Valid Phone Number');
+      setContinueLoading(false);
       return;
     }
     if (roles?.length === 0) {
       ErrorToaster('Select User Role');
+      setContinueLoading(false);
       return;
     }
 
@@ -419,6 +427,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       .catch(error => {
         ErrorToaster('Unexpected Error');
       })
+    setContinueLoading(false);
     getEditServiceDialog(false);
   }
 
@@ -615,7 +624,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
         </div>
         {isEditable &&
           <div className={`${style.floatRight} ${style.marginTop20}`}>
-            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave(); }}>SAVE & EXIT</button>
+            <button className={`${style.buttonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { handleSave(); } : {}}>SAVE & EXIT</button>
           </div>
         }
 

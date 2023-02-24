@@ -74,6 +74,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [isShowDocumentsList, setIsShowDocumentsList] = useState(false);
   const [contractDocumentList, setContractDocumentList] = useState([]);
   const [notesData, setNotesData] = useState([]);
+  const [continueLoading, setContinueLoading] = useState(false);
 
   useEffect(() => {
     getServiceList();
@@ -277,6 +278,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const addOnWorkFlow = async (buttonType) => {
+    setContinueLoading(true);
     setAddOnButton(buttonType);
     if (serviceTypeTemplate === ADDON && editService && metadata?.[0]?.approver !== undefined) {
       let dataValue = [];
@@ -398,6 +400,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     } else {
       handleSave(buttonType);
     }
+    setContinueLoading(false);
   }
 
   const handleSave = async (buttonType) => {
@@ -1039,8 +1042,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         <div>
           {isEditable && !isShowPDF &&
             <div className={`${style.floatRight} `}>
-              <button className={`${style.buttonStyle} ${style.marginLeft20} `} onClick={() => { addOnWorkFlow('ADD MORE'); }}>ADD MORE</button>
-              <button className={`${style.buttonStyle} ${style.marginLeft20} `} onClick={() => { addOnWorkFlow('SAVE AND EXIT'); }}>SAVE & EXIT</button>
+              <button className={`${style.buttonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('ADD MORE'); } : {}}>ADD MORE</button>
+              <button className={`${style.buttonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('SAVE AND EXIT'); } : {}}>SAVE & EXIT</button>
             </div>
           }
 

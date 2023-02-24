@@ -90,6 +90,7 @@ const ContractIdTermLimitIndividual = (
   const [selectedSite, setSelectedSite] = useState('');
   const [createdContractId, setCreatedContractId] = useState(contractIdFromActive);
   const [contractedTimeCommitment, setContractTimeCommitment] = useState({ value: 0, frequency: '' });
+  const [continueLoading, setContinueLoading] = useState(false);
 
   useEffect(() => {
     if (method === 'PUT' && createdContractId !== '') {
@@ -221,6 +222,7 @@ const ContractIdTermLimitIndividual = (
   }
 
   const addContract = async (buttonType) => {
+    setContinueLoading(true);
     let sites = getSiteData();
     if (departmentSpecific && sites?.some(data => data?.departmentList?.departments?.length === 0)) {
       ErrorToaster('Select Departments for all the selected Sites');
@@ -335,6 +337,7 @@ const ContractIdTermLimitIndividual = (
           ErrorToaster('Unexpected Error Updating Contract');
         })
     }
+    setContinueLoading(false);
     if (buttonType === 'Continue') {
       getViewPage2(true);
       getViewPage1(false);
@@ -875,8 +878,8 @@ const ContractIdTermLimitIndividual = (
       </div>
       {isEditable &&
         (<div className={`${style.floatRight} ${style.marginTop20}`}>
-          <button className={style.newContractOutlinedButton} onClick={() => addContract('Save In Progress')}>SAVE IN-PROGRESS</button>
-          <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { addContract('Continue'); }}>CONTINUE</button>
+          <button className={`${style.newContractOutlinedButton} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => addContract('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
+          <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addContract('Continue') } : {}}>CONTINUE</button>
         </div>)
       }
 

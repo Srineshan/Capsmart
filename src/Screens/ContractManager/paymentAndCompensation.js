@@ -52,12 +52,14 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const [paymentFields, setPaymentFields] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [timeSheetTabs, setTimeSheetTabs] = useState([]);
+    const [continueLoading, setContinueLoading] = useState(false);
     const limit3 = 3;
     const limit4 = 4;
     const limit5 = 5;
     const limit7 = 7;
 
     const handleContinue = async (buttonType) => {
+        setContinueLoading(true);
         const data = {
             compensationBasis: compensation,
             rvuQuantity: rvuQuantity,
@@ -78,6 +80,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         else {
             ErrorToaster('Unexpected Error');
         }
+        setContinueLoading(false);
         if (buttonType !== 'Continue') {
             getShowAlert(true);
         }
@@ -446,9 +449,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                 <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Timesheet Submission Terms') }}>BACK</button>
                                 <div>
-                                    <button className={style.newContractOutlinedButton} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
-                                        onClick={() => { handleContinue('Continue'); getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') }}
+                                    <button className={`${style.newContractOutlinedButton} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleContinue('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
+                                        onClick={!continueLoading ? () => { handleContinue('Continue'); getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') } : {}}
                                     >CONTINUE</button>
                                 </div>
                             </div>

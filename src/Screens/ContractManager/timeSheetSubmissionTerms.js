@@ -56,6 +56,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [selectedIndex, setSelectedIndex] = useState();
   const [paymentSource, setPaymentSource] = useState(new Array(timeSheetCount || 0));
   const [contractName, setContractName] = useState('');
+  const [continueLoading, setContinueLoading] = useState(false);
 
   const menuRef = useRef(null);
   useOptionsHide(menuRef);
@@ -498,7 +499,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
 
   const handleContinue = async (buttonType) => {
-
+    setContinueLoading(true);
     if (absence?.reviewer === null || absence?.reviewer === '0') {
       ErrorToaster('Select Approver for Absence Request');
       return;
@@ -544,6 +545,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     else {
       ErrorToaster('Unexpected Error');
     }
+    setContinueLoading(false);
     if (buttonType !== 'Continue') {
       getShowAlert(true);
     } else {
@@ -649,8 +651,8 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
           <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contracted Services Specification') }}>BACK</button>
           <div>
-            <button className={style.newContractOutlinedButton} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
-            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleContinue('Continue'); }}>CONTINUE</button>
+            <button className={`${style.newContractOutlinedButton} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleContinue('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
+            <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { handleContinue('Continue') } : {}}>CONTINUE</button>
           </div>
         </div>
       }

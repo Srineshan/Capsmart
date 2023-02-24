@@ -356,7 +356,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                 -
                                             </div>
                                     ) : tableData?.type === "action" ? (
-                                        <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={() => { setShowOptions(true); setSelectedMenuIndex(index) }}>
+                                        <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={() => { setShowOptions(true); setSelectedMenuIndex(index) }}>
                                             <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
                                             {showOptions && index === selectedMenuIndex && (
                                                 <Popover

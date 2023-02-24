@@ -68,6 +68,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const [contracts, setContracts] = useState([]);
   const [allowPersonalMail, setAllowPersonalMail] = useState(false);
   const [mobileNA, setMobileNA] = useState(false);
+  const [continueLoading, setContinueLoading] = useState(false);
 
   useEffect(() => {
     getRoles();
@@ -289,6 +290,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   }
 
   const handleSave = async (buttonType) => {
+    setContinueLoading(true);
     let roles = userProviderData?.roles || [];
     selectedRoles?.map(data => {
       if (!roles?.map(role => role?.id).includes(data?.id)) {
@@ -385,6 +387,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           ErrorToaster('Unexpected Error');
         });
     }
+    setContinueLoading(false);
     if (buttonType === 'Continue') {
       getViewPage3(true);
       getCurrentPage('Contractor Business Entity')
@@ -731,8 +734,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
           <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
           <div>
-            <button className={style.newContractOutlinedButton} onClick={() => handleSave('Save In Progress')}>SAVE IN-PROGRESS</button>
-            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('Continue') }}>CONTINUE</button>
+            <button className={`${style.newContractOutlinedButton} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleSave('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
+            <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { handleSave('Continue') } : {}}>CONTINUE</button>
           </div>
         </div>
       }

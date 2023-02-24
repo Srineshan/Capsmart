@@ -25,6 +25,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [provider, setProvider] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [isShowValidationCheck, setIsShowValidationCheck] = useState(false);
+  const [continueLoading, setContinueLoading] = useState(false);
 
   const [selectedTimeSheet, setSelectedTimeSheet] = useState({ id: '', reviewer: '', approver: '' });
 
@@ -324,16 +325,20 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   }
 
   const submit = async (buttontext) => {
+    setContinueLoading(true);
     if (timesheet?.reviewer === '' || timesheet?.approver === '') {
       ErrorToaster('Select both Approver and Reviewer to save');
+      setContinueLoading(false);
       return;
     }
     if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '') {
       ErrorToaster('Select Aggregator to save');
+      setContinueLoading(false);
       return;
     }
     let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
     updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
+    setContinueLoading(false);
     if (buttontext === 'Continue') {
       getViewPage9(true);
       // getCurrentPage('Request Processing Workflow')
@@ -448,7 +453,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Payment & Compensation') }}>BACK</button>
                 <div>
-                  <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
+                  <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
                     onClick={() => {
                       submit('Continue')
                     }}
