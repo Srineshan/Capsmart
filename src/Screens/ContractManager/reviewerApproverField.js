@@ -37,7 +37,7 @@ const ReviewerApproverField = ({ data, label, onValueChange, selectLabel, value 
         <CommonSelectField className={`${style.fullWidth} `}
           defaultValue={value}
           value={value ? value : '0'}
-          onChange={e => onValueChange(e.target.value)}
+          onChange={e => { onValueChange(e.target.value); console.log(e.target.value, value) }}
           firstOptionLabel={selectLabel} firstOptionValue={'0'}
           valueList={label?.includes('Aggregator') ? data?.map(data => data?.id) : data?.map(data => data?.userId)}
           labelList={label?.includes('Aggregator') ? data?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`) : data?.map(data => data?.title?.title)}

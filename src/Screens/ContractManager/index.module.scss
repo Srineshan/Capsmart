@@ -391,8 +391,10 @@ body::-webkit-scrollbar {
 }
 
 .addMoreButton {
-    color: rgba(143, 153, 168, 0.5);
-    background-color: #f1f2f3;
+    // color: rgba(143, 153, 168, 0.5);
+    // background-color: #f1f2f3;
+    color: white !important;
+    background-color: #7165E3;
     height: 32px;
     width: 130px;
     border: none;

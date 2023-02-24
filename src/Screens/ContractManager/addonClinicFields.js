@@ -19,6 +19,7 @@ import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 
 import style from './index.module.scss';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected }) => {
   console.log('locationItems', locationItems);
@@ -427,7 +428,20 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                 <CommonSwitch label={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={() => handleRequestApprovalChange(service)} checked={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired} />
               </div>
               {metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired &&
-                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], service) }} value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]} />
+                // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], service) }} value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]} />
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <CommonLabel value={'Designate Request Approver*'} />
+                  <div className={style.fullWidth}>
+                    <CommonSelectField className={`${style.fullWidth} `}
+                      defaultValue={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]}
+                      value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0] ? metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0] : '0'}
+                      onChange={(e) => { onApproverSelected(users?.filter(data => data?.userId === e.target.value)?.map(data => data)[0], service) }}
+                      firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
+                      valueList={users?.map(data => data?.userId)}
+                      labelList={users?.map(data => data?.title?.title)}
+                      disabledList={users?.map(data => false)} />
+                  </div>
+                </div>
               }
               {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
@@ -532,11 +546,37 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                         </div>
                         {
                           data?.activityResponse?.dataMap?.additionalDetails?.includes('Prior Pre-Authorization Required') && details === 'Prior Pre-Authorization Required' &&
-                          <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.approver?.userId} />
+                          // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.approver?.userId} />
+                          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                            <CommonLabel value={'Designate Request Approver*'} />
+                            <div className={style.fullWidth}>
+                              <CommonSelectField className={`${style.fullWidth} `}
+                                defaultValue={data?.approver?.userId}
+                                value={data?.approver?.userId ? data?.approver?.userId : '0'}
+                                onChange={(e) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.userId === e.target.value)?.map(user => user)[0]) }}
+                                firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
+                                valueList={users?.map(data => data?.userId)}
+                                labelList={users?.map(data => data?.title?.title)}
+                                disabledList={users?.map(data => false)} />
+                            </div>
+                          </div>
                         }
                         {
                           data?.activityResponse?.dataMap?.additionalDetails?.includes('Administrative Approval For Payment Required') && details === 'Administrative Approval For Payment Required' &&
-                          <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.paymentApprover?.userId} />
+                          // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.paymentApprover?.userId} />
+                          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                            <CommonLabel value={'Designate Payment Approver*'} />
+                            <div className={style.fullWidth}>
+                              <CommonSelectField className={`${style.fullWidth} `}
+                                defaultValue={data?.paymentApprover?.userId}
+                                value={data?.paymentApprover?.userId ? data?.paymentApprover?.userId : '0'}
+                                onChange={(e) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.userId === e.target.value)?.map(user => user)[0]) }}
+                                firstOptionLabel={'Select Payment Approver'} firstOptionValue={'0'}
+                                valueList={users?.map(data => data?.userId)}
+                                labelList={users?.map(data => data?.title?.title)}
+                                disabledList={users?.map(data => false)} />
+                            </div>
+                          </div>
                         }
                       </>
                     ))
@@ -578,7 +618,20 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                 <CommonSwitch label={data?.activityApprovalWFRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={data?.activityApprovalWFRequired} onChange={() => handleRequestApprovalChange(data?.performingActivity)} />
               </div>
               {data?.activityApprovalWFRequired &&
-                <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], data?.performingActivity) }} value={metadata?.[0]?.approver?.userId} />
+                // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], data?.performingActivity) }} value={metadata?.[0]?.approver?.userId} />
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <CommonLabel value={'Designate Request Approver*'} />
+                  <div className={style.fullWidth}>
+                    <CommonSelectField className={`${style.fullWidth} `}
+                      defaultValue={metadata?.[0]?.approver?.userId}
+                      value={metadata?.[0]?.approver?.userId ? metadata?.[0]?.approver?.userId : '0'}
+                      onChange={(e) => { onApproverSelected(users?.filter(data => data?.userId === e.target.value)?.map(data => data)[0], data?.performingActivity) }}
+                      firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
+                      valueList={users?.map(data => data?.userId)}
+                      labelList={users?.map(data => data?.title?.title)}
+                      disabledList={users?.map(data => false)} />
+                  </div>
+                </div>
               }
               {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
@@ -695,11 +748,39 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                     </div>
                     {
                       newServices?.additionalDetails?.includes('Prior Pre-Authorization Required') && data === 'Prior Pre-Authorization Required' &&
-                      <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
+                      // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
+                      <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <CommonLabel value={'Designate Request Approver*'} />
+                        <div className={style.fullWidth} key={index}>
+                          <CommonSelectField className={`${style.fullWidth} `}
+                            defaultValue={newServices?.approver}
+                            value={newServices?.approver ? newServices?.approver : '0'}
+                            onChange={(e) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.userId === e.target.value)?.map(data => data)[0] }) }}
+                            firstOptionLabel={'Select Approver'}
+                            firstOptionValue={'0'}
+                            valueList={users?.map(data => data?.userId)}
+                            labelList={users?.map(data => data?.title?.title)}
+                            disabledList={users?.map(data => false)} />
+                        </div>
+                      </div>
                     }
                     {
                       newServices?.additionalDetails?.includes('Administrative Approval For Payment Required') && data === 'Administrative Approval For Payment Required' &&
-                      <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
+                      // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
+                      <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <CommonLabel value={'Designate Payment Approver*'} />
+                        <div className={style.fullWidth} key={index}>
+                          <CommonSelectField className={`${style.fullWidth} `}
+                            defaultValue={newServices?.paymentApprover}
+                            value={newServices?.paymentApprover ? newServices?.paymentApprover : '0'}
+                            onChange={(e) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.userId === e.target.value)?.map(data => data)[0] }) }}
+                            firstOptionLabel={'Select Payment Approver'}
+                            firstOptionValue={'0'}
+                            valueList={users?.map(data => data?.userId)}
+                            labelList={users?.map(data => data?.title?.title)}
+                            disabledList={users?.map(data => false)} />
+                        </div>
+                      </div>
                     }
                   </>
                 ))

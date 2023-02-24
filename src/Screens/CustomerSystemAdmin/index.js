@@ -19,7 +19,7 @@ const Home = () => {
     const [userMetadata, setUserMetadata] = useState([]);
     const [viewAlerts, setViewAlerts] = useState(true);
     const [selectedOption, setSelectedOption] = useState('');
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
     let selectedOptionValue = sessionStorage.getItem('selectedOption');
 
     useEffect(() => {
