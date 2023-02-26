@@ -132,14 +132,14 @@ const TerminationReasonForCustomer = () => {
             selectedSubReasons.some((customerData) => customerData === data)
           )?.length === 1
       ) {
-        console.log(
-          selectedTerminationReasons
-            ?.filter((data) => data?.id === innerData?.id)?.[0]
-            ?.secondary_reasons?.filter((data) =>
-              selectedSubReasons.some((customerData) => customerData === data)
-            )?.length === 1
-        );
-        console.log("removed");
+        // console.log(
+        //   selectedTerminationReasons
+        //     ?.filter((data) => data?.id === innerData?.id)?.[0]
+        //     ?.secondary_reasons?.filter((data) =>
+        //       selectedSubReasons.some((customerData) => customerData === data)
+        //     )?.length === 1
+        // );
+        // console.log("removed");
         setSelectedTerminationReasons(
           selectedTerminationReasons
             ?.filter((data) => data?.id !== innerData?.id)
@@ -166,10 +166,10 @@ const TerminationReasonForCustomer = () => {
       entityId: { id: TenantID },
     }));
 
-    console.log(
-      selectedSecondaryReasonListPerTerminationReasons,
-      changedReasons
-    );
+    // console.log(
+    //   selectedSecondaryReasonListPerTerminationReasons,
+    //   changedReasons
+    // );
 
     if (selectedTerminationReasons?.length !== 0) {
       await POST("entity-service/terminationReason", JSON.stringify(data))
@@ -212,11 +212,11 @@ const TerminationReasonForCustomer = () => {
         ?.map((data) => data);
     temp.secondary_reasons = selectedSecondaryReasonListPerTerminationReasons;
     temp.entityId = { id: TenantID };
-    console.log(
-      selectedData,
-      temp,
-      selectedSecondaryReasonListPerTerminationReasons
-    );
+    // console.log(
+    //   selectedData,
+    //   temp,
+    //   selectedSecondaryReasonListPerTerminationReasons
+    // );
     await PUT(
       `entity-service/terminationReason/${selectedData?.id}`,
       JSON.stringify(temp)
@@ -231,7 +231,7 @@ const TerminationReasonForCustomer = () => {
       });
   };
 
-  console.log(selectedTerminationReasons, selectedSubReasons);
+  // console.log(selectedTerminationReasons, selectedSubReasons);
 
   return (
     <Fragment>
@@ -347,7 +347,7 @@ const TerminationReasonForCustomer = () => {
                                             className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                           />
                                           <p
-                                            className={`${style.TextStyle5} ${style.marginLeft5}`}
+                                            className={`${style.tableDataFontStyle} ${style.marginLeft5}`}
                                           >
                                             {data?.primary_reason}
                                           </p>
@@ -374,7 +374,7 @@ const TerminationReasonForCustomer = () => {
                                                 }
                                               />
                                               <p
-                                                className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                                className={`${style.tableDataFontStyle} ${style.marginLeft5}`}
                                               >
                                                 {subData}
                                               </p>
@@ -428,7 +428,7 @@ const TerminationReasonForCustomer = () => {
                                             className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                           />
                                           <p
-                                            className={`${style.TextStyle5} ${style.marginLeft5}`}
+                                            className={`${style.tableDataFontStyle} ${style.marginLeft5}`}
                                           >
                                             {data?.primary_reason}
                                           </p>
@@ -455,7 +455,7 @@ const TerminationReasonForCustomer = () => {
                                                 }
                                               />
                                               <p
-                                                className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                                className={`${style.tableDataFontStyle} ${style.marginLeft5}`}
                                               >
                                                 {subData}
                                               </p>
@@ -505,14 +505,7 @@ const TerminationReasonForCustomer = () => {
                         ></img>
                       </div>
                       <div className={style.customersAdminCardStyle3}>
-                        {/* <p className={style.holidayScheduleCardtextStyle1}>
-                          if you would like to setup your custom list for your
-                          site(s) you can select from the default list on the
-                          left, edit to change labels as needed, and also add
-                          new departments/ service area by clicking on the add
-                          icon
-                        </p> */}
-                        {
+                        {terminationReason?.length !== 0 ? (
                           entityTypes?.map((data, index) => (
                             <div key={index}>
                               <div>
@@ -547,36 +540,45 @@ const TerminationReasonForCustomer = () => {
                                 </div>
                                 {selectedIndex === index && (
                                   <>
-                                    <div
-                                      className={
-                                        style.customListHeaderTermiantionLevel2
-                                      }
-                                    >
-                                      <img
-                                        src={IndustriesEntityFolder}
-                                        alt="IndustriesEntityFolder"
-                                        className={`${style.colorFileStyle} ${style.marginLeft10}`}
-                                      />
-                                      <p
+                                    {/* Contrator */}
+
+                                    {terminationReason?.filter(
+                                      (data) =>
+                                        data.terminationBy === "CONTRACTOR"
+                                    ).length !== 0 ? (
+                                      <div
                                         className={
-                                          style.tableHeaderIndustriesFontStyle
+                                          style.customListHeaderTermiantionLevel2
                                         }
                                       >
-                                        FOR CAUSE BY CONTRACTOR
-                                      </p>
-                                      <img
-                                        src={
-                                          selectedCause === "Contractor"
-                                            ? CloseFolderBlue
-                                            : OpenFolderBlue
-                                        }
-                                        alt="OpenFolder"
-                                        className={`${style.colorFileStyle2}`}
-                                        onClick={() =>
-                                          setSelectedCause("Contractor")
-                                        }
-                                      />
-                                    </div>
+                                        <img
+                                          src={IndustriesEntityFolder}
+                                          alt="IndustriesEntityFolder"
+                                          className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                                        />
+                                        <p
+                                          className={
+                                            style.tableHeaderIndustriesFontStyle
+                                          }
+                                        >
+                                          FOR CAUSE BY CONTRACTOR
+                                        </p>
+                                        <img
+                                          src={
+                                            selectedCause === "Contractor"
+                                              ? CloseFolderBlue
+                                              : OpenFolderBlue
+                                          }
+                                          alt="OpenFolder"
+                                          className={`${style.colorFileStyle2}`}
+                                          onClick={() =>
+                                            setSelectedCause("Contractor")
+                                          }
+                                        />
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
                                     {selectedCause === "Contractor" &&
                                       terminationReason
                                         ?.filter(
@@ -671,36 +673,45 @@ const TerminationReasonForCustomer = () => {
                                             )}
                                           </div>
                                         ))}
-                                    <div
-                                      className={
-                                        style.customListHeaderTermiantionLevel2
-                                      }
-                                    >
-                                      <img
-                                        src={IndustriesEntityFolder}
-                                        alt="IndustriesEntityFolder"
-                                        className={`${style.colorFileStyle} ${style.marginLeft10}`}
-                                      />
-                                      <p
+
+                                    {/* //Entity */}
+                                    {terminationReason?.filter(
+                                      (data) => data.terminationBy === "ENTITY"
+                                    ).length !== 0 ? (
+                                      <div
                                         className={
-                                          style.tableHeaderIndustriesFontStyle
+                                          style.customListHeaderTermiantionLevel2
                                         }
                                       >
-                                        FOR CAUSE BY ENTITY
-                                      </p>
-                                      <img
-                                        src={
-                                          selectedCause === "Entity"
-                                            ? CloseFolderBlue
-                                            : OpenFolderBlue
-                                        }
-                                        alt="OpenFolder"
-                                        className={`${style.colorFileStyle2}`}
-                                        onClick={() =>
-                                          setSelectedCause("Entity")
-                                        }
-                                      />
-                                    </div>
+                                        <img
+                                          src={IndustriesEntityFolder}
+                                          alt="IndustriesEntityFolder"
+                                          className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                                        />
+                                        <p
+                                          className={
+                                            style.tableHeaderIndustriesFontStyle
+                                          }
+                                        >
+                                          FOR CAUSE BY ENTITY
+                                        </p>
+                                        <img
+                                          src={
+                                            selectedCause === "Entity"
+                                              ? CloseFolderBlue
+                                              : OpenFolderBlue
+                                          }
+                                          alt="OpenFolder"
+                                          className={`${style.colorFileStyle2}`}
+                                          onClick={() =>
+                                            setSelectedCause("Entity")
+                                          }
+                                        />
+                                      </div>
+                                    ) : (
+                                      <></>
+                                    )}
+
                                     {selectedCause === "Entity" &&
                                       terminationReason
                                         ?.filter(
@@ -798,16 +809,15 @@ const TerminationReasonForCustomer = () => {
                               </div>
                             </div>
                           ))
-                          // ) : (
-                          //   <p className={style.holidayScheduleCardtextStyle1}>
-                          //     if you would like to setup your custom list for your
-                          //     site(s) you can select from the default list on the
-                          //     left, edit to change labels as needed, and also add
-                          //     new departments/ service area by clicking on the add
-                          //     icon
-                          //   </p>
-                          // )
-                        }
+                        ) : (
+                          <p className={style.holidayScheduleCardtextStyle1}>
+                            if you would like to setup your custom list for your
+                            site(s) you can select from the default list on the
+                            left, edit to change labels as needed, and also add
+                            new departments/ service area by clicking on the add
+                            icon
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
