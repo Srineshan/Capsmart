@@ -11,6 +11,7 @@ import Table from '../../Components/TableDesign';
 import { validateTabs } from './contractValidation';
 import style from './index.module.scss';
 import AddServiceProvided from './addServiceToBeProvided';
+import { CLINIC, SURGERY, ONCALL, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING } from '../../Constants';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 
 const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPage, selectContractInfo, isMultiSiteEntity, isEditable, getTabDataStatus }) => {
@@ -25,7 +26,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [userLength, setUserLength] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [servicesValid, setServicesValid] = useState([]);
-  let tableHeaderValues = ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
+  let tableHeaderValues = selectContractInfo === 'INDIVIDUAL' ? ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'BILLABLE', ''] : ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
 
   useEffect(() => {
     getContractedServices();
@@ -114,7 +115,6 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const getDataStatus = () => {
     let tabsValid = validateTabs(contractId);
     tabsValid?.then(response => {
-      console.log('inside', response);
       setServicesValid(response?.value4);
     })
   }
@@ -130,17 +130,34 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     deleteIcon = [];
 
     contractedServices?.map((data, index) => {
+      let billableValue = data?.billableService;
+      if (data?.activityTypeTemplate?.activityTypeTemplate === ADMINISTRATIVE) {
+        data?.activityResponse?.dataMap?.adminActivities?.map(item => {
+          if (item?.billable) {
+            billableValue = true;
+          }
+        })
+      } else {
+        billableValue = data?.billableService;
+      }
       dataStatus.push(servicesValid?.[index]?.length === 0 ? <TaskAltOutlinedIcon style={{ color: "#14B15A" }} /> : <WarningAmberIcon style={{ color: "#FF6562" }} />);
       activityType.push(data?.activityType?.activityType);
       specificActivity.push(data?.activities?.length > 1 ? `${data?.activities?.[0]?.activity}...` : data?.activities?.[0]?.activity || '-');
       specificActivityHoverText.push(data?.activities?.map(data => data?.activity) || '-');
       appliesTo.push(data?.users?.[0]?.name?.firstName || '-');
       appliesToHoverText.push(data?.users?.map(user => user?.name?.firstName) || '-');
-      billable.push(data?.billableService ? 'YES' : 'NO');
+      billable.push(billableValue ? 'YES' : 'NO');
       deleteIcon.push(<CloseOutlinedIcon style={{ color: "#F94848" }} />);
     })
 
-    return [
+    return selectContractInfo === 'INDIVIDUAL' ? [
+      { "type": "icon", "icon": dataStatus },
+      { "type": "text", "value": activityType, "onClickFunction": onClickFunction },
+      { "type": "textWithHover", "value": specificActivity, "hoverText": specificActivityHoverText, "onClickFunction": onClickFunction },
+      // { "type": "textWithHover", "value": appliesTo, "hoverText": appliesToHoverText, "onClickFunction": onClickFunction },
+      { "type": "text", "value": billable, "onClickFunction": onClickFunction },
+      { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+    ] : [
       { "type": "icon", "icon": dataStatus },
       { "type": "text", "value": activityType, "onClickFunction": onClickFunction },
       { "type": "textWithHover", "value": specificActivity, "hoverText": specificActivityHoverText, "onClickFunction": onClickFunction },
@@ -154,7 +171,6 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
 
-  console.log('editable', isEditable, typeof isEditable);
   return (
     <>
       {userLength !== 0 ? (
@@ -183,15 +199,15 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
                 tableHeaderValues={tableHeaderValues}
                 tableDataValues={getServiceProviderValues()}
                 tableData={contractedServices}
-                gridStyle={style.serviceSpecificationGrid}
+                gridStyle={selectContractInfo === 'INDIVIDUAL' ? style.serviceSpecificationGridIndividual : style.serviceSpecificationGrid}
               />
             </div>
           </div>
           {isEditable &&
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-              <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contractor Business Entity') }}>BACK</button>
+              <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contractor Business Entity') }}>BACK</button>
               <div>
-                <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { getViewPage6(true); getCurrentPage('Timesheet Submission Terms'); }}>CONTINUE</button>
+                <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { getViewPage6(true); getCurrentPage('Timesheet Submission Terms'); }}>CONTINUE</button>
               </div>
             </div>
           }

@@ -649,10 +649,10 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       {
         isEditable &&
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-          <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contracted Services Specification') }}>BACK</button>
+          <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contracted Services Specification') }}>BACK</button>
           <div>
-            <button className={`${style.newContractOutlinedButton} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleContinue('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
-            <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { handleContinue('Continue') } : {}}>CONTINUE</button>
+            <button className={`${style.newContractOutlinedButton}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleContinue('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
+            <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { handleContinue('Continue') } : {}}>CONTINUE</button>
           </div>
         </div>
       }

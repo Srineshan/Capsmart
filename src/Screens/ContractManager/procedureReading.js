@@ -173,7 +173,6 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
             resetMetadata();
             getIsReset(false);
         }
-        resetMetadata();
 
     }, [isReset])
 

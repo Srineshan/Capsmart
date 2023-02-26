@@ -2016,6 +2016,13 @@ input[type=number] {
     padding-left: 10px;
 }
 
+.serviceSpecificationGridIndividual {
+    display: grid;
+    grid-template-columns: 8% 30% 25% 20% 8%;
+    grid-gap: 10px;
+    padding-left: 10px;
+}
+
 .calculatorDisplayStyle {
     position: absolute;
     right: 20px;
