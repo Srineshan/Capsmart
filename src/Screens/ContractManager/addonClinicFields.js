@@ -61,7 +61,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       resetMetadata();
       getIsReset(false);
     }
-    resetMetadata();
   }, [isReset])
 
   useEffect(() => {
@@ -530,11 +529,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                     <CommonSwitch label={data?.locationSpecified ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={data?.locationSpecified} onChange={() => switchShowLocation(data?.performingActivity)} />
                     {
                       data?.locationSpecified &&
-                      <div className={`${style.addGrid} ${style.fullWidth}`}>
+                      <div className={`${style.fullWidth}`}>
                         <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
-                        <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                          <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
-                        </div>
                       </div>
                     }
 
@@ -731,11 +727,11 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                 <CommonSwitch label={newServices?.showLocation ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={newServices?.showLocation} onChange={e => handleNewServiceChange('showLocation', !newServices?.showLocation)} />
                 {
                   newServices?.showLocation &&
-                  <div className={`${style.addGrid} ${style.fullWidth}`}>
+                  <div className={` ${style.fullWidth}`}>
                     <DatalistInput items={locationItems || []} onSelect={handleNewServiceLocation} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} clearInputOnSelect={true} />
-                    <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                    {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                       <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
-                    </div>
+                    </div> */}
                   </div>
                 }
               </div>
@@ -766,7 +762,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                         <div className={style.fullWidth} key={index}>
                           <CommonSelectField className={`${style.fullWidth} `}
                             defaultValue={newServices?.approver}
-                            value={newServices?.approver ? newServices?.approver : '0'}
+                            value={newServices?.approver ? newServices?.approver?.userId : '0'}
                             onChange={(e) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.userId === e.target.value)?.map(data => data)[0] }) }}
                             firstOptionLabel={'Select Approver'}
                             firstOptionValue={'0'}
@@ -784,7 +780,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                         <div className={style.fullWidth} key={index}>
                           <CommonSelectField className={`${style.fullWidth} `}
                             defaultValue={newServices?.paymentApprover}
-                            value={newServices?.paymentApprover ? newServices?.paymentApprover : '0'}
+                            value={newServices?.paymentApprover ? newServices?.paymentApprover?.userId : '0'}
                             onChange={(e) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.userId === e.target.value)?.map(data => data)[0] }) }}
                             firstOptionLabel={'Select Payment Approver'}
                             firstOptionValue={'0'}

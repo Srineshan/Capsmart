@@ -71,7 +71,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             resetMetadata();
             getIsReset(false);
         }
-        resetMetadata();
     }, [isReset])
 
     useEffect(() => {

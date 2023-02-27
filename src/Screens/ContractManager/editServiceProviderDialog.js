@@ -624,7 +624,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
         </div>
         {isEditable &&
           <div className={`${style.floatRight} ${style.marginTop20}`}>
-            <button className={`${style.buttonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { handleSave(); } : {}}>SAVE & EXIT</button>
+            <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { handleSave(); } : {}}>SAVE & EXIT</button>
           </div>
         }
 

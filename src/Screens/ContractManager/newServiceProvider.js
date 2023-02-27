@@ -615,8 +615,8 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
         </div>
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
-            <button className={`${style.buttonStyle} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleSave('Add More') : {}}>ADD MORE</button>
-            <button className={`${style.buttonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleSave('Save & Exit') : {}}>SAVE & EXIT</button>
+            <button className={`${style.buttonStyle}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleSave('Add More') : {}}>ADD MORE</button>
+            <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleSave('Save & Exit') : {}}>SAVE & EXIT</button>
           </div>
         </div>
       </div>

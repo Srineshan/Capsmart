@@ -94,8 +94,6 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             resetMetadata();
             getIsReset(false);
         }
-        resetMetadata();
-
     }, [isReset])
 
     const resetMetadata = () => {

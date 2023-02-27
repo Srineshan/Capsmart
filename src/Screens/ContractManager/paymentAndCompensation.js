@@ -93,7 +93,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     };
 
     useEffect(() => {
-        setCompensation(paymentAndCompensation?.compensationBasis);
+        setCompensation(paymentAndCompensation?.compensationBasis || 'RVUBASED');
         setRvuQuantity(paymentAndCompensation?.rvuQuantity);
         setFrequency(paymentAndCompensation?.frequency);
         setFteEquivalent(paymentAndCompensation?.fteEquivalent);
@@ -112,8 +112,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     useEffect(() => {
         setTimesheetPaymentsValue()
     }, [timeSheetTabs?.length, timesheetPayments?.length])
-
-    console.log('timesheet tabs', timeSheetTabs);
 
     const setTimesheetPaymentsValue = () => {
         if (timeSheetTabs?.length && timesheetPayments?.length === 0) {
@@ -171,9 +169,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                         <CommonLabel value='Timesheet Name*' />
                         <CommonInputField className={style.fullWidth} value={timesheetPayments?.[i]?.timesheetLabel?.label || ''} readOnly={true} />
                     </div>
-                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                        <CommonLabel value='Payment Processing Criteria*' />
-                        {/* <FormControl size="small">
+                    {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Payment Processing Criteria*' /> */}
+                    {/* <FormControl size="small">
                             <Select
                                 labelId="demo-select-small"
                                 id="demo-select-small"
@@ -193,14 +191,14 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <MenuItem value={'YEAR'}>Per Year</MenuItem> 
                             </Select>
                         </FormControl> */}
-                        <CommonSelectField
+                    {/* <CommonSelectField
                             value={timesheetPayments?.[i]?.paymentFrequency || ''}
                             // onChange={(e) => updateTimesheetPayment(e.target.value, 'paymentFrequency', i)}
                             firstOptionLabel={''} firstOptionValue={''}
                             valueList={['ENDOFMONTH', 'ENDOFEVERYWEEK', 'EVERY2WEEKS', 'EVERY4WEEKS', 'ONDAYOFSERVICE']}
                             labelList={['End of the month', 'End of Every Week', 'Every 2 Weeks', 'Every 4 Weeks', 'On Day of Service']}
                             disabledList={[false, false, false, false, false]} />
-                    </div>
+                    </div> */}
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Payment Based On Fixed Hours Vs Actual *' />
                         <div className={`${style.displayInRow}  ${style.verticalAlignCenter}`}>
@@ -447,10 +445,10 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                         </div>
                         {isEditable &&
                             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                                <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Timesheet Submission Terms') }}>BACK</button>
+                                <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Timesheet Submission Terms') }}>BACK</button>
                                 <div>
-                                    <button className={`${style.newContractOutlinedButton} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleContinue('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
-                                    <button className={`${style.newContractButtonStyle} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
+                                    <button className={`${style.newContractOutlinedButton}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleContinue('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
                                         onClick={!continueLoading ? () => { handleContinue('Continue'); getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') } : {}}
                                     >CONTINUE</button>
                                 </div>

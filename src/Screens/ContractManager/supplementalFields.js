@@ -139,7 +139,6 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             resetMetadata();
             getIsReset(false);
         }
-        resetMetadata();
 
     }, [isReset])
 
