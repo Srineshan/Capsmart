@@ -497,7 +497,7 @@ const TerminationReasonForCustomer = () => {
                         <img
                           src={AddNewEntity}
                           ALT="SelectArrow"
-                          className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          className={`${style.colorFileStyle} ${style.marginLeft70} `}
                           onClick={() => {
                             getAddEntityDialog(true);
                             setIsEdit(false);

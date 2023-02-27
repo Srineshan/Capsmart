@@ -336,7 +336,7 @@ const AbsenceReasonsForCustomer = () => {
                           <img
                             src={AddNewEntity}
                             alt="AddNewEntity"
-                            className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                            className={`${style.colorFileStyle} ${style.marginLeft70} `}
                           />
                         </div>
                       </div>

@@ -25,6 +25,7 @@ import AddNewDepartments from "./addNewDepartments";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 
 const DepartmentsForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -300,7 +301,7 @@ const DepartmentsForCustomers = () => {
                         <img
                           src={AddNewEntity}
                           alt="OpenFolder"
-                          className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          className={`${style.colorFileStyle} ${style.marginLeft70} `}
                           onClick={() => {
                             getAddEntityDialog(true);
                             setIsEdit(false);

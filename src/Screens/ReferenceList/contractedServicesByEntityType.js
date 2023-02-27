@@ -230,7 +230,7 @@ const ContractServicesByEntityType = () => {
                         </p>
                         <img
                           src={AddNewEntity}
-                          className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          className={`${style.colorFileStyle} ${style.marginLeft70} `}
                           onClick={() => {
                             getAddContractedServicesDialog(true);
                             setIsEdit(false);

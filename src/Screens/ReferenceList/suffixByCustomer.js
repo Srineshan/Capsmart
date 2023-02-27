@@ -271,7 +271,7 @@ const SuffixByCustomer = () => {
                         <img
                           src={AddNewEntity}
                           alt=""
-                          className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          className={`${style.colorFileStyle} ${style.marginLeft70} `}
                           onClick={() => {
                             setAddEditDialog(true);
                           }}

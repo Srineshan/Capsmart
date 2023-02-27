@@ -323,7 +323,7 @@ const FunctionalTitleForCustomer = () => {
                         <img
                           src={AddNewEntity}
                           alt={"AddNewEntity"}
-                          className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          className={`${style.colorFileStyle} ${style.marginLeft70} `}
                           onClick={() => {
                             getAddFunctionalTitlesDialog(true);
                             setIsEdit(false);

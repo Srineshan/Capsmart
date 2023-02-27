@@ -215,6 +215,7 @@ const ContractServiceProviderBySite = () => {
                             >
                               <img
                                 src={IndustriesEntityFolder}
+                                alt=""
                                 className={`${style.colorFileStyle} ${style.marginLeft5}`}
                               />
                               <p
@@ -285,6 +286,7 @@ const ContractServiceProviderBySite = () => {
                       </p>
                       <img
                         src={SelectArrow}
+                        alt=""
                         className={`${style.colorFileStyle4}`}
                         onClick={() => {
                           handlePostContractedServiceProvider();
@@ -301,7 +303,8 @@ const ContractServiceProviderBySite = () => {
                         </p>
                         <img
                           src={AddNewEntity}
-                          className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          alt=""
+                          className={`${style.colorFileStyle} ${style.marginLeft70} `}
                           onClick={() => {
                             getAddContractedServiceDialog(true);
                             setIsEdit(false);
@@ -318,6 +321,7 @@ const ContractServiceProviderBySite = () => {
                                 >
                                   <img
                                     src={IndustriesEntityFolder}
+                                    alt=""
                                     className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                   />
                                   <p
@@ -353,6 +357,7 @@ const ContractServiceProviderBySite = () => {
                                         <div className={style.displayInRow}>
                                           <img
                                             src={EditBlue}
+                                            alt=""
                                             className={style.colorFileStyle}
                                             onClick={() => {
                                               setIsEdit(true);
@@ -366,6 +371,7 @@ const ContractServiceProviderBySite = () => {
                                           />
                                           <img
                                             src={DeleteHcRow}
+                                            alt=""
                                             className={`${style.colorFileStyle} ${style.marginLeft20}`}
                                             onClick={() =>
                                               handleDeleteContractedServiceProvider(
