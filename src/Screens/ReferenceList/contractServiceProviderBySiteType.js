@@ -18,6 +18,7 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteHcRow from "./../../images/deleteHcRow.png";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
 const ContractServiceProviderBySite = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -253,7 +254,7 @@ const ContractServiceProviderBySite = () => {
                                     className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                     key={index}
                                   >
-                                    <Checkbox
+                                    <CommonPurpleCheckBox
                                       checked={
                                         selectedContractedServiceProviders?.filter(
                                           (innerData) =>
@@ -268,7 +269,7 @@ const ContractServiceProviderBySite = () => {
                                       }
                                     />
                                     <p
-                                      className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                      className={`${style.TextStyle4} ${style.marginLeft10}`}
                                     >
                                       {data?.contractedServiceProviderType}
                                     </p>

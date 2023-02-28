@@ -26,6 +26,7 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
+import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
 const DepartmentsForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -245,27 +246,29 @@ const DepartmentsForCustomers = () => {
                                     )
                                 )
                                 ?.map((data, index) => (
-                                  <div
-                                    className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
-                                    key={index}
-                                  >
-                                    <Checkbox
-                                      checked={
-                                        selectedDepartmentServiceArea?.filter(
-                                          (innerData) =>
-                                            innerData?.id === data?.id
-                                        )?.length !== 0
-                                      }
-                                      onChange={(e) =>
-                                        handleSelectDepartmentService(e, data)
-                                      }
-                                    />
-                                    <p
-                                      className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                  <>
+                                    <div
+                                      className={`${style.customersAdminInnerRowsStyle1}  ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                      key={index}
                                     >
-                                      {data?.departmentGroupBy.name}
-                                    </p>
-                                  </div>
+                                      <CommonPurpleCheckBox
+                                        checked={
+                                          selectedDepartmentServiceArea?.filter(
+                                            (innerData) =>
+                                              innerData?.id === data?.id
+                                          )?.length !== 0
+                                        }
+                                        onChange={(e) =>
+                                          handleSelectDepartmentService(e, data)
+                                        }
+                                      />
+                                      <p
+                                        className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                      >
+                                        {data?.departmentGroupBy.name}
+                                      </p>
+                                    </div>
+                                  </>
                                 ))}
                           </>
                         ))}

@@ -18,12 +18,13 @@ import { DELETE, GET, POST, TenantID } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
 const FunctionalTitleForCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [showFunctionalTitlesDialog, setShowFunctionalTitleDialog] =
     useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const [entityDetails, setEntityDetails] = useState({});
   const [siteTypeId, setSiteTypeId] = useState("");
@@ -268,7 +269,7 @@ const FunctionalTitleForCustomer = () => {
                                       className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                       key={index}
                                     >
-                                      <Checkbox
+                                      <CommonPurpleCheckBox
                                         checked={
                                           selectedFunctionalTitlesCSPType?.filter(
                                             (innerData) =>

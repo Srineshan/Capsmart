@@ -19,6 +19,7 @@ import DeleteConfirmation from "../../Components/DeleteConfirmation";
 
 import style from "./index.module.scss";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
 const HolidayScheduleForCustomers = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -256,7 +257,7 @@ const HolidayScheduleForCustomers = () => {
                                       className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                       key={index}
                                     >
-                                      <Checkbox
+                                      <CommonPurpleCheckBox
                                         checked={
                                           selectedHolidayItems?.filter(
                                             (innerData) =>

@@ -18,6 +18,7 @@ import OpenFolderBlue from "./../../images/openFolderBlue.png";
 import AddSuffixEntity from "./addSuffixEntity";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
 const SuffixByCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -227,7 +228,7 @@ const SuffixByCustomer = () => {
                                   : `${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`
                               }
                             >
-                              <Checkbox
+                              <CommonPurpleCheckBox
                                 checked={
                                   selectedSuffix?.filter(
                                     (innerData) => innerData?.id === data?.id
@@ -235,7 +236,9 @@ const SuffixByCustomer = () => {
                                 }
                                 onChange={(e) => handleSelectSuffix(e, data)}
                               />
-                              <p className={`${style.TextStyle4}`}>
+                              <p
+                                className={`${style.TextStyle4} ${style.marginLeft10}`}
+                              >
                                 {data?.suffix}
                               </p>
                             </div>

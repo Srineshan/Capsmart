@@ -19,6 +19,7 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import AddTerminationReasonsForCustomer from "./addTerminationReasonForCustomer";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
 const TerminationReasonForCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -358,7 +359,7 @@ const TerminationReasonForCustomer = () => {
                                               className={`${style.customersAdminInnerRowsStyle4} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                               key={subIndex}
                                             >
-                                              <Checkbox
+                                              <CommonPurpleCheckBox
                                                 checked={
                                                   selectedSubReasons?.filter(
                                                     (innerData) =>
@@ -439,7 +440,7 @@ const TerminationReasonForCustomer = () => {
                                               className={`${style.customersAdminInnerRowsStyle4} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                               key={subIndex}
                                             >
-                                              <Checkbox
+                                              <CommonPurpleCheckBox
                                                 checked={
                                                   selectedSubReasons?.filter(
                                                     (innerData) =>
