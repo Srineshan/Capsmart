@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import ArrowDown from "./../../images/arrowDown.png";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
 const AbsenceReasonsForCustomer = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -217,7 +218,7 @@ const AbsenceReasonsForCustomer = () => {
                                   }
                                   key={index}
                                 >
-                                  <Checkbox
+                                  <CommonPurpleCheckBox
                                     checked={
                                       selectedAbsenceReasons?.filter(
                                         (innerData) =>
@@ -228,6 +229,7 @@ const AbsenceReasonsForCustomer = () => {
                                       handleSelectAbsenceReasons(e, data)
                                     }
                                   />
+
                                   <p
                                     className={`${style.tableDataFontStyle2} ${style.marginRight5}`}
                                   >
@@ -281,7 +283,7 @@ const AbsenceReasonsForCustomer = () => {
                                   }
                                   key={index}
                                 >
-                                  <Checkbox
+                                  <CommonPurpleCheckBox
                                     checked={
                                       selectedAbsenceReasons?.filter(
                                         (innerData) =>
@@ -336,7 +338,7 @@ const AbsenceReasonsForCustomer = () => {
                           <img
                             src={AddNewEntity}
                             alt="AddNewEntity"
-                            className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                            className={`${style.colorFileStyle} ${style.marginLeft70} `}
                           />
                         </div>
                       </div>

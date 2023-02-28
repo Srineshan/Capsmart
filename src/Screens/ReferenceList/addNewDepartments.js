@@ -170,7 +170,8 @@ const AddNewDepartments = ({
       }),
     };
 
-    let ApiData = callingFrom === "Customer Admin" && !isEdit ? data : [data];
+    // let ApiData = callingFrom === "Customer Admin" && !isEdit ? data : [data];
+    let ApiData = callingFrom === "Customer Admin" ? [data] : data;
 
     let ApiUrl =
       callingFrom === "Super Admin"
@@ -190,6 +191,9 @@ const AddNewDepartments = ({
       getAddEntityDialog(false);
     } else {
       setDepartName("");
+      if (callingFrom === "Customer Admin") {
+        setSerrviceArea("");
+      }
       document.getElementById("departmentEl").focus();
     }
   };

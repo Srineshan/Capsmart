@@ -19,6 +19,7 @@ import DeleteHcRow from "./../../images/deleteHcRow.png";
 import AddContractedServices from "./addContractedServices";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 import { format } from "date-fns";
+import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
 const ContractServicesByEntityType = () => {
   const [contractedServiceTypeMaster, setContractedServiceTypeMaster] =
@@ -185,7 +186,7 @@ const ContractServicesByEntityType = () => {
                               className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
                               key={index}
                             >
-                              <Checkbox
+                              <CommonPurpleCheckBox
                                 checked={
                                   selectedContractedServiceTypes?.filter(
                                     (innerData) =>
@@ -214,6 +215,7 @@ const ContractServicesByEntityType = () => {
                       </p>
                       <img
                         src={SelectArrow}
+                        alt=""
                         className={`${style.colorFileStyle4}`}
                         onClick={() => {
                           handlePostContractedServiceType();
@@ -230,7 +232,8 @@ const ContractServicesByEntityType = () => {
                         </p>
                         <img
                           src={AddNewEntity}
-                          className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          alt=""
+                          className={`${style.colorFileStyle} ${style.marginLeft70} `}
                           onClick={() => {
                             getAddContractedServicesDialog(true);
                             setIsEdit(false);
@@ -250,6 +253,7 @@ const ContractServicesByEntityType = () => {
                               <div className={style.displayInRow}>
                                 <img
                                   src={EditBlue}
+                                  alt=""
                                   className={style.colorFileStyle}
                                   onClick={() => {
                                     setIsEdit(true);
@@ -259,6 +263,7 @@ const ContractServicesByEntityType = () => {
                                 />
                                 <img
                                   src={DeleteHcRow}
+                                  alt=""
                                   className={`${style.colorFileStyle} ${style.marginLeft20}`}
                                   onClick={() =>
                                     handleDeleteContractedServiceType(data?.id)

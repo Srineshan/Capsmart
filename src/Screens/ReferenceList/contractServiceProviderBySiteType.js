@@ -18,6 +18,7 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteHcRow from "./../../images/deleteHcRow.png";
 import { format } from "date-fns";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
 
 const ContractServiceProviderBySite = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -215,6 +216,7 @@ const ContractServiceProviderBySite = () => {
                             >
                               <img
                                 src={IndustriesEntityFolder}
+                                alt=""
                                 className={`${style.colorFileStyle} ${style.marginLeft5}`}
                               />
                               <p
@@ -252,7 +254,7 @@ const ContractServiceProviderBySite = () => {
                                     className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                     key={index}
                                   >
-                                    <Checkbox
+                                    <CommonPurpleCheckBox
                                       checked={
                                         selectedContractedServiceProviders?.filter(
                                           (innerData) =>
@@ -267,7 +269,7 @@ const ContractServiceProviderBySite = () => {
                                       }
                                     />
                                     <p
-                                      className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                      className={`${style.TextStyle4} ${style.marginLeft10}`}
                                     >
                                       {data?.contractedServiceProviderType}
                                     </p>
@@ -285,6 +287,7 @@ const ContractServiceProviderBySite = () => {
                       </p>
                       <img
                         src={SelectArrow}
+                        alt=""
                         className={`${style.colorFileStyle4}`}
                         onClick={() => {
                           handlePostContractedServiceProvider();
@@ -301,7 +304,8 @@ const ContractServiceProviderBySite = () => {
                         </p>
                         <img
                           src={AddNewEntity}
-                          className={`${style.colorFileStyle} ${style.marginLeft150} `}
+                          alt=""
+                          className={`${style.colorFileStyle} ${style.marginLeft70} `}
                           onClick={() => {
                             getAddContractedServiceDialog(true);
                             setIsEdit(false);
@@ -318,6 +322,7 @@ const ContractServiceProviderBySite = () => {
                                 >
                                   <img
                                     src={IndustriesEntityFolder}
+                                    alt=""
                                     className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                   />
                                   <p
@@ -353,6 +358,7 @@ const ContractServiceProviderBySite = () => {
                                         <div className={style.displayInRow}>
                                           <img
                                             src={EditBlue}
+                                            alt=""
                                             className={style.colorFileStyle}
                                             onClick={() => {
                                               setIsEdit(true);
@@ -366,6 +372,7 @@ const ContractServiceProviderBySite = () => {
                                           />
                                           <img
                                             src={DeleteHcRow}
+                                            alt=""
                                             className={`${style.colorFileStyle} ${style.marginLeft20}`}
                                             onClick={() =>
                                               handleDeleteContractedServiceProvider(
