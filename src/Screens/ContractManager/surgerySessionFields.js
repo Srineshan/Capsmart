@@ -181,7 +181,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 <CommonLabel value='Service Cases Target*' />
                 <div className={`${style.displayInRow}`}>
                     <CommonInputField value={metadata?.withNurse} disabled={metadata?.noTargetApplicable} className={` ${style.threeFieldWidth}`} onChange={(e) => { setpatientTarget(e.target.value) }} />
-                    <CommonCheckBox label="No Target Applicable" value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth} `} onChange={(e) => handleValueChange('noTargetApplicable', e.target.checked)} />
+                    <CommonCheckBox label="No Target Applicable" checked={metadata?.noTargetApplicable} value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth} `} onChange={(e) => { setMetadata({ ...metadata, noTargetApplicable: e.target.checked, withNurse: 0, withoutNurse: 0 }) }} />
                 </div>
             </div>
 
@@ -189,7 +189,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 <CommonLabel value='Additional Schedule*' />
                 <div className={style.grid3}>
                     <div className={`${style.fullWidth}`} >
-                        <CommonSwitch checked={metadata?.additionalScheduleRequired} label={metadata?.additionalScheduleRequired ? 'YES' : 'NO'} className={`${style.textAlignLeft} ${style.switchFontStyle} ${style.flexLeft}`} onChange={(e) => setMetadata({ ...metadata, additionalScheduleRequired: !metadata?.additionalScheduleRequired, additionalScheduleValue: '0', additionalScheduleFrequency: '' })} />
+                        <CommonSwitch checked={metadata?.additionalScheduleRequired} label={metadata?.additionalScheduleRequired ? 'YES' : 'NO'} className={`${style.textAlignLeft} ${style.switchFontStyle} ${style.flexLeft}`} onChange={(e) => setMetadata({ ...metadata, additionalScheduleRequired: !metadata?.additionalScheduleRequired, additionalScheduleValue: '0', additionalScheduleFrequency: 'NA' })} />
                     </div>
                     {metadata?.additionalScheduleRequired &&
                         (
@@ -198,7 +198,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                     onChange={(e) => handleValueChange('additionalScheduleValue', e.target.value)}
                                     className={` ${style.fullWidth} ${style.marginLeft20}`} />
                                 <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
-                                    value={metadata?.additionalScheduleFrequency || ''}
+                                    value={metadata?.additionalScheduleFrequency || 'NA'}
                                     onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
                                     firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
                                     valueList={['WEEK', 'EVERY_OTHER_WEEK', 'MONTH', 'EVERY_OTHER_MONTH']}

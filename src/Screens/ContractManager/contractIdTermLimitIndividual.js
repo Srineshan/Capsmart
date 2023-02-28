@@ -52,18 +52,15 @@ const ContractIdTermLimitIndividual = (
     isEditable,
     getTabDataStatus,
   }) => {
-  const [contractAccessPrivilege, setContractAccessPrivilege] = useState(false);
   const [calendarStart, setCalendarStart] = useState(false);
   const [calendarEnd, setCalendarEnd] = useState(false);
   const [calendarEffective, setCalendarEffective] = useState(false);
   const [selectContractManager, setSelectContractManager] = useState();
   const [siteSpecific, setSiteSpecific] = useState(false);
-  const [selectedContract, setSelectedContract] = useState('Select...');
   const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('');
   const [item, setItem] = useState();
   const [contractData, setContractData] = useState();
   const [addNewManagerDialog, setAddNewManagerDialog] = useState(false);
-  const [priorContractItem, setPriorContractItem] = useState();
   const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
   const [fullyExecutedContractData, setFullyExecutedContractData] = useState(fileData);
   const [fileFieldData, setFileFieldData] = useState({ id: '', type: '', name: '', desc: '', fileName: '', file: null, filePath: '' });
@@ -75,9 +72,7 @@ const ContractIdTermLimitIndividual = (
   const [contractName, setContractName] = useState('');
   const [contractId, setContractId] = useState({ id: '', missing: false });
   const [contractPriorId, setContractPriorId] = useState({ id: '', na: false });
-  const [contractNA, setContractNA] = useState(false);
   const [user, setUsers] = useState([]);
-  const [selectedItem, setSelectedItem] = useState();
   const [sites, setSites] = useState();
   const [selectedSites, setSelectedSites] = useState([]);
   const [autoRenewal, setAutoRenewal] = useState({ renewalTerm: '0', allowableRenewalTerm: '0', calendar: 'WEEKS' });
@@ -85,8 +80,6 @@ const ContractIdTermLimitIndividual = (
   const [reminderFields, setReminderFields] = useState([]);
   const [documentFields, setDocumentFields] = useState([]);
   const [userName, setUserName] = useState('');
-  const [selectedRole, setSelectedRole] = useState('');
-  const [addFileClicked, setAddFileClicked] = useState(false);
   const [selectedDepartmentSites, setSelectedDepartmentSites] = useState([]);
   const [selectedSite, setSelectedSite] = useState('');
   const [createdContractId, setCreatedContractId] = useState(contractIdFromActive);
@@ -117,7 +110,6 @@ const ContractIdTermLimitIndividual = (
     getReminder();
   }, [renewalReminder])
 
-
   useEffect(() => {
     getReminder();
   }, [renewalReminder])
@@ -135,9 +127,10 @@ const ContractIdTermLimitIndividual = (
     setFileFields(fullyExecutedContractData);
   }, [fullyExecutedContractData])
 
+  console.log('manager', selectContractManager);
   useEffect(() => {
     setSelectContractManager(user?.filter(data => data?.id === contractData?.contractManager?.userID)?.map(data => data)[0] || undefined);
-  }, [user])
+  }, [user, contractData])
 
   useEffect(() => {
     if (departmentSpecific) {
@@ -166,7 +159,7 @@ const ContractIdTermLimitIndividual = (
       setSiteSpecific(contractDetail?.siteSpecificContract);
       setContractTimeCommitment(contractDetail?.timeCommitment || {});
       setFullyExecutedContract(contractDetail?.fullyExecutedContract);
-      setSelectContractManager(user?.filter(data => data?.id === contractDetail?.contractManager?.userID)?.map(data => data)[0] || undefined);
+      // setSelectContractManager(user?.filter(data => data?.id === contractDetail?.contractManager?.userID)?.map(data => data)[0] || undefined);
       setContractPriorId({ id: contractDetail?.priorContract?.id, na: contractDetail?.priorContract?.notApplicable });
       setContractTermPeriodFrom(contractDetail?.contractTerm?.startDate !== null ? new Date(contractDetail?.contractTerm?.startDate) : null);
       setContractTermPeriodTo(contractDetail?.contractTerm?.endDate !== null ? new Date(contractDetail?.contractTerm?.endDate) : null);
@@ -598,7 +591,7 @@ const ContractIdTermLimitIndividual = (
                 onChange={(e) => setUserName(e.target.value)}
                 className={style.selectAssignedContractFieldWidth}
                 maxLength={TEXTFIELDLEN}
-                value={contractData?.contractManager?.name?.firstName}
+                value={`${contractData?.contractManager?.name?.firstName || ''} ${contractData?.contractManager?.name?.lastName || ''}`}
                 onFocus={() => { checkFieldAndPopAlert(selectContractManager, 'Assigned Contract Manager') }} />
               {(!items?.map(data => data?.name?.firstName)?.includes(userName) && userName !== '') && (
                 <div className={`${style.addBoxDescription} ${style.marginTop}`}>

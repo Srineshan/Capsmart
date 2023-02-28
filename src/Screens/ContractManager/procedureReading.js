@@ -323,7 +323,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
 
     const onAdditionalScheduleChange = (value) => {
         if (!value) {
-            setMetadata({ ...metadata, additionalScheduleRequired: value, additionalScheduleValue: '0', additionalScheduleFrequency: '' })
+            setMetadata({ ...metadata, additionalScheduleRequired: value, additionalScheduleValue: '0', additionalScheduleFrequency: 'NA' })
         } else {
             setMetadata({ ...metadata, additionalScheduleRequired: value });
         }
@@ -618,7 +618,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                         <>
                             <CommonInputField value={metadata?.additionalScheduleValue} type="tel" maxLength="2" onChange={(e) => e.target.value >= 0 && handleValueChange('additionalScheduleValue', e.target.value)} className={` ${style.fullWidth}`} />
                             <CommonSelectField className={`${style.fullWidth}`}
-                                value={metadata?.additionalScheduleFrequency || ''}
+                                value={metadata?.additionalScheduleFrequency || 'NA'}
                                 onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
                                 valueList={['WEEK', 'EVERY_OTHER_WEEK', 'MONTH', 'EVERY_OTHER_MONTH']}

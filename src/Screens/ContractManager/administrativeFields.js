@@ -21,6 +21,7 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const AdministrativeFields = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset }) => {
     const [activity, setActivity] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [showAdminActivity, setShowAdminActivity] = useState(false);
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -168,6 +169,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const activityToAdd = async () => {
+        setIsLoading(true);
         if (adminActivity?.activity === '') {
             ErrorToaster('Administrative Service Name is Mandatory');
             return;
@@ -194,6 +196,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 ErrorToaster('Adding Activity To List Failed');
             })
         setAdminActivity({ ...adminActivity, activity: '' })
+        setIsLoading(false);
     }
 
     const selectedHours = (index) => {
@@ -386,7 +389,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     <div>
                         <div className={`${style.twoCol} ${style.marginTop20}`}>
                             <button className={`${style.outlinedButton} ${style.fullWidth}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
-                            <button className={`${style.buttonStyle} ${style.fullWidth}`} onClick={(e) => { submit() }}>SAVE</button>
+                            <button className={`${style.buttonStyle} ${style.fullWidth} ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
                         <br />
                     </div>
@@ -510,7 +513,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 </div>
             </div>
 
-        </div>
+        </div >
     )
 }
 

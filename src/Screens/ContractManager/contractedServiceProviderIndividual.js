@@ -420,7 +420,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     });
 
   const getRoles = async () => {
-    const { data: roles } = await GET('user-management-service/roles?roleType=APP');
+    let role = ['APP', 'APP_SYSTEM'];
+    const { data: roles } = await GET(`user-management-service/roles?roleType=${role}`);
     setRoles(roles);
     let temp = selectedRoles;
     if (!selectedRoles?.map(data => data?.roleName)?.includes('Activity Logger')) {

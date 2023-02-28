@@ -83,7 +83,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         billableService: true,
         rateType: 'HOURLY',
         totalSession: '0',
-        totalSessionFrequency: '',
+        totalSessionFrequency: 'NA',
         sessionAmount: '',
         sessionDuration: '0',
         workingTimeFrom: null,
@@ -112,7 +112,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             billableService: true,
             rateType: 'HOURLY',
             totalSession: '0',
-            totalSessionFrequency: '',
+            totalSessionFrequency: 'NA',
             sessionAmount: '',
             sessionDuration: '0',
             workingTimeFrom: null,
@@ -181,9 +181,9 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     const handleValueChange = (name, value) => {
         if (name === 'dedicatedHoursSpecified') {
             if (value) {
-                setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: '', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+                setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             } else {
-                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
             }
         }
         //  else if (name === 'dedicatedHoursActivityType') {
@@ -286,7 +286,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                 </div>
                                 <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                                     onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
-                                    value={metadata?.totalSessionFrequency || ''}
+                                    value={metadata?.totalSessionFrequency || 'NA'}
                                     firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
                                     valueList={['WEEK', 'MONTH', 'YEAR']}
                                     labelList={['Per Week', 'Per Month', 'Per Contract Year']}

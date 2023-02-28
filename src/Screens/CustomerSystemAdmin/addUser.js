@@ -69,7 +69,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     }, [selectedSites, sites, addUser]);
 
     const getFunctionalTitle = async () => {
-        await GET(`entity-service/functionalTitlesForCSPType?contractedServiceProviderTypeId=${selectedProvider}`)
+        await GET(`entity-service/functionalTitlesForCSPType`)
             .then(response => {
                 setFunctionalTitle(response?.data);
             })
@@ -96,7 +96,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     };
 
     const getRoles = async () => {
-        const { data: roles } = await GET('user-management-service/roles');
+        const { data: roles } = await GET('user-management-service/roles?roleType=APP_SYSTEM&roleType=SYSTEM');
         setRoles(roles?.filter(data => data?.roleName !== 'Activity Logger')?.map(data => data));
     };
 
