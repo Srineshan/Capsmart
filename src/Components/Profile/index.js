@@ -3,6 +3,7 @@ import Navbar from '../Navbar';
 import SideBar from '../Sidebar';
 import DoctorAnime from './../../images/doctorAnime.png';
 import TextField from '@mui/material/TextField';
+import { InputAdornment, IconButton } from "@material-ui/core";
 import Dropzone from "react-dropzone";
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
@@ -10,6 +11,8 @@ import Papa from 'papaparse';
 import { GET, POST, PUT } from '../../Screens/dataSaver';
 import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
 import { currentUser } from '../../utils/auth';
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
 import style from './index.module.scss';
 
@@ -33,6 +36,11 @@ const Profile = () => {
     const [profilePicToDisplay, setProfilePicToDisplay] = useState('');
     const currentUserDetails = currentUser();
     const [isNewProfilePic, setIsNewProfilePic] = useState(true);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [valuesUpdated, setValuesUpdated] = useState(false);
+
     const getIsExpanded = (value) => {
         setIsExpanded(value);
     }
@@ -49,7 +57,12 @@ const Profile = () => {
         })
         setUserToSend(user);
         setIsNewProfilePic(user?.profilePic?.file?.fileURL !== null ? false : true);
-    }, [user])
+    }, [user]);
+
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
+    const handleClickShowNewPassword = () => setShowNewPassword(!showNewPassword);
+    const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+
 
     const changeHandler = (e) => {
         setProfilePicToDisplay(URL.createObjectURL(e.target.files[0]) || '');
@@ -59,9 +72,29 @@ const Profile = () => {
     };
 
     const getUser = async () => {
-        const { data: user } = await GET(`user-management-service/user/${currentUserDetails?.id}`);
-        setUser(user);
+        const { data: userData } = await GET(`user-management-service/user/${currentUserDetails?.id}`);
+        setUser(userData);
+        setUserToSend(userData);
     };
+
+    const putUserWithProfilePic = async () => {
+        const { data: userData } = await GET(`user-management-service/user/${currentUserDetails?.id}`);
+        console.log(JSON.stringify({
+            ...userData,
+            name: { ...userToSend.name, firstName: profile?.firstName, lastName: profile?.lastName }
+        }))
+        await PUT('user-management-service/user', JSON.stringify({
+            ...userData,
+            name: { ...userToSend.name, firstName: profile?.firstName, lastName: profile?.lastName }
+        }))
+            .then(response => {
+                SuccessToaster('User Modified Successfully');
+                setValuesUpdated(true);
+            })
+            .catch(error => {
+                ErrorToaster('Unexpected Error In Editing User');
+            })
+    }
 
     const updateProfileData = async () => {
         setUserToSend({
@@ -95,30 +128,34 @@ const Profile = () => {
                 await PUT('user-management-service/user/profilePic', formData)
                     .then(response => {
                         SuccessToaster('Profile Pic Updated Successfully');
+                        putUserWithProfilePic();
                     })
                     .catch(error => {
-                        ErrorToaster('Unexpected Error');
+                        ErrorToaster('Unexpected Error in Profile Pic Update');
                     })
             } else {
                 await POST('user-management-service/user/profilePic', formData)
                     .then(response => {
                         SuccessToaster('Profile Pic Updated Successfully');
+                        putUserWithProfilePic();
                     })
                     .catch(error => {
-                        ErrorToaster('Unexpected Error');
+                        ErrorToaster('Unexpected Error in Profile Pic Update');
                     })
             }
+        } else {
+            console.log(userToSend)
+            await PUT('user-management-service/user', JSON.stringify({
+                ...userToSend,
+                name: { ...userToSend.name, firstName: profile?.firstName, lastName: profile?.lastName }
+            }))
+                .then(response => {
+                    SuccessToaster('User Modified Successfully');
+                })
+                .catch(error => {
+                    ErrorToaster('Unexpected Error In Editing User');
+                })
         }
-        await PUT('user-management-service/user', JSON.stringify({
-            ...userToSend,
-            name: { ...userToSend.name, firstName: profile?.firstName, lastName: profile?.lastName }
-        }))
-            .then(response => {
-                SuccessToaster('User Modified Successfully');
-            })
-            .catch(error => {
-                ErrorToaster('Unexpected Error');
-            })
     }
 
     const validatePassword = (password) => {
@@ -143,7 +180,7 @@ const Profile = () => {
                             SuccessToaster('Password Changed Successfully');
                         })
                         .catch(error => {
-                            ErrorToaster('Unexpected Error');
+                            ErrorToaster('Error in changing password');
                         })
                 } else {
                     ErrorToaster('New Password and Confirm Password should be same');
@@ -152,7 +189,7 @@ const Profile = () => {
                 ErrorToaster('Password must contain at least 8 characters, one letter, one number, and one special character.');
             }
         } else {
-            ErrorToaster('Enter New and Confirm Password')
+            ErrorToaster('Enter Both New and Confirm Password')
         }
 
     }
@@ -165,7 +202,7 @@ const Profile = () => {
             <div className={style.margin20}>
                 <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
                     <div>
-                        <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+                        <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded} refetchUserValues={valuesUpdated}>
                             <div></div>
                         </SideBar>
                     </div>
@@ -211,7 +248,7 @@ const Profile = () => {
                         <div className={`${style.personalInformationGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.extentionLableStyle}>First Name</div>
-                                <TextField size="small" className={style.fullWidth} value={profile?.firstName} onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                                <TextField size="small" className={style.fullWidth} value={profile?.firstName} onChange={(e) => setProfile({ ...profile, firstName: e.target.value.slice(0, 25) })}
                                     inputProps={{
                                         style: {
                                             height: 15,
@@ -220,7 +257,7 @@ const Profile = () => {
                             </div>
                             <div className={style.marginLeft20}>
                                 <div className={style.extentionLableStyle}>Last Name</div>
-                                <TextField size="small" className={style.fullWidth} value={profile?.lastName} onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+                                <TextField size="small" className={style.fullWidth} value={profile?.lastName} onChange={(e) => setProfile({ ...profile, lastName: e.target.value.slice(0, 25) })}
                                     inputProps={{
                                         style: {
                                             height: 15,
@@ -232,7 +269,7 @@ const Profile = () => {
                             <div>
                                 <div className={style.extentionLableStyle}>Username</div>
                                 <TextField size="small" className={style.fullWidth} value={profile?.username}
-                                    // onChange={(e) => setProfile({ ...profile, username: e.target.value })}
+                                    onChange={(e) => setProfile({ ...profile, username: e.target.value })}
                                     inputProps={{
                                         style: {
                                             height: 15,
@@ -274,33 +311,70 @@ const Profile = () => {
                             <div>
                                 <div className={style.extentionLableStyle}>Current Password</div>
                                 <TextField size="small" className={style.fullWidth} value={profile?.password} onChange={(e) => setProfile({ ...profile, password: e.target.value })}
-                                    type="password"
+                                    type={showPassword ? 'text' : "password"}
                                     inputProps={{
                                         style: {
                                             height: 15,
                                         },
-                                    }} />
+                                    }}
+                                    InputProps={{ // <-- This is where the toggle button is added.
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                >
+                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
                             </div>
                         </div>
                         <div className={`${style.personalInformationGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.extentionLableStyle}>New Password</div>
                                 <TextField size="small" className={style.fullWidth} value={profile?.newPassword} onChange={(e) => { setProfile({ ...profile, newPassword: e.target.value }) }}
-                                    type="password"
+                                    type={showNewPassword ? 'text' : "password"}
                                     inputProps={{
                                         style: {
                                             height: 15,
                                         },
+                                    }}
+                                    InputProps={{ // <-- This is where the toggle button is added.
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowNewPassword}
+                                                >
+                                                    {showNewPassword ? <Visibility /> : <VisibilityOff />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
                                     }} />
                             </div>
                             <div className={style.marginLeft20}>
                                 <div className={style.extentionLableStyle}>Confirm Password</div>
                                 <TextField size="small" className={style.fullWidth} value={profile?.confirmPassword} onChange={(e) => { setProfile({ ...profile, confirmPassword: e.target.value }) }}
-                                    type="password"
+                                    type={showConfirmPassword ? 'text' : "password"}
                                     inputProps={{
                                         style: {
                                             height: 15,
                                         },
+                                    }}
+                                    InputProps={{ // <-- This is where the toggle button is added.
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowConfirmPassword}
+                                                >
+                                                    {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
                                     }} />
                             </div>
                             <div className={`${style.displayInColRev}`}>

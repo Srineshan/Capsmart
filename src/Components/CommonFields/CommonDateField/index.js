@@ -1,27 +1,27 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateInput } from '@blueprintjs/datetime';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { DateInput2 } from "@blueprintjs/datetime2";
+import { format, parse, parseISO } from "date-fns";
 import { jsDateFormatter } from './../../../utils/jsDateFormatter'
 
 const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, renderInput, minDate, maxDate }) => {
+
+    const dateFnsFormat = "MM/dd/yyyy";
+    const formatDate = useCallback((date) => format(date, dateFnsFormat), []);
+    const parseDate = useCallback((date) => parse(date, dateFnsFormat), []);
+    console.log(value, minDate, maxDate)
     return (
-        // <DateInput
-        //     {...jsDateFormatter}
+        // <DateInput2
+        //     formatDate={formatDate}
         //     onChange={onChange}
-        //     value={value}
-        // />
-        // <DateInput
-        //     {...jsDateFormatter}
-        //     onChange={onChange}
-        //     placeholder="M/D/YYYY"
-        //     value={value}
-        //     minDate={minDate}
-        //     maxDate={maxDate}
+        //     placeholder={dateFnsFormat}
+        //     value={format(new Date(value), dateFnsFormat)}
         // />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DatePicker
+            <DesktopDatePicker
                 open={open}
                 onOpen={onOpen}
                 onClose={onClose}
@@ -31,6 +31,7 @@ const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, r
                 minDate={minDate}
                 maxDate={maxDate}
                 renderInput={renderInput}
+                reduceAnimations={true}
             />
         </LocalizationProvider>
     )

@@ -599,24 +599,24 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
         {/* <div className={`${style.welcomeBorder} ${style.marginTop20}`}></div> */}
 
-        < div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        < div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Planned Absence Notification Days limit*' />
-          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={plannedAbsence} placeholder="0" type='number' onChange={(e) => setPlannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>
         </div>
-        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Maximum Unplanned Absence Days Allowed *' />
-          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={maxUnplannedAbsence} placeholder="0" type='number' onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>
         </div>
-        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Invoice Processing Day Range Goal*' />
           <div className={style.displayInRow}>
-            <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+            <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
               <EditableText value={invoiceProcessingDay} placeholder="0" type='number' onChange={(e) => setInvoiceProcessingDay(e.slice(0, limit))} className={style.editableTextStyleDays} />
               <div className={style.textElementWithoutBackgroundDays}>Days</div>
             </div>
@@ -631,16 +631,16 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           </div>
         </div>
 
-        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Day limit for submission of timesheet based on activity service date *' />
-          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={dayLimitForSubmissionBasedOnActivityServiceDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnActivityServiceDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>
         </div>
-        <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Day limit for submission of timesheet based on contract end date *' />
-          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth} ${style.reduce25Left}`}>
+          <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={dayLimitForSubmissionBasedOnContractEndDate} placeholder="0" type='number' min="0" onChange={(e) => setDayLimitForSubmissionBasedOnContractEndDate(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
           </div>

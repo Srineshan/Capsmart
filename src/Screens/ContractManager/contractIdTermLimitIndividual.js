@@ -586,7 +586,7 @@ const ContractIdTermLimitIndividual = (
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Assigned Contract Manager*' />
           <div className={style.displayInRow}>
-            <div>
+            <div className={style.fullWidth}>
               <DatalistInput items={items || []} onSelect={onSelect}
                 onChange={(e) => setUserName(e.target.value)}
                 className={style.selectAssignedContractFieldWidth}
@@ -724,7 +724,7 @@ const ContractIdTermLimitIndividual = (
                 maxDate={add(new Date(), { months: 6 })}
                 value={contractTermPeriodFrom}
                 onChange={(newValue) => {
-                  setCalendarStart(true);
+                  // setCalendarStart(true);
                   setContractTermPeriodFrom(newValue);
                   setContractEffectiveDate(newValue);
                 }}
@@ -733,15 +733,15 @@ const ContractIdTermLimitIndividual = (
                     fontSize: 14,
                     height: 30,
                   },
-                  onFocus: e => {
-                    setCalendarStart(true);
-                  },
-                  onBlur: e => {
-                    setCalendarStart(false);
-                  }
+                  // onFocus: e => {
+                  //   setCalendarStart(true);
+                  // },
+                  // onBlur: e => {
+                  //   setCalendarStart(false);
+                  // }
                 }}
                 renderInput={(params) => <TextField {...params}
-                  onClick={() => setCalendarStart(true)}
+                  // onClick={() => setCalendarStart(true)}
                   inputProps={{
                     ...params.inputProps,
                     placeholder: "Start Date"
@@ -763,16 +763,17 @@ const ContractIdTermLimitIndividual = (
                     fontSize: 14,
                     height: 30,
                   },
-                  onFocus: e => {
-                    setCalendarEnd(true);
-                  },
-                  onBlur: e => {
-                    setCalendarEnd(false);
-                  }
+                  // onFocus: e => {
+                  //   setCalendarEnd(true);
+                  // },
+                  // onBlur: e => {
+                  //   setCalendarEnd(false);
+                  // }
                 }}
                 minDate={contractTermPeriodFrom}
                 maxDate={add(new Date(), { years: 5 })}
-                renderInput={(params) => <TextField  {...params} onClick={() => setCalendarEnd(true)}
+                renderInput={(params) => <TextField  {...params}
+                  //  onClick={() => setCalendarEnd(true)}
                   inputProps={{
                     ...params.inputProps,
                     placeholder: "End Date"
@@ -797,17 +798,17 @@ const ContractIdTermLimitIndividual = (
                   fontSize: 14,
                   height: 30,
                 },
-                onFocus: e => {
-                  setCalendarEffective(true);
-                },
-                onBlur: e => {
-                  setCalendarEffective(false);
-                }
+                // onFocus: e => {
+                //   setCalendarEffective(true);
+                // },
+                // onBlur: e => {
+                //   setCalendarEffective(false);
+                // }
               }}
               minDate={contractTermPeriodFrom}
               maxDate={contractTermPeriodTo}
               renderInput={(params) => <TextField  {...params}
-                onClick={() => setCalendarEffective(true)}
+                // onClick={() => setCalendarEffective(true)}
                 inputProps={{
                   ...params.inputProps,
                   placeholder: "Effective Date"

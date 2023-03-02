@@ -1122,6 +1122,29 @@
     classnames "^2.3.1"
     tslib "~2.3.1"
 
+"@blueprintjs/popover2@^1.13.3":
+  version "1.13.3"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/popover2/-/popover2-1.13.3.tgz#437c35b7e7c2cd394fb5eb4042f94acea4ed8e9a"
+  integrity sha512-FJ1QamBHRf45rIU3iDbGRnSAOM7SCI+I9DjBCWQlmjNa8fCJXOPd7mmLuolhlNfI9kdgRs0+6RgCifonIJ9BTg==
+  dependencies:
+    "@blueprintjs/core" "^4.16.3"
+    "@juggle/resize-observer" "^3.4.0"
+    "@popperjs/core" "^2.11.6"
+    classnames "^2.3.1"
+    dom4 "^2.1.5"
+    react-popper "^2.3.0"
+    tslib "~2.3.1"
+
+"@blueprintjs/select@^4.9.3":
+  version "4.9.3"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/select/-/select-4.9.3.tgz#8204b0f6b069cf839f5897b3ee59727778c89abb"
+  integrity sha512-G5hQxVUN/wS2yVFe0ASjdM2BV+K7gQXwVceOGbRPN3nIa5puFLBa3d9Y3fdN1gSO1LRpJhpAgUL75OFJC3Ku5Q==
+  dependencies:
+    "@blueprintjs/core" "^4.16.3"
+    "@blueprintjs/popover2" "^1.13.3"
+    classnames "^2.3.1"
+    tslib "~2.3.1"
+
 "@csstools/normalize.css@*":
   version "12.0.0"
   resolved "https://registry.yarnpkg.com/@csstools/normalize.css/-/normalize.css-12.0.0.tgz#a9583a75c3f150667771f30b60d9f059473e62c4"
@@ -4399,7 +4422,7 @@ date-fns-tz@^1.3.7:
   resolved "https://registry.yarnpkg.com/date-fns-tz/-/date-fns-tz-1.3.8.tgz#083e3a4e1f19b7857fa0c18deea6c2bc46ded7b9"
   integrity sha512-qwNXUFtMHTTU6CFSFjoJ80W8Fzzp24LntbjFFBgL/faqds4e5mo9mftoRLgr3Vi1trISsg4awSpYVsOQCRnapQ==
 
-date-fns@^2.29.1:
+date-fns@^2.28.0, date-fns@^2.29.1:
   version "2.29.3"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.3.tgz#27402d2fc67eb442b511b70bbdf98e6411cd68a8"
   integrity sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==
@@ -4654,9 +4677,9 @@ dom-serializer@^1.0.1:
     domhandler "^4.2.0"
     entities "^2.0.0"
 
-"dom-to-image@git+https://github.com/dmapper/dom-to-image.git":
+"dom-to-image@https://github.com/dmapper/dom-to-image":
   version "2.6.0"
-  resolved "git+https://github.com/dmapper/dom-to-image.git#a7c386a8ea813930f05449ac71ab4be0c262dff3"
+  resolved "https://github.com/dmapper/dom-to-image#a7c386a8ea813930f05449ac71ab4be0c262dff3"
 
 dom-to-pdf@^0.3.1:
   version "0.3.2"
@@ -8839,6 +8862,11 @@ react-error-overlay@^6.0.11:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.11.tgz#92835de5841c5cf08ba00ddd2d677b6d17ff9adb"
   integrity sha512-/6UZ2qgEyH2aqzYZgQPxEnz33NJ2gNsnHA2o5+o4wW9bLM/JYQitNP9xPhsXwC08hMMovfGe/8retsdDsczPRg==
 
+react-fast-compare@^3.0.1:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-3.2.0.tgz#641a9da81b6a6320f270e89724fb45a0b39e43bb"
+  integrity sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==
+
 react-full-screen@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/react-full-screen/-/react-full-screen-1.1.1.tgz#b707d56891015a71c503a65dbab3086d75be97d7"
@@ -8895,6 +8923,14 @@ react-popper@^1.3.11:
     popper.js "^1.14.4"
     prop-types "^15.6.1"
     typed-styles "^0.0.7"
+    warning "^4.0.2"
+
+react-popper@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-popper/-/react-popper-2.3.0.tgz#17891c620e1320dce318bad9fede46a5f71c70ba"
+  integrity sha512-e1hj8lL3uM+sgSR4Lxzn5h1GxBlpa4CQz0XLF8kx4MDrDRWY0Ena4c97PUeSX9i5W3UAfDP0z0FXCTQkoXUl3Q==
+  dependencies:
+    react-fast-compare "^3.0.1"
     warning "^4.0.2"
 
 react-reconciler@~0.29.0:
