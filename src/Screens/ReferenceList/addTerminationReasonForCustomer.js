@@ -92,15 +92,16 @@ const AddTerminationReasonsForCustomer = ({
     let temp = secondaryReasonList;
     temp[i] = value;
     setSecondaryReasonList(temp);
+    setSecondaryReason(value);
     // getSubReasons();
-    console.log(temp, value, secondaryReasonList);
+    // console.log(temp, value, secondaryReasonList);
   };
 
   const getSubReasons = () => {
     // console.log('entered', secondaryReasonList)
     let temp = [];
     for (let i = 0; i < secondaryReasonList?.length; i++) {
-      console.log(i);
+      // console.log(i);
       temp[i] = (
         <div
           className={`${style.editHealthCareGrid2}`}
@@ -144,7 +145,10 @@ const AddTerminationReasonsForCustomer = ({
       ...(isEdit && { lastModifiedDate: new Date() }),
       terminationBy: terminationBy,
       primary_reason: primaryReason,
-      secondary_reasons: secondaryReasonList,
+      secondary_reasons:
+        secondaryReasonList[secondaryReasonList.length - 1] === ""
+          ? secondaryReasonList.splice(0, secondaryReasonList.length - 1)
+          : secondaryReasonList,
       siteTypeId: {
         id: currentEntityType,
       },
@@ -157,7 +161,7 @@ const AddTerminationReasonsForCustomer = ({
       writtenNoticeServed: writtenNotice,
     };
 
-    // console.log(data)
+    // console.log(data);
 
     if (!isEdit) {
       await POST("entity-service/terminationReason", JSON.stringify([data]))
@@ -185,18 +189,18 @@ const AddTerminationReasonsForCustomer = ({
     }
 
     // if (type !== "Add More") {
-    //     getAddEntityDialog(false);
+    //   getAddEntityDialog(false);
     // } else {
-    //     setPrimaryReason("");
-    //     setSecondaryReason("");
-    //     document.getElementById("primaryReasonEl").focus();
+    //   setPrimaryReason("");
+    //   setSecondaryReason("");
+    //   document.getElementById("primaryReasonEl").focus();
     // }
   };
 
   const handleAddMore = () => {
     let temp = secondaryReasonList;
     temp.push("");
-    console.log(temp);
+    // console.log(temp);
     setSecondaryReasonList(temp);
     getSubReasons();
   };
@@ -236,7 +240,10 @@ const AddTerminationReasonsForCustomer = ({
             size={20}
             intent={Intent.DANGER}
             className={style.dialogCrossStyle}
-            onClick={() => getAddEntityDialog(false)}
+            onClick={() => {
+              getAddEntityDialog(false);
+              getTerminationReasonData();
+            }}
           />
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
@@ -387,12 +394,26 @@ const AddTerminationReasonsForCustomer = ({
               </div>
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <div></div>
-                <div
+                {secondaryReasonList[secondaryReasonList.length - 1] !== "" ? (
+                  <div
+                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                    onClick={() => handleAddMore()}
+                  >
+                    ADD MORE
+                  </div>
+                ) : (
+                  <div
+                    className={`${style.addMoreTextStyle} ${style.addMoreCardStyle}`}
+                  >
+                    ADD MORE
+                  </div>
+                )}
+                {/* <div
                   className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
                   onClick={() => handleAddMore()}
                 >
                   ADD MORE
-                </div>
+                </div> */}
               </div>
             </>
           )}
@@ -401,7 +422,10 @@ const AddTerminationReasonsForCustomer = ({
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
               className={style.outlinedButton}
-              onClick={() => getAddEntityDialog(false)}
+              onClick={() => {
+                getAddEntityDialog(false);
+                getTerminationReasonData();
+              }}
             >
               CANCEL
             </button>
