@@ -22,7 +22,6 @@ import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected, isReset, getIsReset }) => {
-  console.log('locationItems', locationItems);
   const limit5 = 5;
   let additionalDetails = ['Require Patient Data', 'Prior Pre-Authorization Required', 'Administrative Approval For Payment Required', 'Require Reason For Add-On Service'];
   const [fields, setFields] = useState();

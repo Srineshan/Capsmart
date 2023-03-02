@@ -1069,7 +1069,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         <div>
           {isEditable && !isShowPDF &&
             <div className={`${style.floatRight} `}>
-              <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('ADD MORE'); } : {}}>ADD MORE</button>
+              {!editService && <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('ADD MORE'); } : {}}>ADD MORE</button>}
               <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('SAVE AND EXIT'); } : {}}>SAVE & EXIT</button>
             </div>
           }

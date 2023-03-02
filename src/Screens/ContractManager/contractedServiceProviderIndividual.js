@@ -721,8 +721,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
             <CommonSelectField onChange={(e) => handleRoles(e.target.value)}
               className={`${style.fullWidth}`}
               firstOptionLabel={'Select Role-multi select'} firstOptionValue={'0'}
-              valueList={roles?.map(data => data?.roleName)}
-              labelList={roles?.map(data => data?.roleName)}
+              valueList={roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+              labelList={roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
               disabledList={roles?.map(data => false)} />
             <div className={`${style.marginTop20}`}>
               {rolesTags}
