@@ -7,8 +7,9 @@ import UserCard from '../../Screens/ContractManager/userCard';
 import { GET } from '../../Screens/dataSaver';
 
 import style from './index.module.scss';
+import { useForkRef } from '@material-ui/core';
 
-const SideBar = ({ children, isExpanded, getIsExpanded }) => {
+const SideBar = ({ children, isExpanded, getIsExpanded, refetchUserValues }) => {
     const currentUserData = currentUser();
     const [currentUserDetails, setCurrentUserDetails] = useState();
     const [userId, setUserId] = useState(currentUserData?.id);
@@ -16,11 +17,19 @@ const SideBar = ({ children, isExpanded, getIsExpanded }) => {
     useEffect(() => {
         setUserId(currentUserData?.id);
         setUserDetails();
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        if (refetchUserValues) {
+            setUserDetails();
+            console.log('entered')
+        }
+    }, [refetchUserValues])
 
     const setUserDetails = async () => {
         const { data: user } = await GET(`user-management-service/user/${userId}`);
         setCurrentUserDetails(user);
+        console.log(user)
     }
     return (
         !isExpanded ? (

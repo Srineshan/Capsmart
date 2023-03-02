@@ -140,3 +140,11 @@ select {
 .bp3-toast-container {
 	z-index: 999999;
 }
+
+.bp4-text-overflow-ellipsis {
+	white-space: normal !important;
+}
+
+.bp4-tag {
+	background-color: #7165E3 !important;
+}
