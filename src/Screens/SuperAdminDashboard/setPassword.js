@@ -90,7 +90,7 @@ const SetPassword = () => {
   const getEntityId = async () => {
     await axios(`https://rest.timesmart.io/entity-service/entityID`, {
       method: 'GET',
-      headers: { "X-subdomain": "cardinalhealth" },
+      // headers: { "X-subdomain": "cardinalhealth" },
     }).then(response => {
       var cookie = new Cookie();
       cookie.set('entityId', response?.data?.id);
@@ -203,7 +203,6 @@ const SetPassword = () => {
         <InputGroup type="email" large={true} value={users?.filter(data => data?.id === randomId)?.map(data => data?.email?.officialEmail)[0]} className={style.marginTop10} /> */}
         <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Set Your Password</div>
         <InputGroup type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={style.marginTop10} rightElement={EyeOpenElement(1)} onChange={(e) => setPassword(e.target.value)} />
-        {/* <PasswordStrengthBar password={password} /> */}
         <div className={`${style.passwordStrengthGrid} ${style.marginTop10}`}>
           <div className={`${style.passwordProgress} ${passwordStrengthLength >= 1 && style.activePasswordProgress}`}></div>
           <div className={`${style.passwordProgress} ${passwordStrengthLength >= 2 && style.activePasswordProgress}`}></div>
