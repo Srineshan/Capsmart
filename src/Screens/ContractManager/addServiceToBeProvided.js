@@ -436,10 +436,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Activity Type Selection is Mandatory');
       return;
     }
-    if (showLocation && selectedLocation?.length === 0) {
-      ErrorToaster('Atleast one location has to be selected if yes');
-      return;
-    }
+    // if (showLocation && selectedLocation?.length === 0) {
+    //   ErrorToaster('Atleast one location has to be selected if yes');
+    //   return;
+    // }
     if ((serviceTypeTemplate === CLINIC || serviceTypeTemplate === PROCEDUREREADING) && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
       ErrorToaster('Selected Duration Should be equal to the contract start and end date');
       return;
@@ -945,11 +945,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             <div>
               <div className={style.proofBorder}>
                 <div className={`${style.addManagerGrid} `}>
-                  <CommonLabel value='Primary Sites/ Department Affiliation' />
+                  <CommonLabel value='Primary Sites / Department Affiliation' />
                   <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData} isMultiSiteEntity={isMultiSiteEntity} />
                 </div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                  <CommonLabel value='Activity /Service Type Contracted for*' />
+                  <CommonLabel value='Activity / Service Type Contracted for*' />
                   <div>
                     <CommonSelectField value={serviceType}
                       onChange={(e) => {
@@ -1069,7 +1069,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         <div>
           {isEditable && !isShowPDF &&
             <div className={`${style.floatRight} `}>
-              <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('ADD MORE'); } : {}}>ADD MORE</button>
+              {!editService && <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('ADD MORE'); } : {}}>ADD MORE</button>}
               <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('SAVE AND EXIT'); } : {}}>SAVE & EXIT</button>
             </div>
           }

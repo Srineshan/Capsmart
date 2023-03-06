@@ -365,10 +365,11 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 <CommonLabel value='Vendor NPIN*' />
                 <div className={style.twoCol}>
                   <CommonInputField className={style.fullWidth}
+                    placeholder="Enter Vendor NPIN"
                     type="tel"
                     maxLength={10}
                     disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
-                    value={contractorNPIN?.npin} placeholder="Enter Vendor NPIN"
+                    value={contractorNPIN?.npin}
                     onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value, missing: false, notApplicable: false })} />
                   <div className={`${style.displayInRow}`}>
                     <CommonCheckBox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked, notApplicable: false, npin: '' })} label="Missing" />

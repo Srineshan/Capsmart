@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
-import { POST, TenantID, GET, PUT } from './../dataSaver';
+import { POST, TenantID, GET, PUT, DELETE } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -20,6 +20,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const [selectedRolesToShow, setSelectedRolesToShow] = useState([]);
     const [sites, setSites] = useState([]);
     const [functionalTitle, setFunctionalTitle] = useState([]);
+    const [workFlowUser, setWorkFlowUser] = useState([]);
     const defaultProviderId = "6335e77dbb13e2088b208bb0";
     const selectedProvider = defaultProviderId;
 
@@ -27,6 +28,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         getSites();
         getFunctionalTitle();
         getRoles();
+        getContractWorkFlowUser();
     }, []);
 
     useEffect(() => {
@@ -68,8 +70,15 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         }
     }, [selectedSites, sites, addUser]);
 
+    const getContractWorkFlowUser = async () => {
+        const { data: contractWorkflow } = await GET(`contract-managment-service/contracts/workFlowUser`);
+        if (contractWorkflow) {
+            setWorkFlowUser(contractWorkflow);
+        }
+    }
+
     const getFunctionalTitle = async () => {
-        await GET(`entity-service/functionalTitlesForCSPType?contractedServiceProviderTypeId=${selectedProvider}`)
+        await GET(`entity-service/functionalTitlesForCSPType`)
             .then(response => {
                 setFunctionalTitle(response?.data);
             })
@@ -96,7 +105,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     };
 
     const getRoles = async () => {
-        const { data: roles } = await GET('user-management-service/roles');
+        const { data: roles } = await GET('user-management-service/roles?roleType=APP_SYSTEM&roleType=SYSTEM');
         setRoles(roles?.filter(data => data?.roleName !== 'Activity Logger')?.map(data => data));
     };
 
@@ -204,12 +213,42 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         } else {
             await POST('user-management-service/user/register', JSON.stringify(user))
                 .then(response => {
+                    console.log('response', response);
                     SuccessToaster('User Added Successfully');
                 })
                 .catch(error => {
                     ErrorToaster('Unexpected Error');
                 })
         }
+
+        // if (roles?.map(data => ['APPROVER', 'REVIEWER']?.includes(data?.roleName))) {
+        //     if (!workFlowUser?.map(data => data?.userId)?.includes(userId)) {
+        //         let workFlowUserData = user;
+        //         workFlowUserData.tenant = user?.tenant?.tenantId;
+        //         workFlowUserData.userId = userId;
+        //         await POST('contract-managment-service/contracts/workFlowUser', JSON.stringify(user))
+        //             .then(response => {
+        //                 console.log('Success!');
+        //                 // SuccessToaster('Workflow User Updated Successfully');
+        //             })
+        //             .catch(error => {
+        //                 console.log('Error!');
+        //                 // ErrorToaster('Unexpected Error');
+        //             })
+        //     }
+        // } else {
+        //     if (workFlowUser?.map(data => data?.userId)?.includes(userId)) {
+        //         let workFlowId = workFlowUser?.filter(data => data?.userId === userId)?.map(data => data?.id)?.[0];
+        //         await DELETE(`contract-managment-service/contracts/workFlowUser/${workFlowId}`)
+        //             .then(response => {
+        //                 console.log('Success!');
+        //             })
+        //             .then(error => {
+        //                 console.log('Error!');
+        //             })
+        //     }
+        // }
+
         getManageUserDialog(false);
     };
 

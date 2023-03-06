@@ -137,9 +137,13 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     useEffect(() => {
         getPaymentAndCompensation();
-        getTimeSheetValues();
         setTimesheetPaymentsValue();
+        getTimeSheetValues();
     }, [])
+
+    useEffect(() => {
+        getTimeSheetValues();
+    }, [contractId])
 
     useEffect(() => {
         getPaymentFields();

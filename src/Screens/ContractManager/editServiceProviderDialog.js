@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, Tag, Button, TagInput } from '@blueprintjs/core';
-import { GET, PUT, POST, TenantID } from './../dataSaver';
+import { GET, PUT, POST, DELETE, TenantID } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SuffixList from './../../Components/SuffixList';
 import ProviderTypeList from './../../Components/ProviderTypeList';
@@ -19,6 +19,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   const [startDate, setStartDate] = useState(new Date);
   const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration');
   const [roles, setRoles] = useState([]);
+  const [workFlowUser, setWorkFlowUser] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState(userProviderData?.roles);
   const [npin, setNpin] = useState({ npin: '', missing: false, na: false });
   const [userDetails, setUserDetails] = useState({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '' });
@@ -44,6 +45,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   useEffect(() => {
     getRolesData();
     getContractName();
+    getContractWorkFlowUser();
   }, [])
 
   useEffect(() => {
@@ -116,6 +118,13 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
     }
   }
 
+  const getContractWorkFlowUser = async () => {
+    const { data: contractWorkflow } = await GET(`contract-managment-service/contracts/workFlowUser`);
+    if (contractWorkflow) {
+      setWorkFlowUser(contractWorkflow);
+    }
+  }
+
   const handleRoles = (value) => {
     if (value !== '0') {
       const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
@@ -140,7 +149,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
     });
 
   const getRolesData = async () => {
-    const { data: roles } = await GET(`user-management-service/roles?roleType=APP`);
+    const { data: roles } = await GET(`user-management-service/roles?roleType=APP&roleType=APP_SYSTEM`);
     if (roles) {
       setRoles(roles);
     }
@@ -419,6 +428,30 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       },
       "personalEmailAddressAllowed": allowPersonalMail,
     }
+    // if (roles?.map(data => ['APPROVER', 'REVIEWER']?.includes(data?.roleName))) {
+    //   if (!workFlowUser?.map(data => data?.userId)?.includes(userProviderData?.id)) {
+    //     await POST('contract-managment-service/contracts/workFlowUser', JSON.stringify(data))
+    //       .then(response => {
+    //         console.log('Success!');
+    //         // SuccessToaster('Workflow User Updated Successfully');
+    //       })
+    //       .catch(error => {
+    //         console.log('Error!');
+    //         // ErrorToaster('Unexpected Error');
+    //       })
+    //   }
+    // } else {
+    //   if (workFlowUser?.map(data => data?.userId)?.includes(userProviderData?.id)) {
+    //     let workFlowId = workFlowUser?.filter(data => data?.userId === userProviderData?.id)?.map(data => data?.userId)?.[0];
+    //     await DELETE(`contract-managment-service/contracts/workFlowUser/${workFlowId}`)
+    //       .then(response => {
+    //         console.log('Success!');
+    //       })
+    //       .then(error => {
+    //         console.log('Error!');
+    //       })
+    //   }
+    // }
 
     await PUT('user-management-service/user', JSON.stringify(data))
       .then(response => {

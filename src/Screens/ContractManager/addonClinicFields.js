@@ -22,7 +22,6 @@ import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected, isReset, getIsReset }) => {
-  console.log('locationItems', locationItems);
   const limit5 = 5;
   let additionalDetails = ['Require Patient Data', 'Prior Pre-Authorization Required', 'Administrative Approval For Payment Required', 'Require Reason For Add-On Service'];
   const [fields, setFields] = useState();
@@ -35,7 +34,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     rate: '0',
     duringNormalWorkingHours: false,
     afterWorkingHours: false,
-    showLocation: false,
+    showLocation: true,
     locations: [],
     additionalDetails: [],
     approver: undefined,
@@ -82,8 +81,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       setAddOnWorkFlow(timesheetWorkFlow);
     }
   }
-
-  console.log('add-on ', serviceSelected);
 
   const setSelectedValues = async () => {
     if (editService) {
@@ -144,7 +141,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       rate: '0',
       duringNormalWorkingHours: false,
       afterWorkingHours: false,
-      showLocation: false,
+      showLocation: true,
       locations: [],
       additionalDetails: [],
       approver: undefined,
@@ -286,8 +283,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     }
   }
 
-  console.log('metadata', metadata);
-
   const updateWorkingHours = (name, value) => {
     console.log('name', name, value);
     let temp = metadata;
@@ -323,13 +318,32 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     setNewServices({ ...newServices, 'additionalDetails': temp });
   }
 
+  // const handleMetadataAdditional = (data) => {
+  //   let item = metadata;
+  //   item?.map(element => {
+  //     let temp = element?.activityResponse?.dataMap?.additionalDetails;
+  //     if (element?.activityResponse?.dataMap?.additionalDetails?.includes(data)) {
+  //       if (data === 'Prior Pre-Authorization Required') {
+  //         temp = element?.activityResponse?.dataMap?.additionalDetails?.filter(detail => detail !== 'Administrative Approval For Payment Required')?.map(data => data);
+  //       }
+  //       temp = element?.activityResponse?.dataMap?.additionalDetails?.filter(detail => detail !== data)?.map(data => data);
+  //     } else {
+  //       if (data === 'Administrative Approval For Payment Required' && !temp?.includes('Prior Pre-Authorization Required')) {
+  //         return;
+  //       }
+  //       temp?.push(data);
+  //     }
+  //   })
+
+  //   setMetadata();
+  // }
+
   const addToMetaData = () => {
     if (newServices?.billableService && newServices?.rate === '0') {
       ErrorToaster('Payment Rate Cannot be 0 if Billable');
       return;
     }
     let temp = metadata;
-    console.log('new services', newServices?.additionalDetails)
     temp.push({
       sites: [],
       activities: [{ activity: newServices?.name }],
@@ -352,7 +366,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       paymentApprover: newServices?.paymentApprover,
       billableService: newServices?.billableService,
     });
-
     setMetadata(temp);
     let selectedServiceTemp = selectedServices;
     selectedServiceTemp?.push(newServices?.name);
@@ -386,7 +399,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     console.log('inside func', value, serviceName)
     let temp = metadata;
     temp?.filter(data => data?.performingActivity === serviceName)?.map(data => {
-      console.log('inside filter', data?.billableService, data?.sessionAmount, value)
       data.billableService = value;
       if (!value) {
         data.sessionAmount = '0';
@@ -525,15 +537,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Specify Service Facility / Location' />
                 <div>
-                  <div className={`${style.displayInRow} `}>
-                    <CommonSwitch label={data?.locationSpecified ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={data?.locationSpecified} onChange={() => switchShowLocation(data?.performingActivity)} />
-                    {
-                      data?.locationSpecified &&
-                      <div className={`${style.fullWidth}`}>
-                        <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
-                      </div>
-                    }
-
+                  <div className={`${style.fullWidth}`}>
+                    <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
                   </div>
                   {data?.locationSpecified && data?.locations?.length !== 0 &&
                     <MultiSelectDisplay values={data?.locations?.map(data => data?.location)} removeItem={removeLocation} />
@@ -723,17 +728,11 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value='Specify Service Facility / Location' />
             <div>
-              <div className={`${style.displayInRow} `}>
-                <CommonSwitch label={newServices?.showLocation ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={newServices?.showLocation} onChange={e => handleNewServiceChange('showLocation', !newServices?.showLocation)} />
-                {
-                  newServices?.showLocation &&
-                  <div className={` ${style.fullWidth}`}>
-                    <DatalistInput items={locationItems || []} onSelect={handleNewServiceLocation} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} clearInputOnSelect={true} />
-                    {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+              <div className={` ${style.fullWidth}`}>
+                <DatalistInput items={locationItems || []} onSelect={handleNewServiceLocation} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} clearInputOnSelect={true} />
+                {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                       <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                     </div> */}
-                  </div>
-                }
               </div>
               {
                 newServices?.locations?.length !== 0 && newServices?.showLocation &&

@@ -37,6 +37,7 @@ const ClientAdminDashboard = () => {
       mappedDataArray.push(mappedData);
     }
 
+    
     let latestParentModifiedDate = mappedDataArray.reduce((a, b) => {
       return new Date(a.lastModified) > new Date(b.lastModified) ? a : b;
     });

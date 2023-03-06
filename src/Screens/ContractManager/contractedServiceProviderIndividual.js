@@ -420,7 +420,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     });
 
   const getRoles = async () => {
-    const { data: roles } = await GET('user-management-service/roles?roleType=APP');
+    let role = ['APP', 'APP_SYSTEM'];
+    const { data: roles } = await GET(`user-management-service/roles?roleType=${role}`);
     setRoles(roles);
     let temp = selectedRoles;
     if (!selectedRoles?.map(data => data?.roleName)?.includes('Activity Logger')) {
@@ -720,8 +721,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
             <CommonSelectField onChange={(e) => handleRoles(e.target.value)}
               className={`${style.fullWidth}`}
               firstOptionLabel={'Select Role-multi select'} firstOptionValue={'0'}
-              valueList={roles?.map(data => data?.roleName)}
-              labelList={roles?.map(data => data?.roleName)}
+              valueList={roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+              labelList={roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
               disabledList={roles?.map(data => false)} />
             <div className={`${style.marginTop20}`}>
               {rolesTags}
