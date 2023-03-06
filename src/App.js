@@ -121,7 +121,7 @@ const App = ({ props }) => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/user" element={<Users />} />
               <Route path="/pages" element={<EntryPage />} />
-              <Route path="/setPassword/:userId" element={<SetPassword />} />
+              <Route path="/setPassword/:randomId" element={<SetPassword />} />
               <Route path="/setPassword" element={<SetPasswordWithoutEmail />} />
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/entitySetup/:id" element={<EntitySetup />} />

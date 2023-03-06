@@ -194,8 +194,24 @@ body {
 
 .setPasswordBackground {
     background-color: #F8FCFF;
-    height: 100vh !important;
-    padding-top: 70px;
+    padding: 70px 0;
+    height: 100vh;
+    overflow: scroll;
+}
+
+.passwordStrengthGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 10px;
+}
+
+.passwordProgress {
+    height: 3px;
+    background-color: #52575D;
+}
+
+.activePasswordProgress {
+    background-color: #7165E3 !important;
 }
 
 .setPasswordCard {
@@ -203,7 +219,6 @@ body {
     padding: 40px 100px;
     width: 40%;
     margin-left: 30%;
-    height: 80vh;
 }
 
 .otpCard {
@@ -2147,4 +2162,13 @@ body {
 
 .hidden {
     display: none;
+}
+
+.entityLogo {
+    height: 80px;
+    object-fit: contain;
+}
+
+.redBorderField {
+    border: 1px solid red !important;
 }
