@@ -2515,5 +2515,25 @@
   margin: 0 5px 10px 0;
 }
 
+.headerFlag {
+  width: 50px;
+  height: 30px;
+  background: transparent 0% 0% no-repeat padding-box;
+  border: 1px solid #7165e3;
+  opacity: 1;
+}
+
+.headerCountryName {
+  width: 45px;
+  height: 20px;
+  text-align: left;
+  font: normal normal 600 20px/41px Proxima Nova;
+  letter-spacing: 2.3px;
+  color: #52575d;
+  text-transform: uppercase;
+  opacity: 1;
+  margin-top: -2px;
+}
+
 
 

@@ -8,7 +8,7 @@ import NewPodTypeForHealthcare from "./newPodTypeForHealthCare";
 import { GET } from "../dataSaver";
 
 const SuperAdminDashboard = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [lastDate, setLastDate] = useState({});
 
   const getIsExpanded = (value) => {

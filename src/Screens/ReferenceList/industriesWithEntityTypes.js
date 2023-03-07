@@ -10,7 +10,7 @@ import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
 import { GET, DELETE } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
-import format from "date-fns/format";
+import { format } from "date-fns";
 
 const IndustriesWithEntityTypes = ({
   getAddEntityDialog,
@@ -49,20 +49,7 @@ const IndustriesWithEntityTypes = ({
     );
 
     const date = new Date(lastModifiedDate.industries.lastModified);
-    sendLastDate(
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          month: "short",
-          day: "2-digit",
-          hour: "numeric",
-          minute: "numeric",
-          year: "numeric",
-          timeZoneName: "short",
-          hour12: false,
-        })
-        .toUpperCase()
-    );
+    sendLastDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
   const getEntityData = async () => {
