@@ -233,7 +233,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                     {timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual &&
                         <>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <CommonLabel value='Max. Compensation Value Per Timesheet Submission*' />
+                                <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*' />
                                 <CommonTextField
                                     className={style.twoFieldWidth}
                                     type="number"

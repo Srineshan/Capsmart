@@ -183,6 +183,8 @@ const ContractIdTermLimitIndividual = (
     }
   }
 
+  console.log('departments', selectedDepartmentSites, selectedSites);
+
   const getUserData = async () => {
     const { data: user } = await GET('user-management-service/user/role?role=Contract Manager');
     if (user) {
@@ -708,7 +710,7 @@ const ContractIdTermLimitIndividual = (
           departmentSpecific &&
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div></div>
-            <SiteDepartmentField sites={siteSpecific ? selectedSites?.map(data => data) : sites} getSelectedSites={onSelectDepartment} selectedSites={selectedDepartmentSites} isMultiSiteEntity={isMultiSiteEntity} />
+            <SiteDepartmentField sites={(siteSpecific || !isMultiSiteEntity) ? selectedSites?.map(data => data) : sites} getSelectedSites={onSelectDepartment} selectedSites={selectedDepartmentSites} isMultiSiteEntity={isMultiSiteEntity} />
           </div>
         }
 
