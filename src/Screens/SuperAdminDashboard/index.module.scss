@@ -210,10 +210,6 @@ body {
     background-color: #52575D;
 }
 
-.activePasswordProgress {
-    background-color: #7165E3 !important;
-}
-
 .setPasswordCard {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     padding: 40px 100px;
@@ -2166,9 +2162,30 @@ body {
 
 .entityLogo {
     height: 80px;
+    width: 160px;
     object-fit: contain;
 }
 
 .redBorderField {
-    border: 1px solid red !important;
+    border: 1px solid #FF6562 !important;
+}
+
+.greenBorderField {
+    border: 1px solid #00C07F !important;
+}
+
+.activePasswordProgressLength1 {
+    background-color: #FF6562 !important;
+}
+
+.activePasswordProgressLength2 {
+    background-color: #FEC106 !important;
+}
+
+.activePasswordProgressLength3 {
+    background-color: #ED784A !important;
+}
+
+.activePasswordProgressLength4 {
+    background-color: #00C07F !important;
 }

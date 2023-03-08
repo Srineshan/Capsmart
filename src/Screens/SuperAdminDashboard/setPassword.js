@@ -7,8 +7,10 @@ import { GET } from './../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cookie from 'universal-cookie';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import WelcomeImg from "./../../images/welcomeImg.png";
-import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import Typography from '@mui/material/Typography';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
 
 
 const SetPassword = () => {
@@ -29,6 +31,7 @@ const SetPassword = () => {
   const [isMin8CharacterAvailable, setIsMin8CharacterAvailable] = useState(false);
   const [passwordStrengthLength, setPasswordStrengthLength] = useState(0);
   const [strengthText, setStrengthText] = useState('');
+  const [strengthColor, setStrengthColor] = useState('');
   var cookie = new Cookie();
   const navigate = useNavigate();
 
@@ -37,7 +40,9 @@ const SetPassword = () => {
   }, []);
 
   useEffect(() => {
-    setPasswordStrengthLength([isCapitalCharacterAvailable, isSmallCharacterAvailable, isMin8CharacterAvailable, isNumberAvailable, isSpecialCharacterAvailable]?.filter(data => data === true)?.length);
+    let length = [isCapitalCharacterAvailable, isSmallCharacterAvailable, isMin8CharacterAvailable, isNumberAvailable, isSpecialCharacterAvailable]?.filter(data => data === true)?.length;
+    setPasswordStrengthLength(length);
+    setStrengthColor(length === 1 ? style.activePasswordProgressLength1 : length === 2 ? style.activePasswordProgressLength2 : length === 3 ? style.activePasswordProgressLength3 : length === 4 ? style.activePasswordProgressLength4 : length === 5 ? style.activePasswordProgressLength4 : '');
   }, [password, isCapitalCharacterAvailable, isSmallCharacterAvailable, isMin8CharacterAvailable, isNumberAvailable, isSpecialCharacterAvailable]);
 
   useEffect(() => {
@@ -197,30 +202,75 @@ const SetPassword = () => {
   return (
     <div className={style.setPasswordBackground}>
       <div className={style.setPasswordCard}>
-        <img src={entityLogo?.file?.fileURL} alt="" className={style.entityLogo} />
+        {entityLogo?.file?.fileURL && (
+          <img src={entityLogo?.file?.fileURL} alt="" className={style.entityLogo} />
+        )}
         <div className={style.loginToStyle}>{entity?.entityName?.entityName}</div>
         {/* <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Email(Registered Mail Id)</div>
         <InputGroup type="email" large={true} value={users?.filter(data => data?.id === randomId)?.map(data => data?.email?.officialEmail)[0]} className={style.marginTop10} /> */}
         <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Set Your Password</div>
         <InputGroup type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={style.marginTop10} rightElement={EyeOpenElement(1)} onChange={(e) => setPassword(e.target.value)} />
         <div className={`${style.passwordStrengthGrid} ${style.marginTop10}`}>
-          <div className={`${style.passwordProgress} ${passwordStrengthLength >= 1 && style.activePasswordProgress}`}></div>
-          <div className={`${style.passwordProgress} ${passwordStrengthLength >= 2 && style.activePasswordProgress}`}></div>
-          <div className={`${style.passwordProgress} ${passwordStrengthLength >= 3 && style.activePasswordProgress}`}></div>
-          <div className={`${style.passwordProgress} ${passwordStrengthLength >= 4 && style.activePasswordProgress}`}></div>
+          <div className={`${style.passwordProgress} ${passwordStrengthLength >= 1 && strengthColor}`}></div>
+          <div className={`${style.passwordProgress} ${passwordStrengthLength >= 2 && strengthColor}`}></div>
+          <div className={`${style.passwordProgress} ${passwordStrengthLength >= 3 && strengthColor}`}></div>
+          <div className={`${style.passwordProgress} ${passwordStrengthLength >= 4 && strengthColor}`}></div>
         </div>
         <div className={style.floatRight}>
           <div className={style.loginToStyle}>{strengthText}</div>
         </div>
         <div className={style.marginTop20}>
-          <CommonCheckBox checked={isMin8CharacterAvailable} label={'8 Characters Minimum'} />
+          {/* <CommonCheckBox checked={isMin8CharacterAvailable} label={'8 Characters Minimum'} />
           <CommonCheckBox checked={isSmallCharacterAvailable} label={'1 Lowercase Letter'} />
           <CommonCheckBox checked={isCapitalCharacterAvailable} label={'1 Uppercase Letter'} />
           <CommonCheckBox checked={isNumberAvailable} label={'1 Number(0 - 9)'} />
-          <CommonCheckBox checked={isSpecialCharacterAvailable} label={'1 Special Character'} />
+          <CommonCheckBox checked={isSpecialCharacterAvailable} label={'1 Special Character'} /> */}
+
+
+
+          <FormGroup>
+            <FormControlLabel control={<Checkbox checked={isMin8CharacterAvailable}
+              sx={{
+                '&.Mui-checked': {
+                  color: '#00C07F',
+                },
+              }} />} label={<Typography variant="body2" color="textSecondary">8 Characters Minimum</Typography>} />
+          </FormGroup>
+          <FormGroup>
+            <FormControlLabel control={<Checkbox checked={isSmallCharacterAvailable}
+              sx={{
+                '&.Mui-checked': {
+                  color: '#00C07F',
+                },
+              }} />} label={<Typography variant="body2" color="textSecondary">1 Lowercase Letter</Typography>} />
+          </FormGroup>
+          <FormGroup>
+            <FormControlLabel control={<Checkbox checked={isCapitalCharacterAvailable}
+              sx={{
+                '&.Mui-checked': {
+                  color: '#00C07F',
+                },
+              }} />} label={<Typography variant="body2" color="textSecondary">1 Uppercase Letter</Typography>} />
+          </FormGroup>
+          <FormGroup>
+            <FormControlLabel control={<Checkbox checked={isNumberAvailable}
+              sx={{
+                '&.Mui-checked': {
+                  color: '#00C07F',
+                },
+              }} />} label={<Typography variant="body2" color="textSecondary">1 Number(0 - 9)</Typography>} />
+          </FormGroup>
+          <FormGroup>
+            <FormControlLabel control={<Checkbox checked={isSpecialCharacterAvailable}
+              sx={{
+                '&.Mui-checked': {
+                  color: '#00C07F',
+                },
+              }} />} label={<Typography variant="body2" color="textSecondary">1 Special Character</Typography>} />
+          </FormGroup>
         </div>
         <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Confirm Your Password</div>
-        <InputGroup type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={`${style.marginTop10} ${(confirmPassword?.length > 0 && confirmPassword !== password) && style.redBorderField}`} rightElement={EyeOpenElement(1)} onChange={(e) => setConfirmPassword(e.target.value)} />
+        <InputGroup type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={`${style.marginTop10} ${(confirmPassword?.length > 0 && confirmPassword !== password) && style.redBorderField} ${(confirmPassword?.length > 0 && confirmPassword === password) && style.greenBorderField}`} rightElement={EyeOpenElement(1)} onChange={(e) => setConfirmPassword(e.target.value)} />
         {
           // <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Cell Phone ( To Receive Verfication Passcode)</div>
           // <InputGroup type="text" large={true} placeholder="+1344231717" className={style.marginTop10} onChange={(e)=>setPhone(e.target.value)}/>

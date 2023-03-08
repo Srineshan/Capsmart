@@ -90,6 +90,7 @@ const Profile = () => {
             .then(response => {
                 SuccessToaster('User Modified Successfully');
                 setValuesUpdated(true);
+                getUser();
             })
             .catch(error => {
                 ErrorToaster('Unexpected Error In Editing User');
@@ -151,6 +152,7 @@ const Profile = () => {
             }))
                 .then(response => {
                     SuccessToaster('User Modified Successfully');
+                    getUser();
                 })
                 .catch(error => {
                     ErrorToaster('Unexpected Error In Editing User');
