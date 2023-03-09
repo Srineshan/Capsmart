@@ -391,7 +391,7 @@ body {
 
 .entitySetupBackground {
     background-color: #F8FCFF;
-    height: 15vh !important;
+    height: 225px !important;
 }
 
 .stepperImgStyle {
@@ -581,8 +581,6 @@ body {
     letter-spacing: 0px;
     color: #52575D;
     text-transform: capitalize;
-    opacity: 1;
-    margin-top: 5px;
 }
 
 .subdomainElementStyle {
@@ -2147,4 +2145,22 @@ body {
 
 .hidden {
     display: none;
+}
+
+.subscriptionRow {
+    background-color: #ebe9fb;
+    display: grid;
+    grid-template-columns: 25% 35% 20% 10%;
+    grid-gap: 2.5%;
+    padding: 10px 20px;
+    border-radius: 4px;
+}
+
+.feedbackSupport {
+    background-color: #ebe9fb;
+    display: grid;
+    grid-template-columns: 25% 70%;
+    grid-gap: 2.5%;
+    padding: 10px 20px;
+    border-radius: 4px;
 }

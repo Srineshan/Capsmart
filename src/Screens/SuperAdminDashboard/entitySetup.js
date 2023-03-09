@@ -1,11 +1,11 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { InputGroup, Icon, Intent, TagInput } from '@blueprintjs/core';
 import { Link, useNavigate } from 'react-router-dom';
-import Step1 from './../../images/step1.png';
+import Step1 from './../../images/step34.png';
 import Step2 from './../../images/step2.png';
-import Step3 from './../../images/step3.png';
-import Step4 from './../../images/step4.png';
-import Step5 from './../../images/step5.png';
+import Step3 from './../../images/step33.png';
+import Step4 from './../../images/step3.png';
+import Step5 from './../../images/step55.png';
 import DatalistInput from 'react-datalist-input';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -26,6 +26,7 @@ import EntityTypeList from './../../Components/EntityType';
 import DepartmentList from './../../Components/DepartmentList';
 import SaveInProgress from './saveInProgressAlert';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import ContractAndBillingDetails from './contractAndBillingDetails';
 
 const EntitySetup = () => {
   let { id } = useParams();
@@ -440,50 +441,66 @@ const EntitySetup = () => {
           <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/activeCustomers')} />
           <div className={style.stepperMargin}>
             <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
+              <div onClick={() => getActiveStep('appSubscription')}>
+                <div className={style.justifyCenter}>
+                  <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
+                    <img src={Step5} alt="Step1" className={style.stepperImgStyle} />
+                  </div>
+                </div>
+                <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SUBSCRIPTION PLAN</p>
+              </div>
+              <div onClick={() => getActiveStep('contractAndBilling')}>
+                <div className={style.justifyCenter}>
+                  <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                    <img src={Step1} alt="Step2" className={style.stepperImgStyle} />
+                  </div>
+                </div>
+                <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>CONTRACT & BILLING</p>
+              </div>
               <div onClick={() => getActiveStep('entitySetup')}>
                 <div className={style.justifyCenter}>
                   <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
-                    <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
+                    <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
                   </div>
                 </div>
                 <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
               </div>
               <div onClick={() => getActiveStep('siteInformation')}>
                 <div className={style.justifyCenter}>
-                  <div className={style.stepperImgBackground}>
-                    <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
+                  <div className={`${style.stepperImgBackground}`}>
+                    <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                   </div>
                 </div>
-                <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>SITES FOR APP USE</p>
+                <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
               </div>
               {isSuperAdminAccess && (
                 <div onClick={() => getActiveStep('entitySystemAdmin')}>
                   <div className={style.justifyCenter}>
-                    <div className={style.stepperImgBackground}>
-                      <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                    <div className={`${style.stepperImgBackground}`}>
+                      <img src={Step2} alt="Step5" className={style.stepperImgStyle} />
                     </div>
                   </div>
-                  <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>ENTITY SYSTEM ADMIN</p>
+                  <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                 </div>
               )}
-              <div onClick={() => getActiveStep('siteUsers')}>
-                <div className={style.justifyCenter}>
-                  <div className={style.stepperImgBackground}>
-                    <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
-                  </div>
+              {/*<div onClick={() => getActiveStep('siteUsers')}>
+              <div className={style.justifyCenter}>
+                <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                  <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                 </div>
-                <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>APP USERS</p>
               </div>
-              <div onClick={() => getActiveStep('appSubscription')}>
-                <div className={style.justifyCenter}>
-                  <div className={style.stepperImgBackground}>
-                    <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
-                  </div>
-                </div>
-                <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>APP SUBSCRIPTION</p>
-              </div>
+              <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP USERS</p>
             </div>
-            <div className={style.stepperDivider}></div>
+             <div onClick={() => getActiveStep('appSubscription')}>
+              <div className={style.justifyCenter}>
+                <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
+                  <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
+                </div>
+              </div>
+              <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP SUBSCRIPTION</p>
+            </div> */}
+            </div>
+            <div className={isSuperAdminAccess ? style.stepperDivider3 : style.stepperDivider5grid3}></div>
           </div>
           <div className={style.entitySetupCardStyle}>
             <p className={style.heading}>Entity Setup</p>
@@ -643,6 +660,8 @@ const EntitySetup = () => {
         <EntitySystemAdmin getActiveStep={getActiveStep} />
       ) : activeStep === "siteUsers" ? (
         <SiteUsers getActiveStep={getActiveStep} />
+      ) : activeStep === "contractAndBilling" ? (
+        <ContractAndBillingDetails getActiveStep={getActiveStep} />
       ) : (
         <AppSubscription getActiveStep={getActiveStep} />
       )}

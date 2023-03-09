@@ -13,15 +13,21 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { GET, TenantID, PUT, isSuperAdminAccess } from './../dataSaver';
 import Step1 from './../../images/step12.png';
-import Step2 from './../../images/step23.png';
-import Step3 from './../../images/step34.png';
+import Step2 from './../../images/step2.png';
+import Step3 from './../../images/step3.png';
 import Step4 from './../../images/step45.png';
 import Step5 from './../../images/step55.png';
 import style from './index.module.scss';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
+import Box from '@mui/material/Box';
 import 'react-datalist-input/dist/styles.css';
 import { Auth } from './../../utils/auth'
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SaveInProgress from './saveInProgressAlert';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 
 const AppSubscription = ({ getActiveStep }) => {
@@ -35,6 +41,7 @@ const AppSubscription = ({ getActiveStep }) => {
   const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('AUTORENEWAL');
   const [isSetupComplete, setIsCompleteSetup] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
+  const [personName, setPersonName] = React.useState([]);
   const [plan, setPlan] = useState({
     planName: 'SILVER', allowableRegisteredUsers: 0, fees: "", subscriptionStatus: "ACTIVE", billingFrequency: "MONTHLY", discount: 0,
     poaNumber: ""
@@ -66,6 +73,19 @@ const AppSubscription = ({ getActiveStep }) => {
 
   const role = '';
   const accessToken = Auth();
+
+  const names = [
+    'Oliver Hansen',
+    'Van Henry',
+    'April Tucker',
+    'Ralph Hubbard',
+    'Omar Alexander',
+    'Carlos Abbott',
+    'Miriam Wagner',
+    'Bradley Wilkerson',
+    'Virginia Andrews',
+    'Kelly Snyder',
+  ];
 
   useEffect(() => {
     if (id !== 'new') {
@@ -119,6 +139,16 @@ const AppSubscription = ({ getActiveStep }) => {
       <Icon icon="calendar" intent={Intent.PRIMARY} className={style.calendarStyle} />
     )
   }
+
+  const handleChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setPersonName(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+  };
 
   const mandatoryFieldCheck = (buttonType) => {
     if (billingData?.email === '') {
@@ -280,18 +310,34 @@ const AppSubscription = ({ getActiveStep }) => {
         <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/activeCustomers')} />
         <div className={style.stepperMargin}>
           <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
+            <div onClick={() => getActiveStep('appSubscription')}>
+              <div className={style.justifyCenter}>
+                <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
+                  <img src={Step5} alt="Step1" className={style.stepperImgStyle} />
+                </div>
+              </div>
+              <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SUBSCRIPTION PLAN</p>
+            </div>
+            <div onClick={() => getActiveStep('contractAndBilling')}>
+              <div className={style.justifyCenter}>
+                <div className={`${style.stepperImgBackground}`}>
+                  <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
+                </div>
+              </div>
+              <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>CONTRACT & BILLING</p>
+            </div>
             <div onClick={() => getActiveStep('entitySetup')}>
               <div className={style.justifyCenter}>
-                <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                  <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
+                <div className={`${style.stepperImgBackground}`}>
+                  <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
                 </div>
               </div>
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
             </div>
             <div onClick={() => getActiveStep('siteInformation')}>
               <div className={style.justifyCenter}>
-                <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                  <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
+                <div className={`${style.stepperImgBackground}`}>
+                  <img src={Step3} alt="Step4" className={style.stepperImgStyle} />
                 </div>
               </div>
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
@@ -299,14 +345,14 @@ const AppSubscription = ({ getActiveStep }) => {
             {isSuperAdminAccess && (
               <div onClick={() => getActiveStep('entitySystemAdmin')}>
                 <div className={style.justifyCenter}>
-                  <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
-                    <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                  <div className={`${style.stepperImgBackground}`}>
+                    <img src={Step2} alt="Step5" className={style.stepperImgStyle} />
                   </div>
                 </div>
                 <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
               </div>
             )}
-            <div onClick={() => getActiveStep('siteUsers')}>
+            {/*<div onClick={() => getActiveStep('siteUsers')}>
               <div className={style.justifyCenter}>
                 <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                   <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
@@ -314,16 +360,16 @@ const AppSubscription = ({ getActiveStep }) => {
               </div>
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP USERS</p>
             </div>
-            <div onClick={() => getActiveStep('appSubscription')}>
+             <div onClick={() => getActiveStep('appSubscription')}>
               <div className={style.justifyCenter}>
                 <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
                   <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
                 </div>
               </div>
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP SUBSCRIPTION</p>
-            </div>
+            </div> */}
           </div>
-          <div className={isSuperAdminAccess ? style.stepperDivider5 : style.stepperDivider5grid4}></div>
+          <div className={isSuperAdminAccess ? style.stepperDivider : style.stepperDivider5grid1}></div>
         </div>
         <div className={style.entitySetupCardStyle}>
           <p className={style.heading}>App Subscription Information</p>
@@ -340,49 +386,133 @@ const AppSubscription = ({ getActiveStep }) => {
             <div className={style.cloneBlockStyle}>
               <div className={`${style.newContractFromCloneBoxStyle}`}>
                 <div className={`${style.extentionGrid}`}>
+                  <div className={style.extentionLableStyle}>Contracting Entity Name*</div>
+                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Name" />
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div className={style.extentionLableStyle}>Entity Abbreviation*</div>
+                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Abbreviation" />
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>Subscription Plan *</div>
                   <div className={`${style.leftAlign} ${style.displayInRow} ${style.verticalAlignCenter}`}>
-                    <select
-                      name="class"
-                      id="Class"
-                      disabled={!isSuperAdminAccess}
-                      value={plan?.planName}
+                    <CommonSelectField className={`${style.fullWidth} `}
+                      defaultValue={plan?.planName}
+                      value={plan?.planName ? plan?.planName : '0'}
                       onChange={(e) => setPlan({ ...plan, planName: e.target.value })}
-                      className={style.fullWidth}>
-                      {/* <option value="BASIC" >
-                                              Basic
-                                            </option> */}
-                      <option value="SILVER">
-                        Silver
-                      </option>
-                      <option value="BRONZE">
-                        Bronze
-                      </option>
-                      <option value="GOLD">
-                        Gold
-                      </option>
-                      <option value="CUSTOM">
-                        Custom
-                      </option>
-                      <option value="TRIAL">
-                        Trial Plan
-                      </option>
-                    </select>
-                    <button className={`${style.pricingButton} ${style.selectedColor} ${style.cursorPointer}`} >PRICING REVIEW</button>
+                      firstOptionLabel={'Select Subscription Plan'} firstOptionValue={'0'}
+                      valueList={['SILVER', "BRONZE", "GOLD", "CUSTOM", "TRIAL"]}
+                      labelList={['Silver', "Bronze", "Gold", "Custom", "Trial Plan"]}
+                      disabledList={[false, false, false, false, false]} />
+                    {/* <button className={`${style.pricingButton} ${style.selectedColor} ${style.cursorPointer}`} >PRICING REVIEW</button> */}
+                  </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                  <div></div>
+                  <div className={`${style.subscriptionRow} ${style.verticalAlignCenter}`}>
+
+                    <div className={style.extentionLableStyle}>Allowable Sites*</div>
+                    <CommonSelectField className={`${style.fullWidth} `}
+                      // defaultValue={plan?.planName}
+                      // value={plan?.planName ? plan?.planName : '0'}
+                      // onChange={(e) => setPlan({ ...plan, planName: e.target.value })}
+                      firstOptionLabel={'Select Allowable Sites'} firstOptionValue={'0'}
+                      valueList={['SINGLE', "MULTIPLE"]}
+                      labelList={['Single', "Multiple"]}
+                      disabledList={[false, false]} />
+                    <div className={`${style.extentionLableStyle} ${style.marginLeft50}`}>Number Of Sites*</div>
+                    <InputGroup className={style.fullWidth} />
+                  </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
+                  <div></div>
+                  <div className={`${style.subscriptionRow} ${style.verticalAlignCenter}`}>
+
+                    <div className={style.extentionLableStyle}>Allowable Registered Users*</div>
+                    <CommonSelectField className={`${style.fullWidth} `}
+                      // defaultValue={plan?.planName}
+                      // value={plan?.planName ? plan?.planName : '0'}
+                      // onChange={(e) => setPlan({ ...plan, planName: e.target.value })}
+                      firstOptionLabel={'Select Allowable Registered Users'} firstOptionValue={'0'}
+                      valueList={['LIMITED', "UNLIMITED"]}
+                      labelList={['Limited', "Unlimited"]}
+                      disabledList={[false, false]} />
+                    <div className={`${style.extentionLableStyle} ${style.marginLeft50}`}>Maximum Number Of Users*</div>
+                    <InputGroup className={style.fullWidth} />
+                  </div>
+                </div>
+                <div className={`${style.extentionGrid} ${style.marginTop10}`}>
+                  <div></div>
+                  <div className={`${style.feedbackSupport} ${style.verticalAlignCenter}`}>
+
+                    <div className={style.extentionLableStyle}>Feedback Support*</div>
+                    <FormControl size="small">
+                      <Select
+                        labelId="demo-multiple-chip-label"
+                        id="demo-multiple-chip"
+                        multiple
+                        value={personName}
+                        onChange={handleChange}
+                        // input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                        renderValue={(selected) => (
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            {selected.map((value) => (
+                              <Chip key={value} label={value} onDelete={() => { }} />
+                            ))}
+                          </Box>
+                        )}
+                      >
+                        {names.map((name) => (
+                          <MenuItem
+                            key={name}
+                            value={name}
+                          >
+                            {name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </div>
                 </div>
                 {plan?.planName !== "TRIAL" ? (
                   <>
-                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Allowable Registered Users *</div>
                       <InputGroup className={style.fourFieldWidth}
                         type="number"
                         disabled={!isSuperAdminAccess}
                         value={plan?.allowableRegisteredUsers}
                         onChange={(e) => setPlan({ ...plan, allowableRegisteredUsers: e.target.value })} />
+                    </div> */}
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Subscription Fee Criteria*</div>
+                      <div className={`${style.leftAlign} `}>
+                        <CommonSelectField className={`${style.twoFieldWidth} `}
+                          // defaultValue={plan?.billingFrequency}
+                          // value={plan?.billingFrequency ? plan?.billingFrequency : '0'}
+                          // onChange={(e) => setPlan({ ...plan, billingFrequency: e.target.value })}
+                          firstOptionLabel={'Select Billing Frequency'} firstOptionValue={'0'}
+                          valueList={['PERACTIVEUSERENDOFMONTH', "FIXEDMONTHLYFEE"]}
+                          labelList={['Per Active User End Of Month', "Fixed Monthly Fee"]}
+                          disabledList={[false, false]} />
+                      </div>
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                      <div className={style.extentionLableStyle}>Monthly Subscription Fees*</div>
+                      <div className={style.extentionLableStyle}>Billing Frequency *</div>
+                      <div className={`${style.leftAlign} `}>
+                        <CommonSelectField className={`${style.fourFieldWidth} `}
+                          defaultValue={plan?.billingFrequency}
+                          value={plan?.billingFrequency ? plan?.billingFrequency : '0'}
+                          onChange={(e) => setPlan({ ...plan, billingFrequency: e.target.value })}
+                          firstOptionLabel={'Select Billing Frequency'} firstOptionValue={'0'}
+                          valueList={['MONTHLY', "QUARTERLY", "ANNUALY"]}
+                          labelList={['Monthly', "Quarterly", "Annually"]}
+                          disabledSelect={!isSuperAdminAccess}
+                          disabledList={[false, false, false]} />
+                      </div>
+                    </div>
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Subscription Fees*</div>
                       <div className={style.displayInRow}>
                         <InputGroup className={`${style.textFieldWidth} ${style.fourFieldWidth}`}
                           value={plan?.fees}
@@ -390,38 +520,16 @@ const AppSubscription = ({ getActiveStep }) => {
                           leftElement={dollarLeftElement()}
                           disabled={!isSuperAdminAccess}
                           onChange={(e) => setPlan({ ...plan, fees: e.target.value })} />
-                        <div className={`${style.extentionLableStyle} ${style.fourFieldWidth} ${style.marginLeft20}`}>Per User</div>
+                        <div className={`${style.extentionLableStyle} ${style.fourFieldWidth} ${style.marginLeft20}`}>Monthly Per User</div>
                       </div>
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                      <div className={style.extentionLableStyle}>Billing Frequency *</div>
-                      <div className={`${style.leftAlign} `}>
-                        <select
-                          name="class"
-                          id="Class"
-                          value={plan?.billingFrequency}
-                          disabled={!isSuperAdminAccess}
-                          onChange={(e) => setPlan({ ...plan, billingFrequency: e.target.value })}
-                          className={style.fourFieldWidth}>
-                          <option value="MONTHLY" >
-                            Monthly
-                          </option>
-                          <option value="QUARTERLY" >
-                            Quarterly
-                          </option>
-                          <option value="ANNUALY" >
-                            Annualy
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                      <div className={style.extentionLableStyle}>Discount*</div>
+                      <div className={style.extentionLableStyle}>Agreed To Discount*</div>
                       <InputGroup className={style.fourFieldWidth} type="number" value={plan?.discount} rightElement={percentRightElement()} disabled={!isSuperAdminAccess}
                         onChange={(e) => setPlan({ ...plan, discount: e.target.value })}
                       />
                     </div>
-                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                    {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>POA Number</div>
                       <InputGroup className={style.fourFieldWidth} placeholder="POA Number" value={plan?.poaNumber}
                         onChange={(e) => setPlan({ ...plan, poaNumber: e.target.value })} />
@@ -476,19 +584,14 @@ const AppSubscription = ({ getActiveStep }) => {
                         {fullyExecutedContract && (
                           <div>
                             <div>
-                              <select
-                                name="class"
-                                id="Class"
-                                value={contractFiles?.type || 'Select...'}
+                              <CommonSelectField className={`${style.fullWidth} `}
+                                defaultValue={contractFiles?.type}
+                                value={contractFiles?.type ? contractFiles?.type : '0'}
                                 onChange={(e) => handleContractFiles('type', e.target.value)}
-                                className={`${style.fullWidth}`}>
-                                <option value="" >
-                                  Select Type of Document
-                                </option>
-                                <option value="Agreement">
-                                  Agreement
-                                </option>
-                              </select>
+                                firstOptionLabel={'Select Type of Document'} firstOptionValue={'0'}
+                                valueList={['Agreement']}
+                                labelList={['Agreement']}
+                                disabledList={[false]} />
                             </div>
                             <InputGroup className={`${style.fullWidth} ${style.marginTop10}`}
                               value={contractFiles?.name}
@@ -506,14 +609,6 @@ const AppSubscription = ({ getActiveStep }) => {
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Contract Term Period*</div>
                       <div className={style.displayInRow}>
-                        {/* <DateInput
-                                            formatDate={date => date.toLocaleDateString()}
-                                            parseDate={str => new Date(str)}
-                                            placeholder={"MM-DD-YYYY"}
-                                            value={contract?.startDate}
-                                            onChange={(e)=> handleContract('startDate',e)}
-                                            rightElement={calendarIcon()}
-                                        /> */}
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <DatePicker
                             value={contract?.startDate}
@@ -531,15 +626,6 @@ const AppSubscription = ({ getActiveStep }) => {
                           />
                         </LocalizationProvider>
                         <p className={style.toStyle}>To</p>
-                        {/* <DateInput
-                                            formatDate={date => date.toLocaleDateString()}
-                                            parseDate={str => new Date(str)}
-                                            placeholder={"MM-DD-YYYY"}
-                                            value={contract?.endDate}
-                                            onChange={(e)=> handleContract('endDate', e)}
-                                            minDate={contract?.startDate || new Date()}
-                                            rightElement={calendarIcon()}
-                                        /> */}
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <DatePicker
                             value={contract?.endDate}
@@ -562,15 +648,6 @@ const AppSubscription = ({ getActiveStep }) => {
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Planned Go Live</div>
                       <div className={style.displayInRow}>
-                        {/* <DateInput
-                                            formatDate={date => date.toLocaleDateString()}
-                                            parseDate={str => new Date(str)}
-                                            placeholder={"MM-DD-YYYY"}
-                                            value={contract?.date}
-                                            onChange={(e)=> handleContract('date', e)}
-                                            minDate={contract?.startDate || new Date()}
-                                            rightElement={calendarIcon()}
-                                        /> */}
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <DatePicker
                             value={contract?.date}
@@ -589,35 +666,21 @@ const AppSubscription = ({ getActiveStep }) => {
                           />
                         </LocalizationProvider>
                       </div>
-                    </div>
+                    </div> */}
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                      <div className={style.extentionLableStyle}>Contract Continuation Policy*</div>
+                      {/* <div className={style.extentionLableStyle}>Contract Continuation Policy*</div> */}
                       <div>
-                        <div className={style.reduce10Left}>
-                          <select
-                            name="class"
-                            id="Class"
-                            disabled={!isSuperAdminAccess}
-                            value={contract?.contractContinuationPolicy}
+                        {/* <div>
+                          <CommonSelectField className={`${style.fullWidth} `}
+                            defaultValue={contract?.contractContinuationPolicy}
+                            value={contract?.contractContinuationPolicy ? contract?.contractContinuationPolicy : '0'}
                             onChange={(e) => handleContract('contractContinuationPolicy', e.target.value)}
-                            className={`${style.fullWidth} `}>
-                            <option value="Select Value" >
-                              Select Value
-                            </option>
-                            <option value="AUTORENEWAL" >
-                              Auto Renewal
-                            </option>
-                            <option value="WRITTENCONTRACTEXTENSIONFORFIXEDTERM" >
-                              Written Contract Extension For Fixed Term
-                            </option>
-                            <option value="NEWCONTRACTONEXPIRATION" >
-                              New Contract On Expiration
-                            </option>
-                            <option value="ONETIMECONTRACTTERMINATEONEXPIRATION" >
-                              One Time Contract - Terminate On Expiration
-                            </option>
-                          </select>
-                        </div>
+                            firstOptionLabel={'Select Value'} firstOptionValue={'0'}
+                            valueList={['AUTORENEWAL', "WRITTENCONTRACTEXTENSIONFORFIXEDTERM", "NEWCONTRACTONEXPIRATION", "ONETIMECONTRACTTERMINATEONEXPIRATION"]}
+                            labelList={['Auto Renewal', "Written Contract Extension For Fixed Term", "New Contract On Expiration", "One Time Contract - Terminate On Expiration"]}
+                            disabledList={[false, false, false, false]}
+                            disabledSelect={!isSuperAdminAccess} />
+                        </div> */}
                         {
                           // {contract?.contractContinuationPolicy === "AUTORENEWAL" && (
                           //     <div className={`${style.renewalBoxStyle}`}>
