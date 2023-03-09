@@ -101,7 +101,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
         activityType: { activityType: ADDON },
         performingActivity: serviceSelected?.performingActivity?.activity,
         payableAmount: { value: serviceSelected?.payableAmount?.value },
-        locations: serviceSelected?.locations,
+        locations: serviceSelected?.serviceLocations,
         locationSpecified: serviceSelected?.locationSpecified,
         workingHours: {
           normalWorkingHours: serviceSelected?.workingHours?.normalWorkingHours,
@@ -526,7 +526,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   </div>
                 </div>
               }
-
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Allowable Add-On Working Hours*' />
                 <div className={style.twoCol}>
@@ -537,8 +536,11 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Specify Service Facility / Location' />
                 <div>
-                  <div className={`${style.fullWidth}`}>
-                    <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
+                  <div className={`${style.displayInRow} `}>
+                    <CommonSwitch checked={data?.locationSpecified} className={`${style.textAlignLeft}`} onChange={() => switchShowLocation(data?.performingActivity)} label={data?.locationSpecified ? 'YES' : 'NO'} />
+                    {data?.locationSpecified && <div className={`${style.fullWidth}`}>
+                      <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
+                    </div>}
                   </div>
                   {data?.locationSpecified && data?.locations?.length !== 0 &&
                     <MultiSelectDisplay values={data?.locations?.map(data => data?.location)} removeItem={removeLocation} />
@@ -728,11 +730,14 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value='Specify Service Facility / Location' />
             <div>
-              <div className={` ${style.fullWidth}`}>
-                <DatalistInput items={locationItems || []} onSelect={handleNewServiceLocation} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} clearInputOnSelect={true} />
-                {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+              <div className={`${style.displayInRow}`}>
+                <CommonSwitch className={`${style.textAlignLeft}`} checked={newServices?.showLocation} onChange={e => handleNewServiceChange('showLocation', !newServices?.showLocation)} label={newServices?.showLocation ? 'YES' : 'NO'} />
+                {newServices?.showLocation && <div className={` ${style.fullWidth}`}>
+                  <DatalistInput items={locationItems || []} onSelect={handleNewServiceLocation} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} clearInputOnSelect={true} />
+                  {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                       <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                     </div> */}
+                </div>}
               </div>
               {
                 newServices?.locations?.length !== 0 && newServices?.showLocation &&

@@ -314,6 +314,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       let dataValue = [];
       let temp = metadata;
       temp?.map((data, index) => {
+        data.serviceLocations = data?.locationSpecified ? data?.locations : locationItems;
         if (data?.approver !== undefined) {
           let workFlowData;
           data.activityType.activityType = serviceType;
@@ -375,6 +376,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       let temp = metadata;
       data = temp;
       temp?.map((data, index) => {
+        data.serviceLocations = data?.locationSpecified ? data?.locations : locationItems;
         data.refId = (new Date()).getTime()?.toString();
         let dataMap = {
           selectedActivityId: data?.selectedActivityId,
@@ -436,10 +438,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Activity Type Selection is Mandatory');
       return;
     }
-    // if (showLocation && selectedLocation?.length === 0) {
-    //   ErrorToaster('Atleast one location has to be selected if yes');
-    //   return;
-    // }
+    if (showLocation && selectedLocation?.length === 0) {
+      ErrorToaster('Atleast one location has to be selected if yes');
+      return;
+    }
     if ((serviceTypeTemplate === CLINIC || serviceTypeTemplate === PROCEDUREREADING) && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
       ErrorToaster('Selected Duration Should be equal to the contract start and end date');
       return;
@@ -508,6 +510,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     let data = [];
     if (serviceTypeTemplate === ADDON && !editService) {
       data = metadata;
+      data.serviceLocations = data?.locationSpecified ? data?.locations : locationItems;
     }
     else {
       let dataValues = metadata;
@@ -540,7 +543,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             }
           }
         }),
-        "serviceLocations": serviceTypeTemplate === ADDON ? dataValues?.locations : selectedLocation,
+        "serviceLocations": serviceTypeTemplate === ADDON ? dataValues?.locationSpecified ? dataValues?.locations : locationItems : showLocation ? selectedLocation : locationItems,
         ...(((serviceTypeTemplate === CLINIC || serviceTypeTemplate === PROCEDUREREADING) && {
           "contractedSchedules": metadata?.contractedSchedules,
           "patientsSeenTargets": metadata?.patientsSeenTargets,
@@ -1015,18 +1018,29 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
                     <CommonLabel value='Specify Service Facility / Location (Cost Center)*' />
                     <div>
-                      {/* <div className={`${style.displayInRow} `}> */}
+                      <div className={`${style.displayInRow} `}>
+                        <CommonSwitch checked={showLocation} className={`${style.switchFontStyle} ${style.flexLeft} `} onChange={() => setShowLocation(!showLocation)} label={showLocation ? 'YES' : 'NO'} />
 
-                      {/* <div className={`${style.addGrid} ${style.fullWidth} `}> */}
-                      <div className={style.fullWidth}>
-                        <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
-                        {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
-                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
-                          </div>
-                        </div> */}
+                        {/* <ThemeProvider theme={switchTheme}>
+                          <FormControlLabel
+                            control={
+                              <Switch className={`${style.textAlignLeft}`} />
+                            }
+                            color='primary'
+                            checked={showLocation}
+                            onChange={() => setShowLocation(!showLocation)}
+                            className={`${style.switchFontStyle} ${style.flexLeft} `}
+                            label={showLocation ? 'YES' : 'NO'}
+                          />
+                        </ThemeProvider> */}
+
+                        {/* <div className={`${style.addGrid} ${style.fullWidth} `}> */}
+                        {showLocation && <div className={style.fullWidth}>
+                          <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
+                        </div>}
                       </div>
                       {
-                        selectedLocation?.length !== 0 &&
+                        showLocation && selectedLocation?.length !== 0 &&
                         <MultiSelectDisplay values={selectedLocation?.map(data => data?.location)} removeItem={removeLocation} />
                       }
                     </div>

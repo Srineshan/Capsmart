@@ -162,6 +162,20 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         getPaymentFields();
     }
 
+    const fixedCompensationValue = (value, name, index) => {
+        console.log('value', value, name)
+        let temp = timesheetPayments;
+        temp?.filter((data, indexVal) => index === indexVal)?.map(data => {
+            data[name] = value;
+            // if (name === 'paymentBasedonFixedHoursVsActual' && !value) {
+            //     data['maxPaymentPerTimesheetSubmission'] = parseFloat(0);
+            //     data['maxPaymentPerContract'] = parseFloat(0);
+            // }
+        });
+        setTimesheetPayments(temp);
+        getPaymentFields();
+    }
+
     console.log('timesheet', timesheetPayments);
 
     const getPaymentFields = () => {
@@ -241,7 +255,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => updateTimesheetPayment(parseFloat(e.target.value), 'maxPaymentPerTimesheetSubmission', i)}
+                                    onChange={(e) => fixedCompensationValue(parseFloat(e.target.value), 'maxPaymentPerTimesheetSubmission', i)}
                                     value={timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission}
                                 />
                             </div>

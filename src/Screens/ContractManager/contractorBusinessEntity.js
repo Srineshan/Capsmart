@@ -78,9 +78,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       const { data: userData } = await GET(`user-management-service/user?contractID=${contractId}`);
       setUserCount(userData?.length || 0);
       if (selectContractInfo === 'INDIVIDUAL') {
-        setContractUser(userData?.filter(data => !data?.roles?.map(role => role?.id)?.includes('6344d59a45ca246bd12dd77b'))?.map(data => data)[0])
+        setContractUser(userData?.filter(data => !data?.roles?.map(role => role?.roleName)?.includes('Contract Business Entity Manager'))?.map(data => data)[0])
       }
-      let entityManager = userData?.filter(data => data?.roles?.map(role => role?.id)?.includes('6344d59a45ca246bd12dd77b'))?.map(data => data)
+      let entityManager = userData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Contract Business Entity Manager'))?.map(data => data)
       if (entityManager?.length !== 0) {
         setUserId(entityManager?.[0]?.id);
       }
@@ -133,7 +133,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
           "contractName": {
             "contractName": contractName
           },
-          "roles": roles?.filter(data => data?.roleName === '6344d59a45ca246bd12dd77b' || data?.roleName === 'Aggregator')?.map(data => data),
+          "roles": roles?.filter(data => data?.roleName === 'Contract Business Entity Manager' || data?.roleName === 'Aggregator')?.map(data => data),
           "sites": {
             "sites": []
           },
@@ -153,7 +153,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
           "mobileNumber": businessEntityUser?.contactNumber?.number,
           "landlineNumber": ""
         },
-        "roles": roles?.filter(data => data?.roleName === '6344d59a45ca246bd12dd77b' || data?.roleName === 'Aggregator')?.map(data => data),
+        "roles": roles?.filter(data => data?.roleName === 'Contract Business Entity Manager' || data?.roleName === 'Aggregator')?.map(data => data),
         "tenant": {
           "tenantId": TenantID
         },
@@ -194,7 +194,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       contractorEntityTaxId: contractorEntityTaxId,
       businessEntity: businessEntity,
       businessEntityUser: businessEntityUser,
-      roles: roles?.filter(data => data?.id === '6344d59a45ca246bd12dd77b')?.map(data => data),
+      roles: roles?.filter(data => data?.id === 'Contract Business Entity Manager')?.map(data => data),
       mailingAddress: mailingAddress,
       contractorContact: sameAsContractor,
       appRoleRequired: appRoleRequired,
@@ -366,11 +366,10 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 <div className={style.twoCol}>
                   <CommonInputField className={style.fullWidth}
                     placeholder="Enter Vendor NPIN"
-                    type="tel"
-                    maxLength={10}
+                    type="number"
                     disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
                     value={contractorNPIN?.npin}
-                    onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value, missing: false, notApplicable: false })} />
+                    onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value?.slice(0, 10), missing: false, notApplicable: false })} />
                   <div className={`${style.displayInRow}`}>
                     <CommonCheckBox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked, notApplicable: false, npin: '' })} label="Missing" />
                     <CommonCheckBox value="NA" checked={contractorNPIN?.notApplicable} onChange={(e) => setContractorNPIN({ ...contractorNPIN, notApplicable: e.target.checked, missing: false, npin: '' })} label="NA" />
