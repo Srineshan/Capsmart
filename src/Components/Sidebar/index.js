@@ -9,7 +9,7 @@ import { GET } from '../../Screens/dataSaver';
 import style from './index.module.scss';
 import { useForkRef } from '@material-ui/core';
 
-const SideBar = ({ children, isExpanded, getIsExpanded, refetchUserValues }) => {
+const SideBar = ({ children, isExpanded, getIsExpanded, refetchUserValues, updateProfileData }) => {
     const currentUserData = currentUser();
     const [currentUserDetails, setCurrentUserDetails] = useState();
     const [userId, setUserId] = useState(currentUserData?.id);
@@ -17,20 +17,17 @@ const SideBar = ({ children, isExpanded, getIsExpanded, refetchUserValues }) => 
     useEffect(() => {
         setUserId(currentUserData?.id);
         setUserDetails();
-    }, []);
-
-    useEffect(() => {
-        if (refetchUserValues) {
-            setUserDetails();
-            console.log('entered')
-        }
-    }, [refetchUserValues])
+        console.log('entered')
+    }, [window.location, updateProfileData]);
 
     const setUserDetails = async () => {
         const { data: user } = await GET(`user-management-service/user/${userId}`);
         setCurrentUserDetails(user);
         console.log(user)
     }
+
+    console.log(currentUserDetails, updateProfileData)
+
     return (
         !isExpanded ? (
             <div>
@@ -42,9 +39,9 @@ const SideBar = ({ children, isExpanded, getIsExpanded, refetchUserValues }) => 
                 <div className={`${style.cardStyle} ${style.marginTop20}`}>
                     <div className={`${style.displayInCol} ${style.alignCenter}`}>
                         <div className={`${style.userNameStyle} `}>
-                            {currentUserData?.fullName}
+                            {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
                         </div>
-                        <img src={currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={style.userLogo} />
+                        <img src={updateProfileData ? updateProfileData?.profilePic?.file?.fileURL : (currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime)} className={style.userLogo} />
                     </div>
                 </div>
                 <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
@@ -55,7 +52,7 @@ const SideBar = ({ children, isExpanded, getIsExpanded, refetchUserValues }) => 
             </div>
         ) : (
             <>
-                <UserCard getIsExpanded={getIsExpanded} />
+                <UserCard getIsExpanded={getIsExpanded} updateProfileData={updateProfileData} />
                 <div className={style.marginTop20}>{children}</div>
             </>
         )
