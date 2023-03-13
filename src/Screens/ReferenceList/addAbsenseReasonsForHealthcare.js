@@ -24,6 +24,7 @@ const AddAbsenseReasonsForHealthcare = ({
   const [createdDate, setCreatedDate] = useState("");
 
   console.log(selectedAbsence);
+  console.log(selectedTitle);
   const arrowDown = () => {
     return (
       <img

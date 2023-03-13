@@ -504,8 +504,7 @@ const AbsenceReasonsForCustomer = () => {
                             if you would like to setup your custom list for your
                             site(s) you can select from the default list on the
                             left, edit to change labels as needed, and also add
-                            new departments/ service area by clicking on the add
-                            icon
+                            new Absence Reason by clicking on the add icon
                           </p>
                         )}
                       </div>

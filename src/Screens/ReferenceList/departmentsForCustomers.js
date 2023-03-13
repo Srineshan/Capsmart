@@ -346,38 +346,203 @@ const DepartmentsForCustomers = () => {
                                   />
                                 </div>
                                 {selectedIndex === index &&
-                                  departmentService?.map((data, index) => (
-                                    <div
-                                      className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
-                                      key={index}
-                                    >
-                                      <p className={style.tableDataFontStyle}>
-                                        {data?.departmentGroupBy.name}
-                                      </p>
-                                      <div className={style.displayInRow}>
-                                        <img
-                                          src={EditHcRow}
-                                          alt=""
-                                          className={style.colorFileStyle}
-                                          onClick={() => {
-                                            setIsEdit(true);
-                                            getAddEntityDialog(true);
-                                            setSelectedDepartmentService(data);
-                                          }}
-                                        />
-                                        <img
-                                          src={DeleteHcRow}
-                                          alt=""
-                                          className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                          onClick={() =>
-                                            handleDeleteDepartmentService(
-                                              data?.id
-                                            )
-                                          }
-                                        />
-                                      </div>
-                                    </div>
-                                  ))}
+                                  departmentService?.map((data, index) => {
+                                    if (data?.serviceAreas.length !== 0) {
+                                      return (
+                                        <>
+                                          <div
+                                            className={`${style.contractedServiceProviderCard3} ${style.customersAdminBackground1} ${style.spaceBetween}`}
+                                            key={index}
+                                          >
+                                            <img
+                                              src={SemiTransparentFolder}
+                                              alt="SemiTransparentFolder"
+                                              className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                                            />
+                                            <p
+                                              className={
+                                                style.tableDataFontStyle
+                                              }
+                                            >
+                                              {data?.departmentGroupBy.name}
+                                            </p>
+                                            <div className={style.displayInRow}>
+                                              <img
+                                                src={EditHcFolder}
+                                                alt=""
+                                                className={style.colorFileStyle}
+                                                onClick={() => {
+                                                  setIsEdit(true);
+                                                  getAddEntityDialog(true);
+                                                  setSelectedDepartmentService(
+                                                    data
+                                                  );
+                                                }}
+                                              />
+                                              <img
+                                                src={DeleteHcFolder}
+                                                alt=""
+                                                className={`${style.colorFileStyle} ${style.marginLeft20}`}
+                                                // onClick={() =>
+                                                //   handleDeleteDepartmentService(
+                                                //     data?.id
+                                                //   )
+                                                // }
+                                              />
+                                            </div>
+                                          </div>
+                                          {data?.serviceAreas.map(
+                                            (service, idx) => {
+                                              return (
+                                                <>
+                                                  <div
+                                                    className={`${style.contractedServiceProviderCard2} ${style.customersAdminBackground1} ${style.spaceBetween}`}
+                                                    key={index}
+                                                  >
+                                                    <img
+                                                      src={
+                                                        SemiTransparentFolder
+                                                      }
+                                                      alt="SemiTransparentFolder"
+                                                      className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                                                    />
+                                                    <p
+                                                      className={
+                                                        style.tableDataFontStyle
+                                                      }
+                                                    >
+                                                      {service.name}
+                                                    </p>
+                                                    <div
+                                                      className={
+                                                        style.displayInRow
+                                                      }
+                                                    >
+                                                      <img
+                                                        src={EditHcFolder}
+                                                        alt=""
+                                                        className={
+                                                          style.colorFileStyle
+                                                        }
+                                                        onClick={() => {
+                                                          setIsEdit(true);
+                                                          getAddEntityDialog(
+                                                            true
+                                                          );
+                                                          setSelectedDepartmentService(
+                                                            data
+                                                          );
+                                                        }}
+                                                      />
+                                                      <img
+                                                        src={DeleteHcRow}
+                                                        alt=""
+                                                        className={`${style.colorFileStyle} ${style.marginLeft20}`}
+                                                        // onClick={() =>
+                                                        //   handleDeleteDepartmentService(
+                                                        //     data?.id
+                                                        //   )
+                                                        // }
+                                                      />
+                                                    </div>
+                                                  </div>
+                                                  {service?.serviceLocations.map(
+                                                    (location) => {
+                                                      return (
+                                                        <div
+                                                          className={`${style.contractedServiceProviderCard1} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
+                                                          key={index}
+                                                        >
+                                                          <p
+                                                            className={
+                                                              style.tableDataFontStyle3
+                                                            }
+                                                          >
+                                                            {location?.location}
+                                                          </p>
+                                                          <div
+                                                            className={`${style.displayInRow} ${style.marginRight20}`}
+                                                          >
+                                                            <img
+                                                              src={EditHcRow}
+                                                              alt=""
+                                                              className={
+                                                                style.colorFileStyle
+                                                              }
+                                                              onClick={() => {
+                                                                setIsEdit(true);
+                                                                getAddEntityDialog(
+                                                                  true
+                                                                );
+                                                                setSelectedDepartmentService(
+                                                                  data
+                                                                );
+                                                              }}
+                                                            />
+                                                            <img
+                                                              src={DeleteHcRow}
+                                                              alt=""
+                                                              className={`${style.colorFileStyle} ${style.marginLeft20}`}
+                                                              // onClick={() =>
+                                                              //   handleDeleteDepartmentService(
+                                                              //     data?.id
+                                                              //   )
+                                                              // }
+                                                            />
+                                                          </div>
+                                                        </div>
+                                                      );
+                                                    }
+                                                  )}
+                                                </>
+                                              );
+                                            }
+                                          )}
+                                        </>
+                                      );
+                                    } else {
+                                      return (
+                                        <>
+                                          <div
+                                            className={`${style.contractedServiceProviderCard4} ${style.customersAdminBackground1} ${style.spaceBetween}`}
+                                            key={index}
+                                          >
+                                            <p
+                                              className={
+                                                style.tableDataFontStyle
+                                              }
+                                            >
+                                              {data?.departmentGroupBy.name}
+                                            </p>
+                                            <div className={style.displayInRow}>
+                                              <img
+                                                src={EditHcFolder}
+                                                alt=""
+                                                className={style.colorFileStyle}
+                                                onClick={() => {
+                                                  setIsEdit(true);
+                                                  getAddEntityDialog(true);
+                                                  setSelectedDepartmentService(
+                                                    data
+                                                  );
+                                                }}
+                                              />
+                                              <img
+                                                src={DeleteHcRow}
+                                                alt=""
+                                                className={`${style.colorFileStyle} ${style.marginLeft20}`}
+                                                // onClick={() =>
+                                                //   handleDeleteDepartmentService(
+                                                //     data?.id
+                                                //   )
+                                                // }
+                                              />
+                                            </div>
+                                          </div>
+                                        </>
+                                      );
+                                    }
+                                  })}
                               </div>
                             </>
                           ))
@@ -386,8 +551,8 @@ const DepartmentsForCustomers = () => {
                             if you would like to setup your custom list for your
                             site(s) you can select from the default list on the
                             left, edit to change labels as needed, and also add
-                            new departments/ service area by clicking on the add
-                            icon
+                            new Departments / Service Area by clicking on the
+                            add icon
                           </p>
                         )}
                       </div>

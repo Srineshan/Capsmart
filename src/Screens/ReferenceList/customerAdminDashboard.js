@@ -273,7 +273,7 @@ const ClientAdminDashboard = () => {
                       <div
                         className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                       >
-                        <span className={style.dashboardCardColorOption1}>
+                        <span className={style.dashboardCardColorOption4}>
                           SETUP REQUIRED
                         </span>
                       </div>
@@ -351,7 +351,7 @@ const ClientAdminDashboard = () => {
                         <div
                           className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                         >
-                          <span className={style.dashboardCardColorOption1}>
+                          <span className={style.dashboardCardColorOption4}>
                             SETUP REQUIRED
                           </span>
                         </div>
@@ -368,7 +368,7 @@ const ClientAdminDashboard = () => {
                         <div
                           className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                         >
-                          <span className={style.dashboardCardColorOption1}>
+                          <span className={style.dashboardCardColorOption4}>
                             SETUP REQUIRED
                           </span>
                         </div>
