@@ -83,7 +83,7 @@ const AddNewDepartments = ({
             large={true}
             className={style.tagStyle}
           >
-            {tag?.location}
+            Hello
           </Tag>
         );
       })
@@ -119,24 +119,31 @@ const AddNewDepartments = ({
 
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
-    console.log(name, value);
+    console.log(name, value, index, serviceAreaList, serviceLocation);
     const list = [...serviceAreaList];
     if (name === "location") {
+      console.log(' inside location', value, index, selectedLocations, serviceLocation)
       if (value !== "0") {
         const tempSelectedLocation = serviceLocation
           .filter((data) => data?.location === value)
           .map((data) => data)[0];
-
         if (
           !selectedLocations
             .map((data) => data?.id)
             .includes(tempSelectedLocation?.id)
         ) {
-          setSelectedLocations([...selectedLocations, tempSelectedLocation]);
+          let tempLocations = selectedLocations;
+          tempLocations.push(tempSelectedLocation);
+          setSelectedLocations(tempLocations);
+          let temp = serviceAreaList?.filter((data, indexVal) => index === indexVal)?.map(data => data?.serviceLocations)[0];
+          console.log('temp', temp);
+          temp.push(tempSelectedLocation);
+          console.log('after pushing', temp);
+          list[index]['serviceLocations'] = temp;
         }
       }
       console.log(selectedLocations);
-      list[index][name] = selectedLocations;
+
     } else {
       list[index][name] = value;
     }
