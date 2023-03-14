@@ -93,7 +93,7 @@ const AddNewDepartments = ({
   const onRemoveLocation = (serviceIndex, locationIndex, location) => {
     console.log('remove', location, locationIndex, serviceIndex);
     setSelectedLocations(selectedLocations?.filter(data => data?.location !== location)?.map(data => data));
-    let tempLocations = serviceAreaList?.filter((data, index) => serviceIndex === index)?.map(data => data?.location)[0];
+    let tempLocations = serviceAreaList?.filter((data, index) => serviceIndex === index)?.map(data => data?.serviceLocations)[0] || [];
     let filteredLocations = tempLocations?.filter((data, index) => locationIndex !== index)?.map(data => data);
     let temp = serviceAreaList;
     temp[serviceIndex].serviceLocations = filteredLocations;
@@ -161,7 +161,7 @@ const AddNewDepartments = ({
           let tempLocations = selectedLocations;
           tempLocations.push(tempSelectedLocation);
           setSelectedLocations(tempLocations);
-          let temp = serviceAreaList?.filter((data, indexVal) => index === indexVal)?.map(data => data?.serviceLocations)[0];
+          let temp = serviceAreaList?.filter((data, indexVal) => index === indexVal)?.map(data => data?.serviceLocations)[0] || [];
           console.log('temp', temp);
           temp.push(tempSelectedLocation);
           console.log('after pushing', temp);
