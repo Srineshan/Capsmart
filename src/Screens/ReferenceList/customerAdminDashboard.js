@@ -37,7 +37,6 @@ const ClientAdminDashboard = () => {
       mappedDataArray.push(mappedData);
     }
 
-    
     let latestParentModifiedDate = mappedDataArray.reduce((a, b) => {
       return new Date(a.lastModified) > new Date(b.lastModified) ? a : b;
     });
@@ -81,9 +80,11 @@ const ClientAdminDashboard = () => {
                 {/* UPDATED ON FEB 16, 2022 16:45 EST */}
                 {`UPDATED ON ${letestParentDate.toUpperCase()} EST`}
               </div>
-              <div className={style.crossStyle}>
-                <Icon icon="cross" size={25} intent={Intent.DANGER} />
-              </div>
+              <Link to={"/entitySitePortal"}>
+                <div className={style.crossStyle}>
+                  <Icon icon="cross" size={25} intent={Intent.DANGER} />
+                </div>
+              </Link>
             </div>
             <div className={style.marginTop35}>
               <div className={style.centreCardStyle}>

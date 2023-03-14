@@ -83,40 +83,15 @@ const AddNewDepartments = ({
             large={true}
             className={style.tagStyle}
           >
-            Hello
+            {tag?.location}
           </Tag>
         );
       })
   ) : (
     <></>
   );
-  const onRemoveLocation = (serviceIndex, locationIndex, location) => {
-    console.log('remove', location, locationIndex, serviceIndex);
-    setSelectedLocations(selectedLocations?.filter(data => data?.location !== location)?.map(data => data));
-    let tempLocations = serviceAreaList?.filter((data, index) => serviceIndex === index)?.map(data => data?.serviceLocations)[0] || [];
-    let filteredLocations = tempLocations?.filter((data, index) => locationIndex !== index)?.map(data => data);
-    let temp = serviceAreaList;
-    temp[serviceIndex].serviceLocations = filteredLocations;
-    setServiceAreaList(temp);
-  }
 
-  const locationTagsAdd2 = (index) => {
-    let temp = [];
-    serviceAreaList?.filter((data, indexVal) => indexVal === index)?.map(data => {
-      data?.serviceLocations?.map((location, locationIndex) => {
-        temp.push(<Tag
-          key={locationIndex}
-          onRemove={() => onRemoveLocation(index, locationIndex, location?.location)}
-          large={true}
-          className={style.tagStyle}
-        >
-          {location?.location}
-        </Tag>)
-      })
-    })
-    return temp;
-  }
-
+  console.log(selectedLocations);
   const locationTagsEdit = selectedLocations ? (
     selectedLocations
       .filter((data) =>
@@ -143,12 +118,86 @@ const AddNewDepartments = ({
     <></>
   );
 
+  const onRemoveLocation = (serviceIndex, locationIndex, location) => {
+    // console.log("remove", location, locationIndex, serviceIndex);
+    setSelectedLocations(
+      selectedLocations
+        ?.filter((data) => data?.location !== location)
+        ?.map((data) => data)
+    );
+    let tempLocations =
+      serviceAreaList
+        ?.filter((data, index) => serviceIndex === index)
+        ?.map((data) => data?.serviceLocations)[0] || [];
+    let filteredLocations = tempLocations
+      ?.filter((data, index) => locationIndex !== index)
+      ?.map((data) => data);
+    let temp = serviceAreaList;
+    temp[serviceIndex].serviceLocations = filteredLocations;
+    setServiceAreaList(temp);
+  };
+
+  const locationTagsAdd2 = (index) => {
+    let temp = [];
+    serviceAreaList
+      ?.filter((data, indexVal) => indexVal === index)
+      ?.map((data) => {
+        data?.serviceLocations?.map((location, locationIndex) => {
+          temp.push(
+            <Tag
+              key={locationIndex}
+              onRemove={() =>
+                onRemoveLocation(index, locationIndex, location?.location)
+              }
+              large={true}
+              className={style.tagStyle}
+            >
+              {location?.location}
+            </Tag>
+          );
+        });
+      });
+    return temp;
+  };
+
+  const locationTagsEdit2 = (index) => {
+    let temp = [];
+    serviceAreaList
+      ?.filter((data, indexVal) => {
+        console.log(data, indexVal, index);
+        return indexVal === index;
+      })
+      ?.map((data) => {
+        data?.serviceLocations?.map((location, locationIndex) => {
+          temp.push(
+            <Tag
+              key={locationIndex}
+              onRemove={() =>
+                onRemoveLocation(index, locationIndex, location?.location)
+              }
+              large={true}
+              className={style.tagStyle}
+            >
+              {location?.location}
+            </Tag>
+          );
+        });
+      });
+    return temp;
+  };
+
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
-    console.log(name, value, index, serviceAreaList, serviceLocation);
+    // console.log(name, value, index, serviceAreaList, serviceLocation);
     const list = [...serviceAreaList];
     if (name === "location") {
-      console.log(' inside location', value, index, selectedLocations, serviceLocation)
+      // console.log(
+      //   " inside location",
+      //   value,
+      //   index,
+      //   selectedLocations,
+      //   serviceLocation
+      // );
       if (value !== "0") {
         const tempSelectedLocation = serviceLocation
           .filter((data) => data?.location === value)
@@ -161,15 +210,17 @@ const AddNewDepartments = ({
           let tempLocations = selectedLocations;
           tempLocations.push(tempSelectedLocation);
           setSelectedLocations(tempLocations);
-          let temp = serviceAreaList?.filter((data, indexVal) => index === indexVal)?.map(data => data?.serviceLocations)[0] || [];
-          console.log('temp', temp);
+          let temp =
+            serviceAreaList
+              ?.filter((data, indexVal) => index === indexVal)
+              ?.map((data) => data?.serviceLocations)[0] || [];
+          // console.log("temp", temp);
           temp.push(tempSelectedLocation);
-          console.log('after pushing', temp);
-          list[index]['serviceLocations'] = temp;
+          // console.log("after pushing", temp);
+          list[index]["serviceLocations"] = temp;
         }
       }
-      console.log(selectedLocations);
-
+      // console.log(selectedLocations);
     } else {
       list[index][name] = value;
     }
@@ -184,12 +235,12 @@ const AddNewDepartments = ({
   };
 
   const saveSubmitHandler = async (type) => {
-    let ServiceAreaData = [];
-    let ServiceLocation = [];
+    // let ServiceAreaData = [];
+    // let ServiceLocation = [];
 
-    if (selectedDepart?.serviceAreas) {
-      ServiceAreaData = [...selectedDepart?.serviceAreas];
-    }
+    // if (selectedDepart?.serviceAreas) {
+    //   ServiceAreaData = [...selectedDepart?.serviceAreas];
+    // }
 
     // const isPresent = departmentList.find(
     //   (p) => p.departmentName.name === departName
@@ -206,12 +257,12 @@ const AddNewDepartments = ({
       return false;
     }
 
-    if (serviceArea !== "") {
-      ServiceAreaData.push({
-        name: serviceArea,
-        serviceLocations: selectedLocations,
-      });
-    }
+    // if (serviceArea !== "") {
+    //   ServiceAreaData.push({
+    //     name: serviceArea,
+    //     serviceLocations: selectedLocations,
+    //   });
+    // }
 
     const data = {
       ...(isEdit && { id: departId }),
@@ -222,11 +273,8 @@ const AddNewDepartments = ({
       departmentGroupBy: {
         name: departName,
       },
-      serviceAreas: addService && serviceArea !== "" ? ServiceAreaData : [],
-      serviceLocations:
-        !addService || (addService && serviceArea === "")
-          ? selectedLocations
-          : ServiceLocation,
+      serviceAreas: addService ? serviceAreaList : [],
+      serviceLocations: !addService ? selectedLocations : [],
       ...(callingFrom === "Super Admin" && {
         siteTypeId: {
           id: selectedEntity?.id,
@@ -243,20 +291,20 @@ const AddNewDepartments = ({
     // let ApiData = callingFrom === "Customer Admin" && !isEdit ? data : [data];
     let ApiData = callingFrom === "Customer Admin" ? [data] : data;
 
-    console.log(ApiData);
-    // let ApiUrl =
-    //   callingFrom === "Super Admin"
-    //     ? "entity-service/departmentMaster"
-    //     : `entity-service/department`;
+    // console.log(ApiData);
+    let ApiUrl =
+      callingFrom === "Super Admin"
+        ? "entity-service/departmentMaster"
+        : `entity-service/department`;
 
-    // await POST(ApiUrl, JSON.stringify(ApiData))
-    //   .then((response) => {
-    //     SuccessToaster("Department Added Successfully");
-    //     getEntityData();
-    //   })
-    //   .catch((error) => {
-    //     ErrorToaster(error);
-    //   });
+    await POST(ApiUrl, JSON.stringify(ApiData))
+      .then((response) => {
+        SuccessToaster("Department Added Successfully");
+        getEntityData();
+      })
+      .catch((error) => {
+        ErrorToaster(error);
+      });
 
     if (type !== "Add More") {
       getAddEntityDialog(false);
@@ -275,18 +323,19 @@ const AddNewDepartments = ({
       setDepartName(selectedDepart?.departmentName?.name);
       setCreatedDate(selectedDepart?.createdDate);
       setSelectedLocations(selectedDepart?.serviceAreas[0]?.serviceLocations);
-      if (callingFrom === "Customer Admin") {
-        setServiceArea(selectedDepart?.serviceAreas[0]?.name);
-      }
+      setServiceAreaList(selectedDepart?.serviceAreas);
+      // if (callingFrom === "Customer Admin") {
+      //   setServiceArea(selectedDepart?.serviceAreas[0]?.name);
+      // }
       if (isService) {
         setServiceArea(selectedDepart?.serviceAreas[0]?.name);
       }
     }
   }, [selectedDepart]);
 
-  // console.log(addService);
+  console.log(addService);
   // console.log(selectedLocations);
-
+  console.log(selectedDepart?.serviceAreas);
   console.log(serviceAreaList);
 
   return (
@@ -400,21 +449,28 @@ const AddNewDepartments = ({
                           className={`${style.fullWidth} ${style.marginLeft10} `}
                         >
                           <option value="0">Select Service Location</option>
-                          {serviceLocation?.filter(data => !selectedLocations?.map(location => location?.location).includes(data?.location))?.map((data, index) => {
-                            return (
-                              <option
-                                key={`${data}-${index}`}
-                                value={data?.location}
-                              >
-                                {data?.location}
-                              </option>
-                            );
-                          })}
+                          {serviceLocation
+                            ?.filter(
+                              (data) =>
+                                !selectedLocations
+                                  ?.map((location) => location?.location)
+                                  .includes(data?.location)
+                            )
+                            ?.map((data, index) => {
+                              return (
+                                <option
+                                  key={`${data}-${index}`}
+                                  value={data?.location}
+                                >
+                                  {data?.location}
+                                </option>
+                              );
+                            })}
                         </select>
                         <div
                           className={`${style.marginTop20} ${style.marginLeft10}`}
                         >
-                          {!isEdit ? locationTagsAdd2(i) : locationTagsEdit}
+                          {!isEdit ? locationTagsAdd2(i) : locationTagsEdit2(i)}
                         </div>
                       </div>
                     </div>
@@ -493,7 +549,7 @@ const AddNewDepartments = ({
                     })}
                   </select>
                   <div className={`${style.marginTop20} ${style.marginLeft10}`}>
-                    {!isEdit ? locationTagsAdd2 : locationTagsEdit}
+                    {!isEdit ? locationTagsAdd : locationTagsEdit}
                   </div>
                 </div>
               </div>
