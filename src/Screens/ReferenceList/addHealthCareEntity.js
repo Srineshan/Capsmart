@@ -72,6 +72,7 @@ const AddHealthCareEntity = ({
     } else {
       setEntityName("");
       document.getElementById("entityName").focus();
+      getEntityData();
     }
   };
 

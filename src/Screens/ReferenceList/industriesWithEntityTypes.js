@@ -20,12 +20,14 @@ const IndustriesWithEntityTypes = ({
   const [showAddHcEntityDialog, setShowAddHcEntityDialog] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState("");
   const [industryId, setIndustryId] = useState("");
+  const [selectedIndustry, setSelectedIndustry] = useState({});
   const [tableEntityData, setTableEntityData] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [seletedEntity, setSelectedEntity] = useState({});
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
   const [allData, setAllData] = useState([]);
+  const [count, setCount] = useState(0);
 
   const getAddHcEntityDialog = (value) => {
     setShowAddHcEntityDialog(value);
@@ -40,7 +42,7 @@ const IndustriesWithEntityTypes = ({
 
   const getIndustryData = async () => {
     const { data: industryData } = await GET(`entity-service/industryMaster`);
-    setAllData([]);
+
     let allEntries = await Promise.all(industryData.map(entityAllData));
     setAllData(allEntries);
 
@@ -53,16 +55,13 @@ const IndustriesWithEntityTypes = ({
   };
 
   const getEntityData = async () => {
-    const { data: entity } = await GET(
-      `entity-service/entityTypeMaster?industryId=${industryId}`
+    const { data: entityData } = await GET(
+      `entity-service/entityTypeMaster?industryId=${selectedIndustry.id}`
     );
-    setTableEntityData(entity);
+    setTableEntityData(entityData);
   };
 
-  const SelectedHandler = (data) => {
-    setSelectedTitle(data.industry);
-    setIndustryId(data.id);
-  };
+  console.log(selectedIndustry);
 
   const deleteHandler = (data) => {
     setDeleteEntityId(data?.id);
@@ -84,7 +83,6 @@ const IndustriesWithEntityTypes = ({
       .then((response) => {
         SuccessToaster("Entity Deleted Successfully");
         getEntityData();
-        getIndustryData();
       })
       .catch((error) => {
         ErrorToaster(error);
@@ -97,12 +95,36 @@ const IndustriesWithEntityTypes = ({
 
   useEffect(() => {
     getEntityData();
-  }, [selectedTitle]);
+  }, [selectedIndustry]);
+
+  const EntityDefaultSet = (Data) => {
+    let updatedData = [...Data];
+    setSelectedIndustry(updatedData?.[0]);
+    setSelectedTitle(updatedData?.[0]?.industry);
+    setIndustryId(updatedData?.[0]?.id);
+  };
 
   useEffect(() => {
-    setSelectedTitle(allData?.[0]?.industry);
-    setIndustryId(allData?.[0]?.id);
+    EntityDefaultSet(allData);
   }, [allData]);
+
+  useEffect(() => {
+    let updateTableData = [];
+    tableEntityData.map((data) => {
+      updateTableData.push({ ...data, entities: data });
+    });
+    // console.log(updateTableData);
+    let updatedSideMenu = [];
+    allData.forEach((i) => {
+      // console.log(i.id, selectedIndustry.id);
+      if (i.id === selectedIndustry?.id) {
+        updatedSideMenu.push({ ...i, entities: updateTableData });
+      } else {
+        updatedSideMenu.push({ ...i });
+      }
+    });
+    console.log(updatedSideMenu);
+  }, [tableEntityData]);
 
   return (
     <Fragment>
@@ -116,7 +138,11 @@ const IndustriesWithEntityTypes = ({
                     ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
                     : `${style.industriesCardStyle} ${style.marginTop10}`
                 }
-                onClick={() => SelectedHandler(data)}
+                onClick={() => {
+                  setSelectedTitle(data?.industry);
+                  setIndustryId(data?.id);
+                  setSelectedIndustry(data);
+                }}
                 key={index}
               >
                 <div className={style.spaceBetween}>
@@ -124,7 +150,7 @@ const IndustriesWithEntityTypes = ({
                     {data.industry}
                   </p>
                   <p className={style.industriesCardTextStyle1}>
-                    {data.entities.length}
+                    {data?.entities.length}
                   </p>
                 </div>
               </div>

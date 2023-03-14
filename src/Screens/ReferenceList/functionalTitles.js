@@ -165,8 +165,10 @@ const FunctionalTitles = ({
   useEffect(() => {
     let updateTableData = [];
     getEntityDataList.map((data) => {
+      console.log(data);
       updateTableData.push({ ...data, functionalData: data });
     });
+    console.log(updateTableData);
     let updatedSideMenu = [];
     allData.forEach((i) => {
       i.entities.forEach((e) => {
@@ -179,6 +181,7 @@ const FunctionalTitles = ({
         });
       });
     });
+    console.log(updatedSideMenu);
   }, [getEntityDataList]);
 
   return (
