@@ -83,13 +83,39 @@ const AddNewDepartments = ({
             large={true}
             className={style.tagStyle}
           >
-            {tag?.location}
+            Hello
           </Tag>
         );
       })
   ) : (
     <></>
   );
+  const onRemoveLocation = (serviceIndex, locationIndex, location) => {
+    console.log('remove', location, locationIndex, serviceIndex);
+    setSelectedLocations(selectedLocations?.filter(data => data?.location !== location)?.map(data => data));
+    let tempLocations = serviceAreaList?.filter((data, index) => serviceIndex === index)?.map(data => data?.serviceLocations)[0] || [];
+    let filteredLocations = tempLocations?.filter((data, index) => locationIndex !== index)?.map(data => data);
+    let temp = serviceAreaList;
+    temp[serviceIndex].serviceLocations = filteredLocations;
+    setServiceAreaList(temp);
+  }
+
+  const locationTagsAdd2 = (index) => {
+    let temp = [];
+    serviceAreaList?.filter((data, indexVal) => indexVal === index)?.map(data => {
+      data?.serviceLocations?.map((location, locationIndex) => {
+        temp.push(<Tag
+          key={locationIndex}
+          onRemove={() => onRemoveLocation(index, locationIndex, location?.location)}
+          large={true}
+          className={style.tagStyle}
+        >
+          {location?.location}
+        </Tag>)
+      })
+    })
+    return temp;
+  }
 
   const locationTagsEdit = selectedLocations ? (
     selectedLocations
@@ -119,24 +145,31 @@ const AddNewDepartments = ({
 
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
-    console.log(name, value);
+    console.log(name, value, index, serviceAreaList, serviceLocation);
     const list = [...serviceAreaList];
     if (name === "location") {
+      console.log(' inside location', value, index, selectedLocations, serviceLocation)
       if (value !== "0") {
         const tempSelectedLocation = serviceLocation
           .filter((data) => data?.location === value)
           .map((data) => data)[0];
-
         if (
           !selectedLocations
             .map((data) => data?.id)
             .includes(tempSelectedLocation?.id)
         ) {
-          setSelectedLocations([...selectedLocations, tempSelectedLocation]);
+          let tempLocations = selectedLocations;
+          tempLocations.push(tempSelectedLocation);
+          setSelectedLocations(tempLocations);
+          let temp = serviceAreaList?.filter((data, indexVal) => index === indexVal)?.map(data => data?.serviceLocations)[0] || [];
+          console.log('temp', temp);
+          temp.push(tempSelectedLocation);
+          console.log('after pushing', temp);
+          list[index]['serviceLocations'] = temp;
         }
       }
       console.log(selectedLocations);
-      list[index][name] = selectedLocations;
+
     } else {
       list[index][name] = value;
     }
@@ -367,7 +400,7 @@ const AddNewDepartments = ({
                           className={`${style.fullWidth} ${style.marginLeft10} `}
                         >
                           <option value="0">Select Service Location</option>
-                          {serviceLocation?.map((data, index) => {
+                          {serviceLocation?.filter(data => !selectedLocations?.map(location => location?.location).includes(data?.location))?.map((data, index) => {
                             return (
                               <option
                                 key={`${data}-${index}`}
@@ -381,7 +414,7 @@ const AddNewDepartments = ({
                         <div
                           className={`${style.marginTop20} ${style.marginLeft10}`}
                         >
-                          {!isEdit ? locationTagsAdd : locationTagsEdit}
+                          {!isEdit ? locationTagsAdd2(i) : locationTagsEdit}
                         </div>
                       </div>
                     </div>
@@ -460,7 +493,7 @@ const AddNewDepartments = ({
                     })}
                   </select>
                   <div className={`${style.marginTop20} ${style.marginLeft10}`}>
-                    {!isEdit ? locationTagsAdd : locationTagsEdit}
+                    {!isEdit ? locationTagsAdd2 : locationTagsEdit}
                   </div>
                 </div>
               </div>
