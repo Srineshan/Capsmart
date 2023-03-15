@@ -334,6 +334,26 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         }
     }
 
+    // Format the price above to USD using the locale, style, and currency.
+    // let USDollar = new Intl.NumberFormat('en-US', {
+    //     style: 'currency',
+    //     currency: 'USD',
+    // });
+
+    // console.log(`The formated version of ${dollarRate?.hour} is ${USDollar.format(dollarRate?.hour)} and ${dollarRate?.hour.toLocaleString()}`);
+    console.log(parseFloat(dollarRate?.hour).toLocaleString())
+
+    const numberFormatter = (value) => {
+        console.log("1  " + value + "  " + typeof value); // Standard input from the textbox
+        if (value == null || value.length === 0) return value; // No crash when empty textbox
+        // value = value?.replaceAll(".", "").replaceAll(",", ""); // Remove garbage so we can make a number
+        console.log("2  " + value + "  " + typeof value);
+        value = parseInt(value, 10); // toLocaleString needs a Number
+        console.log("3  " + value + "  " + typeof value);
+        if (isNaN(value)) return 0; // Cant make a number then 0
+        return value?.toLocaleString("en-US"); // Cast number to US locale
+    };
+
     if (isLoading) {
         return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
     }
@@ -427,10 +447,13 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <CommonLabel value='Dollar Hourly Rate*' />
                                 <div className={style.twoCol}>
                                     <CommonTextField
-                                        type="number"
-                                        min="0"
+                                        // type="text"
+                                        // min="0"
+                                        // onBlur={(e) => setDollarRate({
+                                        //     ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7))?.toLocaleString('en-gb'), notApplicable: false
+                                        // })}
                                         disabled={dollarRate?.notApplicable}
-                                        value={dollarRate?.hour}
+                                        value={numberFormatter(dollarRate?.hour)}
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                         }}

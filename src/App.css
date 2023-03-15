@@ -148,3 +148,14 @@ select {
 .bp4-tag {
 	background-color: #7165E3 !important;
 }
+
+.css-euuqmf-MuiInputAdornment-root {
+	max-height: 100% !important;
+	margin-left: -14px;
+	min-width: 60%;
+}
+
+.css-1pnmrwp-MuiTypography-root {
+	color: #AFB2B6 !important;
+	font-size: 12px !important;
+}

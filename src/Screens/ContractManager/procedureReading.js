@@ -509,14 +509,32 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Regular Service Schedule*' />
                         <div className={style.displayInRow}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.contractedSchedules?.[0]?.minimum?.value} onChange={(e) => onSameTargetChange('contractedSchedules', e, 'minimum')} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => onSameTargetChange('contractedSchedules', e.target.value.slice(0, 2), 'minimum')}
+                                value={metadata?.contractedSchedules?.[0]?.minimum?.value}
+                                type='number'
+                            />
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
                                 <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.contractedSchedules?.[0]?.maximum?.value} onChange={(e) => onSameTargetChange('contractedSchedules', e, 'maximum')} />
-                            </div>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => onSameTargetChange('contractedSchedules', e.target.value.slice(0, 2), 'maximum')}
+                                value={metadata?.contractedSchedules?.[0]?.maximum?.value}
+                                type='number'
+                            />
                             <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                                 value={metadata?.contractedSchedules?.[0]?.frequency || ''}
                                 onChange={(e) => onSameTargetChange('contractedSchedules', e.target.value, 'frequency')}
@@ -529,14 +547,32 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Patients Seen Target*' />
                         <div className={style.withNurseGrid}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                                 <div className={style.textElement}>WITH NURSE</div>
                                 <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.patientsSeenTargets?.[0]?.withNurse?.value} onChange={(e) => onSameTargetChange('patientsSeenTargets', e, 'withNurse')} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>WITH NURSE</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => onSameTargetChange('patientsSeenTargets', e.target.value.slice(0, 2), 'withNurse')}
+                                value={metadata?.patientsSeenTargets?.[0]?.withNurse?.value}
+                                type='number'
+                            />
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                                 <div className={style.textElement}>WITHOUT NURSE</div>
                                 <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value} onChange={(e) => onSameTargetChange('patientsSeenTargets', e, 'withoutNurse')} />
-                            </div>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>WITHOUT NURSE</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => onSameTargetChange('patientsSeenTargets', e.target.value.slice(0, 2), 'withoutNurse')}
+                                value={metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value}
+                                type='number'
+                            />
                             <CommonCheckBox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} checked={metadata?.patientsSeenTargets?.[0]?.noTargetApplicable} onChange={(e) => onSameTargetChange('patientsSeenTargets', e.target.checked, 'noTargetApplicable')} />
                         </div>
                     </div>
@@ -544,14 +580,32 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Scheduled Patient Target*' />
                         <div className={`${style.withNurseGrid} ${style.fullWidth}`}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                                 <div className={style.textElement}>WITH NURSE</div>
                                 <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.scheduledPatientsTargets?.[0]?.withNurse?.value} onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e, 'withNurse')} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>WITH NURSE</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e.target.value.slice(0, 2), 'withNurse')}
+                                value={metadata?.scheduledPatientsTargets?.[0]?.withNurse?.value}
+                                type='number'
+                            />
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                                 <div className={style.textElement}>WITHOUT NURSE</div>
                                 <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.scheduledPatientsTargets?.[0]?.withoutNurse?.value} onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e, 'withoutNurse')} />
-                            </div>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>WITHOUT NURSE</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e.target.value.slice(0, 2), 'withoutNurse')}
+                                value={metadata?.scheduledPatientsTargets?.[0]?.withoutNurse?.value}
+                                type='number'
+                            />
                             <CommonCheckBox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} checked={metadata?.scheduledPatientsTargets?.[0]?.noTargetApplicable} onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e.target.checked, 'noTargetApplicable')} />
                         </div>
                     </div>

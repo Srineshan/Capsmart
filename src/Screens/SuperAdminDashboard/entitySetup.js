@@ -355,7 +355,6 @@ const EntitySetup = () => {
       }
     }
     if (logo === null) {
-      data.id = entityData?.logo?.id;
       formData.append('logo', new Blob([JSON.stringify(data)], {
         type: "application/json"
       }));
@@ -369,6 +368,7 @@ const EntitySetup = () => {
           ErrorToaster('Unexpected Error Occured');
         })
     } else {
+      data.id = entityData?.logo?.id;
       formData.append('logo', new Blob([JSON.stringify(data)], {
         type: "application/json"
       }));
@@ -398,7 +398,6 @@ const EntitySetup = () => {
       }
     }
     if (thumbnail?.url === '') {
-      data.id = entityData?.logoThumbnail?.id;
       formData.append('logoThumbnail', new Blob([JSON.stringify(data)], {
         type: "application/json"
       }));
@@ -412,6 +411,7 @@ const EntitySetup = () => {
           ErrorToaster('Unexpected Error Occured');
         })
     } else {
+      data.id = entityData?.logoThumbnail?.id;
       formData.append('logoThumbnail', new Blob([JSON.stringify(data)], {
         type: "application/json"
       }));

@@ -159,14 +159,32 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Regular Service Schedule*' />
                 <div className={style.displayInRow}>
-                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                    {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MIN</div>
                         <EditableText type='tel' maxLength="2" placeholder='' value={metadata?.min} className={style.serviceProvidedEditableTextStyle} onChange={(e) => e >= 0 && handleValueChange('min', e)} />
-                    </div>
-                    <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                    </div> */}
+                    <CommonTextField
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
+                        }}
+                        className={style.threeFieldWidth}
+                        onChange={(e) => e.target.value >= 0 && handleValueChange('min', e.target.value.slice(0, 2))}
+                        value={metadata?.min}
+                        type='number'
+                    />
+                    {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MAX</div>
                         <EditableText value={metadata?.max} placeholder='' type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} onChange={(e) => e >= 0 && handleValueChange('max', e)} />
-                    </div>
+                    </div> */}
+                    <CommonTextField
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
+                        }}
+                        className={style.threeFieldWidth}
+                        onChange={(e) => e.target.value >= 0 && handleValueChange('max', e.target.value.slice(0, 2))}
+                        value={metadata?.max}
+                        type='number'
+                    />
                     <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                         onChange={(e) => handleValueChange('frequency', e.target.value)}
                         value={metadata?.frequency}

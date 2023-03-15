@@ -142,7 +142,7 @@ const SetPassword = () => {
     } else if (!isMin8CharacterAvailable) {
       ErrorToaster('Minimum 8 characters required');
       return;
-    } else if (passwordStrengthLength <= 4) {
+    } else if (passwordStrengthLength < 4) {
       ErrorToaster('Should Satisfy Minimum 4 Conditions');
       return;
     } else {
@@ -162,7 +162,7 @@ const SetPassword = () => {
         })
         .catch(error => {
           console.log('Error', error);
-          ErrorToaster('Unexpected Error Occured');
+          ErrorToaster(error?.response?.data);
 
         })
     }
