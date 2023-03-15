@@ -11,6 +11,7 @@ import {
   Tag,
 } from "@blueprintjs/core";
 import style from "./index.module.scss";
+import ArrowDown from "./../../images/arrowDown.png";
 import { POST, PUT, GET, TenantID } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 
@@ -91,7 +92,7 @@ const AddNewDepartments = ({
     <></>
   );
 
-  console.log(selectedLocations);
+  // console.log(selectedLocations);
   const locationTagsEdit = selectedLocations ? (
     selectedLocations
       .filter((data) =>
@@ -333,10 +334,10 @@ const AddNewDepartments = ({
     }
   }, [selectedDepart]);
 
-  console.log(addService);
+  // console.log(addService);
   // console.log(selectedLocations);
-  console.log(selectedDepart?.serviceAreas);
-  console.log(serviceAreaList);
+  // console.log(selectedDepart?.serviceAreas);
+  // console.log(serviceAreaList);
 
   return (
     <Dialog
@@ -351,14 +352,36 @@ const AddNewDepartments = ({
           <p className={style.extensionStyle}>
             {` New Departments / Services Area For ${selectedTitle}`}
           </p>
-          <Icon
-            icon="cross"
-            size={20}
-            intent={Intent.DANGER}
-            className={style.dialogCrossStyle}
-            onClick={() => getAddEntityDialog(false)}
-          />
+          <div className={`${style.displayInRow}`}>
+            <div className={`${style.displayInRow} ${style.marginRight20}`}>
+              <img
+                src={
+                  "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
+                }
+                alt="refresh"
+                className={`${style.headerFlag} ${style.marginRight15}`}
+              />
+              <span
+                className={`${style.headerCountryName} ${style.marginLeft10}`}
+              >
+                USA
+              </span>
+              <img
+                src={ArrowDown}
+                className={`${style.colorFileStyle2} ${style.marginLeft10}  ${style.marginTop10}`}
+                alt=""
+              />
+            </div>
+            <Icon
+              icon="cross"
+              size={20}
+              intent={Intent.DANGER}
+              className={style.dialogCrossStyle}
+              onClick={() => getAddEntityDialog(false)}
+            />
+          </div>
         </div>
+
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
           <div className={`${style.extentionGrid}`}>

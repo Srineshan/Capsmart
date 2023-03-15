@@ -10,6 +10,7 @@ import {
 import style from "./index.module.scss";
 import AddHealthcareGroup from "./../../images/addGroupBlue.png";
 import { POST, PUT, TenantID } from "../dataSaver";
+import ArrowDown from "./../../images/arrowDown.png";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import { useEffect } from "react";
 
@@ -22,14 +23,14 @@ const AddSuffixEntity = ({
   getEntityData,
   tableEntityData,
   getIndustryData,
-  callingFrom
+  callingFrom,
 }) => {
   const [entityId, setEntityId] = useState("");
   const [entityName, setEntityName] = useState("");
   const [createdDate, setCreatedDate] = useState("");
   const [addSuffix, setAddSuffix] = useState(true);
 
-  console.log('selectedEntiy', selectedEntity);
+  console.log("selectedEntiy", selectedEntity);
 
   const saveSubmitHandler = async (type) => {
     const isPresent = tableEntityData.find((p) => p.suffix === entityName);
@@ -51,17 +52,20 @@ const AddSuffixEntity = ({
       industryId: {
         id: IndustryId,
       },
-      ...(callingFrom === 'Customer Admin' && {
+      ...(callingFrom === "Customer Admin" && {
         customized: true,
         entityId: {
-          id: TenantID
-        }
-      })
+          id: TenantID,
+        },
+      }),
     };
 
-    let ApiData = callingFrom === 'Customer Admin' && !isEdit ? [data] : data;
+    let ApiData = callingFrom === "Customer Admin" && !isEdit ? [data] : data;
 
-    let ApiUrl = callingFrom === 'Super Admin' ? 'entity-service/nameSuffixMaster' : `entity-service/nameSuffix`;
+    let ApiUrl =
+      callingFrom === "Super Admin"
+        ? "entity-service/nameSuffixMaster"
+        : `entity-service/nameSuffix`;
     if (!isEdit) {
       await POST(ApiUrl, JSON.stringify(ApiData))
         .then((response) => {
@@ -72,10 +76,7 @@ const AddSuffixEntity = ({
           ErrorToaster(error);
         });
     } else {
-      await PUT(
-        `${ApiUrl}/${data?.id}`,
-        JSON.stringify(ApiData)
-      )
+      await PUT(`${ApiUrl}/${data?.id}`, JSON.stringify(ApiData))
         .then((response) => {
           SuccessToaster("Event Updated Successfully");
           getEntityData();
@@ -84,7 +85,7 @@ const AddSuffixEntity = ({
           ErrorToaster(error);
         });
     }
-    if (callingFrom === 'Super Admin') {
+    if (callingFrom === "Super Admin") {
       getIndustryData();
     }
     if (type !== "Add More") {
@@ -117,19 +118,41 @@ const AddSuffixEntity = ({
           <p className={style.extensionStyle}>
             {`Add / Edit Suffix For ${selectedTitle}`}
           </p>
-          <Icon
-            icon="cross"
-            size={20}
-            intent={Intent.DANGER}
-            className={style.dialogCrossStyle}
-            onClick={() => getAddEntityDialog(false)}
-          />
+          <div className={`${style.displayInRow}`}>
+            <div className={`${style.displayInRow} ${style.marginRight20}`}>
+              <img
+                src={
+                  "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
+                }
+                alt="refresh"
+                className={`${style.headerFlag} ${style.marginRight15}`}
+              />
+              <span
+                className={`${style.headerCountryName} ${style.marginLeft10}`}
+              >
+                USA
+              </span>
+              <img
+                src={ArrowDown}
+                className={`${style.colorFileStyle2} ${style.marginLeft10}  ${style.marginTop10}`}
+                alt=""
+              />
+            </div>
+            <Icon
+              icon="cross"
+              size={20}
+              intent={Intent.DANGER}
+              className={style.dialogCrossStyle}
+              onClick={() => getAddEntityDialog(false)}
+            />
+          </div>
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
-
           <>
-            <div className={`${style.editHealthCareGrid1} ${style.marginTop20}`}>
+            <div
+              className={`${style.editHealthCareGrid1} ${style.marginTop20}`}
+            >
               <div className={style.entityLableStyle}>Industry Name*</div>
               <div className={style.displayInRow}>
                 <InputGroup value={selectedTitle} className={style.halfWidth} />
@@ -146,8 +169,6 @@ const AddSuffixEntity = ({
               className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
             ></div>
           </>
-
-
 
           {addSuffix && (
             <div className={`${style.addHealthCareBoxStyle}`}>

@@ -11,7 +11,7 @@ const ClientAdminDashboard = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [lastUpdatedDate, setLastUpdatedDate] = useState([]);
   const [entityId, setEntityId] = useState("");
-  const [letestParentDate, setLatestParentDate] = useState("");
+  const [latestParentDate, setLatestParentDate] = useState("");
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -78,7 +78,7 @@ const ClientAdminDashboard = () => {
                 className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
               >
                 {/* UPDATED ON FEB 16, 2022 16:45 EST */}
-                {`UPDATED ON ${letestParentDate.toUpperCase()} EST`}
+                {`UPDATED ON ${latestParentDate.toUpperCase()} EST`}
               </div>
               <Link to={"/entitySitePortal"}>
                 <div className={style.crossStyle}>

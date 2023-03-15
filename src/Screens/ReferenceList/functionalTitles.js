@@ -11,15 +11,14 @@ import EditHcRow from "./../../images/editHcRow.png";
 import { GET, DELETE } from "./../dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
-import format from "date-fns/format";
+import { format } from "date-fns";
+import Navbar from "../../Components/Navbar";
+import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import SideBar from "../../Components/Sidebar";
 
-const FunctionalTitles = ({
-  getAddEntityDialog,
-  showAddEntityDialog,
-  isEdit,
-  setIsEdit,
-  sendLastDate,
-}) => {
+const FunctionalTitles = () => {
+  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [allData, setAllData] = useState([]);
   const [clicked, setClicked] = useState(0);
   const [isClicked, setIsClicked] = useState(0);
@@ -31,6 +30,16 @@ const FunctionalTitles = ({
   const [entityData, setEntityData] = useState({});
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+
+  const getAddEntityDialog = (value) => {
+    setShowAddEntityDialog(value);
+  };
+
+  const getIsExpanded = (value) => {
+    setIsExpanded(value);
+  };
 
   const entityAllData = async (industry) => {
     const { data: entities } = await GET(
@@ -67,21 +76,7 @@ const FunctionalTitles = ({
     );
 
     const date = new Date(lastModifiedDate.functionalTitles.lastModified);
-
-    sendLastDate(
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          month: "short",
-          day: "2-digit",
-          hour: "numeric",
-          minute: "numeric",
-          year: "numeric",
-          timeZoneName: "short",
-          hour12: false,
-        })
-        .toUpperCase()
-    );
+    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
   const handleToggle = (index, data) => {
@@ -186,186 +181,246 @@ const FunctionalTitles = ({
 
   return (
     <Fragment>
-      <div className={style.departmentCardColumnsGrid}>
-        <div>
-          {allData?.map((data, index) => {
-            return data?.entities.length !== 0 ? (
-              <>
-                <div
-                  className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween} ${style.marginTop10}`}
-                  key={index}
-                  onClick={() => handleToggle(index, data)}
-                >
-                  <img
-                    src={TransparentFolder}
-                    className={`${style.colorFileStyle2} ${style.marginLeft15}`}
-                    alt=""
-                  />
-                  <p className={style.healthCareHeaderTextStyle}>
-                    {data.industry}
-                  </p>
-                  <img
-                    src={ArrowDown}
-                    className={`${style.colorFileStyle2} ${style.marginRight}`}
-                    alt=""
-                  />
-                </div>
-                <div
-                  className={
-                    clicked === index
-                      ? `${style.listWrapper} ${style.open}`
-                      : `${style.listWrapper}`
-                  }
-                >
-                  {data?.entities?.map((entity, indx) => {
-                    return entity.CSP.length !== 0 ? (
-                      <>
-                        <div
-                          className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween} ${style.marginTop10}`}
-                          onClick={() => handleToggleCsp(indx, entity)}
-                        >
+      <Navbar />
+      <div className={style.margin20}>
+        <div
+          className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid}`}
+        >
+          <div>
+            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+              <div></div>
+            </SideBar>
+          </div>
+
+          <div>
+            <LevelTwoHeader
+              heading={`FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              path={"/Screens/ReferenceList/superAdminDashboard"}
+              callingFrom={"Super Admin"}
+              needHeader={true}
+              getAddEntityDialog={getAddEntityDialog}
+              Title={"ADD FUNCTIONAL TITLES"}
+            />
+
+            <div className={style.marginTop35}>
+              <div className={style.centreCardStyle}>
+                <div className={style.margin20}>
+                  <div className={style.departmentCardColumnsGrid}>
+                    <div>
+                      {allData?.map((data, index) => {
+                        return data?.entities.length !== 0 ? (
+                          <>
+                            <div
+                              className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween} ${style.marginTop10}`}
+                              key={index}
+                              onClick={() => handleToggle(index, data)}
+                            >
+                              <img
+                                src={TransparentFolder}
+                                className={`${style.colorFileStyle2} ${style.marginLeft15}`}
+                                alt=""
+                              />
+                              <p className={style.healthCareHeaderTextStyle}>
+                                {data.industry}
+                              </p>
+                              <img
+                                src={ArrowDown}
+                                className={`${style.colorFileStyle2} ${style.marginRight}`}
+                                alt=""
+                              />
+                            </div>
+                            <div
+                              className={
+                                clicked === index
+                                  ? `${style.listWrapper} ${style.open}`
+                                  : `${style.listWrapper}`
+                              }
+                            >
+                              {data?.entities?.map((entity, indx) => {
+                                return entity.CSP.length !== 0 ? (
+                                  <>
+                                    <div
+                                      className={`${style.healthCareListHeader} ${style.HealthCareListBackground1} ${style.spaceBetween} ${style.marginTop10}`}
+                                      onClick={() =>
+                                        handleToggleCsp(indx, entity)
+                                      }
+                                    >
+                                      <img
+                                        src={TransparentFolder}
+                                        className={`${style.colorFileStyle2} ${style.marginLeft15}`}
+                                        alt=""
+                                      />
+                                      <p
+                                        className={
+                                          style.healthCareHeaderTextStyle3
+                                        }
+                                      >
+                                        {" "}
+                                        {entity.type}
+                                      </p>
+                                      <img
+                                        src={ArrowDown}
+                                        className={`${style.colorFileStyle2} ${style.marginRight}`}
+                                        alt=""
+                                      />
+                                    </div>
+                                    <div
+                                      className={
+                                        isClicked === indx
+                                          ? `${style.listWrapper} ${style.open}`
+                                          : `${style.listWrapper}`
+                                      }
+                                    >
+                                      {entity?.CSP?.map((siteType) => {
+                                        return (
+                                          <div
+                                            className={
+                                              siteType?.contractedServiceProviderType ===
+                                              selectedTitle
+                                                ? `${style.healthCareListCardStyle}  ${style.marginTop10} ${style.HealthCareListBackground2} ${style.spaceBetween}`
+                                                : `${style.healthCareListCardStyle}  ${style.marginTop10}  ${style.spaceBetween}`
+                                            }
+                                            onClick={() => {
+                                              setSelectedTitle(
+                                                siteType.contractedServiceProviderType
+                                              );
+                                              setIsEdit(false);
+                                              setSelectedEntity(siteType);
+                                            }}
+                                          >
+                                            <p
+                                              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop10}`}
+                                            >
+                                              {
+                                                siteType.contractedServiceProviderType
+                                              }
+                                            </p>
+                                            <p
+                                              className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
+                                            >
+                                              {siteType?.functionalData.length}
+                                            </p>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </>
+                                ) : (
+                                  <></>
+                                );
+                              })}
+                            </div>
+                          </>
+                        ) : (
+                          <></>
+                        );
+                      })}
+                    </div>
+
+                    <div className={style.DepartmentEntityCardStyle}>
+                      <div className={style.tableHeaderFuntionalTitles}>
+                        <p></p>
+                        <p className={style.tableHeaderIndustriesFontStyle}>
+                          ENTITY NAME
+                        </p>
+                        <p className={style.tableHeaderIndustriesFontStyle}>
+                          ALIAS 1
+                        </p>
+                        <p className={style.tableHeaderIndustriesFontStyle}>
+                          ALIAS 2
+                        </p>
+                        <p className={style.tableHeaderIndustriesFontStyle}>
+                          LAST UPDATED
+                        </p>
+                        <p></p>
+                      </div>
+                      {
+                        <div className={style.healthCareIndustriesHeader}>
                           <img
-                            src={TransparentFolder}
-                            className={`${style.colorFileStyle2} ${style.marginLeft15}`}
-                            alt=""
+                            src={IndustriesEntityFolder}
+                            alt="IndustriesEntityFolder"
+                            className={`${style.colorFileStyle} ${style.marginLeft5}`}
                           />
-                          <p className={style.healthCareHeaderTextStyle3}>
-                            {" "}
-                            {entity.type}
+                          <p className={style.tableHeaderIndustriesFontStyle}>
+                            {selectedEntity.contractedServiceProviderType}
                           </p>
                           <img
-                            src={ArrowDown}
-                            className={`${style.colorFileStyle2} ${style.marginRight}`}
+                            src={EditHcFolder}
+                            onClick={() => {
+                              getAddEntityDialog(true);
+                              setIsEdit(false);
+                            }}
+                            className={style.colorFileStyle}
+                            alt=""
+                          />
+                          <img
+                            src={DeleteHcFolder}
+                            className={style.colorFileStyle}
                             alt=""
                           />
                         </div>
-                        <div
-                          className={
-                            isClicked === indx
-                              ? `${style.listWrapper} ${style.open}`
-                              : `${style.listWrapper}`
-                          }
-                        >
-                          {entity?.CSP?.map((siteType) => {
-                            return (
-                              <div
-                                className={
-                                  siteType?.contractedServiceProviderType ===
-                                  selectedTitle
-                                    ? `${style.healthCareListCardStyle}  ${style.marginTop10} ${style.HealthCareListBackground2} ${style.spaceBetween}`
-                                    : `${style.healthCareListCardStyle}  ${style.marginTop10}  ${style.spaceBetween}`
-                                }
+                      }
+
+                      {getEntityDataList?.map((data, index) => {
+                        return (
+                          <>
+                            <div
+                              className={
+                                index % 2 === 0
+                                  ? `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                  : `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                              }
+                              key={index}
+                            >
+                              <p></p>
+                              <p className={style.tableDataFontStyle}>
+                                {data?.title}
+                              </p>
+                              <p className={style.tableDataFontStyle}>
+                                {data?.alias1}
+                              </p>
+                              <p className={style.tableDataFontStyle}>
+                                {data?.alias2}
+                              </p>
+                              <p className={style.tableDataFontStyle}>
+                                {format(
+                                  new Date(`${data.lastModifiedDate}`),
+                                  "MM-dd-yyyy"
+                                )}
+                              </p>
+                              <img
+                                src={EditHcRow}
+                                className={style.colorFileStyle}
+                                alt=""
                                 onClick={() => {
-                                  setSelectedTitle(
-                                    siteType.contractedServiceProviderType
-                                  );
-                                  setIsEdit(false);
-                                  setSelectedEntity(siteType);
+                                  setIsEdit(true);
+                                  getAddEntityDialog(true);
+                                  setSelectedFunctional(data);
                                 }}
-                              >
-                                <p
-                                  className={`${style.healthCareHeaderTextStyle2} ${style.marginTop10}`}
-                                >
-                                  {siteType.contractedServiceProviderType}
-                                </p>
-                                <p
-                                  className={`${style.healthCareHeaderTextStyle2} ${style.marginTop20}`}
-                                >
-                                  {siteType?.functionalData.length}
-                                </p>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </>
-                    ) : (
-                      <></>
-                    );
-                  })}
+                              />
+                              <img
+                                src={DeleteHcRow}
+                                className={style.colorFileStyle}
+                                alt=""
+                                onClick={() => {
+                                  deleteHandler(data);
+                                }}
+                              />
+                            </div>
+                          </>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
-              </>
-            ) : (
-              <></>
-            );
-          })}
-        </div>
-
-        <div className={style.DepartmentEntityCardStyle}>
-          <div className={style.tableHeaderFuntionalTitles}>
-            <p></p>
-            <p className={style.tableHeaderIndustriesFontStyle}>ENTITY NAME</p>
-            <p className={style.tableHeaderIndustriesFontStyle}>ALIAS 1</p>
-            <p className={style.tableHeaderIndustriesFontStyle}>ALIAS 2</p>
-            <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
-            <p></p>
-          </div>
-          {
-            <div className={style.healthCareIndustriesHeader}>
-              <img
-                src={IndustriesEntityFolder}
-                alt="IndustriesEntityFolder"
-                className={`${style.colorFileStyle} ${style.marginLeft5}`}
-              />
-              <p className={style.tableHeaderIndustriesFontStyle}>
-                {selectedEntity.contractedServiceProviderType}
-              </p>
-              <img
-                src={EditHcFolder}
-                onClick={() => {
-                  getAddEntityDialog(true);
-                  setIsEdit(false);
-                }}
-                className={style.colorFileStyle}
-                alt=""
-              />
-              <img
-                src={DeleteHcFolder}
-                className={style.colorFileStyle}
-                alt=""
-              />
+              </div>
             </div>
-          }
-
-          {getEntityDataList?.map((data, index) => {
-            return (
-              <>
-                <div
-                  className={
-                    index % 2 === 0
-                      ? `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                      : `${style.FuntionalTitlesTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                  }
-                  key={index}
-                >
-                  <p></p>
-                  <p className={style.tableDataFontStyle}>{data?.title}</p>
-                  <p className={style.tableDataFontStyle}>{data?.alias1}</p>
-                  <p className={style.tableDataFontStyle}>{data?.alias2}</p>
-                  <p className={style.tableDataFontStyle}>
-                    {format(new Date(`${data.lastModifiedDate}`), "MM-dd-yyyy")}
-                  </p>
-                  <img
-                    src={EditHcRow}
-                    className={style.colorFileStyle}
-                    alt=""
-                    onClick={() => {
-                      setIsEdit(true);
-                      getAddEntityDialog(true);
-                      setSelectedFunctional(data);
-                    }}
-                  />
-                  <img
-                    src={DeleteHcRow}
-                    className={style.colorFileStyle}
-                    alt=""
-                    onClick={() => {
-                      deleteHandler(data);
-                    }}
-                  />
-                </div>
-              </>
-            );
-          })}
+          </div>
+        </div>
+        <div className={style.spaceBetween}>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI</p>
         </div>
       </div>
 

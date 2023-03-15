@@ -6,10 +6,12 @@ import { Icon, Intent } from "@blueprintjs/core";
 import { Link } from "react-router-dom";
 import NewPodTypeForHealthcare from "./newPodTypeForHealthCare";
 import { GET } from "../dataSaver";
+import { format } from "date-fns";
 
 const SuperAdminDashboard = () => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [lastDate, setLastDate] = useState({});
+  const [lastUpdatedDate, setLastUpdatedDate] = useState([]);
+  const [latestParentDate, setLatestParentDate] = useState("");
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -19,7 +21,23 @@ const SuperAdminDashboard = () => {
     const { data: lastModifiedDate } = await GET(
       `entity-service/referenceList/master`
     );
-    setLastDate(lastModifiedDate);
+    setLastUpdatedDate(lastModifiedDate);
+
+    //Parent LastModifiedDate get value
+    const mappedDataArray = [];
+    for (const key in lastModifiedDate) {
+      const mappedData = {
+        ...lastModifiedDate[key],
+      };
+      mappedDataArray.push(mappedData);
+    }
+
+    let latestParentModifiedDate = mappedDataArray.reduce((a, b) => {
+      return new Date(a.lastModified) > new Date(b.lastModified) ? a : b;
+    });
+
+    const date = new Date(latestParentModifiedDate?.lastModified);
+    setLatestParentDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
   useEffect(() => {
@@ -49,7 +67,8 @@ const SuperAdminDashboard = () => {
               <div
                 className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
               >
-                UPDATED ON FEB 16, 2022 16:45 EST
+                {/* UPDATED ON FEB 16, 2022 16:45 EST */}
+                {`UPDATED ON ${latestParentDate.toUpperCase()} EST`}
               </div>
               <div className={style.crossStyle}>
                 <Link to={"/partnerPortal"}>
@@ -77,7 +96,7 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastDate.industries?.lastModified)
+                            {new Date(lastUpdatedDate.industries?.lastModified)
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
@@ -104,7 +123,7 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastDate.departments?.lastModified)
+                            {new Date(lastUpdatedDate.departments?.lastModified)
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
@@ -135,7 +154,7 @@ const SuperAdminDashboard = () => {
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
                             {new Date(
-                              lastDate.contractedServiceProviders?.lastModified
+                              lastUpdatedDate.contractedServiceProviders?.lastModified
                             )
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
@@ -163,7 +182,9 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastDate.functionalTitles?.lastModified)
+                            {new Date(
+                              lastUpdatedDate.functionalTitles?.lastModified
+                            )
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
@@ -190,7 +211,9 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastDate.boardCertification?.lastModified)
+                            {new Date(
+                              lastUpdatedDate.boardCertification?.lastModified
+                            )
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
@@ -217,7 +240,9 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastDate.absenceResons?.lastModified)
+                            {new Date(
+                              lastUpdatedDate.absenceResons?.lastModified
+                            )
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
@@ -244,7 +269,7 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastDate.nameSuffix?.lastModified)
+                            {new Date(lastUpdatedDate.nameSuffix?.lastModified)
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
@@ -272,7 +297,9 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastDate.terminationReason?.lastModified)
+                            {new Date(
+                              lastUpdatedDate.terminationReason?.lastModified
+                            )
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
@@ -295,7 +322,7 @@ const SuperAdminDashboard = () => {
                           className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <div className={`${style.dashboardInsideCardStyle} `}>
-                            <span className={style.dashboardCardColorOption1}>
+                            <span className={style.dashboardCardColorOption4}>
                               DEFAULT LIST SETUP REQUIRED
                             </span>
                           </div>
@@ -310,7 +337,7 @@ const SuperAdminDashboard = () => {
                         className={`${style.optionsStyle} ${style.displayInCol}  `}
                       >
                         <div className={`${style.dashboardInsideCardStyle} `}>
-                          <span className={style.dashboardCardColorOption1}>
+                          <span className={style.dashboardCardColorOption4}>
                             DEFAULT LIST SETUP REQUIRED
                           </span>
                         </div>
@@ -332,7 +359,7 @@ const SuperAdminDashboard = () => {
                           </span>
                           <span className={style.dashboardCardColorOption2}>
                             LAST UPDATED ON{" "}
-                            {new Date(lastDate.holidayList?.lastModified)
+                            {new Date(lastUpdatedDate.holidayList?.lastModified)
                               .toLocaleString("en-US", {
                                 timeZone: "America/New_York",
                                 year: "numeric",
@@ -355,7 +382,7 @@ const SuperAdminDashboard = () => {
                           className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <div className={`${style.dashboardInsideCardStyle} `}>
-                            <span className={style.dashboardCardColorOption1}>
+                            <span className={style.dashboardCardColorOption4}>
                               DEFAULT LIST SETUP REQUIRED
                             </span>
                           </div>
@@ -374,7 +401,7 @@ const SuperAdminDashboard = () => {
                           className={`${style.optionsStyle} ${style.displayInCol}  `}
                         >
                           <div className={`${style.dashboardInsideCardStyle} `}>
-                            <span className={style.dashboardCardColorOption1}>
+                            <span className={style.dashboardCardColorOption4}>
                               DEFAULT LIST SETUP REQUIRED
                             </span>
                           </div>
