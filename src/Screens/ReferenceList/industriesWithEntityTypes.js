@@ -10,7 +10,8 @@ import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
 import { GET, DELETE } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
-import { format } from "date-fns";
+// import { format } from "date-fns";
+import { format } from "date-fns-tz";
 import Navbar from "../../Components/Navbar";
 import SideBar from "../../Components/Sidebar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
@@ -152,7 +153,7 @@ const IndustriesWithEntityTypes = () => {
           <div>
             <LevelTwoHeader
               heading={`INDUSTRIES WITH ENTITY TYPES`}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate} `}
               path={"/Screens/ReferenceList/superAdminDashboard"}
               callingFrom={"Super Admin"}
               needHeader={true}

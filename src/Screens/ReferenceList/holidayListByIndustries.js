@@ -156,7 +156,7 @@ const BoardCertification = () => {
           <div>
             <LevelTwoHeader
               heading={`HOLIDAY SCHEDULE BY INDUSTRIES`}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/superAdminDashboard"}
               callingFrom={"Super Admin"}
               needHeader={true}
@@ -167,7 +167,7 @@ const BoardCertification = () => {
             <div className={style.marginTop35}>
               <div className={style.centreCardStyle}>
                 <div className={style.margin20}>
-                  <div className={style.departmentCardColumnsGrid}>
+                  <div className={style.centreCardColumnsGrid}>
                     <div className={style.displayInCol}>
                       {allData?.map((data, index) => {
                         return (

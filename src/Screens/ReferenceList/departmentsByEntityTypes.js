@@ -153,7 +153,7 @@ const DepartmentsByEntityTypes = () => {
           <div>
             <LevelTwoHeader
               heading={`DEPARTMENTS / SERVICE AREAS BY ENTITY TYPES`}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/superAdminDashboard"}
               callingFrom={"Super Admin"}
               needHeader={true}

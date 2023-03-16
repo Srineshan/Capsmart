@@ -170,7 +170,7 @@ const ContractedServiceProvidedByIndustries = () => {
           <div>
             <LevelTwoHeader
               heading={`CONTRACTED SERVICE PROVIDERS BY INDUSTRY & ENTITY TYPES`}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate} `}
               path={"/Screens/ReferenceList/superAdminDashboard"}
               callingFrom={"Super Admin"}
               needHeader={true}

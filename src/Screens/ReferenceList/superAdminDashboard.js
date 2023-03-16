@@ -6,7 +6,8 @@ import { Icon, Intent } from "@blueprintjs/core";
 import { Link } from "react-router-dom";
 import NewPodTypeForHealthcare from "./newPodTypeForHealthCare";
 import { GET } from "../dataSaver";
-import { format } from "date-fns";
+// import { format } from "date-fns";
+import { format } from "date-fns-tz";
 
 const SuperAdminDashboard = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -37,6 +38,8 @@ const SuperAdminDashboard = () => {
     });
 
     const date = new Date(latestParentModifiedDate?.lastModified);
+    console.log(date.toLocaleString());
+    // console.log(format(date, "MMM d, yyyy HH:mm zzzz"));
     setLatestParentDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
@@ -68,7 +71,7 @@ const SuperAdminDashboard = () => {
                 className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
               >
                 {/* UPDATED ON FEB 16, 2022 16:45 EST */}
-                {`UPDATED ON ${latestParentDate.toUpperCase()} EST`}
+                {`LAST UPDATED ON ${latestParentDate} `}
               </div>
               <div className={style.crossStyle}>
                 <Link to={"/partnerPortal"}>

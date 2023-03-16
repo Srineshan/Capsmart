@@ -127,7 +127,7 @@ const AbsenseReasonsByIndustries = () => {
           <div>
             <LevelTwoHeader
               heading={`ABSENCE REASONS BY INDUSTRIES`}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate} `}
               path={"/Screens/ReferenceList/superAdminDashboard"}
               callingFrom={"Super Admin"}
               needHeader={true}

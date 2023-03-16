@@ -129,7 +129,7 @@ const SuffixByIndustries = () => {
           <div>
             <LevelTwoHeader
               heading={`SUFFIX BY INDUSTRIES`}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/superAdminDashboard"}
               callingFrom={"Super Admin"}
               needHeader={true}

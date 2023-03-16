@@ -195,7 +195,7 @@ const FunctionalTitles = () => {
           <div>
             <LevelTwoHeader
               heading={`FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS`}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate} `}
               path={"/Screens/ReferenceList/superAdminDashboard"}
               callingFrom={"Super Admin"}
               needHeader={true}
