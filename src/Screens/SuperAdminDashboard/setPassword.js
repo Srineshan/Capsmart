@@ -73,7 +73,7 @@ const SetPassword = () => {
     } else {
       setIsNumberAvailable(false);
     }
-    if (/^(?=.*[@$!%*#?&])/.test(password)) {
+    if (/^(?=.[@$!%#?&])/.test(password)) {
       setIsSpecialCharacterAvailable(true);
     } else {
       setIsSpecialCharacterAvailable(false);
@@ -93,9 +93,9 @@ const SetPassword = () => {
   }, [tenantId])
 
   const getEntityId = async () => {
-    await axios(`https://rest.timesmart.io/entity-service/entityID`, {
+    await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
       method: 'GET',
-      // headers: { "X-subdomain": "fremont" },
+      // headers: { "X-subdomain": "cardinalhealth" },
     }).then(response => {
       var cookie = new Cookie();
       cookie.set('entityId', response?.data?.id);
@@ -121,7 +121,7 @@ const SetPassword = () => {
   }
 
   const getUser = async () => {
-    await axios('https://rest.timesmart.io/user-management-service/user', {
+    await axios('https://rest.mytimesmart.com/user-management-service/user', {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -142,7 +142,7 @@ const SetPassword = () => {
     } else if (!isMin8CharacterAvailable) {
       ErrorToaster('Minimum 8 characters required');
       return;
-    } else if (passwordStrengthLength <= 4) {
+    } else if (passwordStrengthLength < 4) {
       ErrorToaster('Should Satisfy Minimum 4 Conditions');
       return;
     } else {
@@ -152,7 +152,7 @@ const SetPassword = () => {
           "password": password,
         }
       }
-      axios('https://rest.timesmart.io/user-management-service/user/updatepassword', {
+      axios('https://rest.mytimesmart.com/user-management-service/user/updatepassword', {
         method: 'POST',
         headers: headers,
         data: JSON.stringify(data),
@@ -162,7 +162,7 @@ const SetPassword = () => {
         })
         .catch(error => {
           console.log('Error', error);
-          ErrorToaster('Unexpected Error Occured');
+          ErrorToaster(error?.response?.data);
 
         })
     }
@@ -209,13 +209,7 @@ const SetPassword = () => {
         {/* <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Email(Registered Mail Id)</div>
         <InputGroup type="email" large={true} value={users?.filter(data => data?.id === randomId)?.map(data => data?.email?.officialEmail)[0]} className={style.marginTop10} /> */}
         <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Set Your Password</div>
-        <InputGroup type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={style.marginTop10} rightElement={EyeOpenElement(1)} onChange={(e) => setPassword(e.target.value)} onPaste={(e) => {
-          e.preventDefault()
-          return false;
-        }} onCopy={(e) => {
-          e.preventDefault()
-          return false;
-        }} />
+        <InputGroup type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={style.marginTop10} rightElement={EyeOpenElement(1)} onChange={(e) => setPassword(e.target.value)} />
         <div className={`${style.passwordStrengthGrid} ${style.marginTop10}`}>
           <div className={`${style.passwordProgress} ${passwordStrengthLength >= 1 && strengthColor}`}></div>
           <div className={`${style.passwordProgress} ${passwordStrengthLength >= 2 && strengthColor}`}></div>
@@ -240,7 +234,7 @@ const SetPassword = () => {
                 '&.Mui-checked': {
                   color: '#00C07F',
                 },
-              }} />} label={<Typography variant="body2" color="textSecondary">Atleast 8 Characters Minimum</Typography>} />
+              }} />} label={<Typography variant="body2" color="textSecondary">8 Characters Minimum</Typography>} />
           </FormGroup>
           <FormGroup>
             <FormControlLabel control={<Checkbox checked={isSmallCharacterAvailable}
@@ -248,7 +242,7 @@ const SetPassword = () => {
                 '&.Mui-checked': {
                   color: '#00C07F',
                 },
-              }} />} label={<Typography variant="body2" color="textSecondary">Atleast 1 Lowercase Letter</Typography>} />
+              }} />} label={<Typography variant="body2" color="textSecondary">1 Lowercase Letter</Typography>} />
           </FormGroup>
           <FormGroup>
             <FormControlLabel control={<Checkbox checked={isCapitalCharacterAvailable}
@@ -256,7 +250,7 @@ const SetPassword = () => {
                 '&.Mui-checked': {
                   color: '#00C07F',
                 },
-              }} />} label={<Typography variant="body2" color="textSecondary">Atleast 1 Uppercase Letter</Typography>} />
+              }} />} label={<Typography variant="body2" color="textSecondary">1 Uppercase Letter</Typography>} />
           </FormGroup>
           <FormGroup>
             <FormControlLabel control={<Checkbox checked={isNumberAvailable}
@@ -264,7 +258,7 @@ const SetPassword = () => {
                 '&.Mui-checked': {
                   color: '#00C07F',
                 },
-              }} />} label={<Typography variant="body2" color="textSecondary">Atleast 1 Number(0 - 9)</Typography>} />
+              }} />} label={<Typography variant="body2" color="textSecondary">1 Number(0 - 9)</Typography>} />
           </FormGroup>
           <FormGroup>
             <FormControlLabel control={<Checkbox checked={isSpecialCharacterAvailable}
@@ -272,17 +266,11 @@ const SetPassword = () => {
                 '&.Mui-checked': {
                   color: '#00C07F',
                 },
-              }} />} label={<Typography variant="body2" color="textSecondary">Atleast 1 Special Character</Typography>} />
+              }} />} label={<Typography variant="body2" color="textSecondary">1 Special Character</Typography>} />
           </FormGroup>
         </div>
         <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Confirm Your Password</div>
-        <InputGroup type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={`${style.marginTop10} ${(confirmPassword?.length > 0 && confirmPassword !== password) && style.redBorderField} ${(confirmPassword?.length > 0 && confirmPassword === password) && style.greenBorderField}`} rightElement={EyeOpenElement(1)} onPaste={(e) => {
-          e.preventDefault()
-          return false;
-        }} onCopy={(e) => {
-          e.preventDefault()
-          return false;
-        }} onChange={(e) => setConfirmPassword(e.target.value)} />
+        <InputGroup type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={`${style.marginTop10} ${(confirmPassword?.length > 0 && confirmPassword !== password) && style.redBorderField} ${(confirmPassword?.length > 0 && confirmPassword === password) && style.greenBorderField}`} rightElement={EyeOpenElement(1)} onChange={(e) => setConfirmPassword(e.target.value)} />
         {
           // <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Cell Phone ( To Receive Verfication Passcode)</div>
           // <InputGroup type="text" large={true} placeholder="+1344231717" className={style.marginTop10} onChange={(e)=>setPhone(e.target.value)}/>
