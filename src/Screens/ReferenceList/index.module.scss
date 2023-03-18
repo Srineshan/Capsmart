@@ -267,6 +267,10 @@
   margin-top: 2px !important;
 }
 
+.textUppercase{
+  text-transform: uppercase;
+}
+
 .loginStatus {
   text-align: left;
   font: normal normal normal 11px/15px Montserrat;
@@ -637,6 +641,15 @@
   text-align: left;
   margin-top: 10px;
   margin-left: 20px;
+}
+
+.tableHeaderIndustriesFontStyle6 {
+  font: normal normal bold 14px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  opacity: 1;
+  text-align: left;
+  margin-top: 10px;
 }
 
 .tableSubHeaderIndustriesFontStyle {

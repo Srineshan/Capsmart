@@ -143,7 +143,7 @@ const SuffixByCustomer = () => {
 
     let allChecked = true;
 
-    if (selectAllList.length > selectedSuffix.length) {
+    if (tempSuffix.length > selectedSuffix.length) {
       allChecked = false;
     }
 
@@ -152,7 +152,7 @@ const SuffixByCustomer = () => {
     } else {
       setCheckedAll(false);
     }
-  }, [selectedSuffix, selectAllList]);
+  }, [selectedSuffix]);
 
   const handlePostSuffix = async () => {
     let data = selectedSuffix?.map((data) => ({
@@ -160,6 +160,7 @@ const SuffixByCustomer = () => {
       customized: true,
       entityId: { id: TenantID },
     }));
+
     if (selectedSuffix?.length !== 0) {
       await POST("entity-service/nameSuffix", JSON.stringify(data))
         .then((response) => {
@@ -205,7 +206,7 @@ const SuffixByCustomer = () => {
           <div>
             <LevelTwoHeader
               heading={"NAME SUFFIX"}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={true}
@@ -236,7 +237,7 @@ const SuffixByCustomer = () => {
                                 selectAll(event.target.checked)
                               }
                               checked={
-                                selectAllList.length === 0 ? false : checkedAll
+                                selectAllList.length !== 0 ? checkedAll : false
                               }
                             />
                             <p

@@ -23,8 +23,6 @@ const AddAbsenseReasonsForHealthcare = ({
   const [notificationPeriod, setNotificationPeriod] = useState("14");
   const [createdDate, setCreatedDate] = useState("");
 
-  console.log(selectedAbsence);
-  console.log(selectedTitle);
   const arrowDown = () => {
     return (
       <img
@@ -171,8 +169,8 @@ const AddAbsenseReasonsForHealthcare = ({
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>
             {isEdit
-              ? "Add/Edit Absence Reasons"
-              : `New Absence Reason For ${selectedTitle}`}
+              ? `Add/Edit Absence Reasons ${selectedTitle}`
+              : `New Absence Reason For ${selectedTitle ? selectedTitle : ""}`}
           </p>
           <div className={`${style.displayInRow}`}>
             <div className={`${style.displayInRow} ${style.marginRight20}`}>

@@ -78,7 +78,7 @@ const ClientAdminDashboard = () => {
                 className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
               >
                 {/* UPDATED ON FEB 16, 2022 16:45 EST */}
-                {`UPDATED ON ${latestParentDate.toUpperCase()} EST`}
+                {`UPDATED ON ${latestParentDate}`}
               </div>
               <Link to={"/entitySitePortal"}>
                 <div className={style.crossStyle}>
