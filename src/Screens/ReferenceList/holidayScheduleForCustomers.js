@@ -250,7 +250,7 @@ const HolidayScheduleForCustomers = () => {
             <div>
               <LevelTwoHeader
                 heading={"HOLIDAY SCHEDULE FOR HEALTHCARE"}
-                updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+                updatedTime={`UPDATED ON ${lastUpdatedDate} `}
                 path={"/Screens/ReferenceList/customerAdminDashboard"}
                 callingFrom={"Customer Admin"}
                 needHeader={true}

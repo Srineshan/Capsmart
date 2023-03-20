@@ -250,7 +250,7 @@ const TerminationReasonForCustomer = () => {
           <div>
             <LevelTwoHeader
               heading={"TERMINATION REASONS BY ENTITY / SITES"}
-              updatedTime={`UPDATED ON ${lastUpdatedDate.toUpperCase()} EST`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate} `}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={true}
