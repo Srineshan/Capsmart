@@ -107,16 +107,18 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     } else {
       getSites();
     }
-  }, [contractId, userProviderData, isUserPresent])
+  }, [contractId, userProviderData, isUserPresent, user])
 
   useEffect(() => {
     getTitleData();
-  }, [siteList])
+  }, [siteList?.length, siteList, userProviderData, isUserPresent])
 
   const getTitleData = () => {
+    console.log('inside titledata', siteList, siteTitleValues, departmentTitleValues);
     let temp = [];
-    let siteValue = siteTitleValues;
-    let deptValue = departmentTitleValues;
+    let siteValue = siteTitleValues || [];
+    let deptValue = departmentTitleValues || [];
+    console.log('above values', deptValue, siteValue);
     siteList?.map(data => {
       let dept = [];
       data?.departmentList?.departments?.map(deptData => {
@@ -125,6 +127,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           let valueString = `${data?.siteName?.siteName} - ${deptData?.departmentName?.name} - ${deptData?.departmentResponsibility?.title}`
           if (!deptValue.includes(valueString)) {
             deptValue.push(valueString);
+            console.log('deptvalue', valueString)
           }
         }
       })
@@ -133,13 +136,17 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         let valueString = `${data?.siteName?.siteName} - ${data?.siteResponsibility?.title}`;
         if (!siteValue.includes(valueString)) {
           siteValue.push(valueString);
+          console.log('siteValue', valueString)
         }
       }
     })
+    console.log('under site title value', siteValue, deptValue);
     setSites(temp);
     setSiteTitleValues(siteValue);
     setDepartmentTitleValues(deptValue);
   }
+
+  console.log('sites', siteTitleValues, departmentTitleValues);
 
   const getUserData = async () => {
     if (contractId !== '' && contractId !== undefined) {
@@ -167,7 +174,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     let sites = contractDetail?.site?.sites;
     if (sites && siteList?.length === 0) {
       setSiteList(sites);
-      getTitleData();
+      // getTitleData();
     }
   }
 

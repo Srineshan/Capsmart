@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 
 import style from './index.module.scss';
 
-const UserCard = ({ getIsExpanded }) => {
+const UserCard = ({ getIsExpanded, updateProfileData }) => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
@@ -30,13 +30,13 @@ const UserCard = ({ getIsExpanded }) => {
             <div className={`${style.displayInRow} ${style.alignCenter}`}>
                 <Link to={'/profile'} className={style.noFontStyle}>
                     <label for="file-upload">
-                        <img src={currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
+                        <img src={updateProfileData ? updateProfileData?.profilePic?.file?.fileURL : currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
                     </label>
                 </Link>
                 <input id="file-upload" type="file" />
                 <div className={style.marginLeft20}>
                     <div className={style.userNameStyle}>
-                        Hi, {user?.userName}
+                        Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
                     </div>
                     <div className={style.loginStatus}>
                         last login {formatInTimeZone(new Date(currentUserDetails?.lastLogin || new Date()), 'America/New_York', 'MMM d, yy h:mm zzz')}

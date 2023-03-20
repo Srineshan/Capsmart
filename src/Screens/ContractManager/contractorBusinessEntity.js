@@ -78,9 +78,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       const { data: userData } = await GET(`user-management-service/user?contractID=${contractId}`);
       setUserCount(userData?.length || 0);
       if (selectContractInfo === 'INDIVIDUAL') {
-        setContractUser(userData?.filter(data => !data?.roles?.map(role => role?.id)?.includes('6344d59a45ca246bd12dd77b'))?.map(data => data)[0])
+        setContractUser(userData?.filter(data => !data?.roles?.map(role => role?.roleName)?.includes('Contract Business Entity Manager'))?.map(data => data)[0])
       }
-      let entityManager = userData?.filter(data => data?.roles?.map(role => role?.id)?.includes('6344d59a45ca246bd12dd77b'))?.map(data => data)
+      let entityManager = userData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Contract Business Entity Manager'))?.map(data => data)
       if (entityManager?.length !== 0) {
         setUserId(entityManager?.[0]?.id);
       }
@@ -113,110 +113,113 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   }
 
   const handleContinue = async (buttonType) => {
-    setContinueLoading(true);
+    if (!continueLoading) {
+      console.log('inside', buttonType);
+      setContinueLoading(true);
 
-    if (allowBEM || allowAggregator) {
-      if (businessEntityUser?.email?.officialEmail === contractUser?.email?.officialEmail) {
-        ErrorToaster('Enter Different Email to register with App User Role');
+      if (allowBEM || allowAggregator) {
+        if (businessEntityUser?.email?.officialEmail === contractUser?.email?.officialEmail) {
+          ErrorToaster('Enter Different Email to register with App User Role');
+          return;
+        }
+        const userData = {
+          ...(userId !== '0' && { 'id': userId }),
+          "name": {
+            "firstName": businessEntityUser?.name?.firstName,
+            "lastName": businessEntityUser?.name?.lastName,
+            "suffix": {}
+          },
+          "userType": "REGISTERED_USER",
+          "contracts": [{
+            "id": contractId,
+            "contractName": {
+              "contractName": contractName
+            },
+            "roles": roles?.filter(data => data?.roleName === 'Contract Business Entity Manager' || data?.roleName === 'Aggregator')?.map(data => data),
+            "sites": {
+              "sites": []
+            },
+            "siteLevelResponsible": true,
+            "departmentLevelResponsible": true,
+          }],
+          "email": {
+            "officialEmail": businessEntityUser?.email?.officialEmail
+          },
+          ...((userId === undefined || userId === '0') && {
+            "password": {
+              "password": "admin123"
+            }
+          }),
+          "communication": {
+            "personalEmail": businessEntityUser?.email?.officialEmail,
+            "mobileNumber": businessEntityUser?.contactNumber?.number,
+            "landlineNumber": ""
+          },
+          "roles": roles?.filter(data => data?.roleName === 'Contract Business Entity Manager' || data?.roleName === 'Aggregator')?.map(data => data),
+          "tenant": {
+            "tenantId": TenantID
+          },
+        }
+
+        if (userId === '0') {
+          await POST('user-management-service/user/register', JSON.stringify(userData))
+            .then(response => {
+              SuccessToaster('Business Entity Manager Added Successfully');
+            })
+            .catch(error => {
+              ErrorToaster('Unexpected Error');
+            })
+        }
+        else {
+          await PUT('user-management-service/user', JSON.stringify(userData))
+            .then(response => {
+              SuccessToaster('Business Entity Manager Updated Successfully');
+            })
+            .catch(error => {
+              ErrorToaster('Unexpected Error');
+            });
+        }
+      }
+
+      if (EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory') ||
+        !contractorNPIN?.notApplicable && !contractorNPIN?.missing && EmptyStringCheck(contractorNPIN?.npin, 'NPIN is Mandatory') ||
+        !contractorEntityTaxId?.missing && !contractorEntityTaxId?.notApplicable && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory') ||
+        EmptyStringCheck(businessEntityUser?.name?.firstName, 'First Name is Mandatory') ||
+        EmptyStringCheck(businessEntityUser?.name?.lastName, 'Last Name is Mandatory') ||
+        EmailValidator(businessEntityUser?.email?.officialEmail) ||
+        !businessEntityUser?.contactNumber?.missing && PhoneValidator(businessEntityUser?.contactNumber?.number)) {
         return;
       }
-      const userData = {
-        ...(userId !== '0' && { 'id': userId }),
-        "name": {
-          "firstName": businessEntityUser?.name?.firstName,
-          "lastName": businessEntityUser?.name?.lastName,
-          "suffix": {}
-        },
-        "userType": "REGISTERED_USER",
-        "contracts": [{
-          "id": contractId,
-          "contractName": {
-            "contractName": contractName
-          },
-          "roles": roles?.filter(data => data?.roleName === '6344d59a45ca246bd12dd77b' || data?.roleName === 'Aggregator')?.map(data => data),
-          "sites": {
-            "sites": []
-          },
-          "siteLevelResponsible": true,
-          "departmentLevelResponsible": true,
-        }],
-        "email": {
-          "officialEmail": businessEntityUser?.email?.officialEmail
-        },
-        ...((userId === undefined || userId === '0') && {
-          "password": {
-            "password": "admin123"
-          }
-        }),
-        "communication": {
-          "personalEmail": businessEntityUser?.email?.officialEmail,
-          "mobileNumber": businessEntityUser?.contactNumber?.number,
-          "landlineNumber": ""
-        },
-        "roles": roles?.filter(data => data?.roleName === '6344d59a45ca246bd12dd77b' || data?.roleName === 'Aggregator')?.map(data => data),
-        "tenant": {
-          "tenantId": TenantID
-        },
-      }
 
-      if (userId === '0') {
-        await POST('user-management-service/user/register', JSON.stringify(userData))
-          .then(response => {
-            SuccessToaster('Business Entity Manager Added Successfully');
-          })
-          .catch(error => {
-            ErrorToaster('Unexpected Error');
-          })
+      const data = {
+        contractorNPIN: contractorNPIN,
+        contractorEntityTaxId: contractorEntityTaxId,
+        businessEntity: businessEntity,
+        businessEntityUser: businessEntityUser,
+        roles: roles?.filter(data => data?.id === 'Contract Business Entity Manager')?.map(data => data),
+        mailingAddress: mailingAddress,
+        contractorContact: sameAsContractor,
+        appRoleRequired: appRoleRequired,
+        accessAllowedForBusinessEntityUser: allowBEM,
+        paymentDataConfidential: keepConfidential,
+      }
+      const response = await PUT(`contract-managment-service/contracts/${contractId}/contractorBusinessEntity`, JSON.stringify(data));
+      if (response) {
+        SuccessToaster('Business Entity Updated Successfully');
       }
       else {
-        await PUT('user-management-service/user', JSON.stringify(userData))
-          .then(response => {
-            SuccessToaster('Business Entity Manager Updated Successfully');
-          })
-          .catch(error => {
-            ErrorToaster('Unexpected Error');
-          });
+        ErrorToaster('Unexpected Error');
       }
-    }
+      setContinueLoading(false);
 
-    if (EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory') ||
-      !contractorNPIN?.notApplicable && !contractorNPIN?.missing && EmptyStringCheck(contractorNPIN?.npin, 'NPIN is Mandatory') ||
-      !contractorEntityTaxId?.missing && !contractorEntityTaxId?.notApplicable && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory') ||
-      EmptyStringCheck(businessEntityUser?.name?.firstName, 'First Name is Mandatory') ||
-      EmptyStringCheck(businessEntityUser?.name?.lastName, 'Last Name is Mandatory') ||
-      EmailValidator(businessEntityUser?.email?.officialEmail) ||
-      !businessEntityUser?.contactNumber?.missing && PhoneValidator(businessEntityUser?.contactNumber?.number)) {
-      return;
+      if (buttonType === 'Continue') {
+        getViewPage5(true);
+        getCurrentPage('Contracted Services Specification');
+      } else {
+        getShowAlert(true);
+      }
+      getTabDataStatus();
     }
-
-    const data = {
-      contractorNPIN: contractorNPIN,
-      contractorEntityTaxId: contractorEntityTaxId,
-      businessEntity: businessEntity,
-      businessEntityUser: businessEntityUser,
-      roles: roles?.filter(data => data?.id === '6344d59a45ca246bd12dd77b')?.map(data => data),
-      mailingAddress: mailingAddress,
-      contractorContact: sameAsContractor,
-      appRoleRequired: appRoleRequired,
-      accessAllowedForBusinessEntityUser: allowBEM,
-      paymentDataConfidential: keepConfidential,
-    }
-    const response = await PUT(`contract-managment-service/contracts/${contractId}/contractorBusinessEntity`, JSON.stringify(data));
-    if (response) {
-      SuccessToaster('Business Entity Updated Successfully');
-    }
-    else {
-      ErrorToaster('Unexpected Error');
-    }
-    setContinueLoading(false);
-
-    if (buttonType === 'Continue') {
-      getViewPage5(true);
-      getCurrentPage('Contracted Services Specification');
-    } else {
-      getShowAlert(true);
-    }
-    getTabDataStatus();
   }
 
   const getRoles = async () => {
@@ -366,11 +369,10 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                 <div className={style.twoCol}>
                   <CommonInputField className={style.fullWidth}
                     placeholder="Enter Vendor NPIN"
-                    type="tel"
-                    maxLength={10}
+                    type="number"
                     disabled={contractorNPIN?.missing || contractorNPIN?.notApplicable}
                     value={contractorNPIN?.npin}
-                    onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value, missing: false, notApplicable: false })} />
+                    onChange={(e) => e.target.value >= 0 && setContractorNPIN({ ...contractorNPIN, npin: e.target.value?.slice(0, 10), missing: false, notApplicable: false })} />
                   <div className={`${style.displayInRow}`}>
                     <CommonCheckBox value="Missing" checked={contractorNPIN?.missing} onChange={(e) => setContractorNPIN({ ...contractorNPIN, missing: e.target.checked, notApplicable: false, npin: '' })} label="Missing" />
                     <CommonCheckBox value="NA" checked={contractorNPIN?.notApplicable} onChange={(e) => setContractorNPIN({ ...contractorNPIN, notApplicable: e.target.checked, missing: false, npin: '' })} label="NA" />
@@ -514,9 +516,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contracted Services Provider(s)') }}>BACK</button>
                 <div>
-                  <button className={`${style.newContractOutlinedButton}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleContinue('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
+                  <button className={`${style.newContractOutlinedButton}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
                   <button className={`${style.newContractButtonStyle} ${style.cursorPointer}  ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
-                    onClick={!continueLoading ? () => { handleContinue('Continue') } : {}}
+                    onClick={() => { handleContinue('Continue') }}
                   >CONTINUE</button>
                 </div>
               </div>
