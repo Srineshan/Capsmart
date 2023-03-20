@@ -391,9 +391,9 @@ const Navbar = () => {
                   }}
                 >
                   <div className={style.optionsCardStyle}>
-                    <Link to={"/user"} className={style.noFontStyle}>
+                    {/* <Link to={"/user"} className={style.noFontStyle}>
                       <div className={style.options}>USER MANAGEMENT</div>
-                    </Link>
+                    </Link> */}
                     {currentUserRoles?.includes("Super Sys Admin") && (
                       <Link to={"/referenceList"} className={style.noFontStyle}>
                         <div className={style.options}>REFERENCE LIST</div>

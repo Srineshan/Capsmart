@@ -24,7 +24,7 @@ const Login = (props) => {
   const getEntityId = async () => {
     await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
       method: "GET",
-      headers: { "X-subdomain": "demo" },
+      // headers: { "X-subdomain": "demo" },
     })
       .then((response) => {
         cookie.set("entityId", response?.data?.id);
@@ -76,10 +76,10 @@ const Login = (props) => {
           navigate("/contracts");
           window.location.reload();
         } else if (isEntityLevelAdmin) {
-          navigate("/user");
+          navigate("/entitySitePortal");
           window.location.reload();
         } else {
-          navigate("/user");
+          navigate("/entitySitePortal");
           window.location.reload();
         }
       });

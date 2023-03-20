@@ -308,8 +308,6 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         });
     }
 
-    console.log('Dependent Activities', metadata?.additionalActivity);
-
     const limit5 = 5;
 
 

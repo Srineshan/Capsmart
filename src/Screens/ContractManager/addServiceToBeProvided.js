@@ -443,7 +443,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       return;
     }
     if ((serviceTypeTemplate === CLINIC || serviceTypeTemplate === PROCEDUREREADING) && (metadata?.contractedSchedules?.[0]?.startDate !== contractTermPeriod?.start || metadata?.contractedSchedules?.[metadata?.contractedSchedules?.length - 1]?.endDate !== contractTermPeriod?.end)) {
-      ErrorToaster('Selected Duration Should be equal to the contract start and end date');
+      ErrorToaster('Target Applicable Period Should cover contract effective date and contract end date range');
       return;
     }
     if (selectContractInfo !== "INDIVIDUAL" && isDesignatedSpecificContractor && selectedUsers?.length === 0) {
