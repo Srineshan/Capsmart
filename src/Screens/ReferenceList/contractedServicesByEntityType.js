@@ -37,6 +37,9 @@ const ContractServicesByEntityType = () => {
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
 
+  const [selectAllList, setSelectAllList] = useState([]);
+  const [checkedAll, setCheckedAll] = useState(false);
+
   useEffect(() => {
     getContractedServiceTypeMaster();
     getContractedServiceType();
@@ -111,7 +114,52 @@ const ContractServicesByEntityType = () => {
     }
   };
 
-  console.log(selectedContractedServiceTypes);
+  const selectAll = (value) => {
+    if (value) {
+      let tempContractedServices = contractedServiceTypeMaster
+        ?.filter(
+          (data) =>
+            !contractedServiceType.some(
+              (customerData) =>
+                customerData?.serviceTypeTemplate === data?.serviceTypeTemplate
+            )
+        )
+        ?.map((data) => {
+          return { ...data };
+        });
+      setSelectedContractedServiceTypes(tempContractedServices);
+    } else {
+      setSelectedContractedServiceTypes([]);
+    }
+    setCheckedAll(value);
+  };
+
+  useEffect(() => {
+    let tempContractedServices = contractedServiceTypeMaster
+      ?.filter(
+        (data) =>
+          !contractedServiceType.some(
+            (customerData) =>
+              customerData?.serviceTypeTemplate === data?.serviceTypeTemplate
+          )
+      )
+      ?.map((data) => {
+        return { ...data };
+      });
+    setSelectAllList(tempContractedServices);
+
+    let allChecked = true;
+
+    if (tempContractedServices.length > selectedContractedServiceTypes.length) {
+      allChecked = false;
+    }
+
+    if (allChecked) {
+      setCheckedAll(true);
+    } else {
+      setCheckedAll(false);
+    }
+  }, [selectedContractedServiceTypes]);
 
   const handlePostContractedServiceType = async () => {
     let data = selectedContractedServiceTypes?.map((data) => ({
@@ -172,39 +220,63 @@ const ContractServicesByEntityType = () => {
                         </p>
                       </div>
                       <div className={style.customersAdminCardStyle1}>
-                        {contractedServiceTypeMaster
-                          ?.filter(
-                            (data) =>
-                              !contractedServiceType.some(
-                                (customerData) =>
-                                  customerData?.serviceTypeTemplate ===
-                                  data?.serviceTypeTemplate
-                              )
-                          )
-                          ?.map((data, index) => (
-                            <div
-                              className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
-                              key={index}
+                        <>
+                          <div
+                            className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground3} ${style.displayInRow}`}
+                          >
+                            <CommonPurpleCheckBox
+                              name="allSelect"
+                              onChange={(event) =>
+                                selectAll(event.target.checked)
+                              }
+                              checked={
+                                selectAllList.length !== 0 ? checkedAll : false
+                              }
+                            />
+                            <p
+                              className={`${style.TextStyle4} ${style.marginLeft10}`}
                             >
-                              <CommonPurpleCheckBox
-                                checked={
-                                  selectedContractedServiceTypes?.filter(
-                                    (innerData) =>
-                                      innerData?.serviceType ===
-                                      data?.serviceType
-                                  )?.length !== 0
-                                }
-                                onChange={(e) =>
-                                  handleSelectContractedServiceProvider(e, data)
-                                }
-                              />
-                              <p
-                                className={`${style.TextStyle4} ${style.marginLeft5}`}
+                              SELECT ALL
+                            </p>
+                          </div>
+
+                          {contractedServiceTypeMaster
+                            ?.filter(
+                              (data) =>
+                                !contractedServiceType.some(
+                                  (customerData) =>
+                                    customerData?.serviceTypeTemplate ===
+                                    data?.serviceTypeTemplate
+                                )
+                            )
+                            ?.map((data, index) => (
+                              <div
+                                className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                key={index}
                               >
-                                {data?.serviceType}
-                              </p>
-                            </div>
-                          ))}
+                                <CommonPurpleCheckBox
+                                  checked={
+                                    selectedContractedServiceTypes?.filter(
+                                      (innerData) =>
+                                        innerData?.serviceType ===
+                                        data?.serviceType
+                                    )?.length !== 0
+                                  }
+                                  onChange={(e) =>
+                                    handleSelectContractedServiceProvider(
+                                      e,
+                                      data
+                                    )
+                                  }
+                                />
+                                <p
+                                  className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                >
+                                  {data?.serviceType}
+                                </p>
+                              </div>
+                            ))}
+                        </>
                       </div>
                     </div>
                     <div className={style.customersAdminCardStyle2}>

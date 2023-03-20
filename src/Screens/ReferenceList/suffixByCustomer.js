@@ -33,8 +33,8 @@ const SuffixByCustomer = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
-  const [selectAllList, setSelectAllList] = useState([]);
 
+  const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
 
   const getIsExpanded = (value) => {
