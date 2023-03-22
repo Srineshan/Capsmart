@@ -308,26 +308,39 @@ const ContractServiceProviderBySite = () => {
                                   : `${style.listWrapper}`
                               }
                             >
-                              <div
-                                className={`${style.customersAdminInnerRowsStyle1}  ${style.customersAdminBackground1} ${style.displayInRow}`}
-                              >
-                                <CommonPurpleCheckBox
-                                  name="allSelect"
-                                  onChange={(event) =>
-                                    selectAll(event.target.checked)
-                                  }
-                                  checked={
-                                    selectAllList.length !== 0
-                                      ? checkedAll
-                                      : false
-                                  }
-                                />
-                                <p
-                                  className={`${style.TextStyle4} ${style.marginLeft10}`}
-                                >
-                                  SELECT ALL
-                                </p>
-                              </div>
+                              {contractedServiceProviderMaster?.filter(
+                                (data) =>
+                                  !contractedServiceProvider.some(
+                                    (customerData) =>
+                                      customerData?.contractedServiceProviderType ===
+                                      data?.contractedServiceProviderType
+                                  )
+                              )?.length > 1 ? (
+                                <>
+                                  <div
+                                    className={`${style.customersAdminInnerRowsStyle5}  ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                  >
+                                    <CommonPurpleCheckBox
+                                      name="allSelect"
+                                      onChange={(event) =>
+                                        selectAll(event.target.checked)
+                                      }
+                                      checked={
+                                        selectAllList.length !== 0
+                                          ? checkedAll
+                                          : false
+                                      }
+                                    />
+                                    <p
+                                      className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                    >
+                                      SELECT ALL
+                                    </p>
+                                  </div>
+                                </>
+                              ) : (
+                                <></>
+                              )}
 
                               {contractedServiceProviderMaster
                                 ?.filter(
@@ -340,7 +353,7 @@ const ContractServiceProviderBySite = () => {
                                 )
                                 ?.map((data, index) => (
                                   <div
-                                    className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                    className={`${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                     key={index}
                                   >
                                     <CommonPurpleCheckBox

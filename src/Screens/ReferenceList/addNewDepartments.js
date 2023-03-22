@@ -33,17 +33,36 @@ const AddNewDepartments = ({
   const [addService, setAddService] = useState(true);
   const [serviceArea, setServiceArea] = useState("");
   const [serviceLocation, setServiceLocation] = useState([]);
+  // const [selectedServiceAreas, setSelectedServiceAreas] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
+  const [selectedLocationDeleteId, setSelectedLocationDeleteId] = useState("");
 
   const [serviceAreaList, setServiceAreaList] = useState([
     { name: "", serviceLocations: [] },
   ]);
 
+  useEffect(() => {
+    if (
+      selectedLocationDeleteId !== "" &&
+      selectedLocationDeleteId !== undefined
+    ) {
+      getServiceLocationDelete();
+    }
+  }, [selectedLocationDeleteId]);
+
   const getServiceLocation = async () => {
     const { data: serviceLocation } = await GET(
       "entity-service/servicelocation"
     );
+    console.log(serviceLocation);
     setServiceLocation(serviceLocation);
+  };
+
+  const getServiceLocationDelete = async () => {
+    const { data: serviceLocationDelete } = await PUT(
+      `entity-service/servicelocation/${selectedLocationDeleteId}/unMapDepartment`
+    );
+    // console.log(serviceLocationDelete);
   };
 
   useEffect(() => {
@@ -73,6 +92,7 @@ const AddNewDepartments = ({
       )
       .map((tag, index) => {
         const onRemoveLocation = () => {
+          setSelectedLocationDeleteId(tag?.id);
           setSelectedLocations(
             selectedLocations.filter((t) => t?.location !== tag?.location)
           );
@@ -92,7 +112,6 @@ const AddNewDepartments = ({
     <></>
   );
 
-  // console.log(selectedLocations);
   const locationTagsEdit = selectedLocations ? (
     selectedLocations
       .filter((data) =>
@@ -100,6 +119,7 @@ const AddNewDepartments = ({
       )
       .map((tag, index) => {
         const onRemoveLocation = () => {
+          setSelectedLocationDeleteId(tag?.id);
           setSelectedLocations(
             selectedLocations.filter((t) => t?.location !== tag?.location)
           );
@@ -119,8 +139,14 @@ const AddNewDepartments = ({
     <></>
   );
 
-  const onRemoveLocation = (serviceIndex, locationIndex, location) => {
-    // console.log("remove", location, locationIndex, serviceIndex);
+  const onRemoveLocation = (
+    serviceIndex,
+    locationIndex,
+    location,
+    locationId
+  ) => {
+    // console.log("remove", location, locationIndex, serviceIndex, locationId);
+    setSelectedLocationDeleteId(locationId);
     setSelectedLocations(
       selectedLocations
         ?.filter((data) => data?.location !== location)
@@ -148,7 +174,12 @@ const AddNewDepartments = ({
             <Tag
               key={locationIndex}
               onRemove={() =>
-                onRemoveLocation(index, locationIndex, location?.location)
+                onRemoveLocation(
+                  index,
+                  locationIndex,
+                  location?.location,
+                  location?.id
+                )
               }
               large={true}
               className={style.tagStyle}
@@ -165,7 +196,7 @@ const AddNewDepartments = ({
     let temp = [];
     serviceAreaList
       ?.filter((data, indexVal) => {
-        console.log(data, indexVal, index);
+        // console.log(data, indexVal, index);
         return indexVal === index;
       })
       ?.map((data) => {
@@ -174,7 +205,12 @@ const AddNewDepartments = ({
             <Tag
               key={locationIndex}
               onRemove={() =>
-                onRemoveLocation(index, locationIndex, location?.location)
+                onRemoveLocation(
+                  index,
+                  locationIndex,
+                  location?.location,
+                  location?.id
+                )
               }
               large={true}
               className={style.tagStyle}
@@ -236,34 +272,10 @@ const AddNewDepartments = ({
   };
 
   const saveSubmitHandler = async (type) => {
-    // let ServiceAreaData = [];
-    // let ServiceLocation = [];
-
-    // if (selectedDepart?.serviceAreas) {
-    //   ServiceAreaData = [...selectedDepart?.serviceAreas];
-    // }
-
-    // const isPresent = departmentList.find(
-    //   (p) => p.departmentName.name === departName
-    // );
-    // if (isPresent) {
-    //   ErrorToaster("Already This Name Exists");
-    //   document.getElementById("departmentEl").focus();
-    //   getAddEntityDialog(true);
-    //   return false;
-    // }
-
     if (!departName && departName === "") {
       document.getElementById("departmentEl").focus();
       return false;
     }
-
-    // if (serviceArea !== "") {
-    //   ServiceAreaData.push({
-    //     name: serviceArea,
-    //     serviceLocations: selectedLocations,
-    //   });
-    // }
 
     const data = {
       ...(isEdit && { id: departId }),
@@ -323,21 +335,26 @@ const AddNewDepartments = ({
       setDepartId(selectedDepart?.id);
       setDepartName(selectedDepart?.departmentName?.name);
       setCreatedDate(selectedDepart?.createdDate);
-      setSelectedLocations(selectedDepart?.serviceAreas[0]?.serviceLocations);
-      setServiceAreaList(selectedDepart?.serviceAreas);
-      // if (callingFrom === "Customer Admin") {
-      //   setServiceArea(selectedDepart?.serviceAreas[0]?.name);
-      // }
+
+      if (selectedDepart?.serviceAreas.length > 0) {
+        setServiceAreaList(selectedDepart?.serviceAreas);
+        setAddService(true);
+      } else {
+        setAddService(false);
+      }
+
+      if (selectedDepart?.serviceLocations.length > 0) {
+        setSelectedLocations(selectedDepart?.serviceLocations);
+        setAddService(false);
+      } else {
+        setAddService(true);
+      }
+
       if (isService) {
         setServiceArea(selectedDepart?.serviceAreas[0]?.name);
       }
     }
   }, [selectedDepart]);
-
-  // console.log(addService);
-  // console.log(selectedLocations);
-  // console.log(selectedDepart?.serviceAreas);
-  // console.log(serviceAreaList);
 
   return (
     <Dialog
@@ -546,7 +563,7 @@ const AddNewDepartments = ({
             </div>
           )} */}
 
-          {!addService && callingFrom === "Customer Admin" && (
+          {!addService && (
             <div className={`${style.addHealthCareBoxStyle}`}>
               <div
                 className={`${style.editHealthCareGrid2} ${style.marginTop20}`}

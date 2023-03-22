@@ -132,7 +132,7 @@ const HolidayScheduleForCustomers = () => {
         ?.filter(
           (data) =>
             !holidayCustomerData.some(
-              (customerData) => customerData?.eventName === data?.eventName
+              (customerData) => customerData?.id === data?.id
             )
         )
         ?.map((data) => {
@@ -150,7 +150,7 @@ const HolidayScheduleForCustomers = () => {
       ?.filter(
         (data) =>
           !holidayCustomerData.some(
-            (customerData) => customerData?.eventName === data?.eventName
+            (customerData) => customerData?.id === data?.id
           )
       )
       ?.map((data) => {
@@ -304,34 +304,45 @@ const HolidayScheduleForCustomers = () => {
                                     : `${style.listWrapper}`
                                 }
                               >
-                                <div
-                                  className={`${style.customersAdminInnerRowsStyle1}  ${style.customersAdminBackground3} ${style.displayInRow}`}
-                                >
-                                  <CommonPurpleCheckBox
-                                    name="allSelect"
-                                    onChange={(event) =>
-                                      selectAll(event.target.checked)
-                                    }
-                                    checked={
-                                      selectAllList.length !== 0
-                                        ? checkedAll
-                                        : false
-                                    }
-                                  />
-                                  <p
-                                    className={`${style.TextStyle4} ${style.marginLeft10}`}
-                                  >
-                                    SELECT ALL
-                                  </p>
-                                </div>
+                                {holidayDataMaster?.filter(
+                                  (data) =>
+                                    !holidayCustomerData.some(
+                                      (customerData) =>
+                                        customerData?.id === data?.id
+                                    )
+                                )?.length > 1 ? (
+                                  <>
+                                    <div
+                                      className={`${style.customersAdminInnerRowsStyle1}  ${style.customersAdminBackground3} ${style.displayInRow}`}
+                                    >
+                                      <CommonPurpleCheckBox
+                                        name="allSelect"
+                                        onChange={(event) =>
+                                          selectAll(event.target.checked)
+                                        }
+                                        checked={
+                                          selectAllList.length !== 0
+                                            ? checkedAll
+                                            : false
+                                        }
+                                      />
+                                      <p
+                                        className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                      >
+                                        SELECT ALL
+                                      </p>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
 
                                 {holidayDataMaster
                                   ?.filter(
                                     (data) =>
                                       !holidayCustomerData.some(
                                         (customerData) =>
-                                          customerData?.eventName ===
-                                          data?.eventName
+                                          customerData?.id === data?.id
                                       )
                                   )
                                   ?.map((data, index) => (
@@ -432,7 +443,7 @@ const HolidayScheduleForCustomers = () => {
                                 {holidayCustomerData?.map((data, index) => {
                                   return (
                                     <div
-                                      className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
+                                      className={`${style.holidayScheduleTableData1} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
                                       key={index}
                                     >
                                       <p className={style.tableDataFontStyle}>
@@ -447,8 +458,10 @@ const HolidayScheduleForCustomers = () => {
                                       <p className={style.tableDataFontStyle}>
                                         {data?.stateName}
                                       </p>
-                                      <p className={style.tableDataFontStyle}>
-                                        {data?.eventType}
+                                      <p
+                                        className={`${style.tableDataFontStyle} ${style.textCapitalize}`}
+                                      >
+                                        {(data?.eventType).toLowerCase()}
                                       </p>
 
                                       <div className={style.displayInRow}>
@@ -465,7 +478,7 @@ const HolidayScheduleForCustomers = () => {
                                         <img
                                           src={DeleteHcRow}
                                           alt=""
-                                          className={`${style.colorFileStyle} ${style.marginLeft20}`}
+                                          className={`${style.colorFileStyle}`}
                                           onClick={() =>
                                             handleDeleteHoliday(data?.id)
                                           }

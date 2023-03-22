@@ -34,7 +34,7 @@ const AbsenceReasonsForCustomer = () => {
   const [showPlanned, setShowPlanned] = useState(true);
   const [showUnPlanned, setShowUnPlanned] = useState(false);
   const [selectedAbsence, setSelectedAbsence] = useState({});
-  const [selectedAbsenceReasons, setSelectedAbsenceReasons] = useState([]);
+
   const [selectedPlannedAbsenceReasons, setSelectedPlannedAbsenceReasons] =
     useState([]);
   const [selectedUnPlannedAbsenceReasons, setSelectedUnPlannedAbsenceReasons] =
@@ -309,10 +309,10 @@ const AbsenceReasonsForCustomer = () => {
                             <img
                               src={IndustriesEntityFolder}
                               alt="IndustriesEntityFolder"
-                              className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                              className={`${style.colorFileStyle} ${style.marginLeft}`}
                             />
                             <p
-                              className={`${style.TextStyle2} ${style.marginLeft5}`}
+                              className={`${style.TextStyle2} ${style.marginLeft15}`}
                             >
                               PLANNED
                             </p>
@@ -321,32 +321,45 @@ const AbsenceReasonsForCustomer = () => {
                                 showPlanned ? CloseFolderBlue : OpenFolderBlue
                               }
                               alt="OpenFolder"
-                              className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                              className={`${style.colorFileStyle2} ${style.marginRight10}`}
                               onClick={() => setShowPlanned(!showPlanned)}
                             />
                           </div>
                           {showPlanned && (
                             <>
-                              <div
-                                className={`${style.customersAdminInnerRowsStyle6}  ${style.customersAdminBackground1} ${style.displayInRow}`}
-                              >
-                                <CommonPurpleCheckBox
-                                  name="allSelect"
-                                  onChange={(event) =>
-                                    selectAllPlanned(event.target.checked)
-                                  }
-                                  checked={
-                                    selectAllPlannedList.length !== 0
-                                      ? checkedAllPlanned
-                                      : false
-                                  }
-                                />
-                                <p
-                                  className={`${style.TextStyle4} ${style.marginLeft10}`}
-                                >
-                                  SELECT ALL
-                                </p>
-                              </div>
+                              {absenceReasonMaster?.filter(
+                                (data) =>
+                                  data?.absenceType === "PLANNED" &&
+                                  !absenceReason.some(
+                                    (customerData) =>
+                                      customerData?.id === data?.id
+                                  )
+                              )?.length > 1 ? (
+                                <>
+                                  <div
+                                    className={`${style.customersAdminInnerRowsStyle6}  ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                  >
+                                    <CommonPurpleCheckBox
+                                      name="allSelect"
+                                      onChange={(event) =>
+                                        selectAllPlanned(event.target.checked)
+                                      }
+                                      checked={
+                                        selectAllPlannedList.length !== 0
+                                          ? checkedAllPlanned
+                                          : false
+                                      }
+                                    />
+                                    <p
+                                      className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                    >
+                                      SELECT ALL
+                                    </p>
+                                  </div>
+                                </>
+                              ) : (
+                                <></>
+                              )}
 
                               {absenceReasonMaster
                                 ?.filter(
@@ -398,10 +411,10 @@ const AbsenceReasonsForCustomer = () => {
                             <img
                               src={IndustriesEntityFolder}
                               alt="IndustriesEntityFolder"
-                              className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                              className={`${style.colorFileStyle} ${style.marginLeft}`}
                             />
                             <p
-                              className={`${style.TextStyle2} ${style.marginLeft5}`}
+                              className={`${style.TextStyle2} ${style.marginLeft15}`}
                             >
                               {" "}
                               UNPLANNED{" "}
@@ -411,33 +424,46 @@ const AbsenceReasonsForCustomer = () => {
                                 showUnPlanned ? CloseFolderBlue : OpenFolderBlue
                               }
                               alt="OpenFolder"
-                              className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                              className={`${style.colorFileStyle2} ${style.marginRight10}`}
                               onClick={() => setShowUnPlanned(!showUnPlanned)}
                             />
                           </div>
 
                           {showUnPlanned && (
                             <>
-                              <div
-                                className={`${style.customersAdminInnerRowsStyle6}  ${style.customersAdminBackground1} ${style.displayInRow}`}
-                              >
-                                <CommonPurpleCheckBox
-                                  name="allSelect"
-                                  onChange={(event) =>
-                                    selectAllUnPlanned(event.target.checked)
-                                  }
-                                  checked={
-                                    selectAllUnPlannedList.length !== 0
-                                      ? checkedAllUnPlanned
-                                      : false
-                                  }
-                                />
-                                <p
-                                  className={`${style.TextStyle4} ${style.marginLeft10}`}
-                                >
-                                  SELECT ALL
-                                </p>
-                              </div>
+                              {absenceReasonMaster?.filter(
+                                (data) =>
+                                  data?.absenceType === "UNPLANNED" &&
+                                  !absenceReason.some(
+                                    (customerData) =>
+                                      customerData?.id === data?.id
+                                  )
+                              )?.length > 1 ? (
+                                <>
+                                  <div
+                                    className={`${style.customersAdminInnerRowsStyle6}  ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                  >
+                                    <CommonPurpleCheckBox
+                                      name="allSelect"
+                                      onChange={(event) =>
+                                        selectAllUnPlanned(event.target.checked)
+                                      }
+                                      checked={
+                                        selectAllUnPlannedList.length !== 0
+                                          ? checkedAllUnPlanned
+                                          : false
+                                      }
+                                    />
+                                    <p
+                                      className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                    >
+                                      SELECT ALL
+                                    </p>
+                                  </div>
+                                </>
+                              ) : (
+                                <></>
+                              )}
 
                               {absenceReasonMaster
                                 ?.filter(

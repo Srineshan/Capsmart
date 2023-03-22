@@ -271,6 +271,10 @@
   text-transform: uppercase;
 }
 
+.textCapitalize{
+  text-transform: capitalize;
+}
+
 .loginStatus {
   text-align: left;
   font: normal normal normal 11px/15px Montserrat;
@@ -1577,7 +1581,7 @@
   margin-left: 2%;
   align-items: center;
   display: grid;
-  grid-template-columns: 7% 84% 5%;
+  grid-template-columns: 10% 75% 15%;
 }
 
 .ContractedServiceProviderHeaderInsideContainer {
@@ -1802,7 +1806,8 @@
   display: grid;
   align-items: center;
   margin-top: 4px;
-  grid-template-columns: 20% 30% 20% 20% 5% 5%;
+  // grid-template-columns: 20% 35% 18% 17% 5% 5%;
+  grid-template-columns: 20% 35% 13% 15% 5% 7%;
 }
 
 .holidayScheduleTableData2 {

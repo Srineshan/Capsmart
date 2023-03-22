@@ -315,26 +315,38 @@ const FunctionalTitleForCustomer = () => {
                                     : `${style.listWrapper}`
                                 }
                               >
-                                <div
-                                  className={`${style.customersAdminInnerRowsStyle1}  ${style.customersAdminBackground1} ${style.displayInRow}`}
-                                >
-                                  <CommonPurpleCheckBox
-                                    name="allSelect"
-                                    onChange={(event) =>
-                                      selectAll(event.target.checked)
-                                    }
-                                    checked={
-                                      selectAllList.length !== 0
-                                        ? checkedAll
-                                        : false
-                                    }
-                                  />
-                                  <p
-                                    className={`${style.TextStyle4} ${style.marginLeft10}`}
-                                  >
-                                    SELECT ALL
-                                  </p>
-                                </div>
+                                {functionalTitlesForCSPTypeMaster?.filter(
+                                  (data) =>
+                                    !functionalTitlesForCSPTypeCustomerData.some(
+                                      (customerData) =>
+                                        customerData?.title === data?.title
+                                    )
+                                )?.length > 1 ? (
+                                  <>
+                                    <div
+                                      className={`${style.customersAdminInnerRowsStyle1}  ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                    >
+                                      <CommonPurpleCheckBox
+                                        name="allSelect"
+                                        onChange={(event) =>
+                                          selectAll(event.target.checked)
+                                        }
+                                        checked={
+                                          selectAllList.length !== 0
+                                            ? checkedAll
+                                            : false
+                                        }
+                                      />
+                                      <p
+                                        className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                      >
+                                        SELECT ALL
+                                      </p>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
 
                                 {functionalTitlesForCSPTypeMaster
                                   ?.filter(

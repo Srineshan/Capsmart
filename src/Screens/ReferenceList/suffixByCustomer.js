@@ -228,24 +228,37 @@ const SuffixByCustomer = () => {
                         className={`${style.customersAdminCardStyle1} ${style.scrollbar}`}
                       >
                         <>
-                          <div
-                            className={`${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`}
-                          >
-                            <CommonPurpleCheckBox
-                              name="allSelect"
-                              onChange={(event) =>
-                                selectAll(event.target.checked)
-                              }
-                              checked={
-                                selectAllList.length !== 0 ? checkedAll : false
-                              }
-                            />
-                            <p
-                              className={`${style.TextStyle4} ${style.marginLeft10}`}
-                            >
-                              SELECT ALL
-                            </p>
-                          </div>
+                          {masterNameSuffix?.filter(
+                            (data) =>
+                              !entityNameSuffix?.some(
+                                (suffix) => suffix?.suffix === data?.suffix
+                              )
+                          )?.length > 1 ? (
+                            <>
+                              <div
+                                className={`${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground3} ${style.displayInRow}`}
+                              >
+                                <CommonPurpleCheckBox
+                                  name="allSelect"
+                                  onChange={(event) =>
+                                    selectAll(event.target.checked)
+                                  }
+                                  checked={
+                                    selectAllList.length !== 0
+                                      ? checkedAll
+                                      : false
+                                  }
+                                />
+                                <p
+                                  className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                >
+                                  SELECT ALL
+                                </p>
+                              </div>
+                            </>
+                          ) : (
+                            <></>
+                          )}
 
                           {masterNameSuffix
                             ?.filter(
@@ -259,8 +272,8 @@ const SuffixByCustomer = () => {
                                 key={index}
                                 className={
                                   index % 2 !== 0
-                                    ? `${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground3} ${style.displayInRow}`
-                                    : `${style.customersAdminInnerRowsStyle2} ${style.customersAdminBackground2} ${style.displayInRow}`
+                                    ? `${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground3} ${style.displayInRow}`
+                                    : `${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground2} ${style.displayInRow}`
                                 }
                               >
                                 <CommonPurpleCheckBox

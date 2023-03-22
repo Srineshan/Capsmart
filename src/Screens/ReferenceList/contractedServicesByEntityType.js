@@ -221,24 +221,39 @@ const ContractServicesByEntityType = () => {
                       </div>
                       <div className={style.customersAdminCardStyle1}>
                         <>
-                          <div
-                            className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground3} ${style.displayInRow}`}
-                          >
-                            <CommonPurpleCheckBox
-                              name="allSelect"
-                              onChange={(event) =>
-                                selectAll(event.target.checked)
-                              }
-                              checked={
-                                selectAllList.length !== 0 ? checkedAll : false
-                              }
-                            />
-                            <p
-                              className={`${style.TextStyle4} ${style.marginLeft10}`}
-                            >
-                              SELECT ALL
-                            </p>
-                          </div>
+                          {contractedServiceTypeMaster?.filter(
+                            (data) =>
+                              !contractedServiceType.some(
+                                (customerData) =>
+                                  customerData?.serviceTypeTemplate ===
+                                  data?.serviceTypeTemplate
+                              )
+                          )?.length > 1 ? (
+                            <>
+                              <div
+                                className={`${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground3} ${style.displayInRow}`}
+                              >
+                                <CommonPurpleCheckBox
+                                  name="allSelect"
+                                  onChange={(event) =>
+                                    selectAll(event.target.checked)
+                                  }
+                                  checked={
+                                    selectAllList.length !== 0
+                                      ? checkedAll
+                                      : false
+                                  }
+                                />
+                                <p
+                                  className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                >
+                                  SELECT ALL
+                                </p>
+                              </div>
+                            </>
+                          ) : (
+                            <></>
+                          )}
 
                           {contractedServiceTypeMaster
                             ?.filter(
@@ -251,7 +266,7 @@ const ContractServicesByEntityType = () => {
                             )
                             ?.map((data, index) => (
                               <div
-                                className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                className={`${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground1} ${style.displayInRow}`}
                                 key={index}
                               >
                                 <CommonPurpleCheckBox
@@ -270,7 +285,7 @@ const ContractServicesByEntityType = () => {
                                   }
                                 />
                                 <p
-                                  className={`${style.TextStyle4} ${style.marginLeft5}`}
+                                  className={`${style.TextStyle4} ${style.marginLeft10} `}
                                 >
                                   {data?.serviceType}
                                 </p>
