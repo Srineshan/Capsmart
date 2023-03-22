@@ -504,9 +504,12 @@ const DepartmentsForCustomers = () => {
                                             (location) => {
                                               return (
                                                 <div
-                                                  className={`${style.contractedServiceProviderCard1} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
+                                                  className={`${style.contractedServiceProviderCard2} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
                                                   key={index}
                                                 >
+                                                  <p
+                                                    className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                                                  ></p>
                                                   <p
                                                     className={
                                                       style.tableDataFontStyle3
@@ -557,9 +560,10 @@ const DepartmentsForCustomers = () => {
                                 return (
                                   <>
                                     <div
-                                      className={`${style.contractedServiceProviderCard4} ${style.customersAdminBackground1} ${style.spaceBetween}`}
+                                      className={`${style.contractedServiceProviderCard3} ${style.customersAdminBackground1} ${style.spaceBetween}`}
                                       key={index}
                                     >
+                                      <p></p>
                                       <p className={style.tableDataFontStyle}>
                                         {data?.departmentGroupBy.name}
                                       </p>

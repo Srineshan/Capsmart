@@ -817,7 +817,7 @@
   margin-left: 7%;
   border-radius: 6px;
   display: grid;
-  grid-template-columns: 5% 82% 10% 5%;
+  grid-template-columns: 5% 75% 10% 10%;
   align-items: center;
   margin-top: 5px;
 }
@@ -829,19 +829,7 @@
   margin-left: 2%;
   border-radius: 6px;
   display: grid;
-  grid-template-columns: 5% 82% 10% 5%;
-  align-items: center;
-  margin-top: 5px;
-}
-
-.contractedServiceProviderCard4 {
-  background: #f5f5f8 0% 0% no-repeat padding-box;
-  min-height: 50px;
-  width: 98%;
-  margin-left: 2%;
-  border-radius: 6px;
-  display: grid;
-  grid-template-columns: 87% 10% 5%;
+  grid-template-columns: 5% 75% 10% 10%;
   align-items: center;
   margin-top: 5px;
 }
@@ -984,7 +972,7 @@
   letter-spacing: 0px;
   color: #484c51;
   opacity: 1;
-  margin-left: 45px;
+  margin-left: 17px;
   text-align: left;
   margin-top: 10px;
 }
@@ -1337,7 +1325,7 @@
 
 .entityLableStyle1 {
   text-align: left;
-  font: normal normal medium 20px/24px Proxima Nova;
+  font: normal normal medium 20px/24px Montserrat;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 0.5;
@@ -1694,7 +1682,7 @@
 
 .TextStyle2 {
   text-align: left;
-  font: normal normal normal 14px/17px Proxima Nova;
+  font: normal normal normal 14px/17px Montserrat;
   letter-spacing: 0px;
   color: #050505;
   margin-top: 5px;
@@ -1710,7 +1698,7 @@
 
 .TextStyle4 {
   text-align: left;
-  font: normal normal normal 14px/18px Proxima Nova;
+  font: normal normal normal 14px/18px Montserrat;
   letter-spacing: 0px;
   color: #050505;
   margin-top: 5px;
@@ -1720,7 +1708,7 @@
 
 .TextStyle5 {
   text-align: left;
-  font: normal normal normal 14px/16px Proxima Nova;
+  font: normal normal normal 14px/16px Montserrat;
   letter-spacing: 0px;
   color: #050505;
   margin-top: 10px;
@@ -1737,7 +1725,7 @@
 
 .holidayScheduleLeftCardTextStyle1 {
   text-align: left;
-  font: normal normal normal 15px/28px Proxima Nova;
+  font: normal normal normal 15px/28px Montserrat;
   letter-spacing: 0px;
   color: #050505;
   opacity: 1;
@@ -1848,7 +1836,7 @@
   display: flex;
   justify-content: center;
   margin-top: 10px;
-  font: normal normal bold 14px/18px Proxima Nova;
+  font: normal normal bold 14px/18px Montserrat;
   letter-spacing: 2.4px;
   color: #303236;
   text-transform: uppercase;
@@ -2262,7 +2250,7 @@
   width: 93%;
   border-radius: 6px;
   margin-top: 2px;
-  margin-left: 4%;
+  margin-left: 7%;
   align-items: center;
   display: flex;
   display: grid;
@@ -2289,7 +2277,7 @@
 .customerAdminTableData {
   min-height: 50px;
   width: 87%;
-  margin-left: 10%;
+  margin-left: 13%;
   border: 0.20000000298023224px solid #d7d4f7;
   border-radius: 6px;
   display: grid;
@@ -2602,7 +2590,7 @@
   width: 45px;
   height: 20px;
   text-align: left;
-  font: normal normal 600 20px/41px Proxima Nova;
+  font: normal normal 600 20px/41px Montserrat;
   letter-spacing: 2.3px;
   color: #52575d;
   text-transform: uppercase;
