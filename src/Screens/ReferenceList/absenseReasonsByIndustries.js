@@ -17,7 +17,7 @@ const AbsenseReasonsByIndustries = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [sideMenu, setSideMenu] = useState([]);
-  const [selectedTitle, setSelectedTitle] = useState(`${sideMenu?.[0]?.id}`);
+  const [selectedTitle, setSelectedTitle] = useState("");
   const [industryId, setIndustryId] = useState("");
   const [tableEntityData, setTableEntityData] = useState([]);
   const [deleteEntityId, setDeleteEntityId] = useState("");
@@ -34,6 +34,16 @@ const AbsenseReasonsByIndustries = () => {
     setIsExpanded(value);
   };
 
+  useEffect(() => {
+    getIndustryData();
+  }, []);
+
+  useEffect(() => {
+    if (industryId !== "" && industryId !== undefined) {
+      getEntityData();
+    }
+  }, [industryId]);
+
   const entityAllData = async (industry) => {
     const { data: entities } = await GET(
       `entity-service/entityTypeMaster?industryId=${industry.id}`
@@ -46,9 +56,12 @@ const AbsenseReasonsByIndustries = () => {
 
   const getIndustryData = async () => {
     const { data: industryData } = await GET(`entity-service/industryMaster`);
-    setSideMenu([]);
-    let allEntries = await Promise.all(industryData.map(entityAllData));
-    setSideMenu(allEntries);
+    setSelectedTitle(industryData?.[0]?.industry);
+    setIndustryId(industryData?.[0]?.id);
+    setSideMenu(industryData);
+
+    // let allEntries = await Promise.all(industryData.map(entityAllData));
+    // setSideMenu(allEntries);
 
     const { data: lastModifiedDate } = await GET(
       `entity-service/referenceList/master`
@@ -83,7 +96,6 @@ const AbsenseReasonsByIndustries = () => {
     if (value) {
       deleteEntity(deleteEntityId);
     }
-    getIndustryData();
   };
 
   const deleteEntity = async (id) => {
@@ -96,19 +108,6 @@ const AbsenseReasonsByIndustries = () => {
         ErrorToaster(error);
       });
   };
-
-  useEffect(() => {
-    getIndustryData();
-  }, []);
-
-  useEffect(() => {
-    getEntityData();
-  }, [selectedTitle]);
-
-  useEffect(() => {
-    setSelectedTitle(sideMenu?.[0]?.industry);
-    setIndustryId(sideMenu?.[0]?.id);
-  }, [sideMenu]);
 
   return (
     <Fragment>
@@ -157,7 +156,7 @@ const AbsenseReasonsByIndustries = () => {
                                 {data.industry}
                               </p>
                               <p className={style.industriesCardTextStyle1}>
-                                {data.absenceReason.length}
+                                {/* {data.absenceReason.length} */} 0
                               </p>
                             </div>
                           </div>

@@ -67,7 +67,7 @@ const AddAbsenseReasonsForHealthcare = ({
         await POST("entity-service/absenceReasonMaster", JSON.stringify(data))
           .then((response) => {
             SuccessToaster("Absence Added Successfully");
-            getIndustryData();
+            getEntityData();
           })
           .catch((error) => {
             ErrorToaster(error);
@@ -79,7 +79,7 @@ const AddAbsenseReasonsForHealthcare = ({
         )
           .then((response) => {
             SuccessToaster("Absence Updated Successfully");
-            getIndustryData();
+            getEntityData();
           })
           .catch((error) => {
             ErrorToaster(error);
@@ -88,7 +88,7 @@ const AddAbsenseReasonsForHealthcare = ({
 
       if (type !== "Add More") {
         getAddEntityDialog(false);
-        getIndustryData();
+        getEntityData();
       } else {
         setAbsenseReason("");
         document.getElementById("absenceEl").focus();
