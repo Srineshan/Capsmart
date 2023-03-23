@@ -208,7 +208,7 @@ const AddCompanyHoliday = ({
                     }}
                     value={eventDate}
                     onChange={(e) => {
-                      setEventDate(e.target.value);
+                      setEventDate(e);
                     }}
                     inputFormat="MM-dd-yyyy"
                     renderInput={(params) => (
