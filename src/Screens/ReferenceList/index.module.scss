@@ -605,7 +605,20 @@
   display: flex;
   align-items: center;
   display: grid;
-  grid-template-columns: 59% 15% 15% 10% 10%;
+  grid-template-columns: 55% 15% 15% 10% 10%;
+}
+
+.tableHeaderDepartment{
+  background: #afa9ef 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  //margin-left: 50px;
+  height: 55px;
+  width: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 59% 8% 20% 6% 6%;
 }
 
 .tableHeaderTerminationReasons {
@@ -767,7 +780,8 @@
   display: grid;
   align-items: center;
   margin-top: 4px;
-  grid-template-columns: 3% 58% 15% 15% 5% 5%;
+  // grid-template-columns: 3% 58% 15% 15% 5% 5%;
+  grid-template-columns: 7% 56% 5% 20% 6% 6%;
 }
 
 .terminationLayer3Card {
@@ -929,7 +943,7 @@
   display: grid;
   align-items: center;
   margin-top: 5px;
-  grid-template-columns: 2% 58% 15% 16% 5% 5%;
+  grid-template-columns: 4% 55% 8% 20% 6% 6%;;
 }
 
 .terminationInnerFolderData {
@@ -1489,7 +1503,7 @@
 }
 
 .healthCareHeaderTextStyle {
-  font: normal normal 600 20px/22px Montserrat;
+  font: normal normal 600 18px/22px Montserrat;
   letter-spacing: 3.05px;
   color: #6d6d6d;
   text-align: left;
@@ -1519,7 +1533,7 @@
 }
 
 .healthCareLeftCardFontStyle {
-  font: normal normal normal 18px/25px Montserrat;
+  font: normal normal normal 15px/25px Montserrat;
   letter-spacing: 0px;
 }
 
@@ -2567,7 +2581,7 @@
 }
 
 .healthCareHeaderTextStyle7 {
-  font: normal normal bolder 18px/25px Montserrat;
+  font: normal normal bolder 15px/25px Montserrat;
 }
 
 .tableHeaderIndustriesFontStyle5 {

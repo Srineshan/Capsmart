@@ -268,7 +268,7 @@ const DepartmentsByEntityTypes = () => {
                       </>
                     ) : (
                       <div className={style.DepartmentEntityCardStyle}>
-                        <div className={style.tableHeaderIndustriesEntity}>
+                        <div className={style.tableHeaderDepartment}>
                           <p
                             className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft40}`}
                           >

@@ -30,6 +30,7 @@ const IndustriesWithEntityTypes = () => {
   const [allData, setAllData] = useState([]);
   const [isExpanded, setIsExpanded] = useState(true);
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+  const [countValue, setCountValue] = useState("");
 
   const getAddEntityDialog = (value) => {
     setShowAddEntityDialog(value);
@@ -43,18 +44,24 @@ const IndustriesWithEntityTypes = () => {
     setIsExpanded(value);
   };
 
-  const entityAllData = async (industry) => {
-    const { data: entities } = await GET(
-      `entity-service/entityTypeMaster?industryId=${industry.id}`
-    );
-    return await { ...industry, entities };
-  };
+  useEffect(() => {
+    getIndustryData();
+  }, []);
+
+  useEffect(() => {
+    if (industryId !== "" && industryId !== undefined) {
+      getEntityData();
+    }
+  }, [industryId]);
+
+  // console.log(industryId);
 
   const getIndustryData = async () => {
     const { data: industryData } = await GET(`entity-service/industryMaster`);
-
-    let allEntries = await Promise.all(industryData.map(entityAllData));
-    setAllData(allEntries);
+    // console.log(industryData);
+    setSelectedTitle(industryData?.[0]?.industry);
+    setIndustryId(industryData?.[0]?.id);
+    setAllData(industryData);
 
     const { data: lastModifiedDate } = await GET(
       `entity-service/referenceList/master`
@@ -66,12 +73,10 @@ const IndustriesWithEntityTypes = () => {
 
   const getEntityData = async () => {
     const { data: entityData } = await GET(
-      `entity-service/entityTypeMaster?industryId=${selectedIndustry.id}`
+      `entity-service/entityTypeMaster?industryId=${industryId}`
     );
     setTableEntityData(entityData);
   };
-
-  // console.log(selectedIndustry);
 
   const deleteHandler = (data) => {
     setDeleteEntityId(data?.id);
@@ -98,25 +103,6 @@ const IndustriesWithEntityTypes = () => {
         ErrorToaster(error);
       });
   };
-
-  useEffect(() => {
-    getIndustryData();
-  }, []);
-
-  useEffect(() => {
-    getEntityData();
-  }, [selectedIndustry]);
-
-  const EntityDefaultSet = (Data) => {
-    let updatedData = [...Data];
-    setSelectedIndustry(updatedData?.[0]);
-    setSelectedTitle(updatedData?.[0]?.industry);
-    setIndustryId(updatedData?.[0]?.id);
-  };
-
-  useEffect(() => {
-    EntityDefaultSet(allData);
-  }, [allData]);
 
   return (
     <Fragment>
@@ -168,7 +154,8 @@ const IndustriesWithEntityTypes = () => {
                                 {data.industry}
                               </p>
                               <p className={style.industriesCardTextStyle1}>
-                                {data?.entities.length}
+                                {/* {data?.entities.length} */}
+                                {"0"}
                               </p>
                             </div>
                           </div>
