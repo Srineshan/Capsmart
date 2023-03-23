@@ -118,24 +118,6 @@ const IndustriesWithEntityTypes = () => {
     EntityDefaultSet(allData);
   }, [allData]);
 
-  useEffect(() => {
-    let updateTableData = [];
-    tableEntityData.map((data) => {
-      updateTableData.push({ ...data, entities: data });
-    });
-    // console.log(updateTableData);
-    let updatedSideMenu = [];
-    allData.forEach((i) => {
-      // console.log(i.id, selectedIndustry.id);
-      if (i.id === selectedIndustry?.id) {
-        updatedSideMenu.push({ ...i, entities: updateTableData });
-      } else {
-        updatedSideMenu.push({ ...i });
-      }
-    });
-    // console.log(updatedSideMenu);
-  }, [tableEntityData]);
-
   return (
     <Fragment>
       <Navbar />

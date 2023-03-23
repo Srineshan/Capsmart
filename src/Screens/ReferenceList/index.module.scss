@@ -608,6 +608,18 @@
   grid-template-columns: 59% 15% 15% 10% 10%;
 }
 
+.tableHeaderTerminationReasons {
+  background: #afa9ef 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  height: 55px;
+  width: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 59% 16% 15% 10%;
+}
+
 .tableHeaderIndustriesFontStyle {
   font: normal normal bold 12px/18px Montserrat;
   letter-spacing: 0px;
@@ -616,6 +628,8 @@
   text-align: left;
   margin-top: 10px;
   margin-left: 10px;
+  width: 95%;
+  min-height: fit-content;
 }
 
 .tableHeaderIndustriesFontStyle2 {
@@ -677,7 +691,7 @@
   align-items: center;
   display: flex;
   display: grid;
-  grid-template-columns: 3% 88% 5% 5%;
+  grid-template-columns: 5% 82% 6% 6%;
 }
 
 .holidayFolderHeader {
@@ -734,13 +748,13 @@
 .healthCareTableData {
   background: #f5f5f8 0% 0% no-repeat padding-box;
   min-height: 50px;
-  width: 96%;
+  width: 98%;
   margin-left: 2%;
   border-radius: 6px;
   display: grid;
   align-items: center;
   margin-top: 5px;
-  grid-template-columns: 61% 15% 15% 5% 5%;
+  grid-template-columns: 61% 8% 18% 6% 5%;
 }
 
 .departmentTableData {
@@ -1609,6 +1623,18 @@
   grid-template-columns: 7% 84% 5%;
 }
 
+.terminationReasonSideRows {
+  background: #928AE1 0% 0% no-repeat padding-box;
+    font-weight: normal;
+    height: 50px;
+    width: 98%;
+    border-radius: 6px;
+    margin-top: 1%;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 10% 78% 5%;
+}
+
 .costCenterLeftCard {
   background: #cecaf5 0% 0% no-repeat padding-box;
   font-weight: normal;
@@ -1634,6 +1660,31 @@
   align-items: center;
 }
 
+.terminationInnerFolderRows{
+  font-weight: normal;
+  min-height: 50px;
+  height: 50px;
+  width: 93%;
+  border: 0.400000006px solid rgba(136, 126, 231, 0.6862745098);
+  opacity: 1;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 5%;
+  align-items: center;
+}
+
+.terminationReasonBackground1 {
+  background: #887ee7af 0% 0% no-repeat padding-box;
+  display: grid;
+  grid-template-columns: 10% 85% 3%;
+}
+
+.terminationReasonBackground2 {
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  display: grid;
+  grid-template-columns: 10% 85% 3%;
+}
+
 .HolidayListInnerFolderRows {
   font-weight: normal;
   min-height: 50px;
@@ -1652,6 +1703,7 @@
   display: grid;
   grid-template-columns: 7% 80% 10%;
 }
+
 
 .boardCertificationTextStyle1 {
   text-align: left;
@@ -1752,7 +1804,7 @@
   display: flex;
   align-items: center;
   display: grid;
-  grid-template-columns: 5% 35% 20% 18% 20% 10%;
+  grid-template-columns: 5% 35% 15% 15% 18%;
 }
 
 .FuntionalTitlesTableData {
@@ -1764,7 +1816,7 @@
   display: grid;
   align-items: center;
   margin-top: 5px;
-  grid-template-columns: 2% 30% 25% 22% 12% 5% 5%;
+  grid-template-columns: 2% 30% 20% 20% 18% 5% 5%;
 }
 
 .textColorBlue {
@@ -1793,7 +1845,8 @@
   display: grid;
   align-items: center;
   margin-top: 4px;
-  grid-template-columns: 3% 30% 15% 10% 15% 18% 5% 5%;
+  // grid-template-columns: 3% 30% 15% 10% 15% 18% 5% 5%;
+  grid-template-columns: 1% 27% 24% 15% 10% 13% 5% 5%;;
 }
 
 .holidayScheduleTableData1 {

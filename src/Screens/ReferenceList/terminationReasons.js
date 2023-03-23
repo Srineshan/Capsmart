@@ -172,7 +172,7 @@ const BoardCertification = () => {
                         return data?.entities.length !== 0 ? (
                           <>
                             <div
-                              className={`${style.boardCertificationSideRows} ${style.displayInRow}`}
+                              className={`${style.terminationReasonSideRows} ${style.displayInRow}`}
                               key={index}
                               onClick={() => handleToggle(index, data)}
                             >
@@ -203,8 +203,8 @@ const BoardCertification = () => {
                                 <div
                                   className={
                                     entity?.type === selectedTitle
-                                      ? `${style.boardCertificationInnerFolderRows} ${style.boardCertificationBackground1} ${style.displayInRow} `
-                                      : `${style.boardCertificationInnerFolderRows} ${style.displayInRow} `
+                                      ? `${style.terminationInnerFolderRows} ${style.terminationReasonBackground1} ${style.displayInRow} `
+                                      : `${style.terminationInnerFolderRows} ${style.terminationReasonBackground2} ${style.displayInRow} `
                                   }
                                   onClick={() => {
                                     setSelectedTitle(entity.type);
@@ -233,7 +233,7 @@ const BoardCertification = () => {
                     </div>
 
                     <div className={style.industriesEntityCardStyle}>
-                      <div className={style.tableHeaderIndustriesEntity}>
+                      <div className={style.tableHeaderTerminationReasons}>
                         <p
                           className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft40}`}
                         >

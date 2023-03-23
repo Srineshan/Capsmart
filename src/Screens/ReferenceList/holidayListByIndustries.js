@@ -334,8 +334,10 @@ const BoardCertification = () => {
                           <p className={style.tableDataFontStyle}>
                             {format(new Date(data?.eventDate), "EEEE")}
                           </p>
-                          <p className={style.tableDataFontStyle}>
-                            {data?.eventType}
+                          <p
+                            className={`${style.tableDataFontStyle} ${style.textCapitalize}`}
+                          >
+                            {(data?.eventType).toLowerCase()}
                           </p>
                           <p className={style.tableDataFontStyle}>
                             {data?.stateName}
