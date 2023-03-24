@@ -15,6 +15,7 @@ import { format } from "date-fns-tz";
 import Navbar from "../../Components/Navbar";
 import SideBar from "../../Components/Sidebar";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import { index } from "d3";
 
 const IndustriesWithEntityTypes = () => {
   const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
@@ -30,7 +31,7 @@ const IndustriesWithEntityTypes = () => {
   const [allData, setAllData] = useState([]);
   const [isExpanded, setIsExpanded] = useState(true);
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
-  const [countValue, setCountValue] = useState("");
+  const [entityTypeList, setEntityTypeList] = useState([]);
 
   const getAddEntityDialog = (value) => {
     setShowAddEntityDialog(value);
@@ -50,15 +51,17 @@ const IndustriesWithEntityTypes = () => {
 
   useEffect(() => {
     if (industryId !== "" && industryId !== undefined) {
-      getEntityData();
+      getAllEntityType();
     }
   }, [industryId]);
 
-  // console.log(industryId);
+  const getAllEntityType = async () => {
+    const { data: entityType } = await GET(`entity-service/entityTypeMaster`);
+    setEntityTypeList(entityType);
+  };
 
   const getIndustryData = async () => {
     const { data: industryData } = await GET(`entity-service/industryMaster`);
-    // console.log(industryData);
     setSelectedTitle(industryData?.[0]?.industry);
     setIndustryId(industryData?.[0]?.id);
     setAllData(industryData);
@@ -97,11 +100,19 @@ const IndustriesWithEntityTypes = () => {
     await DELETE(`entity-service/entityTypeMaster/${id}`)
       .then((response) => {
         SuccessToaster("Entity Deleted Successfully");
-        getEntityData();
+        // getEntityData();
+        getAllEntityType();
       })
       .catch((error) => {
         ErrorToaster(error);
       });
+  };
+
+  const getCountValue = (id) => {
+    let countValue = entityTypeList?.filter(
+      (entity) => entity?.industryId?.id === id
+    );
+    return countValue?.length;
   };
 
   return (
@@ -155,7 +166,8 @@ const IndustriesWithEntityTypes = () => {
                               </p>
                               <p className={style.industriesCardTextStyle1}>
                                 {/* {data?.entities.length} */}
-                                {"0"}
+                                {/* {"0"} */}
+                                {getCountValue(data?.id)}
                               </p>
                             </div>
                           </div>
@@ -204,46 +216,51 @@ const IndustriesWithEntityTypes = () => {
                           />
                         </div>
                       }
-                      {tableEntityData?.map((data, innerIndex) => {
-                        return (
-                          <div
-                            className={
-                              innerIndex % 2 !== 0
-                                ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                                : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                            }
-                          >
-                            <p className={style.tableDataFontStyle}>
-                              {data.type}
-                            </p>
-                            <p className={style.tableDataFontStyle}></p>
-                            <p className={style.tableDataFontStyle}>
-                              {format(
-                                new Date(`${data.lastModifiedDate}`),
-                                "MM-dd-yyyy"
-                              )}
-                            </p>
-                            <img
-                              src={EditHcRow}
-                              className={style.colorFileStyle}
-                              onClick={() => {
-                                setIsEdit(true);
-                                setSelectedEntity(data);
-                                getAddHcEntityDialog(true);
-                              }}
-                              alt=""
-                            />
-                            <img
-                              src={DeleteHcRow}
-                              className={style.colorFileStyle}
-                              onClick={() => {
-                                deleteHandler(data);
-                              }}
-                              alt=""
-                            />
-                          </div>
-                        );
-                      })}
+
+                      {entityTypeList
+                        ?.filter((data) => data?.industryId?.id === industryId)
+                        ?.map((data, innerIndex) => {
+                          return (
+                            <>
+                              <div
+                                className={
+                                  innerIndex % 2 !== 0
+                                    ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                    : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                }
+                              >
+                                <p className={style.tableDataFontStyle}>
+                                  {data.type}
+                                </p>
+                                <p className={style.tableDataFontStyle}></p>
+                                <p className={style.tableDataFontStyle}>
+                                  {format(
+                                    new Date(`${data.lastModifiedDate}`),
+                                    "MM-dd-yyyy"
+                                  )}
+                                </p>
+                                <img
+                                  src={EditHcRow}
+                                  className={style.colorFileStyle}
+                                  onClick={() => {
+                                    setIsEdit(true);
+                                    setSelectedEntity(data);
+                                    getAddHcEntityDialog(true);
+                                  }}
+                                  alt=""
+                                />
+                                <img
+                                  src={DeleteHcRow}
+                                  className={style.colorFileStyle}
+                                  onClick={() => {
+                                    deleteHandler(data);
+                                  }}
+                                  alt=""
+                                />
+                              </div>
+                            </>
+                          );
+                        })}
                     </div>
                   </div>
                 </div>
@@ -272,7 +289,7 @@ const IndustriesWithEntityTypes = () => {
           isEdit={isEdit}
           seletedEntity={seletedEntity}
           selectedTitle={selectedTitle}
-          getEntityData={getEntityData}
+          getEntityData={getAllEntityType}
           tableEntityData={tableEntityData}
           setTableEntityData={setTableEntityData}
         />
