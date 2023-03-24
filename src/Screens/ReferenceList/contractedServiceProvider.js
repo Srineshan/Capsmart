@@ -219,7 +219,9 @@ const ContractedServiceProvidedByIndustries = () => {
                       {siteTypeTableData?.map((data) =>
                         data.items.length !== 0 ? (
                           <>
-                            <div className={style.terminationHeader}>
+                            <div
+                              className={style.contractedServiceProvidersHeader}
+                            >
                               <img
                                 src={IndustriesEntityFolder}
                                 alt="IndustriesEntityFolder"

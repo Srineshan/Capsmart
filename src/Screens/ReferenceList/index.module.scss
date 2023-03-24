@@ -745,6 +745,19 @@
   grid-template-columns: 5% 75% 10% 5%;
 }
 
+.contractedServiceProvidersHeader {
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 45px;
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 5px;
+  align-items: center;
+  display: flex;
+  display: grid;
+  grid-template-columns: 5% 85% 5% 5%;
+}
+
 .terminationHeader2 {
   background: #d3d0f6 0% 0% no-repeat padding-box;
   font-weight: normal;
@@ -768,6 +781,18 @@
   align-items: center;
   margin-top: 5px;
   grid-template-columns: 61% 8% 18% 6% 5%;
+}
+
+.suffixTableData {
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 98%;
+  margin-left: 2%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 60% 15% 12% 6% 5%;;
 }
 
 .departmentTableData {

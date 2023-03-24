@@ -205,8 +205,8 @@ const SuffixByIndustries = () => {
                           <div
                             className={
                               innerIndex % 2 !== 0
-                                ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                                : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                ? `${style.suffixTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                : `${style.suffixTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
                             }
                           >
                             <p className={style.tableDataFontStyle}>
