@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { InputGroup, Icon, Intent, TextArea, Checkbox } from '@blueprintjs/core';
+import { InputGroup, Icon, Intent, TextArea, Checkbox, EditableText } from '@blueprintjs/core';
 import Switch from '@mui/material/Switch';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -24,11 +24,21 @@ import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 import 'react-datalist-input/dist/styles.css';
+import InputAdornment from '@mui/material/InputAdornment';
+import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import { Auth } from './../../utils/auth'
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SaveInProgress from './saveInProgressAlert';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import { FormatPhoneNumber } from '../../utils/formatting';
+import Table from '../../Components/TableDesign';
 
+
+const TEXTFIELDLEN = 100;
+const DESCLEN = 250;
 
 const ContractAndBillingDetails = ({ getActiveStep }) => {
     const { id } = useParams();
@@ -38,17 +48,21 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
     const [selectDepartment, setSelectDepartment] = useState('');
     const [selectedContract, setSelectedContract] = useState('Select...');
     const [fullyExecutedContract, setFullyExecutedContract] = useState(false);
+    const [fullyExecutedContractData, setFullyExecutedContractData] = useState([]);
     const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('AUTORENEWAL');
     const [isSetupComplete, setIsCompleteSetup] = useState(false);
     const [isUpdated, setIsUpdated] = useState(false);
-    const [personName, setPersonName] = React.useState([]);
+    const [renewalReminder, setRenewalreminder] = useState([{ 'days': 0 }]);
+    const [reminderFields, setReminderFields] = useState([]);
+    const tableHeaderValues = ['DOCUMENT NAME', 'DOCUMENT TYPE', 'DOCUMENT DESCRIPTION', 'VIEW', 'DELETE'];
+    const [fileFieldData, setFileFieldData] = useState({ id: '', type: '', name: '', desc: '', fileName: '', file: null, filePath: '' });
+
     const [plan, setPlan] = useState({
         planName: 'SILVER', allowableRegisteredUsers: 0, fees: "", subscriptionStatus: "ACTIVE", billingFrequency: "MONTHLY", discount: 0,
         poaNumber: ""
     });
     const [billingData, setBillingData] = useState({ firstName: '', lastName: '', email: '', phone: '' });
-    // const [autoRenewal,setAutoRenewal] = useState({renewalTerm:'0',allowableRenewalTerm:'0',calendar:'WEEKS'});
-    // const [renewalReminder,setRenewalreminder] = useState([{'days':0}]);
+    const [autoRenewal, setAutoRenewal] = useState({ renewalTerm: '0', allowableRenewalTerm: '0', calendar: 'WEEKS' });
     const [contract, setContract] = useState(
         {
             contractName: "",
@@ -65,7 +79,6 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
         startDate: null,
         endDate: null
     })
-    const [contractFiles, setContractFiles] = useState([{ type: '', name: '', desc: '', file: null, path: '' }])
     const Fields = { planName: 'Subscription Plan', allowableRegisteredUsers: 'Allowable Registered Users', fees: 'Monthly Subscription Fees', billingFrequency: 'Billing Frequency', discount: 'Discount', poaNumber: 'POA Number', firstName: 'First Name', lastName: 'Last Name', email: 'Email', phone: 'Cell Phone', contractName: 'Contract / Agreement Name', contractID: 'Contract ID', startDate: 'Contract Start Date', endDate: 'Contract End Date', date: 'Contract Effective Date', contractContinuationPolicy: 'Contract Continuation Policy' };
     const [showSaveInProgress, setShowSaveInProgress] = useState(false);
     const [unassignedKeys, setUnassignedKeys] = useState([]);
@@ -74,35 +87,34 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
     const role = '';
     const accessToken = Auth();
 
-    const names = [
-        'Oliver Hansen',
-        'Van Henry',
-        'April Tucker',
-        'Ralph Hubbard',
-        'Omar Alexander',
-        'Carlos Abbott',
-        'Miriam Wagner',
-        'Bradley Wilkerson',
-        'Virginia Andrews',
-        'Kelly Snyder',
-    ];
-
     useEffect(() => {
         if (id !== 'new') {
             getEntityData();
         }
     }, []);
 
+    useEffect(() => {
+        getReminder();
+    }, [renewalReminder])
+
     const getEntityData = async () => {
         const { data: data } = await GET(`entity-service/entity/${id}`);
         let subscription = data?.subscriptionPlan;
         let contractData = data?.contractDetails;
         setEntityData(data);
-        setBillingData({ firstName: data?.billingDetails?.contactname?.firstName, lastName: data?.billingDetails?.contactname?.lastName, email: data?.billingDetails?.email?.emailId, phone: data?.billingDetails?.contactNumber?.contactNumber.toString() });
+        setBillingData({ firstName: data?.billingDetails?.contactname?.firstName, lastName: data?.billingDetails?.contactname?.lastName, email: data?.billingDetails?.email?.officialEmail, phone: data?.billingDetails?.contactNumber?.contactNumber });
         setPlan({
             planName: subscription?.planName, allowableRegisteredUsers: subscription?.allowableRegisteredUsers?.allowableRegisteredUsers, fees: subscription?.subscriptionFees?.fees, subscriptionStatus: subscription?.subscriptionStatus, billingFrequency: subscription?.billingFrequency, discount: subscription?.discount?.discount || '0',
-            poaNumber: subscription?.poaNumber?.poaNumber
+            poaNumber: data?.contractDetails?.poaNumber?.poaNumber
         });
+        handleContract('contractContinuationPolicy', data?.contractDetails?.contractContinuationPolicy?.contractPolicyType)
+        setAutoRenewal({
+            renewalTerm: data?.contractDetails?.contractContinuationPolicy?.autoRenewalPeriod?.autoRenewalTerm,
+            allowableRenewalTerm: data?.contractDetails?.contractContinuationPolicy?.autoRenewalPeriod?.allowableAutoRenewalTerm,
+            calendar: data?.contractDetails?.contractContinuationPolicy?.autoRenewalPeriod?.autoRenewalCalender
+        })
+        setRenewalreminder(data?.contractDetails?.contractContinuationPolicy?.reminderList?.renewalReminderList)
+        setFullyExecutedContract(data?.contractDetails?.fullyExecutedContractOnFile);
         if (contractData !== null) {
             setContract({
                 contractName: contractData?.contractName,
@@ -111,14 +123,88 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                 startDate: contractData?.contractTermPeriod?.startDate !== null ? new Date(contractData?.contractTermPeriod?.startDate) : null,
                 endDate: contractData?.contractTermPeriod?.endDate !== null ? new Date(contractData?.contractTermPeriod?.endDate) : null,
                 date: contractData?.plannedGoLive?.date !== null ? new Date(contractData?.plannedGoLive?.date) : null,
-                contractContinuationPolicy: contractData?.contractContinuationPolicy,
+                contractContinuationPolicy: contractData?.contractContinuationPolicy?.contractPolicyType !== null ? contractData?.contractContinuationPolicy?.contractPolicyType : "",
             })
         }
     }
 
+    console.log(contract)
+
+
+
+    const getReminder = () => {
+        let temp = [];
+        for (let i = 0; i < renewalReminder?.length; i++) {
+            temp[i] = (
+                <div className={`${style.renewalRemainderBoxGrid} ${style.marginBottom}`} key={`reminder${i}-${renewalReminder?.[i]?.days}`}>
+                    <div className={style.verticalAlignCenter}>
+                        Set Renewal Reminder*
+                    </div>
+                    {/* <div className={style.displayInRow}>
+                <EditableText className={style.inputRenewalRemainderStyle} defaultValue={renewalReminder?.[i]?.days} placeholder="" onChange={(e) => handleReminder(e, i)} key={`days${i}${renewalReminder?.[i]?.days}`} />
+                <div className={`${style.marginTop10} ${style.marginLeft20}`}>Days</div>
+              </div> */}
+                    <div className={style.renewalWidth}>
+                        <CommonTextField
+                            InputProps={{
+                                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+                            }}
+                            onChange={(e) => handleReminder(e, i)}
+                            key={`days${i}${renewalReminder?.[i]?.days}`}
+                            defaultValue={renewalReminder?.[i]?.days}
+                        />
+                    </div>
+                    <div className={style.verticalAlignCenter}>
+                        {renewalReminder?.length !== 1 && (
+                            <Icon icon="cross" color="#a0a5ab" onClick={() => removeReminder(i)} />
+                        )}
+                    </div>
+                </div>
+            )
+        }
+        setReminderFields(temp);
+    }
+
+    const addReminder = () => {
+        let temp = renewalReminder;
+        temp.push({ 'days': 0 });
+        setRenewalreminder(temp);
+        getReminder();
+    }
+
+    const removeReminder = (index) => {
+        setRenewalreminder(renewalReminder?.filter((data, indexValue) => index !== indexValue)?.map(data => data));
+    }
+
+    const handleReminder = (e, i) => {
+        let temp = renewalReminder;
+        temp[i] = { 'days': parseInt(e.target.value) };
+        setRenewalreminder(temp);
+    }
+
+    const handleFileChange = (e, name) => {
+        setFileFieldData({ ...fileFieldData, [name]: e.target.value });
+    }
+
+    const addNewDocumentField = () => {
+        let temp = fullyExecutedContractData;
+        temp.push(fileFieldData);
+        // setFileFields(temp);
+        setFullyExecutedContractData(temp);
+        updateBilling('addDoc');
+        setFileFieldData({ id: '', type: '', name: '', desc: '', fileName: '', file: null, filePath: '' });
+    }
+
+    console.log(fileFieldData, fullyExecutedContractData)
+
     const leftElement = () => {
         return (
-            <button className={style.uploadButtonStyle} >UPLOAD</button>
+            <div>
+                <label for="file-upload" className={style.customFileUpload}>
+                    Choose File
+                </label>
+                <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => handleFileUpload(e)} />
+            </div>
         )
     }
 
@@ -132,38 +218,6 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
         return (
             <p className={`${style.marginTop7} ${style.marginLeft20}`}>$</p>
         )
-    }
-
-    const calendarIcon = () => {
-        return (
-            <Icon icon="calendar" intent={Intent.PRIMARY} className={style.calendarStyle} />
-        )
-    }
-
-    const handleChange = (event) => {
-        const {
-            target: { value },
-        } = event;
-        setPersonName(
-            // On autofill we get a stringified value.
-            typeof value === 'string' ? value.split(',') : value,
-        );
-    };
-
-    const mandatoryFieldCheck = (buttonType) => {
-        if (billingData?.email === '') {
-            ErrorToaster('Email is Mandatory');
-            return;
-        }
-        if (!billingData?.email?.includes('@') || !billingData?.email?.includes('.')) {
-            ErrorToaster('Enter Valid Email-Id');
-            return;
-        }
-        if (buttonType === 'saveInProgress') {
-            saveInProgressCheck();
-        } else {
-            updateBilling(buttonType);
-        }
     }
 
     const saveInProgressCheck = () => {
@@ -193,16 +247,65 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
         updateBilling('saveInProgress');
     }
 
-    const updateBilling = async (type) => {
-        let fileData = [];
-        contractFiles?.map(data => {
-            fileData.push({ "name": data?.name, "description": data?.desc, "contractDocType": data?.type, "contractDocPath": data?.path })
+    const changeContractFile = (value) => {
+        if (fullyExecutedContractData?.length === 0 || value) {
+            setFullyExecutedContract(value);
+        }
+    }
+
+    const updateBilling = async (type, id) => {
+        if (contract?.contractName === '') {
+            ErrorToaster('Contract / Agreement Name Is Mandatory');
+            return;
+        }
+        if (contract?.contractID === '') {
+            ErrorToaster('Contract ID ( CID ) Is Mandatory');
+            return;
+        }
+        if (billingData?.email === '') {
+            ErrorToaster('Email Is Mandatory');
+            return;
+        }
+        if (!billingData?.email?.includes('@') || !billingData?.email?.includes('.')) {
+            ErrorToaster('Enter a Valid Email');
+            return;
+        }
+        if (contract?.startDate === null || contract?.endDate === null) {
+            ErrorToaster('Contract Term Period Is Mandatory ');
+            return;
+        }
+        if (contract?.contractContinuationPolicy === '') {
+            ErrorToaster('Continuation Policy Is Mandatory ');
+            return;
+        }
+        let contractFiles = [];
+        // if (type === 'addDoc') {
+        contractFiles = entityData?.contractDetails !== null ? entityData?.contractDetails?.entityContractDocuments : [];
+        // }
+        if (type === 'removeDoc') {
+            contractFiles = entityData?.contractDetails !== null ? entityData?.contractDetails?.entityContractDocuments?.filter(docData => id !== docData?.id)?.map(data => data) : [];
+        }
+        fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
+            contractFiles?.push({
+                documentType: data.type,
+                documentDescription: data.desc,
+                documentName: data.name,
+                file: {
+                    fileName: data.fileName,
+                }
+            })
         })
         let data = {
             "id": entityData?.id,
             "entityName": entityData?.entityName,
             "entityType": entityData?.entityType,
             "entityDisplayId": entityData?.entityDisplayId,
+            "entityAbbrevation": entityData?.entityAbbrevation,
+            "partnerId": entityData?.partnerId,
+            "partner": entityData?.partner,
+            "npin": entityData?.npin,
+            "mailingAddress": entityData?.mailingAddress,
+            "officialEmailDomain": entityData?.officialEmailDomain,
             "industryId": entityData?.industryId,
             "sites": entityData?.sites,
             "subdomain": entityData?.subdomain,
@@ -213,21 +316,23 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
             "logo": entityData?.logo,
             "logoThumbnail": entityData?.logoThumbnail,
             "subscriptionPlan": {
-                "planName": plan?.planName || 'SILVER',
-                "allowableRegisteredUsers": {
-                    "allowableRegisteredUsers": parseInt(plan?.allowableRegisteredUsers),
-                },
+                "planName": entityData?.subscriptionPlan?.planName,
                 "subscriptionFees": {
-                    "fees": plan?.fees,
+                    "fees": entityData?.subscriptionPlan?.subscriptionFees?.fees,
                 },
-                "subscriptionStatus": plan?.subscriptionStatus || 'ACTIVE',
-                "billingFrequency": plan?.billingFrequency || 'MONTHLY',
+                "subscriptionStatus": entityData?.subscriptionPlan?.subscriptionStatus,
+                "billingFrequency": entityData?.subscriptionPlan?.billingFrequency,
                 "discount": {
-                    "discount": parseInt(plan?.discount)
+                    "discount": entityData?.subscriptionPlan?.discount?.discount
                 },
-                "poaNumber": {
-                    "poaNumber": plan?.poaNumber,
-                }
+                "plannedToGoLive": { date: contract?.date ? format(contract?.date, 'yyyy-MM-dd').toString() : null },
+                "allowableSites": entityData?.subscriptionPlan?.allowableSites,
+                "noOfSites": entityData?.subscriptionPlan?.noOfSites,
+                "allowableRegisteredUsers": entityData?.subscriptionPlan?.allowableRegisteredUsers,
+                "maximumNumberOfUsers": entityData?.subscriptionPlan?.maximumNumberOfUsers,
+                "feedbackSupports": entityData?.subscriptionPlan?.feedbackSupports,
+                "subscriptionFeeCriteria": entityData?.subscriptionPlan?.subscriptionFeeCriteria,
+                "subscriptionDate": contract?.date ? format(contract?.date, 'yyyy-MM-dd').toString() : null
             },
             "billingDetails": {
                 "contactname": {
@@ -235,16 +340,18 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                     "lastName": billingData?.lastName,
                 },
                 "email": {
-                    "emailId": billingData?.email
+                    "officialEmail": billingData?.email
                 },
                 "contactNumber": {
-                    "contactNumber": parseInt(billingData?.phone)
+                    "contactNumber": billingData?.phone
                 }
             },
             "contractDetails": {
                 "contractName": contract?.contractName,
                 "contractID": contract?.contractID,
-                "contractDocuments": [],
+                "poaNumber": {
+                    "poaNumber": plan?.poaNumber
+                },
                 "contractTermPeriod": {
                     "startDate": contract?.startDate ? format(contract?.startDate, 'yyyy-MM-dd').toString() : null,
                     "endDate": contract?.endDate ? format(contract?.endDate, 'yyyy-MM-dd').toString() : null,
@@ -252,22 +359,100 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                 "plannedGoLive": {
                     "date": contract?.date ? format(contract?.date, 'yyyy-MM-dd').toString() : null,
                 },
-                "contractContinuationPolicy": contract?.contractContinuationPolicy,
+                "contractContinuationPolicy": {
+                    "contractPolicyType": contract?.contractContinuationPolicy,
+                    "autoRenewalPeriod": {
+                        ...(parseInt(autoRenewal.renewalTerm) && {
+                            "autoRenewalTerm": contract?.contractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.renewalTerm) : 0,
+                        }),
+                        ...(parseInt(autoRenewal.allowableRenewalTerm) && {
+                            "allowableAutoRenewalTerm": contract?.contractContinuationPolicy === 'AUTORENEWAL' ? parseInt(autoRenewal.allowableRenewalTerm) : 0,
+                        }),
+                        ...(autoRenewal.calendar !== '' &&
+                        {
+                            "autoRenewalCalender": contract?.contractContinuationPolicy === 'AUTORENEWAL' ? autoRenewal.calendar : 'WEEKS'
+                        })
+                    },
+                    "reminderList": {
+                        "renewalReminderList": renewalReminder
+                    }
+                },
+                "contractIdMissing": contract.missing,
+                "entityContractDocuments": contractFiles,
                 "fullyExecutedContractOnFile": fullyExecutedContract,
-            }
+            },
+            "logo": entityData?.logo,
+            "logoThumbnail": entityData?.logoThumbnail,
+            "accountType": "CONTRACTED",
+            "hideWelcomeScreen": true,
         }
-        await PUT('entity-service/entity', data)
+
+        const formData = new FormData();
+        let file = fullyExecutedContractData?.map(data => data.file);
+        formData.append('entity', new Blob([JSON.stringify(data)], {
+            type: "application/json"
+        }));
+        file?.filter(data => data !== null)?.map(data => {
+            formData.append('entitycontractFiles', data);
+        })
+        console.log(formData, data)
+        await PUT('entity-service/entity', formData)
             .then(response => {
                 SuccessToaster('Entity Billing Updated Successfully');
+                setFullyExecutedContractData([]);
             }).catch(error => {
                 ErrorToaster('Unexpected Error Updating Entity Billing');
+                setFullyExecutedContractData([]);
             });
-
+        if (type === 'addDoc' || type === 'removeDoc') {
+            getEntityData();
+            return;
+        }
         if (type === 'Continue') {
-            setIsCompleteSetup(true);
+            getActiveStep('entitySetup');
         } else {
             navigate('/user');
         }
+    }
+
+    const onClickFunction = (data) => {
+        console.log(data);
+        window.open(data?.file?.fileURL, "_blank");
+    }
+
+    const onClickDeleteFunction = (data) => {
+        updateBilling('removeDoc', data?.id);
+    }
+    console.log(entityData)
+
+    let documentName = [];
+    let documentType = [];
+    let documentDescription = [];
+    let viewValue = [];
+    let deleteValue = [];
+
+    const getServiceProviderValues = () => {
+        documentName = [];
+        documentType = [];
+        documentDescription = [];
+        viewValue = [];
+        deleteValue = [];
+
+        entityData?.contractDetails?.entityContractDocuments?.map((data, index) => {
+            documentName.push(data?.documentName || '-');
+            documentType.push(data?.documentType || '-');
+            documentDescription.push(data?.documentDescription || '-');
+            viewValue.push('View');
+            deleteValue.push('Delete');
+        })
+
+        return [
+            { "type": "text", "value": documentName, "onClickFunction": () => { } },
+            { "type": "text", "value": documentType, "onClickFunction": () => { } },
+            { "type": "text", "value": documentDescription, "onClickFunction": () => { } },
+            { "type": "text", "value": viewValue, "onClickFunction": onClickFunction },
+            { "type": "text", "value": deleteValue, "onClickFunction": onClickDeleteFunction },
+        ];
     }
 
     const handleBillingData = (name, value) => {
@@ -304,10 +489,15 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
         setShowSaveInProgress(value);
     }
 
+    const handleFileUpload = (e) => {
+        setFileFieldData({ ...fileFieldData, file: e.target.files[0], fileName: e.target.files?.[0]?.name });
+    }
+    console.log(renewalReminder)
     return (
         <>
-            {isSetupComplete ? <SetupComplete data={plan?.planName === 'TRIAL' ? 'Trial' : 'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess ? 'Created' : 'Updated'} /> : <div className={style.entitySetupBackground}>
-                <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/activeCustomers')} />
+            {/* {isSetupComplete ? <SetupComplete data={plan?.planName === 'TRIAL' ? 'Trial' : 'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess ? 'Created' : 'Updated'} /> : */}
+            <div className={style.entitySetupBackground}>
+                <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : window.history.go(-1)} />
                 <div className={style.stepperMargin}>
                     <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
                         <div onClick={() => getActiveStep('appSubscription')}>
@@ -334,7 +524,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                             </div>
                             <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                         </div>
-                        <div onClick={() => getActiveStep('siteInformation')}>
+                        <div onClick={() => entityData?.multiSiteEntity && getActiveStep('siteInformation')} className={!entityData?.multiSiteEntity && style.disabledView}>
                             <div className={style.justifyCenter}>
                                 <div className={`${style.stepperImgBackground}`}>
                                     <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
@@ -369,7 +559,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP SUBSCRIPTION</p>
             </div> */}
                     </div>
-                    <div className={isSuperAdminAccess ? style.stepperDivider2 : style.stepperDivider5grid2}></div>
+                    <div className={isSuperAdminAccess ? style.stepperDivider2 : style.stepperDivider2grid4}></div>
                 </div>
                 <div className={style.entitySetupCardStyle}>
                     <p className={style.heading}>Contract & Billing Details</p>
@@ -393,7 +583,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Contract ID ( CID )*</div>
                                     <div className={style.displayInRow}>
-                                        <InputGroup className={style.fourFieldWidth} value={contract?.contractID} disabled={!isSuperAdminAccess} placeholder="Contract Id"
+                                        <InputGroup className={style.fourFieldWidth} value={contract?.contractID} disabled={!isSuperAdminAccess || contract.missing} placeholder="Contract Id"
                                             onChange={(e) => handleContract('contractID', e.target.value)} />
                                         <Checkbox label="Missing" checked={contract.missing} disabled={!isSuperAdminAccess} onChange={(e) => handleContract('missing', e.target.checked)} className={`${style.marginTop} ${style.marginLeft20}`} />
                                     </div>
@@ -418,47 +608,55 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Cell Phone</div>
-                                    <InputGroup type="number" className={style.twoFieldWidth} value={billingData?.phone} placeholder="+1(342)444-5505"
-                                        onChange={(e) => handleBillingData('phone', e.target.value)} />
+                                    <CommonInputField placeholder="Numeric" value={billingData?.phone} maxLength={15}
+                                        InputProps={{
+                                            startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>+1</InputAdornment>,
+                                            style: { fontSize: 15 }
+                                        }}
+                                        onChange={(e) => { handleBillingData('phone', FormatPhoneNumber(e.target.value)) }} className={`${style.twoFieldWidth}`} />
                                 </div>
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                    <div className={style.extentionLableStyle}>Fully Executed Contract on File*</div>
-                                    <div>
-                                        <div className={style.spaceBetween}>
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch checked={fullyExecutedContract} className={` ${style.textAlignLeft}`} onChange={(e) => setFullyExecutedContract(!fullyExecutedContract)} />
-                                                }
-                                                disabled={!isSuperAdminAccess}
-                                                className={`${style.switchFontStyle} ${style.flexLeft}`}
+                                    <CommonLabel value='Contract Documents On File*' />
+                                    <div >
+                                        <div className={`${style.spaceBetween}`}>
+                                            <CommonSwitch checked={fullyExecutedContract} className={`${style.switchFontStyle} ${style.flexLeft}`}
                                                 label={fullyExecutedContract ? 'YES' : "NO"}
+                                                onChange={() => changeContractFile(entityData?.contractDetails?.entityContractDocuments?.length !== 0 ? true : !fullyExecutedContract)}
                                             />
-                                            {fullyExecutedContract && (
-                                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
-                                            )}
                                         </div>
                                         {fullyExecutedContract && (
                                             <div>
                                                 <div>
-                                                    <CommonSelectField className={`${style.fullWidth} `}
-                                                        defaultValue={contractFiles?.type}
-                                                        value={contractFiles?.type ? contractFiles?.type : '0'}
-                                                        onChange={(e) => handleContractFiles('type', e.target.value)}
-                                                        firstOptionLabel={'Select Type of Document'} firstOptionValue={'0'}
-                                                        valueList={['Agreement']}
-                                                        labelList={['Agreement']}
-                                                        disabledList={[false]} />
+                                                    <CommonSelectField value={fileFieldData?.type || 'Select...'} onChange={(e) => handleFileChange(e, 'type')}
+                                                        className={`${style.fullWidth}`} firstOptionLabel={'Select...'} firstOptionValue={'Select...'}
+                                                        valueList={['AGREEMENTDRAFT', 'EXECUTEDDRAFT', 'APPENDIXADDENDUM', 'SCHEDULE', 'ATTACHMENT']}
+                                                        labelList={['Agreement Draft', 'Executed Agreement', 'Appendix Addendum', 'Schedule', 'Attachment']}
+                                                        disabledList={[false, false]} />
                                                 </div>
-                                                <InputGroup className={`${style.fullWidth} ${style.marginTop10}`}
-                                                    value={contractFiles?.name}
-                                                    onChange={(e) => handleContractFiles('name', e.target.value)}
-                                                />
-                                                <TextArea rows={4} value={contractFiles?.desc} className={`${style.fullWidth} ${style.marginTop10}`}
-                                                    onChange={(e) => handleContractFiles('desc', e.target.value)} />
-                                                <div className={`${style.displayInRow} ${style.marginTop10} ${style.twoFieldWidth} ${style.floatRight}`}>
-                                                    <InputGroup rightElement={leftElement()} className={`${style.marginLeft20} ${style.fullWidth}`} />
+                                                <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
+                                                    value={fileFieldData?.name}
+                                                    maxLength={TEXTFIELDLEN}
+                                                    onChange={(e) => handleFileChange(e, 'name')} />
+                                                <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc}
+                                                    maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'desc')} />
+                                                <div>
+                                                    <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
                                                 </div>
                                             </div>
+                                        )}
+                                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                                            <div></div>
+                                            {fullyExecutedContract && (
+                                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
+                                            )}
+                                        </div>
+                                        {entityData?.contractDetails?.entityContractDocuments?.length !== 0 && (
+                                            <Table
+                                                tableHeaderValues={tableHeaderValues}
+                                                tableDataValues={getServiceProviderValues()}
+                                                tableData={entityData?.contractDetails?.entityContractDocuments}
+                                                gridStyle={style.documentTableGrid}
+                                            />
                                         )}
                                     </div>
                                 </div>
@@ -529,9 +727,9 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                         <div>
                                             <CommonSelectField className={`${style.fullWidth} `}
                                                 defaultValue={contract?.contractContinuationPolicy}
-                                                value={contract?.contractContinuationPolicy ? contract?.contractContinuationPolicy : '0'}
+                                                value={contract?.contractContinuationPolicy ? contract?.contractContinuationPolicy : ''}
                                                 onChange={(e) => handleContract('contractContinuationPolicy', e.target.value)}
-                                                firstOptionLabel={'Select Value'} firstOptionValue={'0'}
+                                                firstOptionLabel={'Select Value'} firstOptionValue={''}
                                                 valueList={['AUTORENEWAL', "WRITTENCONTRACTEXTENSIONFORFIXEDTERM", "NEWCONTRACTONEXPIRATION", "ONETIMECONTRACTTERMINATEONEXPIRATION"]}
                                                 labelList={['Auto Renewal', "Written Contract Extension For Fixed Term", "New Contract On Expiration", "One Time Contract - Terminate On Expiration"]}
                                                 disabledList={[false, false, false, false]}
@@ -540,42 +738,31 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
 
                                         {contract?.contractContinuationPolicy === "AUTORENEWAL" && (
                                             <div className={`${style.renewalBoxStyle}`}>
-                                                <div className={`${style.renewalBoxGrid}`}>
-                                                    <div className={`${style.marginTop10} ${style.textAlignRight} ${style.marginRight20}`}>Auto Renewal Term*</div>
-                                                    <div className={style.inputRenewalStyle} >4</div>
-                                                    <select
-                                                        name="class"
-                                                        id="Class"
-                                                        value={contract?.continuationPolicy || 'Select...'}
-                                                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                                                        <option value="Select Value" >
-                                                            Select Value
-                                                        </option>
-                                                        <option value="WEEKS" >
-                                                            Weeks
-                                                        </option>
-                                                        <option value="MONTHS" >
-                                                            Months
-                                                        </option>
-                                                    </select>
+                                                <div className={`${style.renewalBoxGrid}`} >
+                                                    <div className={style.marginTop}>Auto Renewal Term*</div>
+                                                    <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e) => (e <= 52 && setAutoRenewal({ ...autoRenewal, renewalTerm: e, calendar: '' }))} type="tel" />
+                                                    <CommonSelectField value={autoRenewal.calendar}
+                                                        onChange={(e) => setAutoRenewal({ ...autoRenewal, calendar: e.target.value })}
+                                                        className={`${style.marginLeft20} ${style.weekSelectStyle}`} firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                                        valueList={['WEEKS', 'MONTHS']}
+                                                        labelList={['Weeks', 'Months']}
+                                                        disabledList={[false, autoRenewal?.renewalTerm > 12]} />
                                                 </div>
                                                 <div className={`${style.renewalBoxGrid}`}>
-                                                    <div className={`${style.marginTop15} ${style.textAlignRight} ${style.marginRight20}`}>Allowable Auto Renewal Terms*</div>
-                                                    <div className={`${style.inputRenewalStyle} ${style.marginTop10}`} >2</div>
+                                                    <div className={style.marginTop10}>Allowable Auto Renewal Terms*</div>
+                                                    <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm} onChange={(e) => (e <= 12 && setAutoRenewal({ ...autoRenewal, allowableRenewalTerm: e }))} type="tel" />
                                                 </div>
                                             </div>
                                         )}
-                                        {(selectedContractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
-                                            || selectedContractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
-                                            || selectedContractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION") && (
+                                        {(contract?.contractContinuationPolicy === "WRITTENCONTRACTEXTENSIONFORFIXEDTERM"
+                                            || contract?.contractContinuationPolicy === "NEWCONTRACTONEXPIRATION"
+                                            || contract?.contractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION") && (
                                                 <div className={`${style.renewalRemainderBoxStyle}`}>
-                                                    <div className={`${style.renewalRemainderBoxGrid}`}>
-                                                        <div className={style.marginTop}>Set Renewal Reminder*</div>
-                                                        <div className={style.inputRenewalRemainderStyle} >30 Days   </div>
-                                                        <Icon icon="cross" className={style.marginTop10} color="black" />
-                                                    </div>
+                                                    {reminderFields}
                                                     <div className={`${style.renewalBoxGrid}`}>
-                                                        <button className={`${style.addMoreButton} ${style.selectedColor} ${style.cursorPointer}`} >ADD MORE</button>
+                                                        {renewalReminder?.length <= 2 && (
+                                                            <button className={`${style.addMoreButton} ${style.selectedColor} ${style.cursorPointer}`} onClick={addReminder}>ADD MORE</button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             )}
@@ -584,13 +771,14 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                 </div>
                             </div>
                             <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                <button className={style.outlinedButton} onClick={() => mandatoryFieldCheck('saveInProgress')}>SAVE IN-PROGRESS</button>
-                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => mandatoryFieldCheck('Continue')}>CONTINUE</button>
+                                <button className={style.outlinedButton} onClick={() => saveInProgressCheck()}>SAVE IN-PROGRESS</button>
+                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => updateBilling('Continue')}>CONTINUE</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>}
+            </div>
+            {/* } */}
             <SaveInProgress alert={showSaveInProgress} getSaveInProgressAlert={getSaveInProgressAlert} fieldData={unassignedKeys?.join(', ')} saveInProgressFunction={saveInProgressFunction} />
         </>
     )

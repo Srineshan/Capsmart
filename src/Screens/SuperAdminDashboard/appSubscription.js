@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { GET, TenantID, PUT, isSuperAdminAccess } from './../dataSaver';
+import { GET, TenantID, POST, PUT, isSuperAdminAccess } from './../dataSaver';
 import Step1 from './../../images/step12.png';
 import Step2 from './../../images/step2.png';
 import Step3 from './../../images/step3.png';
@@ -28,6 +28,7 @@ import { Auth } from './../../utils/auth'
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SaveInProgress from './saveInProgressAlert';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 
 const AppSubscription = ({ getActiveStep }) => {
@@ -41,10 +42,15 @@ const AppSubscription = ({ getActiveStep }) => {
   const [selectedContractContinuationPolicy, setSelectedContractContinuationPolicy] = useState('AUTORENEWAL');
   const [isSetupComplete, setIsCompleteSetup] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
+  const [entityName, setEntityName] = useState('');
+  const [entityAbbreviation, setEntityAbbreviation] = useState('');
   const [personName, setPersonName] = React.useState([]);
+  const [partners, setPartners] = useState([]);
+  let selectedPartnerId = sessionStorage.getItem('selectedPartner');
+  const [selectedPartner, setSelectedPartner] = useState();
   const [plan, setPlan] = useState({
-    planName: 'SILVER', allowableRegisteredUsers: 0, fees: "", subscriptionStatus: "ACTIVE", billingFrequency: "MONTHLY", discount: 0,
-    poaNumber: ""
+    planName: 'SILVER', allowableRegisteredUsers: "", maximumNumberOfUsers: 0, allowableSites: "", noOfSites: 0, feedbackSupport: [], fees: "", subscriptionStatus: "ACTIVE", billingFrequency: "MONTHLY", discount: 0,
+    subscriptionFeeCriteria: ''
   });
   const [billingData, setBillingData] = useState({ firstName: '', lastName: '', email: '', phone: '' });
   // const [autoRenewal,setAutoRenewal] = useState({renewalTerm:'0',allowableRenewalTerm:'0',calendar:'WEEKS'});
@@ -74,35 +80,37 @@ const AppSubscription = ({ getActiveStep }) => {
   const role = '';
   const accessToken = Auth();
 
-  const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
+  const feedbackSupportValues = [
+    'EMAIL',
+    'LIVE_CHAT'
   ];
 
   useEffect(() => {
     if (id !== 'new') {
       getEntityData();
     }
+    getPartners();
   }, []);
+
+  const getPartners = async () => {
+    const { data: partners } = await GET(`entity-service/partners`);
+    setPartners(partners);
+    setSelectedPartner(partners?.filter(data => data?.partnerId?.id === selectedPartnerId)?.map(data => data)[0]);
+    console.log(partners?.filter(data => data?.partnerId?.id === selectedPartnerId)?.map(data => data)[0])
+  };
 
   const getEntityData = async () => {
     const { data: data } = await GET(`entity-service/entity/${id}`);
     let subscription = data?.subscriptionPlan;
     let contractData = data?.contractDetails;
     setEntityData(data);
-    setBillingData({ firstName: data?.billingDetails?.contactname?.firstName, lastName: data?.billingDetails?.contactname?.lastName, email: data?.billingDetails?.email?.emailId, phone: data?.billingDetails?.contactNumber?.contactNumber.toString() });
+    setBillingData({ firstName: data?.billingDetails?.contactname?.firstName, lastName: data?.billingDetails?.contactname?.lastName, email: data?.billingDetails?.email?.emailId, phone: data?.billingDetails?.contactNumber?.contactNumber });
     setPlan({
-      planName: subscription?.planName, allowableRegisteredUsers: subscription?.allowableRegisteredUsers?.allowableRegisteredUsers, fees: subscription?.subscriptionFees?.fees, subscriptionStatus: subscription?.subscriptionStatus, billingFrequency: subscription?.billingFrequency, discount: subscription?.discount?.discount || '0',
-      poaNumber: subscription?.poaNumber?.poaNumber
+      planName: subscription?.planName, fees: subscription?.subscriptionFees?.fees, subscriptionStatus: subscription?.subscriptionStatus, billingFrequency: subscription?.billingFrequency, discount: subscription?.discount?.discount || '0',
+      allowableRegisteredUsers: subscription?.allowableRegisteredUsers, maximumNumberOfUsers: subscription?.maximumNumberOfUsers, allowableSites: subscription?.allowableSites, noOfSites: subscription?.noOfSites, feedbackSupport: subscription?.feedbackSupports, subscriptionFeeCriteria: subscription?.subscriptionFeeCriteria
     });
+    setEntityName(data?.entityName?.entityName);
+    setEntityAbbreviation(data?.entityAbbrevation?.abbreviation);
     if (contractData !== null) {
       setContract({
         contractName: contractData?.contractName,
@@ -144,19 +152,18 @@ const AppSubscription = ({ getActiveStep }) => {
     const {
       target: { value },
     } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
-    );
+    setPlan({ ...plan, feedbackSupport: typeof value === 'string' ? value.split(',') : value })
   };
 
+  console.log(plan)
+
   const mandatoryFieldCheck = (buttonType) => {
-    if (billingData?.email === '') {
-      ErrorToaster('Email is Mandatory');
+    if (entityName === '') {
+      ErrorToaster('Entity Name is Mandatory');
       return;
     }
-    if (!billingData?.email?.includes('@') || !billingData?.email?.includes('.')) {
-      ErrorToaster('Enter Valid Email-Id');
+    if (entityAbbreviation === '') {
+      ErrorToaster('Entity Abbreviation is Mandatory');
       return;
     }
     if (buttonType === 'saveInProgress') {
@@ -194,15 +201,55 @@ const AppSubscription = ({ getActiveStep }) => {
   }
 
   const updateBilling = async (type) => {
+
+    if (entityName === '') {
+      ErrorToaster('Contracting Entity Name Is Mandatory');
+      return;
+    }
+    if (entityAbbreviation === '') {
+      ErrorToaster('Entity Abbreviation Is Mandatory');
+      return;
+    }
+    if (plan?.planName === '' || plan?.allowableSites === '' || plan?.allowableRegisteredUsers === '') {
+      ErrorToaster('Subscription Plan Details Are Mandatory');
+      return;
+    }
+    if (plan?.subscriptionFeeCriteria === '') {
+      ErrorToaster('Subscription Fee Criteria Is Mandatory');
+      return;
+    }
+    if (plan?.billingFrequency === '') {
+      ErrorToaster('Billing Frequency Is Mandatory');
+      return;
+    }
+    if (plan?.fees === '') {
+      ErrorToaster('Subscription Fees Is Mandatory');
+      return;
+    }
     let fileData = [];
     contractFiles?.map(data => {
       fileData.push({ "name": data?.name, "description": data?.desc, "contractDocType": data?.type, "contractDocPath": data?.path })
     })
     let data = {
-      "id": entityData?.id,
-      "entityName": entityData?.entityName,
+      ...(id !== 'new' && { 'id': entityData?.id }),
+      "entityName": entityName,
       "entityType": entityData?.entityType,
       "entityDisplayId": entityData?.entityDisplayId,
+      "entityAbbrevation": entityAbbreviation,
+      ...(id !== 'new' && { "partnerId": entityData?.partnerId }),
+      ...(id !== 'new' && { "partner": entityData?.partner }),
+      ...(id === 'new' && { "partnerId": selectedPartner?.partnerId?.id }),
+      ...(id === 'new' && {
+        "partner": {
+          "partnerId": {
+            id: selectedPartner?.partnerId?.id
+          },
+          "partnerName": selectedPartner?.partnerName
+        }
+      }),
+      "npin": entityData?.npin,
+      "mailingAddress": entityData?.mailingAddress,
+      "officialEmailDomain": entityData?.officialEmailDomain,
       "industryId": entityData?.industryId,
       "sites": entityData?.sites,
       "subdomain": entityData?.subdomain,
@@ -214,9 +261,6 @@ const AppSubscription = ({ getActiveStep }) => {
       "logoThumbnail": entityData?.logoThumbnail,
       "subscriptionPlan": {
         "planName": plan?.planName || 'SILVER',
-        "allowableRegisteredUsers": {
-          "allowableRegisteredUsers": parseInt(plan?.allowableRegisteredUsers),
-        },
         "subscriptionFees": {
           "fees": plan?.fees,
         },
@@ -225,49 +269,52 @@ const AppSubscription = ({ getActiveStep }) => {
         "discount": {
           "discount": parseInt(plan?.discount)
         },
-        "poaNumber": {
-          "poaNumber": plan?.poaNumber,
-        }
+        "plannedToGoLive": entityData?.subscriptionPlan?.plannedToGoLive,
+        "allowableSites": plan?.allowableSites,
+        "noOfSites": plan?.noOfSites,
+        "allowableRegisteredUsers": plan?.allowableRegisteredUsers,
+        "maximumNumberOfUsers": plan?.allowableRegisteredUsers === 'UNLIMITED' ? 0 : plan?.maximumNumberOfUsers,
+        "feedbackSupports": plan?.feedbackSupport,
+        "subscriptionFeeCriteria": plan?.subscriptionFeeCriteria,
+        "subscriptionDate": entityData?.subscriptionPlan?.plannedToGoLive?.date
       },
-      "billingDetails": {
-        "contactname": {
-          "firstName": billingData?.firstName,
-          "lastName": billingData?.lastName,
-        },
-        "email": {
-          "emailId": billingData?.email
-        },
-        "contactNumber": {
-          "contactNumber": parseInt(billingData?.phone)
-        }
-      },
-      "contractDetails": {
-        "contractName": contract?.contractName,
-        "contractID": contract?.contractID,
-        "contractDocuments": [],
-        "contractTermPeriod": {
-          "startDate": contract?.startDate ? format(contract?.startDate, 'yyyy-MM-dd').toString() : null,
-          "endDate": contract?.endDate ? format(contract?.endDate, 'yyyy-MM-dd').toString() : null,
-        },
-        "plannedGoLive": {
-          "date": contract?.date ? format(contract?.date, 'yyyy-MM-dd').toString() : null,
-        },
-        "contractContinuationPolicy": contract?.contractContinuationPolicy,
-        "fullyExecutedContractOnFile": fullyExecutedContract,
-      }
+      "billingDetails": entityData?.billingDetails,
+      "contractDetails": entityData?.contractDetails,
+      "accountType": "CONTRACTED",
+      "hideWelcomeScreen": true,
     }
-    await PUT('entity-service/entity', data)
-      .then(response => {
-        SuccessToaster('Entity Billing Updated Successfully');
-      }).catch(error => {
-        ErrorToaster('Unexpected Error Updating Entity Billing');
-      });
-
-    if (type === 'Continue') {
-      setIsCompleteSetup(true);
+    const formData = new FormData();
+    formData.append('entity', new Blob([JSON.stringify(data)], {
+      type: "application/json"
+    }));
+    if (id !== 'new') {
+      await PUT('entity-service/entity', formData)
+        .then(response => {
+          SuccessToaster('Entity Subscription Updated Successfully');
+          if (type === 'Continue') {
+            getActiveStep('contractAndBilling');
+          } else {
+            navigate('/user');
+          }
+        }).catch(error => {
+          ErrorToaster('Unexpected Error Updating Entity Subscription');
+        });
     } else {
-      navigate('/user');
+      await POST('entity-service/entity', formData)
+        .then(response => {
+          SuccessToaster('Entity Subscription Added Successfully');
+          let newEntityId = response?.data?.id;
+          if (type === 'Continue') {
+            window.location = `/app/entitySetup/${newEntityId}`
+            getActiveStep('contractAndBilling');
+          } else {
+            navigate('/user');
+          }
+        }).catch(error => {
+          ErrorToaster('Unexpected Error Adding Entity Subscription');
+        });
     }
+    console.log(data)
   }
 
   const handleBillingData = (name, value) => {
@@ -306,8 +353,8 @@ const AppSubscription = ({ getActiveStep }) => {
 
   return (
     <>
-      {isSetupComplete ? <SetupComplete data={plan?.planName === 'TRIAL' ? 'Trial' : 'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess ? 'Created' : 'Updated'} /> : <div className={style.entitySetupBackground}>
-        <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/activeCustomers')} />
+      {isSetupComplete ? <SetupComplete data={plan?.planName === 'TRIAL' ? 'Trial' : 'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess ? 'Created' : 'Updated'} isSuperAdminAccess={isSuperAdminAccess} /> : <div className={style.entitySetupBackground}>
+        <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : window.history.go(-1)} />
         <div className={style.stepperMargin}>
           <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
             <div onClick={() => getActiveStep('appSubscription')}>
@@ -334,7 +381,7 @@ const AppSubscription = ({ getActiveStep }) => {
               </div>
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
             </div>
-            <div onClick={() => getActiveStep('siteInformation')}>
+            <div onClick={() => entityData?.multiSiteEntity && getActiveStep('siteInformation')} className={!entityData?.multiSiteEntity && style.disabledView}>
               <div className={style.justifyCenter}>
                 <div className={`${style.stepperImgBackground}`}>
                   <img src={Step3} alt="Step4" className={style.stepperImgStyle} />
@@ -369,7 +416,7 @@ const AppSubscription = ({ getActiveStep }) => {
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP SUBSCRIPTION</p>
             </div> */}
           </div>
-          <div className={isSuperAdminAccess ? style.stepperDivider : style.stepperDivider5grid1}></div>
+          <div className={isSuperAdminAccess ? style.stepperDivider : style.stepperDivider}></div>
         </div>
         <div className={style.entitySetupCardStyle}>
           <p className={style.heading}>App Subscription Information</p>
@@ -387,20 +434,20 @@ const AppSubscription = ({ getActiveStep }) => {
               <div className={`${style.newContractFromCloneBoxStyle}`}>
                 <div className={`${style.extentionGrid}`}>
                   <div className={style.extentionLableStyle}>Contracting Entity Name*</div>
-                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Name" />
+                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Name" value={entityName} onChange={(e) => setEntityName(e.target.value)} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>Entity Abbreviation*</div>
-                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Abbreviation" />
+                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Abbreviation" value={entityAbbreviation} onChange={(e) => setEntityAbbreviation(e.target.value)} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>Subscription Plan *</div>
                   <div className={`${style.leftAlign} ${style.displayInRow} ${style.verticalAlignCenter}`}>
                     <CommonSelectField className={`${style.fullWidth} `}
                       defaultValue={plan?.planName}
-                      value={plan?.planName ? plan?.planName : '0'}
+                      value={plan?.planName ? plan?.planName : ''}
                       onChange={(e) => setPlan({ ...plan, planName: e.target.value })}
-                      firstOptionLabel={'Select Subscription Plan'} firstOptionValue={'0'}
+                      firstOptionLabel={'Select Subscription Plan'} firstOptionValue={''}
                       valueList={['SILVER', "BRONZE", "GOLD", "CUSTOM", "TRIAL"]}
                       labelList={['Silver', "Bronze", "Gold", "Custom", "Trial Plan"]}
                       disabledList={[false, false, false, false, false]} />
@@ -413,15 +460,15 @@ const AppSubscription = ({ getActiveStep }) => {
 
                     <div className={style.extentionLableStyle}>Allowable Sites*</div>
                     <CommonSelectField className={`${style.fullWidth} `}
-                      // defaultValue={plan?.planName}
-                      // value={plan?.planName ? plan?.planName : '0'}
-                      // onChange={(e) => setPlan({ ...plan, planName: e.target.value })}
-                      firstOptionLabel={'Select Allowable Sites'} firstOptionValue={'0'}
+                      defaultValue={plan?.allowableSites}
+                      value={plan?.allowableSites ? plan?.allowableSites : ''}
+                      onChange={(e) => setPlan({ ...plan, allowableSites: e.target.value })}
+                      firstOptionLabel={'Select Allowable Sites'} firstOptionValue={''}
                       valueList={['SINGLE', "MULTIPLE"]}
                       labelList={['Single', "Multiple"]}
                       disabledList={[false, false]} />
                     <div className={`${style.extentionLableStyle} ${style.marginLeft50}`}>Number Of Sites*</div>
-                    <InputGroup className={style.fullWidth} />
+                    <InputGroup className={style.fullWidth} value={plan?.noOfSites} onChange={(e) => setPlan({ ...plan, noOfSites: e.target.value })} />
                   </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
@@ -430,15 +477,15 @@ const AppSubscription = ({ getActiveStep }) => {
 
                     <div className={style.extentionLableStyle}>Allowable Registered Users*</div>
                     <CommonSelectField className={`${style.fullWidth} `}
-                      // defaultValue={plan?.planName}
-                      // value={plan?.planName ? plan?.planName : '0'}
-                      // onChange={(e) => setPlan({ ...plan, planName: e.target.value })}
-                      firstOptionLabel={'Select Allowable Registered Users'} firstOptionValue={'0'}
+                      defaultValue={plan?.allowableRegisteredUsers}
+                      value={plan?.allowableRegisteredUsers ? plan?.allowableRegisteredUsers : ''}
+                      onChange={(e) => setPlan({ ...plan, allowableRegisteredUsers: e.target.value })}
+                      firstOptionLabel={'Select Allowable Registered Users'} firstOptionValue={''}
                       valueList={['LIMITED', "UNLIMITED"]}
                       labelList={['Limited', "Unlimited"]}
                       disabledList={[false, false]} />
                     <div className={`${style.extentionLableStyle} ${style.marginLeft50}`}>Maximum Number Of Users*</div>
-                    <InputGroup className={style.fullWidth} />
+                    <InputGroup className={style.fullWidth} disabled={plan?.allowableRegisteredUsers === 'UNLIMITED'} value={plan?.maximumNumberOfUsers} onChange={(e) => setPlan({ ...plan, maximumNumberOfUsers: e.target.value })} />
                   </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
@@ -451,23 +498,22 @@ const AppSubscription = ({ getActiveStep }) => {
                         labelId="demo-multiple-chip-label"
                         id="demo-multiple-chip"
                         multiple
-                        value={personName}
+                        value={plan?.feedbackSupport}
                         onChange={handleChange}
-                        // input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
                         renderValue={(selected) => (
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                             {selected.map((value) => (
-                              <Chip key={value} label={value} onDelete={() => { }} />
+                              <Chip key={value} label={value === 'EMAIL' ? 'Email' : value === 'LIVE_CHAT' ? 'Live Chat' : ''} />
                             ))}
                           </Box>
                         )}
                       >
-                        {names.map((name) => (
+                        {feedbackSupportValues.map((name) => (
                           <MenuItem
                             key={name}
                             value={name}
                           >
-                            {name}
+                            {name === 'EMAIL' ? 'Email' : name === 'LIVE_CHAT' ? 'Live Chat' : ''}
                           </MenuItem>
                         ))}
                       </Select>
@@ -488,11 +534,11 @@ const AppSubscription = ({ getActiveStep }) => {
                       <div className={style.extentionLableStyle}>Subscription Fee Criteria*</div>
                       <div className={`${style.leftAlign} `}>
                         <CommonSelectField className={`${style.twoFieldWidth} `}
-                          // defaultValue={plan?.billingFrequency}
-                          // value={plan?.billingFrequency ? plan?.billingFrequency : '0'}
-                          // onChange={(e) => setPlan({ ...plan, billingFrequency: e.target.value })}
-                          firstOptionLabel={'Select Billing Frequency'} firstOptionValue={'0'}
-                          valueList={['PERACTIVEUSERENDOFMONTH', "FIXEDMONTHLYFEE"]}
+                          defaultValue={plan?.subscriptionFeeCriteria}
+                          value={plan?.subscriptionFeeCriteria ? plan?.subscriptionFeeCriteria : ''}
+                          onChange={(e) => setPlan({ ...plan, subscriptionFeeCriteria: e.target.value })}
+                          firstOptionLabel={'Select Subscription Fee Criteria'} firstOptionValue={''}
+                          valueList={['PER_ACTIVE_USER_END_OF_MONTH', "FIX_MONTHLY_FEE"]}
                           labelList={['Per Active User End Of Month', "Fixed Monthly Fee"]}
                           disabledList={[false, false]} />
                       </div>
@@ -502,9 +548,9 @@ const AppSubscription = ({ getActiveStep }) => {
                       <div className={`${style.leftAlign} `}>
                         <CommonSelectField className={`${style.fourFieldWidth} `}
                           defaultValue={plan?.billingFrequency}
-                          value={plan?.billingFrequency ? plan?.billingFrequency : '0'}
+                          value={plan?.billingFrequency ? plan?.billingFrequency : ''}
                           onChange={(e) => setPlan({ ...plan, billingFrequency: e.target.value })}
-                          firstOptionLabel={'Select Billing Frequency'} firstOptionValue={'0'}
+                          firstOptionLabel={'Select Billing Frequency'} firstOptionValue={''}
                           valueList={['MONTHLY', "QUARTERLY", "ANNUALY"]}
                           labelList={['Monthly', "Quarterly", "Annually"]}
                           disabledSelect={!isSuperAdminAccess}
@@ -519,14 +565,14 @@ const AppSubscription = ({ getActiveStep }) => {
                           type="number"
                           leftElement={dollarLeftElement()}
                           disabled={!isSuperAdminAccess}
-                          onChange={(e) => setPlan({ ...plan, fees: e.target.value })} />
-                        <div className={`${style.extentionLableStyle} ${style.fourFieldWidth} ${style.marginLeft20}`}>Monthly Per User</div>
+                          onChange={(e) => setPlan({ ...plan, fees: e.target.value.slice(0, 7) })} />
+                        <div className={`${style.extentionLableStyle} ${style.fourFieldWidth} ${style.marginLeft20} ${style.verticalAlignCenter}`}>Monthly Per User</div>
                       </div>
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Agreed To Discount*</div>
                       <InputGroup className={style.fourFieldWidth} type="number" value={plan?.discount} rightElement={percentRightElement()} disabled={!isSuperAdminAccess}
-                        onChange={(e) => setPlan({ ...plan, discount: e.target.value })}
+                        onChange={(e) => e.target.value >= 0 && e.target.value <= 100 && setPlan({ ...plan, discount: e.target.value })}
                       />
                     </div>
                     {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>

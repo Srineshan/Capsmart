@@ -24,7 +24,7 @@ const Login = (props) => {
   const getEntityId = async () => {
     await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
       method: "GET",
-      headers: { "X-subdomain": "demo" },
+      // headers: { "X-subdomain": "demo" },
     })
       .then((response) => {
         cookie.set("entityId", response?.data?.id);

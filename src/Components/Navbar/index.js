@@ -400,7 +400,7 @@ const Navbar = () => {
                       </Link>
                     )}
                     <Link
-                      to={isSuperAdminAccess ? "/partnerPortal" : "/welcome"}
+                      to={isSuperAdminAccess ? "/partnerPortal" : `/entitySetup/${TenantID}`}
                       className={style.noFontStyle}
                     >
                       <div className={style.options}>ENTITY MANAGEMENT</div>
