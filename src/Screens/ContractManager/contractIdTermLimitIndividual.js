@@ -85,6 +85,8 @@ const ContractIdTermLimitIndividual = (
   const [createdContractId, setCreatedContractId] = useState(contractIdFromActive);
   const [contractedTimeCommitment, setContractTimeCommitment] = useState({ value: 0, frequency: '' });
   const [continueLoading, setContinueLoading] = useState(false);
+  const [contractedServices, setContractedServices] = useState([]);
+  const [isDateUpdated, setIsDateUpdated] = useState(false);
 
   useEffect(() => {
     if (method === 'PUT' && createdContractId !== '') {
@@ -111,10 +113,6 @@ const ContractIdTermLimitIndividual = (
   }, [renewalReminder])
 
   useEffect(() => {
-    getReminder();
-  }, [renewalReminder])
-
-  useEffect(() => {
     getContractDetail();
     getContractId(createdContractId);
   }, [createdContractId])
@@ -127,7 +125,6 @@ const ContractIdTermLimitIndividual = (
     setFileFields(fullyExecutedContractData);
   }, [fullyExecutedContractData])
 
-  console.log('manager', selectContractManager);
   useEffect(() => {
     setSelectContractManager(user?.filter(data => data?.id === contractData?.contractManager?.userID)?.map(data => data)[0] || undefined);
   }, [user, contractData])
@@ -214,6 +211,37 @@ const ContractIdTermLimitIndividual = (
 
     return siteData;
   }
+
+  const checkAndUpdateDate = async (buttonType) => {
+    if (isDateUpdated) {
+      let temp = contractedServices;
+      if (contractedServices?.length !== 0) {
+        temp?.filter((data) => data?.contractedSchedules?.length === 1)?.map(data => {
+          data.contractedSchedules[0].startDate = format(contractEffectiveDate, 'yyyy-MM-dd').toString();
+          data.contractedSchedules[0].endDate = format(contractTermPeriodTo, 'yyyy-MM-dd').toString();
+          data.scheduledPatientsTargets[0].startDate = format(contractEffectiveDate, 'yyyy-MM-dd').toString();
+          data.scheduledPatientsTargets[0].endDate = format(contractTermPeriodTo, 'yyyy-MM-dd').toString();
+          data.patientsSeenTargets[0].startDate = format(contractEffectiveDate, 'yyyy-MM-dd').toString();
+          data.patientsSeenTargets[0].endDate = format(contractTermPeriodTo, 'yyyy-MM-dd').toString();
+        })
+      }
+      let data = {
+        "contractedServices": temp
+      }
+      const response = await PUT(`contract-managment-service/contracts/${contractIdFromActive}/ContractedService`, JSON.stringify(data));
+      if (response) {
+        console.log('Services Success!', response);
+        SuccessToaster('Contracted Service Updated Successfully');
+      }
+      else {
+        console('services Failure');
+        ErrorToaster('Unexpected Error');
+      }
+    }
+    addContract(buttonType)
+  }
+
+  console.log('services', contractedServices);
 
   const addContract = async (buttonType) => {
     setContinueLoading(true);
@@ -549,7 +577,10 @@ const ContractIdTermLimitIndividual = (
     }
   }
 
-  console.log('contract', contractTermPeriodFrom, contractTermPeriodTo);
+  const getContractedServices = async () => {
+    const { data: contractedServices } = await GET(`contract-managment-service/contracts/${contractIdFromActive}/ContractedService`);
+    setContractedServices(contractedServices?.contractedServices);
+  }
 
   return (
     <div className={style.cloneBlockStyle}>
@@ -708,7 +739,7 @@ const ContractIdTermLimitIndividual = (
           departmentSpecific &&
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div></div>
-            <SiteDepartmentField sites={siteSpecific ? selectedSites?.map(data => data) : sites} getSelectedSites={onSelectDepartment} selectedSites={selectedDepartmentSites} isMultiSiteEntity={isMultiSiteEntity} />
+            <SiteDepartmentField sites={(siteSpecific || !isMultiSiteEntity) ? selectedSites?.map(data => data) : sites} getSelectedSites={onSelectDepartment} selectedSites={selectedDepartmentSites} isMultiSiteEntity={isMultiSiteEntity} />
           </div>
         }
 
@@ -725,6 +756,8 @@ const ContractIdTermLimitIndividual = (
                 value={contractTermPeriodFrom}
                 onChange={(newValue) => {
                   // setCalendarStart(true);
+                  setIsDateUpdated(true);
+                  getContractedServices();
                   setContractTermPeriodFrom(newValue);
                   setContractEffectiveDate(newValue);
                 }}
@@ -756,7 +789,9 @@ const ContractIdTermLimitIndividual = (
                 onClose={() => setCalendarEnd(false)}
                 value={contractTermPeriodTo}
                 onChange={(newValue) => {
+                  setIsDateUpdated(true);
                   setContractTermPeriodTo(newValue);
+                  getContractedServices();
                 }}
                 InputProps={{
                   style: {
@@ -791,7 +826,9 @@ const ContractIdTermLimitIndividual = (
               onClose={() => setCalendarEffective(false)}
               value={contractEffectiveDate}
               onChange={(newValue) => {
+                setIsDateUpdated(true);
                 setContractEffectiveDate(newValue);
+                getContractedServices();
               }}
               InputProps={{
                 style: {
@@ -884,8 +921,8 @@ const ContractIdTermLimitIndividual = (
       </div>
       {isEditable &&
         (<div className={`${style.floatRight} ${style.marginTop20}`}>
-          <button className={`${style.newContractOutlinedButton} ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => addContract('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
-          <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addContract('Continue') } : {}}>CONTINUE</button>
+          <button className={`${style.newContractOutlinedButton} ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => checkAndUpdateDate('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
+          <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { checkAndUpdateDate('Continue') } : {}}>CONTINUE</button>
         </div>)
       }
 

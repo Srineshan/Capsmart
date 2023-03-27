@@ -90,6 +90,7 @@ const Profile = () => {
             .then(response => {
                 SuccessToaster('User Modified Successfully');
                 setValuesUpdated(true);
+                getUser();
             })
             .catch(error => {
                 ErrorToaster('Unexpected Error In Editing User');
@@ -151,6 +152,7 @@ const Profile = () => {
             }))
                 .then(response => {
                     SuccessToaster('User Modified Successfully');
+                    getUser();
                 })
                 .catch(error => {
                     ErrorToaster('Unexpected Error In Editing User');
@@ -202,7 +204,7 @@ const Profile = () => {
             <div className={style.margin20}>
                 <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
                     <div>
-                        <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded} refetchUserValues={valuesUpdated}>
+                        <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded} refetchUserValues={valuesUpdated} updateProfileData={user}>
                             <div></div>
                         </SideBar>
                     </div>
@@ -274,6 +276,7 @@ const Profile = () => {
                                         style: {
                                             height: 15,
                                         },
+                                        autoComplete: 'new-password'
                                     }} />
                             </div>
                         </div>
@@ -295,6 +298,7 @@ const Profile = () => {
                                         style: {
                                             height: 15,
                                         },
+                                        autoComplete: 'new-password'
                                     }} />
                             </div>
                         </div>
@@ -316,6 +320,7 @@ const Profile = () => {
                                         style: {
                                             height: 15,
                                         },
+                                        autoComplete: 'new-password'
                                     }}
                                     InputProps={{ // <-- This is where the toggle button is added.
                                         endAdornment: (

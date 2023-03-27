@@ -76,10 +76,10 @@ const Login = (props) => {
           navigate("/contracts");
           window.location.reload();
         } else if (isEntityLevelAdmin) {
-          navigate("/user");
+          navigate("/entitySitePortal");
           window.location.reload();
         } else {
-          navigate("/user");
+          navigate("/entitySitePortal");
           window.location.reload();
         }
       });

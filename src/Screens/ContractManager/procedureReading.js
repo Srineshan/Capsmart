@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { EditableText, Checkbox } from '@blueprintjs/core';
+import { EditableText, Checkbox, Icon, Intent } from '@blueprintjs/core';
 import { TimePicker } from "@blueprintjs/datetime";
 import { format } from 'date-fns';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -71,7 +71,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
         targetNoTargetApplicable: false,
         additionalScheduleValue: '0',
         additionalScheduleFrequency: 'NA',
-        additionalScheduleRequired: true,
+        additionalScheduleRequired: false,
         scheduleAndTargetSame: true,
         billableService: true,
         rateType: 'HOURLY',
@@ -142,7 +142,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
             targetNoTargetApplicable: false,
             additionalScheduleValue: '0',
             additionalScheduleFrequency: 'NA',
-            additionalScheduleRequired: true,
+            additionalScheduleRequired: false,
             scheduleAndTargetSame: true,
             billableService: true,
             rateType: 'HOURLY',
@@ -189,7 +189,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
             }
         })
 
-        temp?.catientsSeenTargets?.map(data => {
+        temp?.patientsSeenTargets?.map(data => {
             if (data?.startDate === null) {
                 data.startDate = contractTermPeriod?.start;
                 data.endDate = contractTermPeriod?.end;
@@ -409,9 +409,14 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
         setMetadata({ ...metadata, [targetName]: temp });
     }
 
-    const limit5 = 5;
+    const deleteRow = (index) => {
+        let contractSchedule = metadata?.contractedSchedules?.filter((data, indexVal) => indexVal !== index)?.map(data => data);
+        let patientsSeenTarget = metadata?.patientsSeenTargets?.filter((data, indexVal) => indexVal !== index)?.map(data => data);
+        let scheduledPatientsTargets = metadata?.scheduledPatientsTargets?.filter((data, indexVal) => indexVal !== index)?.map(data => data);
+        setMetadata({ ...metadata, contractedSchedules: contractSchedule, patientsSeenTargets: patientsSeenTarget, scheduledPatientsTargets: scheduledPatientsTargets })
+    }
 
-    console.log('selected', format(new Date(contractTermPeriod?.start), 'MMMM d, yyyy'));
+    const limit5 = 5;
 
     return (
         <div>
@@ -580,6 +585,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                             <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} ></p>
                             <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} >W / NURSE </p>
                             <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} >WO / NURSE</p>
+                            <p></p>
                             {/* <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} ></p>
                             <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} ></p> */}
                         </div>
@@ -596,6 +602,8 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                                 <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}></p>
                                 <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{metadata?.scheduledPatientsTargets?.[index]?.withNurse?.value || '-'}</p>
                                 <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{metadata?.scheduledPatientsTargets?.[index]?.withoutNurse?.value || '-'}</p>
+                                <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.flexCenter}${style.verticalAlignCenter}  ${style.verticalAlignCenter}`} onClick={() => deleteRow(index)} />
+
                                 {/* <div className={`${style.verticalAlignCenter} ${style.flexCenter} ${style.cursorPointer}`}>
                                     <EditIcon style={{ color: "#7165E3" }} />
                                 </div>

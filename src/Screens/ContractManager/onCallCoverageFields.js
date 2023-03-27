@@ -308,8 +308,6 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         });
     }
 
-    console.log('Dependent Activities', metadata?.additionalActivity);
-
     const limit5 = 5;
 
 
@@ -718,7 +716,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             <CommonSelectField className={`${style.fullWidth}`}
                                 value={metadata?.frequency}
                                 onChange={(e) => handleValueChange('frequency', e.target.value)}
-                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                firstOptionLabel={'Select Frequecy'} firstOptionValue={'NA'}
                                 valueList={['WEEK', 'MONTH']}
                                 labelList={['Per Week', 'Per Month']}
                                 disabledList={[false, false]} />
@@ -826,7 +824,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 <div className={style.grid3}>
                     <div className={`${style.fullWidth}`} >
                         <CommonSwitch checked={metadata?.additionalScheduleRequired} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
-                            onChange={(e) => setMetadata({ ...metadata, additionalScheduleRequired: !metadata?.additionalScheduleRequired, additionalScheduleValue: '0', additionalScheduleFrequency: '' })}
+                            onChange={(e) => setMetadata({ ...metadata, additionalScheduleRequired: !metadata?.additionalScheduleRequired, additionalScheduleValue: '0', additionalScheduleFrequency: 'NA' })}
                             label={metadata?.additionalScheduleRequired ? 'YES' : 'NO'} />
                     </div>
                     {
