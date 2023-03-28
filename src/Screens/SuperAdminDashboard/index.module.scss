@@ -80,6 +80,10 @@ body {
     margin-left: 10px;
 }
 
+.marginBottom {
+    margin-bottom: 10px;
+}
+
 .marginBottom20 {
     margin-bottom: 20px;
 }
@@ -402,7 +406,7 @@ body {
 
 .entitySetupBackground {
     background-color: #F8FCFF;
-    height: 15vh !important;
+    height: 225px !important;
 }
 
 .stepperImgStyle {
@@ -592,8 +596,6 @@ body {
     letter-spacing: 0px;
     color: #52575D;
     text-transform: capitalize;
-    opacity: 1;
-    margin-top: 5px;
 }
 
 .subdomainElementStyle {
@@ -761,11 +763,11 @@ body {
 }
 
 .addMoreButton {
-    color: rgba(143, 153, 168, 0.5);
-    background-color: #f1f2f3;
-    border: 1px solid #BEB9F2;
+    color: white !important;
+    background-color: #7165E3;
     height: 32px;
     width: 130px;
+    border: none;
     border-radius: 6px;
 }
 
@@ -1229,7 +1231,6 @@ body {
     text-align: left;
     border: 1px solid #B3B8BD;
     border-radius: 10px;
-    height: 100px;
     font: normal normal normal 13px/15px Montserrat;
     margin-top: 10px;
     padding: 15px;
@@ -2188,4 +2189,65 @@ body {
 
 .activePasswordProgressLength4 {
     background-color: #00C07F !important;
+}
+
+.subscriptionRow {
+    background-color: #ebe9fb;
+    display: grid;
+    grid-template-columns: 25% 35% 20% 10%;
+    grid-gap: 2.5%;
+    padding: 10px 20px;
+    border-radius: 4px;
+}
+
+.feedbackSupport {
+    background-color: #ebe9fb;
+    display: grid;
+    grid-template-columns: 25% 70%;
+    grid-gap: 2.5%;
+    padding: 10px 20px;
+    border-radius: 4px;
+}
+
+.renewalWidth {
+    width: 100px;
+    height: 100%;
+}
+
+.customFileUpload {
+    cursor: pointer;
+    width: 70px;
+    height: 50px;
+    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 1.25;
+    background-color: #f1f2f3;
+    color: #7165E3;
+    border: none;
+    position: relative;
+    top: 7px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.disabledUploadButton {
+    color: rgba(143, 153, 168, 0.5) !important;
+    background-color: #f1f2f3;
+    border: none;
+    border-radius: 6px;
+    cursor: not-allowed !important;
+}
+
+.disabledView {
+    opacity: 0.7;
+    cursor: not-allowed !important;
+}
+
+.documentTableGrid {
+    display: grid;
+    grid-template-columns: 25% 25% 25% 6% 6%;
+    grid-gap: 2%;
+    padding-left: 10px;
 }
