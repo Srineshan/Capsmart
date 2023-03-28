@@ -650,7 +650,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                                 <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
                                             )}
                                         </div>
-                                        {entityData?.contractDetails?.entityContractDocuments?.length !== 0 && (
+                                        {fullyExecutedContract && entityData?.contractDetails?.entityContractDocuments?.length !== 0 && (
                                             <Table
                                                 tableHeaderValues={tableHeaderValues}
                                                 tableDataValues={getServiceProviderValues()}

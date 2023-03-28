@@ -39,6 +39,9 @@ const SiteInformation = ({ getActiveStep }) => {
   const [entityData, setEntityData] = useState();
   const [selectedDepartment, setSelectedDepartment] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [selectedSite, setSelectedSite] = useState({});
+  const [selectedSiteIndex, setSelectedSiteIndex] = useState({});
   const [address, setAddress] = useState({
     addressLine: '', city: '', state: '', zipcode: '', country: ''
   })
@@ -55,6 +58,10 @@ const SiteInformation = ({ getActiveStep }) => {
     getDepartmentData();
     getEntityData();
   }, []);
+
+  useEffect(() => {
+    setSelectedSiteValues();
+  }, [selectedSite]);
 
   const getEntityData = async () => {
     const { data: data } = await GET(`entity-service/entity/${id}`);
@@ -117,37 +124,74 @@ const SiteInformation = ({ getActiveStep }) => {
 
   const updateEntitySite = async (buttonText) => {
     let temp = entityData?.sites;
-    temp.push({
-      "siteName": {
-        "siteName": site?.name
-      },
-      "siteAdmin": {
-        "id": ""
-      },
-      "siteDisplayId": {
-        "id": ""
-      },
-      "siteType": {
-        "type": site?.type?.type,
-        "id": site?.type?.id,
-      },
-      "npin": {
-        "id": site?.npin,
-        "notApplicable": site?.npinNA
-      },
-      "canSetupDepartment": site?.canSetupDepartment,
-      "departmentList": {
-        "departments": departmentSpecific ? selectedDepartment : departmentValue,
-      },
-      "address": {
-        "addressLine": address?.addressLine,
-        "city": address?.city,
-        "state": address?.state,
-        "zipcode": address?.zipcode,
-        "country": address?.country,
-      },
-      "primarySite": false
-    });
+    if (!isEdit) {
+      temp.push({
+        "siteName": {
+          "siteName": site?.name
+        },
+        "siteAdmin": {
+          "id": ""
+        },
+        "siteDisplayId": {
+          "id": ""
+        },
+        "siteType": {
+          "type": site?.type?.type,
+          "id": site?.type?.id,
+        },
+        "npin": {
+          "id": site?.npin,
+          "notApplicable": site?.npinNA
+        },
+        "canSetupDepartment": site?.canSetupDepartment,
+        "departmentList": {
+          "departments": departmentSpecific ? selectedDepartment : departmentValue,
+        },
+        "address": {
+          "addressLine": address?.addressLine,
+          "city": address?.city,
+          "state": address?.state,
+          "zipcode": address?.zipcode,
+          "country": address?.country,
+        },
+        "primarySite": false
+      });
+    } else {
+      temp[selectedSiteIndex] = {
+        "id": selectedSite?.id,
+        "siteName": {
+          "siteName": site?.name
+        },
+        "siteAdmin": {
+          "id": ""
+        },
+        "siteDisplayId": {
+          "id": ""
+        },
+        "siteType": {
+          "type": site?.type?.type,
+          "id": site?.type?.id,
+        },
+        "npin": {
+          "id": site?.npin,
+          "notApplicable": site?.npinNA
+        },
+        "canSetupDepartment": site?.canSetupDepartment,
+        "departmentList": {
+          "departments": departmentSpecific ? selectedDepartment : departmentValue,
+        },
+        "address": {
+          "addressLine": address?.addressLine,
+          "city": address?.city,
+          "state": address?.state,
+          "zipcode": address?.zipcode,
+          "country": address?.country,
+        },
+        "createdDate": selectedSite?.createdDate,
+        "lastModifiedDate": selectedSite?.lastModifiedDate,
+        "primarySite": selectedSite?.primarySite
+      }
+    }
     const updatedValue =
     {
       "id": entityData?.id,
@@ -264,10 +308,18 @@ const SiteInformation = ({ getActiveStep }) => {
 
   const resetSiteValues = () => {
     setAddress({
-      city: '', state: '', zipcode: '', country: ''
+      city: '', state: '', zipcode: '', country: '', addressLine: ''
     });
     setSite({ name: '', type: {}, canSetupDepartment: true, npin: '', npinNA: false, officialEmailDomain: '' });
     setSelectedDepartment([]);
+  }
+
+  const setSelectedSiteValues = () => {
+    setAddress({
+      city: selectedSite?.address?.city, state: selectedSite?.address?.state, zipcode: selectedSite?.address?.zipcode, country: selectedSite?.address?.country, addressLine: selectedSite?.address?.addressLine
+    });
+    setSite({ name: selectedSite?.siteName?.siteName, type: { id: selectedSite?.siteType?.id, type: selectedSite?.siteType?.type }, canSetupDepartment: selectedSite?.canSetupDepartment, npin: selectedSite?.npin?.id, npinNA: selectedSite?.npin?.notApplicable, officialEmailDomain: '' });
+    setSelectedDepartment(selectedSite?.departmentList?.departments);
   }
 
   const onSiteTypeChange = (id, value) => {
@@ -344,9 +396,9 @@ const SiteInformation = ({ getActiveStep }) => {
             </div>
             <div className={isSuperAdminAccess ? style.stepperDivider4 : style.stepperDivider5grid4}></div>
           </div>
-          {!showSiteTable ? (
+          {!showSiteTable || isEdit ? (
             <div className={style.entitySetupCardStyle}>
-              <p className={style.heading}>Add Site Information</p>
+              <p className={style.heading}>{isEdit ? 'Edit' : 'Add'} Site Information</p>
               <div className={style.greyBorder}></div>
               <div className={style.entityDescription}>
                 Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
@@ -388,7 +440,7 @@ const SiteInformation = ({ getActiveStep }) => {
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Site Type*</div>
                       <div className={`${style.leftAlign} `}>
-                        <EntityTypeList value={site?.type?.id} onChangeFunc={(id, value) => onSiteTypeChange(id, value)} className={[style.fullWidth]} industryId={entityData?.industryId?.id} />
+                        <EntityTypeList value={site?.type?.id ? site?.type?.id : ''} onChangeFunc={(id, value) => onSiteTypeChange(id, value)} className={[style.fullWidth]} industryId={entityData?.industryId?.id} />
                       </div>
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -426,7 +478,7 @@ const SiteInformation = ({ getActiveStep }) => {
                           {departmentSpecific && (
                             <TagInput
                               placeholder="Selected Department list"
-                              values={selectedDepartment?.map(data => data?.departmentName?.name)}
+                              values={selectedDepartment?.map(data => data?.departmentName?.name) || []}
                               className={`${style.marginTop20} ${style.tagInputStyle}`}
                               onAdd={handleTagsAdd}
                               onRemove={handleTagsRemove}
@@ -439,13 +491,17 @@ const SiteInformation = ({ getActiveStep }) => {
                       </div>
                     )}
                   </div>
-                  <div className={style.spaceBetween}>
-                    <div className={`${style.marginTop20} ${style.buttonPositionLeft}`}>
-                      <button className={style.outlinedButton}>BULK UPLOAD</button>
-                    </div>
+                  <div className={!isEdit && style.spaceBetween}>
+                    {!isEdit && (
+                      <div className={`${style.marginTop20} ${style.buttonPositionLeft}`}>
+                        <button className={style.outlinedButton}>BULK UPLOAD</button>
+                      </div>
+                    )}
                     <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
                       <button className={style.outlinedButton} onClick={() => { mandatoryFieldCheck('Saveinprogress'); }}>SAVE IN-PROGRESS</button>
-                      <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { mandatoryFieldCheck('Addmore'); }}>SAVE & ADD MORE</button>
+                      {!isEdit && (
+                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { mandatoryFieldCheck('Addmore'); }}>SAVE & ADD MORE</button>
+                      )}
                       <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { mandatoryFieldCheck('Continue'); }}>CONTINUE</button>
                     </div>
                   </div>
@@ -472,9 +528,9 @@ const SiteInformation = ({ getActiveStep }) => {
                 </div>
                 <div className={`${style.tableData} ${style.displayInCol}`}>
                   {
-                    siteList?.map(data => (
-                      <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`}>
-                        <p className={style.tableDataFontStyle}>{data?.siteName?.siteName}</p>
+                    siteList?.map((data, index) => (
+                      <div className={`${style.tableDataGrid} ${style.fullWidth} ${style.marginTop7}`} key={index}>
+                        <p className={`${style.tableDataFontStyle} ${style.cursorPointer}`} onClick={() => { setIsEdit(true); setSelectedSite(data); setSelectedSiteIndex(index) }}>{data?.siteName?.siteName}</p>
                         <p className={style.tableDataFontStyle}>{data?.siteType?.type}</p>
                         <p className={style.tableDataFontStyle}>{data.address.city}</p>
                         <p className={style.tableDataFontStyle}>{data.address.state}</p>
