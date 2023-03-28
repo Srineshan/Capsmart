@@ -117,6 +117,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
             selectedActivities: serviceSelected?.activityResponse?.dataMap?.adminActivities,
             totalSession: serviceSelected?.totalSessions?.value || '0',
+            totalSessionFrequency: serviceSelected?.totalSessions?.frequency || 'NA',
             workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
             workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
             serviceDays: serviceSelected?.serviceDays,
@@ -453,16 +454,25 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Separate Administrative Hours Specified*' />
-                <div className={`${style.threeFieldWidth}`}>
-                    <CommonTextField
-                        type="tel"
-                        maxLength="3"
-                        InputProps={{
-                            endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
-                        }}
-                        onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
-                        value={metadata?.totalSession}
-                    />
+                <div className={style.displayInRow}>
+                    <div className={`${style.twoFieldWidth}`}>
+                        <CommonTextField
+                            type="tel"
+                            maxLength="3"
+                            InputProps={{
+                                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                            }}
+                            onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
+                            value={metadata?.totalSession}
+                        />
+                    </div>
+                    <CommonSelectField className={` ${style.marginLeft20}`}
+                        value={metadata?.totalSessionFrequency || 'NA'}
+                        onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
+                        firstOptionLabel={'Select Frequecy'} firstOptionValue={'NA'}
+                        valueList={['WEEK', 'MONTH']}
+                        labelList={['Per Week', 'Per Month']}
+                        disabledList={[false, false]} />
                 </div>
             </div>
             {
@@ -513,7 +523,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 </div>
             </div>
 
-        </div >
+        </div>
     )
 }
 

@@ -510,7 +510,22 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     let data = [];
     if (serviceTypeTemplate === ADDON && !editService) {
       data = metadata;
-      data.serviceLocations = data?.locationSpecified ? data?.locations : locationItems;
+      data.map((item, index) => {
+        item.workingPeriod = {
+          "from": metadata?.[index]?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
+          "to": metadata?.[index]?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
+        }
+        item.serviceLocations = item?.locationSpecified ? data?.locations : locationItems;
+        item.duration = {
+          "hours": parseInt(item?.sessionDuration)
+        };
+      })
+      console.log('data in check', data)
+      // data.workingPeriod = {
+      //   "from": metadata?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
+      //   "to": metadata?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
+      // };
+      // data.serviceLocations = data?.locationSpecified ? data?.locations : locationItems;
     }
     else {
       let dataValues = metadata;
@@ -1056,7 +1071,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                       : serviceTypeTemplate === SUPPLEMENTAL
                         ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
                         : serviceTypeTemplate === ADDON
-                          ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
+                          ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} />
                           : serviceTypeTemplate === PROCEDUREREADING
                             ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
                             : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />}

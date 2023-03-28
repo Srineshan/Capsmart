@@ -12,7 +12,6 @@ export const validateContractIDTermLimit = (contract) => {
   { field: 'contract Effective date', value: contract?.contractDetail?.contractTerm?.effectiveDate },
   { field: 'Time Commitment - value', value: contract?.contractDetail?.timeCommitment?.value },
   { field: 'Time Commitment - frequency', value: contract?.contractDetail?.timeCommitment?.frequency },
-  { field: 'contract Effective date', value: contract?.contractDetail?.contractTerm?.effectiveDate },
   { field: 'Contract Continuation Policy', value: contract?.contractDetail?.continuationPolicy?.contractPolicyType },
   ];
   let temp = fieldData;

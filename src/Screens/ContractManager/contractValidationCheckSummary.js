@@ -228,15 +228,6 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                         </div>
                     </div>
                 </div>
-                <div className={style.marginTop20}>
-                    <ValidationHeader heading={'REQUEST PROCESSING WORKFLOW'} result={isTabsValid?.tab8 ? "PASS" : "FAIL"} />
-                    <div className={style.validationPadding}>
-                        <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>Mandatory data element</div>
-                            <div className={style.statusText}>{isTabsValid?.tab8 ? "PASS" : "FAIL"}</div>
-                        </div>
-                    </div>
-                </div>
                 <div className={`${style.floatRight} ${style.marginTop20}`}>
                     <button className={`${style.cloneOutlinedButton} ${style.buttonHeight40}`} onClick={() => getContractValidationDialog(false)}>CANCEL</button>
                     <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.buttonHeight40}`} onClick={() => getContractValidationDialog(false)}>OK</button>
