@@ -11,6 +11,7 @@ import {
   Tag,
 } from "@blueprintjs/core";
 import style from "./index.module.scss";
+import ArrowDown from "./../../images/arrowDown.png";
 import { POST, PUT, GET, TenantID } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 
@@ -30,15 +31,38 @@ const AddNewDepartments = ({
   const [departName, setDepartName] = useState("");
   const [createdDate, setCreatedDate] = useState("");
   const [addService, setAddService] = useState(true);
-  const [serviceArea, setSerrviceArea] = useState("");
+  const [serviceArea, setServiceArea] = useState("");
   const [serviceLocation, setServiceLocation] = useState([]);
+  // const [selectedServiceAreas, setSelectedServiceAreas] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
+  const [selectedLocationDeleteId, setSelectedLocationDeleteId] = useState("");
+
+  const [serviceAreaList, setServiceAreaList] = useState([
+    { name: "", serviceLocations: [] },
+  ]);
+
+  useEffect(() => {
+    if (
+      selectedLocationDeleteId !== "" &&
+      selectedLocationDeleteId !== undefined
+    ) {
+      getServiceLocationDelete();
+    }
+  }, [selectedLocationDeleteId]);
 
   const getServiceLocation = async () => {
     const { data: serviceLocation } = await GET(
       "entity-service/servicelocation"
     );
+    console.log(serviceLocation);
     setServiceLocation(serviceLocation);
+  };
+
+  const getServiceLocationDelete = async () => {
+    const { data: serviceLocationDelete } = await PUT(
+      `entity-service/servicelocation/${selectedLocationDeleteId}/unMapDepartment`
+    );
+    // console.log(serviceLocationDelete);
   };
 
   useEffect(() => {
@@ -68,6 +92,7 @@ const AddNewDepartments = ({
       )
       .map((tag, index) => {
         const onRemoveLocation = () => {
+          setSelectedLocationDeleteId(tag?.id);
           setSelectedLocations(
             selectedLocations.filter((t) => t?.location !== tag?.location)
           );
@@ -94,6 +119,7 @@ const AddNewDepartments = ({
       )
       .map((tag, index) => {
         const onRemoveLocation = () => {
+          setSelectedLocationDeleteId(tag?.id);
           setSelectedLocations(
             selectedLocations.filter((t) => t?.location !== tag?.location)
           );
@@ -113,34 +139,142 @@ const AddNewDepartments = ({
     <></>
   );
 
-  const saveSubmitHandler = async (type) => {
-    let ServiceAreaData = [];
-    let ServiceLocation = [];
+  const onRemoveLocation = (
+    serviceIndex,
+    locationIndex,
+    location,
+    locationId
+  ) => {
+    // console.log("remove", location, locationIndex, serviceIndex, locationId);
+    setSelectedLocationDeleteId(locationId);
+    setSelectedLocations(
+      selectedLocations
+        ?.filter((data) => data?.location !== location)
+        ?.map((data) => data)
+    );
+    let tempLocations =
+      serviceAreaList
+        ?.filter((data, index) => serviceIndex === index)
+        ?.map((data) => data?.serviceLocations)[0] || [];
+    let filteredLocations = tempLocations
+      ?.filter((data, index) => locationIndex !== index)
+      ?.map((data) => data);
+    let temp = serviceAreaList;
+    temp[serviceIndex].serviceLocations = filteredLocations;
+    setServiceAreaList(temp);
+  };
 
-    if (selectedDepart?.serviceAreas) {
-      ServiceAreaData = [...selectedDepart?.serviceAreas];
+  const locationTagsAdd2 = (index) => {
+    let temp = [];
+    serviceAreaList
+      ?.filter((data, indexVal) => indexVal === index)
+      ?.map((data) => {
+        data?.serviceLocations?.map((location, locationIndex) => {
+          temp.push(
+            <Tag
+              key={locationIndex}
+              onRemove={() =>
+                onRemoveLocation(
+                  index,
+                  locationIndex,
+                  location?.location,
+                  location?.id
+                )
+              }
+              large={true}
+              className={style.tagStyle}
+            >
+              {location?.location}
+            </Tag>
+          );
+        });
+      });
+    return temp;
+  };
+
+  const locationTagsEdit2 = (index) => {
+    let temp = [];
+    serviceAreaList
+      ?.filter((data, indexVal) => {
+        // console.log(data, indexVal, index);
+        return indexVal === index;
+      })
+      ?.map((data) => {
+        data?.serviceLocations?.map((location, locationIndex) => {
+          temp.push(
+            <Tag
+              key={locationIndex}
+              onRemove={() =>
+                onRemoveLocation(
+                  index,
+                  locationIndex,
+                  location?.location,
+                  location?.id
+                )
+              }
+              large={true}
+              className={style.tagStyle}
+            >
+              {location?.location}
+            </Tag>
+          );
+        });
+      });
+    return temp;
+  };
+
+  const handleInputChange = (e, index) => {
+    const { name, value } = e.target;
+    // console.log(name, value, index, serviceAreaList, serviceLocation);
+    const list = [...serviceAreaList];
+    if (name === "location") {
+      // console.log(
+      //   " inside location",
+      //   value,
+      //   index,
+      //   selectedLocations,
+      //   serviceLocation
+      // );
+      if (value !== "0") {
+        const tempSelectedLocation = serviceLocation
+          .filter((data) => data?.location === value)
+          .map((data) => data)[0];
+        if (
+          !selectedLocations
+            .map((data) => data?.id)
+            .includes(tempSelectedLocation?.id)
+        ) {
+          let tempLocations = selectedLocations;
+          tempLocations.push(tempSelectedLocation);
+          setSelectedLocations(tempLocations);
+          let temp =
+            serviceAreaList
+              ?.filter((data, indexVal) => index === indexVal)
+              ?.map((data) => data?.serviceLocations)[0] || [];
+          // console.log("temp", temp);
+          temp.push(tempSelectedLocation);
+          // console.log("after pushing", temp);
+          list[index]["serviceLocations"] = temp;
+        }
+      }
+      // console.log(selectedLocations);
+    } else {
+      list[index][name] = value;
     }
+    setServiceAreaList(list);
+  };
 
-    // const isPresent = departmentList.find(
-    //   (p) => p.departmentName.name === departName
-    // );
-    // if (isPresent) {
-    //   ErrorToaster("Already This Name Exists");
-    //   document.getElementById("departmentEl").focus();
-    //   getAddEntityDialog(true);
-    //   return false;
-    // }
+  const handleAddMoreClick = () => {
+    setServiceAreaList([
+      ...serviceAreaList,
+      { name: "", serviceLocations: [] },
+    ]);
+  };
 
+  const saveSubmitHandler = async (type) => {
     if (!departName && departName === "") {
       document.getElementById("departmentEl").focus();
       return false;
-    }
-
-    if (serviceArea !== "") {
-      ServiceAreaData.push({
-        name: serviceArea,
-        serviceLocations: selectedLocations,
-      });
     }
 
     const data = {
@@ -152,11 +286,8 @@ const AddNewDepartments = ({
       departmentGroupBy: {
         name: departName,
       },
-      serviceAreas: addService && serviceArea !== "" ? ServiceAreaData : [],
-      serviceLocations:
-        !addService || (addService && serviceArea === "")
-          ? selectedLocations
-          : ServiceLocation,
+      serviceAreas: addService ? serviceAreaList : [],
+      serviceLocations: !addService ? selectedLocations : [],
       ...(callingFrom === "Super Admin" && {
         siteTypeId: {
           id: selectedEntity?.id,
@@ -173,6 +304,7 @@ const AddNewDepartments = ({
     // let ApiData = callingFrom === "Customer Admin" && !isEdit ? data : [data];
     let ApiData = callingFrom === "Customer Admin" ? [data] : data;
 
+    // console.log(ApiData);
     let ApiUrl =
       callingFrom === "Super Admin"
         ? "entity-service/departmentMaster"
@@ -192,7 +324,7 @@ const AddNewDepartments = ({
     } else {
       setDepartName("");
       if (callingFrom === "Customer Admin") {
-        setSerrviceArea("");
+        setServiceArea("");
       }
       document.getElementById("departmentEl").focus();
     }
@@ -203,12 +335,23 @@ const AddNewDepartments = ({
       setDepartId(selectedDepart?.id);
       setDepartName(selectedDepart?.departmentName?.name);
       setCreatedDate(selectedDepart?.createdDate);
-      setSelectedLocations(selectedDepart?.serviceAreas[0]?.serviceLocations);
-      if (callingFrom === "Customer Admin") {
-        setSerrviceArea(selectedDepart?.serviceAreas[0]?.name);
+
+      if (selectedDepart?.serviceAreas.length > 0) {
+        setServiceAreaList(selectedDepart?.serviceAreas);
+        setAddService(true);
+      } else {
+        setAddService(false);
       }
+
+      if (selectedDepart?.serviceLocations.length > 0) {
+        setSelectedLocations(selectedDepart?.serviceLocations);
+        setAddService(false);
+      } else {
+        setAddService(true);
+      }
+
       if (isService) {
-        setSerrviceArea(selectedDepart?.serviceAreas[0]?.name);
+        setServiceArea(selectedDepart?.serviceAreas[0]?.name);
       }
     }
   }, [selectedDepart]);
@@ -226,14 +369,36 @@ const AddNewDepartments = ({
           <p className={style.extensionStyle}>
             {` New Departments / Services Area For ${selectedTitle}`}
           </p>
-          <Icon
-            icon="cross"
-            size={20}
-            intent={Intent.DANGER}
-            className={style.dialogCrossStyle}
-            onClick={() => getAddEntityDialog(false)}
-          />
+          <div className={`${style.displayInRow}`}>
+            <div className={`${style.displayInRow} ${style.marginRight20}`}>
+              <img
+                src={
+                  "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
+                }
+                alt="refresh"
+                className={`${style.headerFlag} ${style.marginRight15}`}
+              />
+              <span
+                className={`${style.headerCountryName} ${style.marginLeft10}`}
+              >
+                USA
+              </span>
+              <img
+                src={ArrowDown}
+                className={`${style.colorFileStyle2} ${style.marginLeft10}  ${style.marginTop10}`}
+                alt=""
+              />
+            </div>
+            <Icon
+              icon="cross"
+              size={20}
+              intent={Intent.DANGER}
+              className={style.dialogCrossStyle}
+              onClick={() => getAddEntityDialog(false)}
+            />
+          </div>
         </div>
+
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
           <div className={`${style.extentionGrid}`}>
@@ -250,6 +415,7 @@ const AddNewDepartments = ({
                 value="ADD SERVICES"
                 checked={addService}
                 onChange={(e) => setAddService(e.target.checked)}
+                // onChange={(e) => handleAddService(e.target.checked)}
                 className={` ${style.marginLeft20} ${style.marginTop}`}
                 label="ADD SERVICES"
               />
@@ -258,91 +424,177 @@ const AddNewDepartments = ({
           <div
             className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
           ></div>
-          <div className={`${style.addHealthCareBoxStyle}`}>
-            {addService && callingFrom === "Super Admin" && (
+          {addService && callingFrom === "Super Admin" && (
+            <div className={`${style.addHealthCareBoxStyle}`}>
               <div className={`${style.editHealthCareGrid2}`}>
                 <div className={style.entityLableStyle}>Service Area*</div>
                 <div className={style.displayInRow}>
                   <InputGroup
                     value={serviceArea}
                     className={style.fullWidth}
-                    onChange={(e) => setSerrviceArea(e.target.value)}
+                    onChange={(e) => setServiceArea(e.target.value)}
                   />
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {addService && callingFrom === "Customer Admin" && (
-              <div
-                className={`${style.editHealthCareGrid2} ${style.marginTop20}`}
-              >
-                <div className={`${style.entityLableStyle}`}>
-                  Service Line /
-                  <div className={style.entityLableStyle}>Speciality*</div>
-                </div>
+          {addService &&
+            callingFrom === "Customer Admin" &&
+            serviceAreaList.map((list, i) => {
+              return (
+                <>
+                  <div className={`${style.addHealthCareBoxStyle}`}>
+                    <div
+                      className={`${style.editHealthCareGrid2} `}
+                      key={`${i}${serviceAreaList[i]}`}
+                    >
+                      <div className={`${style.entityLableStyle}`}>
+                        Service Line /
+                        <div className={style.entityLableStyle}>
+                          Speciality* {i + 1}
+                        </div>
+                      </div>
 
-                <div className={`${style.displayInRow} ${style.marginTop10}`}>
-                  <InputGroup
-                    value={serviceArea}
-                    className={style.fullWidth}
-                    onChange={(e) => setSerrviceArea(e.target.value)}
-                  />
-                </div>
-              </div>
-            )}
+                      <div
+                        className={`${style.displayInRow} ${style.marginTop10}`}
+                      >
+                        <InputGroup
+                          name="name"
+                          value={list?.name}
+                          className={style.fullWidth}
+                          onChange={(e) => handleInputChange(e, i)}
+                        />
+                      </div>
+                    </div>
 
+                    {/* Location */}
+                    <div
+                      className={`${style.editHealthCareGrid2} ${style.marginTop20}`}
+                    >
+                      <div className={`${style.entityLableStyle}`}>
+                        Assign Service
+                        <div className={style.entityLableStyle}>
+                          Location {i + 1}
+                        </div>
+                      </div>
+                      <div
+                        className={`${style.reduce10Left} ${style.marginRight}`}
+                      >
+                        <select
+                          name="location"
+                          id="location"
+                          value={list?.serviceLocations}
+                          onChange={(e) => handleInputChange(e, i)}
+                          className={`${style.fullWidth} ${style.marginLeft10} `}
+                        >
+                          <option value="0">Select Service Location</option>
+                          {serviceLocation
+                            ?.filter(
+                              (data) =>
+                                !selectedLocations
+                                  ?.map((location) => location?.location)
+                                  .includes(data?.location)
+                            )
+                            ?.map((data, index) => {
+                              return (
+                                <option
+                                  key={`${data}-${index}`}
+                                  value={data?.location}
+                                >
+                                  {data?.location}
+                                </option>
+                              );
+                            })}
+                        </select>
+                        <div
+                          className={`${style.marginTop20} ${style.marginLeft10}`}
+                        >
+                          {!isEdit ? locationTagsAdd2(i) : locationTagsEdit2(i)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* //Addmore */}
+                  {serviceAreaList.length - 1 === i && (
+                    <div
+                      className={`${style.spaceBetween} ${style.marginTop20}`}
+                    >
+                      <div></div>
+                      {addService && callingFrom === "Customer Admin" && (
+                        <>
+                          <div
+                            className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                            onClick={() => handleAddMoreClick()}
+                          >
+                            ADD MORE
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </>
+              );
+            })}
+
+          {/* <div className={`${style.addHealthCareBoxStyle}`}>
             <div
               className={`${style.editHealthCareGrid2} ${style.marginTop20}`}
             >
               <div className={`${style.entityLableStyle}`}>
-                Assign Service
-                <div className={style.entityLableStyle}>Location</div>
+                Service Line /
+                <div className={style.entityLableStyle}>Speciality*</div>
               </div>
-              <div className={`${style.reduce10Left} ${style.marginRight}`}>
-                <select
-                  name="class"
-                  id="Class"
-                  onChange={(e) => handleSelectLocation(e.target.value)}
-                  className={`${style.fullWidth} ${style.marginLeft10} `}
-                >
-                  <option value="0">Select Service Location</option>
-                  {serviceLocation?.map((data, index) => {
-                    return (
-                      <option key={`${data}-${index}`} value={data?.location}>
-                        {data?.location}
-                      </option>
-                    );
-                  })}
-                </select>
-                <div className={`${style.marginTop20} ${style.marginLeft10}`}>
-                  {!isEdit ? locationTagsAdd : locationTagsEdit}
+
+              <div className={`${style.displayInRow} ${style.marginTop10}`}>
+                <InputGroup
+                  value={serviceArea}
+                  className={style.fullWidth}
+                  onChange={(e) => setServiceArea(e.target.value)}
+                />
+              </div>
+            </div>
+          </div> */}
+
+          {/* {addService && callingFrom === "Customer Admin" && (
+            <div className={`${style.addHealthCareBoxStyle}`}>
+              {serviceAreaFields}
+            </div>
+          )} */}
+
+          {!addService && (
+            <div className={`${style.addHealthCareBoxStyle}`}>
+              <div
+                className={`${style.editHealthCareGrid2} ${style.marginTop20}`}
+              >
+                <div className={`${style.entityLableStyle}`}>
+                  Assign Service
+                  <div className={style.entityLableStyle}>Location</div>
+                </div>
+                <div className={`${style.reduce10Left} ${style.marginRight}`}>
+                  <select
+                    name="class"
+                    id="Class"
+                    onChange={(e) => handleSelectLocation(e.target.value)}
+                    className={`${style.fullWidth} ${style.marginLeft10} `}
+                  >
+                    <option value="0">Select Service Location</option>
+                    {serviceLocation?.map((data, index) => {
+                      return (
+                        <option key={`${data}-${index}`} value={data?.location}>
+                          {data?.location}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <div className={`${style.marginTop20} ${style.marginLeft10}`}>
+                    {!isEdit ? locationTagsAdd : locationTagsEdit}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-            <div></div>
-            {!isEdit && (
-              <>
-                {departName.length > 0 ? (
-                  <div
-                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
-                    onClick={() => saveSubmitHandler("Add More")}
-                  >
-                    ADD MORE
-                  </div>
-                ) : (
-                  <div
-                    className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
-                    onClick={() => saveSubmitHandler("Add More")}
-                  >
-                    ADD MORE
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+          )}
         </div>
         <div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>

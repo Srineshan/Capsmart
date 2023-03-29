@@ -212,10 +212,12 @@ const ContractIdTermLimitIndividual = (
     return siteData;
   }
 
+  console.log('sites', sites);
+
   const checkAndUpdateDate = async (buttonType) => {
     if (isDateUpdated) {
       let temp = contractedServices;
-      if (contractedServices?.length !== 0) {
+      if (contractedServices?.length !== 0 && contractedServices) {
         temp?.filter((data) => data?.contractedSchedules?.length === 1)?.map(data => {
           data.contractedSchedules[0].startDate = format(contractEffectiveDate, 'yyyy-MM-dd').toString();
           data.contractedSchedules[0].endDate = format(contractTermPeriodTo, 'yyyy-MM-dd').toString();
@@ -224,24 +226,22 @@ const ContractIdTermLimitIndividual = (
           data.patientsSeenTargets[0].startDate = format(contractEffectiveDate, 'yyyy-MM-dd').toString();
           data.patientsSeenTargets[0].endDate = format(contractTermPeriodTo, 'yyyy-MM-dd').toString();
         })
-      }
-      let data = {
-        "contractedServices": temp
-      }
-      const response = await PUT(`contract-managment-service/contracts/${contractIdFromActive}/ContractedService`, JSON.stringify(data));
-      if (response) {
-        console.log('Services Success!', response);
-        SuccessToaster('Contracted Service Updated Successfully');
-      }
-      else {
-        console('services Failure');
-        ErrorToaster('Unexpected Error');
+        let data = {
+          "contractedServices": temp
+        }
+        const response = await PUT(`contract-managment-service/contracts/${contractIdFromActive}/ContractedService`, JSON.stringify(data));
+        if (response) {
+          console.log('Services Success!', response);
+          SuccessToaster('Contracted Service Updated Successfully');
+        }
+        else {
+          console('services Failure');
+          ErrorToaster('Unexpected Error');
+        }
       }
     }
-    addContract(buttonType)
+    addContract(buttonType);
   }
-
-  console.log('services', contractedServices);
 
   const addContract = async (buttonType) => {
     setContinueLoading(true);

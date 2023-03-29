@@ -267,6 +267,14 @@
   margin-top: 2px !important;
 }
 
+.textUppercase{
+  text-transform: uppercase;
+}
+
+.textCapitalize{
+  text-transform: capitalize;
+}
+
 .loginStatus {
   text-align: left;
   font: normal normal normal 11px/15px Montserrat;
@@ -439,6 +447,10 @@
   color: #7165E3;
 }
 
+.dashboardCardColorOption4 {
+  color: #f59393;
+}
+
 .centreCardColumnsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -462,6 +474,7 @@
   height: 70px;
   padding: 20px;
   margin-right: 40px;
+  width: 100%;
 }
 
 .selectedIndustriesBackground {
@@ -574,7 +587,7 @@
 
 .industriesEntityCardStyle {
   max-height: calc(100vh - 250px);
-  width: 65vw;
+  width: 56vw;
   overflow: scroll;
   box-shadow: 0px 3px 6px #00000029;
   border: 0.20000000298023224px solid #d9d9d9;
@@ -592,7 +605,32 @@
   display: flex;
   align-items: center;
   display: grid;
-  grid-template-columns: 59% 15% 15% 10% 10%;
+  grid-template-columns: 55% 15% 15% 10% 10%;
+}
+
+.tableHeaderDepartment{
+  background: #afa9ef 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  //margin-left: 50px;
+  height: 55px;
+  width: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 59% 8% 20% 6% 6%;
+}
+
+.tableHeaderTerminationReasons {
+  background: #afa9ef 0% 0% no-repeat padding-box;
+  font-weight: medium;
+  height: 55px;
+  width: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 59% 16% 15% 10%;
 }
 
 .tableHeaderIndustriesFontStyle {
@@ -603,6 +641,8 @@
   text-align: left;
   margin-top: 10px;
   margin-left: 10px;
+  width: 95%;
+  min-height: fit-content;
 }
 
 .tableHeaderIndustriesFontStyle2 {
@@ -635,6 +675,15 @@
   margin-left: 20px;
 }
 
+.tableHeaderIndustriesFontStyle6 {
+  font: normal normal bold 14px/20px Montserrat;
+  letter-spacing: 0px;
+  color: #52575d;
+  opacity: 1;
+  text-align: left;
+  margin-top: 10px;
+}
+
 .tableSubHeaderIndustriesFontStyle {
   font: normal 15px/20px Montserrat;
   letter-spacing: 0px;
@@ -655,7 +704,7 @@
   align-items: center;
   display: flex;
   display: grid;
-  grid-template-columns: 3% 88% 5% 5%;
+  grid-template-columns: 5% 82% 6% 6%;
 }
 
 .holidayFolderHeader {
@@ -696,6 +745,19 @@
   grid-template-columns: 5% 75% 10% 5%;
 }
 
+.contractedServiceProvidersHeader {
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  font-weight: normal;
+  height: 45px;
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 5px;
+  align-items: center;
+  display: flex;
+  display: grid;
+  grid-template-columns: 5% 85% 5% 5%;
+}
+
 .terminationHeader2 {
   background: #d3d0f6 0% 0% no-repeat padding-box;
   font-weight: normal;
@@ -712,13 +774,25 @@
 .healthCareTableData {
   background: #f5f5f8 0% 0% no-repeat padding-box;
   min-height: 50px;
-  width: 96%;
+  width: 98%;
   margin-left: 2%;
   border-radius: 6px;
   display: grid;
   align-items: center;
   margin-top: 5px;
-  grid-template-columns: 61% 15% 15% 5% 5%;
+  grid-template-columns: 61% 8% 18% 6% 5%;
+}
+
+.suffixTableData {
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 98%;
+  margin-left: 2%;
+  border-radius: 6px;
+  display: grid;
+  align-items: center;
+  margin-top: 5px;
+  grid-template-columns: 60% 15% 12% 6% 5%;;
 }
 
 .departmentTableData {
@@ -731,7 +805,8 @@
   display: grid;
   align-items: center;
   margin-top: 4px;
-  grid-template-columns: 3% 58% 15% 15% 5% 5%;
+  // grid-template-columns: 3% 58% 15% 15% 5% 5%;
+  grid-template-columns: 7% 56% 5% 20% 6% 6%;
 }
 
 .terminationLayer3Card {
@@ -778,6 +853,41 @@
   margin-left: 2%;
   border-radius: 6px;
   display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.contractedServiceProviderCard1 {
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 93%;
+  margin-left: 7%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.contractedServiceProviderCard2 {
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 93%;
+  margin-left: 7%;
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: 5% 75% 10% 10%;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.contractedServiceProviderCard3 {
+  background: #f5f5f8 0% 0% no-repeat padding-box;
+  min-height: 50px;
+  width: 98%;
+  margin-left: 2%;
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: 5% 75% 10% 10%;
   align-items: center;
   margin-top: 5px;
 }
@@ -858,7 +968,7 @@
   display: grid;
   align-items: center;
   margin-top: 5px;
-  grid-template-columns: 2% 58% 15% 16% 5% 5%;
+  grid-template-columns: 4% 55% 8% 20% 6% 6%;;
 }
 
 .terminationInnerFolderData {
@@ -913,6 +1023,16 @@
   text-align: left;
   margin-left: 10px;
   display: flex;
+}
+
+.tableDataFontStyle3 {
+  font: normal normal normal 15px/17px Montserrat;
+  letter-spacing: 0px;
+  color: #484c51;
+  opacity: 1;
+  margin-left: 17px;
+  text-align: left;
+  margin-top: 10px;
 }
 
 .poweredBy {
@@ -1263,7 +1383,7 @@
 
 .entityLableStyle1 {
   text-align: left;
-  font: normal normal medium 20px/24px Proxima Nova;
+  font: normal normal medium 20px/24px Montserrat;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 0.5;
@@ -1408,7 +1528,7 @@
 }
 
 .healthCareHeaderTextStyle {
-  font: normal normal 600 20px/22px Montserrat;
+  font: normal normal 600 18px/22px Montserrat;
   letter-spacing: 3.05px;
   color: #6d6d6d;
   text-align: left;
@@ -1438,7 +1558,7 @@
 }
 
 .healthCareLeftCardFontStyle {
-  font: normal normal normal 18px/25px Montserrat;
+  font: normal normal normal 15px/25px Montserrat;
   letter-spacing: 0px;
 }
 
@@ -1514,7 +1634,7 @@
   margin-left: 2%;
   align-items: center;
   display: grid;
-  grid-template-columns: 7% 84% 5%;
+  grid-template-columns: 10% 75% 15%;
 }
 
 .ContractedServiceProviderHeaderInsideContainer {
@@ -1542,6 +1662,18 @@
   grid-template-columns: 7% 84% 5%;
 }
 
+.terminationReasonSideRows {
+  background: #928AE1 0% 0% no-repeat padding-box;
+    font-weight: normal;
+    height: 50px;
+    width: 98%;
+    border-radius: 6px;
+    margin-top: 1%;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 10% 78% 5%;
+}
+
 .costCenterLeftCard {
   background: #cecaf5 0% 0% no-repeat padding-box;
   font-weight: normal;
@@ -1567,6 +1699,31 @@
   align-items: center;
 }
 
+.terminationInnerFolderRows{
+  font-weight: normal;
+  min-height: 50px;
+  height: 50px;
+  width: 93%;
+  border: 0.400000006px solid rgba(136, 126, 231, 0.6862745098);
+  opacity: 1;
+  border-radius: 6px;
+  margin-top: 1%;
+  margin-left: 5%;
+  align-items: center;
+}
+
+.terminationReasonBackground1 {
+  background: #887ee7af 0% 0% no-repeat padding-box;
+  display: grid;
+  grid-template-columns: 10% 85% 3%;
+}
+
+.terminationReasonBackground2 {
+  background: #d3d0f6 0% 0% no-repeat padding-box;
+  display: grid;
+  grid-template-columns: 10% 85% 3%;
+}
+
 .HolidayListInnerFolderRows {
   font-weight: normal;
   min-height: 50px;
@@ -1585,6 +1742,7 @@
   display: grid;
   grid-template-columns: 7% 80% 10%;
 }
+
 
 .boardCertificationTextStyle1 {
   text-align: left;
@@ -1620,7 +1778,7 @@
 
 .TextStyle2 {
   text-align: left;
-  font: normal normal normal 14px/17px Proxima Nova;
+  font: normal normal normal 14px/17px Montserrat;
   letter-spacing: 0px;
   color: #050505;
   margin-top: 5px;
@@ -1636,7 +1794,7 @@
 
 .TextStyle4 {
   text-align: left;
-  font: normal normal normal 14px/18px Proxima Nova;
+  font: normal normal normal 14px/18px Montserrat;
   letter-spacing: 0px;
   color: #050505;
   margin-top: 5px;
@@ -1646,7 +1804,7 @@
 
 .TextStyle5 {
   text-align: left;
-  font: normal normal normal 14px/16px Proxima Nova;
+  font: normal normal normal 14px/16px Montserrat;
   letter-spacing: 0px;
   color: #050505;
   margin-top: 10px;
@@ -1663,7 +1821,7 @@
 
 .holidayScheduleLeftCardTextStyle1 {
   text-align: left;
-  font: normal normal normal 15px/28px Proxima Nova;
+  font: normal normal normal 15px/28px Montserrat;
   letter-spacing: 0px;
   color: #050505;
   opacity: 1;
@@ -1685,7 +1843,7 @@
   display: flex;
   align-items: center;
   display: grid;
-  grid-template-columns: 5% 35% 20% 18% 20% 10%;
+  grid-template-columns: 5% 35% 15% 15% 18%;
 }
 
 .FuntionalTitlesTableData {
@@ -1697,7 +1855,7 @@
   display: grid;
   align-items: center;
   margin-top: 5px;
-  grid-template-columns: 2% 30% 25% 22% 12% 5% 5%;
+  grid-template-columns: 2% 30% 20% 20% 18% 5% 5%;
 }
 
 .textColorBlue {
@@ -1726,7 +1884,8 @@
   display: grid;
   align-items: center;
   margin-top: 4px;
-  grid-template-columns: 3% 30% 15% 10% 15% 18% 5% 5%;
+  // grid-template-columns: 3% 30% 15% 10% 15% 18% 5% 5%;
+  grid-template-columns: 1% 27% 24% 15% 10% 13% 5% 5%;;
 }
 
 .holidayScheduleTableData1 {
@@ -1739,7 +1898,8 @@
   display: grid;
   align-items: center;
   margin-top: 4px;
-  grid-template-columns: 20% 30% 20% 20% 5% 5%;
+  // grid-template-columns: 20% 35% 18% 17% 5% 5%;
+  grid-template-columns: 20% 35% 13% 15% 5% 7%;
 }
 
 .holidayScheduleTableData2 {
@@ -1774,7 +1934,7 @@
   display: flex;
   justify-content: center;
   margin-top: 10px;
-  font: normal normal bold 14px/18px Proxima Nova;
+  font: normal normal bold 14px/18px Montserrat;
   letter-spacing: 2.4px;
   color: #303236;
   text-transform: uppercase;
@@ -1794,7 +1954,8 @@
   padding: 50px;
   font: normal normal normal 20px/24px Montserrat;
   letter-spacing: 0px;
-  color: #d8d8d8;
+  // color: #d8d8d8;
+  color: #777777;
   opacity: 1;
   text-align: center;
   display: flex;
@@ -2187,7 +2348,7 @@
   width: 93%;
   border-radius: 6px;
   margin-top: 2px;
-  margin-left: 4%;
+  margin-left: 7%;
   align-items: center;
   display: flex;
   display: grid;
@@ -2214,7 +2375,7 @@
 .customerAdminTableData {
   min-height: 50px;
   width: 87%;
-  margin-left: 10%;
+  margin-left: 13%;
   border: 0.20000000298023224px solid #d7d4f7;
   border-radius: 6px;
   display: grid;
@@ -2445,7 +2606,7 @@
 }
 
 .healthCareHeaderTextStyle7 {
-  font: normal normal bolder 18px/25px Montserrat;
+  font: normal normal bolder 15px/25px Montserrat;
 }
 
 .tableHeaderIndustriesFontStyle5 {
@@ -2513,6 +2674,26 @@
 
 .tagStyle {
   margin: 0 5px 10px 0;
+}
+
+.headerFlag {
+  width: 50px;
+  height: 30px;
+  background: transparent 0% 0% no-repeat padding-box;
+  border: 1px solid #7165e3;
+  opacity: 1;
+}
+
+.headerCountryName {
+  width: 45px;
+  height: 20px;
+  text-align: left;
+  font: normal normal 600 20px/41px Montserrat;
+  letter-spacing: 2.3px;
+  color: #52575d;
+  text-transform: uppercase;
+  opacity: 1;
+  margin-top: -2px;
 }
 
 

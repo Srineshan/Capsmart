@@ -23,10 +23,10 @@ const SideBar = ({ children, isExpanded, getIsExpanded, refetchUserValues, updat
     const setUserDetails = async () => {
         const { data: user } = await GET(`user-management-service/user/${userId}`);
         setCurrentUserDetails(user);
-        console.log(user)
+        // console.log(user)
     }
 
-    console.log(currentUserDetails, updateProfileData)
+    // console.log(currentUserDetails, updateProfileData)
 
     return (
         !isExpanded ? (

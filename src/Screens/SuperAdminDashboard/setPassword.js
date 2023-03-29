@@ -209,7 +209,13 @@ const SetPassword = () => {
         {/* <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Email(Registered Mail Id)</div>
         <InputGroup type="email" large={true} value={users?.filter(data => data?.id === randomId)?.map(data => data?.email?.officialEmail)[0]} className={style.marginTop10} /> */}
         <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Set Your Password</div>
-        <InputGroup type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={style.marginTop10} rightElement={EyeOpenElement(1)} onChange={(e) => setPassword(e.target.value)} />
+        <InputGroup onPaste={(e) => {
+          e.preventDefault()
+          return false;
+        }} onCopy={(e) => {
+          e.preventDefault()
+          return false;
+        }} type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={style.marginTop10} rightElement={EyeOpenElement(1)} onChange={(e) => setPassword(e.target.value)} />
         <div className={`${style.passwordStrengthGrid} ${style.marginTop10}`}>
           <div className={`${style.passwordProgress} ${passwordStrengthLength >= 1 && strengthColor}`}></div>
           <div className={`${style.passwordProgress} ${passwordStrengthLength >= 2 && strengthColor}`}></div>
@@ -270,7 +276,15 @@ const SetPassword = () => {
           </FormGroup>
         </div>
         <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Confirm Your Password</div>
-        <InputGroup type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={`${style.marginTop10} ${(confirmPassword?.length > 0 && confirmPassword !== password) && style.redBorderField} ${(confirmPassword?.length > 0 && confirmPassword === password) && style.greenBorderField}`} rightElement={EyeOpenElement(1)} onChange={(e) => setConfirmPassword(e.target.value)} />
+        <InputGroup
+          onPaste={(e) => {
+            e.preventDefault()
+            return false;
+          }} onCopy={(e) => {
+            e.preventDefault()
+            return false;
+          }}
+          type={viewPassword ? "text" : "password"} large={true} placeholder="Password" className={`${style.marginTop10} ${(confirmPassword?.length > 0 && confirmPassword !== password) && style.redBorderField} ${(confirmPassword?.length > 0 && confirmPassword === password) && style.greenBorderField}`} rightElement={EyeOpenElement(1)} onChange={(e) => setConfirmPassword(e.target.value)} />
         {
           // <div className={`${style.regHeading} ${style.blackText} ${style.marginTop30}`}>Cell Phone ( To Receive Verfication Passcode)</div>
           // <InputGroup type="text" large={true} placeholder="+1344231717" className={style.marginTop10} onChange={(e)=>setPhone(e.target.value)}/>
