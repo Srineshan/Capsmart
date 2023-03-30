@@ -11,16 +11,17 @@ const switchTheme = createTheme({
     },
 });
 
-const CommonSwitch = ({ checked, onChange, label, className }) => {
+const CommonSwitch = ({ checked, onChange, label, className, disabled }) => {
     return (
         <ThemeProvider theme={switchTheme}>
             <FormControlLabel
                 control={
-                    <Switch className={className} onChange={onChange} checked={checked} />
+                    <Switch className={className} onChange={onChange} checked={checked} disabled={disabled || false} />
                 }
                 color='primary'
                 className={className}
                 label={label}
+
             />
         </ThemeProvider>
     )

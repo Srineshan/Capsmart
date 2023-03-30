@@ -62,8 +62,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [continueLoading, setContinueLoading] = useState(false);
 
-  console.log('contractorNPIN', contractorNPIN);
-
   useEffect(() => {
     getUserData();
   }, [])

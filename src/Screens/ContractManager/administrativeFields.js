@@ -248,6 +248,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         let temp = metadata?.selectedActivities?.filter(data => data?.activity !== adminActivity?.activity)?.map(data => data);
         temp.push({ activity: adminActivity?.activity, billable: adminActivity?.billable, podRequired: adminActivity?.podRequired, id: editableData?.id, tenant: editableData?.tenant, schedule: adminActivity?.schedule });
         setMetadata({ ...metadata, selectedActivities: temp });
+        setShowAdminActivity(false);
+        setEditAdminActivitySelected(false);
     }
 
     const submit = () => {
@@ -263,6 +265,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         // let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
+
+    console.log('metadata', metadata);
 
     return (
         <div>
@@ -309,9 +313,18 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         activity?.map((data, index) => (
                             <div className={`${style.displayInRow} ${style.marginBottom10}`}>
                                 <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={data?.activity} />
-                                <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
-                                {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
-                                {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) ? (
+                                    <>
+                                        <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.schedule)[0]}</div>
+                                        {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.billable)[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                        {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.podRequired)[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                    </>
+                                ) : (<>
+                                    <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
+                                    {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                    {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                </>)}
+
                                 {
                                     // metadata?.selectedActivities?.map(data => data?.id).includes(data?.id) ? <>
                                     //     <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.schedule)?.[0] || ''}</div>

@@ -28,7 +28,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   const [showNewService, setShowNewService] = useState(false);
   const [selectedService, setSelectedService] = useState('');
   const [selectedServices, setSelectedServices] = useState([]);
-  const [addOnWorkFlow, setAddOnWorkFlow] = useState();
+  const [addOnWorkFlow, setAddOnWorkFlow] = useState([]);
   const [newServices, setNewServices] = useState({
     name: '',
     rate: '0',
@@ -70,7 +70,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
 
   useEffect(() => {
     setSelectedValues();
-  }, [serviceSelected, addOnWorkFlow]);
+  }, [addOnWorkFlow, serviceSelected]);
 
   const resetMetadata = () => {
     setMetadata([]);
@@ -121,12 +121,14 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
       let workFlowValues = Object?.values(workflowData);
       if (workFlowValues?.length === 1) {
-        data.approver = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
-        data.paymentApprover = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+        data.approver = users?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+        data.paymentApprover = users?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
       } else {
-        data.approver = users?.filter(data => data?.userId === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
-        data.paymentApprover = users?.filter(data => data?.userId === workFlowValues?.[1]?.workFlowUser?.id)?.map(data => data)[0];
+        data.approver = users?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+        data.paymentApprover = users?.filter(data => data?.id === workFlowValues?.[1]?.workFlowUser?.id)?.map(data => data)[0];
       }
+
+      console.log('data approver', users, workFlowValues, data?.approver);
 
       temp.push(data);
       setMetadata(temp);
@@ -223,6 +225,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     temp?.filter(data => data?.performingActivity === serviceName)?.map(data => {
       data.approver = value;
     })
+    console.log('temp value', temp);
     setMetadata(temp);
     getFields();
   }
@@ -486,7 +489,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
             <div className={`${style.addonBoxStyle}`}>
               <div className={`${style.addManagerGrid}`}>
                 <CommonLabel value='Only Allow Upon Request / Notification Approval' />
-                <CommonSwitch label={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={() => handleRequestApprovalChange(service)} checked={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired} />
+                <CommonSwitch disabled={selectedServices?.filter(data => data === service)?.map(data => data)?.length !== 0 ? false : true} label={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={() => handleRequestApprovalChange(service)} checked={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired} />
               </div>
               {metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired &&
                 // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], service) }} value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]} approverReviewer='approver' />
@@ -494,9 +497,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   <CommonLabel value={'Designate Request Approver* '} />
                   <div className={style.fullWidth}>
                     <CommonSelectField className={`${style.fullWidth} `}
-                      defaultValue={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]}
-                      value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0] ? metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0] : '0'}
-                      onChange={(e) => { onApproverSelected(users?.filter(data => data?.userId === e.target.value)?.map(data => data)[0], service) }}
+                      defaultValue={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.id)[0]}
+                      value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.id)[0] ? metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.id)[0] : '0'}
+                      onChange={(e) => { onApproverSelected(users?.filter(data => data?.id === e.target.value)?.map(data => data)[0], service) }}
                       firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
                       valueList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData?.id)}
                       labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
@@ -618,13 +621,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                             <CommonLabel value={'Designate Request Approver*'} />
                             <div className={style.fullWidth}>
                               <CommonSelectField className={`${style.fullWidth} `}
-                                defaultValue={data?.approver?.userId}
-                                value={data?.approver?.userId ? data?.approver?.userId : '0'}
-                                onChange={(e) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.userId === e.target.value)?.map(user => user)[0]) }}
+                                defaultValue={data?.approver?.id}
+                                value={data?.approver?.id ? data?.approver?.id : '0'}
+                                onChange={(e) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.id === e.target.value)?.map(user => user)[0]) }}
                                 firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
-                                valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
+                                valueList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData?.id)}
                                 labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
-                                disabledList={title?.map(data => false)} />
+                                disabledList={title?.filter(titleData => titleData?.approver === true)?.map(data => false)} />
                             </div>
                           </div>
                         }
@@ -635,9 +638,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                             <CommonLabel value={'Designate Payment Approver*'} />
                             <div className={style.fullWidth}>
                               <CommonSelectField className={`${style.fullWidth} `}
-                                defaultValue={data?.paymentApprover?.userId}
-                                value={data?.paymentApprover?.userId ? data?.paymentApprover?.userId : '0'}
-                                onChange={(e) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.userId === e.target.value)?.map(user => user)[0]) }}
+                                defaultValue={data?.paymentApprover?.id}
+                                value={data?.paymentApprover?.id ? data?.paymentApprover?.id : '0'}
+                                onChange={(e) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.id === e.target.value)?.map(user => user)[0]) }}
                                 firstOptionLabel={'Select Payment Approver'} firstOptionValue={'0'}
                                 valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
                                 labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
@@ -690,9 +693,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   <CommonLabel value={'Designate Request Approver*'} />
                   <div className={style.fullWidth}>
                     <CommonSelectField className={`${style.fullWidth} `}
-                      defaultValue={metadata?.[0]?.approver?.userId}
-                      value={metadata?.[0]?.approver?.userId ? metadata?.[0]?.approver?.userId : '0'}
-                      onChange={(e) => { onApproverSelected(users?.filter(data => data?.userId === e.target.value)?.map(data => data)[0], data?.performingActivity) }}
+                      defaultValue={metadata?.[0]?.approver?.id}
+                      value={metadata?.[0]?.approver?.id ? metadata?.[0]?.approver?.id : '0'}
+                      onChange={(e) => { onApproverSelected(users?.filter(data => data?.id === e.target.value)?.map(data => data)[0], data?.performingActivity) }}
                       firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
                       valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
                       labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
@@ -835,13 +838,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                         <div className={style.fullWidth} key={index}>
                           <CommonSelectField className={`${style.fullWidth} `}
                             defaultValue={newServices?.approver}
-                            value={newServices?.approver ? newServices?.approver?.userId : '0'}
-                            onChange={(e) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.userId === e.target.value)?.map(data => data)[0] }) }}
+                            value={newServices?.approver ? newServices?.approver?.id : '0'}
+                            onChange={(e) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.id === e.target.value)?.map(data => data)[0] }) }}
                             firstOptionLabel={'Select Approver'}
                             firstOptionValue={'0'}
-                            valueList={users?.map(data => data?.userId)}
-                            labelList={users?.map(data => data?.title?.title)}
-                            disabledList={users?.map(data => false)} />
+                            valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
+                            labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                            disabledList={title?.map(data => false)} />
                         </div>
                       </div>
                     }
@@ -853,13 +856,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                         <div className={style.fullWidth} key={index}>
                           <CommonSelectField className={`${style.fullWidth} `}
                             defaultValue={newServices?.paymentApprover}
-                            value={newServices?.paymentApprover ? newServices?.paymentApprover?.userId : '0'}
-                            onChange={(e) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.userId === e.target.value)?.map(data => data)[0] }) }}
+                            value={newServices?.paymentApprover ? newServices?.paymentApprover?.id : '0'}
+                            onChange={(e) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.id === e.target.value)?.map(data => data)[0] }) }}
                             firstOptionLabel={'Select Payment Approver'}
                             firstOptionValue={'0'}
-                            valueList={users?.map(data => data?.userId)}
-                            labelList={users?.map(data => data?.title?.title)}
-                            disabledList={users?.map(data => false)} />
+                            valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
+                            labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                            disabledList={title?.map(data => false)} />
                         </div>
                       </div>
                     }
