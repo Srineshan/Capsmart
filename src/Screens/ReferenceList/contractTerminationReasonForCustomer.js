@@ -351,7 +351,8 @@ const TerminationReasonForCustomer = () => {
                                         data?.terminationBy === "CONTRACTOR" &&
                                         !terminationReason.some(
                                           (customerData) =>
-                                            customerData?.id === data?.id
+                                            customerData?.primary_reason ===
+                                            data?.primary_reason
                                         )
                                     )
                                     ?.map((data, index) => (
@@ -432,7 +433,8 @@ const TerminationReasonForCustomer = () => {
                                         data?.terminationBy === "ENTITY" &&
                                         !terminationReason.some(
                                           (customerData) =>
-                                            customerData?.id === data?.id
+                                            customerData?.primary_reason ===
+                                            data?.primary_reason
                                         )
                                     )
                                     ?.map((data, index) => (

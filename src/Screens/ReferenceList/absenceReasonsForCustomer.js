@@ -151,7 +151,10 @@ const AbsenceReasonsForCustomer = () => {
         ?.filter(
           (data) =>
             data?.absenceType === "PLANNED" &&
-            !absenceReason.some((customerData) => customerData?.id === data?.id)
+            !absenceReason.some(
+              (customerData) =>
+                customerData?.absenceReason === data?.absenceReason
+            )
         )
         ?.map((data) => {
           return { ...data };
@@ -169,7 +172,10 @@ const AbsenceReasonsForCustomer = () => {
         ?.filter(
           (data) =>
             data?.absenceType === "UNPLANNED" &&
-            !absenceReason.some((customerData) => customerData?.id === data?.id)
+            !absenceReason.some(
+              (customerData) =>
+                customerData?.absenceReason === data?.absenceReason
+            )
         )
         ?.map((data) => {
           return { ...data };
@@ -186,7 +192,10 @@ const AbsenceReasonsForCustomer = () => {
       ?.filter(
         (data) =>
           data?.absenceType === "PLANNED" &&
-          !absenceReason.some((customerData) => customerData?.id === data?.id)
+          !absenceReason.some(
+            (customerData) =>
+              customerData?.absenceReason === data?.absenceReason
+          )
       )
       ?.map((data) => {
         return { ...data };
@@ -212,7 +221,10 @@ const AbsenceReasonsForCustomer = () => {
       ?.filter(
         (data) =>
           data?.absenceType === "UNPLANNED" &&
-          !absenceReason.some((customerData) => customerData?.id === data?.id)
+          !absenceReason.some(
+            (customerData) =>
+              customerData?.absenceReason === data?.absenceReason
+          )
       )
       ?.map((data) => {
         return { ...data };
@@ -332,7 +344,8 @@ const AbsenceReasonsForCustomer = () => {
                                   data?.absenceType === "PLANNED" &&
                                   !absenceReason.some(
                                     (customerData) =>
-                                      customerData?.id === data?.id
+                                      customerData?.absenceReason ===
+                                      data?.absenceReason
                                   )
                               )?.length > 1 ? (
                                 <>
@@ -367,7 +380,8 @@ const AbsenceReasonsForCustomer = () => {
                                     data?.absenceType === "PLANNED" &&
                                     !absenceReason.some(
                                       (customerData) =>
-                                        customerData?.id === data?.id
+                                        customerData?.absenceReason ===
+                                        data?.absenceReason
                                     )
                                 )
                                 ?.map((data, index) => (
@@ -436,7 +450,8 @@ const AbsenceReasonsForCustomer = () => {
                                   data?.absenceType === "UNPLANNED" &&
                                   !absenceReason.some(
                                     (customerData) =>
-                                      customerData?.id === data?.id
+                                      customerData?.absenceReason ===
+                                      data?.absenceReason
                                   )
                               )?.length > 1 ? (
                                 <>
@@ -471,7 +486,8 @@ const AbsenceReasonsForCustomer = () => {
                                     data?.absenceType === "UNPLANNED" &&
                                     !absenceReason.some(
                                       (customerData) =>
-                                        customerData?.id === data?.id
+                                        customerData?.absenceReason ===
+                                        data?.absenceReason
                                     )
                                 )
                                 ?.map((data, index) => (

@@ -132,7 +132,7 @@ const HolidayScheduleForCustomers = () => {
         ?.filter(
           (data) =>
             !holidayCustomerData.some(
-              (customerData) => customerData?.id === data?.id
+              (customerData) => customerData?.eventName === data?.eventName
             )
         )
         ?.map((data) => {
@@ -150,7 +150,7 @@ const HolidayScheduleForCustomers = () => {
       ?.filter(
         (data) =>
           !holidayCustomerData.some(
-            (customerData) => customerData?.id === data?.id
+            (customerData) => customerData?.eventName === data?.eventName
           )
       )
       ?.map((data) => {
@@ -226,7 +226,7 @@ const HolidayScheduleForCustomers = () => {
   };
 
   useEffect(() => {
-    if (selectedYear !== undefined) {
+    if (selectedYear !== "" && selectedYear !== undefined) {
       getHolidayMasterData();
       getHolidayData();
     }
@@ -308,7 +308,8 @@ const HolidayScheduleForCustomers = () => {
                                   (data) =>
                                     !holidayCustomerData.some(
                                       (customerData) =>
-                                        customerData?.id === data?.id
+                                        customerData?.eventName ===
+                                        data?.eventName
                                     )
                                 )?.length > 1 ? (
                                   <>
@@ -342,7 +343,8 @@ const HolidayScheduleForCustomers = () => {
                                     (data) =>
                                       !holidayCustomerData.some(
                                         (customerData) =>
-                                          customerData?.id === data?.id
+                                          customerData?.eventName ===
+                                          data?.eventName
                                       )
                                   )
                                   ?.map((data, index) => (
