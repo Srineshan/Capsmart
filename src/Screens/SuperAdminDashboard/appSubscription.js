@@ -107,7 +107,7 @@ const AppSubscription = ({ getActiveStep }) => {
     setBillingData({ firstName: data?.billingDetails?.contactname?.firstName, lastName: data?.billingDetails?.contactname?.lastName, email: data?.billingDetails?.email?.emailId, phone: data?.billingDetails?.contactNumber?.contactNumber });
     setPlan({
       planName: subscription?.planName, fees: subscription?.subscriptionFees?.fees, subscriptionStatus: subscription?.subscriptionStatus, billingFrequency: subscription?.billingFrequency, discount: subscription?.discount?.discount || '0',
-      allowableRegisteredUsers: subscription?.allowableRegisteredUsers, maximumNumberOfUsers: subscription?.maximumNumberOfUsers, allowableSites: subscription?.allowableSites, noOfSites: subscription?.noOfSites, feedbackSupport: subscription?.feedbackSupports, subscriptionFeeCriteria: subscription?.subscriptionFeeCriteria
+      allowableRegisteredUsers: subscription?.allowableRegisteredUsers, maximumNumberOfUsers: subscription?.maximumNumberOfUsers, allowableSites: subscription?.allowableSites, noOfSites: subscription?.noOfSites, feedbackSupport: subscription?.feedbackSupports || [], subscriptionFeeCriteria: subscription?.subscriptionFeeCriteria
     });
     setEntityName(data?.entityName?.entityName);
     setEntityAbbreviation(data?.entityAbbrevation?.abbreviation);
@@ -508,7 +508,7 @@ const AppSubscription = ({ getActiveStep }) => {
                           </Box>
                         )}
                       >
-                        {feedbackSupportValues.map((name) => (
+                        {feedbackSupportValues?.map((name) => (
                           <MenuItem
                             key={name}
                             value={name}

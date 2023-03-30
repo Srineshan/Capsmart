@@ -20,7 +20,7 @@ export const validateContractIDTermLimit = (contract) => {
       temp.push({ field: 'Auto Renewal Term', value: contract?.contractDetail?.continuationPolicy?.autoRenewalPeriod?.autoRenewalTerm?.term });
       temp.push({ field: 'Allowable Auto Renewal Terms', value: contract?.contractDetail?.continuationPolicy?.autoRenewalPeriod?.allowableAutoRenewalTerm?.term });
     } else {
-      temp.push({ field: 'Renewal Reminder List', value: contract?.contractDetail?.continuationPolicy?.reminderList?.renewalReminderList?.filter(data => data?.days === 0)?.map(data => data)?.length });
+      temp.push({ field: 'Renewal Reminder List', value: contract?.contractDetail?.continuationPolicy?.reminderList?.renewalReminderList?.filter(data => data?.days !== 0)?.map(data => data)?.length });
     }
   })
   const emptyFields = fieldData?.filter(data => data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data => data?.field);

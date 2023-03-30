@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Dialog,
   Classes,
@@ -14,6 +14,7 @@ import style from "./index.module.scss";
 import ArrowDown from "./../../images/arrowDown.png";
 import { POST, PUT, GET, TenantID } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
+import DatalistInput from "react-datalist-input";
 
 const AddNewDepartments = ({
   getAddEntityDialog,
@@ -70,7 +71,7 @@ const AddNewDepartments = ({
   }, []);
 
   const handleSelectLocation = (value) => {
-    if (value !== "0") {
+    if (value !== "") {
       const tempSelectedLocation = serviceLocation
         .filter((data) => data?.location === value)
         .map((data) => data)[0];
@@ -235,7 +236,7 @@ const AddNewDepartments = ({
       //   selectedLocations,
       //   serviceLocation
       // );
-      if (value !== "0") {
+      if (value !== "") {
         const tempSelectedLocation = serviceLocation
           .filter((data) => data?.location === value)
           .map((data) => data)[0];
