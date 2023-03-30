@@ -538,12 +538,8 @@ const EntitySetup = () => {
               <p className={style.heading}>Entity Setup</p>
               <div className={style.greyBorder}></div>
               <div className={style.entityDescription}>
-                Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
-                quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus
-                dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam
-                eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
-                felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
-                adipiscing elit. sed finibus quam nec tellus dictum.
+                In this step provide the necessary information required to setup the primary entity for use of the application, as well as any sub-sites (if applicable). In this step you can also provide the required information for setting up Single Sign-on. All data fields marked with an "*" are mandatory.
+                If you do not have all of the information, you can save this customer's entity information as an In-progress account.
               </div>
               <div>
                 <div className={style.cloneBlockStyle}>

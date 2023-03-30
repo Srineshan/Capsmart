@@ -34,7 +34,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
   const [entity, setEntity] = useState();
   const [isSetupComplete, setIsCompleteSetup] = useState(false);
   const [partnerId, setPartnerId] = useState('');
-  const [customerAccountManagerChecked, setCustomerAccountManagerChecked] = useState(false);
+  const [customerAccountManagerChecked, setCustomerAccountManagerChecked] = useState(true);
   const [createUserChecked, setCreateUserChecked] = useState(false);
   const handleBillingData = (name, value) => {
     setBillingAddress({ ...billingAddress, [name]: value });
@@ -59,7 +59,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
   }
 
   const getUserData = async () => {
-    // await axios(`https://rest.mytimesmart.com/user-management-service/user?partnerId=${partnerId}&userType=PARTNER_USER`, {
+    // await axios(`https://rest.timesmart.io/user-management-service/user?partnerId=${partnerId}&userType=PARTNER_USER`, {
     //   method: 'GET',
     //   headers: {
     //     'Content-Type': 'application/json',
@@ -274,19 +274,14 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
             <p className={style.heading}>Entity System Admin</p>
             <div className={style.greyBorder}></div>
             <div className={style.entityDescription}>
-              Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
-              quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus
-              dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam
-              eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
-              felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
-              adipiscing elit. sed finibus quam nec tellus dictum.
+              In this step provide the person that will be responsible for this account from your organization. Also setup the customer sys admin user.
             </div>
             <div>
               <div className={style.cloneBlockStyle}>
                 <div className={`${style.newContractFromCloneBoxStyle}`}>
                   <div className={style.textAlignLeft}>
                     <CommonCheckBox
-                      checked={customerAccountManagerChecked} onChange={(e) => { setCustomerAccountManagerChecked(e.target.checked) }}
+                      checked={true}
                       label="DESIGNATE CUSTOMER ACCOUNT MANAGER" />
                   </div>
                   <div className={`${style.extentionGrid} ${style.marginTop30}`}>

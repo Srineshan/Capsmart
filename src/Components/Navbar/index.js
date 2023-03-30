@@ -176,7 +176,7 @@ const Navbar = () => {
       },
     };
     fetch(
-      "https://rest.mytimesmart.com/user-management-service/auth/logout",
+      "https://rest.timesmart.io/user-management-service/auth/logout",
       requestOptions
     )
       .then((response) => {
