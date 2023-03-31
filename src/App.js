@@ -232,7 +232,7 @@ const App = ({ props }) => {
                 <Route path="/setPassword/:randomId" element={<SetPassword />} />
                 <Route path="/setPassword" element={<SetPasswordWithoutEmail />} />
                 <Route path="/welcome" element={<Welcome />} />
-                <Route path="/entitySetup/:id" element={<EntitySetup />} />
+                <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />
                 <Route
                   path="/entitySystemAdmin"
                   element={<EntitySystemAdmin />}

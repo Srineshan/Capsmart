@@ -43,7 +43,7 @@ const Welcome = ({ getIsContinue }) => {
             await PUT('entity-service/entity', formData)
                 .then(response => {
                     SuccessToaster('Entity Updated Successfully');
-                    navigate(`/entitySetup/${TenantID}`);
+                    navigate(`/entitySetup/${TenantID}/appSubscription`);
                 }).catch(error => {
                     ErrorToaster('Unexpected Error Updating Entity');
                 });

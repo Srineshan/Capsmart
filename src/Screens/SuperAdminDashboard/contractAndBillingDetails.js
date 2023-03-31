@@ -409,7 +409,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
             return;
         }
         if (type === 'Continue') {
-            getActiveStep('entitySetup');
+            navigate(`/entitySetup/${TenantID}/entitySetup`);
         } else {
             navigate('/user');
         }
@@ -497,10 +497,10 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
         <>
             {/* {isSetupComplete ? <SetupComplete data={plan?.planName === 'TRIAL' ? 'Trial' : 'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess ? 'Created' : 'Updated'} /> : */}
             <div className={style.entitySetupBackground}>
-                <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : window.history.go(-1)} />
+                <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : navigate('/entitySitePortal')} />
                 <div className={style.stepperMargin}>
                     <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
-                        <div onClick={() => getActiveStep('appSubscription')}>
+                        <div onClick={() => navigate(`/entitySetup/${TenantID}/appSubscription`)}>
                             <div className={style.justifyCenter}>
                                 <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
                                     <img src={Step5} alt="Step1" className={style.stepperImgStyle} />
@@ -508,7 +508,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                             </div>
                             <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SUBSCRIPTION PLAN</p>
                         </div>
-                        <div onClick={() => getActiveStep('contractAndBilling')}>
+                        <div onClick={() => navigate(`/entitySetup/${TenantID}/contractAndBilling`)}>
                             <div className={style.justifyCenter}>
                                 <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
                                     <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
@@ -516,7 +516,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                             </div>
                             <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>CONTRACT & BILLING</p>
                         </div>
-                        <div onClick={() => getActiveStep('entitySetup')}>
+                        <div onClick={() => navigate(`/entitySetup/${TenantID}/entitySetup`)}>
                             <div className={style.justifyCenter}>
                                 <div className={`${style.stepperImgBackground}`}>
                                     <img src={Step4} alt="Step3" className={style.stepperImgStyle} />
@@ -524,7 +524,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                             </div>
                             <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                         </div>
-                        <div onClick={() => entityData?.multiSiteEntity && getActiveStep('siteInformation')} className={!entityData?.multiSiteEntity && style.disabledView}>
+                        <div onClick={() => entityData?.multiSiteEntity && navigate(`/entitySetup/${TenantID}/siteInformation`)} className={!entityData?.multiSiteEntity && style.disabledView}>
                             <div className={style.justifyCenter}>
                                 <div className={`${style.stepperImgBackground}`}>
                                     <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
@@ -533,7 +533,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                             <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                         </div>
                         {isSuperAdminAccess && (
-                            <div onClick={() => getActiveStep('entitySystemAdmin')}>
+                            <div onClick={() => navigate(`/entitySetup/${TenantID}/entitySystemAdmin`)}>
                                 <div className={style.justifyCenter}>
                                     <div className={`${style.stepperImgBackground}`}>
                                         <img src={Step2} alt="Step5" className={style.stepperImgStyle} />
