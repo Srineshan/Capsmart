@@ -168,8 +168,8 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
                         }}
                         className={style.threeFieldWidth}
-                        onChange={(e) => e.target.value >= 0 && handleValueChange('min', e.target.value.slice(0, 2))}
-                        value={metadata?.min}
+                        onChange={(e) => e.target.value >= 0 && handleValueChange('min', parseFloat(e.target.value.slice(0, 5)))}
+                        value={metadata?.min === 0 ? '' : metadata?.min}
                         type='number'
                     />
                     {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
@@ -181,8 +181,8 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
                         }}
                         className={style.threeFieldWidth}
-                        onChange={(e) => e.target.value >= 0 && handleValueChange('max', e.target.value.slice(0, 2))}
-                        value={metadata?.max}
+                        onChange={(e) => e.target.value >= 0 && handleValueChange('max', parseFloat(e.target.value.slice(0, 5)))}
+                        value={metadata?.max === 0 ? '' : metadata?.max}
                         type='number'
                     />
                     <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
