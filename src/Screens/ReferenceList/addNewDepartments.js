@@ -27,6 +27,7 @@ const AddNewDepartments = ({
   isService,
   callingFrom,
   siteTypeId,
+  DepartmentService,
 }) => {
   const [departId, setDepartId] = useState("");
   const [departName, setDepartName] = useState("");
@@ -42,6 +43,8 @@ const AddNewDepartments = ({
     { name: "", serviceLocations: [] },
   ]);
 
+  console.log(DepartmentService);
+
   useEffect(() => {
     if (
       selectedLocationDeleteId !== "" &&
@@ -55,7 +58,6 @@ const AddNewDepartments = ({
     const { data: serviceLocation } = await GET(
       "entity-service/servicelocation"
     );
-    console.log(serviceLocation);
     setServiceLocation(serviceLocation);
   };
 
@@ -273,6 +275,23 @@ const AddNewDepartments = ({
   };
 
   const saveSubmitHandler = async (type) => {
+    const isPresent = DepartmentService.find(
+      (depart) => depart?.departmentName.name === departName
+    );
+
+    // const isServiceAreas = isPresent.serviceAreas?.find((service) => {
+    //   console.log(service);
+    //   console.log(serviceAreaList);
+    // });
+    // console.log(isServiceAreas);
+
+    if (isPresent) {
+      ErrorToaster("Already This Name Exists");
+      document.getElementById("departmentEl").focus();
+      getAddEntityDialog(true);
+      return false;
+    }
+
     if (!departName && departName === "") {
       document.getElementById("departmentEl").focus();
       return false;

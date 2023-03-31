@@ -425,72 +425,96 @@ const HolidayScheduleForCustomers = () => {
 
                         <div className={style.customersAdminCardStyle3}>
                           {holidayCustomerData?.length !== 0 ? (
-                            <>
-                              <div>
-                                <div
-                                  className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}
-                                >
-                                  <img
-                                    src={IndustriesEntityFolder}
-                                    alt=""
-                                    className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                                  />
-                                  <p
-                                    className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
+                            years?.map((data, index) => (
+                              <>
+                                <div>
+                                  <div
+                                    className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}
                                   >
-                                    {selectedYear}
-                                  </p>
-                                </div>
-
-                                {holidayCustomerData?.map((data, index) => {
-                                  return (
-                                    <div
-                                      className={`${style.holidayScheduleTableData1} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
-                                      key={index}
+                                    <img
+                                      src={IndustriesEntityFolder}
+                                      alt=""
+                                      className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                                    />
+                                    <p
+                                      className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
                                     >
-                                      <p className={style.tableDataFontStyle}>
-                                        {format(
-                                          new Date(data?.eventDate),
-                                          "MMMM d"
-                                        )}{" "}
-                                      </p>
-                                      <p className={style.tableDataFontStyle}>
-                                        {data?.eventName}
-                                      </p>
-                                      <p className={style.tableDataFontStyle}>
-                                        {data?.stateName}
-                                      </p>
-                                      <p
-                                        className={`${style.tableDataFontStyle} ${style.textCapitalize}`}
-                                      >
-                                        {(data?.eventType).toLowerCase()}
-                                      </p>
+                                      {data?.year}
+                                    </p>
+                                    <img
+                                      src={
+                                        selectedIndex === index
+                                          ? CloseFolderBlue
+                                          : OpenFolderBlue
+                                      }
+                                      alt="OpenFolder"
+                                      className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                                      onClick={() => {
+                                        setSelectedIndex(index);
+                                        setSelectedYear(data?.year);
+                                      }}
+                                    />
+                                  </div>
 
-                                      <div className={style.displayInRow}>
-                                        <img
-                                          src={EditHcRow}
-                                          alt=""
-                                          className={style.colorFileStyle}
-                                          onClick={() => {
-                                            setIsEdit(true);
-                                            getAddCompanyHolidayDialog(true);
-                                            setSelectedHolidayMaster(data);
-                                          }}
-                                        />
-                                        <img
-                                          src={DeleteHcRow}
-                                          alt=""
-                                          className={`${style.colorFileStyle}`}
-                                          onClick={() =>
-                                            handleDeleteHoliday(data?.id)
-                                          }
-                                        />
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </>
+                                  {selectedIndex === index &&
+                                    holidayCustomerData?.map((data, index) => {
+                                      return (
+                                        <div
+                                          className={`${style.holidayScheduleTableData1} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
+                                          key={index}
+                                        >
+                                          <p
+                                            className={style.tableDataFontStyle}
+                                          >
+                                            {format(
+                                              new Date(data?.eventDate),
+                                              "MMMM d"
+                                            )}{" "}
+                                          </p>
+                                          <p
+                                            className={style.tableDataFontStyle}
+                                          >
+                                            {data?.eventName}
+                                          </p>
+                                          <p
+                                            className={style.tableDataFontStyle}
+                                          >
+                                            {data?.stateName}
+                                          </p>
+                                          <p
+                                            className={`${style.tableDataFontStyle} ${style.textCapitalize}`}
+                                          >
+                                            {(data?.eventType).toLowerCase()}
+                                          </p>
+
+                                          <div className={style.displayInRow}>
+                                            <img
+                                              src={EditHcRow}
+                                              alt=""
+                                              className={style.colorFileStyle}
+                                              onClick={() => {
+                                                setIsEdit(true);
+                                                getAddCompanyHolidayDialog(
+                                                  true
+                                                );
+                                                setSelectedHolidayMaster(data);
+                                              }}
+                                            />
+                                            <img
+                                              src={DeleteHcRow}
+                                              alt=""
+                                              className={`${style.colorFileStyle}`}
+                                              onClick={() =>
+                                                handleDeleteHoliday(data?.id)
+                                              }
+                                            />
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                </div>
+                              </>
+                            ))
                           ) : (
                             <p className={style.holidayScheduleCardtextStyle1}>
                               if you would like to setup your custom list for

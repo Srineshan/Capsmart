@@ -526,281 +526,312 @@ const TerminationReasonForCustomer = () => {
                       </div>
                       <div className={style.customersAdminCardStyle3}>
                         {terminationReason?.length !== 0 ? (
-                          <>
-                            <div>
-                              <div
-                                className={style.customListHeaderTermiantion}
-                              >
-                                <img
-                                  src={IndustriesEntityFolder}
-                                  alt="IndustriesEntityFolder"
-                                  className={`${style.colorFileStyle} ${style.marginLeft10}`}
-                                />
-                                <p
-                                  className={
-                                    style.tableHeaderIndustriesFontStyle
-                                  }
+                          entityTypes?.map((data, index) => (
+                            <>
+                              <div>
+                                <div
+                                  className={style.customListHeaderTermiantion}
                                 >
-                                  {selectedEntityType}
-                                </p>
+                                  <img
+                                    src={IndustriesEntityFolder}
+                                    alt="IndustriesEntityFolder"
+                                    className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                                  />
+                                  <p
+                                    className={
+                                      style.tableHeaderIndustriesFontStyle
+                                    }
+                                  >
+                                    {data?.siteTypeName}
+                                  </p>
+                                  <img
+                                    src={
+                                      selectedIndex === index
+                                        ? CloseFolderBlue
+                                        : OpenFolderBlue
+                                    }
+                                    alt="OpenFolder"
+                                    className={`${style.colorFileStyle2} ${style.marginLeft5}`}
+                                    onClick={() => {
+                                      setSelectedIndex(index);
+                                      setSiteTypeId(data?.siteTypeId);
+                                    }}
+                                  />
+                                </div>
+
+                                <>
+                                  {/* Contrator */}
+                                  {selectedIndex === index &&
+                                  terminationReason?.filter(
+                                    (data) =>
+                                      data.terminationBy === "CONTRACTOR"
+                                  ).length !== 0 ? (
+                                    <div
+                                      className={
+                                        style.customListHeaderTermiantionLevel2
+                                      }
+                                    >
+                                      <img
+                                        src={IndustriesEntityFolder}
+                                        alt="IndustriesEntityFolder"
+                                        className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                                      />
+                                      <p
+                                        className={
+                                          style.tableHeaderIndustriesFontStyle
+                                        }
+                                      >
+                                        FOR CAUSE BY CONTRACTOR
+                                      </p>
+                                      <img
+                                        src={
+                                          selectedCause === "Contractor"
+                                            ? CloseFolderBlue
+                                            : OpenFolderBlue
+                                        }
+                                        alt="OpenFolder"
+                                        className={`${style.colorFileStyle2}`}
+                                        onClick={() =>
+                                          setSelectedCause("Contractor")
+                                        }
+                                      />
+                                    </div>
+                                  ) : (
+                                    <></>
+                                  )}
+
+                                  {selectedIndex === index &&
+                                    selectedCause === "Contractor" &&
+                                    terminationReason
+                                      ?.filter(
+                                        (data) =>
+                                          data?.terminationBy === "CONTRACTOR"
+                                      )
+                                      ?.map((data, index) => (
+                                        <div key={index}>
+                                          <div
+                                            className={
+                                              style.customTerminationPrimaryReason
+                                            }
+                                          >
+                                            <p></p>
+                                            <p
+                                              className={
+                                                style.customersAdminTableFontStyle
+                                              }
+                                            >
+                                              {data?.primary_reason}
+                                            </p>
+                                            <img
+                                              src={EditHcFolder}
+                                              alt="OpenFolder"
+                                              className={style.colorFileStyle}
+                                              onClick={() => {
+                                                setSelectedTerminationReason(
+                                                  data
+                                                );
+                                                getAddEntityDialog(true);
+                                                setIsEdit(true);
+                                              }}
+                                            />
+                                            <img
+                                              src={DeleteHcRow}
+                                              alt="OpenFolder"
+                                              className={style.colorFileStyle}
+                                              onClick={() =>
+                                                handleDeleteTerminationReason(
+                                                  data?.id
+                                                )
+                                              }
+                                            />
+                                          </div>
+                                          {data?.secondary_reasons?.map(
+                                            (secondaryReason, index) => (
+                                              <div
+                                                className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+                                              >
+                                                <p></p>
+                                                <p
+                                                  className={
+                                                    style.tableDataFontStyle
+                                                  }
+                                                >
+                                                  {secondaryReason}
+                                                </p>
+                                                <p></p>
+                                                <p></p>
+                                                <img
+                                                  src={EditHcRow}
+                                                  alt="OpenFolder"
+                                                  className={
+                                                    style.colorFileStyle
+                                                  }
+                                                  onClick={() => {
+                                                    setSelectedTerminationReason(
+                                                      data
+                                                    );
+                                                    getAddEntityDialog(true);
+                                                    setIsEdit(true);
+                                                  }}
+                                                />
+                                                <img
+                                                  src={DeleteHcRow}
+                                                  alt="OpenFolder"
+                                                  className={
+                                                    style.colorFileStyle
+                                                  }
+                                                  onClick={() => {
+                                                    setSelectedTerminationReason(
+                                                      data
+                                                    );
+                                                    handlePutContractTerminationReason(
+                                                      data,
+                                                      secondaryReason
+                                                    );
+                                                  }}
+                                                />
+                                              </div>
+                                            )
+                                          )}
+                                        </div>
+                                      ))}
+
+                                  {/* //Entity */}
+                                  {selectedIndex === index &&
+                                  terminationReason?.filter(
+                                    (data) => data.terminationBy === "ENTITY"
+                                  ).length !== 0 ? (
+                                    <div
+                                      className={
+                                        style.customListHeaderTermiantionLevel2
+                                      }
+                                    >
+                                      <img
+                                        src={IndustriesEntityFolder}
+                                        alt="IndustriesEntityFolder"
+                                        className={`${style.colorFileStyle} ${style.marginLeft10}`}
+                                      />
+                                      <p
+                                        className={
+                                          style.tableHeaderIndustriesFontStyle
+                                        }
+                                      >
+                                        FOR CAUSE BY ENTITY
+                                      </p>
+                                      <img
+                                        src={
+                                          selectedCause === "Entity"
+                                            ? CloseFolderBlue
+                                            : OpenFolderBlue
+                                        }
+                                        alt="OpenFolder"
+                                        className={`${style.colorFileStyle2}`}
+                                        onClick={() =>
+                                          setSelectedCause("Entity")
+                                        }
+                                      />
+                                    </div>
+                                  ) : (
+                                    <></>
+                                  )}
+
+                                  {selectedIndex === index &&
+                                    selectedCause === "Entity" &&
+                                    terminationReason
+                                      ?.filter(
+                                        (data) =>
+                                          data?.terminationBy === "ENTITY"
+                                      )
+                                      ?.map((data, index) => (
+                                        <div key={index}>
+                                          <div
+                                            className={
+                                              style.customTerminationPrimaryReason
+                                            }
+                                          >
+                                            <p></p>
+                                            <p
+                                              className={
+                                                style.customersAdminTableFontStyle
+                                              }
+                                            >
+                                              {data?.primary_reason}
+                                            </p>
+                                            <img
+                                              src={EditHcFolder}
+                                              alt="OpenFolder"
+                                              className={style.colorFileStyle}
+                                              onClick={() => {
+                                                setSelectedTerminationReason(
+                                                  data
+                                                );
+                                                getAddEntityDialog(true);
+                                              }}
+                                            />
+                                            <img
+                                              src={DeleteHcRow}
+                                              alt="OpenFolder"
+                                              className={style.colorFileStyle}
+                                              onClick={() =>
+                                                handleDeleteTerminationReason(
+                                                  data?.id
+                                                )
+                                              }
+                                            />
+                                          </div>
+                                          {data?.secondary_reasons?.map(
+                                            (secondaryReason, index) => (
+                                              <div
+                                                className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
+                                              >
+                                                <p></p>
+                                                <p
+                                                  className={
+                                                    style.tableDataFontStyle
+                                                  }
+                                                >
+                                                  {secondaryReason}
+                                                </p>
+                                                <p></p>
+                                                <p></p>
+                                                <img
+                                                  src={EditHcRow}
+                                                  alt="OpenFolder"
+                                                  className={
+                                                    style.colorFileStyle
+                                                  }
+                                                  onClick={() => {
+                                                    setSelectedTerminationReason(
+                                                      data
+                                                    );
+                                                    getAddEntityDialog(true);
+                                                  }}
+                                                />
+                                                <img
+                                                  src={DeleteHcRow}
+                                                  alt="OpenFolder"
+                                                  className={
+                                                    style.colorFileStyle
+                                                  }
+                                                  onClick={() => {
+                                                    setSelectedTerminationReason(
+                                                      data
+                                                    );
+                                                    handlePutContractTerminationReason(
+                                                      data,
+                                                      secondaryReason
+                                                    );
+                                                  }}
+                                                />
+                                              </div>
+                                            )
+                                          )}
+                                        </div>
+                                      ))}
+                                </>
                               </div>
-
-                              <>
-                                {/* Contrator */}
-
-                                {terminationReason?.filter(
-                                  (data) => data.terminationBy === "CONTRACTOR"
-                                ).length !== 0 ? (
-                                  <div
-                                    className={
-                                      style.customListHeaderTermiantionLevel2
-                                    }
-                                  >
-                                    <img
-                                      src={IndustriesEntityFolder}
-                                      alt="IndustriesEntityFolder"
-                                      className={`${style.colorFileStyle} ${style.marginLeft10}`}
-                                    />
-                                    <p
-                                      className={
-                                        style.tableHeaderIndustriesFontStyle
-                                      }
-                                    >
-                                      FOR CAUSE BY CONTRACTOR
-                                    </p>
-                                    <img
-                                      src={
-                                        selectedCause === "Contractor"
-                                          ? CloseFolderBlue
-                                          : OpenFolderBlue
-                                      }
-                                      alt="OpenFolder"
-                                      className={`${style.colorFileStyle2}`}
-                                      onClick={() =>
-                                        setSelectedCause("Contractor")
-                                      }
-                                    />
-                                  </div>
-                                ) : (
-                                  <></>
-                                )}
-                                {selectedCause === "Contractor" &&
-                                  terminationReason
-                                    ?.filter(
-                                      (data) =>
-                                        data?.terminationBy === "CONTRACTOR"
-                                    )
-                                    ?.map((data, index) => (
-                                      <div key={index}>
-                                        <div
-                                          className={
-                                            style.customTerminationPrimaryReason
-                                          }
-                                        >
-                                          <p></p>
-                                          <p
-                                            className={
-                                              style.customersAdminTableFontStyle
-                                            }
-                                          >
-                                            {data?.primary_reason}
-                                          </p>
-                                          <img
-                                            src={EditHcFolder}
-                                            alt="OpenFolder"
-                                            className={style.colorFileStyle}
-                                            onClick={() => {
-                                              setSelectedTerminationReason(
-                                                data
-                                              );
-                                              getAddEntityDialog(true);
-                                              setIsEdit(true);
-                                            }}
-                                          />
-                                          <img
-                                            src={DeleteHcRow}
-                                            alt="OpenFolder"
-                                            className={style.colorFileStyle}
-                                            onClick={() =>
-                                              handleDeleteTerminationReason(
-                                                data?.id
-                                              )
-                                            }
-                                          />
-                                        </div>
-                                        {data?.secondary_reasons?.map(
-                                          (secondaryReason, index) => (
-                                            <div
-                                              className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-                                            >
-                                              <p></p>
-                                              <p
-                                                className={
-                                                  style.tableDataFontStyle
-                                                }
-                                              >
-                                                {secondaryReason}
-                                              </p>
-                                              <p></p>
-                                              <p></p>
-                                              <img
-                                                src={EditHcRow}
-                                                alt="OpenFolder"
-                                                className={style.colorFileStyle}
-                                                onClick={() => {
-                                                  setSelectedTerminationReason(
-                                                    data
-                                                  );
-                                                  getAddEntityDialog(true);
-                                                  setIsEdit(true);
-                                                }}
-                                              />
-                                              <img
-                                                src={DeleteHcRow}
-                                                alt="OpenFolder"
-                                                className={style.colorFileStyle}
-                                                onClick={() => {
-                                                  setSelectedTerminationReason(
-                                                    data
-                                                  );
-                                                  handlePutContractTerminationReason(
-                                                    data,
-                                                    secondaryReason
-                                                  );
-                                                }}
-                                              />
-                                            </div>
-                                          )
-                                        )}
-                                      </div>
-                                    ))}
-
-                                {/* //Entity */}
-                                {terminationReason?.filter(
-                                  (data) => data.terminationBy === "ENTITY"
-                                ).length !== 0 ? (
-                                  <div
-                                    className={
-                                      style.customListHeaderTermiantionLevel2
-                                    }
-                                  >
-                                    <img
-                                      src={IndustriesEntityFolder}
-                                      alt="IndustriesEntityFolder"
-                                      className={`${style.colorFileStyle} ${style.marginLeft10}`}
-                                    />
-                                    <p
-                                      className={
-                                        style.tableHeaderIndustriesFontStyle
-                                      }
-                                    >
-                                      FOR CAUSE BY ENTITY
-                                    </p>
-                                    <img
-                                      src={
-                                        selectedCause === "Entity"
-                                          ? CloseFolderBlue
-                                          : OpenFolderBlue
-                                      }
-                                      alt="OpenFolder"
-                                      className={`${style.colorFileStyle2}`}
-                                      onClick={() => setSelectedCause("Entity")}
-                                    />
-                                  </div>
-                                ) : (
-                                  <></>
-                                )}
-
-                                {selectedCause === "Entity" &&
-                                  terminationReason
-                                    ?.filter(
-                                      (data) => data?.terminationBy === "ENTITY"
-                                    )
-                                    ?.map((data, index) => (
-                                      <div key={index}>
-                                        <div
-                                          className={
-                                            style.customTerminationPrimaryReason
-                                          }
-                                        >
-                                          <p></p>
-                                          <p
-                                            className={
-                                              style.customersAdminTableFontStyle
-                                            }
-                                          >
-                                            {data?.primary_reason}
-                                          </p>
-                                          <img
-                                            src={EditHcFolder}
-                                            alt="OpenFolder"
-                                            className={style.colorFileStyle}
-                                            onClick={() => {
-                                              setSelectedTerminationReason(
-                                                data
-                                              );
-                                              getAddEntityDialog(true);
-                                            }}
-                                          />
-                                          <img
-                                            src={DeleteHcRow}
-                                            alt="OpenFolder"
-                                            className={style.colorFileStyle}
-                                            onClick={() =>
-                                              handleDeleteTerminationReason(
-                                                data?.id
-                                              )
-                                            }
-                                          />
-                                        </div>
-                                        {data?.secondary_reasons?.map(
-                                          (secondaryReason, index) => (
-                                            <div
-                                              className={`${style.customerAdminTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`}
-                                            >
-                                              <p></p>
-                                              <p
-                                                className={
-                                                  style.tableDataFontStyle
-                                                }
-                                              >
-                                                {secondaryReason}
-                                              </p>
-                                              <p></p>
-                                              <p></p>
-                                              <img
-                                                src={EditHcRow}
-                                                alt="OpenFolder"
-                                                className={style.colorFileStyle}
-                                                onClick={() => {
-                                                  setSelectedTerminationReason(
-                                                    data
-                                                  );
-                                                  getAddEntityDialog(true);
-                                                }}
-                                              />
-                                              <img
-                                                src={DeleteHcRow}
-                                                alt="OpenFolder"
-                                                className={style.colorFileStyle}
-                                                onClick={() => {
-                                                  setSelectedTerminationReason(
-                                                    data
-                                                  );
-                                                  handlePutContractTerminationReason(
-                                                    data,
-                                                    secondaryReason
-                                                  );
-                                                }}
-                                              />
-                                            </div>
-                                          )
-                                        )}
-                                      </div>
-                                    ))}
-                              </>
-                            </div>
-                          </>
+                            </>
+                          ))
                         ) : (
                           <p className={style.holidayScheduleCardtextStyle1}>
                             if you would like to setup your custom list for your

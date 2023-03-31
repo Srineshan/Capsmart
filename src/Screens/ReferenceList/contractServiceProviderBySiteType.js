@@ -417,22 +417,23 @@ const ContractServiceProviderBySite = () => {
                       </div>
                       <div className={style.customersAdminCardStyle3}>
                         {contractedServiceProvider?.length !== 0 ? (
-                          <>
-                            <div>
-                              <div
-                                className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}
-                              >
-                                <img
-                                  src={IndustriesEntityFolder}
-                                  alt=""
-                                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                                />
-                                <p
-                                  className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
+                          entityTypes?.map((data, index) => (
+                            <>
+                              <div>
+                                <div
+                                  className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}
                                 >
-                                  {selectedEntityType}
-                                </p>
-                                {/* <img
+                                  <img
+                                    src={IndustriesEntityFolder}
+                                    alt=""
+                                    className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                                  />
+                                  <p
+                                    className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
+                                  >
+                                    {data?.siteTypeName}
+                                  </p>
+                                  <img
                                     src={
                                       selectedIndex === index
                                         ? CloseFolderBlue
@@ -445,44 +446,50 @@ const ContractServiceProviderBySite = () => {
                                       setSiteTypeId(data?.siteTypeId);
                                       setSelectedEntityType(data?.siteTypeName);
                                     }}
-                                  /> */}
-                              </div>
-                              {contractedServiceProvider?.map((data, index) => (
-                                <div
-                                  className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
-                                  key={index}
-                                >
-                                  <p className={style.tableDataFontStyle}>
-                                    {data?.contractedServiceProviderType}
-                                  </p>
-                                  <div className={style.displayInRow}>
-                                    <img
-                                      src={EditBlue}
-                                      alt=""
-                                      className={style.colorFileStyle}
-                                      onClick={() => {
-                                        setIsEdit(true);
-                                        getAddContractedServiceDialog(true);
-                                        setSelectedContractedServiceProvider(
-                                          data
-                                        );
-                                      }}
-                                    />
-                                    <img
-                                      src={DeleteHcRow}
-                                      alt=""
-                                      className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                      onClick={() =>
-                                        handleDeleteContractedServiceProvider(
-                                          data?.id
-                                        )
-                                      }
-                                    />
-                                  </div>
+                                  />
                                 </div>
-                              ))}
-                            </div>
-                          </>
+                                {selectedIndex === index &&
+                                  contractedServiceProvider?.map(
+                                    (data, index) => (
+                                      <div
+                                        className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
+                                        key={index}
+                                      >
+                                        <p className={style.tableDataFontStyle}>
+                                          {data?.contractedServiceProviderType}
+                                        </p>
+                                        <div className={style.displayInRow}>
+                                          <img
+                                            src={EditBlue}
+                                            alt=""
+                                            className={style.colorFileStyle}
+                                            onClick={() => {
+                                              setIsEdit(true);
+                                              getAddContractedServiceDialog(
+                                                true
+                                              );
+                                              setSelectedContractedServiceProvider(
+                                                data
+                                              );
+                                            }}
+                                          />
+                                          <img
+                                            src={DeleteHcRow}
+                                            alt=""
+                                            className={`${style.colorFileStyle} ${style.marginLeft20}`}
+                                            onClick={() =>
+                                              handleDeleteContractedServiceProvider(
+                                                data?.id
+                                              )
+                                            }
+                                          />
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
+                              </div>
+                            </>
+                          ))
                         ) : (
                           <p className={style.holidayScheduleCardtextStyle1}>
                             if you would like to setup your custom list for your
