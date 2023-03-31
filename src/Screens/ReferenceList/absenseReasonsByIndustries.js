@@ -9,21 +9,40 @@ import { GET, DELETE } from "./../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
 import format from "date-fns/format";
+import Navbar from "../../Components/Navbar";
+import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import SideBar from "../../Components/Sidebar";
 
-const AbsenseReasonsByIndustries = ({
-  getAddEntityDialog,
-  showAddEntityDialog,
-  isEdit,
-  setIsEdit,
-  sendLastDate,
-}) => {
+const AbsenseReasonsByIndustries = () => {
+  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [sideMenu, setSideMenu] = useState([]);
-  const [selectedTitle, setSelectedTitle] = useState(`${sideMenu?.[0]?.id}`);
+  const [selectedTitle, setSelectedTitle] = useState("");
   const [industryId, setIndustryId] = useState("");
   const [tableEntityData, setTableEntityData] = useState([]);
   const [deleteEntityId, setDeleteEntityId] = useState("");
   const [selectedAbsence, setSelectedAbsence] = useState({});
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+
+  const getAddEntityDialog = (value) => {
+    setShowAddEntityDialog(value);
+  };
+
+  const getIsExpanded = (value) => {
+    setIsExpanded(value);
+  };
+
+  useEffect(() => {
+    getIndustryData();
+  }, []);
+
+  useEffect(() => {
+    if (industryId !== "" && industryId !== undefined) {
+      getEntityData();
+    }
+  }, [industryId]);
 
   const entityAllData = async (industry) => {
     const { data: entities } = await GET(
@@ -37,30 +56,19 @@ const AbsenseReasonsByIndustries = ({
 
   const getIndustryData = async () => {
     const { data: industryData } = await GET(`entity-service/industryMaster`);
-    setSideMenu([]);
-    let allEntries = await Promise.all(industryData.map(entityAllData));
-    setSideMenu(allEntries);
+    setSelectedTitle(industryData?.[0]?.industry);
+    setIndustryId(industryData?.[0]?.id);
+    setSideMenu(industryData);
+
+    // let allEntries = await Promise.all(industryData.map(entityAllData));
+    // setSideMenu(allEntries);
 
     const { data: lastModifiedDate } = await GET(
       `entity-service/referenceList/master`
     );
 
-    const date = new Date(lastModifiedDate.absenceResons.lastModified);
-
-    sendLastDate(
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          month: "short",
-          day: "2-digit",
-          hour: "numeric",
-          minute: "numeric",
-          year: "numeric",
-          timeZoneName: "short",
-          hour12: false,
-        })
-        .toUpperCase()
-    );
+    const date = new Date(lastModifiedDate.absenceResons?.lastModified);
+    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
   const getEntityData = async () => {
@@ -88,7 +96,6 @@ const AbsenseReasonsByIndustries = ({
     if (value) {
       deleteEntity(deleteEntityId);
     }
-    getIndustryData();
   };
 
   const deleteEntity = async (id) => {
@@ -102,179 +109,210 @@ const AbsenseReasonsByIndustries = ({
       });
   };
 
-  useEffect(() => {
-    getIndustryData();
-  }, []);
-
-  useEffect(() => {
-    getEntityData();
-  }, [selectedTitle]);
-
-  useEffect(() => {
-    setSelectedTitle(sideMenu?.[0]?.industry);
-    setIndustryId(sideMenu?.[0]?.id);
-  }, [sideMenu]);
-
   return (
     <Fragment>
-      <div className={style.departmentCardColumnsGrid}>
-        <div className={style.displayInCol}>
-          {sideMenu?.map((data) => {
-            return (
-              <div
-                className={
-                  data?.industry === selectedTitle
-                    ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
-                    : `${style.industriesCardStyle} ${style.marginTop10}`
-                }
-                onClick={() => {
-                  SelectedHandler(data);
-                }}
-              >
-                <div className={style.spaceBetween}>
-                  <p className={style.industriesCardTextStyle1}>
-                    {data.industry}
-                  </p>
-                  <p className={style.industriesCardTextStyle1}>
-                    {data.absenceReason.length}
-                  </p>
+      <Navbar />
+
+      <div className={style.margin20}>
+        <div
+          className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid}`}
+        >
+          <div>
+            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+              <div></div>
+            </SideBar>
+          </div>
+
+          <div>
+            <LevelTwoHeader
+              heading={`ABSENCE REASONS BY INDUSTRIES`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate} `}
+              path={"/Screens/ReferenceList/superAdminDashboard"}
+              callingFrom={"Super Admin"}
+              needHeader={true}
+              getAddEntityDialog={getAddEntityDialog}
+              Title={"ADD ABSENSE REASONS"}
+            />
+
+            <div className={style.marginTop35}>
+              <div className={style.centreCardStyle}>
+                <div className={style.margin20}>
+                  <div className={style.departmentCardColumnsGrid}>
+                    <div className={style.displayInCol}>
+                      {sideMenu?.map((data) => {
+                        return (
+                          <div
+                            className={
+                              data?.industry === selectedTitle
+                                ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
+                                : `${style.industriesCardStyle} ${style.marginTop10}`
+                            }
+                            onClick={() => {
+                              SelectedHandler(data);
+                            }}
+                          >
+                            <div className={style.spaceBetween}>
+                              <p className={style.industriesCardTextStyle1}>
+                                {data.industry}
+                              </p>
+                              <p className={style.industriesCardTextStyle1}>
+                                {/* {data.absenceReason.length} */} 0
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className={style.industriesEntityCardStyle}>
+                      <div className={style.tableHeaderIndustriesEntity}>
+                        <p
+                          className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft40}`}
+                        >
+                          {`ABSENCE REASONS FOR ${selectedTitle}`}
+                        </p>
+                        <p className={style.tableHeaderIndustriesFontStyle}></p>
+                        <p className={style.tableHeaderIndustriesFontStyle}>
+                          LAST UPDATED
+                        </p>
+                      </div>
+                      {tableEntityData?.filter(
+                        (data) => data.absenceType === "PLANNED"
+                      ).length !== 0 ? (
+                        <div className={style.terminationHeader}>
+                          <img
+                            src={IndustriesEntityFolder}
+                            alt="IndustriesEntityFolder"
+                            className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                          />
+                          <p className={style.tableHeaderIndustriesFontStyle}>
+                            PLANNED
+                          </p>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+
+                      {tableEntityData
+                        ?.filter((data) => data.absenceType === "PLANNED")
+                        .map((data, innerIndex) => {
+                          return (
+                            <>
+                              <div
+                                className={
+                                  innerIndex % 2 !== 0
+                                    ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                    : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                }
+                              >
+                                <p className={style.tableDataFontStyle}>
+                                  {data.absenceReason}
+                                </p>
+                                <p className={style.tableDataFontStyle}>
+                                  {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
+                                </p>
+                                <p className={style.tableDataFontStyle}>
+                                  {format(
+                                    new Date(`${data.lastModifiedDate}`),
+                                    "MM-dd-yyyy"
+                                  )}
+                                </p>
+                                <img
+                                  src={EditHcRow}
+                                  onClick={() => {
+                                    getAddEntityDialog(true);
+                                    setIsEdit(true);
+                                    setSelectedAbsence(data);
+                                  }}
+                                  className={style.colorFileStyle}
+                                  alt=""
+                                />
+                                <img
+                                  src={DeleteHcRow}
+                                  className={style.colorFileStyle}
+                                  onClick={() => {
+                                    deleteHandler(data);
+                                  }}
+                                  alt=""
+                                />
+                              </div>
+                            </>
+                          );
+                        })}
+
+                      {tableEntityData?.filter(
+                        (data) => data.absenceType === "UNPLANNED"
+                      ).length !== 0 ? (
+                        <div className={style.terminationHeader}>
+                          <img
+                            src={IndustriesEntityFolder}
+                            alt="IndustriesEntityFolder"
+                            className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                          />
+                          <p className={style.tableHeaderIndustriesFontStyle}>
+                            UNPLANNED
+                          </p>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+
+                      {tableEntityData
+                        ?.filter((data) => data.absenceType === "UNPLANNED")
+                        .map((data, innerIndex) => {
+                          return (
+                            <>
+                              <div
+                                className={
+                                  innerIndex % 2 !== 0
+                                    ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                    : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                }
+                              >
+                                <p className={style.tableDataFontStyle}>
+                                  {data.absenceReason}
+                                </p>
+                                <p className={style.tableDataFontStyle}>
+                                  {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
+                                </p>
+                                <p className={style.tableDataFontStyle}>
+                                  {format(
+                                    new Date(`${data.lastModifiedDate}`),
+                                    "MM-dd-yyyy"
+                                  )}
+                                </p>
+                                <img
+                                  src={EditHcRow}
+                                  onClick={() => {
+                                    getAddEntityDialog(true);
+                                    setIsEdit(true);
+                                    setSelectedAbsence(data);
+                                  }}
+                                  className={style.colorFileStyle}
+                                  alt=""
+                                />
+                                <img
+                                  src={DeleteHcRow}
+                                  className={style.colorFileStyle}
+                                  onClick={() => {
+                                    deleteHandler(data);
+                                  }}
+                                  alt=""
+                                />{" "}
+                              </div>
+                            </>
+                          );
+                        })}
+                    </div>
+                  </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        <div className={style.industriesEntityCardStyle}>
-          <div className={style.tableHeaderIndustriesEntity}>
-            <p
-              className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft40}`}
-            >
-              {`ABSENCE REASONS FOR ${selectedTitle}`}
-            </p>
-            <p className={style.tableHeaderIndustriesFontStyle}></p>
-            <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
+            </div>
           </div>
-          {tableEntityData?.filter((data) => data.absenceType === "PLANNED")
-            .length !== 0 ? (
-            <div className={style.terminationHeader}>
-              <img
-                src={IndustriesEntityFolder}
-                alt="IndustriesEntityFolder"
-                className={`${style.colorFileStyle} ${style.marginLeft5}`}
-              />
-              <p className={style.tableHeaderIndustriesFontStyle}>PLANNED</p>
-            </div>
-          ) : (
-            <></>
-          )}
-
-          {tableEntityData
-            ?.filter((data) => data.absenceType === "PLANNED")
-            .map((data, innerIndex) => {
-              return (
-                <>
-                  <div
-                    className={
-                      innerIndex % 2 !== 0
-                        ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                        : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                    }
-                  >
-                    <p className={style.tableDataFontStyle}>
-                      {data.absenceReason}
-                    </p>
-                    <p className={style.tableDataFontStyle}>
-                      {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
-                    </p>
-                    <p className={style.tableDataFontStyle}>
-                      {format(
-                        new Date(`${data.lastModifiedDate}`),
-                        "MM-dd-yyyy"
-                      )}
-                    </p>
-                    <img
-                      src={EditHcRow}
-                      onClick={() => {
-                        getAddEntityDialog(true);
-                        setIsEdit(true);
-                        setSelectedAbsence(data);
-                      }}
-                      className={style.colorFileStyle}
-                      alt=""
-                    />
-                    <img
-                      src={DeleteHcRow}
-                      className={style.colorFileStyle}
-                      onClick={() => {
-                        deleteHandler(data);
-                      }}
-                      alt=""
-                    />
-                  </div>
-                </>
-              );
-            })}
-
-          {tableEntityData?.filter((data) => data.absenceType === "UNPLANNED")
-            .length !== 0 ? (
-            <div className={style.terminationHeader}>
-              <img
-                src={IndustriesEntityFolder}
-                alt="IndustriesEntityFolder"
-                className={`${style.colorFileStyle} ${style.marginLeft5}`}
-              />
-              <p className={style.tableHeaderIndustriesFontStyle}>UNPLANNED</p>
-            </div>
-          ) : (
-            <></>
-          )}
-
-          {tableEntityData
-            ?.filter((data) => data.absenceType === "UNPLANNED")
-            .map((data, innerIndex) => {
-              return (
-                <>
-                  <div
-                    className={
-                      innerIndex % 2 !== 0
-                        ? `${style.healthCareTableData} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                        : `${style.healthCareTableData} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                    }
-                  >
-                    <p className={style.tableDataFontStyle}>
-                      {data.absenceReason}
-                    </p>
-                    <p className={style.tableDataFontStyle}>
-                      {/* {`${data.notificationPeriod.numberOfDays}`} Days Prior */}
-                    </p>
-                    <p className={style.tableDataFontStyle}>
-                      {format(
-                        new Date(`${data.lastModifiedDate}`),
-                        "MM-dd-yyyy"
-                      )}
-                    </p>
-                    <img
-                      src={EditHcRow}
-                      onClick={() => {
-                        getAddEntityDialog(true);
-                        setIsEdit(true);
-                        setSelectedAbsence(data);
-                      }}
-                      className={style.colorFileStyle}
-                      alt=""
-                    />
-                    <img
-                      src={DeleteHcRow}
-                      className={style.colorFileStyle}
-                      onClick={() => {
-                        deleteHandler(data);
-                      }}
-                      alt=""
-                    />{" "}
-                  </div>
-                </>
-              );
-            })}
+        </div>
+        <div className={style.spaceBetween}>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI</p>
         </div>
       </div>
 

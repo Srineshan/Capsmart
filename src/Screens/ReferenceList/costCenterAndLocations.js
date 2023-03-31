@@ -41,8 +41,10 @@ const CostCenterAndLocations = () => {
     []
   );
   const [isEdit, setIsEdit] = useState(false);
+  const [entityName, setEntityName] = useState("");
 
   useEffect(() => {
+    getEntity();
     getEntityTypes();
   }, []);
 
@@ -57,6 +59,12 @@ const CostCenterAndLocations = () => {
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
+  };
+
+  const getEntity = async () => {
+    const { data: entity } = await GET(`entity-service/entity`);
+    // console.log(entity?.[0]?.entityName.entityName);
+    setEntityName(entity?.[0]?.entityName?.entityName);
   };
 
   const getEntityTypes = async () => {
@@ -178,7 +186,7 @@ const CostCenterAndLocations = () => {
                         className={`${style.costCenterLeftCard} ${style.spaceBetween}`}
                       >
                         <div className={`${style.costCenterLeftCardText}`}>
-                          SMMC
+                          {entityName}
                         </div>
                         <div className={`${style.costCenterLeftCardText}`}>
                           {costCenter?.length}{" "}

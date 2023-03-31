@@ -21,7 +21,7 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected, isReset, getIsReset }) => {
+const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected, isReset, getIsReset, sites }) => {
   const limit5 = 5;
   let additionalDetails = ['Require Patient Data', 'Prior Pre-Authorization Required', 'Administrative Approval For Payment Required', 'Require Reason For Add-On Service'];
   const [fields, setFields] = useState();
@@ -46,6 +46,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   const [currentServiceData, setCurrentServiceData] = useState();
   const [metadata, setMetadata] = useState([]);
   const [users, setUsers] = useState([]);
+  const [title, setTitle] = useState([]);
 
   useEffect(() => {
     getFields();
@@ -101,7 +102,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
         activityType: { activityType: ADDON },
         performingActivity: serviceSelected?.performingActivity?.activity,
         payableAmount: { value: serviceSelected?.payableAmount?.value },
-        locations: serviceSelected?.locations,
+        locations: serviceSelected?.serviceLocations,
         locationSpecified: serviceSelected?.locationSpecified,
         workingHours: {
           normalWorkingHours: serviceSelected?.workingHours?.normalWorkingHours,
@@ -153,10 +154,36 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   }
 
   const getUserData = async () => {
-    const { data: userList } = await GET(`contract-managment-service/contracts/workFlowUser`)
+    let siteId = sites?.map(data => data?.id);
+    let deptId = [];
+    sites?.map(data => data?.departmentList?.departments?.map(dept => {
+      deptId.push(`${data?.id}#${dept?.id}`);
+    }))
+    let encodedDept = encodeURIComponent(deptId);
+    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}`;
+    const { data: userList } = await GET(uri);
     if (userList) {
       setUsers(userList);
+      let temp = [];
+      userList?.map(data => data?.sites?.sites?.map(site => {
+        if (data?.name?.firstName && site?.siteName?.siteName && site?.siteResponsibility?.title) {
+          if (site?.siteResponsibility?.title !== "" && site?.siteResponsibility?.title !== undefined && site?.siteResponsibility?.title !== null) {
+            temp.push({ name: data?.name?.firstName, site: 'Site', title: site?.siteResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+          }
+
+          site?.departmentList?.departments?.map(dept => {
+            if (dept?.departmentResponsibility?.title !== "" && dept?.departmentResponsibility?.title !== undefined && dept?.departmentResponsibility?.title !== null) {
+              temp.push({ name: data?.name?.firstName, site: 'Department', title: dept?.departmentResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+            }
+          })
+        }
+      }))
+      setTitle(temp);
     }
+    // const { data: userList } = await GET(`contract-managment-service/contracts/workFlowUser`)
+    // if (userList) {
+    //   setUsers(userList);
+    // }
   }
 
   const getSelectedLocation = (serviceName) => {
@@ -284,7 +311,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   }
 
   const updateWorkingHours = (name, value) => {
-    console.log('name', name, value);
     let temp = metadata;
     temp?.map(data => {
       data[name] = value;
@@ -350,12 +376,15 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       activityType: { activityType: ADDON },
       performingActivity: newServices?.name,
       sessionAmount: newServices?.rate,
+      sessionDuration: newServices?.sessionDuration,
       locations: newServices?.locations,
       locationSpecified: newServices?.showLocation,
       workingHours: {
         normalWorkingHours: newServices?.duringNormalWorkingHours,
         afterWorkingHours: newServices?.afterWorkingHours,
       },
+      workingTimeFrom: newServices?.workingTimeFrom,
+      workingTimeTo: newServices?.workingTimeTo,
       activityResponse: {
         dataMap: {
           additionalDetails: newServices?.additionalDetails
@@ -390,6 +419,15 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     let temp = metadata;
     temp?.filter(data => data?.performingActivity === serviceName)?.map(data => {
       data.sessionAmount = value;
+    });
+    setMetadata(temp);
+    getFields();
+  }
+
+  const updateSessionDuration = (serviceName, value) => {
+    let temp = metadata;
+    temp?.filter(data => data?.performingActivity === serviceName)?.map(data => {
+      data.sessionDuration = value;
     });
     setMetadata(temp);
     getFields();
@@ -451,38 +489,38 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                 <CommonSwitch label={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={() => handleRequestApprovalChange(service)} checked={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired} />
               </div>
               {metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired &&
-                // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], service) }} value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]} />
+                // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], service) }} value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]} approverReviewer='approver' />
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                  <CommonLabel value={'Designate Request Approver*'} />
+                  <CommonLabel value={'Designate Request Approver* '} />
                   <div className={style.fullWidth}>
                     <CommonSelectField className={`${style.fullWidth} `}
                       defaultValue={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]}
                       value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0] ? metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0] : '0'}
                       onChange={(e) => { onApproverSelected(users?.filter(data => data?.userId === e.target.value)?.map(data => data)[0], service) }}
                       firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
-                      valueList={users?.map(data => data?.userId)}
-                      labelList={users?.map(data => data?.title?.title)}
-                      disabledList={users?.map(data => false)} />
+                      valueList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData?.id)}
+                      labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                      disabledList={title?.filter(titleData => titleData?.approver === true)?.map(data => false)} />
                   </div>
                 </div>
               }
-              {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              {/* <div className={`${ style.addManagerGrid } ${ style.marginTop20 }`}>
                 <div className={style.extentionLableStyle}>Specify Service Facility / Location</div>
                 <div>
-                  <div className={`${style.displayInRow} `}>
+                  <div className={`${ style.displayInRow } `}>
                     <ThemeProvider theme={switchTheme}>
                       <FormControlLabel
                         control={
-                          <Switch className={`${style.textAlignLeft}`} onChange={() => switchShowLocation(service)} checked={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.locationSpecified} />
+                          <Switch className={`${ style.textAlignLeft }`} onChange={() => switchShowLocation(service)} checked={metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.locationSpecified} />
                         }
                         color='primary'
-                        className={`${style.switchFontStyle} ${style.flexLeft} `}
+                        className={`${ style.switchFontStyle } ${ style.flexLeft } `}
                         label={metadata?.filter(data => data?.performingActivity === service)?.map(item => item)[0]?.locationSpecified ? 'YES' : 'NO'}
                       />
                     </ThemeProvider>
-                    <div className={`${style.addGrid} ${style.fullWidth}`}>
+                    <div className={`${ style.addGrid } ${ style.fullWidth }`}>
                       <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, service)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
-                      <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                      <div className={`${ style.addStyle } ${ style.alignCenter } ${ style.cursorPointer }`}>
                         <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                       </div>
                     </div>
@@ -506,6 +544,20 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                 <CommonLabel value='Billable Service*' />
                 <CommonSwitch label={data?.billableService ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={data?.billableService} onChange={() => UpdateBillable(data?.performingActivity, !data?.billableService)} />
               </div>
+              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Service Session Duration' />
+                <div className={`${style.threeFieldWidth}`}>
+                  <CommonTextField
+                    type="tel"
+                    maxLength="3"
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                    }}
+                    onChange={(e) => e.target.value >= 0 && updateSessionDuration(data?.performingActivity, e.target.value)}
+                    value={data?.sessionDuration}
+                  />
+                </div>
+              </div>
               {
                 data?.billableService &&
                 <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -521,12 +573,11 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                       />
                     </div>
                     <div className={style.verticalAlignCenter}>
-                      <CommonLabel className={`${style.marginLeft20}`} value='Per Hour' />
+                      <CommonLabel className={`${style.marginLeft20}`} value={`${data?.sessionAmount / data?.sessionDuration?.toFixed(2)} Per Hour`} />
                     </div>
                   </div>
                 </div>
               }
-
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Allowable Add-On Working Hours*' />
                 <div className={style.twoCol}>
@@ -537,8 +588,11 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Specify Service Facility / Location' />
                 <div>
-                  <div className={`${style.fullWidth}`}>
-                    <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
+                  <div className={`${style.displayInRow} `}>
+                    <CommonSwitch checked={data?.locationSpecified} className={`${style.textAlignLeft}`} onChange={() => switchShowLocation(data?.performingActivity)} label={data?.locationSpecified ? 'YES' : 'NO'} />
+                    {data?.locationSpecified && <div className={`${style.fullWidth}`}>
+                      <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
+                    </div>}
                   </div>
                   {data?.locationSpecified && data?.locations?.length !== 0 &&
                     <MultiSelectDisplay values={data?.locations?.map(data => data?.location)} removeItem={removeLocation} />
@@ -568,9 +622,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                                 value={data?.approver?.userId ? data?.approver?.userId : '0'}
                                 onChange={(e) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.userId === e.target.value)?.map(user => user)[0]) }}
                                 firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
-                                valueList={users?.map(data => data?.userId)}
-                                labelList={users?.map(data => data?.title?.title)}
-                                disabledList={users?.map(data => false)} />
+                                valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
+                                labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                                disabledList={title?.map(data => false)} />
                             </div>
                           </div>
                         }
@@ -585,9 +639,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                                 value={data?.paymentApprover?.userId ? data?.paymentApprover?.userId : '0'}
                                 onChange={(e) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.userId === e.target.value)?.map(user => user)[0]) }}
                                 firstOptionLabel={'Select Payment Approver'} firstOptionValue={'0'}
-                                valueList={users?.map(data => data?.userId)}
-                                labelList={users?.map(data => data?.title?.title)}
-                                disabledList={users?.map(data => false)} />
+                                valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
+                                labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                                disabledList={title?.map(data => false)} />
                             </div>
                           </div>
                         }
@@ -596,7 +650,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   }
                 </div>
               </div>
-              {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Allowable Working Day Hours For Service*' />
                 <div className={style.displayInRow}>
                   <TimePicker
@@ -614,7 +668,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                   />
                 </div>
-              </div> */}
+              </div>
             </div>
           </div>
         ))
@@ -640,9 +694,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                       value={metadata?.[0]?.approver?.userId ? metadata?.[0]?.approver?.userId : '0'}
                       onChange={(e) => { onApproverSelected(users?.filter(data => data?.userId === e.target.value)?.map(data => data)[0], data?.performingActivity) }}
                       firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
-                      valueList={users?.map(data => data?.userId)}
-                      labelList={users?.map(data => data?.title?.title)}
-                      disabledList={users?.map(data => false)} />
+                      valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
+                      labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                      disabledList={title?.map(data => false)} />
                   </div>
                 </div>
               }
@@ -679,12 +733,15 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       }
 
 
-      {!editService && <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
-        <CommonInputField className={style.fullWidth} placeholder="Enter Add-On Service" value={newServices?.name} onChange={(e) => setNewServices({ ...newServices, 'name': e.target.value })} />
-        <div className={`${style.addAddonServiceButton} ${style.alignCenter}`} onClick={handleNewServiceName}>ADD ADD-ON SERVICES</div>
-      </div>}
+      {
+        !editService && <div className={`${style.marginTop20} ${style.addAddonGrid}`}>
+          <CommonInputField className={style.fullWidth} placeholder="Enter Add-On Service" value={newServices?.name} onChange={(e) => setNewServices({ ...newServices, 'name': e.target.value })} />
+          <div className={`${style.addAddonServiceButton} ${style.alignCenter}`} onClick={handleNewServiceName}>ADD ADD-ON SERVICES</div>
+        </div>
+      }
 
-      {showNewService &&
+      {
+        showNewService &&
         <div className={`${style.addonAddBox} ${style.marginTop20}`}>
           <div className={`${style.addManagerGrid}`}>
             <CommonLabel value='Add-On Service Name*' />
@@ -694,6 +751,20 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value='Billable Service*' />
             <CommonSwitch label={newServices?.billableService ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={newServices?.billableService} onChange={() => handleNewServiceChange('billableService', !newServices?.billableService)} />
+          </div>
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <CommonLabel value='Service Session Duration' />
+            <div className={`${style.threeFieldWidth}`}>
+              <CommonTextField
+                type="tel"
+                maxLength="3"
+                InputProps={{
+                  endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                }}
+                onChange={(e) => e.target.value >= 0 && handleNewServiceChange('sessionDuration', e.target.value)}
+                value={newServices?.sessionDuration}
+              />
+            </div>
           </div>
           {
             newServices?.billableService &&
@@ -710,7 +781,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   />
                 </div>
                 <div className={style.verticalAlignCenter}>
-                  <CommonLabel className={`${style.marginLeft20}`} value='Per Hour' />
+                  <CommonLabel className={`${style.marginLeft20}`} value={`${(newServices?.rate / newServices?.sessionDuration).toFixed(2)} Per Hour`} />
                 </div>
               </div>
             </div>
@@ -728,11 +799,14 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value='Specify Service Facility / Location' />
             <div>
-              <div className={` ${style.fullWidth}`}>
-                <DatalistInput items={locationItems || []} onSelect={handleNewServiceLocation} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} clearInputOnSelect={true} />
-                {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+              <div className={`${style.displayInRow}`}>
+                <CommonSwitch className={`${style.textAlignLeft}`} checked={newServices?.showLocation} onChange={e => handleNewServiceChange('showLocation', !newServices?.showLocation)} label={newServices?.showLocation ? 'YES' : 'NO'} />
+                {newServices?.showLocation && <div className={` ${style.fullWidth}`}>
+                  <DatalistInput items={locationItems || []} onSelect={handleNewServiceLocation} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} clearInputOnSelect={true} />
+                  {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                       <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                     </div> */}
+                </div>}
               </div>
               {
                 newServices?.locations?.length !== 0 && newServices?.showLocation &&
@@ -795,7 +869,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
             </div>
           </div>
 
-          {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value='Allowable Working Day Hours For Service*' />
             <div className={style.displayInRow}>
               <TimePicker
@@ -813,7 +887,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
               />
             </div>
-          </div> */}
+          </div>
 
 
           <div>
@@ -828,7 +902,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
         </div>
       }
 
-    </div>
+    </div >
   )
 }
 

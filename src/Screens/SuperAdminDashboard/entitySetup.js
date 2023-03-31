@@ -1,11 +1,11 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { InputGroup, Icon, Intent, TagInput } from '@blueprintjs/core';
 import { Link, useNavigate } from 'react-router-dom';
-import Step1 from './../../images/step1.png';
+import Step1 from './../../images/step34.png';
 import Step2 from './../../images/step2.png';
-import Step3 from './../../images/step3.png';
-import Step4 from './../../images/step4.png';
-import Step5 from './../../images/step5.png';
+import Step3 from './../../images/step33.png';
+import Step4 from './../../images/step3.png';
+import Step5 from './../../images/step55.png';
 import DatalistInput from 'react-datalist-input';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -26,6 +26,9 @@ import EntityTypeList from './../../Components/EntityType';
 import DepartmentList from './../../Components/DepartmentList';
 import SaveInProgress from './saveInProgressAlert';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import ContractAndBillingDetails from './contractAndBillingDetails';
+import Welcome from './welcome';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 const EntitySetup = () => {
   let { id } = useParams();
@@ -37,7 +40,7 @@ const EntitySetup = () => {
   const [multiSiteEntity, setMultiSiteEntity] = useState(false);
   const [department, setDepartment] = useState([]);
   const [allSites, setAllSites] = useState([]);
-  const [activeStep, setActiveStep] = useState('entitySetup');
+  const [activeStep, setActiveStep] = useState('');
   const [billing, setBilling] = useState();
   const [trial, setTrial] = useState();
   const [subscription, setSubscription] = useState();
@@ -48,7 +51,7 @@ const EntitySetup = () => {
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [logo, setLogo] = useState({ name: '', url: '', file: null });
   const [thumbnail, setThumbnail] = useState({ name: '', url: '', file: null });
-  const [entity, setEntity] = useState({ id: '', customerType: '', npin: '', name: '', type: { type: '', id: '' }, subdomain: '', multiSiteEntity: false, primarySiteToUseApp: false, canSetupDepartment: false });
+  const [entity, setEntity] = useState({ id: '', customerType: '', npin: '', npinNA: false, name: '', type: { type: '', id: '' }, subdomain: '', multiSiteEntity: false, primarySiteToUseApp: false, canSetupDepartment: false, officialEmailDomain: '' });
   const [address, setAddress] = useState({ addressLine: '', city: '', state: '', country: '', zipcode: '' });
   const [isUpdated, setIsUpdated] = useState(false);
   const [unassignedKeys, setUnassignedKeys] = useState([]);
@@ -57,10 +60,8 @@ const EntitySetup = () => {
   const accessToken = Auth();
 
   useEffect(() => {
-    if (id !== 'new') {
-      getEntityData();
-      getDepartmentData();
-    }
+    getEntityData();
+    getDepartmentData();
   }, []);
 
   useEffect(() => {
@@ -97,17 +98,28 @@ const EntitySetup = () => {
     setShowSaveInProgress(value);
   }
 
+  const getIsContinue = (value) => {
+    console.log('entered')
+    if (value) {
+      console.log('entered')
+      getEntityData();
+    }
+  }
+
   const getEntityData = async () => {
     const { data: data } = await GET(`entity-service/entity/${id}`);
     setEntityData(data);
     let siteData = data?.sites?.filter(data => data.primarySite === true)?.map(data => data)[0];
-    setEntity({ id: '', customerType: data?.industryId?.id, name: data?.entityName?.entityName, type: { type: data?.entityType?.type, id: data?.entityType?.id }, subdomain: data?.subdomain, multiSiteEntity: data?.multiSiteEntity, primarySiteToUseApp: data.canPrimarySiteToUseApp, npin: siteData?.npin?.id });
+    setEntity({ id: '', customerType: data?.industryId?.id, name: data?.entityName?.entityName, type: { type: data?.entityType?.type, id: data?.entityType?.id }, subdomain: data?.subdomain, multiSiteEntity: data?.multiSiteEntity, primarySiteToUseApp: data.canPrimarySiteToUseApp, npin: data?.npin?.id, npinNA: data?.npin?.notApplicable, officialEmailDomain: data?.officialEmailDomain?.officialEmail });
     setAddress({ city: siteData?.address?.city, state: siteData?.address?.state, zipcode: siteData?.address?.zipcode, addressLine: siteData?.address?.addressLine, country: siteData?.address?.country });
     setSelectDepartments(siteData?.departmentList?.departments);
     setDepartmentSpecific(siteData?.canSetupDepartment);
     setLogo({ ...logo, url: data?.logo?.file?.fileURL || '' });
     setThumbnail({ ...thumbnail, url: data?.logoThumbnail?.file?.fileURL || '' });
+    console.log('entered', entityData)
   }
+
+  console.log(entityData)
 
 
   const getDepartmentData = async () => {
@@ -182,16 +194,24 @@ const EntitySetup = () => {
 
 
   const mandatoryFieldCheck = (buttonType) => {
-    if (entity?.name === '') {
-      ErrorToaster('Entity Name is Mandatory');
+    if (entity?.customerType === '' || entity?.customerType === null) {
+      ErrorToaster('Customer Type Is Mandatory');
       return;
     }
-    if (entity?.type?.type === '') {
-      ErrorToaster('Entity Type is Mandatory');
+    if ((!entity?.npinNA && entity?.npin === '') || (!entity?.npinNA && entity?.npin === null)) {
+      ErrorToaster('NPIN is Mandatory if not NA');
       return;
     }
-    if (entity?.subdomain === null) {
-      ErrorToaster('Subdomain is Mandatory');
+    if (entity?.type?.type === '' || entity?.type?.type === null) {
+      ErrorToaster('Entity Type Is Mandatory');
+      return;
+    }
+    if (entity.subdomain === '' || entity?.subdomain === null) {
+      ErrorToaster('Subdomain Is Mandatory');
+      return;
+    }
+    if (entity?.officialEmailDomain === '' || entity?.officialEmailDomain === null) {
+      ErrorToaster('Official Email Domain Is Mandatory');
       return;
     }
     if (buttonType === 'SaveInProgress') {
@@ -201,6 +221,8 @@ const EntitySetup = () => {
       updateEntity('Continue');
     }
   }
+
+  console.log(entity)
 
   const saveInProgressCheck = () => {
     var keys = Object.keys(entity)?.filter(key => entity[key] === '' && key !== 'id' || entity[key] === null)?.map(data => Fields[data]);
@@ -248,7 +270,8 @@ const EntitySetup = () => {
           "id": entity?.type?.id,
         },
         "npin": {
-          "id": entity?.npin
+          "id": entity?.npin,
+          "notApplicable": entity?.npinNA,
         },
         "canSetupDepartment": departmentSpecific,
         "departmentList": {
@@ -267,17 +290,31 @@ const EntitySetup = () => {
       const updatedValue =
       {
         "id": entityData?.id,
-        "entityName": {
-          "entityName": entity?.name,
-        },
+        "entityName": entityData?.entityName,
         "entityType": {
           "id": entity?.type?.id,
           "type": entity?.type?.type,
         },
         "multiSiteEntity": entity?.multiSiteEntity,
         "entityDisplayId": entityData?.entityDisplayId,
+        "entityAbbrevation": entityData?.entityAbbrevation,
+        "partner": entityData?.partner,
         "industryId": {
           "id": entity?.customerType,
+        },
+        "npin": {
+          "id": entity?.npin,
+          "notApplicable": entity?.npinNA,
+        },
+        "mailingAddress": {
+          "addressLine": address.addressLine,
+          "city": address.city,
+          "state": address.state,
+          "zipcode": address.zipcode,
+          "country": address.country,
+        },
+        "officialEmailDomain": {
+          "officialEmail": entity?.officialEmailDomain
         },
         "subdomain": entity?.subdomain,
         "canPrimarySiteToUseApp": entity?.primarySiteToUseApp,
@@ -290,34 +327,26 @@ const EntitySetup = () => {
         "logo": entityData?.logo,
         "logoThumbnail": entityData?.logoThumbnail,
       }
-      if (id !== 'new') {
-        console.log('inside put')
-        await PUT('entity-service/entity', updatedValue)
-          .then(response => {
-            SuccessToaster('Entity Updated Successfully');
-            id = response?.data?.id;
+
+      const formData = new FormData();
+      formData.append('entity', new Blob([JSON.stringify(updatedValue)], {
+        type: "application/json"
+      }));
+
+      await PUT('entity-service/entity', formData)
+        .then(response => {
+          SuccessToaster('Entity Updated Successfully');
+          id = response?.data?.id;
+          if (logo?.name !== '') {
             handleLogoUpload(response?.data?.id);
+          }
+          if (thumbnail?.name !== '') {
             handleThumbnailUplaod(response?.data?.id);
-          }).catch(error => {
-            console.log('error', error);
-            ErrorToaster('Unexpected Error Updating Entity');
-          });
-      } else {
-        await POST('entity-service/entity', updatedValue)
-          .then(response => {
-            console.log('id testing here', id);
-            handleLogoUpload(response?.data?.id);
-            handleThumbnailUplaod(response?.data?.id);
-            let newEntityId = response?.data?.id;
-            if (type === 'Continue') {
-              window.location = `/app/entitySetup/${newEntityId}`
-            }
-            SuccessToaster('Entity Updated Successfully');
-          }).catch(error => {
-            console.log('error', error);
-            ErrorToaster('Unexpected Error Updating Entity');
-          });
-      }
+          }
+        }).catch(error => {
+          console.log('error', error);
+          ErrorToaster('Unexpected Error Updating Entity');
+        });
       setIsUpdated(false);
     }
     setUnassignedKeys([]);
@@ -434,220 +463,253 @@ const EntitySetup = () => {
   }
 
   return (
-    <>
-      {activeStep === "entitySetup" ? (
-        <div className={style.entitySetupBackground}>
-          <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/activeCustomers')} />
-          <div className={style.stepperMargin}>
-            <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
-              <div onClick={() => getActiveStep('entitySetup')}>
-                <div className={style.justifyCenter}>
-                  <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
-                    <img src={Step1} alt="Step1" className={style.stepperImgStyle} />
-                  </div>
-                </div>
-                <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
-              </div>
-              <div onClick={() => getActiveStep('siteInformation')}>
-                <div className={style.justifyCenter}>
-                  <div className={style.stepperImgBackground}>
-                    <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
-                  </div>
-                </div>
-                <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>SITES FOR APP USE</p>
-              </div>
-              {isSuperAdminAccess && (
-                <div onClick={() => getActiveStep('entitySystemAdmin')}>
+
+    (!entityData?.hideWelcomeScreen && !isSuperAdminAccess) ? (
+      <Welcome getIsContinue={getIsContinue} />
+    ) : (
+      <>
+        {activeStep === "entitySetup" ? (
+          <div className={style.entitySetupBackground}>
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : window.history.go(-1)} />
+            <div className={style.stepperMargin}>
+              <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
+                <div onClick={() => getActiveStep('appSubscription')}>
                   <div className={style.justifyCenter}>
-                    <div className={style.stepperImgBackground}>
-                      <img src={Step2} alt="Step3" className={style.stepperImgStyle} />
+                    <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
+                      <img src={Step5} alt="Step1" className={style.stepperImgStyle} />
                     </div>
                   </div>
-                  <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>ENTITY SYSTEM ADMIN</p>
+                  <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SUBSCRIPTION PLAN</p>
                 </div>
-              )}
-              <div onClick={() => getActiveStep('siteUsers')}>
-                <div className={style.justifyCenter}>
-                  <div className={style.stepperImgBackground}>
-                    <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
+                <div onClick={() => getActiveStep('contractAndBilling')}>
+                  <div className={style.justifyCenter}>
+                    <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                      <img src={Step1} alt="Step2" className={style.stepperImgStyle} />
+                    </div>
                   </div>
+                  <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>CONTRACT & BILLING</p>
                 </div>
-                <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>APP USERS</p>
-              </div>
-              <div onClick={() => getActiveStep('appSubscription')}>
-                <div className={style.justifyCenter}>
-                  <div className={style.stepperImgBackground}>
-                    <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
+                <div onClick={() => getActiveStep('entitySetup')}>
+                  <div className={style.justifyCenter}>
+                    <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
+                      <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
+                    </div>
                   </div>
+                  <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                 </div>
-                <p className={isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid}>APP SUBSCRIPTION</p>
-              </div>
-            </div>
-            <div className={style.stepperDivider}></div>
-          </div>
-          <div className={style.entitySetupCardStyle}>
-            <p className={style.heading}>Entity Setup</p>
-            <div className={style.greyBorder}></div>
-            <div className={style.entityDescription}>
-              Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
-              quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus
-              dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam
-              eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
-              felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
-              adipiscing elit. sed finibus quam nec tellus dictum.
-            </div>
-            <div>
-              <div className={style.cloneBlockStyle}>
-                <div className={`${style.newContractFromCloneBoxStyle}`}>
-                  <div className={style.spaceBetween}>
-                    <div className={style.displayInRow}>
-
-                      <label for="logo-upload">
-                        <div className={style.displayInRow}>
-                          <img src={logo?.url || UploadImg} alt="Upload" className={`${style.companyLogoUpload} ${style.cursor}`} />
-
-                          <input id="logo-upload" type="file" onChange={handleLogoFile} className={style.hidden} />
-                          <p className={style.uploadText}>Click To Upload Company Logo</p>
-                        </div>
-                      </label>
-
-                      <label for="thumbnail-upload">
-                        <div className={style.displayInRow}>
-                          <img src={thumbnail?.url || UploadImg} alt="Upload" className={`${style.logoThumbnailUpload} ${style.cursor}`} />
-
-                          <input id="thumbnail-upload" type="file" onChange={handleThumbnailFile} className={style.hidden} />
-                          <p className={style.uploadText}>Click To Upload Logo Thumbnail</p>
-                        </div>
-                      </label>
-                    </div>
-                    {entityData?.entityDisplayId?.id ? <div>
-                      <button className={style.entityIDButton}><span>ENTITY ID:</span>{entityData?.entityDisplayId.id}</button>
-                    </div> : ''}
-                  </div>
-                  <div className={`${style.extentionGrid} ${style.marginTop30}`}>
-                    <div className={style.extentionLableStyle}>Customer Type*</div>
-                    <div className={`${style.leftAlign} `}>
-                      <IndustryList value={entity?.customerType} onChangeFunc={(value) => handleEntity('customerType', value)} className={[style.twoFieldWidth]} />
+                <div onClick={() => entityData?.multiSiteEntity && getActiveStep('siteInformation')} className={!entityData?.multiSiteEntity && style.disabledView}>
+                  <div className={style.justifyCenter}>
+                    <div className={`${style.stepperImgBackground}`}>
+                      <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
                     </div>
                   </div>
-                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>NPIN*</div>
-                    <div className={style.displayInRow}>
-                      <InputGroup className={style.fourFieldWidth} value={entity?.npin} onChange={(e) => handleEntity('npin', e.target.value)} />
-                      <CommonCheckBox value="NA" className={style.marginLeft20}
-                        // checked={serviceDays?.weekDays} onChange={(e) => onWeekDaysCheck(e.target.checked)} 
-                        label="NA" />
-                    </div>
-                  </div>
-                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Entity Name*</div>
-                    <InputGroup className={`${style.twoFieldWidth}`} value={entity?.name} onChange={(e) => handleEntity('name', e.target.value)} />
-                  </div>
-                  <div className={`${style.extentionGrid} ${style.marginTop30}`}>
-                    <div className={style.extentionLableStyle}>Entity Type*</div>
-                    <div className={`${style.leftAlign} `}>
-                      <EntityTypeList value={entity?.type?.id} onChangeFunc={(id, value) => handleEntityTypeChange(id, value)} className={[style.twoFieldWidth]} industryId={entity?.customerType} />
-                    </div>
-                  </div>
-                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Mailing Address*</div>
-                    <div>
-                      <InputGroup value={address.addressLine} className={`${style.fullWidth}`} onChange={(e) => handleAddress('addressLine', e.target.value)} />
-                      <div className={`${style.marginTop20} ${style.displayInRow}`}>
-                        <InputGroup placeholder="City" className={`${style.fourFieldWidth}`} value={address.city} onChange={(e) => handleAddress('city', e.target.value)} />
-                        <InputGroup placeholder="State" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.state} onChange={(e) => handleAddress('state', e.target.value)} />
-                        <InputGroup placeholder="Country" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.country} onChange={(e) => handleAddress('country', e.target.value)} />
-                        <InputGroup placeholder="Zipcode" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value)} />
+                  <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
+                </div>
+                {isSuperAdminAccess && (
+                  <div onClick={() => getActiveStep('entitySystemAdmin')}>
+                    <div className={style.justifyCenter}>
+                      <div className={`${style.stepperImgBackground}`}>
+                        <img src={Step2} alt="Step5" className={style.stepperImgStyle} />
                       </div>
                     </div>
+                    <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
                   </div>
-                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Subdomain*</div>
-                    <InputGroup value={entity.subdomain} leftElement={inputGroupElement('https://')} rightElement={inputGroupElement('.timesmartai.com')} placeholder="Subdomain Name" className={style.subdomainFieldWidth} onChange={(e) => handleEntity('subdomain', e.target.value)} />
-                  </div>
-                  <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Multi-site Entity*</div>
-                    <div>
+                )}
+                {/*<div onClick={() => getActiveStep('siteUsers')}>
+              <div className={style.justifyCenter}>
+                <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
+                  <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
+                </div>
+              </div>
+              <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP USERS</p>
+            </div>
+             <div onClick={() => getActiveStep('appSubscription')}>
+              <div className={style.justifyCenter}>
+                <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
+                  <img src={Step5} alt="Step5" className={style.stepperImgStyle} />
+                </div>
+              </div>
+              <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP SUBSCRIPTION</p>
+            </div> */}
+              </div>
+              <div className={isSuperAdminAccess ? style.stepperDivider3 : style.stepperDivider4grid4}></div>
+            </div>
+            <div className={style.entitySetupCardStyle}>
+              <p className={style.heading}>Entity Setup</p>
+              <div className={style.greyBorder}></div>
+              <div className={style.entityDescription}>
+                Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
+                quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus
+                dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam
+                eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
+                felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
+                adipiscing elit. sed finibus quam nec tellus dictum.
+              </div>
+              <div>
+                <div className={style.cloneBlockStyle}>
+                  <div className={`${style.newContractFromCloneBoxStyle}`}>
+                    <div className={style.spaceBetween}>
                       <div className={style.displayInRow}>
-                        <FormControlLabel
-                          control={
-                            <Switch checked={entity.multiSiteEntity} className={` ${style.textAlignLeft}`} value={entity.multiSiteEntity} onChange={(e) => { handleEntity('multiSiteEntity', e.target.checked) }} />
-                          }
-                          className={style.switchFontStyle}
-                          label={entity?.multiSiteEntity ? 'YES' : 'NO'}
-                        />
-                        {entity.multiSiteEntity && (
-                          <>
-                            <div className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Primary Site To Use App*</div>
-                            <FormControlLabel
-                              control={
-                                <Switch checked={entity.primarySiteToUseApp} onChange={(e) => handleEntity('primarySiteToUseApp', e.target.checked)} className={` ${style.textAlignLeft} ${style.marginLeft20}`} />
-                              }
-                              className={style.switchFontStyle}
-                              label={entity?.primarySiteToUseApp ? 'YES' : 'NO'}
-                            />
-                          </>
-                        )}
+
+                        <label for="logo-upload">
+                          <div className={style.displayInRow}>
+                            <img src={logo?.url || UploadImg} alt="Upload" className={`${style.companyLogoUpload} ${style.cursor}`} />
+
+                            <input id="logo-upload" type="file" onChange={handleLogoFile} className={style.hidden} />
+                            <p className={style.uploadText}>Click To Upload Company Logo</p>
+                          </div>
+                        </label>
+
+                        <label for="thumbnail-upload">
+                          <div className={style.displayInRow}>
+                            <img src={thumbnail?.url || UploadImg} alt="Upload" className={`${style.logoThumbnailUpload} ${style.cursor}`} />
+
+                            <input id="thumbnail-upload" type="file" onChange={handleThumbnailFile} className={style.hidden} />
+                            <p className={style.uploadText}>Click To Upload Logo Thumbnail</p>
+                          </div>
+                        </label>
+                      </div>
+                      {entityData?.entityDisplayId?.id ? <div>
+                        <button className={style.entityIDButton}><span>ENTITY ID:</span>{entityData?.entityDisplayId.id}</button>
+                      </div> : ''}
+                    </div>
+                    <div className={`${style.extentionGrid} ${style.marginTop30}`}>
+                      <div className={style.extentionLableStyle}>Customer Type*</div>
+                      <div className={`${style.leftAlign} `}>
+                        <IndustryList value={entity?.customerType} onChangeFunc={(value) => handleEntity('customerType', value)} className={[style.twoFieldWidth]} />
                       </div>
                     </div>
-                  </div>
-                  {
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                      <div className={style.extentionLableStyle}>Setup Department*</div>
+                      <div className={style.extentionLableStyle}>NPIN*</div>
+                      <div className={style.displayInRow}>
+                        <CommonInputField className={style.fourFieldWidth}
+                          placeholder="NPIN"
+                          value={entity?.npin}
+                          type="tel"
+                          maxLength={10}
+                          disabled={entity?.npinNA}
+                          onChange={(e) => e.target.value >= 0 && handleEntity('npin', e.target.value)} />
+                        <CommonCheckBox value="NA" className={style.marginLeft20}
+                          checked={entity?.npinNA} onChange={(e) => { handleEntity('npinNA', e.target.checked) }}
+                          label="NA" />
+                      </div>
+                    </div>
+                    {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Entity Name*</div>
+                      <InputGroup className={`${style.twoFieldWidth}`} value={entity?.name} onChange={(e) => handleEntity('name', e.target.value)} />
+                    </div> */}
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Entity Type*</div>
+                      <div className={`${style.leftAlign} `}>
+                        <EntityTypeList value={entity?.type?.id} onChangeFunc={(id, value) => handleEntityTypeChange(id, value)} className={[style.twoFieldWidth]} industryId={entity?.customerType} />
+                      </div>
+                    </div>
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Mailing Address*</div>
+                      <div>
+                        <InputGroup value={address.addressLine} className={`${style.fullWidth}`} onChange={(e) => handleAddress('addressLine', e.target.value)} />
+                        <div className={`${style.marginTop20} ${style.displayInRow}`}>
+                          <InputGroup placeholder="City" className={`${style.fourFieldWidth}`} value={address.city} onChange={(e) => handleAddress('city', e.target.value)} />
+                          <InputGroup placeholder="State" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.state} onChange={(e) => handleAddress('state', e.target.value)} />
+                          <InputGroup placeholder="Country" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.country} onChange={(e) => handleAddress('country', e.target.value)} />
+                          <InputGroup placeholder="Zipcode" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value)} />
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Subdomain*</div>
+                      <InputGroup value={entity.subdomain} leftElement={inputGroupElement('https://')} rightElement={inputGroupElement('.timesmartai.com')} placeholder="Subdomain Name" className={style.subdomainFieldWidth} onChange={(e) => handleEntity('subdomain', e.target.value)} />
+                    </div>
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Official Email Domain*</div>
+                      <InputGroup value={entity.officialEmailDomain} placeholder="xxxxxx" className={style.subdomainFieldWidth} onChange={(e) => handleEntity('officialEmailDomain', e.target.value)} />
+                    </div>
+                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={style.extentionLableStyle}>Multi-site Entity*</div>
                       <div>
                         <div className={style.displayInRow}>
                           <FormControlLabel
                             control={
-                              <Switch checked={departmentSpecific} className={`${style.textAlignLeft}`} onChange={() => { setDepartmentSpecific(!departmentSpecific); setIsUpdated(true); }} />
+                              <Switch checked={entity.multiSiteEntity} className={` ${style.textAlignLeft}`} value={entity.multiSiteEntity} onChange={(e) => { handleEntity('multiSiteEntity', e.target.checked) }} />
                             }
                             className={style.switchFontStyle}
-                            label={departmentSpecific ? 'YES' : "NO"}
+                            label={entity?.multiSiteEntity ? 'YES' : 'NO'}
                           />
-                          {departmentSpecific &&
-                            (
-                              <DepartmentList value={item?.id} onChangeFunc={(selectedItem) => onSelect(selectedItem)} className={[style.fullWidth, style.textAlignLeft]} entityTypeId={entity?.type?.id} />
-                            )
-                          }
+                          {entity.multiSiteEntity && (
+                            <>
+                              <div className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Primary Site To Use App*</div>
+                              <FormControlLabel
+                                control={
+                                  <Switch checked={entity.primarySiteToUseApp} onChange={(e) => handleEntity('primarySiteToUseApp', e.target.checked)} className={` ${style.textAlignLeft} ${style.marginLeft20}`} />
+                                }
+                                className={style.switchFontStyle}
+                                label={entity?.primarySiteToUseApp ? 'YES' : 'NO'}
+                              />
+                            </>
+                          )}
                         </div>
-                        {departmentSpecific && (
-                          <TagInput
-                            placeholder="Selected Department list"
-                            values={selectDepartments?.map(data => data?.departmentName?.name) || []}
-                            key={`tags${tags}`}
-                            className={`${style.marginTop20} ${style.tagInputStyle}`}
-                            onAdd={handleTagsAdd}
-                            onRemove={handleTagsRemove}
-                            separator={/[\s,]/}
-                            addOnBlur={true}
-                            addOnPaste={true}
-                          />
-                        )}
                       </div>
                     </div>
+                    {!isSuperAdminAccess && (
+                      <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                        <div className={style.extentionLableStyle}>Setup Department*</div>
+                        <div>
+                          <div className={style.displayInRow}>
+                            <FormControlLabel
+                              control={
+                                <Switch checked={departmentSpecific} className={`${style.textAlignLeft}`} onChange={() => { setDepartmentSpecific(!departmentSpecific); setIsUpdated(true); }} />
+                              }
+                              className={style.switchFontStyle}
+                              label={departmentSpecific ? 'YES' : "NO"}
+                            />
+                            {departmentSpecific &&
+                              (
+                                <DepartmentList value={item?.id} onChangeFunc={(selectedItem) => onSelect(selectedItem)} className={[style.fullWidth, style.textAlignLeft]} entityTypeId={entity?.type?.id} />
+                              )
+                            }
+                          </div>
+                          {departmentSpecific && (
+                            <TagInput
+                              placeholder="Selected Department list"
+                              values={selectDepartments?.map(data => data?.departmentName?.name) || []}
+                              key={`tags${tags}`}
+                              className={`${style.marginTop20} ${style.tagInputStyle}`}
+                              onAdd={handleTagsAdd}
+                              onRemove={handleTagsRemove}
+                              separator={/[\s,]/}
+                              addOnBlur={true}
+                              addOnPaste={true}
+                            />
+                          )}
+                        </div>
+                      </div>
 
-                  }
-                </div>
-                <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                  <button className={style.outlinedButton} onClick={() => { mandatoryFieldCheck('SaveInProgress'); }}>SAVE IN-PROGRESS</button>
-                  {/* <Link to={`/${nextStep}`}> */}
-                  <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { mandatoryFieldCheck('Continue'); }}>CONTINUE</button>
-                  {/* </Link> */}
+                    )}
+                  </div>
+                  <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
+                    <button className={style.outlinedButton} onClick={() => { mandatoryFieldCheck('SaveInProgress'); }}>SAVE IN-PROGRESS</button>
+                    {/* <Link to={`/${nextStep}`}> */}
+                    <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { mandatoryFieldCheck('Continue'); }}>CONTINUE</button>
+                    {/* </Link> */}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      ) : activeStep === "siteInformation" ? (
-        <SiteInformation getActiveStep={getActiveStep} />
-      ) : activeStep === "entitySystemAdmin" ? (
-        <EntitySystemAdmin getActiveStep={getActiveStep} />
-      ) : activeStep === "siteUsers" ? (
-        <SiteUsers getActiveStep={getActiveStep} />
-      ) : (
-        <AppSubscription getActiveStep={getActiveStep} />
-      )}
-      <SaveInProgress alert={showSaveInProgress} getSaveInProgressAlert={getSaveInProgressAlert} fieldData={unassignedKeys?.join(', ')} saveInProgressFunction={saveInProgressFunction} />
-    </>
+        ) : activeStep === "siteInformation" ? (
+          <SiteInformation getActiveStep={getActiveStep} />
+        ) : activeStep === "entitySystemAdmin" ? (
+          <EntitySystemAdmin getActiveStep={getActiveStep} />
+        ) : activeStep === "siteUsers" ? (
+          <SiteUsers getActiveStep={getActiveStep} />
+        ) : activeStep === "contractAndBilling" ? (
+          <ContractAndBillingDetails getActiveStep={getActiveStep} />
+        ) : (
+          <AppSubscription getActiveStep={getActiveStep} />
+        )}
+        <SaveInProgress alert={showSaveInProgress} getSaveInProgressAlert={getSaveInProgressAlert} fieldData={unassignedKeys?.join(', ')} saveInProgressFunction={saveInProgressFunction} />
+      </>
+    )
   )
 }
 

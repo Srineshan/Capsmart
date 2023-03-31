@@ -60,32 +60,37 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const limit9 = 9;
 
     const handleContinue = async (buttonType) => {
-        setContinueLoading(true);
-        const data = {
-            compensationBasis: compensation,
-            rvuQuantity: rvuQuantity,
-            frequency: frequency,
-            fteEquivalent: fteEquivalent,
-            rvuReferenceUsed: rvuReferenceUsed,
-            rvuQuantityVariance: rvuQuantityVariance,
-            rvuQuantityPeriod: rvuQuantityPeriod,
-            compensationOffsetCriteria: compensationOffsetCriteria,
-            dollarRate: dollarRate,
-            dollarValue: dollarValue,
-            timesheetPayments: timesheetPayments,
+        if (!continueLoading) {
+            setContinueLoading(true);
+            const data = {
+                compensationBasis: compensation,
+                rvuQuantity: rvuQuantity,
+                frequency: frequency,
+                fteEquivalent: fteEquivalent,
+                rvuReferenceUsed: rvuReferenceUsed,
+                rvuQuantityVariance: rvuQuantityVariance,
+                rvuQuantityPeriod: rvuQuantityPeriod,
+                compensationOffsetCriteria: compensationOffsetCriteria,
+                dollarRate: dollarRate,
+                dollarValue: dollarValue,
+                timesheetPayments: timesheetPayments,
+            }
+            const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
+            if (response) {
+                SuccessToaster('Payment And Compensation Updated Successfully');
+            }
+            else {
+                ErrorToaster('Unexpected Error');
+            }
+            setContinueLoading(false);
+            if (buttonType !== 'Continue') {
+                getShowAlert(true);
+            } else {
+                getViewPage8(true);
+                getCurrentPage('Timesheet Processing Workflow')
+            }
+            getTabDataStatus();
         }
-        const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
-        if (response) {
-            SuccessToaster('Payment And Compensation Updated Successfully');
-        }
-        else {
-            ErrorToaster('Unexpected Error');
-        }
-        setContinueLoading(false);
-        if (buttonType !== 'Continue') {
-            getShowAlert(true);
-        }
-        getTabDataStatus();
     }
 
     const getPaymentAndCompensation = async () => {
@@ -163,6 +168,20 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         getPaymentFields();
     }
 
+    const fixedCompensationValue = (value, name, index) => {
+        console.log('value', value, name)
+        let temp = timesheetPayments;
+        temp?.filter((data, indexVal) => index === indexVal)?.map(data => {
+            data[name] = value;
+            // if (name === 'paymentBasedonFixedHoursVsActual' && !value) {
+            //     data['maxPaymentPerTimesheetSubmission'] = parseFloat(0);
+            //     data['maxPaymentPerContract'] = parseFloat(0);
+            // }
+        });
+        setTimesheetPayments(temp);
+        getPaymentFields();
+    }
+
     console.log('timesheet', timesheetPayments);
 
     const getPaymentFields = () => {
@@ -234,7 +253,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                     {timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual &&
                         <>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <CommonLabel value='Max. Compensation Value Per Timesheet Submission*' />
+                                <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*' />
                                 <CommonTextField
                                     className={style.twoFieldWidth}
                                     type="number"
@@ -242,7 +261,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => updateTimesheetPayment(parseFloat(e.target.value), 'maxPaymentPerTimesheetSubmission', i)}
+                                    onChange={(e) => fixedCompensationValue(parseFloat(e.target.value), 'maxPaymentPerTimesheetSubmission', i)}
                                     value={timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission}
                                 />
                             </div>
@@ -457,9 +476,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                 <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Timesheet Submission Terms') }}>BACK</button>
                                 <div>
-                                    <button className={`${style.newContractOutlinedButton}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleContinue('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
+                                    <button className={`${style.newContractOutlinedButton}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={() => handleContinue('Save In Progress')}>SAVE IN-PROGRESS</button>
                                     <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
-                                        onClick={!continueLoading ? () => { handleContinue('Continue'); getViewPage8(true); getCurrentPage('Timesheet Processing Workflow') } : {}}
+                                        onClick={() => handleContinue('Continue')}
                                     >CONTINUE</button>
                                 </div>
                             </div>

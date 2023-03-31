@@ -2069,7 +2069,7 @@ input[type=number] {
 
 .editableTableGridStyle {
     display: grid;
-    grid-template-columns: 11% 23% 23% 23% 9% 9%;
+    grid-template-columns: 10% 22% 22% 22% 8% 8% 6%;
     grid-gap: 5px;
 }
 
@@ -2099,10 +2099,10 @@ input[type=number] {
     text-align: left;
 }
 
-.scheduleTableGrid1 {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 2fr 1fr 2fr 1fr;
-}
+// .scheduleTableGrid1 {
+//     display: grid;
+//     grid-template-columns: 2fr 1fr 1fr 2fr 1fr 2fr 1fr;
+// }
 
 .scheduleTableGrid2 {
     display: grid;
@@ -2121,7 +2121,7 @@ input[type=number] {
 
 .scheduleTableGrid2 {
     display: grid;
-    grid-template-columns: 2fr 0.5fr 0.5fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr;
+    grid-template-columns: 2fr 0.5fr 0.5fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr 0.5fr;
 }
 
 .dayStyle {

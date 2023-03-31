@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { EditableText, Checkbox } from '@blueprintjs/core';
+import { EditableText, Checkbox, Icon, Intent } from '@blueprintjs/core';
 import { TimePicker } from "@blueprintjs/datetime";
 import { format } from 'date-fns';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -65,7 +65,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
         targetNoTargetApplicable: false,
         additionalScheduleValue: '0',
         additionalScheduleFrequency: 'NA',
-        additionalScheduleRequired: true,
+        additionalScheduleRequired: false,
         scheduleAndTargetSame: true,
         billableService: true,
         rateType: 'HOURLY',
@@ -144,7 +144,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             targetNoTargetApplicable: false,
             additionalScheduleValue: '0',
             additionalScheduleFrequency: 'NA',
-            additionalScheduleRequired: true,
+            additionalScheduleRequired: false,
             scheduleAndTargetSame: true,
             billableService: true,
             rateType: 'HOURLY',
@@ -401,6 +401,13 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
 
     console.log('selected', format(new Date(contractTermPeriod?.start), 'MMMM d, yyyy'));
 
+    const deleteRow = (index) => {
+        let contractSchedule = metadata?.contractedSchedules?.filter((data, indexVal) => indexVal !== index)?.map(data => data);
+        let patientsSeenTarget = metadata?.patientsSeenTargets?.filter((data, indexVal) => indexVal !== index)?.map(data => data);
+        let scheduledPatientsTargets = metadata?.scheduledPatientsTargets?.filter((data, indexVal) => indexVal !== index)?.map(data => data);
+        setMetadata({ ...metadata, contractedSchedules: contractSchedule, patientsSeenTargets: patientsSeenTarget, scheduledPatientsTargets: scheduledPatientsTargets })
+    }
+
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -554,6 +561,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                             <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} ></p>
                             <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} >W / NURSE </p>
                             <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} >WO / NURSE</p>
+                            <p></p>
                             {/* <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} ></p>
                             <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} ></p> */}
                         </div>
@@ -570,6 +578,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}></p>
                                 <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{metadata?.scheduledPatientsTargets?.[index]?.withNurse?.value || '-'}</p>
                                 <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{metadata?.scheduledPatientsTargets?.[index]?.withoutNurse?.value || '-'}</p>
+                                <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.flexCenter}${style.verticalAlignCenter}  ${style.verticalAlignCenter}`} onClick={() => deleteRow(index)} />
                                 {/* <div className={`${style.verticalAlignCenter} ${style.flexCenter} ${style.cursorPointer}`}>
                                     <EditIcon style={{ color: "#7165E3" }} />
                                 </div>

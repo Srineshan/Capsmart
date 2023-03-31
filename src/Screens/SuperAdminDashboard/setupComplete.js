@@ -6,7 +6,7 @@ import SetupCompleteImg from './../../images/setupCompleteImg.png';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import style from './index.module.scss';
 
-const SetupComplete = ({ data, setCompleteValue, operation }) => {
+const SetupComplete = ({ data, setCompleteValue, operation, isSuperAdminAccess }) => {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -66,10 +66,12 @@ const SetupComplete = ({ data, setCompleteValue, operation }) => {
                         onClick={() => {
                             navigate('/user');
                         }}>DONE & EXIT SETUP</button>
-                    <button className={`${style.setupCompleteButton} ${style.marginLeft20} ${style.cursor}`}
-                        onClick={() => {
-                            activateEntity();
-                        }}>ACTIVATE ENTITY</button>
+                    {isSuperAdminAccess && (
+                        <button className={`${style.setupCompleteButton} ${style.marginLeft20} ${style.cursor}`}
+                            onClick={() => {
+                                activateEntity();
+                            }}>ACTIVATE ENTITY</button>
+                    )}
                 </div>
             </div>
 

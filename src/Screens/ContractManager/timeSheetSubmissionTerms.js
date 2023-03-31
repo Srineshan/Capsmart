@@ -78,11 +78,14 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getTimeSheetSubmissionTerms();
     getTimesheetFields();
     getContractSites();
-    getUserData();
     getTimeSheetWorkFlow();
     getAbsenceRequestWorkFlow();
     setPaymentSource(new Array(timeSheetCount || 0));
   }, [])
+
+  useEffect(() => {
+    getUserData();
+  }, [sites])
 
   useEffect(() => {
     getTimesheetFields();
@@ -99,21 +102,6 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   useEffect(() => {
     getAbsenceRequestWorkFlow();
   }, [timesheetWorkFlow])
-
-  // useEffect(() => {
-  //   if (selectedIndex !== undefined) {
-  //     let temp = paymentSource;
-  //     temp[selectedIndex] = selectedSites;
-  //     setPaymentSource(temp);
-  //     formatActivities();
-  //   }
-  // }, [selectedSites])
-
-  // useEffect(() => {
-
-  // }, [paymentSource])
-
-  console.log('paymentSource', paymentSource);
 
   const getTimeSheetWorkFlow = async () => {
     const { data: timesheetWorkFlow } = await GET('timesheet-management-service/workflow');
@@ -134,7 +122,14 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   }
 
   const getUserData = async () => {
-    const { data: userList } = await GET(`contract-managment-service/contracts/workFlowUser`)
+    let siteId = sites?.map(data => data?.id);
+    let deptId = [];
+    sites?.map(data => data?.departmentList?.departments?.map(dept => {
+      deptId.push(`${data?.id}#${dept?.id}`);
+    }))
+    let encodedDept = encodeURIComponent(deptId);
+    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}`;
+    const { data: userList } = await GET(uri);
     if (userList) {
       setUsers(userList);
     }
@@ -594,7 +589,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           <div className={style.purpleTitle}>
             PLANNED ABSENCE REQUESTS
           </div>
-          <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setAbsence({ ...absence, reviewer: value }) }} value={absence?.reviewer} />
+          <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setAbsence({ ...absence, reviewer: value }) }} value={absence?.reviewer} approverReviewer='approver' />
         </div>
 
         {/* <div className={`${style.welcomeBorder} ${style.marginTop20}`}></div> */}

@@ -176,7 +176,7 @@ const Navbar = () => {
       },
     };
     fetch(
-      "https://rest.timesmart.io/user-management-service/auth/logout",
+      "https://rest.mytimesmart.com/user-management-service/auth/logout",
       requestOptions
     )
       .then((response) => {
@@ -391,16 +391,16 @@ const Navbar = () => {
                   }}
                 >
                   <div className={style.optionsCardStyle}>
-                    <Link to={"/user"} className={style.noFontStyle}>
+                    {/* <Link to={"/user"} className={style.noFontStyle}>
                       <div className={style.options}>USER MANAGEMENT</div>
-                    </Link>
+                    </Link> */}
                     {currentUserRoles?.includes("Super Sys Admin") && (
                       <Link to={"/referenceList"} className={style.noFontStyle}>
                         <div className={style.options}>REFERENCE LIST</div>
                       </Link>
                     )}
                     <Link
-                      to={isSuperAdminAccess ? "/partnerPortal" : "/welcome"}
+                      to={isSuperAdminAccess ? "/partnerPortal" : `/entitySetup/${TenantID}`}
                       className={style.noFontStyle}
                     >
                       <div className={style.options}>ENTITY MANAGEMENT</div>
@@ -457,9 +457,11 @@ const Navbar = () => {
                         <img src={PrintIcon} alt="print" className={style.icons} />
                     </>
                 )} */}
-          {/* <img src={NotificationsIcon} alt="print" className={style.icons} />
-                <img src={RedBackground} alt="print" className={style.notificationIcon} />
-                <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
+          {/* <img src={File} alt="print" className={style.icons} />
+          <img src={PrintIcon} alt="print" className={style.icons} />
+          <img src={NotificationsIcon} alt="print" className={style.icons} />
+          <img src={RedBackground} alt="print" className={style.notificationIcon} />
+          <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
           <div className={`${style.logoutStyle} ${style.cursorPointer}`} onClick={logout}>
             <p>Logout</p>
           </div>

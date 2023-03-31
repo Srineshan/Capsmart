@@ -11,7 +11,7 @@ const ClientAdminDashboard = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [lastUpdatedDate, setLastUpdatedDate] = useState([]);
   const [entityId, setEntityId] = useState("");
-  const [letestParentDate, setLatestParentDate] = useState("");
+  const [latestParentDate, setLatestParentDate] = useState("");
 
   const getIsExpanded = (value) => {
     setIsExpanded(value);
@@ -37,7 +37,6 @@ const ClientAdminDashboard = () => {
       mappedDataArray.push(mappedData);
     }
 
-    
     let latestParentModifiedDate = mappedDataArray.reduce((a, b) => {
       return new Date(a.lastModified) > new Date(b.lastModified) ? a : b;
     });
@@ -79,11 +78,13 @@ const ClientAdminDashboard = () => {
                 className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
               >
                 {/* UPDATED ON FEB 16, 2022 16:45 EST */}
-                {`UPDATED ON ${letestParentDate.toUpperCase()} EST`}
+                {`UPDATED ON ${latestParentDate}`}
               </div>
-              <div className={style.crossStyle}>
-                <Icon icon="cross" size={25} intent={Intent.DANGER} />
-              </div>
+              <Link to={"/entitySitePortal"}>
+                <div className={style.crossStyle}>
+                  <Icon icon="cross" size={25} intent={Intent.DANGER} />
+                </div>
+              </Link>
             </div>
             <div className={style.marginTop35}>
               <div className={style.centreCardStyle}>
@@ -273,7 +274,7 @@ const ClientAdminDashboard = () => {
                       <div
                         className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                       >
-                        <span className={style.dashboardCardColorOption1}>
+                        <span className={style.dashboardCardColorOption4}>
                           SETUP REQUIRED
                         </span>
                       </div>
@@ -351,7 +352,7 @@ const ClientAdminDashboard = () => {
                         <div
                           className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                         >
-                          <span className={style.dashboardCardColorOption1}>
+                          <span className={style.dashboardCardColorOption4}>
                             SETUP REQUIRED
                           </span>
                         </div>
@@ -368,7 +369,7 @@ const ClientAdminDashboard = () => {
                         <div
                           className={`${style.dashboardInsideCardStyle} ${style.marginTop30}`}
                         >
-                          <span className={style.dashboardCardColorOption1}>
+                          <span className={style.dashboardCardColorOption4}>
                             SETUP REQUIRED
                           </span>
                         </div>

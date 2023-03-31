@@ -159,3 +159,7 @@ select {
 	color: #AFB2B6 !important;
 	font-size: 12px !important;
 }
+
+.css-jedpe8-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-jedpe8-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-jedpe8-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+	text-align: left !important;
+}

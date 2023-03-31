@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { EditableText } from '@blueprintjs/core';
+import { EditableText, Icon, Intent } from '@blueprintjs/core';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import { TimePicker } from "@blueprintjs/datetime";
@@ -11,7 +11,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
     const [additionalActivity, setAdditionalActivity] = useState(additionalActivityData);
     const [activityTableRows, setActivityTableRows] = useState([]);
 
-    console.log('additional', additionalActivityData, serviceDays);
+    console.log('additional', additionalActivityData);
 
     useEffect(() => {
         if (additionalActivity?.length === 0) {
@@ -68,6 +68,11 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
         })
         setAdditionalActivity(temp);
         getActivitytableRows();
+    }
+
+    const deleteRow = (index) => {
+        let temp = additionalActivity;
+        setAdditionalActivity(temp?.filter((data, indexVal) => indexVal !== index)?.map(data => data));
     }
 
     const getActivitytableRows = () => {
@@ -165,15 +170,13 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
                             label={additionalActivity?.[i]?.attendingDocRequired ? 'YES' : 'NO'}
                         />
                     </ThemeProvider>
+                    <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.verticalAlignCenter} ${style.marginTop10} ${style.marginLeft20}`} onClick={() => deleteRow(i)} />
                 </div>
 
             )
         }
         setActivityTableRows(temp);
     }
-
-    console.log('data', additionalActivity)
-
 
     return (
         <div>
@@ -184,6 +187,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
                 <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} >HOLIDAY HOURS</p>
                 <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} >REQUIRE PATIENT MRN</p>
                 <p className={`${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} >REQUIRE ATTENDING DOC</p>
+                <p></p>
             </div>
             {
                 activityTableRows
