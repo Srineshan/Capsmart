@@ -293,7 +293,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         <EditableText placeholder='' value={metadata?.totalSession} type='number' min="0"
                             className={style.editableSessionTextStyle}
                             onChange={(e) => {
-                                let value = e.slice(0, e.slice());
+                                let value = e.slice(0, 6);
                                 handleValueChange('totalSession', value);
                             }} />
                         <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>

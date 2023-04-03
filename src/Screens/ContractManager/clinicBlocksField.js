@@ -319,7 +319,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
 
     const onTotalSessionChange = (e) => {
         if (e >= 0) {
-            let value = e.slice(0, limit5);
+            let value = e.slice(0, 6);
             handleValueChange('totalSession', value);
         }
     }
@@ -679,7 +679,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                 <CommonLabel value='Total Contracted Service Sessions*' />
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <EditableText value={metadata?.totalSession} placeholder="" type='tel' maxLength="5" onChange={(e) => onTotalSessionChange(e)}
+                        <EditableText value={metadata?.totalSession} placeholder="" type='tel' onChange={(e) => onTotalSessionChange(e.slice(0, 6))}
                             className={style.editableSessionTextStyle} />
                         <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue) ? style.greenBase : style.redBase} `}>{SpecifiedCountCalculator(metadata?.contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue)} Minimum Specified</div>
                     </div>
