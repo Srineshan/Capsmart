@@ -104,6 +104,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setSelectedLocation(selectedService?.serviceLocations?.map(data => data));
       removeSelectedLocationFromList();
     }
+    console.log('selectedService', selectedService?.sites);
   }, [selectedService]);
 
   useEffect(() => {
@@ -114,6 +115,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       }))
       setSelectedDeptId(temp);
     }
+    console.log('site Data check', siteData);
   }, [siteData])
 
   const removeSelectedLocationFromList = () => {
@@ -528,7 +530,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "hours": parseInt(item?.sessionDuration)
         };
       })
-      console.log('data in check', data)
       // data.workingPeriod = {
       //   "from": metadata?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
       //   "to": metadata?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
@@ -634,6 +635,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "value": parseInt(dataValues?.totalSession),
           "frequency": dataValues?.totalSessionFrequency
         },
+        "sessionsAsNeeded": dataValues?.sessionsAsNeeded || false,
         "serviceDays": dataValues?.serviceDays,
         ...(serviceTypeTemplate === ONCALL && {
           "dependentService": {
@@ -897,6 +899,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
   }
 
+  console.log('sites in add services', siteData);
 
   return (
     <>

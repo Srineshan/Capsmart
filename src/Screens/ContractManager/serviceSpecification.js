@@ -236,6 +236,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
           </Dialog>
         </div>
       ) : (
+        <></>
         (
           <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Contracted Services Provider(s)'} title={'NO USERS FOUND'} description={'No Contracted Service Provider Is Found.'} buttonText={'ADD CONTRACTOR'} />
         )

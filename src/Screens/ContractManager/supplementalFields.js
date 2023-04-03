@@ -8,7 +8,7 @@ import { GetDateFromHours } from './../../utils/formatting';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
-
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import style from './index.module.scss';
 import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSelectDisplay';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
@@ -86,6 +86,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         totalSessionFrequency: 'NA',
         sessionAmount: '',
         sessionDuration: '0',
+        sessionsAsNeeded: false,
         workingTimeFrom: null,
         workingTimeTo: null,
         serviceDays: {
@@ -115,6 +116,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             totalSessionFrequency: 'NA',
             sessionAmount: '',
             sessionDuration: '0',
+            sessionsAsNeeded: false,
             workingTimeFrom: null,
             workingTimeTo: null,
             serviceDays: {
@@ -165,6 +167,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             sessionAmount: serviceSelected?.payableAmount?.value,
             sessionDuration: serviceSelected?.duration?.hours || '0',
             totalSession: serviceSelected?.totalSessions?.value,
+            sessionsAsNeeded: serviceSelected?.sessionsAsNeeded,
             totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
             workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
             workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
@@ -277,6 +280,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                     <CommonTextField
                                         type="tel"
                                         maxLength="3"
+                                        disabled={metadata?.sessionsAsNeeded}
                                         InputProps={{
                                             endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
                                         }}
@@ -284,13 +288,22 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                         value={metadata?.totalSession}
                                     />
                                 </div>
-                                <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
-                                    onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
-                                    value={metadata?.totalSessionFrequency || 'NA'}
-                                    firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                    valueList={['WEEK', 'MONTH', 'YEAR']}
-                                    labelList={['Per Week', 'Per Month', 'Per Contract Year']}
-                                    disabledList={[false, false, false]} />
+                                <div className={style.displayInRow}>
+                                    <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
+                                        onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
+                                        value={metadata?.totalSessionFrequency || 'NA'}
+                                        firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                        valueList={['WEEK', 'MONTH', 'YEAR']}
+                                        labelList={['Per Week', 'Per Month', 'Per Contract Year']}
+                                        disabledList={[false, false, false]}
+                                        disabledSelect={metadata?.sessionsAsNeeded} />
+                                    <div className={`${style.fullWidth} ${style.marginLeft20}`}>
+                                        <CommonCheckBox value="NA"
+                                            checked={metadata?.sessionsAsNeeded}
+                                            onChange={(e) => setMetadata({ ...metadata, sessionsAsNeeded: e.target.checked, totalSession: 0, totalSessionFrequency: 'NA' })}
+                                            label="As Needed" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -331,7 +344,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                     </div>
 
                                     <div className={style.verticalAlignCenter}>
-                                        <CommonLabel className={`${style.marginLeft20}`} value={`$ ${(metadata?.sessionAmount / metadata?.totalSession || 0).toFixed(2)} per Hour (Pro Rata)`} />
+                                        {metadata?.sessionAmount !== '' && metadata?.sessionAmount !== '0' && <CommonLabel className={`${style.marginLeft20}`} value={metadata?.sessionsAsNeeded ? `${parseInt(metadata?.sessionAmount)?.toFixed(2)} per Hour (Pro Rata)` : `${(metadata?.sessionAmount / metadata?.totalSession || 0).toFixed(2)} per Hour (Pro Rata)`} />}
                                     </div>
                                 </div>
                             </div>
@@ -365,7 +378,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                 </div>
             </>
 
-        </div>
+        </div >
     )
 }
 

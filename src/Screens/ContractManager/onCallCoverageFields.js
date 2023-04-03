@@ -225,13 +225,31 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     const [specified, setSpecified] = useState(0);
 
     useEffect(() => {
-        let contractedSchedules = [{
-            minimum: { value: metadata?.min },
-            maximum: { value: metadata?.max },
-            frequency: metadata?.frequency
-        }]
-        setSpecified(SpecifiedCountCalculator(contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue));
-    }, [metadata?.frequency, metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
+        if (metadata?.customizedSchedule) {
+            let contractedSchedules = [{
+                minimum: { value: metadata?.min },
+                maximum: { value: metadata?.max },
+                frequency: metadata?.frequency
+            }]
+
+            setSpecified(SpecifiedCountCalculator(contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue));
+        } else {
+            let contractedSchedules = [{
+                minimum: { value: metadata?.weekdayMin },
+                maximum: { value: metadata?.weekdayMax },
+                frequency: metadata?.weekdayFrequency
+            }, {
+                minimum: { value: metadata?.weekendMin },
+                maximum: { value: metadata?.weekendMax },
+                frequency: metadata?.weekendFrequency
+            }, {
+                minimum: { value: metadata?.holidayMin },
+                maximum: { value: metadata?.holidayMax },
+                frequency: metadata?.holidayFrequency
+            }]
+            setSpecified(SpecifiedCountCalculator(contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue));
+        }
+    }, [metadata?.frequency, metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value, metadata?.weekdayMin, metadata?.weekdayFrequency, metadata?.weekendMin, metadata?.weekendFrequency, metadata?.holidayMin, metadata?.holidayFrequency])
 
     useEffect(() => {
         if (Object.entries(serviceSelected)?.length !== 0) {
@@ -243,11 +261,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     const setSelectedValues = () => {
         let dependentActivities = [];
         serviceSelected?.dependentService?.additionalServices?.map(data => {
-            console.log('data-in', data?.holiday?.from);
             dependentActivities.push(
                 { activity: data?.activity?.activity, weekdayFrom: GetDateFromHours(data?.weekday?.from?.toString() || ''), weekdayTo: GetDateFromHours(data?.weekday?.to?.toString() || ''), weekendFrom: GetDateFromHours(data?.weekend?.from?.toString() || ''), weekendTo: GetDateFromHours(data?.weekend?.to?.toString() || ''), holidayFrom: GetDateFromHours(data?.holiday?.from?.toString() || ''), holidayTo: GetDateFromHours(data?.holiday?.to?.toString() || ''), patientMRNRequired: data?.patientMRNRequired, attendingDocRequired: data?.attendingDocRequired }
             )
-            console.log('dependent-after', dependentActivities);
         })
 
         setMetadata({

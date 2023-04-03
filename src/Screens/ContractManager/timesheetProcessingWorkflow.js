@@ -10,7 +10,7 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 
 import style from './index.module.scss';
 
-const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus, contract }) => {
+const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus, contract, getShowAlert }) => {
   const [timesheet, setTimesheet] = useState({ id: '', aggregator: '', reviewer: '', approver: '' });
   const [workFlowList, setWorkFlowList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -343,22 +343,24 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
 
   const submit = async (buttontext) => {
     setContinueLoading(true);
-    if (timesheet?.reviewer === '' || timesheet?.approver === '') {
-      ErrorToaster('Select both Approver and Reviewer to save');
-      setContinueLoading(false);
-      return;
-    }
-    if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '') {
-      ErrorToaster('Select Aggregator to save');
-      setContinueLoading(false);
-      return;
-    }
+    // if (timesheet?.reviewer === '' || timesheet?.approver === '') {
+    //   ErrorToaster('Select both Approver and Reviewer to save');
+    //   setContinueLoading(false);
+    //   return;
+    // }
+    // if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '') {
+    //   ErrorToaster('Select Aggregator to save');
+    //   setContinueLoading(false);
+    //   return;
+    // }
     let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
     updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
     setContinueLoading(false);
     if (buttontext === 'Continue') {
       getViewPage9(true);
       // getCurrentPage('Request Processing Workflow')
+    } else if (buttontext === 'Save In Progress') {
+      getShowAlert(true);
     } else {
       getNextTab();
     }
@@ -470,6 +472,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                 <button className={`${style.newContractButtonStyle} ${style.cursorPointer} `} onClick={() => { getCurrentPage('Payment & Compensation') }}>BACK</button>
                 <div>
+                  <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
+                    onClick={() => {
+                      submit('Save In Progress')
+                    }}
+                  >SAVE IN PROGRESS</button>
                   <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
                     onClick={() => {
                       submit('Continue')
