@@ -1218,7 +1218,7 @@ select {
 }
 
 .threeFieldWidth {
-    width: 33.3% !important;
+    min-width: 33.3% !important;
 }
 
 .fourFieldWidth {
