@@ -43,6 +43,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [timesheetSubmissionTerms, setTimesheetSubmissionTerms] = useState({});
   const [timesheetFields, setTimesheetFields] = useState([]);
   const [contractedServices, setContractedServices] = useState([]);
+  const [maxPlannedAbsence, setMaxPlannedAbsence] = useState({ days: 0, includingHoliday: false })
   const [activityTypes, setActivityTypes] = useState([]);
   const [selectedItems, setSelectedItems] = useState();
   const limit = 3;
@@ -278,7 +279,6 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const getTimesheetFields = () => {
     let temp = [];
     for (let i = 0; i < timeSheetCount; i++) {
-      console.log('data check', timeSheetLabelData?.[i]?.value);
       temp[i] = (
         <div key={`${i}temp${timeSheetCount + 1}`} className={`${timeSheetCount > 1 && style.contractedBorderStyle} ${style.marginTop20}`}>
           <div className={`${style.extentionGrid}`}>
@@ -518,6 +518,10 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       "maximumAbsenceAllowed": {
         "days": maxUnplannedAbsence
       },
+      "maxPlannedAbsence": {
+        "days": maxPlannedAbsence?.days,
+        "holidaysIncluded": maxPlannedAbsence?.includingHoliday,
+      },
       "invoiceProcessing": {
         "days": invoiceProcessingDay,
         "threshold": invoiceProcessingDayThreshold,
@@ -557,6 +561,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     setContractedTimeCommitmentFrequency(timesheetSubmissionTerms?.contractorBusinessContact?.frequency);
     setPlannedAbsence(timesheetSubmissionTerms?.plannedAbsenceLimit?.days);
     setMaxUnplannedAbsence(timesheetSubmissionTerms?.maximumAbsenceAllowed?.days);
+    setMaxPlannedAbsence({ days: timesheetSubmissionTerms?.maxPlannedAbsence?.days, includingHoliday: timesheetSubmissionTerms?.maxPlannedAbsence?.holidaysIncluded });
     setInvoiceProcessingDay(timesheetSubmissionTerms?.invoiceProcessing?.days);
     setInvoiceProcessingDayThreshold(timesheetSubmissionTerms?.invoiceProcessing?.threshold);
     setInvoiceProcessingDayGoal(timesheetSubmissionTerms?.invoiceProcessing?.goal);
@@ -606,6 +611,18 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
             <EditableText value={maxUnplannedAbsence} placeholder="0" type='number' onChange={(e) => setMaxUnplannedAbsence(e.slice(0, limit))} className={style.editableTextStyleDays} />
             <div className={style.textElementWithoutBackgroundDays}>Days</div>
+          </div>
+        </div>
+        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+          <CommonLabel value='Maximum Absence Period*' />
+          <div className={style.displayInRow}>
+            <div className={`${style.displayInRow} ${style.editableTextOuterBorderSmall} ${style.fourFieldWidth}`}>
+              <EditableText value={maxPlannedAbsence?.days} placeholder="0" type='number' onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, days: e.slice(0, limit) })} className={style.editableTextStyleDays} />
+              <div className={style.textElementWithoutBackgroundDays}>Days</div>
+            </div>
+            <div className={style.marginLeft20}>
+              <CommonCheckBox value="NA" checked={maxPlannedAbsence?.includingHoliday} onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, includingHoliday: e.target.checked })} label="Including Holidays" />
+            </div>
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
