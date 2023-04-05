@@ -384,16 +384,15 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         }
     }
 
-
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='On Call Coverage For *' />
                 <div className={style.spaceBetween}>
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('InPatient')} className={`${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} label="Inpatient" />
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('Ambulatory')} className={`${style.marginLeft10} ${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('Ambulatory', e)} label="Ambulatory" />
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('ED')} className={`${style.marginLeft10} ${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('ED', e)} label="ED" />
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('L & D')} className={`${style.marginLeft10} ${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('L & D', e)} label="L & D" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('InPatient')} className={`${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} label="Inpatient" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('Ambulatory')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('Ambulatory', e)} label="Ambulatory" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('L & D')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('L & D', e)} label="L & D" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('ED')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('ED', e)} label="ED" />
                 </div>
             </div>
 
@@ -490,8 +489,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayFrequency')}
                                 disabledSelect={!metadata?.serviceDays?.weekDays}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month']}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -607,8 +606,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekendFrequency')}
                                 disabled={!metadata?.serviceDays?.weekEnds}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month']}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -743,9 +742,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'holidayFrequency')}
                                 disabled={!metadata?.serviceDays?.isholidays}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month']}
-                                disabledList={[false, false, false]} />
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year']}
+                                disabledList={[false, false, false, false]} />
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -819,8 +818,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 value={metadata?.frequency}
                                 onChange={(e) => handleValueChange('frequency', e.target.value)}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={'NA'}
-                                valueList={['WEEK', 'MONTH']}
-                                labelList={['Per Week', 'Per Month']}
+                                valueList={['WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false]} />
                         </div>
                     </div>

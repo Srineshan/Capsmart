@@ -749,9 +749,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       temp.push(...data);
       services = temp;
     } else {
-      console.log('services in else', data);
+      console.log('services in else', data, existingServices, services);
       if (existingServices?.length === services?.length) {
-        services.push(...data);
+        data?.map(data => {
+          if (!services?.map(service => service?.refId)?.includes(data?.refId)) {
+            services.push(data);
+          }
+        })
+
       }
     }
     let formattedData = {

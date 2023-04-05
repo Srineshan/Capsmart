@@ -276,7 +276,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                         <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <CommonLabel value='Separate Service Hours Specified*' />
                             <div className={style.grid3WithoutGap}>
-                                <div className={`${style.fullWidth}`}>
+                                <div className={`${style.threeFieldWidth}`}>
                                     <CommonTextField
                                         type="tel"
                                         maxLength="3"
@@ -288,21 +288,19 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                         value={metadata?.totalSession}
                                     />
                                 </div>
-                                <div className={style.displayInRow}>
-                                    <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
-                                        onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
-                                        value={metadata?.totalSessionFrequency || 'NA'}
-                                        firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                        valueList={['WEEK', 'MONTH', 'YEAR']}
-                                        labelList={['Per Week', 'Per Month', 'Per Contract Year']}
-                                        disabledList={[false, false, false]}
-                                        disabledSelect={metadata?.sessionsAsNeeded} />
-                                    <div className={`${style.fullWidth} ${style.marginLeft20}`}>
-                                        <CommonCheckBox value="NA"
-                                            checked={metadata?.sessionsAsNeeded}
-                                            onChange={(e) => setMetadata({ ...metadata, sessionsAsNeeded: e.target.checked, totalSession: 0, totalSessionFrequency: 'NA' })}
-                                            label="As Needed" />
-                                    </div>
+                                <CommonSelectField className={`${style.threeFieldWidth} ${style.marginLeft20}`}
+                                    onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
+                                    value={metadata?.totalSessionFrequency || 'NA'}
+                                    firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                    valueList={['WEEK', 'MONTH', 'YEAR']}
+                                    labelList={['Per Week', 'Per Month', 'Per Contract Year']}
+                                    disabledList={[false, false, false]}
+                                    disabledSelect={metadata?.sessionsAsNeeded} />
+                                <div className={`${style.threeFieldWidth} ${style.marginLeft20}`}>
+                                    <CommonCheckBox value="NA"
+                                        checked={metadata?.sessionsAsNeeded}
+                                        onChange={(e) => setMetadata({ ...metadata, sessionsAsNeeded: e.target.checked, totalSession: 0, totalSessionFrequency: 'NA' })}
+                                        label="As Needed" />
                                 </div>
                             </div>
                         </div>

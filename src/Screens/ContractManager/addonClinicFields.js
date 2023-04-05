@@ -368,6 +368,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   // }
 
   const addToMetaData = () => {
+    console.log('new services', newServices);
     if (newServices?.billableService && newServices?.rate === '0') {
       ErrorToaster('Payment Rate Cannot be 0 if Billable');
       return;
@@ -661,13 +662,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                     onChange={(e) => {
                       updateWorkingHours('workingTimeFrom', e);
                     }}
-                    value={metadata?.[0]?.workingTimeTo === null ? null : new Date(metadata?.[0]?.workingTimeFrom)}
+                    value={data?.workingTimeFrom === null ? null : new Date(data?.workingTimeFrom)}
                   />
                   <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                   <TimePicker
                     useAmPm={false}
                     onChange={(e) => updateWorkingHours('workingTimeTo', e)}
-                    value={metadata?.[0]?.workingTimeTo === null ? null : new Date(metadata?.[0]?.workingTimeTo) || null}
+                    value={data?.workingTimeTo === null ? null : new Date(data?.workingTimeTo) || null}
                   // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.sessionDuration * 60 * 60 * 1000))}
                   />
                 </div>
