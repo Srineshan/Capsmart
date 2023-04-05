@@ -18,8 +18,8 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, isReset, getIsReset }) => {
     const [metadata, setMetadata] = useState({
-        min: '0',
-        max: '0',
+        min: 0,
+        max: 99999999,
         frequency: 'NA',
         onCallCoverageFor: [],
         additionalScheduleValue: '0',
@@ -98,8 +98,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
 
     const resetMetadata = () => {
         setMetadata({
-            min: '0',
-            max: '0',
+            min: 0,
+            max: 99999999,
             frequency: 'NA',
             onCallCoverageFor: [],
             additionalScheduleValue: '0',
@@ -336,7 +336,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
 
     const onTotalSessionChange = (e) => {
         if (e >= 0) {
-            let value = e.slice(0, e.slice());
+            let value = e.slice(0, 5);
             handleValueChange('totalSession', value);
         }
     }
@@ -796,7 +796,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 }}
                                 className={style.threeFieldWidth}
                                 onChange={(e) => e.target.value >= 0 && handleValueChange('max', parseFloat(e.target.value.slice(0, 5)))}
-                                value={metadata?.max === 0 ? '' : metadata?.max}
+                                value={(metadata?.max === 0 || metadata?.max === 99999999) ? '' : metadata?.max}
                                 type='number'
                             />
                             <CommonSelectField className={`${style.fullWidth}`}
@@ -936,7 +936,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 <CommonLabel value='Total Contracted Service Sessions*' />
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="3"
+                        <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="5"
                             className={style.editableSessionTextStyle}
                             onChange={(e) => onTotalSessionChange(e)} />
                         <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>
