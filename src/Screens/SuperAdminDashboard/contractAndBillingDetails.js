@@ -258,7 +258,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
             ErrorToaster('Contract / Agreement Name Is Mandatory');
             return;
         }
-        if (contract?.contractID === '') {
+        if (contract?.contractID === '' && !contract.missing) {
             ErrorToaster('Contract ID ( CID ) Is Mandatory');
             return;
         }
@@ -431,7 +431,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
     let viewValue = [];
     let deleteValue = [];
 
-    const getServiceProviderValues = () => {
+    const getTableValues = () => {
         documentName = [];
         documentType = [];
         documentDescription = [];
@@ -565,12 +565,8 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                     <p className={style.heading}>Contract & Billing Details</p>
                     <div className={style.greyBorder}></div>
                     <div className={style.entityDescription}>
-                        Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
-                        quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus
-                        dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam
-                        eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
-                        felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
-                        adipiscing elit. sed finibus quam nec tellus dictum.
+                        Provide the necessary customer contract details, including the associated document. All data fields marked with an "*" are mandatory.
+                        If you do not have all of the information, you can save this customer's contract information as an In-progress account.
                     </div>
                     <div>
                         <div className={style.cloneBlockStyle}>
@@ -653,7 +649,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                         {fullyExecutedContract && entityData?.contractDetails?.entityContractDocuments?.length !== 0 && (
                                             <Table
                                                 tableHeaderValues={tableHeaderValues}
-                                                tableDataValues={getServiceProviderValues()}
+                                                tableDataValues={getTableValues()}
                                                 tableData={entityData?.contractDetails?.entityContractDocuments}
                                                 gridStyle={style.documentTableGrid}
                                             />

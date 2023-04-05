@@ -7,7 +7,10 @@ export const SpecifiedCountCalculator = (contractedSchedules, timeCommitment, ad
         } else {
             if (data?.frequency === 'WEEK') {
                 schedulesTotal = schedulesTotal + ((data?.minimum?.value || 0) * 52);
-            } else {
+            } else if (data?.frequency === 'CONTRACT_YEAR') {
+                schedulesTotal = schedulesTotal + (data?.minimum?.value || 0);
+            }
+            else {
                 schedulesTotal = schedulesTotal + ((data?.minimum?.value || 0) * 12);
             }
         }

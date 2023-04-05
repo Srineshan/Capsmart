@@ -62,11 +62,11 @@ const CustomerSetup = () => {
                     </div>
                     <div className={style.welcomeBorder}></div>
                     <div className={style.welcomeMessage}>
-                        This wizard will guide you step by step for adding a new customer. Follow the prompts and make the necessary selection in order to proceed to the next steps.
+                        {`This customer setup wizard will guide you to enter all of the information required for activating a Timesmart customer account.If you experience any problems or have questions, do not hesitate to reach out to our TimeSmartAI support team - <support@timesmart.ai>`}
                     </div>
                     <div className={`${style.contractOptions} ${style.alignCenter}`}>
                         <div className={style.displayInRow}>
-                            <p className={style.selectLable}>Select the Partner to add</p>
+                            <p className={style.selectLable}>Select The Partner For This Customer</p>
                             <CommonSelectField value={selectedPartner || ''}
                                 onChange={(e) => handlePartnerSelection(e.target.value)}
                                 className={`${style.addContractTextFieldWidth} ${style.marginLeft20}`}

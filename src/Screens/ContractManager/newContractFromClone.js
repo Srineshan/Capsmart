@@ -376,6 +376,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         contract={contractSelected}
                         isEditable={isEditable}
                         getTabDataStatus={getTabDataStatus}
+                        getShowAlert={getShowAlert}
                     />
                 ) : currentPage === "Timesheet Submission Terms" ? (
                     <TimeSheetSubmissionTerms

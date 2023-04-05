@@ -422,12 +422,8 @@ const AppSubscription = ({ getActiveStep }) => {
           <p className={style.heading}>App Subscription Information</p>
           <div className={style.greyBorder}></div>
           <div className={style.entityDescription}>
-            Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
-            quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus
-            dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam
-            eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
-            felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
-            adipiscing elit. sed finibus quam nec tellus dictum.
+            Review the contract with the customer and provide the information indicated below. All data fields marked with an "*" are mandatory.
+            If you do not have all of the information, you can save this customer's information as an In-progress account.
           </div>
           <div>
             <div className={style.cloneBlockStyle}>
@@ -438,7 +434,7 @@ const AppSubscription = ({ getActiveStep }) => {
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>Entity Abbreviation*</div>
-                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Abbreviation" value={entityAbbreviation} onChange={(e) => setEntityAbbreviation(e.target.value)} />
+                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Abbreviation" value={entityAbbreviation} onChange={(e) => setEntityAbbreviation(e.target.value.toUpperCase())} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>Subscription Plan *</div>
@@ -447,10 +443,10 @@ const AppSubscription = ({ getActiveStep }) => {
                       defaultValue={plan?.planName}
                       value={plan?.planName ? plan?.planName : ''}
                       onChange={(e) => setPlan({ ...plan, planName: e.target.value })}
-                      firstOptionLabel={'Select Subscription Plan'} firstOptionValue={''}
-                      valueList={['SILVER', "BRONZE", "GOLD", "CUSTOM", "TRIAL"]}
-                      labelList={['Silver', "Bronze", "Gold", "Custom", "Trial Plan"]}
-                      disabledList={[false, false, false, false, false]} />
+                      firstOptionLabel={'Select the account type you want to create'} firstOptionValue={''}
+                      valueList={['SILVER', "BRONZE", "GOLD", "CUSTOM"]}
+                      labelList={['Silver', "Bronze", "Gold", "Custom"]}
+                      disabledList={[false, false, false, false]} />
                     {/* <button className={`${style.pricingButton} ${style.selectedColor} ${style.cursorPointer}`} >PRICING REVIEW</button> */}
                   </div>
                 </div>
@@ -468,7 +464,7 @@ const AppSubscription = ({ getActiveStep }) => {
                       labelList={['Single', "Multiple"]}
                       disabledList={[false, false]} />
                     <div className={`${style.extentionLableStyle} ${style.marginLeft50}`}>Number Of Sites*</div>
-                    <InputGroup className={style.fullWidth} value={plan?.noOfSites} onChange={(e) => setPlan({ ...plan, noOfSites: e.target.value })} />
+                    <InputGroup className={style.fullWidth} value={plan?.noOfSites} disabled={plan?.allowableSites === 'SINGLE'} onChange={(e) => setPlan({ ...plan, noOfSites: e.target.value })} />
                   </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>

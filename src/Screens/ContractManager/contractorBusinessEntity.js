@@ -31,7 +31,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     notApplicable: false,
   });
   const [businessEntity, setBusinessEntity] = useState({
-    name: ''
+    name: '',
+    notApplicable: false,
   });
   const [businessEntityUser, setBusinessEntityUser] = useState({
     name: {
@@ -61,8 +62,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   const [allowAggregator, setAllowAggregator] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [continueLoading, setContinueLoading] = useState(false);
-
-  console.log('contractorNPIN', contractorNPIN);
 
   useEffect(() => {
     getUserData();
@@ -114,7 +113,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
 
   const handleContinue = async (buttonType) => {
     if (!continueLoading) {
-      console.log('inside', buttonType);
       setContinueLoading(true);
 
       if (allowBEM || allowAggregator) {
@@ -181,7 +179,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
         }
       }
 
-      if (EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory') ||
+      if ((!businessEntity?.notApplicable && EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory')) ||
         !contractorNPIN?.notApplicable && !contractorNPIN?.missing && EmptyStringCheck(contractorNPIN?.npin, 'NPIN is Mandatory') ||
         !contractorEntityTaxId?.missing && !contractorEntityTaxId?.notApplicable && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory') ||
         EmptyStringCheck(businessEntityUser?.name?.firstName, 'First Name is Mandatory') ||
@@ -393,11 +391,18 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Business Entity Name*' />
-                <CommonInputField className={style.fullWidth}
-                  value={businessEntity?.name}
-                  onFocus={() => { checkFieldAndPopAlert(businessEntity?.name, 'Business Entity Name') }}
-                  placeholder="Enter Business Entity Name"
-                  onChange={(e) => setBusinessEntity({ ...businessEntity, name: e.target.value })} />
+                <div className={style.twoCol}>
+                  <CommonInputField className={style.fullWidth}
+                    value={businessEntity?.name}
+                    disabled={businessEntity?.notApplicable}
+                    onFocus={() => { checkFieldAndPopAlert(businessEntity?.name, 'Business Entity Name') }}
+                    placeholder="Enter Business Entity Name"
+                    onChange={(e) => setBusinessEntity({ ...businessEntity, name: e.target.value })} />
+                  <CommonCheckBox value="NA"
+                    checked={businessEntity?.notApplicable}
+                    onChange={(e) => setBusinessEntity({ ...businessEntity, notApplicable: e.target.checked, name: '' })}
+                    label="Not Applicable" />
+                </div>
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Business Point of Contact*' />

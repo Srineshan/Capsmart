@@ -16,6 +16,8 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
   const [siteData, setSiteData] = useState([]);
   const [departmentList, setDepartmentList] = useState();
 
+  console.log('sites', sites, selectedSites)
+
   useEffect(() => {
     if (sites?.length === 1) {
       onSiteSelected(sites?.[0]?.id);
@@ -28,7 +30,9 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
 
   useEffect(() => {
     let dept = sites?.filter(site => site?.id === selectedSite)?.map(site => site?.departmentList?.departments)?.[0];
+    console.log('dept', dept);
     if (dept?.length > 1) {
+      console.log('inside selected Site change dept length greater thatn 1');
       setDepartmentsSelected([]);
     } else {
       setDepartmentsSelected([dept?.[0]?.id]);
@@ -57,8 +61,11 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     let depts = sites?.filter(site => siteId === site?.id)?.map(data =>
       data?.departmentList?.departments
     )[0];
+    console.log('departments', depts);
     setDepartmentList(depts);
   }
+
+  console.log('dept selected', departmentsSelected);
 
   const onAdd = () => {
     if (selectedSite === undefined) {

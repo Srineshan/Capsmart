@@ -32,7 +32,7 @@ const SetPasswordWithoutPassword = () => {
   const getEntityId = async () => {
     await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
       method: 'GET',
-      // headers: { 'X-subdomain': 'demo' }
+      // headers: { 'X-subdomain': 'hopkins' }
     }).then(response => {
       var cookie = new Cookie();
       cookie.set('entityId', response?.data?.id);

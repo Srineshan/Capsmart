@@ -49,7 +49,7 @@ const ServiceDays = ({ setMetaData, selectedService, isReset, setIsReset }) => {
 
   useEffect(() => {
     if (serviceDays?.monday && serviceDays?.tuesday && serviceDays?.wednesday && serviceDays?.thursday && serviceDays?.friday) {
-      setWeekdayLabel('Any Weekday');
+      setWeekdayLabel('Any Weekdays');
     }
     else if (serviceDays?.monday || serviceDays?.tuesday || serviceDays?.wednesday || serviceDays?.thursday || serviceDays?.friday) {
       setWeekdayLabel('Weekdays Specific');
@@ -132,7 +132,7 @@ const ServiceDays = ({ setMetaData, selectedService, isReset, setIsReset }) => {
       if (serviceDays?.monday || serviceDays?.tuesday || serviceDays?.wednesday || serviceDays?.thursday || serviceDays?.friday) {
         return 'Weekdays Specific';
       } else if (serviceDays?.monday && serviceDays?.tuesday && serviceDays?.wednesday && serviceDays?.thursday && serviceDays?.friday) {
-        return 'Any Weekday';
+        return 'Any Weekdays';
       } else {
         return 'Weekdays';
       }
