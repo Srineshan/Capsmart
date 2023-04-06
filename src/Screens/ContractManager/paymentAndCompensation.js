@@ -256,13 +256,13 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*' />
                                 <CommonTextField
                                     className={style.twoFieldWidth}
-                                    type="number"
+                                    // type="number"
                                     min="0"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => fixedCompensationValue(parseFloat(e.target.value), 'maxPaymentPerTimesheetSubmission', i)}
-                                    value={timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission}
+                                    onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
+                                    value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString()}
                                 />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -279,13 +279,13 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <CommonLabel value='Max. Compensation Value for Contract Period*' />
                                 <CommonTextField
                                     className={style.twoFieldWidth}
-                                    type="number"
+                                    // type="number"
                                     min="0"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => updateTimesheetPayment(parseFloat(e.target.value), 'maxPaymentPerContract', i)}
-                                    value={timesheetPayments?.[i]?.maxPaymentPerContract}
+                                    onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
+                                    value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
                                 />
                             </div>
 
