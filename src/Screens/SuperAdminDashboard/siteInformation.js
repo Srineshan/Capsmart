@@ -232,7 +232,7 @@ const SiteInformation = ({ getActiveStep }) => {
       resetSiteValues();
     } else if (buttonText === 'Saveinprogress') {
       resetSiteValues();
-      navigate('/user');
+      navigate(isSuperAdminAccess ? '/activeCustomers' : '/entitySitePortal');
     } else {
       resetSiteValues();
       setShowSiteTable(false);

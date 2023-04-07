@@ -59,7 +59,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
   }
 
   const getUserData = async () => {
-    // await axios(`https://rest.timesmart.io/user-management-service/user?partnerId=${partnerId}&userType=PARTNER_USER`, {
+    // await axios(`https://rest.mytimesmart.com/user-management-service/user?partnerId=${partnerId}&userType=PARTNER_USER`, {
     //   method: 'GET',
     //   headers: {
     //     'Content-Type': 'application/json',
@@ -165,7 +165,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
             if (buttonType === 'Continue') {
               setIsCompleteSetup(true);
             } else {
-              navigate('/user');
+              navigate('/activeCustomers');
             }
           })
           .catch(error => {
@@ -184,7 +184,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
               if (buttonType === 'Continue') {
                 setIsCompleteSetup(true);
               } else {
-                navigate('/user');
+                navigate('/entitySitePortal');
               }
             })
             .catch(error => {
@@ -211,7 +211,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
           <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => navigate('/activeCustomers')} />
           <div className={style.stepperMargin}>
             <div className={style.stepperGrid}>
-              <div onClick={() => navigate(`/entitySetup/${TenantID}/appSubscription`)}>
+              <div onClick={() => navigate(`/entitySetup/${id}/appSubscription`)}>
                 <div className={style.justifyCenter}>
                   <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
                     <img src={Step5} alt="Step1" className={style.stepperImgStyle} />
@@ -219,7 +219,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
                 </div>
                 <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SUBSCRIPTION PLAN</p>
               </div>
-              <div onClick={() => navigate(`/entitySetup/${TenantID}/contractAndBilling`)}>
+              <div onClick={() => navigate(`/entitySetup/${id}/contractAndBilling`)}>
                 <div className={style.justifyCenter}>
                   <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                     <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
@@ -227,7 +227,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
                 </div>
                 <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>CONTRACT & BILLING</p>
               </div>
-              <div onClick={() => navigate(`/entitySetup/${TenantID}/entitySetup`)}>
+              <div onClick={() => navigate(`/entitySetup/${id}/entitySetup`)}>
                 <div className={style.justifyCenter}>
                   <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                     <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
@@ -235,7 +235,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
                 </div>
                 <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
               </div>
-              <div onClick={() => entity?.multiSiteEntity && navigate(`/entitySetup/${TenantID}/siteInformation`)} className={!entity?.multiSiteEntity && style.disabledView}>
+              <div onClick={() => entity?.multiSiteEntity && navigate(`/entitySetup/${id}/siteInformation`)} className={!entity?.multiSiteEntity && style.disabledView}>
                 <div className={style.justifyCenter}>
                   <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                     <img src={Step3} alt="Step4" className={style.stepperImgStyle} />
@@ -243,7 +243,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
                 </div>
                 <p className={`${style.entityTextColor} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
               </div>
-              <div onClick={() => navigate(`/entitySetup/${TenantID}/entitySystemAdmin`)}>
+              <div onClick={() => navigate(`/entitySetup/${id}/entitySystemAdmin`)}>
                 <div className={style.justifyCenter}>
                   <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
                     <img src={Step2} alt="Step5" className={style.stepperImgStyle} />
