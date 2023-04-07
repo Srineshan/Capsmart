@@ -32,7 +32,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                 "value": 0
             },
             "maximum": {
-                "value": 0
+                "value": 99999999
             },
             "frequency": "NA",
             "startDate": contractTermPeriod?.start,
@@ -103,7 +103,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                     "value": 0
                 },
                 "maximum": {
-                    "value": 0
+                    "value": 99999999
                 },
                 "frequency": "NA",
                 "startDate": contractTermPeriod?.start,
@@ -537,7 +537,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                                 }}
                                 className={style.threeFieldWidth}
                                 onChange={(e) => onSameTargetChange('contractedSchedules', parseFloat(e.target.value.slice(0, 5)), 'maximum')}
-                                value={metadata?.contractedSchedules?.[0]?.maximum?.value === 0 ? '' : metadata?.contractedSchedules?.[0]?.maximum?.value}
+                                value={(metadata?.contractedSchedules?.[0]?.maximum?.value === 0 || metadata?.contractedSchedules?.[0]?.maximum?.value === 99999999) ? '' : metadata?.contractedSchedules?.[0]?.maximum?.value}
                                 type='number'
                             />
                             <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
@@ -564,6 +564,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                                 onChange={(e) => onSameTargetChange('patientsSeenTargets', e.target.value.slice(0, 2), 'withNurse')}
                                 value={metadata?.patientsSeenTargets?.[0]?.withNurse?.value === 0 ? '' : metadata?.patientsSeenTargets?.[0]?.withNurse?.value}
                                 type='number'
+                                disabled={metadata?.patientsSeenTargets?.[0]?.noTargetApplicable}
                             />
                             {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                                 <div className={style.textElement}>WITHOUT NURSE</div>
@@ -577,6 +578,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                                 onChange={(e) => onSameTargetChange('patientsSeenTargets', e.target.value.slice(0, 2), 'withoutNurse')}
                                 value={metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value === 0 ? '' : metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value}
                                 type='number'
+                                disabled={metadata?.patientsSeenTargets?.[0]?.noTargetApplicable}
                             />
                             <CommonCheckBox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} checked={metadata?.patientsSeenTargets?.[0]?.noTargetApplicable} onChange={(e) => onSameTargetChange('patientsSeenTargets', e.target.checked, 'noTargetApplicable')} />
                         </div>
@@ -597,6 +599,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                                 onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e.target.value.slice(0, 2), 'withNurse')}
                                 value={metadata?.scheduledPatientsTargets?.[0]?.withNurse?.value === 0 ? '' : metadata?.scheduledPatientsTargets?.[0]?.withNurse?.value}
                                 type='number'
+                                disabled={metadata?.scheduledPatientsTargets?.[0]?.noTargetApplicable}
                             />
                             {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
                                 <div className={style.textElement}>WITHOUT NURSE</div>
@@ -610,6 +613,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                                 onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e.target.value.slice(0, 2), 'withoutNurse')}
                                 value={metadata?.scheduledPatientsTargets?.[0]?.withoutNurse?.value === 0 ? '' : metadata?.scheduledPatientsTargets?.[0]?.withoutNurse?.value}
                                 type='number'
+                                disabled={metadata?.scheduledPatientsTargets?.[0]?.noTargetApplicable}
                             />
                             <CommonCheckBox label="No Target Applicable" className={`${style.marginLeft20} ${style.fullWidth} ${style.verticalAlignCenter}`} checked={metadata?.scheduledPatientsTargets?.[0]?.noTargetApplicable} onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e.target.checked, 'noTargetApplicable')} />
                         </div>
