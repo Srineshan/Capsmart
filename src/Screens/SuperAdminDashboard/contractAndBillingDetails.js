@@ -41,7 +41,7 @@ const TEXTFIELDLEN = 100;
 const DESCLEN = 250;
 
 const ContractAndBillingDetails = ({ getActiveStep }) => {
-    const { id } = useParams();
+    const { id, page } = useParams();
     const navigate = useNavigate();
     const [entityData, setEntityData] = useState();
     const [departmentSpecific, setDepartmentSpecific] = useState(true);
@@ -102,19 +102,23 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
         let subscription = data?.subscriptionPlan;
         let contractData = data?.contractDetails;
         setEntityData(data);
-        setBillingData({ firstName: data?.billingDetails?.contactname?.firstName, lastName: data?.billingDetails?.contactname?.lastName, email: data?.billingDetails?.email?.officialEmail, phone: data?.billingDetails?.contactNumber?.contactNumber });
+        if (data?.billingDetails !== null) {
+            setBillingData({ firstName: data?.billingDetails?.contactname?.firstName, lastName: data?.billingDetails?.contactname?.lastName, email: data?.billingDetails?.email?.officialEmail, phone: data?.billingDetails?.contactNumber?.contactNumber });
+        }
         setPlan({
             planName: subscription?.planName, allowableRegisteredUsers: subscription?.allowableRegisteredUsers?.allowableRegisteredUsers, fees: subscription?.subscriptionFees?.fees, subscriptionStatus: subscription?.subscriptionStatus, billingFrequency: subscription?.billingFrequency, discount: subscription?.discount?.discount || '0',
             poaNumber: data?.contractDetails?.poaNumber?.poaNumber
         });
-        handleContract('contractContinuationPolicy', data?.contractDetails?.contractContinuationPolicy?.contractPolicyType)
-        setAutoRenewal({
-            renewalTerm: data?.contractDetails?.contractContinuationPolicy?.autoRenewalPeriod?.autoRenewalTerm,
-            allowableRenewalTerm: data?.contractDetails?.contractContinuationPolicy?.autoRenewalPeriod?.allowableAutoRenewalTerm,
-            calendar: data?.contractDetails?.contractContinuationPolicy?.autoRenewalPeriod?.autoRenewalCalender
-        })
-        setRenewalreminder(data?.contractDetails?.contractContinuationPolicy?.reminderList?.renewalReminderList)
-        setFullyExecutedContract(data?.contractDetails?.fullyExecutedContractOnFile);
+        if (data?.contractDetails !== null) {
+            handleContract('contractContinuationPolicy', data?.contractDetails?.contractContinuationPolicy?.contractPolicyType)
+            setAutoRenewal({
+                renewalTerm: data?.contractDetails?.contractContinuationPolicy?.autoRenewalPeriod?.autoRenewalTerm,
+                allowableRenewalTerm: data?.contractDetails?.contractContinuationPolicy?.autoRenewalPeriod?.allowableAutoRenewalTerm,
+                calendar: data?.contractDetails?.contractContinuationPolicy?.autoRenewalPeriod?.autoRenewalCalender
+            })
+            setRenewalreminder(data?.contractDetails?.contractContinuationPolicy?.reminderList?.renewalReminderList)
+            setFullyExecutedContract(data?.contractDetails?.fullyExecutedContractOnFile);
+        }
         if (contractData !== null) {
             setContract({
                 contractName: contractData?.contractName,
@@ -253,37 +257,50 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
         }
     }
 
-    const updateBilling = async (type, id) => {
-        if (contract?.contractName === '') {
-            ErrorToaster('Contract / Agreement Name Is Mandatory');
-            return;
-        }
-        if (contract?.contractID === '' && !contract.missing) {
-            ErrorToaster('Contract ID ( CID ) Is Mandatory');
-            return;
-        }
-        if (billingData?.email === '') {
-            ErrorToaster('Email Is Mandatory');
-            return;
-        }
-        if (!billingData?.email?.includes('@') || !billingData?.email?.includes('.')) {
-            ErrorToaster('Enter a Valid Email');
-            return;
-        }
-        if (contract?.startDate === null || contract?.endDate === null) {
-            ErrorToaster('Contract Term Period Is Mandatory ');
-            return;
-        }
-        if (contract?.contractContinuationPolicy === '') {
-            ErrorToaster('Continuation Policy Is Mandatory ');
-            return;
+    const updateBilling = async (type, docId) => {
+        console.log(type, docId)
+        if (type !== 'addDoc' && type !== 'removeDoc') {
+            if (contract?.contractName === '') {
+                ErrorToaster('Contract / Agreement Name Is Mandatory');
+                return;
+            }
+            if (type === 'Continue') {
+                if (contract?.contractID === '' && !contract.missing) {
+                    ErrorToaster('Contract ID ( CID ) Is Mandatory');
+                    return;
+                }
+                if (billingData?.email === '') {
+                    ErrorToaster('Email Is Mandatory');
+                    return;
+                }
+                if (!billingData?.email?.includes('@') || !billingData?.email?.includes('.')) {
+                    ErrorToaster('Enter a Valid Email');
+                    return;
+                }
+                if (contract?.startDate === null || contract?.endDate === null) {
+                    ErrorToaster('Contract Term Period Is Mandatory ');
+                    return;
+                }
+                if (contract?.contractContinuationPolicy === '') {
+                    ErrorToaster('Continuation Policy Is Mandatory ');
+                    return;
+                }
+                if (contract?.contractContinuationPolicy === 'AUTORENEWAL' && (autoRenewal.renewalTerm === '0' || autoRenewal?.allowableRenewalTerm === '0')) {
+                    ErrorToaster('Auto Renewal Details Are Mandatory ');
+                    return;
+                }
+                if (contract?.contractContinuationPolicy === 'AUTORENEWAL' && (autoRenewal.renewalTerm === '0' || autoRenewal?.allowableRenewalTerm === '0')) {
+                    ErrorToaster('Auto Renewal Details Are Mandatory ');
+                    return;
+                }
+            }
         }
         let contractFiles = [];
         // if (type === 'addDoc') {
         contractFiles = entityData?.contractDetails !== null ? entityData?.contractDetails?.entityContractDocuments : [];
         // }
         if (type === 'removeDoc') {
-            contractFiles = entityData?.contractDetails !== null ? entityData?.contractDetails?.entityContractDocuments?.filter(docData => id !== docData?.id)?.map(data => data) : [];
+            contractFiles = entityData?.contractDetails !== null ? entityData?.contractDetails?.entityContractDocuments?.filter(docData => docId !== docData?.id)?.map(data => data) : [];
         }
         fullyExecutedContract && fullyExecutedContractData?.filter(data => data?.file !== null)?.map(data => {
             contractFiles?.push({
@@ -409,9 +426,10 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
             return;
         }
         if (type === 'Continue') {
-            getActiveStep('entitySetup');
+            window.location = `/app/entitySetup/${id}/entitySetup`
+            // navigate(`/entitySetup/${id}/entitySetup`);
         } else {
-            navigate('/user');
+            navigate(isSuperAdminAccess ? '/activeCustomers' : '/entitySitePortal');
         }
     }
 
@@ -497,10 +515,10 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
         <>
             {/* {isSetupComplete ? <SetupComplete data={plan?.planName === 'TRIAL' ? 'Trial' : 'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess ? 'Created' : 'Updated'} /> : */}
             <div className={style.entitySetupBackground}>
-                <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : window.history.go(-1)} />
+                <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : navigate('/entitySitePortal')} />
                 <div className={style.stepperMargin}>
                     <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
-                        <div onClick={() => getActiveStep('appSubscription')}>
+                        <div onClick={() => navigate(`/entitySetup/${id}/appSubscription`)}>
                             <div className={style.justifyCenter}>
                                 <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
                                     <img src={Step5} alt="Step1" className={style.stepperImgStyle} />
@@ -508,7 +526,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                             </div>
                             <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SUBSCRIPTION PLAN</p>
                         </div>
-                        <div onClick={() => getActiveStep('contractAndBilling')}>
+                        <div onClick={() => navigate(`/entitySetup/${id}/contractAndBilling`)}>
                             <div className={style.justifyCenter}>
                                 <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
                                     <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
@@ -516,7 +534,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                             </div>
                             <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>CONTRACT & BILLING</p>
                         </div>
-                        <div onClick={() => getActiveStep('entitySetup')}>
+                        <div onClick={() => navigate(`/entitySetup/${id}/entitySetup`)}>
                             <div className={style.justifyCenter}>
                                 <div className={`${style.stepperImgBackground}`}>
                                     <img src={Step4} alt="Step3" className={style.stepperImgStyle} />
@@ -524,7 +542,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                             </div>
                             <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                         </div>
-                        <div onClick={() => entityData?.multiSiteEntity && getActiveStep('siteInformation')} className={!entityData?.multiSiteEntity && style.disabledView}>
+                        <div onClick={() => entityData?.multiSiteEntity && navigate(`/entitySetup/${id}/siteInformation`)} className={!entityData?.multiSiteEntity && style.disabledView}>
                             <div className={style.justifyCenter}>
                                 <div className={`${style.stepperImgBackground}`}>
                                     <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
@@ -533,7 +551,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                             <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                         </div>
                         {isSuperAdminAccess && (
-                            <div onClick={() => getActiveStep('entitySystemAdmin')}>
+                            <div onClick={() => navigate(`/entitySetup/${id}/entitySystemAdmin`)}>
                                 <div className={style.justifyCenter}>
                                     <div className={`${style.stepperImgBackground}`}>
                                         <img src={Step2} alt="Step5" className={style.stepperImgStyle} />
@@ -579,8 +597,15 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                     <div className={style.extentionLableStyle}>Contract ID ( CID )*</div>
                                     <div className={style.displayInRow}>
-                                        <InputGroup className={style.fourFieldWidth} value={contract?.contractID} disabled={!isSuperAdminAccess || contract.missing} placeholder="Contract Id"
-                                            onChange={(e) => handleContract('contractID', e.target.value)} />
+                                        {/* <InputGroup className={style.fourFieldWidth} value={contract?.contractID} disabled={!isSuperAdminAccess || contract.missing} placeholder="Contract Id"
+                                            onChange={(e) => handleContract('contractID', e.target.value)} /> */}
+                                        <CommonInputField className={style.fourFieldWidth}
+                                            placeholder="Contract Id"
+                                            value={contract?.contractID}
+                                            type="tel"
+                                            maxLength={10}
+                                            disabled={!isSuperAdminAccess || contract.missing}
+                                            onChange={(e) => e.target.value >= 0 && handleContract('contractID', e.target.value)} />
                                         <Checkbox label="Missing" checked={contract.missing} disabled={!isSuperAdminAccess} onChange={(e) => handleContract('missing', e.target.checked)} className={`${style.marginTop} ${style.marginLeft20}`} />
                                     </div>
                                 </div>
@@ -617,7 +642,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                         <div className={`${style.spaceBetween}`}>
                                             <CommonSwitch checked={fullyExecutedContract} className={`${style.switchFontStyle} ${style.flexLeft}`}
                                                 label={fullyExecutedContract ? 'YES' : "NO"}
-                                                onChange={() => changeContractFile(entityData?.contractDetails?.entityContractDocuments?.length !== 0 ? true : !fullyExecutedContract)}
+                                                onChange={() => setFullyExecutedContract((entityData?.contractDetails?.entityContractDocuments?.length !== 0 && entityData?.contractDetails !== null) ? fullyExecutedContract : !fullyExecutedContract)}
                                             />
                                         </div>
                                         {fullyExecutedContract && (
@@ -646,7 +671,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                                 <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
                                             )}
                                         </div>
-                                        {fullyExecutedContract && entityData?.contractDetails?.entityContractDocuments?.length !== 0 && (
+                                        {fullyExecutedContract && (entityData?.contractDetails?.entityContractDocuments?.length !== 0 || entityData?.contractDetails !== null) && (
                                             <Table
                                                 tableHeaderValues={tableHeaderValues}
                                                 tableDataValues={getTableValues()}
@@ -767,7 +792,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                 </div>
                             </div>
                             <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                <button className={style.outlinedButton} onClick={() => saveInProgressCheck()}>SAVE IN-PROGRESS</button>
+                                <button className={style.outlinedButton} onClick={() => updateBilling('saveInProgress')}>SAVE IN-PROGRESS</button>
                                 <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => updateBilling('Continue')}>CONTINUE</button>
                             </div>
                         </div>

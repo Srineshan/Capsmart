@@ -48,7 +48,7 @@ const CustomerSetup = () => {
             ErrorToaster('Select a Subscription Plan to proceed');
             return;
         } else {
-            navigate('/entitySetup/new');
+            navigate('/entitySetup/new/appSubscription');
         }
     }
 

@@ -26,7 +26,7 @@ const ActiveCustomers = ({ getSelectedCustomer, getAddContract, entityList }) =>
     const navigate = useNavigate();
 
     const onClickFunction = (data) => {
-        navigate(`/entitySetup/${data?.id}`);
+        navigate(`/entitySetup/${data?.id}/appSubscription`);
     }
 
     let customer = [];

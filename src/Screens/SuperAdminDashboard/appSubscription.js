@@ -32,7 +32,7 @@ import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 
 const AppSubscription = ({ getActiveStep }) => {
-  const { id } = useParams();
+  const { id, page } = useParams();
   const navigate = useNavigate();
   const [entityData, setEntityData] = useState();
   const [departmentSpecific, setDepartmentSpecific] = useState(true);
@@ -50,7 +50,7 @@ const AppSubscription = ({ getActiveStep }) => {
   const [selectedPartner, setSelectedPartner] = useState();
   const [plan, setPlan] = useState({
     planName: 'SILVER', allowableRegisteredUsers: "", maximumNumberOfUsers: 0, allowableSites: "", noOfSites: 0, feedbackSupport: [], fees: "", subscriptionStatus: "ACTIVE", billingFrequency: "MONTHLY", discount: 0,
-    subscriptionFeeCriteria: ''
+    subscriptionFeeCriteria: 'PER_ACTIVE_USER_END_OF_MONTH'
   });
   const [billingData, setBillingData] = useState({ firstName: '', lastName: '', email: '', phone: '' });
   // const [autoRenewal,setAutoRenewal] = useState({renewalTerm:'0',allowableRenewalTerm:'0',calendar:'WEEKS'});
@@ -162,15 +162,15 @@ const AppSubscription = ({ getActiveStep }) => {
       ErrorToaster('Entity Name is Mandatory');
       return;
     }
-    if (entityAbbreviation === '') {
+    if (entityAbbreviation === '' && buttonType !== 'saveInProgress') {
       ErrorToaster('Entity Abbreviation is Mandatory');
       return;
     }
-    if (buttonType === 'saveInProgress') {
-      saveInProgressCheck();
-    } else {
-      updateBilling(buttonType);
-    }
+    // if (buttonType === 'saveInProgress') {
+    //   saveInProgressCheck();
+    // } else {
+    updateBilling(buttonType);
+    // }
   }
 
   const saveInProgressCheck = () => {
@@ -201,30 +201,40 @@ const AppSubscription = ({ getActiveStep }) => {
   }
 
   const updateBilling = async (type) => {
-
-    if (entityName === '') {
-      ErrorToaster('Contracting Entity Name Is Mandatory');
-      return;
-    }
-    if (entityAbbreviation === '') {
-      ErrorToaster('Entity Abbreviation Is Mandatory');
-      return;
-    }
-    if (plan?.planName === '' || plan?.allowableSites === '' || plan?.allowableRegisteredUsers === '') {
-      ErrorToaster('Subscription Plan Details Are Mandatory');
-      return;
-    }
-    if (plan?.subscriptionFeeCriteria === '') {
-      ErrorToaster('Subscription Fee Criteria Is Mandatory');
-      return;
-    }
-    if (plan?.billingFrequency === '') {
-      ErrorToaster('Billing Frequency Is Mandatory');
-      return;
-    }
-    if (plan?.fees === '') {
-      ErrorToaster('Subscription Fees Is Mandatory');
-      return;
+    console.log(plan)
+    if (type !== 'saveInProgress') {
+      if (entityName === '') {
+        ErrorToaster('Contracting Entity Name Is Mandatory');
+        return;
+      }
+      if (entityAbbreviation === '') {
+        ErrorToaster('Entity Abbreviation Is Mandatory');
+        return;
+      }
+      if (plan?.planName === '' || plan?.allowableSites === '' || plan?.allowableRegisteredUsers === '' || plan?.feedbackSupport?.length === 0) {
+        ErrorToaster('Subscription Plan Details Are Mandatory');
+        return;
+      }
+      if ((plan?.allowableSites === 'MULTIPLE') && (plan?.noOfSites === 0)) {
+        ErrorToaster('Number of Sites Should be greater than 0 if Multiple');
+        return;
+      }
+      if ((plan?.allowableRegisteredUsers === 'LIMITED') && (plan?.maximumNumberOfUsers === 0)) {
+        ErrorToaster('Maximum Number Of Users Should be greater than 0 if Limited');
+        return;
+      }
+      if (plan?.subscriptionFeeCriteria === '') {
+        ErrorToaster('Subscription Fee Criteria Is Mandatory');
+        return;
+      }
+      if (plan?.billingFrequency === '') {
+        ErrorToaster('Billing Frequency Is Mandatory');
+        return;
+      }
+      if (plan?.fees === '') {
+        ErrorToaster('Subscription Fees Is Mandatory');
+        return;
+      }
     }
     let fileData = [];
     contractFiles?.map(data => {
@@ -292,9 +302,9 @@ const AppSubscription = ({ getActiveStep }) => {
         .then(response => {
           SuccessToaster('Entity Subscription Updated Successfully');
           if (type === 'Continue') {
-            getActiveStep('contractAndBilling');
+            navigate(`/entitySetup/${id}/contractAndBilling`);
           } else {
-            navigate('/user');
+            navigate(isSuperAdminAccess ? '/activeCustomers' : '/entitySitePortal');
           }
         }).catch(error => {
           ErrorToaster('Unexpected Error Updating Entity Subscription');
@@ -305,10 +315,10 @@ const AppSubscription = ({ getActiveStep }) => {
           SuccessToaster('Entity Subscription Added Successfully');
           let newEntityId = response?.data?.id;
           if (type === 'Continue') {
-            window.location = `/app/entitySetup/${newEntityId}`
-            getActiveStep('contractAndBilling');
+            window.location = `/app/entitySetup/${newEntityId}/contractAndBilling`
+            navigate(`/entitySetup/${newEntityId}/contractAndBilling`);
           } else {
-            navigate('/user');
+            navigate(isSuperAdminAccess ? '/activeCustomers' : '/entitySitePortal');
           }
         }).catch(error => {
           ErrorToaster('Unexpected Error Adding Entity Subscription');
@@ -354,10 +364,10 @@ const AppSubscription = ({ getActiveStep }) => {
   return (
     <>
       {isSetupComplete ? <SetupComplete data={plan?.planName === 'TRIAL' ? 'Trial' : 'Customer'} setCompleteValue={getCompleteValue} operation={isSuperAdminAccess ? 'Created' : 'Updated'} isSuperAdminAccess={isSuperAdminAccess} /> : <div className={style.entitySetupBackground}>
-        <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : window.history.go(-1)} />
+        <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : navigate('/entitySitePortal')} />
         <div className={style.stepperMargin}>
           <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
-            <div onClick={() => getActiveStep('appSubscription')}>
+            <div onClick={() => id !== 'new' && navigate(`/entitySetup/${id}/appSubscription`)} className={id === 'new' && style.disabledView}>
               <div className={style.justifyCenter}>
                 <div className={`${style.stepperImgBackground} ${style.activeStepperStyle} `}>
                   <img src={Step5} alt="Step1" className={style.stepperImgStyle} />
@@ -365,7 +375,7 @@ const AppSubscription = ({ getActiveStep }) => {
               </div>
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SUBSCRIPTION PLAN</p>
             </div>
-            <div onClick={() => getActiveStep('contractAndBilling')}>
+            <div onClick={() => id !== 'new' && navigate(`/entitySetup/${id}/contractAndBilling`)} className={id === 'new' && style.disabledView}>
               <div className={style.justifyCenter}>
                 <div className={`${style.stepperImgBackground}`}>
                   <img src={Step3} alt="Step2" className={style.stepperImgStyle} />
@@ -373,7 +383,7 @@ const AppSubscription = ({ getActiveStep }) => {
               </div>
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>CONTRACT & BILLING</p>
             </div>
-            <div onClick={() => getActiveStep('entitySetup')}>
+            <div onClick={() => id !== 'new' && navigate(`/entitySetup/${id}/entitySetup`)} className={id === 'new' && style.disabledView}>
               <div className={style.justifyCenter}>
                 <div className={`${style.stepperImgBackground}`}>
                   <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
@@ -381,7 +391,7 @@ const AppSubscription = ({ getActiveStep }) => {
               </div>
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
             </div>
-            <div onClick={() => entityData?.multiSiteEntity && getActiveStep('siteInformation')} className={!entityData?.multiSiteEntity && style.disabledView}>
+            <div onClick={() => (id !== 'new' && entityData?.multiSiteEntity) && navigate(`/entitySetup/${id}/siteInformation`)} className={(!entityData?.multiSiteEntity || id === 'new') && style.disabledView}>
               <div className={style.justifyCenter}>
                 <div className={`${style.stepperImgBackground}`}>
                   <img src={Step3} alt="Step4" className={style.stepperImgStyle} />
@@ -390,7 +400,7 @@ const AppSubscription = ({ getActiveStep }) => {
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
             </div>
             {isSuperAdminAccess && (
-              <div onClick={() => getActiveStep('entitySystemAdmin')}>
+              <div onClick={() => id !== 'new' && navigate(`/entitySetup/${id}/entitySystemAdmin`)} className={id === 'new' && style.disabledView}>
                 <div className={style.justifyCenter}>
                   <div className={`${style.stepperImgBackground}`}>
                     <img src={Step2} alt="Step5" className={style.stepperImgStyle} />
@@ -430,11 +440,11 @@ const AppSubscription = ({ getActiveStep }) => {
               <div className={`${style.newContractFromCloneBoxStyle}`}>
                 <div className={`${style.extentionGrid}`}>
                   <div className={style.extentionLableStyle}>Contracting Entity Name*</div>
-                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Name" value={entityName} onChange={(e) => setEntityName(e.target.value)} />
+                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Name" value={entityName} onChange={(e) => setEntityName(e.target.value.slice(0, 50))} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>Entity Abbreviation*</div>
-                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Abbreviation" value={entityAbbreviation} onChange={(e) => setEntityAbbreviation(e.target.value.toUpperCase())} />
+                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Abbreviation" value={entityAbbreviation} onChange={(e) => setEntityAbbreviation(e.target.value.slice(0, 10).toUpperCase())} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>Subscription Plan *</div>
@@ -458,13 +468,13 @@ const AppSubscription = ({ getActiveStep }) => {
                     <CommonSelectField className={`${style.fullWidth} `}
                       defaultValue={plan?.allowableSites}
                       value={plan?.allowableSites ? plan?.allowableSites : ''}
-                      onChange={(e) => setPlan({ ...plan, allowableSites: e.target.value })}
+                      onChange={(e) => setPlan({ ...plan, allowableSites: e.target.value, noOfSites: 0 })}
                       firstOptionLabel={'Select Allowable Sites'} firstOptionValue={''}
                       valueList={['SINGLE', "MULTIPLE"]}
                       labelList={['Single', "Multiple"]}
                       disabledList={[false, false]} />
                     <div className={`${style.extentionLableStyle} ${style.marginLeft50}`}>Number Of Sites*</div>
-                    <InputGroup className={style.fullWidth} value={plan?.noOfSites} disabled={plan?.allowableSites === 'SINGLE'} onChange={(e) => setPlan({ ...plan, noOfSites: e.target.value })} />
+                    <InputGroup className={style.fullWidth} value={plan?.noOfSites} disabled={plan?.allowableSites === 'SINGLE'} onChange={(e) => setPlan({ ...plan, noOfSites: e.target.value.slice(0, 4) })} />
                   </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
@@ -475,13 +485,13 @@ const AppSubscription = ({ getActiveStep }) => {
                     <CommonSelectField className={`${style.fullWidth} `}
                       defaultValue={plan?.allowableRegisteredUsers}
                       value={plan?.allowableRegisteredUsers ? plan?.allowableRegisteredUsers : ''}
-                      onChange={(e) => setPlan({ ...plan, allowableRegisteredUsers: e.target.value })}
+                      onChange={(e) => setPlan({ ...plan, allowableRegisteredUsers: e.target.value, maximumNumberOfUsers: 0 })}
                       firstOptionLabel={'Select Allowable Registered Users'} firstOptionValue={''}
                       valueList={['LIMITED', "UNLIMITED"]}
                       labelList={['Limited', "Unlimited"]}
                       disabledList={[false, false]} />
                     <div className={`${style.extentionLableStyle} ${style.marginLeft50}`}>Maximum Number Of Users*</div>
-                    <InputGroup className={style.fullWidth} disabled={plan?.allowableRegisteredUsers === 'UNLIMITED'} value={plan?.maximumNumberOfUsers} onChange={(e) => setPlan({ ...plan, maximumNumberOfUsers: e.target.value })} />
+                    <InputGroup className={style.fullWidth} disabled={plan?.allowableRegisteredUsers === 'UNLIMITED'} value={plan?.maximumNumberOfUsers} onChange={(e) => setPlan({ ...plan, maximumNumberOfUsers: e.target.value.slice(0, 4) })} />
                   </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
