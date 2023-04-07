@@ -199,6 +199,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 ErrorToaster('Adding Activity To List Failed');
             })
         setAdminActivity({ ...adminActivity, activity: '' })
+        setShowAdminActivity(false);
+        setEditAdminActivitySelected(false);
         setIsLoading(false);
     }
 
@@ -231,7 +233,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     // }
 
     const handleAdminActivity = (name, value) => {
-        if (name === 'schedule' && adminActivity?.asNeeded) {
+        if (name === 'schedule' && value !== 'NA') {
+            setAdminActivity({ ...adminActivity, [name]: value, asNeeded: false })
+        } else if (name === 'schedule' && adminActivity?.asNeeded) {
             setAdminActivity({ ...adminActivity, [name]: "NA" });
         } else {
             setAdminActivity({ ...adminActivity, [name]: value });
@@ -271,8 +275,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         // let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
-
-    console.log('metadata', metadata);
 
     return (
         <div>
@@ -384,18 +386,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                             </div>
                             <div className={style.threeFieldWidth}>
                                 <CommonLabel value='Frequency*' />
-                                {/* <Select
-                                    displayEmpty
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                    className={`${style.fullWidth}`}
-                                    value={adminActivity?.schedule}
-                                    onChange={(e) => handleAdminActivity('schedule', e.target.value)}
-                                >
-                                    <MenuItem value="">Select Frequecy</MenuItem>
-                                    <MenuItem value={'WEEK'}>Per Week</MenuItem>
-                                    <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                                    <MenuItem value={'YEAR'}>Per Contract Year</MenuItem>
-                                </Select> */}
                                 <CommonSelectField className={`${style.fullWidth}`}
                                     value={adminActivity?.schedule || ''}
                                     onChange={(e) => handleAdminActivity('schedule', e.target.value)}

@@ -625,7 +625,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
               <CommonCheckBox value="NA" disabled={maxPlannedAbsence?.notApplicable} checked={maxPlannedAbsence?.includingHoliday} onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, includingHoliday: e.target.checked })} label="Including Holidays" />
             </div>
             <div className={style.marginLeft20}>
-              <CommonCheckBox value="NA" checked={maxPlannedAbsence?.notApplicable} onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, notApplicable: e.target.checked })} label="NA" />
+              <CommonCheckBox value="NA" checked={maxPlannedAbsence?.notApplicable} onChange={(e) => setMaxPlannedAbsence({ ...maxPlannedAbsence, notApplicable: e.target.checked, includingHoliday: false, days: 0 })} label="NA" />
             </div>
           </div>
         </div>

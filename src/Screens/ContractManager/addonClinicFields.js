@@ -128,8 +128,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
         data.paymentApprover = users?.filter(data => data?.id === workFlowValues?.[1]?.workFlowUser?.id)?.map(data => data)[0];
       }
 
-      console.log('data approver', users, workFlowValues, data?.approver);
-
       temp.push(data);
       setMetadata(temp);
       let selectedServiceTemp = selectedServices;
@@ -472,14 +470,12 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   const onAdditionalServicePaymentApproverChange = (name, value) => {
     let temp = metadata;
     temp?.filter(data => data?.performingActivity === name)?.map(data => {
-      console.log('temp check', data?.performingActivity);
       data.paymentApprover = value;
     });
     setMetadata(temp);
     getFields();
   }
 
-  console.log('metadata', metadata);
 
   return (
     <div>

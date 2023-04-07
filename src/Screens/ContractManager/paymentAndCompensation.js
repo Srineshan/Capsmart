@@ -121,7 +121,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     const setTimesheetPaymentsValue = () => {
         if (timeSheetTabs?.length && timesheetPayments?.length === 0) {
-            console.log('init', timesheetPayments)
             let temp = [];
             timeSheetTabs?.map(data => {
                 temp.push({
@@ -455,7 +454,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         //     ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7))?.toLocaleString('en-gb'), notApplicable: false
                                         // })}
                                         disabled={dollarRate?.notApplicable}
-                                        value={Number(dollarRate?.hour)?.toLocaleString()}
+                                        value={dollarRate?.hour === null || dollarRate?.hour === '' ? null : Number(dollarRate?.hour)?.toLocaleString()}
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                         }}

@@ -24,11 +24,9 @@ import SurgerySessionFields from './surgerySessionFields';
 import { workFlowDataGenerator } from './workflowDataGenerator';
 import { CLINIC, SURGERY, ONCALL, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING } from '../../Constants';
 import Notes from '../../Components/Notes';
-import LoadingScreen from '../../Components/LoadingScreen';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
-import RedirectingPopUp from './redirectingPopUp';
 
 import style from './index.module.scss';
 
@@ -49,7 +47,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [newActivity, setNewActivity] = useState('');
   const [selectedActivity, setSelectedActivity] = useState([]);
   const [item, setItem] = useState();
-  const [isRecent, setIsRecent] = useState(false);
   const [locationList, setLocationList] = useState([]);
   const [newLocation, setNewLocation] = useState('');
   const [showLocation, setShowLocation] = useState(false);
@@ -67,7 +64,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [isWorkFlowUpdated, setIsWorkFlowUpdated] = useState(false);
   const [timeCommitment, setTimeCommitment] = useState({ value: 0, frequency: '' });
   const [contractTermPeriod, setContractTermPeriod] = useState({ start: null, end: null });
-  const [allowableWorkingHours, setAllowableWorkingHours] = useState({ from: new Date()?.toLocaleTimeString('it-IT').toString(), to: new Date()?.toLocaleTimeString('it-IT').toString() });
   const [isShowPDF, setIsShowPDF] = useState(false);
   const [pdfToOpen, setPdfToOpen] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
@@ -79,15 +75,21 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [isShowNotesList, setIsShowNotesList] = useState(false);
   const [isShowDocumentsList, setIsShowDocumentsList] = useState(false);
   const [contractDocumentList, setContractDocumentList] = useState([]);
-  const [notesData, setNotesData] = useState([]);
   const [continueLoading, setContinueLoading] = useState(false);
 
   useEffect(() => {
+    getContractedServices();
+    getUserData();
+    getSites();
     getServiceList();
+    // getActivityList();
+    getLocations();
+    getContractNotes();
   }, [])
 
   useEffect(() => {
     if (editService) {
+      console.log('selectedSerice', selectedService);
       setSiteData(selectedService?.sites);
       getSelectedSites(selectedService?.sites);
       getNewLocation(selectedService?.locations);
@@ -103,9 +105,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setShowLocation(selectedService?.locationSpecified);
       setSelectedLocation(selectedService?.serviceLocations?.map(data => data));
       removeSelectedLocationFromList();
+      setServiceTypeId(serviceTypeList?.filter(type => type?.serviceType === selectedService?.activityType?.activityType)?.map(data => data?.id)[0]);
     }
-    console.log('selectedService', selectedService?.sites);
-  }, [selectedService]);
+  }, [selectedService, serviceTypeList]);
 
   useEffect(() => {
     if (siteData?.length !== 0) {
@@ -115,7 +117,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       }))
       setSelectedDeptId(temp);
     }
-    console.log('site Data check', siteData);
   }, [siteData])
 
   const removeSelectedLocationFromList = () => {
@@ -172,18 +173,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }, [selectedDeptId])
 
   useEffect(() => {
-    getContractedServices();
-    getUserData();
-    getSites();
-    getActivityList();
-    getLocations();
-    getContractNotes();
-  }, [])
-
-  useEffect(() => {
-    setNewActivity('');
-    getActivityList();
-  }, [serviceTypeId])
+    if (serviceTypeId !== '') {
+      setNewActivity('');
+      getActivityList();
+    }
+  }, [serviceTypeId, siteData])
 
   useEffect(() => {
     if (selectContractInfo === "INDIVIDUAL") {
@@ -205,7 +199,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const getActivityList = async () => {
-    const { data: activityList } = await GET(`contract-managment-service/contracts/activities?siteTypeId=${siteTypeId}&&contractedServiceTypeId=${serviceTypeId}`);
+    let dept = [];
+    siteData?.map(data => data?.departmentList?.departments?.map(deptData => {
+      dept.push(deptData?.id)
+    }))
+    const { data: activityList } = await GET(`contract-managment-service/contracts/activities?siteTypeId=${siteTypeId}&&contractedServiceTypeId=${serviceTypeId}&&departments=${dept}`);
     setActivity(activityList);
   }
 
@@ -236,17 +234,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   const getUserData = async () => {
     const { data: userData } = await GET(`user-management-service/user?contractID=${contractId}`);
-    setIsLoading(true);
     if (userData) {
       let user = userData?.filter(user => !user?.contracts?.map(data => data?.id)?.includes(''))?.map(data => data);
       setUsers(user?.filter(userData => userData?.roles?.map(role => role?.roleName)?.includes('Activity Logger'))?.map(data => data));
     }
-    setIsLoading(false);
   }
 
-  console.log('users', users);
 
   const activityToAdd = async () => {
+    let dept = [];
+    siteData?.map(site => site?.departmentList?.departments?.map(deptData => {
+      dept.push(deptData.id);
+    }))
     if (activity?.some(data => data?.activity?.activity?.replace(' ', '')?.toLowerCase()?.includes(newActivity?.replace(' ', '')?.toLowerCase()))) {
       return;
     }
@@ -266,7 +265,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       "siteTypeId": siteTypeId,
       "tenant": {
         "id": TenantID
-      }
+      },
+      "departments": dept,
     }
     await POST(`contract-managment-service/contracts/activities`, data)
       .then(response => {
@@ -339,7 +339,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.id, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.id, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
           }
           if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
-            POST(`timesheet - management - service / workflow`, JSON.stringify(workFlowData)).
+            POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
               then(response => {
                 data.workFlow = {
                   id: response?.data,
@@ -400,7 +400,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         data.activityType.activityType = serviceType;
         // data.activityType.id = serviceTypeId;
         data.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
-        data.performingActivity = { activity: data?.performingActivity };
+        data.performingActivity =
+          typeof data.performingActivity !== 'object' ? { activity: data?.performingActivity } : data?.performingActivity
+          ;
         data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
         if (data?.approver !== undefined) {
           let workFlowData;
@@ -443,12 +445,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setContinueLoading(false);
   }
 
+  console.log('metadata', metadata);
+
   const handleSave = async (buttonType) => {
     if (serviceType === '') {
       ErrorToaster('Activity Type Selection is Mandatory');
       return;
     }
-    if (showLocation && selectedLocation?.length === 0) {
+    if ((serviceTypeTemplate === ADDON && metadata?.[0]?.locationSpecified && metadata?.[0]?.locations?.length === 0)) {
+      ErrorToaster('Atleast one location has to be selected if yes');
+      return;
+    }
+    if ((serviceTypeTemplate !== ADDON && showLocation && selectedLocation?.length === 0)) {
       ErrorToaster('Atleast one location has to be selected if yes');
       return;
     }
@@ -556,7 +564,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         },
         "activities": activities,
 
-        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) &&
+        ...(((serviceTypeTemplate === SUPPLEMENTAL && dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === ADMINISTRATIVE && dataValues?.dedicatedHoursSpecified)) &&
         {
           "hoursBorrowed": {
             "activityType": {
@@ -631,6 +639,16 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "payableAmount": {
           "value": parseInt(dataValues?.sessionAmount)
         },
+        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && {
+          "hourlyRate": {
+            "value": (dataValues?.sessionAmount / dataValues?.totalSession).toFixed(2)
+          },
+        }),
+        ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(serviceTypeTemplate) && {
+          "hourlyRate": {
+            "value": (dataValues?.sessionAmount / dataValues?.sessionDuration).toFixed(2)
+          },
+        }),
         "totalSessions": {
           "value": parseInt(dataValues?.totalSession),
           "frequency": dataValues?.totalSessionFrequency
@@ -673,6 +691,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 "payableAmount": {
                   "value": parseFloat(dataValues?.weekdayPayment)
                 },
+                "hourlyRate": {
+                  "value": (dataValues?.weekdayPayment / dataValues?.weekdayDuration).toFixed(2)
+                },
                 "paymentNotApplicable": dataValues?.weekdayPaymentNa
               },
               "weekend": {
@@ -695,6 +716,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 "payableAmount": {
                   "value": parseFloat(dataValues?.weekendPayment)
                 },
+                "hourlyRate": {
+                  "value": (dataValues?.weekendPayment / dataValues?.weekendDuration).toFixed(2)
+                },
                 "paymentNotApplicable": dataValues?.weekendPaymentNa
               },
               "holiday": {
@@ -715,6 +739,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 },
                 "payableAmount": {
                   "value": parseFloat(dataValues?.holidayPayment)
+                },
+                "hourlyRate": {
+                  "value": (dataValues?.holidayPayment / dataValues?.holidayDuration).toFixed(2)
                 },
                 "paymentNotApplicable": dataValues?.holidayPaymentNa
               }
@@ -899,10 +926,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const handleClosePopoverDoc = () => {
     setAnchorElDoc(null);
   };
-
-  if (isLoading) {
-    return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
-  }
 
   console.log('sites in add services', siteData);
 

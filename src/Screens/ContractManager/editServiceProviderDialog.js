@@ -80,7 +80,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       data?.departmentList?.departments?.map(deptData => {
         dept.push({ id: deptData?.id, name: deptData?.departmentName?.name, title: deptData?.departmentResponsibility?.title || '', title_id: deptData?.departmentResponsibility?.id });
         if (deptData?.departmentResponsibility?.title !== '' && deptData?.departmentResponsibility?.title !== undefined) {
-          let valueString = `${data?.siteName?.siteName} - ${deptData?.departmentName?.name} - ${deptData?.departmentResponsibility?.title}`
+          let valueString = `${data?.siteName?.siteName} -- ${deptData?.departmentName?.name} -- ${deptData?.departmentResponsibility?.title}`
           if (!deptValue.includes(valueString)) {
             deptValue.push(valueString);
           }
@@ -88,7 +88,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       })
       temp.push({ id: data?.id, name: data?.siteName?.siteName, title: data?.siteResponsibility?.title || '', title_id: data?.siteResponsibility?.id, department: dept });
       if (data?.siteResponsibility?.title !== '' && data?.siteResponsibility?.title !== undefined) {
-        let valueString = `${data?.siteName?.siteName} - ${data?.siteResponsibility?.title}`;
+        let valueString = `${data?.siteName?.siteName} -- ${data?.siteResponsibility?.title}`;
         if (!siteValue.includes(valueString)) {
           siteValue.push(valueString);
         }
@@ -181,7 +181,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} - ${siteLevelTitle?.title}`]);
+    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} -- ${siteLevelTitle?.title}`]);
     let temp = sites;
     temp?.filter(data => data?.id === siteLevelSite?.id)?.map(data => {
       data.title = siteLevelTitle?.title;
@@ -197,7 +197,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    let valueString = `${departmentLevelSite?.name} - ${departmentLevelDepartment?.name} - ${departmentLevelTitle?.title}`
+    let valueString = `${departmentLevelSite?.name} -- ${departmentLevelDepartment?.name} -- ${departmentLevelTitle?.title}`
     setDepartmentTitleValues([...departmentTitleValues, valueString]);
     let temp = sites;
     let siteDepartment = sites?.filter(data => data?.id === departmentLevelSite?.id)?.map(data => data?.department)[0];
@@ -219,27 +219,28 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   }
 
   const handleDeptRemove = (values, index) => {
-    let data = values?.split(' - ');
-    let site = data?.[0];
-    let dept = data?.[1];
-    let title = data?.[2];
-    let temp = sites;
-    let siteDepartment = sites?.filter(data => data?.name === site)?.map(data => data?.department)[0];
-    siteDepartment?.filter(data => data?.name === dept && data?.title === title)?.map(data => {
-      data.title = '';
-      data.title_id = '';
+    let data = values?.split('--');
+    let site = data?.[0]?.trim();
+    let dept = data?.[1]?.trim();
+    let title = data?.[2]?.trim();
+    console.log('dept value', data);
+    sites?.filter(data => data?.name === site)?.map(data => {
+      data?.department?.map(deptData => {
+        if (deptData?.name === dept && deptData?.title === title) {
+          console.log('inside condition')
+          deptData.title = '';
+          deptData.title_id = null;
+        }
+      }
+      )
     });
-    temp?.filter(data => data?.name === site && data?.title)?.map(data => {
-      data.department = siteDepartment;
-    });
-    setSites(temp);
     setDepartmentTitleValues(departmentTitleValues?.filter((data, indexVal) => index !== indexVal)?.map(data => data));
   }
 
   const handleSiteRemove = (values, index) => {
-    let data = values?.split(' - ');
-    let site = data?.[0];
-    let title = data?.[1];
+    let data = values?.split('--');
+    let site = data?.[0]?.trim();
+    let title = data?.[1]?.trim();
     let temp = sites;
     temp?.filter(data => data?.name === site && data?.title === title)?.map(data => {
       data.title = '';
@@ -263,7 +264,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
 
   const handleSuffixChange = (id, value) => {
     console.log('value', value);
-    setUserDetails({ ...userDetails, suffix: { id: id, value: value } });
+    setUserDetails({ ...userDetails, suffix: { id: id, suffix: value } });
   }
 
   const getSiteData = () => {
