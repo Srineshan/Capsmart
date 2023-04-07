@@ -58,6 +58,11 @@ const SetPassword = () => {
   }, [password]);
 
   const handlePasswordStrengthCheck = () => {
+    if (/^(?=.*[@$!%#?&^()*~`])/.test(password)) {
+      setIsSpecialCharacterAvailable(true);
+    } else {
+      setIsSpecialCharacterAvailable(false);
+    }
     if (/^(?=.*[A-Z])/.test(password)) {
       setIsCapitalCharacterAvailable(true);
     } else {
@@ -73,12 +78,7 @@ const SetPassword = () => {
     } else {
       setIsNumberAvailable(false);
     }
-    if (/^(?=.[@$!%#?&])/.test(password)) {
-      setIsSpecialCharacterAvailable(true);
-    } else {
-      setIsSpecialCharacterAvailable(false);
-    }
-    if (/^[A-Za-z\d@$!%*#?&]{8,}/.test(password)) {
+    if (/^[A-Za-z\d@$!%*#?&^()*~`]{8,}/.test(password)) {
       setIsMin8CharacterAvailable(true);
     } else {
       setIsMin8CharacterAvailable(false);

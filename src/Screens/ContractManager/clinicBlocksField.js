@@ -26,7 +26,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                 "value": 0
             },
             "maximum": {
-                "value": 0
+                "value": 99999999
             },
             "frequency": "WEEK",
             "startDate": contractTermPeriod?.start,
@@ -105,7 +105,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                     "value": 0
                 },
                 "maximum": {
-                    "value": 0
+                    "value": 99999999
                 },
                 "frequency": "WEEK",
                 "startDate": contractTermPeriod?.start,
@@ -436,6 +436,10 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText type='tel' maxLength="2" placeholder='0' className={style.serviceProvidedEditableTextStyle} value={metadata?.contractedSchedules?.[0]?.minimum?.value} onChange={(e) => onSameTargetChange('contractedSchedules', e, 'minimum')} />
                             </div> */}
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                                <div className={style.textElement}>MAX</div>
+                                <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.contractedSchedules?.[0]?.maximum?.value} onChange={(e) => onSameTargetChange('contractedSchedules', e, 'maximum')} />
+                            </div> */}
                             <CommonTextField
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
@@ -445,17 +449,13 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 value={metadata?.contractedSchedules?.[0]?.minimum?.value === 0 ? '' : metadata?.contractedSchedules?.[0]?.minimum?.value}
                                 type='number'
                             />
-                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
-                                <div className={style.textElement}>MAX</div>
-                                <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.contractedSchedules?.[0]?.maximum?.value} onChange={(e) => onSameTargetChange('contractedSchedules', e, 'maximum')} />
-                            </div> */}
                             <CommonTextField
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
                                 }}
                                 className={style.threeFieldWidth}
                                 onChange={(e) => onSameTargetChange('contractedSchedules', parseFloat(e.target.value.slice(0, 5)), 'maximum')}
-                                value={metadata?.contractedSchedules?.[0]?.maximum?.value === 0 ? '' : metadata?.contractedSchedules?.[0]?.maximum?.value}
+                                value={(metadata?.contractedSchedules?.[0]?.maximum?.value === 0 || metadata?.contractedSchedules?.[0]?.maximum?.value === 99999999) ? '' : metadata?.contractedSchedules?.[0]?.maximum?.value}
                                 type='number'
                             />
                             <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
@@ -474,6 +474,10 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 <div className={style.textElement}>WITH NURSE</div>
                                 <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.patientsSeenTargets?.[0]?.withNurse?.value} onChange={(e) => onSameTargetChange('patientsSeenTargets', e, 'withNurse')} />
                             </div> */}
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
+                                <div className={style.textElement}>WITHOUT NURSE</div>
+                                <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value} onChange={(e) => onSameTargetChange('patientsSeenTargets', e, 'withoutNurse')} />
+                            </div> */}
                             <CommonTextField
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>WITH NURSE</InputAdornment>,
@@ -484,10 +488,6 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                                 type='number'
                                 disabled={metadata?.patientsSeenTargets?.[0]?.noTargetApplicable}
                             />
-                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                                <div className={style.textElement}>WITHOUT NURSE</div>
-                                <EditableText placeholder="" type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} value={metadata?.patientsSeenTargets?.[0]?.withoutNurse?.value} onChange={(e) => onSameTargetChange('patientsSeenTargets', e, 'withoutNurse')} />
-                            </div> */}
                             <CommonTextField
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>WITHOUT NURSE</InputAdornment>,

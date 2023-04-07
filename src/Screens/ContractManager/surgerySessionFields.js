@@ -18,8 +18,8 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
     const limit5 = 5;
 
     const [metadata, setMetadata] = useState({
-        min: '0',
-        max: '0',
+        min: 0,
+        max: 99999999,
         frequency: 'NA',
         withNurse: '0',
         withoutNurse: '0',
@@ -74,8 +74,8 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
 
     const resetMetadata = () => {
         setMetadata({
-            min: '0',
-            max: '0',
+            min: 0,
+            max: 99999999,
             frequency: 'NA',
             withNurse: '0',
             withoutNurse: '0',
@@ -107,29 +107,33 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
         });
     }
 
+    console.log(metadata, serviceSelected)
+
     const setSelectedValues = () => {
-        setMetadata({
-            ...metadata,
-            refId: serviceSelected?.refId,
-            min: serviceSelected?.contractedSchedules?.[0]?.minimum?.value,
-            max: serviceSelected?.contractedSchedules?.[0]?.maximum?.value,
-            frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
-            withNurse: serviceSelected?.patientsSeenTargets?.[0]?.withNurse?.value,
-            withoutNurse: serviceSelected?.patientsSeenTargets?.[0]?.withoutNurse?.value,
-            noTargetApplicable: serviceSelected?.patientsSeenTargets?.[0]?.noTargetApplicable,
-            additionalScheduleValue: serviceSelected?.additionalSchedule?.value,
-            additionalScheduleFrequency: serviceSelected?.additionalSchedule?.frequency,
-            additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
-            billableService: serviceSelected?.billableService,
-            rateType: serviceSelected?.rateType,
-            sessionDuration: serviceSelected?.duration?.hours || '0',
-            sessionAmount: serviceSelected?.payableAmount?.value,
-            totalSession: serviceSelected?.totalSessions?.value,
-            totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
-            workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
-            workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
-            serviceDays: serviceSelected?.serviceDays,
-        });
+        if (serviceSelected) {
+            setMetadata({
+                ...metadata,
+                refId: serviceSelected?.refId,
+                min: serviceSelected?.contractedSchedules?.[0]?.minimum?.value,
+                max: serviceSelected?.contractedSchedules?.[0]?.maximum?.value,
+                frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
+                withNurse: serviceSelected?.patientsSeenTargets?.[0]?.withNurse?.value,
+                withoutNurse: serviceSelected?.patientsSeenTargets?.[0]?.withoutNurse?.value,
+                noTargetApplicable: serviceSelected?.patientsSeenTargets?.[0]?.noTargetApplicable,
+                additionalScheduleValue: serviceSelected?.additionalSchedule?.value,
+                additionalScheduleFrequency: serviceSelected?.additionalSchedule?.frequency,
+                additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
+                billableService: serviceSelected?.billableService,
+                rateType: serviceSelected?.rateType,
+                sessionDuration: serviceSelected?.duration?.hours || '0',
+                sessionAmount: serviceSelected?.payableAmount?.value,
+                totalSession: serviceSelected?.totalSessions?.value,
+                totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
+                workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+                workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
+                serviceDays: serviceSelected?.serviceDays,
+            });
+        }
     }
 
 
@@ -182,7 +186,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         }}
                         className={style.threeFieldWidth}
                         onChange={(e) => e.target.value >= 0 && handleValueChange('max', parseFloat(e.target.value.slice(0, 5)))}
-                        value={metadata?.max === 0 ? '' : metadata?.max}
+                        value={(metadata?.max === 0 || metadata?.max === 99999999) ? '' : metadata?.max}
                         type='number'
                     />
                     <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
