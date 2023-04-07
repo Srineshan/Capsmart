@@ -71,7 +71,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const getUserData = async () => {
     const { data: userData } = await GET(`user-management-service/user?contractID=${contractId}`);
     if (userData) {
-      setUsers(userData);
+      setUsers(userData?.filter(user => !user?.contracts?.map(data => data?.id)?.includes(''))?.map(data => data));
     }
     setIsLoading(false);
   }
@@ -236,6 +236,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
           </Dialog>
         </div>
       ) : (
+        <></>
         (
           <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Contracted Services Provider(s)'} title={'NO USERS FOUND'} description={'No Contracted Service Provider Is Found.'} buttonText={'ADD CONTRACTOR'} />
         )

@@ -57,6 +57,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const limit4 = 4;
     const limit5 = 5;
     const limit7 = 7;
+    const limit9 = 9;
 
     const handleContinue = async (buttonType) => {
         if (!continueLoading) {
@@ -353,6 +354,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         }
     }
 
+    console.log(dollarRate?.hour)
+
     if (isLoading) {
         return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
     }
@@ -446,15 +449,18 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <CommonLabel value='Dollar Hourly Rate*' />
                                 <div className={style.twoCol}>
                                     <CommonTextField
-                                        type="number"
-                                        min="0"
+                                        // type="text"
+                                        // min="0"
+                                        // onBlur={(e) => setDollarRate({
+                                        //     ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7))?.toLocaleString('en-gb'), notApplicable: false
+                                        // })}
                                         disabled={dollarRate?.notApplicable}
-                                        value={dollarRate?.hour}
+                                        value={Number(dollarRate?.hour)?.toLocaleString()}
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                         }}
                                         onChange={(e) => setDollarRate({
-                                            ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7)), notApplicable: false
+                                            ...dollarRate, hour: (e.target.value.slice(0, limit9)).replace(/,/g, ""), notApplicable: false
                                         })}
                                     />
                                     <CommonCheckBox value="NA" checked={dollarRate?.notApplicable} onChange={(e) => setDollarRate({ ...dollarRate, notApplicable: e.target.checked, hour: parseFloat(0) })} label="NA" />

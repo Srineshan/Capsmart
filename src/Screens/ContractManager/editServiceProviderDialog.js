@@ -60,7 +60,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   useEffect(() => {
     setNpin({ npin: userProviderData?.npin?.npin, missing: userProviderData?.npin?.missing, na: userProviderData?.npin?.notApplicable });
     setSelectedRoles(userProviderData?.roles || []);
-    setUserDetails({ ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '' });
+    setUserDetails({ ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: { suffix: userProviderData?.name?.suffix?.suffix || '', id: userProviderData?.name?.suffix?.id }, email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '' });
     setProviderType(userProviderData?.serviceProviderType || {});
     setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
     setAddress({ addressLine: userProviderData?.address?.addressLine || '', city: userProviderData?.address?.city || '', state: userProviderData?.address?.state || '', zipcode: userProviderData?.address?.zipcode || '' });
@@ -262,6 +262,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   }
 
   const handleSuffixChange = (id, value) => {
+    console.log('value', value);
     setUserDetails({ ...userDetails, suffix: { id: id, value: value } });
   }
 
@@ -362,7 +363,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
         "firstName": userDetails?.firstName,
         "middleName": userDetails?.middleName,
         "lastName": userDetails?.lastName,
-        "suffix": userDetails?.suffix
+        "suffix": userDetails?.suffix,
       },
       "userType": "CONTRACTED_SERVICE_PROVIDER_USER",
       "contracts": contractData,
@@ -496,7 +497,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <CommonLabel value='Suffix*' />
             <div className={style.grid3}>
-              <SuffixList value={userDetails?.suffix?.id} onChangeFunc={(id, value) => handleSuffixChange(id, value)} className={[style.fullWidth]} />
+              <SuffixList value={userDetails?.suffix?.id || ''} onChangeFunc={(id, value) => handleSuffixChange(id, value)} className={[style.fullWidth]} />
             </div>
           </div>
 
