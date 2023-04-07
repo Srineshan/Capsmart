@@ -93,9 +93,9 @@ const SetPassword = () => {
   }, [tenantId])
 
   const getEntityId = async () => {
-    await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
+    await axios(`https://mytimesmart.com/entity-service/entityID`, {
       method: 'GET',
-      // headers: { "X-subdomain": "smmc-trial" },
+      headers: { "X-subdomain": "smmc-trial" },
     }).then(response => {
       var cookie = new Cookie();
       cookie.set('entityId', response?.data?.id);
@@ -121,7 +121,7 @@ const SetPassword = () => {
   }
 
   const getUser = async () => {
-    await axios('https://rest.mytimesmart.com/user-management-service/user', {
+    await axios('https://mytimesmart.com/user-management-service/user', {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -152,7 +152,7 @@ const SetPassword = () => {
           "password": password,
         }
       }
-      axios('https://rest.mytimesmart.com/user-management-service/user/updatepassword', {
+      axios('https://mytimesmart.com/user-management-service/user/updatepassword', {
         method: 'POST',
         headers: headers,
         data: JSON.stringify(data),
