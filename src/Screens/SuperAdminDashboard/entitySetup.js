@@ -205,7 +205,7 @@ const EntitySetup = () => {
 
   const mandatoryFieldCheck = (buttonType) => {
     console.log(address)
-    if (entity?.customerType === ('' || null)) {
+    if (entity?.customerType === ('' || null || undefined)) {
       ErrorToaster('Customer Type Is Mandatory');
       return;
     }
