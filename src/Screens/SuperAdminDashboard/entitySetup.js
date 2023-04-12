@@ -31,7 +31,7 @@ import Welcome from './welcome';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 const EntitySetup = () => {
-  let { id } = useParams();
+  let { id, page } = useParams();
   let navigate = useNavigate();
   const [tags, setTags] = useState([]);
   const [departmentSpecific, setDepartmentSpecific] = useState(false);
@@ -63,6 +63,10 @@ const EntitySetup = () => {
     getEntityData();
     getDepartmentData();
   }, []);
+
+  useEffect(() => {
+    getEntityData();
+  }, [id, page]);
 
   useEffect(() => {
     getDepartmentData();
@@ -111,7 +115,13 @@ const EntitySetup = () => {
     setEntityData(data);
     let siteData = data?.sites?.filter(data => data.primarySite === true)?.map(data => data)[0];
     setEntity({ id: '', customerType: data?.industryId?.id, name: data?.entityName?.entityName, type: { type: data?.entityType?.type, id: data?.entityType?.id }, subdomain: data?.subdomain, multiSiteEntity: data?.multiSiteEntity, primarySiteToUseApp: data.canPrimarySiteToUseApp, npin: data?.npin?.id, npinNA: data?.npin?.notApplicable, officialEmailDomain: data?.officialEmailDomain?.officialEmail });
-    setAddress({ city: siteData?.address?.city, state: siteData?.address?.state, zipcode: siteData?.address?.zipcode, addressLine: siteData?.address?.addressLine, country: siteData?.address?.country });
+    setAddress({
+      city: siteData?.address?.city ? siteData?.address?.city : '',
+      state: siteData?.address?.state ? siteData?.address?.state : '',
+      zipcode: siteData?.address?.zipcode ? siteData?.address?.zipcode : '',
+      addressLine: siteData?.address?.addressLine ? siteData?.address?.addressLine : '',
+      country: siteData?.address?.country ? siteData?.address?.country : ''
+    });
     setSelectDepartments(siteData?.departmentList?.departments);
     setDepartmentSpecific(siteData?.canSetupDepartment);
     setLogo({ ...logo, url: data?.logo?.file?.fileURL || '' });
@@ -194,28 +204,39 @@ const EntitySetup = () => {
 
 
   const mandatoryFieldCheck = (buttonType) => {
-    if (entity?.customerType === '' || entity?.customerType === null) {
+    console.log(address)
+    if (entity?.customerType === ('' || null)) {
       ErrorToaster('Customer Type Is Mandatory');
       return;
     }
-    if ((!entity?.npinNA && entity?.npin === '') || (!entity?.npinNA && entity?.npin === null)) {
-      ErrorToaster('NPIN is Mandatory if not NA');
-      return;
-    }
-    if (entity?.type?.type === '' || entity?.type?.type === null) {
-      ErrorToaster('Entity Type Is Mandatory');
-      return;
-    }
-    if (entity.subdomain === '' || entity?.subdomain === null) {
-      ErrorToaster('Subdomain Is Mandatory');
-      return;
-    }
-    if (entity?.officialEmailDomain === '' || entity?.officialEmailDomain === null) {
-      ErrorToaster('Official Email Domain Is Mandatory');
-      return;
+    if (buttonType !== 'SaveInProgress') {
+      if (!entity?.npinNA && entity?.npin === ('' || null)) {
+        ErrorToaster('NPIN is Mandatory if not NA');
+        return;
+      }
+      if (entity?.type?.type === ('' || null)) {
+        ErrorToaster('Entity Type Is Mandatory');
+        return;
+      }
+      console.log('entered')
+      if (address?.addressLine === '' || address?.city === '' || address?.state === '' || address?.zipcode === '' || address?.country === '') {
+        ErrorToaster('Mailing Address Is Mandatory');
+        console.log('entered')
+        return;
+      }
+      console.log('entered')
+      if (entity.subdomain === ('' || null)) {
+        ErrorToaster('Subdomain Is Mandatory');
+        return;
+      }
+      if (entity?.officialEmailDomain === ('' || null)) {
+        ErrorToaster('Official Email Domain Is Mandatory');
+        return;
+      }
     }
     if (buttonType === 'SaveInProgress') {
-      saveInProgressCheck();
+      // saveInProgressCheck();
+      updateEntity('SaveInProgress')
     }
     else {
       updateEntity('Continue');
@@ -359,9 +380,9 @@ const EntitySetup = () => {
       sessionStorage.setItem('title', entity?.name);
     }
     if (type === 'Continue') {
-      setActiveStep(entity.multiSiteEntity === true ? "siteInformation" : isSuperAdminAccess ? "entitySystemAdmin" : "siteUsers");
+      navigate(entity.multiSiteEntity === true ? `/entitySetup/${id}/siteInformation` : isSuperAdminAccess ? `/entitySetup/${id}/entitySystemAdmin` : `/entitySitePortal`);
     } else {
-      navigate('/user');
+      navigate(isSuperAdminAccess ? '/activeCustomers' : '/entitySitePortal');
     }
   }
 
@@ -468,12 +489,12 @@ const EntitySetup = () => {
       <Welcome getIsContinue={getIsContinue} />
     ) : (
       <>
-        {activeStep === "entitySetup" ? (
+        {page === "entitySetup" ? (
           <div className={style.entitySetupBackground}>
-            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : window.history.go(-1)} />
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : navigate('/entitySitePortal')} />
             <div className={style.stepperMargin}>
               <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
-                <div onClick={() => getActiveStep('appSubscription')}>
+                <div onClick={() => navigate(`/entitySetup/${id}/appSubscription`)}>
                   <div className={style.justifyCenter}>
                     <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
                       <img src={Step5} alt="Step1" className={style.stepperImgStyle} />
@@ -481,7 +502,7 @@ const EntitySetup = () => {
                   </div>
                   <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SUBSCRIPTION PLAN</p>
                 </div>
-                <div onClick={() => getActiveStep('contractAndBilling')}>
+                <div onClick={() => navigate(`/entitySetup/${id}/contractAndBilling`)}>
                   <div className={style.justifyCenter}>
                     <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                       <img src={Step1} alt="Step2" className={style.stepperImgStyle} />
@@ -489,7 +510,7 @@ const EntitySetup = () => {
                   </div>
                   <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>CONTRACT & BILLING</p>
                 </div>
-                <div onClick={() => getActiveStep('entitySetup')}>
+                <div onClick={() => navigate(`/entitySetup/${id}/entitySetup`)}>
                   <div className={style.justifyCenter}>
                     <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
                       <img src={Step3} alt="Step3" className={style.stepperImgStyle} />
@@ -497,7 +518,7 @@ const EntitySetup = () => {
                   </div>
                   <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
                 </div>
-                <div onClick={() => entityData?.multiSiteEntity && getActiveStep('siteInformation')} className={!entityData?.multiSiteEntity && style.disabledView}>
+                <div onClick={() => entityData?.multiSiteEntity && navigate(`/entitySetup/${id}/siteInformation`)} className={!entityData?.multiSiteEntity && style.disabledView}>
                   <div className={style.justifyCenter}>
                     <div className={`${style.stepperImgBackground}`}>
                       <img src={Step4} alt="Step4" className={style.stepperImgStyle} />
@@ -505,16 +526,17 @@ const EntitySetup = () => {
                   </div>
                   <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
                 </div>
-                {isSuperAdminAccess && (
-                  <div onClick={() => getActiveStep('entitySystemAdmin')}>
-                    <div className={style.justifyCenter}>
-                      <div className={`${style.stepperImgBackground}`}>
-                        <img src={Step2} alt="Step5" className={style.stepperImgStyle} />
+                {
+                  isSuperAdminAccess && (
+                    <div onClick={() => navigate(`/entitySetup/${id}/entitySystemAdmin`)}>
+                      <div className={style.justifyCenter}>
+                        <div className={`${style.stepperImgBackground}`}>
+                          <img src={Step2} alt="Step5" className={style.stepperImgStyle} />
+                        </div>
                       </div>
-                    </div>
-                    <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
-                  </div>
-                )}
+                      <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SYSTEM ADMIN</p>
+                    </div >
+                  )}
                 {/*<div onClick={() => getActiveStep('siteUsers')}>
               <div className={style.justifyCenter}>
                 <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
@@ -531,19 +553,15 @@ const EntitySetup = () => {
               </div>
               <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>APP SUBSCRIPTION</p>
             </div> */}
-              </div>
+              </div >
               <div className={isSuperAdminAccess ? style.stepperDivider3 : style.stepperDivider4grid4}></div>
-            </div>
+            </div >
             <div className={style.entitySetupCardStyle}>
               <p className={style.heading}>Entity Setup</p>
               <div className={style.greyBorder}></div>
               <div className={style.entityDescription}>
-                Help lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus
-                quam nec tellus dictum, vitae ultrices urna porttitor. donec commodo tellus
-                dapibus semper mattis. aenean ut massa vitae tortor consequat tristique. etiam
-                eget condimentum sapien. morbi est ante, sagittis ac rhoncus eget, faucibus ut
-                felis. pellentesque iaculis aliquam massa. lorem ipsum dolor sit amet, consectetur
-                adipiscing elit. sed finibus quam nec tellus dictum.
+                In this step provide the necessary information required to setup the primary entity for use of the application, as well as any sub-sites (if applicable). In this step you can also provide the required information for setting up Single Sign-on. All data fields marked with an "*" are mandatory.
+                If you do not have all of the information, you can save this customer's entity information as an In-progress account.
               </div>
               <div>
                 <div className={style.cloneBlockStyle}>
@@ -590,7 +608,7 @@ const EntitySetup = () => {
                           disabled={entity?.npinNA}
                           onChange={(e) => e.target.value >= 0 && handleEntity('npin', e.target.value)} />
                         <CommonCheckBox value="NA" className={style.marginLeft20}
-                          checked={entity?.npinNA} onChange={(e) => { handleEntity('npinNA', e.target.checked) }}
+                          checked={entity?.npinNA} onChange={(e) => { setEntity({ ...entity, npin: '', npinNA: e.target.checked }); setIsUpdated(true) }}
                           label="NA" />
                       </div>
                     </div>
@@ -607,18 +625,18 @@ const EntitySetup = () => {
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Mailing Address*</div>
                       <div>
-                        <InputGroup value={address.addressLine} className={`${style.fullWidth}`} onChange={(e) => handleAddress('addressLine', e.target.value)} />
+                        <InputGroup value={address.addressLine} className={`${style.fullWidth}`} onChange={(e) => handleAddress('addressLine', e.target.value.slice(0, 50))} />
                         <div className={`${style.marginTop20} ${style.displayInRow}`}>
-                          <InputGroup placeholder="City" className={`${style.fourFieldWidth}`} value={address.city} onChange={(e) => handleAddress('city', e.target.value)} />
-                          <InputGroup placeholder="State" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.state} onChange={(e) => handleAddress('state', e.target.value)} />
-                          <InputGroup placeholder="Country" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.country} onChange={(e) => handleAddress('country', e.target.value)} />
-                          <InputGroup placeholder="Zipcode" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value)} />
+                          <InputGroup placeholder="City" className={`${style.fourFieldWidth}`} value={address.city} onChange={(e) => handleAddress('city', e.target.value.slice(0, 25))} />
+                          <InputGroup placeholder="State" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.state} onChange={(e) => handleAddress('state', e.target.value.slice(0, 25))} />
+                          <InputGroup placeholder="Country" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.country} onChange={(e) => handleAddress('country', e.target.value.slice(0, 25))} />
+                          <InputGroup placeholder="Zipcode" className={`${style.fourFieldWidth} ${style.marginLeft20}`} value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value.slice(0, 10))} />
                         </div>
                       </div>
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Subdomain*</div>
-                      <InputGroup value={entity.subdomain} leftElement={inputGroupElement('https://')} rightElement={inputGroupElement('.timesmartai.com')} placeholder="Subdomain Name" className={style.subdomainFieldWidth} onChange={(e) => handleEntity('subdomain', e.target.value)} />
+                      <InputGroup value={entity.subdomain} leftElement={inputGroupElement('https://')} rightElement={inputGroupElement('.timesmartai.com')} placeholder="Subdomain Name" className={style.subdomainFieldWidth} onChange={(e) => handleEntity('subdomain', e.target.value.toLowerCase())} />
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Official Email Domain*</div>
@@ -695,14 +713,14 @@ const EntitySetup = () => {
                 </div>
               </div>
             </div>
-          </div>
-        ) : activeStep === "siteInformation" ? (
+          </div >
+        ) : page === "siteInformation" ? (
           <SiteInformation getActiveStep={getActiveStep} />
-        ) : activeStep === "entitySystemAdmin" ? (
+        ) : page === "entitySystemAdmin" ? (
           <EntitySystemAdmin getActiveStep={getActiveStep} />
-        ) : activeStep === "siteUsers" ? (
+        ) : page === "siteUsers" ? (
           <SiteUsers getActiveStep={getActiveStep} />
-        ) : activeStep === "contractAndBilling" ? (
+        ) : page === "contractAndBilling" ? (
           <ContractAndBillingDetails getActiveStep={getActiveStep} />
         ) : (
           <AppSubscription getActiveStep={getActiveStep} />

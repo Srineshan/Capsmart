@@ -1,0 +1,77 @@
+.errorBackgroundCard {
+    background-color: #1a1a1a;
+    height: 100vh;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.horizontalAlignCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.errorCodeTextStyle {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    font: normal normal bolder 124px/130px Montserrat;
+    color: #7165E3;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.messageStyle {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    font: normal normal bold 34px/50px Montserrat;
+    color: #a6a6a6;
+}
+
+.descriptionStyle {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    font: normal normal normal 24px/30px Montserrat;
+    color: #a6a6a6;
+    padding: 0 20%;
+}
+
+.marginTop20 {
+    margin-top: 20px;
+}
+
+.marginTop30 {
+    margin-top: 30px;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.buttonStyle {
+    padding: 15px 40px;
+    border-radius: 30px;
+    border: none;
+}
+
+.colouredButton {
+    color: white;
+    background-color: #7165E3;
+}
+
+.whiteButton {
+    color: #a6a6a6;
+    background-color: #fff;
+}
+
+.marginLeft20 {
+    margin-left: 20px;
+}

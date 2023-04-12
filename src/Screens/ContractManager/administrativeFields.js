@@ -30,6 +30,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         podRequired: false,
         schedule: 'WEEK',
         billable: false,
+        asNeeded: false,
     });
     const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
 
@@ -186,7 +187,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             },
             "podRequired": adminActivity?.podRequired,
             "schedule": adminActivity?.schedule,
-            "billable": adminActivity?.billable
+            "billable": adminActivity?.billable,
+            "asNeeded": adminActivity?.asNeeded,
         }
         await POST(`contract-managment-service/contracts/adminActivity`, data)
             .then(response => {
@@ -197,6 +199,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 ErrorToaster('Adding Activity To List Failed');
             })
         setAdminActivity({ ...adminActivity, activity: '' })
+        setShowAdminActivity(false);
+        setEditAdminActivitySelected(false);
         setIsLoading(false);
     }
 
@@ -229,10 +233,17 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     // }
 
     const handleAdminActivity = (name, value) => {
-        setAdminActivity({ ...adminActivity, [name]: value });
+        if (name === 'schedule' && value !== 'NA') {
+            setAdminActivity({ ...adminActivity, [name]: value, asNeeded: false })
+        } else if (name === 'schedule' && adminActivity?.asNeeded) {
+            setAdminActivity({ ...adminActivity, [name]: "NA" });
+        } else {
+            setAdminActivity({ ...adminActivity, [name]: value });
+        }
     }
 
     const onSelectActivity = (id, checked) => {
+        console.log('activities', activity);
         if (checked) {
             let temp = metadata?.selectedActivities || [];
             temp.push(activity?.filter(data => data?.id === id)?.map(data => data)[0]);
@@ -248,6 +259,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         let temp = metadata?.selectedActivities?.filter(data => data?.activity !== adminActivity?.activity)?.map(data => data);
         temp.push({ activity: adminActivity?.activity, billable: adminActivity?.billable, podRequired: adminActivity?.podRequired, id: editableData?.id, tenant: editableData?.tenant, schedule: adminActivity?.schedule });
         setMetadata({ ...metadata, selectedActivities: temp });
+        setShowAdminActivity(false);
+        setEditAdminActivitySelected(false);
     }
 
     const submit = () => {
@@ -258,7 +271,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         }
     }
 
-    console.log('test', showAdminActivity, editAdminActivitySelected);
     const updateWorkingPeriod = (e) => {
         // let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
         setMetadata({ ...metadata, workingTimeFrom: e });
@@ -309,9 +321,18 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         activity?.map((data, index) => (
                             <div className={`${style.displayInRow} ${style.marginBottom10}`}>
                                 <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={data?.activity} />
-                                <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
-                                {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
-                                {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) ? (
+                                    <>
+                                        <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.schedule)[0]}</div>
+                                        {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.billable)[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                        {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.podRequired)[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                    </>
+                                ) : (<>
+                                    <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
+                                    {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                    {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                </>)}
+
                                 {
                                     // metadata?.selectedActivities?.map(data => data?.id).includes(data?.id) ? <>
                                     //     <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.schedule)?.[0] || ''}</div>
@@ -332,6 +353,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                         podRequired: data?.podRequired,
                                         schedule: data?.schedule,
                                         billable: data?.billable,
+                                        asNeeded: data?.asNeeded,
                                     });
                                 }} />}
                             </div>
@@ -363,27 +385,19 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                 <CommonSwitch label={adminActivity?.podRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={adminActivity?.podRequired} onChange={(e) => handleAdminActivity('podRequired', !adminActivity?.podRequired)} />
                             </div>
                             <div className={style.threeFieldWidth}>
-                                <CommonLabel value='Contracted Schedule*' />
-                                {/* <Select
-                                    displayEmpty
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                    className={`${style.fullWidth}`}
-                                    value={adminActivity?.schedule}
-                                    onChange={(e) => handleAdminActivity('schedule', e.target.value)}
-                                >
-                                    <MenuItem value="">Select Frequecy</MenuItem>
-                                    <MenuItem value={'WEEK'}>Per Week</MenuItem>
-                                    <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                                    <MenuItem value={'YEAR'}>Per Contract Year</MenuItem>
-                                </Select> */}
+                                <CommonLabel value='Frequency*' />
                                 <CommonSelectField className={`${style.fullWidth}`}
                                     value={adminActivity?.schedule || ''}
                                     onChange={(e) => handleAdminActivity('schedule', e.target.value)}
                                     firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                    valueList={['WEEK', 'MONTH', 'YEAR']}
-                                    labelList={['Per Week', 'Per Month', 'Per Contract Year']}
-                                    disabledList={[false, false, false]} />
+                                    valueList={['NA', 'WEEK', 'MONTH', 'YEAR']}
+                                    labelList={['NA', 'Per Week', 'Per Month', 'Per Contract Year']}
+                                    disabledList={[false, false, false, false, false]} />
                             </div>
+                            <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                                <CommonCheckBox checked={adminActivity?.asNeeded} label='As Needed' onChange={(e) => setAdminActivity({ ...adminActivity, asNeeded: e.target.checked, schedule: 'NA' })} />
+                            </div>
+
                         </div>
                     </div>
 
@@ -492,7 +506,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                             />
                         </div>
                         <div className={style.verticalAlignCenter}>
-                            <CommonLabel className={` ${style.marginLeft20}`} value='per Hour' />
+                            <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
                         </div>
                     </div>
                 </div>

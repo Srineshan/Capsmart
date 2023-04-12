@@ -39,15 +39,15 @@ const Welcome = ({ getIsContinue }) => {
         formData.append('entity', new Blob([JSON.stringify(data)], {
             type: "application/json"
         }));
-        if (id !== 'new') {
+        // if (id !== 'new') {
             await PUT('entity-service/entity', formData)
                 .then(response => {
                     SuccessToaster('Entity Updated Successfully');
-                    navigate(`/entitySetup/${TenantID}`);
+                    navigate(`/entitySetup/${TenantID}/appSubscription`);
                 }).catch(error => {
                     ErrorToaster('Unexpected Error Updating Entity');
                 });
-        }
+        // }
     }
 
     return (

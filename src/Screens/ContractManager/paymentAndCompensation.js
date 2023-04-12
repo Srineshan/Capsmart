@@ -57,6 +57,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const limit4 = 4;
     const limit5 = 5;
     const limit7 = 7;
+    const limit9 = 9;
 
     const handleContinue = async (buttonType) => {
         if (!continueLoading) {
@@ -120,7 +121,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     const setTimesheetPaymentsValue = () => {
         if (timeSheetTabs?.length && timesheetPayments?.length === 0) {
-            console.log('init', timesheetPayments)
             let temp = [];
             timeSheetTabs?.map(data => {
                 temp.push({
@@ -255,13 +255,13 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*' />
                                 <CommonTextField
                                     className={style.twoFieldWidth}
-                                    type="number"
+                                    // type="number"
                                     min="0"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => fixedCompensationValue(parseFloat(e.target.value), 'maxPaymentPerTimesheetSubmission', i)}
-                                    value={timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission}
+                                    onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
+                                    value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString()}
                                 />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
@@ -278,13 +278,13 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <CommonLabel value='Max. Compensation Value for Contract Period*' />
                                 <CommonTextField
                                     className={style.twoFieldWidth}
-                                    type="number"
+                                    // type="number"
                                     min="0"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => updateTimesheetPayment(parseFloat(e.target.value), 'maxPaymentPerContract', i)}
-                                    value={timesheetPayments?.[i]?.maxPaymentPerContract}
+                                    onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
+                                    value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
                                 />
                             </div>
 
@@ -352,6 +352,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
             setRvuQuantityVariance(null);
         }
     }
+
+    console.log(dollarRate?.hour)
 
     if (isLoading) {
         return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
@@ -446,15 +448,18 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                 <CommonLabel value='Dollar Hourly Rate*' />
                                 <div className={style.twoCol}>
                                     <CommonTextField
-                                        type="number"
-                                        min="0"
+                                        // type="text"
+                                        // min="0"
+                                        // onBlur={(e) => setDollarRate({
+                                        //     ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7))?.toLocaleString('en-gb'), notApplicable: false
+                                        // })}
                                         disabled={dollarRate?.notApplicable}
-                                        value={dollarRate?.hour}
+                                        value={dollarRate?.hour === null || dollarRate?.hour === '' ? null : Number(dollarRate?.hour)?.toLocaleString()}
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                         }}
                                         onChange={(e) => setDollarRate({
-                                            ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7)), notApplicable: false
+                                            ...dollarRate, hour: (e.target.value.slice(0, limit9)).replace(/,/g, ""), notApplicable: false
                                         })}
                                     />
                                     <CommonCheckBox value="NA" checked={dollarRate?.notApplicable} onChange={(e) => setDollarRate({ ...dollarRate, notApplicable: e.target.checked, hour: parseFloat(0) })} label="NA" />

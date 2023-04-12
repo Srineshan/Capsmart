@@ -176,7 +176,7 @@ const Navbar = () => {
       },
     };
     fetch(
-      "https://rest.mytimesmart.com/user-management-service/auth/logout",
+      "https://mytimesmart.com/user-management-service/auth/logout",
       requestOptions
     )
       .then((response) => {
@@ -400,7 +400,7 @@ const Navbar = () => {
                       </Link>
                     )}
                     <Link
-                      to={isSuperAdminAccess ? "/partnerPortal" : `/entitySetup/${TenantID}`}
+                      to={isSuperAdminAccess ? "/partnerPortal" : `/entitySetup/${TenantID}/appSubscription`}
                       className={style.noFontStyle}
                     >
                       <div className={style.options}>ENTITY MANAGEMENT</div>

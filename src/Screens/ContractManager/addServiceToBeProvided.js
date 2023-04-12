@@ -34,6 +34,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [serviceTypeList, setServiceTypeList] = useState([]);
   const [serviceTypeId, setServiceTypeId] = useState('');
   const siteTypeId = sessionStorage.getItem('entityTypeId');
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedDeptId, setSelectedDeptId] = useState([]);
   const [serviceType, setServiceType] = useState(CLINIC);
   const [serviceTypeTemplate, setServiceTypeTemplate] = useState(CLINIC);
@@ -46,7 +47,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [newActivity, setNewActivity] = useState('');
   const [selectedActivity, setSelectedActivity] = useState([]);
   const [item, setItem] = useState();
-  const [isRecent, setIsRecent] = useState(false);
   const [locationList, setLocationList] = useState([]);
   const [newLocation, setNewLocation] = useState('');
   const [showLocation, setShowLocation] = useState(false);
@@ -64,7 +64,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [isWorkFlowUpdated, setIsWorkFlowUpdated] = useState(false);
   const [timeCommitment, setTimeCommitment] = useState({ value: 0, frequency: '' });
   const [contractTermPeriod, setContractTermPeriod] = useState({ start: null, end: null });
-  const [allowableWorkingHours, setAllowableWorkingHours] = useState({ from: new Date()?.toLocaleTimeString('it-IT').toString(), to: new Date()?.toLocaleTimeString('it-IT').toString() });
   const [isShowPDF, setIsShowPDF] = useState(false);
   const [pdfToOpen, setPdfToOpen] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
@@ -76,15 +75,21 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [isShowNotesList, setIsShowNotesList] = useState(false);
   const [isShowDocumentsList, setIsShowDocumentsList] = useState(false);
   const [contractDocumentList, setContractDocumentList] = useState([]);
-  const [notesData, setNotesData] = useState([]);
   const [continueLoading, setContinueLoading] = useState(false);
 
   useEffect(() => {
+    getContractedServices();
+    getUserData();
+    getSites();
     getServiceList();
+    // getActivityList();
+    getLocations();
+    getContractNotes();
   }, [])
 
   useEffect(() => {
     if (editService) {
+      console.log('selectedSerice', selectedService);
       setSiteData(selectedService?.sites);
       getSelectedSites(selectedService?.sites);
       getNewLocation(selectedService?.locations);
@@ -100,8 +105,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setShowLocation(selectedService?.locationSpecified);
       setSelectedLocation(selectedService?.serviceLocations?.map(data => data));
       removeSelectedLocationFromList();
+      setServiceTypeId(serviceTypeList?.filter(type => type?.serviceType === selectedService?.activityType?.activityType)?.map(data => data?.id)[0]);
     }
-  }, [selectedService]);
+  }, [selectedService, serviceTypeList]);
 
   useEffect(() => {
     if (siteData?.length !== 0) {
@@ -167,18 +173,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }, [selectedDeptId])
 
   useEffect(() => {
-    getContractedServices();
-    getUserData();
-    getSites();
-    getActivityList();
-    getLocations();
-    getContractNotes();
-  }, [])
-
-  useEffect(() => {
-    setNewActivity('');
-    getActivityList();
-  }, [serviceTypeId])
+    if (serviceTypeId !== '') {
+      setNewActivity('');
+      getActivityList();
+    }
+  }, [serviceTypeId, siteData])
 
   useEffect(() => {
     if (selectContractInfo === "INDIVIDUAL") {
@@ -200,7 +199,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const getActivityList = async () => {
-    const { data: activityList } = await GET(`contract-managment-service/contracts/activities?siteTypeId=${siteTypeId}&&contractedServiceTypeId=${serviceTypeId}`);
+    let dept = [];
+    siteData?.map(data => data?.departmentList?.departments?.map(deptData => {
+      dept.push(deptData?.id)
+    }))
+    const { data: activityList } = await GET(`contract-managment-service/contracts/activities?siteTypeId=${siteTypeId}&&contractedServiceTypeId=${serviceTypeId}&&departments=${dept}`);
     setActivity(activityList);
   }
 
@@ -232,11 +235,17 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const getUserData = async () => {
     const { data: userData } = await GET(`user-management-service/user?contractID=${contractId}`);
     if (userData) {
-      setUsers(userData?.filter(user => user?.roles?.map(role => role?.roleName)?.includes('Activity Logger'))?.map(data => data));
+      let user = userData?.filter(user => !user?.contracts?.map(data => data?.id)?.includes(''))?.map(data => data);
+      setUsers(user?.filter(userData => userData?.roles?.map(role => role?.roleName)?.includes('Activity Logger'))?.map(data => data));
     }
   }
 
+
   const activityToAdd = async () => {
+    let dept = [];
+    siteData?.map(site => site?.departmentList?.departments?.map(deptData => {
+      dept.push(deptData.id);
+    }))
     if (activity?.some(data => data?.activity?.activity?.replace(' ', '')?.toLowerCase()?.includes(newActivity?.replace(' ', '')?.toLowerCase()))) {
       return;
     }
@@ -256,7 +265,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       "siteTypeId": siteTypeId,
       "tenant": {
         "id": TenantID
-      }
+      },
+      "departments": dept,
     }
     await POST(`contract-managment-service/contracts/activities`, data)
       .then(response => {
@@ -322,14 +332,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           data.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
           if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
             let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
-            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.userId, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
           } else {
             let approverName = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
             let paymentApproverName = `${data?.paymentApprover?.name?.firstName} ${data?.paymentApprover?.name?.lastName}`
-            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.userId, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.userId, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
+            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.id, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.id, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
           }
           if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
-            POST(`timesheet - management - service / workflow`, JSON.stringify(workFlowData)).
+            POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
               then(response => {
                 data.workFlow = {
                   id: response?.data,
@@ -390,17 +400,19 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         data.activityType.activityType = serviceType;
         // data.activityType.id = serviceTypeId;
         data.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
-        data.performingActivity = { activity: data?.performingActivity };
+        data.performingActivity =
+          typeof data.performingActivity !== 'object' ? { activity: data?.performingActivity } : data?.performingActivity
+          ;
         data.users = selectContractInfo === "INDIVIDUAL" ? selectedUser : selectedUsers;
         if (data?.approver !== undefined) {
           let workFlowData;
           if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
             let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
-            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.userId, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
           } else {
             let approverName = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
             let paymentApproverName = `${data?.paymentApprover?.name?.firstName} ${data?.paymentApprover?.name?.lastName}`
-            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.userId, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.userId, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
+            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.id, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.id, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
           }
 
           if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
@@ -433,12 +445,18 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setContinueLoading(false);
   }
 
+  console.log('metadata', metadata);
+
   const handleSave = async (buttonType) => {
     if (serviceType === '') {
       ErrorToaster('Activity Type Selection is Mandatory');
       return;
     }
-    if (showLocation && selectedLocation?.length === 0) {
+    if ((serviceTypeTemplate === ADDON && metadata?.[0]?.locationSpecified && metadata?.[0]?.locations?.length === 0)) {
+      ErrorToaster('Atleast one location has to be selected if yes');
+      return;
+    }
+    if ((serviceTypeTemplate !== ADDON && showLocation && selectedLocation?.length === 0)) {
       ErrorToaster('Atleast one location has to be selected if yes');
       return;
     }
@@ -520,7 +538,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "hours": parseInt(item?.sessionDuration)
         };
       })
-      console.log('data in check', data)
       // data.workingPeriod = {
       //   "from": metadata?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
       //   "to": metadata?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
@@ -547,7 +564,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         },
         "activities": activities,
 
-        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) &&
+        ...(((serviceTypeTemplate === SUPPLEMENTAL && dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === ADMINISTRATIVE && dataValues?.dedicatedHoursSpecified)) &&
         {
           "hoursBorrowed": {
             "activityType": {
@@ -622,10 +639,21 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "payableAmount": {
           "value": parseInt(dataValues?.sessionAmount)
         },
+        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && {
+          "hourlyRate": {
+            "value": (dataValues?.sessionAmount / dataValues?.totalSession).toFixed(2)
+          },
+        }),
+        ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(serviceTypeTemplate) && {
+          "hourlyRate": {
+            "value": (dataValues?.sessionAmount / dataValues?.sessionDuration).toFixed(2)
+          },
+        }),
         "totalSessions": {
           "value": parseInt(dataValues?.totalSession),
           "frequency": dataValues?.totalSessionFrequency
         },
+        "sessionsAsNeeded": dataValues?.sessionsAsNeeded || false,
         "serviceDays": dataValues?.serviceDays,
         ...(serviceTypeTemplate === ONCALL && {
           "dependentService": {
@@ -663,6 +691,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 "payableAmount": {
                   "value": parseFloat(dataValues?.weekdayPayment)
                 },
+                "hourlyRate": {
+                  "value": (dataValues?.weekdayPayment / dataValues?.weekdayDuration).toFixed(2)
+                },
                 "paymentNotApplicable": dataValues?.weekdayPaymentNa
               },
               "weekend": {
@@ -685,6 +716,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 "payableAmount": {
                   "value": parseFloat(dataValues?.weekendPayment)
                 },
+                "hourlyRate": {
+                  "value": (dataValues?.weekendPayment / dataValues?.weekendDuration).toFixed(2)
+                },
                 "paymentNotApplicable": dataValues?.weekendPaymentNa
               },
               "holiday": {
@@ -705,6 +739,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                 },
                 "payableAmount": {
                   "value": parseFloat(dataValues?.holidayPayment)
+                },
+                "hourlyRate": {
+                  "value": (dataValues?.holidayPayment / dataValues?.holidayDuration).toFixed(2)
                 },
                 "paymentNotApplicable": dataValues?.holidayPaymentNa
               }
@@ -739,11 +776,21 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       temp.push(...data);
       services = temp;
     } else {
-      services.push(...data);
+      console.log('services in else', data, existingServices, services);
+      if (existingServices?.length === services?.length) {
+        data?.map(data => {
+          if (!services?.map(service => service?.refId)?.includes(data?.refId)) {
+            services.push(data);
+          }
+        })
+
+      }
     }
     let formattedData = {
       contractedServices: services
     }
+
+    console.log('services data', formattedData)
 
     const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
     if (response) {
@@ -752,6 +799,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     else {
       ErrorToaster('Unexpected Error');
     }
+    getContractedServices();
     if (buttonType === 'SAVE AND EXIT') {
       getAddServiceDialog(false);
       getEditServiceDialog(false);
@@ -776,7 +824,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const handleUsers = (value) => {
-    if (value !== '0') {
+    if (value !== '') {
       const selectedValue = users?.filter(data => data?.id === value)?.map(data => data)[0];
       if (!selectedUsers?.map(data => data?.id)?.includes(value)) {
         setSelectedUsers([...selectedUsers, selectedValue]);
@@ -879,164 +927,166 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setAnchorElDoc(null);
   };
 
+  console.log('sites in add services', siteData);
 
   return (
-    <div>
-      <Dialog isOpen={getAddServiceDialog} onClose={() => { getAddServiceDialog(false); getEditServiceDialog(false); }} className={`${style.manageServiceDialog} ${style.addManagerDialogBackground} ${rightHelpArea && style.moveDialogPosition}`}
-        canOutsideClickClose={false}>
-        <div className={`${Classes.DIALOG_BODY} `}>
-          <div className={style.spaceBetween}>
-            <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
-            <div className={style.displayInRow}>
-              <div className={`${style.cursorPointer} ${style.marginRight20} `}>
-                <div onClick={(e) => { handleClick(e); setIsShowNotesList(!isShowNotesList) }} aria-describedby={id} >
-                  {helpTool?.textArea ? (
-                    <img src={NotesOpen} alt="" className={style.addServiceNotesImgStyle} />
-                  ) : (
-                    <img src={NotesNotOpen} alt="" className={style.addServiceNotesImgStyle} />
-                  )}
-                  <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginNotes} `}>4</div>
-                </div>
-                {isShowNotesList && (
-                  <Popover
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    onClose={handleClosePopover}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                  >
-                    <div className={style.actionsCard}>
-                      <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 1</div>
-                      <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 2</div>
-                      <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 3</div>
-                    </div>
-                  </Popover>
-                )}
-              </div>
-              <div className={`${style.cursorPointer} ${style.marginRight20} `}>
-                <div onClick={(e) => { handleClickDoc(e); setIsShowDocumentsList(!isShowDocumentsList) }} aria-describedby={idDoc}>
-                  {isShowPDF ? (
-                    <img src={DocumentOpen} alt="" className={style.addServiceImgStyle} />
-                  ) : (
-                    <img src={DocumentNotOpen} alt="" className={style.addServiceImgStyle} />
-                  )}
-                  <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginDocument} `}>{contractDocumentList?.length}</div>
-                </div>
-                {isShowDocumentsList && (
-                  <Popover
-                    id={idDoc}
-                    open={openDoc}
-                    anchorEl={anchorElDoc}
-                    onClose={handleClosePopoverDoc}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                  >
-                    <div className={style.actionsCard}>
-                      {contractDocumentList?.map(doc => (
-                        <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => { setIsShowPDF(!isShowPDF); setPdfToOpen(doc?.url) }}>{doc?.name}</div>
-                      ))
-                      }
-                    </div>
-                  </Popover>
-                )}
-              </div>
-              <div className={`${style.cursorPointer} ${style.marginRight20} `} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator })}>
-                {/* <CalculateIcon style={{ fontSize: 30, color: '#bfbfbf' }} /> */}
-                <div>
-                  {helpTool?.calculator ? (
-                    <img src={CalculatorOpen} alt="" className={style.addServiceImgStyle} />
-                  ) : (
-                    <img src={CalculatorNotOpen} alt="" className={style.addServiceImgStyle} />
-                  )}
-                </div>
-              </div>
-              <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => handleClose()} />
-            </div>
-          </div>
-          <div className={style.extensionBorder}></div>
-          {!isShowPDF ? (
-            <div>
-              <div className={style.proofBorder}>
-                <div className={`${style.addManagerGrid} `}>
-                  <CommonLabel value='Primary Sites / Department Affiliation' />
-                  <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData} isMultiSiteEntity={isMultiSiteEntity} />
-                </div>
-                <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                  <CommonLabel value='Activity / Service Type Contracted for*' />
-                  <div>
-                    <CommonSelectField value={serviceType}
-                      onChange={(e) => {
-                        setServiceType(e.target.value);
-                        setServiceTypeTemplate(serviceTypeList?.filter(type => type?.serviceType === e.target.value)?.map(data => data?.serviceTypeTemplate)?.[0]);
-                        setSelectedActivity([]);
-                        setServiceTypeId(serviceTypeList?.filter(data => data?.serviceType === e.target.value)?.map(data => data?.id)[0]);
+    <>
+      <div>
+        <Dialog isOpen={getAddServiceDialog} onClose={() => { getAddServiceDialog(false); getEditServiceDialog(false); }} className={`${style.manageServiceDialog} ${style.addManagerDialogBackground} ${rightHelpArea && style.moveDialogPosition}`}
+          canOutsideClickClose={false}>
+          <div className={`${Classes.DIALOG_BODY} `}>
+            <div className={style.spaceBetween}>
+              <p className={style.extensionStyle}>Add Services To Be Provided As Per Contract</p>
+              <div className={style.displayInRow}>
+                <div className={`${style.cursorPointer} ${style.marginRight20} `}>
+                  <div onClick={(e) => { handleClick(e); setIsShowNotesList(!isShowNotesList) }} aria-describedby={id} >
+                    {helpTool?.textArea ? (
+                      <img src={NotesOpen} alt="" className={style.addServiceNotesImgStyle} />
+                    ) : (
+                      <img src={NotesNotOpen} alt="" className={style.addServiceNotesImgStyle} />
+                    )}
+                    <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginNotes} `}>4</div>
+                  </div>
+                  {isShowNotesList && (
+                    <Popover
+                      id={id}
+                      open={open}
+                      anchorEl={anchorEl}
+                      onClose={handleClosePopover}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
                       }}
-                      className={`${style.fullWidth} `}
-                      firstOptionLabel={'Select Activity /Service Type'} firstOptionValue={''}
-                      valueList={serviceTypeList?.map(data => data?.serviceType)}
-                      labelList={serviceTypeList?.map(data => data?.serviceType)}
-                      disabledList={serviceTypeList?.map(data => false)} />
+                    >
+                      <div className={style.actionsCard}>
+                        <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 1</div>
+                        <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 2</div>
+                        <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => setHelpTool({ ...helpTool, textArea: !helpTool?.textArea })}>Notes 3</div>
+                      </div>
+                    </Popover>
+                  )}
+                </div>
+                <div className={`${style.cursorPointer} ${style.marginRight20} `}>
+                  <div onClick={(e) => { handleClickDoc(e); setIsShowDocumentsList(!isShowDocumentsList) }} aria-describedby={idDoc}>
+                    {isShowPDF ? (
+                      <img src={DocumentOpen} alt="" className={style.addServiceImgStyle} />
+                    ) : (
+                      <img src={DocumentNotOpen} alt="" className={style.addServiceImgStyle} />
+                    )}
+                    <div className={`${style.addServiceCountStyle} ${style.alignCenter} ${style.marginDocument} `}>{contractDocumentList?.length}</div>
+                  </div>
+                  {isShowDocumentsList && (
+                    <Popover
+                      id={idDoc}
+                      open={openDoc}
+                      anchorEl={anchorElDoc}
+                      onClose={handleClosePopoverDoc}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      }}
+                    >
+                      <div className={style.actionsCard}>
+                        {contractDocumentList?.map(doc => (
+                          <div className={`${style.specificActionCard} ${style.cursorPointer} `} onClick={() => { setIsShowPDF(!isShowPDF); setPdfToOpen(doc?.url) }}>{doc?.name}</div>
+                        ))
+                        }
+                      </div>
+                    </Popover>
+                  )}
+                </div>
+                <div className={`${style.cursorPointer} ${style.marginRight20} `} onClick={() => setHelpTool({ ...helpTool, calculator: !helpTool?.calculator })}>
+                  {/* <CalculateIcon style={{ fontSize: 30, color: '#bfbfbf' }} /> */}
+                  <div>
+                    {helpTool?.calculator ? (
+                      <img src={CalculatorOpen} alt="" className={style.addServiceImgStyle} />
+                    ) : (
+                      <img src={CalculatorNotOpen} alt="" className={style.addServiceImgStyle} />
+                    )}
                   </div>
                 </div>
-                {selectContractInfo !== "INDIVIDUAL" && (
+                <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => handleClose()} />
+              </div>
+            </div>
+            <div className={style.extensionBorder}></div>
+            {!isShowPDF ? (
+              <div>
+                <div className={style.proofBorder}>
+                  <div className={`${style.addManagerGrid} `}>
+                    <CommonLabel value='Primary Sites / Department Affiliation' />
+                    <SiteDepartmentField sites={siteList} getSelectedSites={getSelectedSites} selectedSites={siteData} isMultiSiteEntity={isMultiSiteEntity} />
+                  </div>
                   <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                    <CommonLabel value='Designate Specific Contractor*' />
+                    <CommonLabel value='Activity / Service Type Contracted for*' />
                     <div>
-                      <div className={`${style.displayInRow} `}>
-                        <CommonSwitch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.switchFontStyle} ${style.textAlignLeft} ${style.flexLeft}`} onChange={() => handleDesignateContractor()} label={isDesignatedSpecificContractor ? 'YES' : 'NO'} />
-                        {isDesignatedSpecificContractor ? (
-                          <CommonSelectField onChange={(e) => handleUsers(e.target.value)}
-                            className={`${style.fullWidth} `}
-                            firstOptionLabel={'Select Contractors for Services to be Provided'} firstOptionValue={''}
-                            valueList={users?.map(data => data?.id)}
-                            labelList={users?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`)}
-                            disabledList={users?.map(data => false)} />
-                        ) : <p className={` ${style.marginTop10} `}>Any Contractor</p>
-                        }
-                      </div>
-                      {usersTags?.length !== 0 && (
-                        <div className={`${style.marginTop20} ${style.marginLeft20} `}>
-                          {usersTags}
-                        </div>
-                      )}
+                      <CommonSelectField value={serviceType}
+                        onChange={(e) => {
+                          setServiceType(e.target.value);
+                          setServiceTypeTemplate(serviceTypeList?.filter(type => type?.serviceType === e.target.value)?.map(data => data?.serviceTypeTemplate)?.[0]);
+                          setSelectedActivity([]);
+                          setServiceTypeId(serviceTypeList?.filter(data => data?.serviceType === e.target.value)?.map(data => data?.id)[0]);
+                        }}
+                        className={`${style.fullWidth} `}
+                        firstOptionLabel={'Select Activity /Service Type'} firstOptionValue={''}
+                        valueList={serviceTypeList?.map(data => data?.serviceType)}
+                        labelList={serviceTypeList?.map(data => data?.serviceType)}
+                        disabledList={serviceTypeList?.map(data => false)} />
                     </div>
                   </div>
-                )}
-                {
-                  serviceTypeTemplate !== ADMINISTRATIVE && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== SUPPLEMENTAL &&
-                  <div>
+                  {selectContractInfo !== "INDIVIDUAL" && (
                     <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                      <CommonLabel value='Activities To Be Performed*' />
+                      <CommonLabel value='Designate Specific Contractor*' />
                       <div>
-                        <div className={style.addGrid}>
-                          <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e) => setNewActivity(e.target.value)} />
-                          <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${(newActivity === '' || activity?.some(data => data?.activity?.activity?.replace(' ', '')?.toLowerCase()?.includes(newActivity?.replace(' ', '')?.toLowerCase()))) ? style.disabledUploadButton : ''}`}>
-                            <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
-                          </div>
+                        <div className={`${style.displayInRow} `}>
+                          <CommonSwitch checked={isDesignatedSpecificContractor} disabled={(selectContractInfo === "INDIVIDUAL") && true} className={`${style.switchFontStyle} ${style.textAlignLeft} ${style.flexLeft}`} onChange={() => handleDesignateContractor()} label={isDesignatedSpecificContractor ? 'YES' : 'NO'} />
+                          {isDesignatedSpecificContractor ? (
+                            <CommonSelectField onChange={(e) => handleUsers(e.target.value)}
+                              className={`${style.fullWidth} `}
+                              firstOptionLabel={'Select Contractors for Services to be Provided'} firstOptionValue={''}
+                              valueList={users?.map(data => data?.id)}
+                              labelList={users?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`)}
+                              disabledList={users?.map(data => false)} />
+                          ) : <p className={` ${style.marginTop10} `}>Any Contractor</p>
+                          }
                         </div>
-                        {
-                          selectedActivity?.length !== 0 &&
-                          <MultiSelectDisplay values={selectedActivity?.map(data => data?.activity?.activity)} removeItem={removeFriendlyName} />
-                        }
+                        {usersTags?.length !== 0 && (
+                          <div className={`${style.marginTop20} ${style.marginLeft20} `}>
+                            {usersTags}
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                }
-
-
-                {serviceTypeTemplate !== ADDON && <div>
-                  <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                    <CommonLabel value='Specify Service Facility / Location (Cost Center)*' />
+                  )}
+                  {
+                    serviceTypeTemplate !== ADMINISTRATIVE && serviceTypeTemplate !== ADDON && serviceTypeTemplate !== SUPPLEMENTAL &&
                     <div>
-                      <div className={`${style.displayInRow} `}>
-                        <CommonSwitch checked={showLocation} className={`${style.switchFontStyle} ${style.flexLeft} `} onChange={() => setShowLocation(!showLocation)} label={showLocation ? 'YES' : 'NO'} />
+                      <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
+                        <CommonLabel value='Activities To Be Performed*' />
+                        <div>
+                          <div className={style.addGrid}>
+                            <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e) => setNewActivity(e.target.value)} />
+                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${(newActivity === '' || activity?.some(data => data?.activity?.activity?.replace(' ', '')?.toLowerCase()?.includes(newActivity?.replace(' ', '')?.toLowerCase()))) ? style.disabledUploadButton : ''}`}>
+                              <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
+                            </div>
+                          </div>
+                          {
+                            selectedActivity?.length !== 0 &&
+                            <MultiSelectDisplay values={selectedActivity?.map(data => data?.activity?.activity)} removeItem={removeFriendlyName} />
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  }
 
-                        {/* <ThemeProvider theme={switchTheme}>
+
+                  {serviceTypeTemplate !== ADDON && <div>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
+                      <CommonLabel value='Specify Service Facility / Location (Cost Center)*' />
+                      <div>
+                        <div className={`${style.displayInRow} `}>
+                          <CommonSwitch checked={showLocation} className={`${style.switchFontStyle} ${style.flexLeft} `} onChange={() => setShowLocation(!showLocation)} label={showLocation ? 'YES' : 'NO'} />
+
+                          {/* <ThemeProvider theme={switchTheme}>
                           <FormControlLabel
                             control={
                               <Switch className={`${style.textAlignLeft}`} />
@@ -1049,64 +1099,65 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                           />
                         </ThemeProvider> */}
 
-                        {/* <div className={`${style.addGrid} ${style.fullWidth} `}> */}
-                        {showLocation && <div className={style.fullWidth}>
-                          <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
-                        </div>}
+                          {/* <div className={`${style.addGrid} ${style.fullWidth} `}> */}
+                          {showLocation && <div className={style.fullWidth}>
+                            <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
+                          </div>}
+                        </div>
+                        {
+                          showLocation && selectedLocation?.length !== 0 &&
+                          <MultiSelectDisplay values={selectedLocation?.map(data => data?.location)} removeItem={removeLocation} />
+                        }
                       </div>
-                      {
-                        showLocation && selectedLocation?.length !== 0 &&
-                        <MultiSelectDisplay values={selectedLocation?.map(data => data?.location)} removeItem={removeLocation} />
-                      }
                     </div>
-                  </div>
-                </div>}
+                  </div>}
 
-                {serviceTypeTemplate === CLINIC
-                  ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
-                  : serviceTypeTemplate === SURGERY
-                    ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} isReset={isReset} getIsReset={getIsReset} />
-                    : serviceTypeTemplate === ONCALL
-                      ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} isReset={isReset} getIsReset={getIsReset} />
-                      : serviceTypeTemplate === SUPPLEMENTAL
-                        ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
-                        : serviceTypeTemplate === ADDON
-                          ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} />
-                          : serviceTypeTemplate === PROCEDUREREADING
-                            ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
-                            : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />}
+                  {serviceTypeTemplate === CLINIC
+                    ? <ClinicBlocksFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
+                    : serviceTypeTemplate === SURGERY
+                      ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} isReset={isReset} getIsReset={getIsReset} />
+                      : serviceTypeTemplate === ONCALL
+                        ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} isReset={isReset} getIsReset={getIsReset} />
+                        : serviceTypeTemplate === SUPPLEMENTAL
+                          ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
+                          : serviceTypeTemplate === ADDON
+                            ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} />
+                            : serviceTypeTemplate === PROCEDUREREADING
+                              ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
+                              : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className={`${style.pdfViewStyle} ${style.marginTop} `}>
-              <iframe src={pdfToOpen} allowfullscreen height="500px" width="100%" title='Document' />
-            </div>
-          )}
-          {helpTool?.calculator ? (
-            <div className={style.calculatorDisplayStyle}>
-              <Calculator />
-            </div>
-          ) : helpTool?.textArea ? (
-            <div className={style.calculatorDisplayStyle}>
-              {
-                //  notes={notesData} contractId={contractId}
-              }
-              <Notes />
-            </div>
-          ) : ''}
-        </div>
-        <div>
-          {isEditable && !isShowPDF &&
-            <div className={`${style.floatRight} `}>
-              {!editService && <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('ADD MORE'); } : {}}>ADD MORE</button>}
-              <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('SAVE AND EXIT'); } : {}}>SAVE & EXIT</button>
-            </div>
-          }
+            ) : (
+              <div className={`${style.pdfViewStyle} ${style.marginTop} `}>
+                <iframe src={pdfToOpen} allowfullscreen height="500px" width="100%" title='Document' />
+              </div>
+            )}
+            {helpTool?.calculator ? (
+              <div className={style.calculatorDisplayStyle}>
+                <Calculator />
+              </div>
+            ) : helpTool?.textArea ? (
+              <div className={style.calculatorDisplayStyle}>
+                {
+                  //  notes={notesData} contractId={contractId}
+                }
+                <Notes />
+              </div>
+            ) : ''}
+          </div>
+          <div>
+            {isEditable && !isShowPDF &&
+              <div className={`${style.floatRight} `}>
+                {!editService && <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('ADD MORE'); } : {}}>ADD MORE</button>}
+                <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('SAVE AND EXIT'); } : {}}>SAVE & EXIT</button>
+              </div>
+            }
 
-        </div>
-      </Dialog>
+          </div>
+        </Dialog>
 
-    </div>
+      </div>
+    </>
   )
 }
 

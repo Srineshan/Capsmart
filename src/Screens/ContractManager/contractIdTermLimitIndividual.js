@@ -97,16 +97,18 @@ const ContractIdTermLimitIndividual = (
   }, [])
 
   useEffect(() => {
-    if (selectedSites?.length === 0 && sites?.length !== 0) {
+    console.log('in useeffect above if', selectedSites, sites);
+    if ((selectedSites === undefined || selectedSites?.length === 0) && sites?.length !== 0) {
       if (isMultiSiteEntity) {
         setSelectedSites([]);
         setSelectedSite('');
       } else {
+        console.log('inside selectedSites', sites)
         setSelectedSites(sites?.filter((data, index) => index === 0)?.map(data => data));
         setSelectedSite(sites?.[0]?.id);
       }
     }
-  }, [isMultiSiteEntity, sites])
+  }, [isMultiSiteEntity, sites?.length, sites])
 
   useEffect(() => {
     getReminder();
@@ -248,14 +250,17 @@ const ContractIdTermLimitIndividual = (
     let sites = getSiteData();
     if (contractName === '') {
       ErrorToaster('Enter Contract Name to proceed');
+      setContinueLoading(false);
       return;
     }
     if (departmentSpecific && sites?.some(data => data?.departmentList?.departments?.length === 0)) {
       ErrorToaster('Select Departments for all the selected Sites');
+      setContinueLoading(false);
       return;
     }
     if (selectContractManager === null || selectContractManager === undefined) {
       ErrorToaster('Select Contract Manager');
+      setContinueLoading(false);
       return;
     }
 
@@ -443,9 +448,12 @@ const ContractIdTermLimitIndividual = (
   }
 
   const handleReminder = (e, i) => {
-    let temp = renewalReminder;
-    temp[i] = { 'days': parseInt(e.target.value) };
-    setRenewalreminder(temp);
+    if (parseInt(e) <= 999) {
+      console.log('value of e ', e, typeof parseInt(e), parseInt(e) <= 999);
+      let temp = renewalReminder;
+      temp[i] = { 'days': parseInt(e) };
+      setRenewalreminder(temp);
+    }
   }
 
   const handleFileChange = (e, name) => {
@@ -469,9 +477,11 @@ const ContractIdTermLimitIndividual = (
               InputProps={{
                 endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
               }}
-              onChange={(e) => handleReminder(e, i)}
+              onChange={(e) => { handleReminder(e.target.value, i); }}
               key={`days${i}${renewalReminder?.[i]?.days}`}
-              defaultValue={renewalReminder?.[i]?.days}
+              defaultValue={(renewalReminder?.[i]?.days)}
+              maxLength={2}
+              type="number"
             />
           </div>
           <div className={style.verticalAlignCenter}>
@@ -581,6 +591,8 @@ const ContractIdTermLimitIndividual = (
     const { data: contractedServices } = await GET(`contract-managment-service/contracts/${contractIdFromActive}/ContractedService`);
     setContractedServices(contractedServices?.contractedServices);
   }
+
+  console.log('selectedSites', isMultiSiteEntity, siteSpecific, selectedSites);
 
   return (
     <div className={style.cloneBlockStyle}>

@@ -18,8 +18,8 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, isReset, getIsReset }) => {
     const [metadata, setMetadata] = useState({
-        min: '0',
-        max: '0',
+        min: 0,
+        max: 99999999,
         frequency: 'NA',
         onCallCoverageFor: [],
         additionalScheduleValue: '0',
@@ -98,8 +98,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
 
     const resetMetadata = () => {
         setMetadata({
-            min: '0',
-            max: '0',
+            min: 0,
+            max: 99999999,
             frequency: 'NA',
             onCallCoverageFor: [],
             additionalScheduleValue: '0',
@@ -225,13 +225,31 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     const [specified, setSpecified] = useState(0);
 
     useEffect(() => {
-        let contractedSchedules = [{
-            minimum: { value: metadata?.min },
-            maximum: { value: metadata?.max },
-            frequency: metadata?.frequency
-        }]
-        setSpecified(SpecifiedCountCalculator(contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue));
-    }, [metadata?.frequency, metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value])
+        if (metadata?.customizedSchedule) {
+            let contractedSchedules = [{
+                minimum: { value: metadata?.min },
+                maximum: { value: metadata?.max },
+                frequency: metadata?.frequency
+            }]
+
+            setSpecified(SpecifiedCountCalculator(contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue));
+        } else {
+            let contractedSchedules = [{
+                minimum: { value: metadata?.weekdayMin },
+                maximum: { value: metadata?.weekdayMax },
+                frequency: metadata?.weekdayFrequency
+            }, {
+                minimum: { value: metadata?.weekendMin },
+                maximum: { value: metadata?.weekendMax },
+                frequency: metadata?.weekendFrequency
+            }, {
+                minimum: { value: metadata?.holidayMin },
+                maximum: { value: metadata?.holidayMax },
+                frequency: metadata?.holidayFrequency
+            }]
+            setSpecified(SpecifiedCountCalculator(contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue));
+        }
+    }, [metadata?.frequency, metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value, metadata?.weekdayMin, metadata?.weekdayFrequency, metadata?.weekendMin, metadata?.weekendFrequency, metadata?.holidayMin, metadata?.holidayFrequency])
 
     useEffect(() => {
         if (Object.entries(serviceSelected)?.length !== 0) {
@@ -243,11 +261,9 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     const setSelectedValues = () => {
         let dependentActivities = [];
         serviceSelected?.dependentService?.additionalServices?.map(data => {
-            console.log('data-in', data?.holiday?.from);
             dependentActivities.push(
                 { activity: data?.activity?.activity, weekdayFrom: GetDateFromHours(data?.weekday?.from?.toString() || ''), weekdayTo: GetDateFromHours(data?.weekday?.to?.toString() || ''), weekendFrom: GetDateFromHours(data?.weekend?.from?.toString() || ''), weekendTo: GetDateFromHours(data?.weekend?.to?.toString() || ''), holidayFrom: GetDateFromHours(data?.holiday?.from?.toString() || ''), holidayTo: GetDateFromHours(data?.holiday?.to?.toString() || ''), patientMRNRequired: data?.patientMRNRequired, attendingDocRequired: data?.attendingDocRequired }
             )
-            console.log('dependent-after', dependentActivities);
         })
 
         setMetadata({
@@ -336,7 +352,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
 
     const onTotalSessionChange = (e) => {
         if (e >= 0) {
-            let value = e.slice(0, e.slice());
+            let value = e.slice(0, 5);
             handleValueChange('totalSession', value);
         }
     }
@@ -368,16 +384,15 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         }
     }
 
-
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='On Call Coverage For *' />
                 <div className={style.spaceBetween}>
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('InPatient')} className={`${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} label="Inpatient" />
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('Ambulatory')} className={`${style.marginLeft10} ${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('Ambulatory', e)} label="Ambulatory" />
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('ED')} className={`${style.marginLeft10} ${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('ED', e)} label="ED" />
-                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('L & D')} className={`${style.marginLeft10} ${style.threeFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('L & D', e)} label="L & D" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('InPatient')} className={`${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} label="Inpatient" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('Ambulatory')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('Ambulatory', e)} label="Ambulatory" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('L & D')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('L & D', e)} label="L & D" />
+                    <CommonCheckBox checked={metadata?.onCallCoverageFor?.includes('ED')} className={`${style.marginLeft10} ${style.fourFieldWidth}`} onChange={(e) => handleOnCallCoverageFor('ED', e)} label="ED" />
                 </div>
             </div>
 
@@ -433,21 +448,49 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             <CommonLabel value='Number of On Call Duty Days*' />
                         </div>
                         <div className={style.displayInRow}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayMin')}
+                                value={metadata?.weekdayMin === 0 ? '' : metadata?.weekdayMin}
+                                type='number'
+                                disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
+                            />
+                            {/* <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>Days</InputAdornment>,
+                                }}
+                                className={style.serviceProvidedEditableTextStyle}
+                                onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMin')}
+                                defaultValue={metadata?.weekdayMin}
+                            /> */}
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
                                 <EditableText disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays} value={metadata?.weekdayMax} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekdayMax')} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekdayMax')}
+                                value={metadata?.weekdayMax === 0 ? '' : metadata?.weekdayMax}
+                                type='number'
+                                disabled={metadata?.weekdayFrequency === 'NA' || !metadata?.serviceDays?.weekDays}
+                            />
                             <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                                 value={metadata?.weekdayFrequency || ''}
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayFrequency')}
                                 disabledSelect={!metadata?.serviceDays?.weekDays}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month']}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -530,21 +573,41 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             <CommonLabel value='Number of On Call Weekends*' />
                         </div>
                         <div className={style.displayInRow}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText disabled={metadata?.weekendFrequency === 'NA' || !metadata?.serviceDays?.weekEnds} value={metadata?.weekendMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekendMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekendMin')}
+                                value={metadata?.weekendMin === 0 ? '' : metadata?.weekendMin}
+                                type='number'
+                                disabled={metadata?.weekendFrequency === 'NA' || !metadata?.serviceDays?.weekEnds}
+                            />
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
                                 <EditableText disabled={metadata?.weekendFrequency === 'NA' || !metadata?.serviceDays?.weekEnds} value={metadata?.weekendMax} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'weekendMax')} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'weekendMax')}
+                                value={metadata?.weekendMax === 0 ? '' : metadata?.weekendMax}
+                                type='number'
+                                disabled={metadata?.weekendFrequency === 'NA' || !metadata?.serviceDays?.weekEnds}
+                            />
                             <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                                 value={metadata?.weekendFrequency || ''}
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekendFrequency')}
                                 disabled={!metadata?.serviceDays?.weekEnds}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month']}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -646,22 +709,42 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             <CommonLabel value='Number of On Call Holiday Days*' />
                         </div>
                         <div className={style.displayInRow}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText disabled={metadata?.holidayFrequency === 'NA' || !metadata?.serviceDays?.isholidays} value={metadata?.holidayMin} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'holidayMin')} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'holidayMin')}
+                                value={metadata?.holidayMin === 0 ? '' : metadata?.holidayMin}
+                                type='number'
+                                disabled={metadata?.holidayFrequency === 'NA' || !metadata?.serviceDays?.isholidays}
+                            />
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
                                 <EditableText disabled={metadata?.holidayFrequency === 'NA' || !metadata?.serviceDays?.isholidays} value={metadata?.holidayMax} placeholder='' onChange={(e) => e >= 0 && onCustomizeFieldChange(e, 'holidayMax')} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && onCustomizeFieldChange(parseFloat(e.target.value.slice(0, 5)), 'holidayMax')}
+                                value={metadata?.holidayMax === 0 ? '' : metadata?.holidayMax}
+                                type='number'
+                                disabled={metadata?.holidayFrequency === 'NA' || !metadata?.serviceDays?.isholidays}
+                            />
                             <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                                 value={metadata?.holidayFrequency || ''}
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'holidayFrequency')}
                                 disabled={!metadata?.serviceDays?.isholidays}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month']}
-                                disabledList={[false, false, false]} />
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year']}
+                                disabledList={[false, false, false, false]} />
                         </div>
                     </div>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -705,20 +788,38 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Number of On Call Duty Days*' />
                         <div className={style.displayInRow}>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MIN</div>
                                 <EditableText value={metadata?.min} placeholder='' onChange={(e) => e >= 0 && handleValueChange('min', e)} type='tel' maxLength='2' className={style.serviceProvidedEditableTextStyle} />
-                            </div>
-                            <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MIN</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && handleValueChange('min', parseFloat(e.target.value.slice(0, 5)))}
+                                value={metadata?.min === 0 ? '' : metadata?.min}
+                                type='number'
+                            />
+                            {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
                                 <EditableText value={metadata?.max} placeholder='' onChange={(e) => e >= 0 && handleValueChange('max', e)} type='tel' maxLength="2" className={style.serviceProvidedEditableTextStyle} />
-                            </div>
+                            </div> */}
+                            <CommonTextField
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>MAX</InputAdornment>,
+                                }}
+                                className={style.threeFieldWidth}
+                                onChange={(e) => e.target.value >= 0 && handleValueChange('max', parseFloat(e.target.value.slice(0, 5)))}
+                                value={(metadata?.max === 0 || metadata?.max === 99999999) ? '' : metadata?.max}
+                                type='number'
+                            />
                             <CommonSelectField className={`${style.fullWidth}`}
                                 value={metadata?.frequency}
                                 onChange={(e) => handleValueChange('frequency', e.target.value)}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={'NA'}
-                                valueList={['WEEK', 'MONTH']}
-                                labelList={['Per Week', 'Per Month']}
+                                valueList={['WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false]} />
                         </div>
                     </div>
@@ -850,7 +951,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 <CommonLabel value='Total Contracted Service Sessions*' />
                 <div className={style.twoCol}>
                     <div className={`${style.spaceBetween} ${style.editableTextOuterBorder} ${style.fullWidth}`}>
-                        <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="3"
+                        <EditableText placeholder='' value={metadata?.totalSession} type='tel' maxLength="5"
                             className={style.editableSessionTextStyle}
                             onChange={(e) => onTotalSessionChange(e)} />
                         <div className={`${style.textElement} ${parseInt(metadata?.totalSession) === specified ? style.greenBase : style.redBase}`}>{specified} Minimum Specified</div>
