@@ -437,7 +437,7 @@ const DepartmentsForCustomers = () => {
                                       className={`${style.colorFileStyle} ${style.marginLeft5}`}
                                     />
                                     <p
-                                      className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
+                                      className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                                     >
                                       {data?.siteTypeName}
                                     </p>

@@ -292,7 +292,7 @@ const TerminationReasonForCustomer = () => {
                                 className={`${style.colorFileStyle} ${style.marginLeft5}`}
                               />
                               <p
-                                className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
+                                className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} ${style.marginLeft10}`}
                               >
                                 {data?.siteTypeName}
                               </p>
@@ -538,9 +538,7 @@ const TerminationReasonForCustomer = () => {
                                     className={`${style.colorFileStyle} ${style.marginLeft10}`}
                                   />
                                   <p
-                                    className={
-                                      style.tableHeaderIndustriesFontStyle
-                                    }
+                                    className={`${style.tableHeaderIndustriesFontStyle} ${style.textUppercase} `}
                                   >
                                     {data?.siteTypeName}
                                   </p>
