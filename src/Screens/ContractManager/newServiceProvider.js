@@ -242,7 +242,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
         "personalEmail": userDetails?.email,
         "mobileNumber": userDetails?.phone,
         "landlineNumber": "string",
-        "mobileNumberNotApplicable": userDetails?.phoneNA
+        "mobileNumberNotApplicable": phoneNA
       },
       "roles": selectedRoles,
       "address": address,
@@ -381,7 +381,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
   }
 
   const handleSuffixChange = (id, value) => {
-    let suffix = { id: id, value: value }
+    let suffix = { id: id, suffix: value }
     setUserDetails({ ...userDetails, suffix: suffix });
   }
 

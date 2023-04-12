@@ -8,6 +8,8 @@ import Select from '@mui/material/Select';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import { FormatPhoneNumber } from '../../utils/formatting';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import SuffixList from './../../Components/SuffixList';
 
 import style from './index.module.scss';
 
@@ -21,6 +23,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const [sites, setSites] = useState([]);
     const [siteTitle, setSiteTitle] = useState();
     const [deptTitle, setDeptTitle] = useState();
+    const [suffix, setSuffix] = useState();
     const [functionalTitle, setFunctionalTitle] = useState([]);
     const [workFlowUser, setWorkFlowUser] = useState([]);
     const defaultProviderId = "6335e77dbb13e2088b208bb0";
@@ -60,11 +63,9 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         }
     }, [selectedSites]);
 
-    console.log('selectedSites', selectedSites, selectedDepartments, addUser);
 
     useEffect(() => {
         if (isEdit) {
-            console.log('inside edit check function', selectedSites)
             let tempDepartmentList = [];
             // let siteTemp = addUser?.sites?.sites || [];
 
@@ -72,7 +73,6 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 //     console.log('inside initial map', data);
                 addUser?.sites?.sites?.filter(siteData => siteData?.id === data)?.map(siteData => siteData)?.[0]?.departmentList?.departments?.map(deptData => {
                     tempDepartmentList.push(`${deptData?.id}-${data}`);
-                    console.log('inside dept map', deptData);
                 })
                 //     siteTemp.push(sites?.filter(data => data?.id === data)?.map(data => data)[0]);
                 //     sites?.filter(data => data?.id === data)?.map(data => data)?.[0]?.departmentList?.departments?.map(deptData => {
@@ -154,6 +154,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             });
             setSiteTitle(user?.sites?.sites?.[0]?.siteResponsibility);
             setDeptTitle(user?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentResponsibility)
+            setSuffix(user?.name?.suffix);
             let rolesToShow = [];
             user?.roles?.map(data => {
                 rolesToShow.push(data?.id)
@@ -167,29 +168,44 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         }
     }
 
+    console.log('site title', siteTitle, deptTitle);
+
     const handleRolesChange = (value) => {
         setSelectedRolesToShow(typeof value === 'string' ? value.split(',') : value,)
     }
 
     const getFinalSiteValueWithDepartments = () => {
         console.log('edit inside function', addUser, addUser);
-        addUser?.sites?.sites?.map(data => {
-            let departments = [];
-            data.siteResponsibility = siteTitle;
-            data?.departmentList?.departments?.map(deptData => {
-                deptData.departmentResponsibility = deptTitle;
-                if (selectedDepartments?.includes(`${deptData?.id}-${data?.id}`)) {
-                    departments.push(deptData);
-                }
-            })
-            data.departmentList.departments = departments;
+        console.log('selectedSites', selectedSites);
+        console.log('selectedDepartments', selectedDepartments);
+        let siteData = [];
+        sites?.filter(site => selectedSites?.includes(site?.id))?.map(site => {
+            let deptData = [];
+            site?.departmentList?.departments?.filter(dept => selectedDepartments?.map(dept => dept?.split('-')[0])?.includes(dept?.id))?.map(dept => {
+                dept.departmentResponsibility = deptTitle;
+                deptData.push(dept);
+            });
+            site.departmentList.departments = deptData;
+            site.siteResponsibility = siteTitle;
+            siteData.push(site);
         })
-        return addUser?.sites?.sites;
+        // let siteValue = { sites: siteData }
+        // setAddUser({ ...addUser, sites: siteValue })
+        // addUser?.sites?.sites?.map(data => {
+        //     let departments = [];
+        //     data.siteResponsibility = siteTitle;
+        //     data?.departmentList?.departments?.map(deptData => {
+        //         deptData.departmentResponsibility = deptTitle;
+        //         if (selectedDepartments?.includes(`${deptData?.id}-${data?.id}`)) {
+        //             departments.push(deptData);
+        //         }
+        //     })
+        //     data.departmentList.departments = departments;
+        // })
+        return siteData;
     }
 
-    console.log('sites', siteTitle, deptTitle);
 
-    // console.log(selectedRolesToShow, addUser, sites, selectedSites, selectedDepartments)
     const submitUserDetails = async () => {
         if (addUser?.firstName === '') {
             ErrorToaster('First Name is Mandatory');
@@ -208,7 +224,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             "name": {
                 "firstName": addUser?.firstName,
                 "lastName": addUser?.lastName,
-                ...(isEdit ? { "suffix": userDataById?.name?.suffix } : { "suffix": {} }),
+                "suffix": suffix,
             },
             "userType": isEdit ? addUser?.userType : "REGISTERED_USER",
             ...(isEdit && { "contracts": userDataById?.contracts }),
@@ -252,7 +268,6 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         } else {
             await POST('user-management-service/user/register', JSON.stringify(user))
                 .then(response => {
-                    console.log('response', response);
                     SuccessToaster('User Added Successfully');
                 })
                 .catch(error => {
@@ -267,7 +282,6 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         //         workFlowUserData.userId = userId;
         //         await POST('contract-managment-service/contracts/workFlowUser', JSON.stringify(user))
         //             .then(response => {
-        //                 console.log('Success!');
         //                 // SuccessToaster('Workflow User Updated Successfully');
         //             })
         //             .catch(error => {
@@ -290,6 +304,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
 
         getManageUserDialog(false);
     };
+
 
     return (
         <Dialog isOpen={getManageUserDialog} onClose={() => getManageUserDialog(false)} className={`${style.addManagerDialogBackground} ${style.addProofDialog}`}>
@@ -332,6 +347,32 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                     </div>
                     <div className={`${style.twoCol} ${style.marginTop20}`}>
                         <div>
+                            <div className={style.extentionLableStyle}>ROLE*</div>
+                            <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
+                                <Select
+                                    labelId="demo-multiple-checkbox-label"
+                                    id="demo-multiple-checkbox"
+                                    multiple
+                                    value={selectedRolesToShow}
+                                    onChange={(e) => handleRolesChange(e.target.value)}
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                >
+                                    {roles?.map((data, index) =>
+                                        <MenuItem value={data?.id} key={index}>{data?.roleName}</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
+                        </div>
+                        <div >
+                            <CommonLabel value='Suffix*' />
+                            <div className={style.grid3}>
+                                <SuffixList value={suffix?.id || ''} onChangeFunc={(id, value) => { console.log('id', id, value); setSuffix({ id: id, suffix: value }) }} className={[style.fullWidth]} />
+                            </div>
+                        </div>
+
+                    </div>
+                    <div className={`${style.twoCol} ${style.marginTop20}`}>
+                        <div>
                             <div className={style.extentionLableStyle}>SITES</div>
                             <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
                                 <Select
@@ -341,6 +382,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                     value={selectedSites}
                                     onChange={(e) => handleSitesChange(e.target.value)}
                                     className={style.selectFontStyle}
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 >
                                     {sites?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.siteName?.siteName}</MenuItem>
@@ -354,9 +396,10 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <Select
                                     labelId="demo-select-small"
                                     id="demo-select-small"
-                                    value={siteTitle?.id}
+                                    value={siteTitle?.id || ''}
                                     className={style.selectFontStyle}
                                     onChange={(e) => handleSiteTitle(e.target.value)}
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 >
                                     {functionalTitle?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
@@ -376,6 +419,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                     value={selectedDepartments}
                                     onChange={(e) => handleDepartmentsChange(e.target.value)}
                                     className={style.selectFontStyle}
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 >
                                     {sites?.filter(data => selectedSites?.includes(data?.id))?.map((data, index) =>
                                         data?.departmentList?.departments?.map((deptData, deptIndex) => (
@@ -390,10 +434,11 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <Select
                                     labelId="demo-select-small"
                                     id="demo-select-small"
-                                    value={deptTitle?.id}
+                                    value={deptTitle?.id || ''}
                                     className={style.selectFontStyle}
                                     onChange={(e) => handleDeptTitle(e.target.value)}
                                     selected={deptTitle?.id}
+                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                 >
                                     {functionalTitle?.map((data, index) =>
                                         <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
@@ -402,40 +447,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                             </FormControl>
                         </div>
                     </div>
-                    <div className={`${style.twoCol} ${style.marginTop20}`}>
-                        <div>
-                            <div className={style.extentionLableStyle}>ROLE*</div>
-                            <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
-                                <Select
-                                    labelId="demo-multiple-checkbox-label"
-                                    id="demo-multiple-checkbox"
-                                    multiple
-                                    value={selectedRolesToShow}
-                                    onChange={(e) => handleRolesChange(e.target.value)}
-                                >
-                                    {roles?.map((data, index) =>
-                                        <MenuItem value={data?.id} key={index}>{data?.roleName}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
-                        </div>
-                        {/* <div>
-                            <div className={style.extentionLableStyle}>TITLE</div>
-                            <FormControl className={style.fullWidth} size="small">
-                                <Select
-                                    labelId="demo-select-small"
-                                    id="demo-select-small"
-                                    value={addUser?.title?.id}
-                                    className={style.selectFontStyle}
-                                    onChange={(e) => handleTitle(e.target.value)}
-                                >
-                                    {functionalTitle?.map((data, index) =>
-                                        <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
-                        </div> */}
-                    </div>
+
                 </div>
                 <div className={`${style.floatRight} ${style.marginTop10}`}>
                     <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => submitUserDetails()} >SAVE & EXIT</button>

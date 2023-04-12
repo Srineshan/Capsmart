@@ -29,8 +29,6 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
         }
     }, [metadata])
 
-    console.log('service Schedule', serviceSchedule);
-
     const onScheduleChange = (name, value) => {
         setServiceSchedule({ ...serviceSchedule, [name]: value });
     }
@@ -65,11 +63,11 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                                         ...params.inputProps,
                                                         placeholder: "Start Date"
                                                     }} />}
-                                                value={serviceSchedule?.startDate}
+                                                value={serviceSchedule?.startDate === null ? null : serviceSchedule?.startDate}
                                                 minDate={new Date(contractTermPeriod?.start)}
                                                 maxDate={new Date(contractTermPeriod?.end)}
                                                 onChange={(newValue) => {
-                                                    onScheduleChange('startDate', new Date(newValue));
+                                                    onScheduleChange('startDate', newValue ? new Date(newValue) : null);
                                                 }}
 
                                             />
@@ -90,11 +88,11 @@ const AddScheduleAndTargetForDifferentPeriods = ({ getAddScheduleAndTargetForDif
                                                         ...params.inputProps,
                                                         placeholder: "End Date"
                                                     }} />}
-                                                value={serviceSchedule?.endDate}
+                                                value={serviceSchedule?.endDate === null ? null : serviceSchedule?.endDate}
                                                 minDate={new Date(contractTermPeriod?.start)}
                                                 maxDate={new Date(contractTermPeriod?.end)}
                                                 onChange={(newValue) => {
-                                                    onScheduleChange('endDate', new Date(newValue));
+                                                    onScheduleChange('endDate', !newValue ? null : new Date(newValue));
                                                 }}
                                             />
                                         </LocalizationProvider>
