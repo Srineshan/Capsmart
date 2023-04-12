@@ -40,7 +40,7 @@ export default function IdleTimer() {
             },
         };
         fetch(
-            "https://mytimesmart.com/user-management-service/auth/logout",
+            "https://rest.mytimesmart.com/user-management-service/auth/logout",
             requestOptions
         )
             .then((response) => {

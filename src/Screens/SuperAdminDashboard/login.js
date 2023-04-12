@@ -22,7 +22,7 @@ const Login = (props) => {
   }, []);
 
   const getEntityId = async () => {
-    await axios(`https://mytimesmart.com/entity-service/entityID`, {
+    await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "smmc-trial" },
     })
@@ -53,7 +53,7 @@ const Login = (props) => {
       body: JSON.stringify(user),
     };
     fetch(
-      "https://mytimesmart.com/user-management-service/auth/login",
+      "https://rest.mytimesmart.com/user-management-service/auth/login",
       requestOptions
     )
       .then((response) => response.json())
