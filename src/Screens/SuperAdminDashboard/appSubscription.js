@@ -474,7 +474,7 @@ const AppSubscription = ({ getActiveStep }) => {
                       labelList={['Single', "Multiple"]}
                       disabledList={[false, false]} />
                     <div className={`${style.extentionLableStyle} ${style.marginLeft50}`}>Number Of Sites*</div>
-                    <InputGroup className={style.fullWidth} value={plan?.noOfSites} disabled={plan?.allowableSites === 'SINGLE'} onChange={(e) => setPlan({ ...plan, noOfSites: e.target.value.slice(0, 4) })} />
+                    <InputGroup className={style.fullWidth} value={plan?.noOfSites} disabled={plan?.allowableSites === 'SINGLE'} onChange={(e) => setPlan({ ...plan, noOfSites: e.target.value.slice(0, 3) })} />
                   </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
@@ -491,7 +491,7 @@ const AppSubscription = ({ getActiveStep }) => {
                       labelList={['Limited', "Unlimited"]}
                       disabledList={[false, false]} />
                     <div className={`${style.extentionLableStyle} ${style.marginLeft50}`}>Maximum Number Of Users*</div>
-                    <InputGroup className={style.fullWidth} disabled={plan?.allowableRegisteredUsers === 'UNLIMITED'} value={plan?.maximumNumberOfUsers} onChange={(e) => setPlan({ ...plan, maximumNumberOfUsers: e.target.value.slice(0, 4) })} />
+                    <InputGroup type='number' className={style.fullWidth} disabled={plan?.allowableRegisteredUsers === 'UNLIMITED'} value={plan?.maximumNumberOfUsers === 0 ? '' : plan?.maximumNumberOfUsers} onChange={(e) => setPlan({ ...plan, maximumNumberOfUsers: e.target.value.slice(0, 3) })} />
                   </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
