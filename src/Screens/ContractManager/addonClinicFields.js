@@ -21,7 +21,7 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected, isReset, getIsReset, sites }) => {
+const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocation, locationToAdd, editService, serviceSelected, isReset, getIsReset, sites, contractId }) => {
   const limit5 = 5;
   let additionalDetails = ['Require Patient Data', 'Prior Pre-Authorization Required', 'Administrative Approval For Payment Required', 'Require Reason For Add-On Service'];
   const [fields, setFields] = useState();
@@ -165,7 +165,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       deptId.push(`${data?.id}#${dept?.id}`);
     }))
     let encodedDept = encodeURIComponent(deptId);
-    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}`;
+    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&&contractIdToIgnore=${contractId}`;
     const { data: userList } = await GET(uri);
     if (userList) {
       setUsers(userList);

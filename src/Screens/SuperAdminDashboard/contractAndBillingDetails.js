@@ -264,6 +264,10 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                 ErrorToaster('Contract / Agreement Name Is Mandatory');
                 return;
             }
+            if (fullyExecutedContract && entityData?.contractDetails?.entityContractDocuments?.length === 0) {
+                ErrorToaster('Uploading Document is Mandatory if Contract Documents On File');
+                return;
+            }
             if (type === 'Continue') {
                 if (contract?.contractID === '' && !contract.missing) {
                     ErrorToaster('Contract ID ( CID ) Is Mandatory');
@@ -289,7 +293,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                     ErrorToaster('Auto Renewal Details Are Mandatory ');
                     return;
                 }
-                if (contract?.contractContinuationPolicy === 'AUTORENEWAL' && (autoRenewal.renewalTerm === '0' || autoRenewal?.allowableRenewalTerm === '0')) {
+                if (contract?.contractContinuationPolicy !== 'AUTORENEWAL' && (autoRenewal.renewalTerm === '0' || autoRenewal?.allowableRenewalTerm === '0')) {
                     ErrorToaster('Auto Renewal Details Are Mandatory ');
                     return;
                 }
@@ -415,7 +419,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
         console.log(formData, data)
         await PUT('entity-service/entity', formData)
             .then(response => {
-                SuccessToaster('Entity Billing Updated Successfully');
+                SuccessToaster(type === 'addDoc' ? 'Document Uploaded Successfully' : type === 'removeDoc' ? 'Document Deleted Successfully' : 'Entity Billing Updated Successfully');
                 setFullyExecutedContractData([]);
             }).catch(error => {
                 ErrorToaster('Unexpected Error Updating Entity Billing');
@@ -671,7 +675,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                                 <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
                                             )}
                                         </div>
-                                        {fullyExecutedContract && (entityData?.contractDetails?.entityContractDocuments?.length !== 0 || entityData?.contractDetails !== null) && (
+                                        {fullyExecutedContract && entityData?.contractDetails?.entityContractDocuments?.length !== 0 && entityData?.contractDetails !== null && (
                                             <Table
                                                 tableHeaderValues={tableHeaderValues}
                                                 tableDataValues={getTableValues()}

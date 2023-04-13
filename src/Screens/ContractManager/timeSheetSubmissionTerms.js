@@ -129,7 +129,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       deptId.push(`${data?.id}#${dept?.id}`);
     }))
     let encodedDept = encodeURIComponent(deptId);
-    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}`;
+    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&contractIdToIgnore=${contractId}`;
     const { data: userList } = await GET(uri);
     if (userList) {
       setUsers(userList);

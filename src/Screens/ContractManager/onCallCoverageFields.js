@@ -907,12 +907,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     </div>
                 </>
             )}
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Require Patient MRN' />
                 <div className={style.onCallBillableGrid}>
                     <CommonSwitch checked={metadata?.patientMRNRequired} label={metadata?.patientMRNRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={() => handleValueChange('patientMRNRequired', !metadata?.patientMRNRequired)} />
                 </div>
-            </div>
+            </div> */}
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Attending Doc Required' />
                 <div className={style.onCallBillableGrid}>

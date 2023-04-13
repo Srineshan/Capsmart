@@ -1124,7 +1124,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                         : serviceTypeTemplate === SUPPLEMENTAL
                           ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
                           : serviceTypeTemplate === ADDON
-                            ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} />
+                            ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} contractId={contractId} />
                             : serviceTypeTemplate === PROCEDUREREADING
                               ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
                               : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />}
