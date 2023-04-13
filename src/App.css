@@ -163,3 +163,7 @@ select {
 .css-jedpe8-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-jedpe8-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-jedpe8-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
 	text-align: left !important;
 }
+
+.bp4-timepicker .bp4-timepicker-input {
+	width: 20px !important;
+}
