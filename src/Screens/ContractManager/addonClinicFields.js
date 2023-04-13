@@ -38,6 +38,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     locations: [],
     additionalDetails: [],
     approver: undefined,
+    approverTitle: {},
     paymentApprover: undefined,
     billableService: false,
     workingTimeFrom: null,
@@ -94,6 +95,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
         frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
         sessionDuration: serviceSelected?.duration?.hours,
         sessionAmount: serviceSelected?.payableAmount?.value,
+        hourlyRate: { value: (parseInt(serviceSelected?.payableAmount?.value) / parseInt(serviceSelected?.duration?.hours)).toFixed(2) },
         totalSession: serviceSelected?.totalSessions?.value,
         totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
         workingTimeFrom: serviceSelected?.workingPeriod?.from,
@@ -136,6 +138,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     }
   }
 
+  console.log('metadata', metadata);
+
   const resetNewServices = () => {
     setNewServices({
       name: '',
@@ -146,6 +150,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       locations: [],
       additionalDetails: [],
       approver: undefined,
+      approverTitle: {},
       paymentApprover: undefined,
       billableService: false,
       workingTimeFrom: null,
@@ -217,11 +222,12 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     getFields();
   }
 
-  const onApproverSelected = (value, serviceName) => {
+  const onApproverSelected = (value, serviceName, title) => {
     console.log(' Inside approval selection value', value, serviceName)
     let temp = metadata;
     temp?.filter(data => data?.performingActivity === serviceName)?.map(data => {
       data.approver = value;
+      data.approverTitle = title;
     })
     console.log('temp value', temp);
     setMetadata(temp);
@@ -271,6 +277,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       selectedData.activityType = { activityType: ADDON };
       selectedData.selectedActivityId = selectedData?.refId;
       selectedData.refId = null;
+      selectedData.sessionDuration = selectedData?.duration?.hours;
       temp.push(selectedData);
       setSelectedServices(temp?.map(data => data?.performingActivity));
       setMetadata(temp);
@@ -379,6 +386,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       performingActivity: newServices?.name,
       sessionAmount: newServices?.rate,
       sessionDuration: newServices?.sessionDuration,
+      hourlyRate: { value: (newServices?.rate / newServices?.sessionDuration).toFixed(2) },
       locations: newServices?.locations,
       locationSpecified: newServices?.showLocation,
       workingHours: {
@@ -421,6 +429,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     let temp = metadata;
     temp?.filter(data => data?.performingActivity === serviceName)?.map(data => {
       data.sessionAmount = value;
+      data.hourlyRate = { value: (data.sessionAmount / data.sessionDuration).toFixed(2) };
     });
     setMetadata(temp);
     getFields();
@@ -430,6 +439,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     let temp = metadata;
     temp?.filter(data => data?.performingActivity === serviceName)?.map(data => {
       data.sessionDuration = value;
+      data.hourlyRate = { value: (data.sessionAmount / data.sessionDuration).toFixed(2) };
     });
     setMetadata(temp);
     getFields();
@@ -496,7 +506,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                     <CommonSelectField className={`${style.fullWidth} `}
                       defaultValue={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.id)[0]}
                       value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.id)[0] ? metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.id)[0] : '0'}
-                      onChange={(e) => { onApproverSelected(users?.filter(data => data?.id === e.target.value)?.map(data => data)[0], service) }}
+                      onChange={(e) => { onApproverSelected(users?.filter(data => data?.id === e.target.value)?.map(data => data)[0], service, title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData)) }}
                       firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
                       valueList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData?.id)}
                       labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
@@ -692,7 +702,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                     <CommonSelectField className={`${style.fullWidth} `}
                       defaultValue={metadata?.[0]?.approver?.id}
                       value={metadata?.[0]?.approver?.id ? metadata?.[0]?.approver?.id : '0'}
-                      onChange={(e) => { onApproverSelected(users?.filter(data => data?.id === e.target.value)?.map(data => data)[0], data?.performingActivity) }}
+                      onChange={(e) => { onApproverSelected(users?.filter(data => data?.id === e.target.value)?.map(data => data)[0], data?.performingActivity, title?.filter(titleData => titleData?.approver === true)?.map(data => data)[0]) }}
                       firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
                       valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
                       labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
@@ -836,7 +846,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                           <CommonSelectField className={`${style.fullWidth} `}
                             defaultValue={newServices?.approver}
                             value={newServices?.approver ? newServices?.approver?.id : '0'}
-                            onChange={(e) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.id === e.target.value)?.map(data => data)[0] }) }}
+                            onChange={(e) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.id === e.target.value)?.map(data => data)[0], approverTitle: title?.filter(titleData => titleData?.approver === true)?.map(data => data)[0] }) }}
                             firstOptionLabel={'Select Approver'}
                             firstOptionValue={'0'}
                             valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
@@ -854,7 +864,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                           <CommonSelectField className={`${style.fullWidth} `}
                             defaultValue={newServices?.paymentApprover}
                             value={newServices?.paymentApprover ? newServices?.paymentApprover?.id : '0'}
-                            onChange={(e) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.id === e.target.value)?.map(data => data)[0] }) }}
+                            onChange={(e) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.id === e.target.value)?.map(data => data)[0], approverTitle: title?.filter(titleData => titleData?.approver === true)?.map(data => data)[0] }) }}
                             firstOptionLabel={'Select Payment Approver'}
                             firstOptionValue={'0'}
                             valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}

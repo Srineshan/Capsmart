@@ -15,7 +15,7 @@ const ReviewerApproverField = ({ data, label, onValueChange, selectLabel, value,
 
       site?.departmentList?.departments?.map(dept => {
         if (dept?.departmentResponsibility?.title !== "" && dept?.departmentResponsibility?.title !== undefined && dept?.departmentResponsibility?.title !== null) {
-          title.push({ name: data?.name?.firstName, site: 'Department', title: dept?.departmentResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+          title.push({ name: data?.name?.firstName, site: 'Department', title: dept?.departmentResponsibility?.title, titleId: dept?.departmentResponsibility?.id, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
         }
       })
     }
@@ -53,7 +53,7 @@ const ReviewerApproverField = ({ data, label, onValueChange, selectLabel, value,
         <CommonSelectField className={`${style.fullWidth} `}
           defaultValue={value}
           value={value ? value : '0'}
-          onChange={e => { onValueChange(e.target.value) }}
+          onChange={e => { onValueChange(e.target.value, title?.filter(titleData => titleData?.id === e.target.value && titleData[approverReviewer] === true)?.map(titleData => titleData)[0]) }}
           firstOptionLabel={selectLabel} firstOptionValue={'0'}
           valueList={label?.includes('Aggregator') ? data?.map(data => data?.id) : title?.filter(titleData => titleData[approverReviewer] === true)?.map(titleData => titleData?.id)}
           labelList={label?.includes('Aggregator') ? data?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`) : title?.filter(titleData => titleData[approverReviewer] === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}

@@ -332,11 +332,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           data.activityTypeTemplate = { activityTypeTemplate: serviceTypeTemplate };
           if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
             let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
-            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
           } else {
             let approverName = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
             let paymentApproverName = `${data?.paymentApprover?.name?.firstName} ${data?.paymentApprover?.name?.lastName}`
-            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.id, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.id, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
+            workFlowData = workFlowDataGenerator(data?.performingActivity, [{ step: 1, userId: data?.approver?.id, userName: approverName, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.id, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
           }
           if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
             POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
@@ -408,11 +408,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           let workFlowData;
           if (data?.approver?.id === data?.paymentApprover?.id || data?.paymentApprover === undefined) {
             let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
-            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
           } else {
             let approverName = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
             let paymentApproverName = `${data?.paymentApprover?.name?.firstName} ${data?.paymentApprover?.name?.lastName}`
-            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.id, userName: approverName, userTitle: data?.approver?.title, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.id, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
+            workFlowData = workFlowDataGenerator(data?.performingActivity?.activity, [{ step: 1, userId: data?.approver?.id, userName: approverName, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'PRE_AUTHORIZED' }, { step: 2, userId: data?.paymentApprover?.id, userName: paymentApproverName, userTitle: data?.paymentApprover?.title, userSuffix: data?.paymentApprover?.name?.suffix, status: 'APPROVED' }]);
           }
 
           if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
@@ -452,10 +452,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Activity Type Selection is Mandatory');
       return;
     }
-    if ((serviceTypeTemplate === ADDON && metadata?.[0]?.locationSpecified && metadata?.[0]?.locations?.length === 0)) {
-      ErrorToaster('Atleast one location has to be selected if yes');
-      return;
-    }
+    // if ((serviceTypeTemplate === ADDON && metadata?.[0]?.locationSpecified && metadata?.[0]?.locations?.length === 0)) {
+    //   ErrorToaster('Atleast one location has to be selected if yes');
+    //   return;
+    // }
     if ((serviceTypeTemplate !== ADDON && showLocation && selectedLocation?.length === 0)) {
       ErrorToaster('Atleast one location has to be selected if yes');
       return;
@@ -472,7 +472,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       ErrorToaster('Additional Schedule value and frequency required');
       return;
     }
-    if (metadata?.[0]?.billableService && parseInt(metadata?.[0]?.sessionAmount) === 0) {
+    if (serviceTypeTemplate !== ADDON && metadata?.[0]?.billableService && parseInt(metadata?.[0]?.sessionAmount) === 0) {
       ErrorToaster('Payment Amount field is mandatory if the service is Billable');
       return;
     }
@@ -643,6 +643,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "hourlyRate": {
             "value": (dataValues?.sessionAmount / dataValues?.totalSession).toFixed(2)
           },
+        }),
+        ...(serviceTypeTemplate === ADDON && {
+          "hourlyRate": dataValues?.hourlyRate,
         }),
         ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(serviceTypeTemplate) && {
           "hourlyRate": {
