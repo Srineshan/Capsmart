@@ -6,6 +6,7 @@ import { TimePicker } from "@blueprintjs/datetime";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import style from './index.module.scss';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serviceDays }) => {
     const [additionalActivity, setAdditionalActivity] = useState(additionalActivityData);
@@ -80,7 +81,8 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
         for (let i = 0; i < additionalActivity?.length; i++) {
             temp[i] = (
                 <div className={`${style.tableData} ${style.editableTableGridStyle} ${style.alternativeBackgroundColor} ${style.verticalAlignCenter}`} key={i}>
-                    <EditableText placeholder='Enter Service' value={additionalActivity?.[i]?.activity} onChange={(e) => handleActivityChange(e, i, 'activity')} />
+                    {/* <EditableText placeholder='Enter Service' value={additionalActivity?.[i]?.activity} onChange={(e) => handleActivityChange(e, i, 'activity')} /> */}
+                    <CommonInputField placeholder='Enter Service' value={additionalActivity?.[i]?.activity} onChange={(e) => handleActivityChange(e.target.value, i, 'activity')} />
                     <div className={`${style.displayInRow}`}>
                         <TimePicker
                             useAmPm={false}
