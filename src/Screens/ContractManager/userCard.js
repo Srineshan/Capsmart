@@ -15,16 +15,25 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
     const user = jwt(userDetails);
     const [currentUserDetails, setCurrentUserDetails] = useState();
     const [userId, setUserId] = useState(user?.id);
-
+    console.log('in user card', user?.id);
     useEffect(() => {
+        console.log('inside func call useEffect 1', user?.id)
         setUserId(user?.id);
         setUserDetails();
     }, [])
 
+    useEffect(() => {
+        console.log('inside the func call useeffect', user?.id);
+        setUserDetails();
+    }, [userId])
+
     const setUserDetails = async () => {
         const { data: user } = await GET(`user-management-service/user/${userId}`);
         setCurrentUserDetails(user);
+        console.log('users', user)
     }
+    console.log('currentUserDetails', currentUserDetails, currentUserDetails?.lastLogin);
+
     return (
         <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
             <div className={`${style.displayInRow} ${style.alignCenter}`}>
@@ -39,7 +48,7 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                         Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
                     </div>
                     <div className={style.loginStatus}>
-                        last login {formatInTimeZone(new Date(currentUserDetails?.lastLogin || new Date()), 'America/New_York', 'MMM d, yy h:mm zzz')}
+                        last login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), 'America/New_York', 'MMM d, yy h:mm zzz')}
                     </div>
                 </div>
                 <img src={ChevronRight} className={style.chevronRightStyle} onClick={() => getIsExpanded(false)} />
