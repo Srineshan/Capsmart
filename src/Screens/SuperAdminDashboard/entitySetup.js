@@ -316,7 +316,7 @@ const EntitySetup = () => {
           "id": entity?.type?.id,
           "type": entity?.type?.type,
         },
-        "multiSiteEntity": entity?.multiSiteEntity,
+        "multiSiteEntity": entityData?.multiSiteEntity,
         "entityDisplayId": entityData?.entityDisplayId,
         "entityAbbrevation": entityData?.entityAbbrevation,
         "partner": entityData?.partner,
@@ -642,32 +642,32 @@ const EntitySetup = () => {
                       <div className={style.extentionLableStyle}>Official Email Domain*</div>
                       <InputGroup value={entity.officialEmailDomain} placeholder="xxxxxx" className={style.subdomainFieldWidth} onChange={(e) => handleEntity('officialEmailDomain', e.target.value)} />
                     </div>
-                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                      <div className={style.extentionLableStyle}>Multi-site Entity*</div>
+                    {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}> */}
+                    {/* <div className={style.extentionLableStyle}>Multi-site Entity*</div>
                       <div>
-                        <div className={style.displayInRow}>
-                          <FormControlLabel
+                        <div className={style.displayInRow}> */}
+                    {/* <FormControlLabel
                             control={
                               <Switch checked={entity.multiSiteEntity} className={` ${style.textAlignLeft}`} value={entity.multiSiteEntity} onChange={(e) => { handleEntity('multiSiteEntity', e.target.checked) }} />
                             }
                             className={style.switchFontStyle}
                             label={entity?.multiSiteEntity ? 'YES' : 'NO'}
-                          />
-                          {entity.multiSiteEntity && (
-                            <>
-                              <div className={`${style.extentionLableStyle} ${style.marginLeft20}`}>Primary Site To Use App*</div>
-                              <FormControlLabel
-                                control={
-                                  <Switch checked={entity.primarySiteToUseApp} onChange={(e) => handleEntity('primarySiteToUseApp', e.target.checked)} className={` ${style.textAlignLeft} ${style.marginLeft20}`} />
-                                }
-                                className={style.switchFontStyle}
-                                label={entity?.primarySiteToUseApp ? 'YES' : 'NO'}
-                              />
-                            </>
-                          )}
-                        </div>
+                          /> */}
+                    {entityData?.multiSiteEntity && (
+                      <div className={`${style.extentionGrid} ${style.marginTop20} ${style.verticalAlignCenter}`}>
+                        <div className={`${style.extentionLableStyle} `}>Primary Site To Use App*</div>
+                        <FormControlLabel
+                          control={
+                            <Switch checked={entity.primarySiteToUseApp} onChange={(e) => handleEntity('primarySiteToUseApp', e.target.checked)} className={` ${style.textAlignLeft}`} />
+                          }
+                          className={style.switchFontStyle}
+                          label={entity?.primarySiteToUseApp ? 'YES' : 'NO'}
+                        />
                       </div>
-                    </div>
+                    )}
+                    {/* </div>
+                      </div> */}
+                    {/* </div> */}
                     {!isSuperAdminAccess && (
                       <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <div className={style.extentionLableStyle}>Setup Department*</div>

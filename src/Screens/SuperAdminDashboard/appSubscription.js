@@ -263,7 +263,7 @@ const AppSubscription = ({ getActiveStep }) => {
       "industryId": entityData?.industryId,
       "sites": entityData?.sites,
       "subdomain": entityData?.subdomain,
-      "multiSiteEntity": entityData?.multiSiteEntity,
+      "multiSiteEntity": plan?.allowableSites === 'MULTIPLE' ? true : false,
       "canPrimarySiteToUseApp": entityData?.canPrimarySiteToUseApp,
       "accountManager": entityData?.accountManager,
       "appUserRoles": entityData?.appUserRoles,
