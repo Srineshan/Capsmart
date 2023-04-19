@@ -27,6 +27,7 @@ import { validateTimesheetSubmission } from './contractValidation';
 
 import style from './index.module.scss';
 import SideBar from '../../Components/Sidebar';
+import PreImplementationDataDialog from './preImplementationDataDialog';
 
 const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page }) => {
   const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID",
@@ -54,6 +55,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const [isMyContract, setIsMyContract] = useState(true);
   const [isDraft, setIsDraft] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [showPreImplementationDialog, setShowPreImplementationDialog] = useState(false);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
   const currentUserData = currentUser();
@@ -104,6 +106,14 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const deleteDraft = (data) => {
     getDeleteDraftDialog(true);
     getContractIdFromActive(data?.id);
+  }
+
+  const getShowPreImplementationDialog = (data) => {
+    setShowPreImplementationDialog(true);
+  }
+
+  const getPreImplementationDialogBoolean = (value) => {
+    setShowPreImplementationDialog(value);
   }
 
   const handleClick = (event) => {
@@ -243,7 +253,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
     contracts?.map(data => {
       dot.push('yellow');
-      contractType.push(data?.contractType === 'MULTIPLE' ? 'MULTI - PROVIDER' : data?.contractType);
+      contractType.push(data?.contractType === 'MULTIPLE' ? `MULTI - PROVIDER ${data?.newContract ? '(New)' : '(Existing)'}` : `${data?.contractType} ${data?.newContract ? '(New)' : '(Existing)'}`);
       dotTooltipValues.push('In-Progress');
       contractId.push(data?.contractDetail?.contractId?.id);
       lock.push(<LockOpenOutlinedIcon style={{ color: '#14B15A' }} />)
@@ -336,7 +346,8 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const draftActionsData = [
     { 'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean' },
     { 'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
-    // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'}
+    // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'},
+    { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' },
   ]
 
   const upcomingActionsData = [
@@ -482,6 +493,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI</p>
       </div>
+      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} />
     </div>
   )
 }
