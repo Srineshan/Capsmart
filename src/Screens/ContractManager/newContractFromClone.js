@@ -114,7 +114,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
             temp[i] = (
                 <div className={`${style.documentCard} ${style.marginTop10}`}>
                     <div className={`${style.documentGrid}`}>
-                        <a className={style.documentText} href={fileFields?.[i]?.filePath} target="_blank">
+                        <a href={fileFields?.[i]?.filePath} target="_blank">
                             <Tooltip title={'Preview'} arrow>
                                 <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} onClick={() => { setSelectedFileURL(fileFields?.[i]?.filePath) }} />
                             </Tooltip>
