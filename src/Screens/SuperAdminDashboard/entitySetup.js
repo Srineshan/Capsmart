@@ -262,12 +262,12 @@ const EntitySetup = () => {
     if (keys?.length !== 0) {
       setShowSaveInProgress(true);
     } else {
-      updateEntity('SaveInProgress');
+      mandatoryFieldCheck('SaveInProgress');
     }
   }
 
   const saveInProgressFunction = () => {
-    updateEntity('SaveInProgress');
+    mandatoryFieldCheck('SaveInProgress');
   }
 
   console.log('entity depts', entityDepartments);

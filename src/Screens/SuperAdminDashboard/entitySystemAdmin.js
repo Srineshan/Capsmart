@@ -19,6 +19,7 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import { InputAdornment } from '@mui/material';
 import { FormatPhoneNumber } from '../../utils/formatting';
+import SaveInProgress from './saveInProgressAlert';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 
 
@@ -36,6 +37,8 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
   const [partnerId, setPartnerId] = useState('');
   const [customerAccountManagerChecked, setCustomerAccountManagerChecked] = useState(true);
   const [createUserChecked, setCreateUserChecked] = useState(false);
+  const [showSaveInProgress, setShowSaveInProgress] = useState(false);
+  const [unassignedKeys, setUnassignedKeys] = useState([]);
   const handleBillingData = (name, value) => {
     setBillingAddress({ ...billingAddress, [name]: value });
   }
@@ -90,6 +93,40 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
 
   const handleUserData = (name, value) => {
     setUserData({ ...userData, [name]: value });
+  }
+
+  const saveInProgressCheck = () => {
+    var keys = [];
+    if (accountManager === '' || accountManager === null || accountManager === undefined) {
+      keys.push('Available Account Manager');
+    }
+    if (userData.firstName === '' || userData.firstName === null || userData.firstName === undefined) {
+      keys.push('First Name');
+    }
+    if (userData.lastName === '' || userData.lastName === null || userData.lastName === undefined) {
+      keys.push('Last Name');
+    }
+    if (userData.email === '' || userData.email === null || userData.email === undefined) {
+      keys.push('Email Address');
+    }
+    if (userData.phone === '' || userData.phone === null || userData.phone === undefined) {
+      keys.push('Cell Phone');
+    }
+
+    setUnassignedKeys(keys);
+    if (keys?.length !== 0) {
+      setShowSaveInProgress(true);
+    } else {
+      handleUpdate('saveInProgress');
+    }
+  }
+
+  const getSaveInProgressAlert = (value) => {
+    setShowSaveInProgress(value);
+  }
+
+  const saveInProgressFunction = () => {
+    handleUpdate('saveInProgress');
   }
 
   const handleUpdate = async (buttonType) => {
@@ -401,7 +438,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
                   </div>
                 </div>
                 <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                  <button className={style.outlinedButton} onClick={() => handleUpdate('saveInProgress')}>SAVE IN-PROGRESS</button>
+                  <button className={style.outlinedButton} onClick={() => saveInProgressCheck()}>SAVE IN-PROGRESS</button>
                   <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => handleUpdate('Continue')}>CONTINUE</button>
                 </div>
               </div>
@@ -409,6 +446,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
           </div>
         </div>
       )}
+      <SaveInProgress alert={showSaveInProgress} getSaveInProgressAlert={getSaveInProgressAlert} fieldData={unassignedKeys?.join(', ')} saveInProgressFunction={saveInProgressFunction} />
     </>
   )
 }

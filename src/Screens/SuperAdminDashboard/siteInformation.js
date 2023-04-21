@@ -50,7 +50,7 @@ const SiteInformation = ({ getActiveStep }) => {
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [isSetupComplete, setIsCompleteSetup] = useState(false);
   const [unassignedKeys, setUnassignedKeys] = useState([]);
-  const Fields = { name: 'Site Name', type: 'Site Type', npin: 'NPIN', addressLine: 'Address Line', city: 'City', state: 'State', country: 'Country', zipcode: 'Zipcode', officialEmailDomain: 'Official Email Domain' };
+  const Fields = { name: 'Site Name', type: 'Site Type', npin: 'NPIN', addressLine: 'Address', city: 'City', state: 'State', country: 'Country', zipcode: 'Zipcode', officialEmailDomain: 'Official Email Domain' };
   let options = [];
   const accessToken = Auth();
   const role = '';
