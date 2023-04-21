@@ -62,7 +62,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
         poaNumber: ""
     });
     const [billingData, setBillingData] = useState({ firstName: '', lastName: '', email: '', phone: '' });
-    const [autoRenewal, setAutoRenewal] = useState({ renewalTerm: '0', allowableRenewalTerm: '0', calendar: 'WEEKS' });
+    const [autoRenewal, setAutoRenewal] = useState({ renewalTerm: 0, allowableRenewalTerm: 0, calendar: 'WEEKS' });
     const [contract, setContract] = useState(
         {
             contractName: "",
@@ -79,7 +79,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
         startDate: null,
         endDate: null
     })
-    const Fields = { planName: 'Subscription Plan', allowableRegisteredUsers: 'Allowable Registered Users', fees: 'Monthly Subscription Fees', billingFrequency: 'Billing Frequency', discount: 'Discount', poaNumber: 'POA Number', firstName: 'First Name', lastName: 'Last Name', email: 'Email', phone: 'Cell Phone', contractName: 'Contract / Agreement Name', contractID: 'Contract ID', startDate: 'Contract Start Date', endDate: 'Contract End Date', date: 'Contract Effective Date', contractContinuationPolicy: 'Contract Continuation Policy' };
+    const Fields = { contractName: 'Contract / Agreement Name', contractID: 'Contract ID', poaNumber: 'POA Number', firstName: 'Billing Contact First Name', lastName: 'Billing Contact Last Name', email: 'Email', phone: 'Cell Phone', startDate: 'Contract Term Period Start Date', endDate: 'Contract Term Period End Date', date: 'Planned Go Live', contractContinuationPolicy: 'Contract Continuation Policy' };
     const [showSaveInProgress, setShowSaveInProgress] = useState(false);
     const [unassignedKeys, setUnassignedKeys] = useState([]);
 
@@ -155,7 +155,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                             }}
                             onChange={(e) => handleReminder(e, i)}
                             key={`days${i}${renewalReminder?.[i]?.days}`}
-                            defaultValue={renewalReminder?.[i]?.days}
+                            defaultValue={renewalReminder?.[i]?.days === 0 ? '' : renewalReminder?.[i]?.days}
                         />
                     </div>
                     <div className={style.verticalAlignCenter}>
@@ -225,19 +225,20 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
     }
 
     const saveInProgressCheck = () => {
-        if (isSuperAdminAccess) {
-            var keys = Object.keys(plan)?.filter(key => plan[key] === '' || plan[key] === 0 || plan[key] === undefined || plan[key] === null)?.map(data => Fields[data]);
-            var billingKeys = Object.keys(billingData)?.filter(key => billingData[key] === '' || billingData[key] === 0 || billingData[key] === undefined || billingData[key] === null)?.map(data => Fields[data]);
-            keys.push(...billingKeys);
-            var contractKeys = Object.keys(contract)?.filter(key => contract[key] === '' || contract[key] === 0 || contract[key] === undefined || contract[key] === null)?.map(data => Fields[data]);
-            keys.push(...contractKeys);
-        } else {
-            var keys = [];
-            if (plan['poaNumber'] === '' || plan['poaNumber'] === undefined || plan['poaNumber'] === null) {
-                keys.push('POA Number');
-            }
-            var billingKeys = Object.keys(billingData)?.filter(key => billingData[key] === '' || billingData[key] === 0 || billingData[key] === undefined || billingData[key] === null)?.map(data => Fields[data]);
-            keys.push(...billingKeys);
+        var keys = Object.keys(contract)?.filter(key => contract[key] === '' || contract[key] === 0 || contract[key] === undefined || contract[key] === null)?.map(data => Fields[data]);
+        var billingKeys = Object.keys(billingData)?.filter(key => billingData[key] === '' || billingData[key] === 0 || billingData[key] === undefined || billingData[key] === null)?.map(data => Fields[data]);
+        keys.push(...billingKeys);
+        if (plan?.poaNumber === '' || plan?.poaNumber === undefined || plan?.poaNumber === null) {
+            keys.push('POA Number')
+        }
+        if (fullyExecutedContract && entityData?.contractDetails?.entityContractDocuments?.length === 0) {
+            keys.push('Contract Documents On File')
+        }
+        if (contract?.contractContinuationPolicy === 'AUTORENEWAL' && (autoRenewal.renewalTerm === 0 || autoRenewal?.allowableRenewalTerm === 0 || autoRenewal?.calendar === '')) {
+            keys.push('Contract Continuation Policy')
+        }
+        if (contract?.contractContinuationPolicy !== 'AUTORENEWAL' && renewalReminder?.[renewalReminder?.length - 1]?.days === 0) {
+            keys.push('Contract Continuation Policy')
         }
         setUnassignedKeys(keys);
         if (keys?.length !== 0) {
@@ -256,6 +257,8 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
             setFullyExecutedContract(value);
         }
     }
+
+    console.log(autoRenewal)
 
     const updateBilling = async (type, docId) => {
         console.log(type, docId)
@@ -289,12 +292,12 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                     ErrorToaster('Continuation Policy Is Mandatory ');
                     return;
                 }
-                if (contract?.contractContinuationPolicy === 'AUTORENEWAL' && (autoRenewal.renewalTerm === '0' || autoRenewal?.allowableRenewalTerm === '0')) {
+                if (contract?.contractContinuationPolicy === 'AUTORENEWAL' && (autoRenewal.renewalTerm === 0 || autoRenewal?.allowableRenewalTerm === 0 || autoRenewal?.calendar === '')) {
                     ErrorToaster('Auto Renewal Details Are Mandatory ');
                     return;
                 }
-                if (contract?.contractContinuationPolicy !== 'AUTORENEWAL' && (autoRenewal.renewalTerm === '0' || autoRenewal?.allowableRenewalTerm === '0')) {
-                    ErrorToaster('Auto Renewal Details Are Mandatory ');
+                if (contract?.contractContinuationPolicy !== 'AUTORENEWAL' && renewalReminder?.[renewalReminder?.length - 1]?.days === 0) {
+                    ErrorToaster(`Renewal Reminder Details Are Mandatory `);
                     return;
                 }
             }
@@ -672,7 +675,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                             <div></div>
                                             {fullyExecutedContract && (
-                                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
+                                                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${(fileFieldData?.type === ('Select...' || '') || fileFieldData?.name === '' || fileFieldData?.file === null) && style.disabledUploadButton}`} disabled={fileFieldData?.type === ('Select...' || '') || fileFieldData?.name === '' || fileFieldData?.file === null} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
                                             )}
                                         </div>
                                         {fullyExecutedContract && entityData?.contractDetails?.entityContractDocuments?.length !== 0 && entityData?.contractDetails !== null && (
@@ -765,7 +768,13 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                             <div className={`${style.renewalBoxStyle}`}>
                                                 <div className={`${style.renewalBoxGrid}`} >
                                                     <div className={style.marginTop}>Auto Renewal Term*</div>
-                                                    <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e) => (e <= 52 && setAutoRenewal({ ...autoRenewal, renewalTerm: e, calendar: '' }))} type="tel" />
+                                                    <CommonInputField
+                                                        className={`${style.autoRenewalInputStyle}`}
+                                                        value={autoRenewal.renewalTerm === 0 ? '' : autoRenewal.renewalTerm}
+                                                        onChange={(e) => (e.target.value <= 52 && e.target.value > 0 && setAutoRenewal({ ...autoRenewal, renewalTerm: e.target.value, calendar: '' }))}
+                                                        type="number"
+                                                    />
+                                                    {/* <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm === ('0' || 0) ? '' : autoRenewal.renewalTerm} onChange={(e) => (e <= 52 && setAutoRenewal({ ...autoRenewal, renewalTerm: e, calendar: '' }))} type="tel" /> */}
                                                     <CommonSelectField value={autoRenewal.calendar}
                                                         onChange={(e) => setAutoRenewal({ ...autoRenewal, calendar: e.target.value })}
                                                         className={`${style.marginLeft20} ${style.weekSelectStyle}`} firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
@@ -775,7 +784,12 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                                 </div>
                                                 <div className={`${style.renewalBoxGrid}`}>
                                                     <div className={style.marginTop10}>Allowable Auto Renewal Terms*</div>
-                                                    <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm} onChange={(e) => (e <= 12 && setAutoRenewal({ ...autoRenewal, allowableRenewalTerm: e }))} type="tel" />
+                                                    <CommonInputField className={` ${style.autoRenewalInputStyle} ${style.marginTop10}`}
+                                                        value={autoRenewal.allowableRenewalTerm === 0 ? '' : autoRenewal.allowableRenewalTerm}
+                                                        onChange={(e) => (e.target.value <= 12 && e.target.value > 0 && setAutoRenewal({ ...autoRenewal, allowableRenewalTerm: e.target.value }))}
+                                                        type="number"
+                                                    />
+                                                    {/* <EditableText className={`${style.inputRenewalStyle} ${style.marginTop10}`} placeholder="" value={autoRenewal.allowableRenewalTerm === ('0' || 0) ? '' : autoRenewal.allowableRenewalTerm} onChange={(e) => (e <= 12 && setAutoRenewal({ ...autoRenewal, allowableRenewalTerm: e }))} type="tel" /> */}
                                                 </div>
                                             </div>
                                         )}
@@ -796,7 +810,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                 </div>
                             </div>
                             <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                                <button className={style.outlinedButton} onClick={() => updateBilling('saveInProgress')}>SAVE IN-PROGRESS</button>
+                                <button className={style.outlinedButton} onClick={() => saveInProgressCheck()}>SAVE IN-PROGRESS</button>
                                 <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => updateBilling('Continue')}>CONTINUE</button>
                             </div>
                         </div>

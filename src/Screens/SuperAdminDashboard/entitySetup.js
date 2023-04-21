@@ -55,7 +55,7 @@ const EntitySetup = () => {
   const [address, setAddress] = useState({ addressLine: '', city: '', state: '', country: '', zipcode: '' });
   const [isUpdated, setIsUpdated] = useState(false);
   const [unassignedKeys, setUnassignedKeys] = useState([]);
-  const Fields = { customerType: 'Customer Type', npin: 'NPIN', name: 'Entity Name', type: 'Entity Type', addressLine: 'Address Line', city: 'City', state: 'State', country: 'Country', zipcode: 'Zipcode', subdomain: 'Subdomain' };
+  const Fields = { customerType: 'Customer Type', npin: 'NPIN', name: 'Entity Name', type: 'Entity Type', addressLine: 'Mailing Address', city: 'City', state: 'State', country: 'Country', zipcode: 'Zipcode', subdomain: 'Subdomain', officialEmailDomain: 'Official Email Domain' };
   const role = '';
   const accessToken = Auth();
 
@@ -205,16 +205,16 @@ const EntitySetup = () => {
 
   const mandatoryFieldCheck = (buttonType) => {
     console.log(address)
-    if (entity?.customerType === ('' || null || undefined)) {
+    if (entity?.customerType === '' || entity?.customerType === null || entity?.customerType === undefined) {
       ErrorToaster('Customer Type Is Mandatory');
       return;
     }
     if (buttonType !== 'SaveInProgress') {
-      if (!entity?.npinNA && entity?.npin === ('' || null)) {
+      if (!entity?.npinNA && (entity?.npin === '' || entity?.npin === null)) {
         ErrorToaster('NPIN is Mandatory if not NA');
         return;
       }
-      if (entity?.type?.type === ('' || null)) {
+      if (entity?.type?.type === '' || entity?.type?.type === null) {
         ErrorToaster('Entity Type Is Mandatory');
         return;
       }
@@ -225,11 +225,11 @@ const EntitySetup = () => {
         return;
       }
       console.log('entered')
-      if (entity.subdomain === ('' || null)) {
+      if (entity.subdomain === '' || entity.subdomain === null) {
         ErrorToaster('Subdomain Is Mandatory');
         return;
       }
-      if (entity?.officialEmailDomain === ('' || null)) {
+      if (entity?.officialEmailDomain === '' || entity?.officialEmailDomain === null) {
         ErrorToaster('Official Email Domain Is Mandatory');
         return;
       }
@@ -246,13 +246,16 @@ const EntitySetup = () => {
   console.log(entity)
 
   const saveInProgressCheck = () => {
-    var keys = Object.keys(entity)?.filter(key => entity[key] === '' && key !== 'id' || entity[key] === null)?.map(data => Fields[data]);
+    var keys = Object.keys(entity)?.filter(key => entity[key] === '' && key !== 'id' && key !== 'type' || entity[key] === null)?.map(data => Fields[data]);
+    if (entity?.type?.id === '' || entity?.type?.id === null) {
+      keys.push('Entity Type');
+    }
     var addressKeys = Object.keys(address)?.filter(key => address[key] === '')?.map(data => Fields[data]);
-    if (logo === null) {
+    if (logo?.url === '') {
       keys.push('Logo');
     }
-    if (thumbnail === null) {
-      keys.push('Logo Thumbnail');
+    if (thumbnail?.url === '') {
+      keys.push('Thumbnail');
     }
     keys.push(...addressKeys);
     setUnassignedKeys(keys);
@@ -705,7 +708,7 @@ const EntitySetup = () => {
                     )}
                   </div>
                   <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                    <button className={style.outlinedButton} onClick={() => { mandatoryFieldCheck('SaveInProgress'); }}>SAVE IN-PROGRESS</button>
+                    <button className={style.outlinedButton} onClick={() => { saveInProgressCheck() }}>SAVE IN-PROGRESS</button>
                     {/* <Link to={`/${nextStep}`}> */}
                     <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { mandatoryFieldCheck('Continue'); }}>CONTINUE</button>
                     {/* </Link> */}

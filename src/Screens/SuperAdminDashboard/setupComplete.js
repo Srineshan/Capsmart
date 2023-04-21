@@ -55,7 +55,7 @@ const SetupComplete = ({ data, setCompleteValue, operation, isSuperAdminAccess }
                     <button className={`${style.setupCompleteButton} ${style.cursor}`} onClick={() => setCompleteValue(false)}>CANCEL</button>
                     <button className={`${style.setupCompleteButton} ${style.marginLeft20} ${style.cursor}`}
                         onClick={() => {
-                            navigate('/user');
+                            navigate(isSuperAdminAccess ? '/activeCustomers' : '/entitySitePortal');
                         }}>DONE & EXIT SETUP</button>
                     {isSuperAdminAccess && (
                         <button className={`${style.setupCompleteButton} ${style.marginLeft20} ${style.cursor}`}
