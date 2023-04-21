@@ -199,7 +199,7 @@ const Profile = () => {
                 ErrorToaster('New Password and Confirm Password should be same');
             }
         } else {
-            ErrorToaster('Password must contain at least 8 characters, one letter, one number, and one special character.');
+            ErrorToaster('The password must contain at least 8 characters, one upper case letter, one lower case letter, one digit, and one special character.');
         }
 
 

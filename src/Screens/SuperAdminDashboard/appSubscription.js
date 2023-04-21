@@ -8,6 +8,8 @@ import SetupComplete from './setupComplete';
 import { format } from 'date-fns';
 import { DateInput } from "@blueprintjs/datetime";
 import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -72,10 +74,11 @@ const AppSubscription = ({ getActiveStep }) => {
     endDate: null
   })
   const [contractFiles, setContractFiles] = useState([{ type: '', name: '', desc: '', file: null, path: '' }])
-  const Fields = { planName: 'Subscription Plan', allowableRegisteredUsers: 'Allowable Registered Users', fees: 'Monthly Subscription Fees', billingFrequency: 'Billing Frequency', discount: 'Discount', poaNumber: 'POA Number', firstName: 'First Name', lastName: 'Last Name', email: 'Email', phone: 'Cell Phone', contractName: 'Contract / Agreement Name', contractID: 'Contract ID', startDate: 'Contract Start Date', endDate: 'Contract End Date', date: 'Contract Effective Date', contractContinuationPolicy: 'Contract Continuation Policy' };
+  const Fields = { planName: 'Subscription Plan', allowableRegisteredUsers: 'Allowable Registered Users', fees: 'Subscription Fees', billingFrequency: 'Billing Frequency', discount: 'Agreed To Discount', maximumNumberOfUsers: 'Maximum Number Of Users', allowableSites: 'Allowable Sites', noOfSites: 'No Of Sites', feedbackSupport: 'Feedback Support', subscriptionFeeCriteria: 'Subscription Fee Criteria', contractName: 'Contract / Agreement Name', contractID: 'Contract ID', startDate: 'Contract Start Date', endDate: 'Contract End Date', date: 'Contract Effective Date', contractContinuationPolicy: 'Contract Continuation Policy' };
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [unassignedKeys, setUnassignedKeys] = useState([]);
-
+  const exceptThisSymbols = ["e", "E", "+", "-", "."];
+  const exceptThisSymbolsForString = ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "+", "="];
 
   const role = '';
   const accessToken = Auth();
@@ -166,27 +169,23 @@ const AppSubscription = ({ getActiveStep }) => {
       ErrorToaster('Entity Abbreviation is Mandatory');
       return;
     }
-    // if (buttonType === 'saveInProgress') {
-    //   saveInProgressCheck();
-    // } else {
-    updateBilling(buttonType);
-    // }
+    if (buttonType === 'saveInProgress') {
+      saveInProgressCheck();
+    } else {
+      updateBilling(buttonType);
+    }
   }
 
   const saveInProgressCheck = () => {
-    if (isSuperAdminAccess) {
-      var keys = Object.keys(plan)?.filter(key => plan[key] === '' || plan[key] === 0 || plan[key] === undefined || plan[key] === null)?.map(data => Fields[data]);
-      var billingKeys = Object.keys(billingData)?.filter(key => billingData[key] === '' || billingData[key] === 0 || billingData[key] === undefined || billingData[key] === null)?.map(data => Fields[data]);
-      keys.push(...billingKeys);
-      var contractKeys = Object.keys(contract)?.filter(key => contract[key] === '' || contract[key] === 0 || contract[key] === undefined || contract[key] === null)?.map(data => Fields[data]);
-      keys.push(...contractKeys);
-    } else {
-      var keys = [];
-      if (plan['poaNumber'] === '' || plan['poaNumber'] === undefined || plan['poaNumber'] === null) {
-        keys.push('POA Number');
-      }
-      var billingKeys = Object.keys(billingData)?.filter(key => billingData[key] === '' || billingData[key] === 0 || billingData[key] === undefined || billingData[key] === null)?.map(data => Fields[data]);
-      keys.push(...billingKeys);
+    var keys = Object.keys(plan)?.filter(key => plan[key] === '' || plan[key] === 0 || plan[key] === '0' || plan[key] === undefined || plan[key] === null)?.map(data => Fields[data]);
+    if (entityName === '' || entityName === undefined || entityName === null) {
+      keys.push('Entity Name')
+    }
+    if (entityAbbreviation === '' || entityAbbreviation === undefined || entityAbbreviation === null) {
+      keys.push('Entity Abbreviation')
+    }
+    if (plan?.feedbackSupport?.length === 0) {
+      keys.push('Feedback Support')
     }
     setUnassignedKeys(keys);
     if (keys?.length !== 0) {
@@ -215,12 +214,12 @@ const AppSubscription = ({ getActiveStep }) => {
         ErrorToaster('Subscription Plan Details Are Mandatory');
         return;
       }
-      if ((plan?.allowableSites === 'MULTIPLE') && (plan?.noOfSites === 0)) {
-        ErrorToaster('Number of Sites Should be greater than 0 if Multiple');
+      if ((plan?.allowableSites === 'MULTIPLE') && (plan?.noOfSites === 0 || plan?.noOfSites === '0')) {
+        ErrorToaster('Number of Sites Is Mandatory if Multiple');
         return;
       }
-      if ((plan?.allowableRegisteredUsers === 'LIMITED') && (plan?.maximumNumberOfUsers === 0)) {
-        ErrorToaster('Maximum Number Of Users Should be greater than 0 if Limited');
+      if ((plan?.allowableRegisteredUsers === 'LIMITED') && (plan?.maximumNumberOfUsers === 0 || plan?.maximumNumberOfUsers === '0')) {
+        ErrorToaster('Maximum Number Of Users Is Mandatory if Limited');
         return;
       }
       if (plan?.subscriptionFeeCriteria === '') {
@@ -263,7 +262,7 @@ const AppSubscription = ({ getActiveStep }) => {
       "industryId": entityData?.industryId,
       "sites": entityData?.sites,
       "subdomain": entityData?.subdomain,
-      "multiSiteEntity": entityData?.multiSiteEntity,
+      "multiSiteEntity": plan?.allowableSites === 'MULTIPLE' ? true : false,
       "canPrimarySiteToUseApp": entityData?.canPrimarySiteToUseApp,
       "accountManager": entityData?.accountManager,
       "appUserRoles": entityData?.appUserRoles,
@@ -280,9 +279,9 @@ const AppSubscription = ({ getActiveStep }) => {
           "discount": parseInt(plan?.discount)
         },
         "plannedToGoLive": entityData?.subscriptionPlan?.plannedToGoLive,
-        "allowableSites": plan?.allowableSites,
+        ...(plan?.allowableSites !== '' && { "allowableSites": plan?.allowableSites }),
         "noOfSites": plan?.noOfSites,
-        "allowableRegisteredUsers": plan?.allowableRegisteredUsers,
+        ...(plan?.allowableRegisteredUsers !== '' && { "allowableRegisteredUsers": plan?.allowableRegisteredUsers }),
         "maximumNumberOfUsers": plan?.allowableRegisteredUsers === 'UNLIMITED' ? 0 : plan?.maximumNumberOfUsers,
         "feedbackSupports": plan?.feedbackSupport,
         "subscriptionFeeCriteria": plan?.subscriptionFeeCriteria,
@@ -440,7 +439,9 @@ const AppSubscription = ({ getActiveStep }) => {
               <div className={`${style.newContractFromCloneBoxStyle}`}>
                 <div className={`${style.extentionGrid}`}>
                   <div className={style.extentionLableStyle}>Contracting Entity Name*</div>
-                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Name" value={entityName} onChange={(e) => setEntityName(e.target.value.slice(0, 50))} />
+                  <InputGroup className={style.twoFieldWidth} placeholder="Entity Name" value={entityName}
+                    onKeyDown={e => exceptThisSymbolsForString.includes(e.key) && e.preventDefault()}
+                    onChange={(e) => setEntityName(e.target.value.slice(0, 50))} />
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                   <div className={style.extentionLableStyle}>Entity Abbreviation*</div>
@@ -474,7 +475,7 @@ const AppSubscription = ({ getActiveStep }) => {
                       labelList={['Single', "Multiple"]}
                       disabledList={[false, false]} />
                     <div className={`${style.extentionLableStyle} ${style.marginLeft50}`}>Number Of Sites*</div>
-                    <InputGroup className={style.fullWidth} value={plan?.noOfSites} disabled={plan?.allowableSites === 'SINGLE'} onChange={(e) => setPlan({ ...plan, noOfSites: e.target.value.slice(0, 3) })} />
+                    <InputGroup className={style.fullWidth} value={(plan?.noOfSites === 0 || plan?.noOfSites === '0') ? '' : plan?.noOfSites} disabled={plan?.allowableSites === 'SINGLE'} onChange={(e) => setPlan({ ...plan, noOfSites: e.target.value.slice(0, 3) })} />
                   </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
@@ -491,7 +492,7 @@ const AppSubscription = ({ getActiveStep }) => {
                       labelList={['Limited', "Unlimited"]}
                       disabledList={[false, false]} />
                     <div className={`${style.extentionLableStyle} ${style.marginLeft50}`}>Maximum Number Of Users*</div>
-                    <InputGroup type='number' className={style.fullWidth} disabled={plan?.allowableRegisteredUsers === 'UNLIMITED'} value={plan?.maximumNumberOfUsers === 0 ? '' : plan?.maximumNumberOfUsers} onChange={(e) => setPlan({ ...plan, maximumNumberOfUsers: e.target.value.slice(0, 3) })} />
+                    <InputGroup type='number' className={style.fullWidth} disabled={plan?.allowableRegisteredUsers === 'UNLIMITED'} value={(plan?.maximumNumberOfUsers === 0 || plan?.maximumNumberOfUsers === '0') ? '' : plan?.maximumNumberOfUsers} onChange={(e) => setPlan({ ...plan, maximumNumberOfUsers: e.target.value.slice(0, 3) })} />
                   </div>
                 </div>
                 <div className={`${style.extentionGrid} ${style.marginTop10}`}>
@@ -500,12 +501,14 @@ const AppSubscription = ({ getActiveStep }) => {
 
                     <div className={style.extentionLableStyle}>Feedback Support*</div>
                     <FormControl size="small">
+                      <InputLabel id="demo-multiple-chip-label">Select Feedback Support</InputLabel>
                       <Select
                         labelId="demo-multiple-chip-label"
                         id="demo-multiple-chip"
                         multiple
                         value={plan?.feedbackSupport}
                         onChange={handleChange}
+                        input={<OutlinedInput id="select-multiple-chip" label="Select Feedback Support" />}
                         renderValue={(selected) => (
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                             {selected.map((value) => (
@@ -571,13 +574,15 @@ const AppSubscription = ({ getActiveStep }) => {
                           type="number"
                           leftElement={dollarLeftElement()}
                           disabled={!isSuperAdminAccess}
+                          onKeyDown={e => exceptThisSymbols.includes(e.key) && e.preventDefault()}
                           onChange={(e) => setPlan({ ...plan, fees: e.target.value.slice(0, 7) })} />
                         <div className={`${style.extentionLableStyle} ${style.fourFieldWidth} ${style.marginLeft20} ${style.verticalAlignCenter}`}>Monthly Per User</div>
                       </div>
                     </div>
                     <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                       <div className={style.extentionLableStyle}>Agreed To Discount*</div>
-                      <InputGroup className={style.fourFieldWidth} type="number" value={plan?.discount} rightElement={percentRightElement()} disabled={!isSuperAdminAccess}
+                      <InputGroup className={style.fourFieldWidth} type="number" value={plan?.discount} rightElement={percentRightElement()}
+                        onKeyDown={e => exceptThisSymbols.includes(e.key) && e.preventDefault()} disabled={!isSuperAdminAccess}
                         onChange={(e) => e.target.value >= 0 && e.target.value <= 100 && setPlan({ ...plan, discount: e.target.value })}
                       />
                     </div>
