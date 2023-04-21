@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues }) => {
+const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -391,7 +391,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
 
 
                 {
-                    (totalCount || tableData?.length) > 10 &&
+                    !hidePagination && (totalCount || tableData?.length) > 10 &&
                     <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} />
                 }
                 {

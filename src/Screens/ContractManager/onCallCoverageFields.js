@@ -489,8 +489,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayFrequency')}
                                 disabledSelect={!metadata?.serviceDays?.weekDays}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year']}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -606,8 +606,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekendFrequency')}
                                 disabled={!metadata?.serviceDays?.weekEnds}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year']}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>

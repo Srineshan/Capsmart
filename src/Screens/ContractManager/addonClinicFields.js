@@ -173,12 +173,12 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       userList?.map(data => data?.sites?.sites?.map(site => {
         if (data?.name?.firstName && site?.siteName?.siteName && site?.siteResponsibility?.title) {
           if (site?.siteResponsibility?.title !== "" && site?.siteResponsibility?.title !== undefined && site?.siteResponsibility?.title !== null) {
-            temp.push({ name: data?.name?.firstName, site: 'Site', title: site?.siteResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+            temp.push({ fname: data?.name?.firstName, lname: data?.name?.lastName, suffix: data?.name?.suffix?.suffix || '', site: site?.siteName?.siteName, title: site?.siteResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
           }
 
           site?.departmentList?.departments?.map(dept => {
             if (dept?.departmentResponsibility?.title !== "" && dept?.departmentResponsibility?.title !== undefined && dept?.departmentResponsibility?.title !== null) {
-              temp.push({ name: data?.name?.firstName, site: 'Department', title: dept?.departmentResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+              temp.push({ fname: data?.name?.firstName, lname: data?.name?.lastName, suffix: data?.name?.suffix?.suffix || '', site: dept?.departmentName?.name, title: dept?.departmentResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
             }
           })
         }
@@ -509,7 +509,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                       onChange={(e) => { onApproverSelected(users?.filter(data => data?.id === e.target.value)?.map(data => data)[0], service, title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData)) }}
                       firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
                       valueList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData?.id)}
-                      labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                      labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
                       disabledList={title?.filter(titleData => titleData?.approver === true)?.map(data => false)} />
                   </div>
                 </div>
@@ -633,7 +633,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                                 onChange={(e) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.id === e.target.value)?.map(user => user)[0]) }}
                                 firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
                                 valueList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData?.id)}
-                                labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                                labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
                                 disabledList={title?.filter(titleData => titleData?.approver === true)?.map(data => false)} />
                             </div>
                           </div>
@@ -650,7 +650,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                                 onChange={(e) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.id === e.target.value)?.map(user => user)[0]) }}
                                 firstOptionLabel={'Select Payment Approver'} firstOptionValue={'0'}
                                 valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
-                                labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                                labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
                                 disabledList={title?.map(data => false)} />
                             </div>
                           </div>
@@ -705,7 +705,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                       onChange={(e) => { onApproverSelected(users?.filter(data => data?.id === e.target.value)?.map(data => data)[0], data?.performingActivity, title?.filter(titleData => titleData?.approver === true)?.map(data => data)[0]) }}
                       firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
                       valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
-                      labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                      labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
                       disabledList={title?.map(data => false)} />
                   </div>
                 </div>
@@ -850,7 +850,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                             firstOptionLabel={'Select Approver'}
                             firstOptionValue={'0'}
                             valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
-                            labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                            labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
                             disabledList={title?.map(data => false)} />
                         </div>
                       </div>
@@ -868,7 +868,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                             firstOptionLabel={'Select Payment Approver'}
                             firstOptionValue={'0'}
                             valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
-                            labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.name}-${titleData?.site}-${titleData?.title}`)}
+                            labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
                             disabledList={title?.map(data => false)} />
                         </div>
                       </div>

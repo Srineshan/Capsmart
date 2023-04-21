@@ -43,6 +43,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const [contractorNameSuffix, setContractorNameSuffix] = useState({ id: '', suffix: '' });
   const [contractorEmail, setContractorEmail] = useState('');
   const [contractorPhone, setContractorPhone] = useState(0);
+  const [siteTitles, setSiteTitles] = useState([]);
   const [address, setAddress] = useState({
     addressLine: '',
     city: '',
@@ -119,6 +120,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     let siteValue = siteTitleValues || [];
     let deptValue = departmentTitleValues || [];
     console.log('above values', deptValue, siteValue);
+    let tempSiteList = [];
     siteList?.map(data => {
       let dept = [];
       data?.departmentList?.departments?.map(deptData => {
@@ -136,10 +138,12 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         let valueString = `${data?.siteName?.siteName} - ${data?.siteResponsibility?.title}`;
         if (!siteValue.includes(valueString)) {
           siteValue.push(valueString);
+          tempSiteList.push(data?.siteResponsibility?.id)
           console.log('siteValue', valueString)
         }
       }
     })
+    setSiteTitles(tempSiteList);
     console.log('under site title value', siteValue, deptValue);
     setSites(temp);
     setSiteTitleValues(siteValue);
@@ -182,11 +186,15 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     minimal: true,
   });
 
+
+  console.log('site title', siteLevelTitle, siteTitleValues);
+
   const handleSiteLevelValues = () => {
     if (siteLevelSite?.name === '' || siteLevelTitle.title === '') {
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
+    console.log('siteLevelTitle', siteLevelSite, 'title', siteLevelTitle, sites);
     setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} - ${siteLevelTitle?.title}`]);
     let temp = sites;
     temp?.filter(data => data?.id === siteLevelSite?.id)?.map(data => {
@@ -227,6 +235,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const getSiteData = () => {
     let siteData = [];
     sites?.map(data => {
+      console.log('sites', data);
       let deptData = [];
       data?.department?.map(dept => {
         deptData.push({
@@ -239,7 +248,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           },
           "departmentResponsibility": {
             "title": dept?.title,
-            "id": dept?.title_id
+            "id": dept?.id
           }
         })
       })
@@ -253,7 +262,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         },
         "siteResponsibility": {
           "title": data?.title,
-          "id": data?.title_id
+          "id": data?.id
         }
       })
     })
@@ -651,7 +660,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                 {/* )} */}
                 <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                   <div className={style.marginTop}>Title*</div>
-                  <FunctionalTitleList value={siteLevelTitle?.id} onChangeFunc={(id, value) => setSiteLevelTitle({ id: id, title: value })} className={[style.marginLeft20, style.weekSelectStyle]} providerId={serviceProviderType?.id} />
+                  <FunctionalTitleList value={siteLevelTitle?.id} onChangeFunc={(id, value) => { setSiteLevelTitle({ id: id, title: value }); setSiteTitles([...siteTitles, id]) }} className={[style.marginLeft20, style.weekSelectStyle]} providerId={serviceProviderType?.id} />
                 </div>
                 <div className={`${style.addButtonPosition} ${style.marginTop20}`}>
                   <Button variant="outlined" onClick={() => handleSiteLevelValues()}>Add</Button>
@@ -702,7 +711,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                   </div>
                   <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                     <div className={style.marginTop}>Title*</div>
-                    <FunctionalTitleList value={departmentLevelTitle?.id} onChangeFunc={(id, value) => setDepartmentLevelTitle({ id: id, title: value })} className={[style.marginLeft20, style.weekSelectStyle]} providerId={serviceProviderType?.id} />
+                    <FunctionalTitleList value={departmentLevelTitle?.id} onChangeFunc={(id, value) => setDepartmentLevelTitle({ id: id, title: value })} className={[style.marginLeft20, style.weekSelectStyle]} providerId={serviceProviderType?.id} disable={siteTitles} />
                   </div>
                   <div className={`${style.addButtonPosition} ${style.marginTop20}`}>
                     <Button variant="outlined" onClick={() => handleDepartmentLevelValues()}>Add</Button>

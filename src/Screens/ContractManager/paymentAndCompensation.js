@@ -462,7 +462,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             ...dollarRate, hour: (e.target.value.slice(0, limit9)).replace(/,/g, ""), notApplicable: false
                                         })}
                                     />
-                                    <CommonCheckBox value="NA" checked={dollarRate?.notApplicable} onChange={(e) => setDollarRate({ ...dollarRate, notApplicable: e.target.checked, hour: parseFloat(0) })} label="NA" />
+                                    <CommonCheckBox value="NA" checked={dollarRate?.notApplicable} onChange={(e) => setDollarRate({ ...dollarRate, notApplicable: e.target.checked, hour: '0' })} label="NA" />
                                 </div>
                             </div>
 

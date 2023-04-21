@@ -10,8 +10,11 @@ const CommonCheckBox = ({ onChange, label, className, onFocus, value, disabled, 
             <FormControlLabel control={<Checkbox value={value} checked={checked ? true : false} defaultChecked={checked} onChange={onChange} disabled={disabled}
                 sx={{
                     '&.Mui-checked': {
-                        color: '#7165e3',
+                        color: '#7165e3'
                     },
+                    '&.Mui-disabled': {
+                        color: 'rgba(0, 0, 0, 0.26)',
+                    }
                 }} />} label={<Typography variant="body2" color="textSecondary">{label}</Typography>} />
         </FormGroup>
     )
