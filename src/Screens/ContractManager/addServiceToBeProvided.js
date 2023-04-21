@@ -886,6 +886,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setSelectedLocation(temp);
     }
     removeSelectedLocationFromList();
+    setValue('');
   }
 
   const handleDesignateContractor = () => {
@@ -1106,7 +1107,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
                           {/* <div className={`${style.addGrid} ${style.fullWidth} `}> */}
                           {showLocation && <div className={style.fullWidth}>
-                            <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
+                            <DatalistInput
+                              value={value}
+                              setValue={setValue} items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
                           </div>}
                         </div>
                         {
