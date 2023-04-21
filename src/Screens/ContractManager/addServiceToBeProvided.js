@@ -76,6 +76,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [isShowDocumentsList, setIsShowDocumentsList] = useState(false);
   const [contractDocumentList, setContractDocumentList] = useState([]);
   const [continueLoading, setContinueLoading] = useState(false);
+  const { setValue, value } = useComboboxControls({ initialValue: '' });
 
   useEffect(() => {
     getContractedServices();
@@ -876,6 +877,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       temp.push(selectedItem);
       setSelectedActivity(temp);
     }
+    setValue('');
   }
 
   const onLocationSelect = (selectedItem) => {
@@ -887,6 +889,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setSelectedLocation(temp);
     }
     removeSelectedLocationFromList();
+    setValue('');
   }
 
   const handleDesignateContractor = () => {
@@ -1067,7 +1070,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                         <CommonLabel value='Activities To Be Performed*' />
                         <div>
                           <div className={style.addGrid}>
-                            <DatalistInput items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e) => setNewActivity(e.target.value)} />
+                            <DatalistInput
+                              value={value}
+                              setValue={setValue}
+                              items={activityItems || []} onSelect={onActivitySelect} className={style.fullWidth} onChange={(e) => setNewActivity(e.target.value)} />
                             <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${(newActivity === '' || activity?.some(data => data?.activity?.activity?.replace(' ', '')?.toLowerCase()?.includes(newActivity?.replace(' ', '')?.toLowerCase()))) ? style.disabledUploadButton : ''}`}>
                               <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={activityToAdd} />
                             </div>
@@ -1104,7 +1110,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
                           {/* <div className={`${style.addGrid} ${style.fullWidth} `}> */}
                           {showLocation && <div className={style.fullWidth}>
-                            <DatalistInput items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
+                            <DatalistInput
+                              value={value}
+                              setValue={setValue} items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
                           </div>}
                         </div>
                         {
