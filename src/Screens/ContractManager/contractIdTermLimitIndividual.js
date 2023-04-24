@@ -13,7 +13,7 @@ import AddNewContractManager from './addNewContractManager';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import { Auth } from './../../utils/auth'
-import { format, sub, add, getMonth } from 'date-fns';
+import { format, sub, add, getMonth, differenceInCalendarMonths } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { GetDateFromHours } from './../../utils/formatting';
 import axios from 'axios';
@@ -600,7 +600,7 @@ const ContractIdTermLimitIndividual = (
     );
   }
 
-  console.log('weeksbeetween', getMonthDifference(new Date(contractTermPeriodFrom), new Date(contractTermPeriodTo)), new Date(contractTermPeriodFrom), new Date(contractTermPeriodTo));
+  console.log('weeksbeetween', getMonthDifference(new Date(contractTermPeriodFrom), new Date(contractTermPeriodTo)), differenceInCalendarMonths(new Date(contractTermPeriodTo), new Date(contractTermPeriodFrom)), new Date(contractTermPeriodFrom), new Date(contractTermPeriodTo), contractedTimeCommitment, parseInt(contractedTimeCommitment?.value));
 
   return (
     <div className={style.cloneBlockStyle}>
@@ -878,13 +878,13 @@ const ContractIdTermLimitIndividual = (
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Contract Time Commitment*' />
           <div className={style.contractedTime}>
-            <CommonInputField type="tel" maxLength={2} value={contractedTimeCommitment?.value} placeholder="0" onChange={(e) => e.target.value >= 0 && e.target.value < 53 && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value, frequency: 'NA' })} />
+            <CommonInputField type="tel" maxLength={2} value={(contractedTimeCommitment?.value === 0 || contractedTimeCommitment?.value === '0') ? '' : contractedTimeCommitment?.value} onChange={(e) => e.target.value >= 0 && e.target.value < 53 && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value, frequency: 'NA' })} />
             <CommonSelectField value={contractedTimeCommitment?.frequency || 'Select...'}
               onChange={(e) => setContractTimeCommitment({ ...contractedTimeCommitment, frequency: e.target.value })}
               className={`${style.timeCommitment}`} firstOptionLabel={'Select...'} firstOptionValue={'Select...'}
               valueList={['WEEK', 'MONTH']}
               labelList={['Weeks Per Contract Year', 'Months Per Contract Year']}
-              disabledList={(parseInt(contractedTimeCommitment?.value) <= getMonthDifference(new Date(contractTermPeriodFrom, new Date(contractTermPeriodTo))) / 4) ? [true, true] : (parseInt(contractedTimeCommitment?.value) <= getMonthDifference(new Date(contractTermPeriodFrom, new Date(contractTermPeriodTo)))) ? [true, false] : [false, false]} />
+              disabledList={(parseInt(contractedTimeCommitment?.value) <= getMonthDifference(new Date(contractTermPeriodFrom), new Date(contractTermPeriodTo))) ? [false, false] : (parseInt(contractedTimeCommitment?.value) <= getMonthDifference(new Date(contractTermPeriodFrom), new Date(contractTermPeriodTo)) * 4) ? [false, true] : [true, true]} />
           </div>
         </div>
 
