@@ -35,7 +35,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     "NAME", "CONTRACTORS",
     "EFFECTIVE DATE",
     // "POD STATUS",
-    "LAST UPDATED"];
+    "LAST UPDATED", "ACTION"];
   const draftHeaderValues = ["", "CONTRACT TYPE", "ID",
     // "",
     "NAME", "ACTIVATION STATUS", "LAST UPDATED",
@@ -44,7 +44,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
   const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
-  const activeColSortValues = [false, false, false, true, true, false, false, false];
+  const activeColSortValues = [false, false, false, true, true, false, false, false, false];
   const draftColSortValues = [false, false, true, true, false, false, false, false, false];
   const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
   const expiredColSortValues = [false, false, true, true, false, false, false, false];
@@ -230,7 +230,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       // { "type": "iconWithCount", "value": podStatus, "hoverText": podHoverText, 'isShowHoverText': true, "icon": <TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#14B15A' }} /> },
       // {"type": "text", "value": manager, "onClickFunction": onClickFunction},
       { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
-      // {"type": "action", "value": action},
+      { "type": "action", "value": action },
     ];
   }
 
@@ -340,14 +340,14 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const activeActionsData = [
     // {'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
     //   {'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean'},
-    //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'}
+    //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'},
+    { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' }
   ]
 
   const draftActionsData = [
     { 'data': 'Delete Contract', 'onClick': deleteDraft, 'requiredValue': 'boolean' },
     { 'data': 'Activate Contract', 'onClick': activateContracts, 'requiredValue': 'id' },
     // {'data': 'Share', 'onClick': activateContracts, 'requiredValue': 'id'},
-    { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' },
   ]
 
   const upcomingActionsData = [
@@ -374,8 +374,8 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   let tableSortValues = selectedContract === 'activecontracts' ? activeColSortValues : selectedContract === 'draft' ? (isDraft ? draftColSortValues : activationPendingColSortValues) : selectedContract === 'upcomingrenewals' ? upcomingColSortValues : expiredColSortValues;
   let tableDataValues = selectedContract === 'activecontracts' ? getActiveContractsValues() : selectedContract === "draft" ? getDraftContractsValues() : getUpcomingContractsValues();
   let actions = selectedContract === 'activecontracts' ? activeActionsData : draftActionsData;
-  let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGridWithoutAction : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
-  // let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : style.draftContractGrid;
+  // let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGridWithoutAction : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
+  let gridStyle = selectedContract === 'activecontracts' ? style.activeContractGrid : selectedContract === "draft" ? (isDraft ? style.draftContractGrid : style.activationPendingContractGrid) : selectedContract === "upcomingrenewals" ? style.upcomingContractGrid : style.expiredContractGrid;
 
   return (
     <div className={style.margin20}>

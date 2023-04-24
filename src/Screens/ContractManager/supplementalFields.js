@@ -209,6 +209,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             temp?.push(value);
             setMetadata({ ...metadata, supplementServiceName: temp });
         }
+        setValue('');
     }
 
     const removeSupplementServiceName = (index) => {
@@ -228,6 +229,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         let services = metadata.supplementServiceName;
         services.push(newServiceName);
         setMetadata({ ...metadata, supplementServiceName: services });
+        setValue('');
     }
 
     return (
@@ -265,7 +267,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             </div> */}
             <div>
                 <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
-                    <CommonLabel value='Activities To Be Performed*' />
+                    <CommonLabel value='Supplement Services To Perform*' />
                     <div>
                         <div className={style.addGrid}>
                             <DatalistInput
