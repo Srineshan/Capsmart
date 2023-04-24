@@ -176,12 +176,12 @@ const Navbar = () => {
       },
     };
     fetch(
-      "https://rest.mytimesmart.com/user-management-service/auth/logout",
+      `http://${window.location.hostname}:${window.location.port}/logout`,
       requestOptions
     )
       .then((response) => {
-        cookies.remove("user");
-        cookies.remove("entityId");
+        cookies.remove("user", { path: '/' });
+        cookies.remove("entityId", { path: '/' });
         window.location.href = "/";
       })
       .catch((data) => ErrorToaster("Unexpected Error Occured"));

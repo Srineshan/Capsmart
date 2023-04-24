@@ -32,6 +32,9 @@ const Contracts = () => {
     const [isEditable, setIsEditable] = useState(false);
 
     useEffect(() => {
+        if (window.location.pathname === '/app') {
+            window.location.pathname = '/app/contracts';
+        }
         getContracts();
         getUserData();
     }, [])

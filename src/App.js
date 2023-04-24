@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import history from "./routes/history";
 import Loader from "./Components/LoadingScreen";
@@ -7,6 +7,9 @@ import IdleTimer from "./Components/IdleTimer";
 import Cookie from "universal-cookie";
 import { Auth, GetEntityDetails } from "./utils/auth";
 import { TenantID, GET } from "./Screens/dataSaver";
+import axios from "axios";
+import jwt from "jwt-decode";
+
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
@@ -162,6 +165,75 @@ const App = ({ props }) => {
   const [tenantId, setTenantId] = useState(GetEntityDetails());
   const [logo, setLogo] = useState(null);
   const [title, setTitle] = useState("TimeSmartAI");
+  const [entityId, setEntityId] = useState("");
+  var cookie = new Cookie();
+  // const navigate = useNavigate();
+
+
+  useEffect(() => {
+    getEntityId();
+  }, [])
+
+  useEffect(() => {
+    login();
+  }, [entityId])
+
+  const getEntityId = async () => {
+    await axios(`http://${window.location.hostname}:${window.location.port}/entity-service/entityID`, {
+      method: "GET",
+      // headers: { "X-subdomain": "hopkins" },
+    })
+      .then((response) => {
+        cookie.set("entityId", response?.data?.id);
+        setEntityId(response?.data?.id);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  };
+
+  const login = () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-tenantID": entityId,
+      }
+    };
+    fetch(
+      `http://${window.location.hostname}:${window.location.port}/user-management-service/auth/login`,
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        cookie.set("user", data?.accessToken);
+        // let roles = jwt(data?.accessToken)?.roles?.split(",");
+        // let isAppUser =
+        //   roles.includes("Approver") ||
+        //   roles.includes("Reviewer") ||
+        //   roles.includes("Activity Logger");
+        // let isContractManager = roles.includes("Contract Manager");
+        // let isEntityLevelAdmin =
+        //   roles.includes("Super Sys Admin") ||
+        //   roles.includes("Entity Sys Admin") ||
+        //   roles.includes("Entity Sys User") ||
+        //   roles.includes("Distributor Admin");
+        // if (isAppUser) {
+        //   window.location.href = "/";
+        // } else if (isContractManager) {
+        //   navigate("/contracts");
+        //   window.location.reload();
+        // } else if (isEntityLevelAdmin) {
+        //   navigate("/entitySitePortal");
+        //   window.location.reload();
+        // } else {
+        //   navigate("/entitySitePortal");
+        //   window.location.reload();
+        // }
+      });
+    return true;
+  };
+
   console.log("token", accessToken);
   useEffect(() => {
     if (accessToken === false) {
@@ -214,6 +286,8 @@ const App = ({ props }) => {
     history.push("/app");
   }
 
+  console.log('access Token', accessToken);
+
   return (
     <BrowserRouter basename="/app">
       <Suspense fallback={<Loader />}>
@@ -221,10 +295,10 @@ const App = ({ props }) => {
           <IdleTimer></IdleTimer>
         )}
         <div className="App">
-          {accessToken !== false ? (
+          {(accessToken !== false && accessToken !== undefined) ? (
             <>
               <Routes>
-                <Route path="/" element={<Login />} {...props} />
+                <Route path="/" element={<ActiveContracts />} />
                 <Route path="/contracts" element={<ActiveContracts />} />
                 <Route path="/profile" element={<Profile />} />
                 {/* <Route path="/user" element={<Users />} /> */}
