@@ -13,7 +13,7 @@ import AddNewContractManager from './addNewContractManager';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import { Auth } from './../../utils/auth'
-import { format, sub, add } from 'date-fns';
+import { format, sub, add, getMonth } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { GetDateFromHours } from './../../utils/formatting';
 import axios from 'axios';
@@ -592,7 +592,15 @@ const ContractIdTermLimitIndividual = (
     setContractedServices(contractedServices?.contractedServices);
   }
 
-  console.log('selectedSites', isMultiSiteEntity, siteSpecific, selectedSites);
+  function getMonthDifference(startDate, endDate) {
+    return (
+      endDate?.getMonth() -
+      startDate?.getMonth() +
+      12 * (endDate?.getFullYear() - startDate?.getFullYear())
+    );
+  }
+
+  console.log('weeksbeetween', getMonthDifference(new Date(contractTermPeriodFrom), new Date(contractTermPeriodTo)), new Date(contractTermPeriodFrom), new Date(contractTermPeriodTo));
 
   return (
     <div className={style.cloneBlockStyle}>
@@ -876,7 +884,7 @@ const ContractIdTermLimitIndividual = (
               className={`${style.timeCommitment}`} firstOptionLabel={'Select...'} firstOptionValue={'Select...'}
               valueList={['WEEK', 'MONTH']}
               labelList={['Weeks Per Contract Year', 'Months Per Contract Year']}
-              disabledList={contractedTimeCommitment?.value > 12 ? [false, true] : [false, false]} />
+              disabledList={(parseInt(contractedTimeCommitment?.value) <= getMonthDifference(new Date(contractTermPeriodFrom, new Date(contractTermPeriodTo))) / 4) ? [true, true] : (parseInt(contractedTimeCommitment?.value) <= getMonthDifference(new Date(contractTermPeriodFrom, new Date(contractTermPeriodTo)))) ? [true, false] : [false, false]} />
           </div>
         </div>
 
