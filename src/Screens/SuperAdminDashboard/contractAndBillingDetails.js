@@ -268,7 +268,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                 return;
             }
             if (fullyExecutedContract && entityData?.contractDetails?.entityContractDocuments?.length === 0) {
-                ErrorToaster('Uploading Document is Mandatory if Contract Documents On File');
+                ErrorToaster('Uploading Document is Mandatory if Contract Documents On File is "YES"');
                 return;
             }
             if (type === 'Continue') {

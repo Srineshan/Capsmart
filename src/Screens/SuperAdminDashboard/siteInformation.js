@@ -105,7 +105,10 @@ const SiteInformation = ({ getActiveStep }) => {
   }
 
   const saveInProgressCheck = () => {
-    var keys = Object.keys(site)?.filter(key => site[key] === '' && key !== 'id')?.map(data => Fields[data]);
+    var keys = Object.keys(site)?.filter(key => site[key] === '' && key !== 'id' && key !== 'npin')?.map(data => Fields[data]);
+    if ((!site?.npinNA && site?.npin === '') || (!site?.npinNA && site?.npin === null)) {
+      keys.push('NPIN');
+    }
     if (site?.type?.id === '' || site?.type?.id === null) {
       keys.push('Site Type');
     }

@@ -177,12 +177,18 @@ const AppSubscription = ({ getActiveStep }) => {
   }
 
   const saveInProgressCheck = () => {
-    var keys = Object.keys(plan)?.filter(key => plan[key] === '' || plan[key] === 0 || plan[key] === '0' || plan[key] === undefined || plan[key] === null)?.map(data => Fields[data]);
+    var keys = Object.keys(plan)?.filter(key => (plan[key] === '' || plan[key] === 0 || plan[key] === '0' || plan[key] === undefined || plan[key] === null) && key !== 'maximumNumberOfUsers' && key !== 'noOfSites')?.map(data => Fields[data]);
     if (entityName === '' || entityName === undefined || entityName === null) {
       keys.push('Entity Name')
     }
     if (entityAbbreviation === '' || entityAbbreviation === undefined || entityAbbreviation === null) {
       keys.push('Entity Abbreviation')
+    }
+    if ((plan?.allowableSites === 'MULTIPLE') && (plan?.noOfSites === 0 || plan?.noOfSites === '0')) {
+      keys.push('Number Of Sites');
+    }
+    if ((plan?.allowableRegisteredUsers === 'LIMITED') && (plan?.maximumNumberOfUsers === 0 || plan?.maximumNumberOfUsers === '0')) {
+      keys.push('Maximum Number Of Users');
     }
     if (plan?.feedbackSupport?.length === 0) {
       keys.push('Feedback Support')

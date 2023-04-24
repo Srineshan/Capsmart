@@ -246,9 +246,12 @@ const EntitySetup = () => {
   console.log(entity)
 
   const saveInProgressCheck = () => {
-    var keys = Object.keys(entity)?.filter(key => entity[key] === '' && key !== 'id' && key !== 'type' || entity[key] === null)?.map(data => Fields[data]);
+    var keys = Object.keys(entity)?.filter(key => entity[key] === '' && key !== 'id' && key !== 'type' && key !== 'npin' || entity[key] === null)?.map(data => Fields[data]);
     if (entity?.type?.id === '' || entity?.type?.id === null) {
       keys.push('Entity Type');
+    }
+    if (!entity?.npinNA && (entity?.npin === '' || entity?.npin === null)) {
+      keys.push('NPIN');
     }
     var addressKeys = Object.keys(address)?.filter(key => address[key] === '')?.map(data => Fields[data]);
     if (logo?.url === '') {
