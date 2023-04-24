@@ -172,11 +172,11 @@ const App = ({ props }) => {
 
   useEffect(() => {
     getEntityId();
-  }, [])
+  }, [cookie.get("user")])
 
   useEffect(() => {
     login();
-  }, [entityId])
+  }, [entityId, cookie.get("user")])
 
   const getEntityId = async () => {
     await axios(`http://${window.location.hostname}:${window.location.port}/entity-service/entityID`, {
@@ -207,29 +207,7 @@ const App = ({ props }) => {
       .then((response) => response.json())
       .then((data) => {
         cookie.set("user", data?.accessToken);
-        // let roles = jwt(data?.accessToken)?.roles?.split(",");
-        // let isAppUser =
-        //   roles.includes("Approver") ||
-        //   roles.includes("Reviewer") ||
-        //   roles.includes("Activity Logger");
-        // let isContractManager = roles.includes("Contract Manager");
-        // let isEntityLevelAdmin =
-        //   roles.includes("Super Sys Admin") ||
-        //   roles.includes("Entity Sys Admin") ||
-        //   roles.includes("Entity Sys User") ||
-        //   roles.includes("Distributor Admin");
-        // if (isAppUser) {
-        //   window.location.href = "/";
-        // } else if (isContractManager) {
-        //   navigate("/contracts");
-        //   window.location.reload();
-        // } else if (isEntityLevelAdmin) {
-        //   navigate("/entitySitePortal");
-        //   window.location.reload();
-        // } else {
-        //   navigate("/entitySitePortal");
-        //   window.location.reload();
-        // }
+
       });
     return true;
   };
@@ -237,7 +215,6 @@ const App = ({ props }) => {
   console.log("token", accessToken);
   useEffect(() => {
     if (accessToken === false) {
-      let cookie = new Cookie();
       let authValue = cookie.get("user");
       setAccessToken(authValue);
     }
@@ -286,7 +263,38 @@ const App = ({ props }) => {
     history.push("/app");
   }
 
-  console.log('access Token', accessToken);
+  const LoginRoute = () => {
+    let roles = jwt(Auth())?.roles?.split(",");
+    let isAppUser =
+      roles.includes("Approver") ||
+      roles.includes("Reviewer") ||
+      roles.includes("Activity Logger");
+    let isContractManager = roles.includes("Contract Manager");
+    let isEntityLevelAdmin =
+      roles.includes("Super Sys Admin") ||
+      roles.includes("Entity Sys Admin") ||
+      roles.includes("Entity Sys User") ||
+      roles.includes("Distributor Admin");
+    if (isAppUser) {
+      window.location.href = "/";
+      return <Login />;
+    } else if (isContractManager) {
+      window.location.pathname = '/app/contracts';
+      // navigate("/contracts");
+      // window.location.reload();
+      return <ActiveContracts />;
+    } else if (isEntityLevelAdmin) {
+      window.location.pathname = '/app/entitySitePortal';
+      // navigate("/entitySitePortal");
+      // window.location.reload();
+      return <Home />;
+    } else {
+      window.location.pathname = '/app/entitySitePortal';
+      // navigate("/entitySitePortal");
+      // window.location.reload();
+      return <Home />;
+    }
+  }
 
   return (
     <BrowserRouter basename="/app">
@@ -298,7 +306,7 @@ const App = ({ props }) => {
           {(accessToken !== false && accessToken !== undefined) ? (
             <>
               <Routes>
-                <Route path="/" element={<ActiveContracts />} />
+                <Route path="/" element={<LoginRoute />} />
                 <Route path="/contracts" element={<ActiveContracts />} />
                 <Route path="/profile" element={<Profile />} />
                 {/* <Route path="/user" element={<Users />} /> */}

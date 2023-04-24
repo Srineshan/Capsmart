@@ -12,9 +12,10 @@ import File from "./../../images/file.png";
 import { Link } from "react-router-dom";
 import LogoutIcon from "./../../images/logoutIcon.png";
 import Cookies from "universal-cookie";
+// import {POST} from './dataSaver';
 import Popover from "@mui/material/Popover";
 import { isSuperAdminAccess } from "../../Screens/dataSaver";
-import { TenantID, GET } from "./../../Screens/dataSaver";
+import { TenantID, GET, POST } from "./../../Screens/dataSaver";
 import { ErrorToaster } from "./../../utils/toaster";
 import html2canvas from "html2canvas";
 import jwt from "jwt-decode";
@@ -163,28 +164,36 @@ const Navbar = () => {
 
   const idHelp = open ? "mouse-over-popover" : undefined;
 
-  const logout = () => {
+  const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-tenantID": entityId,
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    fetch(
-      `http://${window.location.hostname}:${window.location.port}/logout`,
-      requestOptions
-    )
-      .then((response) => {
+    await POST(`http://${window.location.hostname}:${window.location.port}/logout`, null)
+      .then(response => {
         cookies.remove("user", { path: '/' });
         cookies.remove("entityId", { path: '/' });
         window.location.href = "/";
+      }).catch(error => {
+        ErrorToaster('Unexpected Error');
       })
-      .catch((data) => ErrorToaster("Unexpected Error Occured"));
+    // const requestOptions = {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "X-tenantID": entityId,
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // };
+    // fetch(
+    //   `http://${window.location.hostname}:${window.location.port}/logout`,
+    //   requestOptions
+    // )
+    //   .then((response) => {
+    //     cookies.remove("user", { path: '/' });
+    //     cookies.remove("entityId", { path: '/' });
+    //     window.location.href = "/";
+    //   })
+    //   .catch((data) => ErrorToaster("Unexpected Error Occured"));
   };
 
   useEffect(() => {
