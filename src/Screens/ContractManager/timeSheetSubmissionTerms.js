@@ -22,7 +22,7 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, isMultiSiteEntity, getShowAlert, isEditable, getTabDataStatus }) => {
   const [timeSheetCount, setTimeSheetCount] = useState(0);
-  const [absence, setAbsence] = useState({ id: '', reviewer: '', approver: '' });
+  const [absence, setAbsence] = useState({ id: '', reviewer: '', reviewerTitle: {}, approver: '', approverTitle: {} });
   const [timesheetWorkFlow, setTimeSheetWorkFlow] = useState([]);
   const [showSelectBox, setShowSelectBox] = useState(false);
   const [selectBoxIndex, setSelectBoxIndex] = useState(-1);
@@ -118,7 +118,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       let workFlowValues = Object.values(workflowData);
       let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
       let approver = workFlowValues?.[1]?.workFlowUser?.id;
-      setAbsence({ ...absence, id: absenceWorkFlow?.workFlow?.id, reviewer: reviewer, approver: approver });
+      setAbsence({ ...absence, id: absenceWorkFlow?.workFlow?.id, reviewer: reviewer, reviewerTitle: workFlowValues?.[0]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[1]?.workFlowUser?.title });
     }
   }
 
@@ -129,7 +129,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       deptId.push(`${data?.id}#${dept?.id}`);
     }))
     let encodedDept = encodeURIComponent(deptId);
-    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}`;
+    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&contractIdToIgnore=${contractId}`;
     const { data: userList } = await GET(uri);
     if (userList) {
       setUsers(userList);
@@ -397,7 +397,8 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   };
 
   const getSelectedUserDetails = (id) => {
-    let user = users?.filter(user => user?.userId === id)?.map(data => data)[0];
+    let user = users?.filter(user => user?.id === id)?.map(data => data)[0];
+    console.log('user', user);
     return user;
   }
 
@@ -412,17 +413,11 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           "1": {
             "workFlowUser": {
               "id": reviewer,
-              "title": {
-                "title": getSelectedUserDetails(reviewer)?.title?.title || '',
-                "id": null,
-              },
+              "title": { id: absence?.reviewerTitle?.id, title: absence?.reviewerTitle?.title },
               "name": {
                 "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
               },
-              "suffix": {
-                "id": getSelectedUserDetails(reviewer)?.name?.suffix?.id || '',
-                "suffix": getSelectedUserDetails(reviewer)?.name?.suffix?.suffix || '',
-              }
+              "suffix": getSelectedUserDetails(reviewer)?.name?.suffix
             },
             "workFlowStatus": {
               "status": "APPROVED"
@@ -595,7 +590,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           <div className={style.purpleTitle}>
             PLANNED ABSENCE REQUESTS
           </div>
-          <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setAbsence({ ...absence, reviewer: value }) }} value={absence?.reviewer} approverReviewer='approver' />
+          <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value, title) => { setAbsence({ ...absence, reviewer: value, reviewerTitle: title }) }} value={absence?.reviewer} approverReviewer='approver' />
         </div>
 
         {/* <div className={`${style.welcomeBorder} ${style.marginTop20}`}></div> */}

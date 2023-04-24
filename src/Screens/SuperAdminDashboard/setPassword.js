@@ -95,7 +95,7 @@ const SetPassword = () => {
   const getEntityId = async () => {
     await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
       method: 'GET',
-      headers: { "X-subdomain": "smmc-trial" },
+      // headers: { "X-subdomain": "smmc-trial" },
     }).then(response => {
       var cookie = new Cookie();
       cookie.set('entityId', response?.data?.id);

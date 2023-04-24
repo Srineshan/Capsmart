@@ -454,7 +454,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         //     ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7))?.toLocaleString('en-gb'), notApplicable: false
                                         // })}
                                         disabled={dollarRate?.notApplicable}
-                                        value={dollarRate?.hour === null || dollarRate?.hour === '' ? null : Number(dollarRate?.hour)?.toLocaleString()}
+                                        value={dollarRate?.hour ? Number(dollarRate?.hour)?.toLocaleString() : null}
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                         }}
@@ -462,7 +462,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                             ...dollarRate, hour: (e.target.value.slice(0, limit9)).replace(/,/g, ""), notApplicable: false
                                         })}
                                     />
-                                    <CommonCheckBox value="NA" checked={dollarRate?.notApplicable} onChange={(e) => setDollarRate({ ...dollarRate, notApplicable: e.target.checked, hour: parseFloat(0) })} label="NA" />
+                                    <CommonCheckBox value="NA" checked={dollarRate?.notApplicable} onChange={(e) => setDollarRate({ ...dollarRate, notApplicable: e.target.checked, hour: '0' })} label="NA" />
                                 </div>
                             </div>
 

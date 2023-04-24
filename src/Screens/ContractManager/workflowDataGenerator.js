@@ -1,14 +1,11 @@
 export const workFlowDataGenerator = (workFlowName, workFlowData) => {
-  console.log('name', workFlowName);
+  console.log('name', workFlowName, workFlowData);
   let temp = {};
   for (const item of workFlowData) {
     temp[item?.step] = {
       "workFlowUser": {
         "id": item?.userId,
-        "title": {
-          "title": item?.title?.title || '',
-          "id": item?.title?.id || '',
-        },
+        "title": item?.userTitle,
         "name": {
           "name": item?.userName || '',
         },

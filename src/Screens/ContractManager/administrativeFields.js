@@ -213,11 +213,15 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
                 let dedicatedHoursActivityType = data?.activityType?.activityType;
                 let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join('-');
+                console.log('data', data);
                 setMetadata({
                     ...metadata,
                     dedicatedHoursActivityType: dedicatedHoursActivityType,
                     dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
                     sessionDuration: data?.duration?.hours,
+                    totalSession: data?.totalSessions?.value,
+                    totalSessionFrequency: data?.totalSessions?.frequency,
+                    sessionAmount: data?.payableAmount?.value,
                 });
             }
         });
@@ -313,6 +317,54 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     )}
                 </div>
             </div>
+            {
+                metadata?.dedicatedHoursSpecified &&
+                <>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Separate Administrative Hours Specified*' />
+                        <div className={style.displayInRow}>
+                            <div className={`${style.twoFieldWidth}`}>
+                                <CommonTextField
+                                    type="tel"
+                                    maxLength="3"
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                                    }}
+                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
+                                    value={metadata?.totalSession}
+                                />
+                            </div>
+                            <CommonSelectField className={` ${style.marginLeft20}`}
+                                value={metadata?.totalSessionFrequency || 'NA'}
+                                onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
+                                firstOptionLabel={'Select Frequecy'} firstOptionValue={'NA'}
+                                valueList={['WEEK', 'MONTH']}
+                                labelList={['Per Week', 'Per Month']}
+                                disabledList={[false, false]} />
+                        </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Administrative Services Payment Amount*' />
+                        <div className={`${style.displayInRow}`}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonTextField
+                                    type="tel"
+                                    maxLength="5"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                    }}
+                                    onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
+                                    value={metadata?.sessionAmount}
+                                />
+                            </div>
+                            <div className={style.verticalAlignCenter}>
+                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
+                            </div>
+                        </div>
+                    </div>
+                </>
+            }
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Allowable Administrative Duties & Function To Perform' />
@@ -348,12 +400,13 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
                                 {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={() => {
                                     setEditAdminActivitySelected(true);
+                                    let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
-                                        activity: data?.activity,
-                                        podRequired: data?.podRequired,
-                                        schedule: data?.schedule,
-                                        billable: data?.billable,
-                                        asNeeded: data?.asNeeded,
+                                        activity: adminActivity?.activity,
+                                        podRequired: adminActivity?.podRequired,
+                                        schedule: adminActivity?.schedule,
+                                        billable: adminActivity?.billable,
+                                        asNeeded: adminActivity?.asNeeded,
                                     });
                                 }} />}
                             </div>
@@ -466,51 +519,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 </Popover> */}
             </div>
 
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Separate Administrative Hours Specified*' />
-                <div className={style.displayInRow}>
-                    <div className={`${style.twoFieldWidth}`}>
-                        <CommonTextField
-                            type="tel"
-                            maxLength="3"
-                            InputProps={{
-                                endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
-                            }}
-                            onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
-                            value={metadata?.totalSession}
-                        />
-                    </div>
-                    <CommonSelectField className={` ${style.marginLeft20}`}
-                        value={metadata?.totalSessionFrequency || 'NA'}
-                        onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
-                        firstOptionLabel={'Select Frequecy'} firstOptionValue={'NA'}
-                        valueList={['WEEK', 'MONTH']}
-                        labelList={['Per Week', 'Per Month']}
-                        disabledList={[false, false]} />
-                </div>
-            </div>
-            {
-                metadata?.dedicatedHoursSpecified &&
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <CommonLabel value='Administrative Services Payment Amount*' />
-                    <div className={`${style.displayInRow}`}>
-                        <div className={`${style.threeFieldWidth}`}>
-                            <CommonTextField
-                                type="tel"
-                                maxLength="5"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                                }}
-                                onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
-                                value={metadata?.sessionAmount}
-                            />
-                        </div>
-                        <div className={style.verticalAlignCenter}>
-                            <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
-                        </div>
-                    </div>
-                </div>
-            }
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Service Days*' />

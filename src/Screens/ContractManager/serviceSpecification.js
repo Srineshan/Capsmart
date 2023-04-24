@@ -23,6 +23,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [users, setUsers] = useState([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [selectedContractServiceIndex, setSelectedContractServiceIndex] = useState();
+  const [contractToDelete, setContractToDelete] = useState([]);
   const [userLength, setUserLength] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [servicesValid, setServicesValid] = useState([]);
@@ -78,7 +79,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
 
   const handleDeleteService = async () => {
     let formattedData = {
-      contractedServices: contractedServices?.filter((data, index) => selectedContractServiceIndex !== index)?.map(data => data)
+      contractedServices: contractedServices?.filter((data, index) => !contractToDelete?.includes(index))?.map(data => data)
     }
 
     const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
@@ -90,6 +91,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     }
     setShowDeleteConfirmation(false);
     setSelectedContractServiceIndex();
+    getContractedServices();
   }
 
   const onClickFunction = (data, index) => {
@@ -99,8 +101,11 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   }
 
   const onClickCrossFunction = (data, index) => {
+    let temp = [];
     setShowDeleteConfirmation(true);
-    setSelectedContractServiceIndex(index);
+    temp.push(index);
+    temp.push(contractedServices?.findIndex(service => service?.activityResponse?.dataMap?.selectedActivityId === data?.refId));
+    setContractToDelete(temp);
   }
 
   let dataStatus = [];
@@ -196,6 +201,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
             ))} */}
             <div className={style.marginTop20}>
               <Table
+                hidePagination={true}
                 tableHeaderValues={tableHeaderValues}
                 tableDataValues={getServiceProviderValues()}
                 tableData={contractedServices}
