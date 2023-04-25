@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import InputAdornment from '@mui/material/InputAdornment';
+import DatalistInput, { useComboboxControls } from 'react-datalist-input';
 import { CLINIC, SURGERY, ONCALL, PROCEDUREREADING } from '../../Constants';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import { TimePicker } from "@blueprintjs/datetime";
@@ -19,7 +20,8 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
     const [totalContractedService, setTotalContractedService] = useState(0);
     const [isDedicatedHours, setIsDedicatedHours] = useState(false);
     const [availableActivities, setAvailableActivities] = useState([]);
-
+    const { setValue, value } = useComboboxControls({ initialValue: '' });
+    const [newServiceName, setNewServiceName] = useState('');
     const [supplementServiceName, setSupplementServiceName] = useState('');
 
     let specificDedicatedHoursList = [];
@@ -214,6 +216,20 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
         setMetadata({ ...metadata, supplementServiceName: temp?.filter((data, indexValue) => index !== indexValue)?.map(data => data) });
     }
 
+    const avilableActivityItems = useMemo(
+        () =>
+            availableActivities?.map((data) => ({
+                value: data,
+            })),
+        [availableActivities],
+    );
+
+    const serviceNameToAdd = () => {
+        let services = metadata.supplementServiceName;
+        services.push(newServiceName);
+        setMetadata({ ...metadata, supplementServiceName: services });
+    }
+
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -231,7 +247,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                     )}
                 </div>
             </div>
-
+            {/* 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Supplemental Services To Perform*' />
                 <div>
@@ -245,6 +261,30 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                         metadata?.supplementServiceName?.length !== 0 && metadata?.supplementServiceName &&
                         <MultiSelectDisplay values={metadata?.supplementServiceName} removeItem={removeSupplementServiceName} />
                     }
+                </div>
+            </div> */}
+            <div>
+                <div className={`${style.addManagerGrid} ${style.marginTop20} `}>
+                    <CommonLabel value='Activities To Be Performed*' />
+                    <div>
+                        <div className={style.addGrid}>
+                            <DatalistInput
+                                value={value}
+                                setValue={setValue}
+                                items={avilableActivityItems || []} onSelect={(item) => addSupplementService(item.value)} className={style.fullWidth}
+                                onChange={(e) => setNewServiceName(e.target.value)}
+                            />
+                            <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
+                                <AddIcon sx={{ fontSize: 25, color: 'white' }}
+                                    onClick={serviceNameToAdd}
+                                />
+                            </div>
+                        </div>
+                        {
+                            metadata?.supplementServiceName?.length !== 0 && metadata?.supplementServiceName &&
+                            <MultiSelectDisplay values={metadata?.supplementServiceName} removeItem={removeSupplementServiceName} />
+                        }
+                    </div>
                 </div>
             </div>
             <>

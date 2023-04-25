@@ -83,7 +83,7 @@ const ContractIdTermLimitIndividual = (
   const [selectedDepartmentSites, setSelectedDepartmentSites] = useState([]);
   const [selectedSite, setSelectedSite] = useState('');
   const [createdContractId, setCreatedContractId] = useState(contractIdFromActive);
-  const [contractedTimeCommitment, setContractTimeCommitment] = useState({ value: 0, frequency: '' });
+  const [contractedTimeCommitment, setContractTimeCommitment] = useState({ value: 0, frequency: 'NA' });
   const [continueLoading, setContinueLoading] = useState(false);
   const [contractedServices, setContractedServices] = useState([]);
   const [isDateUpdated, setIsDateUpdated] = useState(false);
@@ -870,13 +870,13 @@ const ContractIdTermLimitIndividual = (
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Contract Time Commitment*' />
           <div className={style.contractedTime}>
-            <CommonInputField type="tel" maxLength={3} value={contractedTimeCommitment?.value} placeholder="0" onChange={(e) => e.target.value >= 0 && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value })} />
+            <CommonInputField type="tel" maxLength={2} value={contractedTimeCommitment?.value} placeholder="0" onChange={(e) => e.target.value >= 0 && e.target.value < 53 && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value, frequency: 'NA' })} />
             <CommonSelectField value={contractedTimeCommitment?.frequency || 'Select...'}
               onChange={(e) => setContractTimeCommitment({ ...contractedTimeCommitment, frequency: e.target.value })}
               className={`${style.timeCommitment}`} firstOptionLabel={'Select...'} firstOptionValue={'Select...'}
               valueList={['WEEK', 'MONTH']}
               labelList={['Weeks Per Contract Year', 'Months Per Contract Year']}
-              disabledList={[false, false]} />
+              disabledList={contractedTimeCommitment?.value > 12 ? [false, true] : [false, false]} />
           </div>
         </div>
 

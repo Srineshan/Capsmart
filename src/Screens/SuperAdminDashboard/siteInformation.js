@@ -21,11 +21,12 @@ import DepartmentList from './../../Components/DepartmentList';
 import SetupComplete from './setupComplete';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import { format } from 'date-fns';
 
 // const VALUES = ['Department 1', "Department 2"];
 
 const SiteInformation = ({ getActiveStep }) => {
-  const { id } = useParams();
+  const { id, page } = useParams();
   const navigate = useNavigate();
   const [tags, setTags] = useState([]);
   const [departmentSpecific, setDepartmentSpecific] = useState(true);
@@ -49,7 +50,7 @@ const SiteInformation = ({ getActiveStep }) => {
   const [showSaveInProgress, setShowSaveInProgress] = useState(false);
   const [isSetupComplete, setIsCompleteSetup] = useState(false);
   const [unassignedKeys, setUnassignedKeys] = useState([]);
-  const Fields = { name: 'Site Name', type: 'Site Type', npin: 'NPIN', addressLine: 'Address Line', city: 'City', state: 'State', country: 'Country', zipcode: 'Zipcode' };
+  const Fields = { name: 'Site Name', type: 'Site Type', npin: 'NPIN', addressLine: 'Address', city: 'City', state: 'State', country: 'Country', zipcode: 'Zipcode', officialEmailDomain: 'Official Email Domain' };
   let options = [];
   const accessToken = Auth();
   const role = '';
@@ -75,6 +76,7 @@ const SiteInformation = ({ getActiveStep }) => {
   }
 
   const mandatoryFieldCheck = (buttonType) => {
+    console.log(site)
     if ((!site?.npinNA && site?.npin === '') || (!site?.npinNA && site?.npin === null)) {
       ErrorToaster('NPIN is Mandatory if not NA');
       return;
@@ -104,6 +106,9 @@ const SiteInformation = ({ getActiveStep }) => {
 
   const saveInProgressCheck = () => {
     var keys = Object.keys(site)?.filter(key => site[key] === '' && key !== 'id')?.map(data => Fields[data]);
+    if (site?.type?.id === '' || site?.type?.id === null) {
+      keys.push('Site Type');
+    }
     var addressKeys = Object.keys(address)?.filter(key => address[key] === '')?.map(data => Fields[data]);
     keys.push(...addressKeys);
     setUnassignedKeys(keys);
@@ -145,7 +150,7 @@ const SiteInformation = ({ getActiveStep }) => {
         },
         "canSetupDepartment": site?.canSetupDepartment,
         "departmentList": {
-          "departments": departmentSpecific ? selectedDepartment : departmentValue,
+          "departments": departmentSpecific ? selectedDepartment || [] : departmentValue || [],
         },
         "address": {
           "addressLine": address?.addressLine,
@@ -178,7 +183,7 @@ const SiteInformation = ({ getActiveStep }) => {
         },
         "canSetupDepartment": site?.canSetupDepartment,
         "departmentList": {
-          "departments": departmentSpecific ? selectedDepartment : departmentValue,
+          "departments": departmentSpecific ? selectedDepartment || [] : departmentValue || [],
         },
         "address": {
           "addressLine": address?.addressLine,
@@ -228,7 +233,7 @@ const SiteInformation = ({ getActiveStep }) => {
         ErrorToaster('Unexpected Error Creating Site');
       });
     if (buttonText === 'Continue') {
-      navigate(`/entitySetup/${TenantID}/entitySystemAdmin`);
+      navigate(`/entitySetup/${id}/entitySystemAdmin`);
       resetSiteValues();
     } else if (buttonText === 'Saveinprogress') {
       resetSiteValues();
@@ -315,11 +320,12 @@ const SiteInformation = ({ getActiveStep }) => {
   }
 
   const setSelectedSiteValues = () => {
+    console.log(selectedSite)
     setAddress({
-      city: selectedSite?.address?.city, state: selectedSite?.address?.state, zipcode: selectedSite?.address?.zipcode, country: selectedSite?.address?.country, addressLine: selectedSite?.address?.addressLine
+      city: selectedSite?.address?.city || '', state: selectedSite?.address?.state || '', zipcode: selectedSite?.address?.zipcode || '', country: selectedSite?.address?.country || '', addressLine: selectedSite?.address?.addressLine || ''
     });
-    setSite({ name: selectedSite?.siteName?.siteName, type: { id: selectedSite?.siteType?.id, type: selectedSite?.siteType?.type }, canSetupDepartment: selectedSite?.canSetupDepartment, npin: selectedSite?.npin?.id, npinNA: selectedSite?.npin?.notApplicable, officialEmailDomain: '' });
-    setSelectedDepartment(selectedSite?.departmentList?.departments);
+    setSite({ name: selectedSite?.siteName?.siteName || '', type: { id: selectedSite?.siteType?.id || '', type: selectedSite?.siteType?.type || '' }, canSetupDepartment: selectedSite?.canSetupDepartment || true, npin: selectedSite?.npin?.id || '', npinNA: selectedSite?.npin?.notApplicable || false, officialEmailDomain: '' });
+    setSelectedDepartment(selectedSite?.departmentList?.departments || []);
   }
 
   const onSiteTypeChange = (id, value) => {
@@ -335,7 +341,7 @@ const SiteInformation = ({ getActiveStep }) => {
           <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle} ${style.floatRight}`} onClick={() => isSuperAdminAccess ? navigate('/activeCustomers') : navigate('/entitySitePortal')} />
           <div className={style.stepperMargin}>
             <div className={isSuperAdminAccess ? style.stepperGrid : style.stepperGrid4}>
-              <div onClick={() => navigate(`/entitySetup/${TenantID}/appSubscription`)}>
+              <div onClick={() => navigate(`/entitySetup/${id}/appSubscription`)}>
                 <div className={style.justifyCenter}>
                   <div className={`${style.stepperImgBackground} ${style.completedStepperStyle} `}>
                     <img src={Step5} alt="Step1" className={style.stepperImgStyle} />
@@ -343,7 +349,7 @@ const SiteInformation = ({ getActiveStep }) => {
                 </div>
                 <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SUBSCRIPTION PLAN</p>
               </div>
-              <div onClick={() => navigate(`/entitySetup/${TenantID}/contractAndBilling`)}>
+              <div onClick={() => navigate(`/entitySetup/${id}/contractAndBilling`)}>
                 <div className={style.justifyCenter}>
                   <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                     <img src={Step4} alt="Step2" className={style.stepperImgStyle} />
@@ -351,7 +357,7 @@ const SiteInformation = ({ getActiveStep }) => {
                 </div>
                 <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>CONTRACT & BILLING</p>
               </div>
-              <div onClick={() => navigate(`/entitySetup/${TenantID}/entitySetup`)}>
+              <div onClick={() => navigate(`/entitySetup/${id}/entitySetup`)}>
                 <div className={style.justifyCenter}>
                   <div className={`${style.stepperImgBackground} ${style.completedStepperStyle}`}>
                     <img src={Step4} alt="Step3" className={style.stepperImgStyle} />
@@ -359,7 +365,7 @@ const SiteInformation = ({ getActiveStep }) => {
                 </div>
                 <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>ENTITY SETUP</p>
               </div>
-              <div onClick={() => navigate(`/entitySetup/${TenantID}/siteInformation`)}>
+              <div onClick={() => navigate(`/entitySetup/${id}/siteInformation`)}>
                 <div className={style.justifyCenter}>
                   <div className={`${style.stepperImgBackground} ${style.activeStepperStyle}`}>
                     <img src={Step3} alt="Step4" className={style.stepperImgStyle} />
@@ -368,7 +374,7 @@ const SiteInformation = ({ getActiveStep }) => {
                 <p className={`${isSuperAdminAccess ? style.entityTextColor : style.entityTextColor4grid} ${style.activeEntityTextColor}`}>SITES FOR APP USE</p>
               </div>
               {isSuperAdminAccess && (
-                <div onClick={() => navigate(`/entitySetup/${TenantID}/entitySystemAdmin`)}>
+                <div onClick={() => navigate(`/entitySetup/${id}/entitySystemAdmin`)}>
                   <div className={style.justifyCenter}>
                     <div className={`${style.stepperImgBackground}`}>
                       <img src={Step2} alt="Step5" className={style.stepperImgStyle} />
@@ -498,7 +504,7 @@ const SiteInformation = ({ getActiveStep }) => {
                       </div>
                     )}
                     <div className={`${style.buttonPosition} ${style.floatRight} ${style.marginTop20}`}>
-                      <button className={style.outlinedButton} onClick={() => { mandatoryFieldCheck('Saveinprogress'); }}>SAVE IN-PROGRESS</button>
+                      <button className={style.outlinedButton} onClick={() => { saveInProgressCheck(); }}>SAVE IN-PROGRESS</button>
                       {!isEdit && (
                         <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { mandatoryFieldCheck('Addmore'); }}>SAVE & ADD MORE</button>
                       )}
@@ -534,7 +540,7 @@ const SiteInformation = ({ getActiveStep }) => {
                         <p className={style.tableDataFontStyle}>{data?.siteType?.type}</p>
                         <p className={style.tableDataFontStyle}>{data.address.city}</p>
                         <p className={style.tableDataFontStyle}>{data.address.state}</p>
-                        <p className={style.tableDataFontStyle}>-</p>
+                        <p className={style.tableDataFontStyle}>{format(new Date(data?.createdDate), 'MM/dd/yyyy')}</p>
                         <p className={style.tableDataFontStyle}>-</p>
                         <p className={style.tableDataFontStyle}>-</p>
                       </div>
@@ -546,7 +552,7 @@ const SiteInformation = ({ getActiveStep }) => {
                 {
                   // <button className={style.outlinedButton}>SAVE IN-PROGRESS</button>
                 }
-                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { !isSuperAdminAccess ? setIsCompleteSetup(true) : navigate(`/entitySetup/${TenantID}/entitySystemAdmin`) }}>CONTINUE</button>
+                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { !isSuperAdminAccess ? setIsCompleteSetup(true) : navigate(`/entitySetup/${id}/entitySystemAdmin`) }}>CONTINUE</button>
               </div>
             </div>
           )}

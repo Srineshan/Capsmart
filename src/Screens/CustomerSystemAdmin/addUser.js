@@ -47,7 +47,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         if (selectedRolesToShow?.length !== 0) {
             let temp = [];
             selectedRolesToShow?.map(data => {
-                temp.push({ id: data, roleName: roles?.filter(roleData => roleData?.id === data)?.map(roleData => roleData?.roleName)?.[0] })
+                temp.push(roles?.filter(roleData => roleData?.id === data)?.map(roleData => roleData)?.[0])
             })
             setAddUser({ ...addUser, roles: temp });
         }
@@ -207,6 +207,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
 
 
     const submitUserDetails = async () => {
+        console.log('roles', addUser?.roles);
         if (addUser?.firstName === '') {
             ErrorToaster('First Name is Mandatory');
             return;
@@ -256,7 +257,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ...(isEdit && { "serviceProviderType": userDataById?.serviceProviderType }),
             ...(isEdit && { "npin": userDataById?.npin }),
         }
-        console.log('site', getFinalSiteValueWithDepartments())
+        console.log('user role details', user);
         if (isEdit) {
             await PUT('user-management-service/user', JSON.stringify(user))
                 .then(response => {
@@ -366,7 +367,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                         <div >
                             <CommonLabel value='Suffix*' />
                             <div className={style.grid3}>
-                                <SuffixList value={suffix?.id || ''} onChangeFunc={(id, value) => { console.log('id', id, value); setSuffix({ id: id, suffix: value }) }} className={[style.fullWidth]} />
+                                <SuffixList value={suffix?.id || ''} onChangeFunc={(id, value) => { setSuffix({ id: id, suffix: value }) }} className={[style.fullWidth]} />
                             </div>
                         </div>
 

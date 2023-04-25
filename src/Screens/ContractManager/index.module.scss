@@ -1268,8 +1268,16 @@ select {
     grid-template-columns: 15% 1fr;
 }
 
+.documentTextGrid {
+    display: grid;
+    grid-template-columns: 85% 10%;
+    grid-gap: 10px;
+}
+
 .documentText {
     color: #707070;
+    word-wrap: break-word;
+    width: 150px;
 }
 
 .proofBorder {
@@ -1887,6 +1895,39 @@ input[type="file"] {
     background-color: #F94848;
 }
 
+.purpleText {
+    color: #E316D6;
+}
+
+.popUpPreImplementationHeading {
+    font: bold 15px/15px Montserrat;
+    color: #7165E3;
+}
+
+.popUpPreImplementationSubHeading {
+    font: bold 13px/15px Montserrat;
+    color: #52575D;
+}
+
+.popUpPreImplementationTitle {
+    font: bold 13px/15px Montserrat;
+    color: #7165E3;
+}
+
+.preImplementationGrid {
+    display: grid;
+    grid-template-columns: 38% 34% 25%;
+    grid-gap: 1%;
+}
+
+.preImplementationPadding {
+    padding: 0 20px;
+}
+
+.leftBorder {
+    border-left: 3px solid #E9E9F0;
+}
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -2069,8 +2110,8 @@ input[type=number] {
 
 .editableTableGridStyle {
     display: grid;
-    grid-template-columns: 10% 22% 22% 22% 8% 8% 6%;
-    grid-gap: 5px;
+    grid-template-columns: 15% 18% 18% 18% 10% 10% 5%;
+    grid-gap: 1%;
 }
 
 .tableHeaderFontStyle {

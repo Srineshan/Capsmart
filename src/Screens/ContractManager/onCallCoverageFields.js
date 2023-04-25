@@ -55,7 +55,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         dependencyFrequency: 'PER_DAY',
         patientMRNRequired: false,
         attendingDocRequired: false,
-        customizedSchedule: true,
+        customizedSchedule: false,
         weekdayFrom: null,
         weekdayTo: null,
         weekdayDuration: 0,
@@ -135,7 +135,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             dependencyFrequency: 'PER_DAY',
             patientMRNRequired: false,
             attendingDocRequired: false,
-            customizedSchedule: true,
+            customizedSchedule: false,
             weekdayFrom: null,
             weekdayTo: null,
             weekdayDuration: 0,
@@ -225,7 +225,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     const [specified, setSpecified] = useState(0);
 
     useEffect(() => {
-        if (metadata?.customizedSchedule) {
+        if (!metadata?.customizedSchedule) {
             let contractedSchedules = [{
                 minimum: { value: metadata?.min },
                 maximum: { value: metadata?.max },
@@ -404,10 +404,10 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Same On Call Schedule For All Days' />
                 <div className={style.onCallBillableGrid}>
-                    <CommonSwitch checked={metadata?.customizedSchedule} label={metadata?.customizedSchedule ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={(e) => onCustomizeFieldOptionChange(!metadata?.customizedSchedule)} />
+                    <CommonSwitch checked={!metadata?.customizedSchedule} label={!metadata?.customizedSchedule ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={(e) => onCustomizeFieldOptionChange(!metadata?.customizedSchedule)} />
                 </div>
             </div>
-            {!metadata?.customizedSchedule && (
+            {metadata?.customizedSchedule && (
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
                         <CommonLabel value='Weekday' />
@@ -489,8 +489,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekdayFrequency')}
                                 disabledSelect={!metadata?.serviceDays?.weekDays}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year']}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -606,8 +606,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => onCustomizeFieldChange(e.target.value, 'weekendFrequency')}
                                 disabled={!metadata?.serviceDays?.weekEnds}
                                 firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
-                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year']}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -783,7 +783,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     </div> */}
                 </div>
             )}
-            {metadata?.customizedSchedule && (
+            {!metadata?.customizedSchedule && (
                 <>
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Number of On Call Duty Days*' />
@@ -907,12 +907,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     </div>
                 </>
             )}
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            {/* <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Require Patient MRN' />
                 <div className={style.onCallBillableGrid}>
                     <CommonSwitch checked={metadata?.patientMRNRequired} label={metadata?.patientMRNRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} onChange={() => handleValueChange('patientMRNRequired', !metadata?.patientMRNRequired)} />
                 </div>
-            </div>
+            </div> */}
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Attending Doc Required' />
                 <div className={style.onCallBillableGrid}>
