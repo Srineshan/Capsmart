@@ -43,7 +43,7 @@ const AddNewDepartments = ({
     { name: "", serviceLocations: [] },
   ]);
 
-  console.log(DepartmentService);
+  // console.log(DepartmentService);
 
   useEffect(() => {
     if (
@@ -63,9 +63,9 @@ const AddNewDepartments = ({
 
   const getServiceLocationDelete = async () => {
     const { data: serviceLocationDelete } = await PUT(
-      `entity-service/servicelocation/${selectedLocationDeleteId}/unMapDepartment`
+      `entity-service/servicelocation/X-tenantID=${TenantID}&${selectedLocationDeleteId}/unMapDepartment`
     );
-    // console.log(serviceLocationDelete);
+    console.log(serviceLocationDelete);
   };
 
   useEffect(() => {
@@ -94,6 +94,7 @@ const AddNewDepartments = ({
         serviceLocation.map((location) => location).includes(data)
       )
       .map((tag, index) => {
+        console.log(tag);
         const onRemoveLocation = () => {
           setSelectedLocationDeleteId(tag?.id);
           setSelectedLocations(
@@ -228,6 +229,7 @@ const AddNewDepartments = ({
 
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
+    // console.log(name, value);
     // console.log(name, value, index, serviceAreaList, serviceLocation);
     const list = [...serviceAreaList];
     if (name === "location") {
@@ -261,6 +263,18 @@ const AddNewDepartments = ({
         }
       }
       // console.log(selectedLocations);
+    } else if (name === "name") {
+      let ListArray = [
+        ...list.filter(
+          (item) => item.name.toLocaleLowerCase() === value.toLocaleLowerCase()
+        ),
+      ];
+
+      if (ListArray.length > 0) {
+        ErrorToaster("Already This Name Exists");
+        return;
+      }
+      list[index][name] = value;
     } else {
       list[index][name] = value;
     }
