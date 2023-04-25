@@ -34,8 +34,7 @@ export default function IdleTimer() {
 
 
     const logout = async () => {
-
-        await POST(`http://${window.location.hostname}:${window.location.port}/logout`, null)
+        await POST(`logout`, null)
             .then(response => {
                 cookies.remove("user", { path: '/' });
                 cookies.remove("entityId", { path: '/' });
@@ -43,26 +42,6 @@ export default function IdleTimer() {
             }).catch(error => {
                 ErrorToaster('Unexpected Error');
             })
-        // const requestOptions = {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //         "X-tenantID": entityId,
-        //         Authorization: `Bearer ${token}`,
-        //     },
-        // };
-        // fetch(
-        //     `http://${window.location.hostname}:${window.location.port}/logout`,
-        //     requestOptions
-        // )
-        //     .then((response) => {
-        //         cookies.remove("user");
-        //         cookies.remove("entityId");
-        //         window.location.href = "/";
-        //     })
-        //     .catch((data) => console.log("Unexpected Error Occured"));
-        // setShowAlert(false);
-        // clearTimeout(sessionTimeoutRef.current);
     };
 
     return (

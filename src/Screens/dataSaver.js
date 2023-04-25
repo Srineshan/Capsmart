@@ -18,6 +18,8 @@ const headers = {
     'X-Authorization': `Bearer ${accessToken}`
 }
 
+console.log('hostname', baseUrl, window.location.hostname);
+
 export const GET = (url) => {
     return axios(`${baseUrl}/${url}`, {
         method: 'GET',
