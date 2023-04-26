@@ -167,12 +167,15 @@ const Navbar = () => {
   const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
-    let entityId = cookies.get("entityId");
+    let entityId = cookies.get("entityId"); 
     await POST(`logout`, null)
       .then(response => {
+        const logouturi = response.headers.get('location') || '';
         cookies.remove("user", { path: '/' });
         cookies.remove("entityId", { path: '/' });
-        window.location.href = "/";
+        if (logouturi) {
+          window.location.href = logouturi;
+        }
       }).catch(error => {
         ErrorToaster('Unexpected Error');
       })
