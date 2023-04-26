@@ -164,7 +164,7 @@ const SuffixByIndustries = () => {
                     </div>
 
                     <div className={style.industriesEntityCardStyle}>
-                      <div className={style.tableHeaderIndustriesEntity}>
+                      <div className={style.tableHeaderSuffixByIndustries}>
                         <p
                           className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft40}`}
                         >
