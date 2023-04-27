@@ -1,18 +1,12 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { TextArea, Icon, TagInput, FileInput, EditableText, Divider } from '@blueprintjs/core';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import cloneDeep from 'lodash.clonedeep';
 import TextField from '@mui/material/TextField';
-import { TimePicker } from "@blueprintjs/datetime";
 import InputAdornment from '@mui/material/InputAdornment';
 import DatalistInput from 'react-datalist-input';
 import { GET, PUT, POST, role, TenantID } from './../dataSaver';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
 import AddNewContractManager from './addNewContractManager';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
-import { Auth } from './../../utils/auth'
 import { format, sub, add, getMonth, differenceInCalendarMonths } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { GetDateFromHours } from './../../utils/formatting';

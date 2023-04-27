@@ -30,6 +30,7 @@ import SideBar from '../../Components/Sidebar';
 import PreImplementationDataDialog from './preImplementationDataDialog';
 
 const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page }) => {
+  const [selectedContractId, setSelectedContractId] = useState();
   const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID",
     // "",
     "NAME", "CONTRACTORS",
@@ -110,6 +111,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
   const getShowPreImplementationDialog = (data) => {
     setShowPreImplementationDialog(true);
+    setSelectedContractId(data?.id);
   }
 
   const getPreImplementationDialogBoolean = (value) => {
@@ -493,7 +495,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI</p>
       </div>
-      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} />
+      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} />
     </div>
   )
 }
