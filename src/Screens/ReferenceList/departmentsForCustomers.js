@@ -53,6 +53,8 @@ const DepartmentsForCustomers = () => {
 
   const [selectAllList, setSelectAllList] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [searchKey, setSearchKey] = useState("");
 
   useEffect(() => {
     if (entityId !== "" && entityId !== undefined) {
@@ -100,9 +102,13 @@ const DepartmentsForCustomers = () => {
 
   const getDepartmentService = async () => {
     const { data: departmentService } = await GET(
-      `entity-service/department/refListView?siteTypeId=${siteTypeId}`
+      `entity-service/department/refListView?X-tenantID=${TenantID}&siteTypeId=${siteTypeId}&searchText=${searchKey}`
     );
     setDepartmentService(departmentService);
+  };
+
+  const getSearchKey = (value) => {
+    setSearchKey(value);
   };
 
   const handleSelectDepartmentService = (e, innerData) => {
@@ -226,7 +232,7 @@ const DepartmentsForCustomers = () => {
       getDepartmentServiceMaster();
       getDepartmentService();
     }
-  }, [siteTypeId, entityDetails]);
+  }, [siteTypeId, entityDetails, searchKey]);
 
   return (
     <Fragment>
@@ -420,6 +426,7 @@ const DepartmentsForCustomers = () => {
                         >
                           <SearchBar
                             className={`${style.fullWidth} ${style.marginLeft20}`}
+                            getSearchKey={getSearchKey}
                           />
                         </div>
 

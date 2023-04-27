@@ -43,10 +43,9 @@ const AddNewDepartments = ({
     { name: "", serviceLocations: [] },
   ]);
 
-  // console.log(DepartmentService);
-
   useEffect(() => {
     if (
+      isEdit &&
       selectedLocationDeleteId !== "" &&
       selectedLocationDeleteId !== undefined
     ) {
@@ -63,7 +62,7 @@ const AddNewDepartments = ({
 
   const getServiceLocationDelete = async () => {
     const { data: serviceLocationDelete } = await PUT(
-      `entity-service/servicelocation/X-tenantID=${TenantID}&${selectedLocationDeleteId}/unMapDepartment`
+      `entity-service/servicelocation/${selectedLocationDeleteId}/unMapDepartment/${departId}`
     );
     console.log(serviceLocationDelete);
   };
@@ -94,7 +93,6 @@ const AddNewDepartments = ({
         serviceLocation.map((location) => location).includes(data)
       )
       .map((tag, index) => {
-        console.log(tag);
         const onRemoveLocation = () => {
           setSelectedLocationDeleteId(tag?.id);
           setSelectedLocations(
@@ -256,7 +254,7 @@ const AddNewDepartments = ({
             serviceAreaList
               ?.filter((data, indexVal) => index === indexVal)
               ?.map((data) => data?.serviceLocations)[0] || [];
-          // console.log("temp", temp);
+          console.log("temp", temp);
           temp.push(tempSelectedLocation);
           // console.log("after pushing", temp);
           list[index]["serviceLocations"] = temp;
@@ -299,7 +297,7 @@ const AddNewDepartments = ({
     // });
     // console.log(isServiceAreas);
 
-    if (isPresent) {
+    if (isPresent && !isEdit) {
       ErrorToaster("Already This Name Exists");
       document.getElementById("departmentEl").focus();
       getAddEntityDialog(true);
@@ -369,7 +367,6 @@ const AddNewDepartments = ({
       setDepartId(selectedDepart?.id);
       setDepartName(selectedDepart?.departmentName?.name);
       setCreatedDate(selectedDepart?.createdDate);
-
       if (selectedDepart?.serviceAreas.length > 0) {
         setServiceAreaList(selectedDepart?.serviceAreas);
         setAddService(true);
