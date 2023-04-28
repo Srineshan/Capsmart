@@ -165,28 +165,47 @@ const Navbar = () => {
 
   const idHelp = open ? "mouse-over-popover" : undefined;
 
+  const logoutURL = () => {
+    window.location.href = `http://${window.location.hostname}:${window.location.port}/logout`;
+  }
+
   const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    axios.post(`http://${window.location.hostname}:${window.location.port}/logout`, {
-      // Add parameters here
-      transformRequest: (data, headers) => {
-        delete headers.common['X-XSRF-TOKEN'];
-        return data;
-      }
+    await fetch(`http://${window.location.hostname}:${window.location.port}/logout`, {
+      // redirect: 'manual',
+      method: 'POST',
+      body: JSON.stringify({}),
+    }).then(response => {
+      console.log('response', response.headers, response.status, response);
+      const logouturi = response.headers.get('location') || '';
+      console.log('logouturi', logouturi)
+      // window.location.href = logouturi;
     })
-      .then((response) => {
-        const logouturi = response.headers.get('location') || '';
-        cookies.remove("user", { path: '/' });
-        cookies.remove("entityId", { path: '/' });
-        if (logouturi) {
-          window.location.href = logouturi;
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      })
+
+
+
+
+    // window.location.href = respose.headers?.get('Location')
+    // axios.post(`http://${window.location.hostname}:${window.location.port}/logout`, {
+    //   // Add parameters here
+    //   // transformRequest: (data, headers) => {
+    //   //   delete headers.common['X-XSRF-TOKEN'];
+    //   //   return data;
+    //   // }
+    // })
+    //   .then((response) => {
+    //     const logouturi = response.headers.get('location') || '';
+    //     cookies.remove("user", { path: '/' });
+    //     cookies.remove("entityId", { path: '/' });
+    //     if (logouturi) {
+    //       window.location.href = logouturi;
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   })
     // await POST(`logout`, null)
     //   .then(response => {
     //     const logouturi = response.headers.get('location') || '';
@@ -475,14 +494,14 @@ const Navbar = () => {
           <img src={NotificationsIcon} alt="print" className={style.icons} />
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
-          <div className={`${style.logoutStyle} ${style.cursorPointer}`} onClick={logout}>
+          <div className={`${style.logoutStyle} ${style.cursorPointer}`} onClick={logoutURL}>
             <p>Logout</p>
           </div>
           <img
             src={LogoutIcon}
             alt="print"
             className={style.logoutIcons}
-            onClick={logout}
+            onClick={logoutURL}
           />
         </div>
       </div>
