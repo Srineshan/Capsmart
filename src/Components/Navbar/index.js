@@ -12,10 +12,9 @@ import File from "./../../images/file.png";
 import { Link } from "react-router-dom";
 import LogoutIcon from "./../../images/logoutIcon.png";
 import Cookies from "universal-cookie";
-// import {POST} from './dataSaver';
 import Popover from "@mui/material/Popover";
 import { isSuperAdminAccess } from "../../Screens/dataSaver";
-import { TenantID, GET, POST } from "./../../Screens/dataSaver";
+import { TenantID, GET, POST, PUT } from "./../../Screens/dataSaver";
 import { ErrorToaster } from "./../../utils/toaster";
 import html2canvas from "html2canvas";
 import jwt from "jwt-decode";
@@ -184,18 +183,18 @@ const Navbar = () => {
     //   window.location.href = logouturi;
     // })
 
-    let data = JSON.stringify({});
-    await axios(`http://${window.location.hostname}:${window.location.port}/logout`, {
-      method: 'PUT',
-      data,
-    }).then(response => {
-      const logouturi = response.headers.get('location') || '';
-      cookies.remove("user", { path: '/' });
-      cookies.remove("entityId", { path: '/' });
-      if (logouturi) {
-        window.location.href = logouturi;
-      }
-    })
+    // let data = JSON.stringify({});
+    // await axios(`http://${window.location.hostname}:${window.location.port}/logout`, {
+    //   method: 'PUT',
+    //   data,
+    // }).then(response => {
+    //   const logouturi = response.headers.get('location') || '';
+    //   cookies.remove("user", { path: '/' });
+    //   cookies.remove("entityId", { path: '/' });
+    //   if (logouturi) {
+    //     window.location.href = logouturi;
+    //   }
+    // })
 
 
 
@@ -219,17 +218,22 @@ const Navbar = () => {
     //   .catch((error) => {
     //     console.log(error);
     //   })
-    // await POST(`logout`, null)
-    //   .then(response => {
-    //     const logouturi = response.headers.get('location') || '';
-    //     cookies.remove("user", { path: '/' });
-    //     cookies.remove("entityId", { path: '/' });
-    //     if (logouturi) {
-    //       window.location.href = logouturi;
-    //     }
-    //   }).catch(error => {
-    //     ErrorToaster('Unexpected Error');
-    //   })
+    await PUT(`logout`, null)
+      .then(response => {
+        console.log('respose', response, response?.data, response?.headers);
+        console.log('response from data', response.data.redirectURL);
+        console.log('response from header', response.headers['location']);
+        const logouturi = response.headers['location'] || '';
+        console.log('redirectURI', logouturi);
+        cookies.remove("user", { path: '/' });
+        cookies.remove("entityId", { path: '/' });
+        if (logouturi) {
+          window.location.href = logouturi;
+        }
+      }).catch(error => {
+        console.log('error msg', error);
+        ErrorToaster('Unexpected Error');
+      })
   };
 
   useEffect(() => {
