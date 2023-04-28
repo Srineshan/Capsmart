@@ -274,11 +274,20 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                 value={value}
                                 setValue={setValue}
                                 items={avilableActivityItems || []} onSelect={(item) => addSupplementService(item.value)} className={style.fullWidth}
-                                onChange={(e) => setNewServiceName(e.target.value)}
+                                onChange={(e) => {
+                                    setNewServiceName(e.target.value);
+                                    const caret = e.target.selectionStart
+                                    const element = e.target
+                                    window.requestAnimationFrame(() => {
+                                        element.selectionStart = caret
+                                        element.selectionEnd = caret
+                                    })
+
+                                }}
                             />
                             <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer} `}>
                                 <AddIcon sx={{ fontSize: 25, color: 'white' }}
-                                    onClick={serviceNameToAdd}
+                                    onClick={value !== '' && serviceNameToAdd}
                                 />
                             </div>
                         </div>

@@ -74,6 +74,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
 
     useEffect(() => {
         getFileData();
+        console.log('entered')
     }, [fileFields])
 
     const getTabDataStatus = () => {
@@ -110,9 +111,10 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
 
     const getFileData = () => {
         let temp = [];
+        console.log('entered', fileFields)
         for (let i = 0; i < fileFields?.length || 0; i++) {
             temp[i] = (
-                <div className={`${style.documentCard} ${style.marginTop10}`}>
+                <div className={`${style.documentCard} ${style.marginTop10}`} key={i}>
                     <div className={`${style.documentGrid}`}>
                         <a href={fileFields?.[i]?.filePath} target="_blank">
                             <Tooltip title={'Preview'} arrow>
@@ -209,8 +211,11 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
     }
 
     const getFileFields = (value) => {
+        console.log(value)
         setFileFields(value);
-        getFileData();
+        if (value?.[value?.length - 1]?.id === '' && value?.length !== 0) {
+            getFileData();
+        }
     }
 
     const getContractName = (value) => {

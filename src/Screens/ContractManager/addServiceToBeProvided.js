@@ -77,6 +77,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [contractDocumentList, setContractDocumentList] = useState([]);
   const [continueLoading, setContinueLoading] = useState(false);
   const { setValue, value } = useComboboxControls({ initialValue: '' });
+  const [location, setLocation] = useState('');
 
   useEffect(() => {
     getContractedServices();
@@ -859,6 +860,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     [activity, usedActivity],
   );
 
+  console.log(activityItems)
+
   const locationItems = useMemo(
     () =>
       locationList?.map((data) => data?.location && ({
@@ -889,7 +892,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setSelectedLocation(temp);
     }
     removeSelectedLocationFromList();
-    setValue('');
+    setLocation('');
   }
 
   const handleDesignateContractor = () => {
@@ -1111,8 +1114,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                           {/* <div className={`${style.addGrid} ${style.fullWidth} `}> */}
                           {showLocation && <div className={style.fullWidth}>
                             <DatalistInput
-                              value={value}
-                              setValue={setValue} items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
+                              value={location}
+                              setValue={setLocation} items={locationItems || []} onSelect={onLocationSelect} className={style.fullWidth} onChange={(e) => setNewLocation(e.target.value)} />
                           </div>}
                         </div>
                         {

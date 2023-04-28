@@ -511,7 +511,7 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
                             </div> */}
                             <CommonTextField
                                 InputProps={{
-                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>WITHOUT NURSE</InputAdornment>,
+                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10, backgroundColor: '#f1f2f3', color: '#fff', height: '35px' }} className={style.textElement}>WITH NURSE</InputAdornment>,
                                 }}
                                 className={style.threeFieldWidth}
                                 onChange={(e) => onSameTargetChange('scheduledPatientsTargets', e.target.value.slice(0, 5), 'withNurse')}

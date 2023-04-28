@@ -12,7 +12,7 @@ const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, r
     const dateFnsFormat = "MM/dd/yyyy";
     const formatDate = useCallback((date) => format(date, dateFnsFormat), []);
     const parseDate = useCallback((date) => parse(date, dateFnsFormat), []);
-    console.log(value, minDate, maxDate)
+
     return (
         // <DateInput2
         //     formatDate={formatDate}

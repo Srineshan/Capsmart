@@ -25,7 +25,7 @@ const CustomerManagement = () => {
     const [viewPendingActivation, setViewPendingActivation] = useState(true);
     const [viewOnHold, setViewOnHold] = useState(false);
     const [viewTerminated, setViewTerminated] = useState(false);
-
+    const [isExpanded, setIsExpanded] = useState(true);
     useEffect(() => {
         getEntityList();
     }, [])
@@ -50,12 +50,20 @@ const CustomerManagement = () => {
         setAddCustomerDialog(value);
     }
 
+    const getIsExpanded = (value) => {
+        setIsExpanded(value);
+    }
+
     return (
         <Fragment>
             <Navbar />
             <div className={style.margin20}>
-                <div className={`${style.bigCardGrid2}`}>
-                    <SideBar />
+                <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
+                    <div>
+                        <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+                            <div></div>
+                        </SideBar>
+                    </div>
                     <div>
                         <div className={style.displayInRow}>
                             <div className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}>

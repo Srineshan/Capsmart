@@ -3,13 +3,14 @@ import { Icon, Intent } from "@blueprintjs/core";
 import Doctor from './../../images/doctor.png';
 import DoctorTeam from './../../images/doctorTeam.png';
 import HighlightedDoctor from './../../images/highlightedDoctor.png';
+import HighlightedDoctorTeam from './../../images/highlightedDoctorTeam.png';
 import style from './index.module.scss';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const AddContract = ({ getAddContract, getNewContract, getContractType, getSelectedContractType, getMethod }) => {
     const [selectedContract, setSelectedContract] = useState('0');
-    const [selectedContractOnClick, setSelectedContractOnClick] = useState(false);
+    const [selectedContractOnClick, setSelectedContractOnClick] = useState('');
     const [contractType, setContractType] = useState('');
 
 
@@ -73,17 +74,17 @@ const AddContract = ({ getAddContract, getNewContract, getContractType, getSelec
                         <div className={`${style.contractCards} ${contractType === "INDIVIDUAL" && style.selectedContractCard}`} onClick={() => { setSelectedContractOnClick(true); setContractType('INDIVIDUAL') }}>
                             <div className={style.alignCenter}>
                                 <div>
-                                    <img src={selectedContractOnClick ? HighlightedDoctor : Doctor} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract' ? '' : style.reducedOpacity}`} />
+                                    <img src={selectedContractOnClick && contractType === "INDIVIDUAL" ? HighlightedDoctor : Doctor} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract' ? '' : style.reducedOpacity}`} />
                                     <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
                                         Individual Contractor Contract
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className={`${style.contractCards} ${contractType === "MULTIPLE" && style.selectedContractCard}`} onClick={() => setContractType('MULTIPLE')}>
+                        <div className={`${style.contractCards} ${contractType === "MULTIPLE" && style.selectedContractCard}`} onClick={() => { setSelectedContractOnClick(true); setContractType('MULTIPLE') }}>
                             <div className={style.alignCenter}>
                                 <div>
-                                    <img src={DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract' ? '' : style.reducedOpacity}`} />
+                                    <img src={contractType === "MULTIPLE" && selectedContractOnClick ? HighlightedDoctorTeam : DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract' ? '' : style.reducedOpacity}`} />
                                     <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
                                         Multiple Contractors Contract
                                     </div>
