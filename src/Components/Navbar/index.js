@@ -175,13 +175,13 @@ const Navbar = () => {
     let entityId = cookies.get("entityId");
     await fetch(`http://${window.location.hostname}:${window.location.port}/logout`, {
       // redirect: 'manual',
-      method: 'POST',
+      method: 'PUT',
       body: JSON.stringify({}),
     }).then(response => {
       console.log('response', response.headers, response.status, response);
       const logouturi = response.headers.get('location') || '';
       console.log('logouturi', logouturi)
-      // window.location.href = logouturi;
+      window.location.href = logouturi;
     })
 
 
@@ -494,14 +494,14 @@ const Navbar = () => {
           <img src={NotificationsIcon} alt="print" className={style.icons} />
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
-          <div className={`${style.logoutStyle} ${style.cursorPointer}`} onClick={logoutURL}>
+          <div className={`${style.logoutStyle} ${style.cursorPointer}`} onClick={logout}>
             <p>Logout</p>
           </div>
           <img
             src={LogoutIcon}
             alt="print"
             className={style.logoutIcons}
-            onClick={logoutURL}
+            onClick={logout}
           />
         </div>
       </div>
