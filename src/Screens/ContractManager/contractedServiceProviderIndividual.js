@@ -146,7 +146,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     setDepartmentTitleValues(deptValue);
   }
 
-  console.log('sites', siteTitleValues, departmentTitleValues);
+  console.log('siteList', siteList);
+  console.log('sites', sites);
 
   const getUserData = async () => {
     if (contractId !== '' && contractId !== undefined) {
@@ -644,9 +645,9 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                     className={`${style.marginLeft20} ${style.weekSelectStyle}`}
                     onChange={(e) => setSiteLevelSite({ id: e.target.value, name: sites?.filter(data => data?.id === e.target.value)?.map(data => data?.name)[0] })}
                     firstOptionLabel={''} firstOptionValue={''}
-                    valueList={sites?.map(data => data?.id)}
-                    labelList={sites?.map(data => data?.name)}
-                    disabledList={sites?.map(data => data?.title !== '' ? true : false)} />
+                    valueList={siteList?.map(data => data?.id)}
+                    labelList={siteList?.map(data => data?.name)}
+                    disabledList={siteList?.map(data => data?.title !== '' ? true : false)} />
                 </div>
                 {/* )} */}
                 <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
