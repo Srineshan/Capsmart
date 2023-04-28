@@ -173,15 +173,28 @@ const Navbar = () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    await fetch(`http://${window.location.hostname}:${window.location.port}/logout`, {
-      // redirect: 'manual',
+    // await fetch(`http://${window.location.hostname}:${window.location.port}/logout`, {
+    //   // redirect: 'manual',
+    //   method: 'PUT',
+    //   body: JSON.stringify({}),
+    // }).then(response => {
+    //   console.log('response', response.headers, response.status, response);
+    //   const logouturi = response.headers.get('location') || '';
+    //   console.log('logouturi', logouturi)
+    //   window.location.href = logouturi;
+    // })
+
+    let data = JSON.stringify({});
+    await axios(`http://${window.location.hostname}:${window.location.port}/logout`, {
       method: 'PUT',
-      body: JSON.stringify({}),
+      data,
     }).then(response => {
-      console.log('response', response.headers, response.status, response);
       const logouturi = response.headers.get('location') || '';
-      console.log('logouturi', logouturi)
-      window.location.href = logouturi;
+      cookies.remove("user", { path: '/' });
+      cookies.remove("entityId", { path: '/' });
+      if (logouturi) {
+        window.location.href = logouturi;
+      }
     })
 
 
