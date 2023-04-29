@@ -161,14 +161,15 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
       { "type": "textWithHover", "value": specificActivity, "hoverText": specificActivityHoverText, "onClickFunction": onClickFunction },
       // { "type": "textWithHover", "value": appliesTo, "hoverText": appliesToHoverText, "onClickFunction": onClickFunction },
       { "type": "text", "value": billable, "onClickFunction": onClickFunction },
-      { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+      isEditable && { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+
     ] : [
       { "type": "icon", "icon": dataStatus },
       { "type": "text", "value": activityType, "onClickFunction": onClickFunction },
       { "type": "textWithHover", "value": specificActivity, "hoverText": specificActivityHoverText, "onClickFunction": onClickFunction },
       { "type": "textWithHover", "value": appliesTo, "hoverText": appliesToHoverText, "onClickFunction": onClickFunction },
       { "type": "text", "value": billable, "onClickFunction": onClickFunction },
-      { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
+      isEditable && { "type": "text", "value": deleteIcon, "onClickFunction": onClickCrossFunction },
     ];
   }
 
@@ -205,7 +206,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
                 tableHeaderValues={tableHeaderValues}
                 tableDataValues={getServiceProviderValues()}
                 tableData={contractedServices}
-                gridStyle={selectContractInfo === 'INDIVIDUAL' ? style.serviceSpecificationGridIndividual : style.serviceSpecificationGrid}
+                gridStyle={selectContractInfo === 'INDIVIDUAL' && !isEditable ? style.serviceSpecificationGridIndividualActive : selectContractInfo === 'INDIVIDUAL' ? style.serviceSpecificationGridIndividual : selectContractInfo === 'MULTIPLE' && !isEditable ? style.serviceSpecificationGridActive : style.serviceSpecificationGrid}
               />
             </div>
           </div>

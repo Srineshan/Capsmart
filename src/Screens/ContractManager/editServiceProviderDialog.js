@@ -218,6 +218,28 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
     setDepartmentLevelSite({ id: id, name: sites?.filter(data => data?.id === id)?.map(data => data?.name)[0] });
   }
 
+  const deptTitleReset = () => {
+    let temp = sites;
+    temp?.map(site => {
+      site?.department?.map(dept => {
+        dept.title = '';
+        dept.title_id = '';
+      })
+    })
+    setSites(temp);
+    setDepartmentTitleValues([]);
+  }
+
+  const siteTitleReset = () => {
+    let temp = sites;
+    temp?.map(site => {
+      site.title = '';
+      site.title_id = '';
+    })
+    setSites(temp);
+    setSiteTitleValues([]);
+  }
+
   const handleDeptRemove = (values, index) => {
     let data = values?.split('--');
     let site = data?.[0]?.trim();
@@ -250,17 +272,17 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
     setSiteTitleValues(siteTitleValues?.filter((data, indexVal) => index !== indexVal)?.map(data => data));
   }
 
-  const resetSiteLevel = (value) => {
-    if (!value) {
-      getTitleData();
-    }
-  }
+  // const resetSiteLevel = (value) => {
+  //   if (!value) {
+  //     getTitleData();
+  //   }
+  // }
 
-  const resetDeptvalue = (value) => {
-    if (!value) {
-      getTitleData();
-    }
-  }
+  // const resetDeptvalue = (value) => {
+  //   if (!value) {
+  //     getTitleData();
+  //   }
+  // }
 
   const handleSuffixChange = (id, value) => {
     console.log('value', value);
@@ -556,7 +578,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
             <CommonLabel value='Site Level Responsibility*' />
             <div>
               <div className={style.flexLeft}>
-                <CommonSwitch checked={siteLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setSiteLevel(!siteLevel); resetSiteLevel(!siteLevel); }} label={siteLevel ? 'YES' : "NO"} />
+                <CommonSwitch checked={siteLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setSiteLevel(!siteLevel); siteTitleReset(); }} label={siteLevel ? 'YES' : "NO"} />
               </div>
               {siteLevel && (
                 <div className={`${style.siteLevelBoxStyle}`}>
@@ -595,7 +617,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
             <CommonLabel value='Department Level Responsibility*' />
             <div>
               <div className={style.flexLeft}>
-                <CommonSwitch checked={departmentLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setDepartmentLevel(!departmentLevel); resetDeptvalue(!departmentLevel) }} label={departmentLevel ? 'YES' : "NO"} />
+                <CommonSwitch checked={departmentLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setDepartmentLevel(!departmentLevel); deptTitleReset(); }} label={departmentLevel ? 'YES' : "NO"} />
               </div>
               <div>
                 {departmentLevel && (
