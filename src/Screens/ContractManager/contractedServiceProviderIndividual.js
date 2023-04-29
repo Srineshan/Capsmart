@@ -101,7 +101,15 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : []);
       setSiteLevel(contractData?.siteLevelResponsible);
       setDepartmentLevel(contractData?.departmentLevelResponsible);
-      setSites(contractData?.sites?.sites || []);
+      let siteTemp = [];
+      contractData?.sites?.sites?.map(site => {
+        let deptTemp = [];
+        site?.departmentList?.departments?.map(dept => {
+          deptTemp.push({ id: dept?.id, name: dept?.departmentName?.name, title: dept?.departmentResponsibility?.title || '', title_id: dept?.departmentResponsibility?.id || '' })
+        })
+        siteTemp.push({ id: site?.id, name: site?.siteName?.siteName, title: site?.siteResponsibility?.title, title_id: site?.siteResponsibility?.id, department: deptTemp })
+      })
+      setSites(siteTemp || []);
       setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
       setMobileNA(userProviderData?.communication?.mobileNumberNotApplicable);
     } else {
@@ -124,7 +132,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       data?.departmentList?.departments?.map(deptData => {
         dept.push({ id: deptData?.id, name: deptData?.departmentName?.name, title: deptData?.departmentResponsibility?.title || '', title_id: deptData?.departmentResponsibility?.id || '' });
         if (deptData?.departmentResponsibility?.title !== '' && deptData?.departmentResponsibility?.title !== undefined) {
-          let valueString = `${data?.siteName?.siteName} - ${deptData?.departmentName?.name} - ${deptData?.departmentResponsibility?.title}`
+          let valueString = `${data?.siteName?.siteName} -- ${deptData?.departmentName?.name} -- ${deptData?.departmentResponsibility?.title}`
           if (!deptValue.includes(valueString)) {
             deptValue.push(valueString);
             console.log('deptvalue', valueString)
@@ -133,7 +141,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       })
       temp.push({ id: data?.id, name: data?.siteName?.siteName, title: data?.siteResponsibility?.title || '', title_id: data?.siteResponsibility?.id, department: dept });
       if (data?.siteResponsibility?.title !== '' && data?.siteResponsibility?.title !== undefined) {
-        let valueString = `${data?.siteName?.siteName} - ${data?.siteResponsibility?.title}`;
+        let valueString = `${data?.siteName?.siteName} -- ${data?.siteResponsibility?.title}`;
         if (!siteValue.includes(valueString)) {
           siteValue.push(valueString);
           console.log('siteValue', valueString)
@@ -172,11 +180,42 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const getSites = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
-    let sites = contractDetail?.site?.sites;
-    if (sites && siteList?.length === 0) {
-      setSiteList(sites);
+    let sitesValue = contractDetail?.site?.sites;
+    if (sitesValue && siteList?.length === 0) {
+      setSiteList(sitesValue);
+      let siteTemp = [];
+      sitesValue?.map(site => {
+        let deptTemp = [];
+        site?.departmentList?.departments?.map(dept => {
+          deptTemp.push({ id: dept?.id, name: dept?.departmentName?.name, title: dept?.departmentResponsibility?.title || '', title_id: dept?.departmentResponsibility?.id || '' })
+        })
+        siteTemp.push({ id: site?.id, name: site?.siteName?.siteName, title: site?.siteResponsibility?.title, title_id: site?.siteResponsibility?.id, department: deptTemp })
+      })
+      setSites(siteTemp || []);
       // getTitleData();
     }
+  }
+
+  const deptTitleReset = () => {
+    let temp = sites;
+    temp?.map(site => {
+      site?.department?.map(dept => {
+        dept.title = '';
+        dept.title_id = '';
+      })
+    })
+    setSites(temp);
+    setDepartmentTitleValues([]);
+  }
+
+  const siteTitleReset = () => {
+    let temp = sites;
+    temp?.map(site => {
+      site.title = '';
+      site.title_id = '';
+    })
+    setSites(temp);
+    setSiteTitleValues([]);
   }
 
   const getTagProps = (_v, index) => ({
@@ -188,7 +227,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} - ${siteLevelTitle?.title}`]);
+    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} -- ${siteLevelTitle?.title}`]);
     let temp = sites;
     temp?.filter(data => data?.id === siteLevelSite?.id)?.map(data => {
       data.title = siteLevelTitle?.title;
@@ -204,7 +243,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    let valueString = `${departmentLevelSite?.name} - ${departmentLevelDepartment?.name} - ${departmentLevelTitle?.title}`
+    let valueString = `${departmentLevelSite?.name} -- ${departmentLevelDepartment?.name} -- ${departmentLevelTitle?.title}`
     setDepartmentTitleValues([...departmentTitleValues, valueString]);
     let temp = sites;
     let siteDepartment = sites?.filter(data => data?.id === departmentLevelSite?.id)?.map(data => data?.department)[0];
@@ -228,6 +267,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const getSiteData = () => {
     let siteData = [];
     sites?.map(data => {
+      console.log('site data', sites, 'data', data);
       let deptData = [];
       data?.department?.map(dept => {
         deptData.push({
@@ -305,35 +345,34 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         roles.push(data);
       }
     });
-    let sites = userProviderData?.sites?.sites || [];
-    let selectedSite = getSiteData();
-    selectedSite?.map(data => {
-      if (!sites?.map(site => site?.id).includes(data?.id)) {
-        sites.push(data);
-      }
-    });
     if (!npinMissing && !npinNotApplicable && npin === '') {
       ErrorToaster('NPIN is Mandatory if not Missing/NA');
+      setContinueLoading(false);
       return;
     }
     if (contractorFirstName === '') {
       ErrorToaster('First Name is Mandatory');
+      setContinueLoading(false);
       return;
     }
     if (contractorLastName === '') {
       ErrorToaster('Last Name is Mandatory');
+      setContinueLoading(false);
       return;
     }
     if (!contractorEmail?.includes('@') || !contractorEmail?.includes('.')) {
       ErrorToaster('Enter a Valid Email');
+      setContinueLoading(false);
       return;
     }
     if (!mobileNA && contractorPhone?.length !== 14) {
       ErrorToaster('Enter Valid Phone Number');
+      setContinueLoading(false);
       return;
     }
     if (roles?.length === 0) {
       ErrorToaster('Select User Role');
+      setContinueLoading(false);
       return;
     }
     const data = {
@@ -367,7 +406,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         "tenantId": TenantID
       },
       "sites": {
-        "sites": sites
+        "sites": getSiteData(),
       },
       "serviceProviderType": serviceProviderType,
       "npin": {
@@ -377,6 +416,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       },
       "personalEmailAddressAllowed": allowPersonalMail,
     }
+    console.log('final data', data);
     if (!isUserPresent) {
       await POST('user-management-service/user/register', JSON.stringify(data))
         .then(response => {
@@ -445,7 +485,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   }
 
   const handleDeptRemove = (values, index) => {
-    let data = values?.split(' - ');
+    let data = values?.split(' -- ');
     let site = data?.[0];
     let dept = data?.[1];
     let title = data?.[2];
@@ -463,7 +503,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   }
 
   const handleSiteRemove = (values, index) => {
-    let data = values?.split(' - ');
+    let data = values?.split(' -- ');
     let site = data?.[0];
     let title = data?.[1];
     let temp = sites;
@@ -475,17 +515,6 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     setSiteTitleValues(siteTitleValues?.filter((data, indexVal) => index !== indexVal)?.map(data => data));
   }
 
-  const resetSiteLevel = (value) => {
-    if (!value) {
-      getTitleData();
-    }
-  }
-
-  const resetDeptvalue = (value) => {
-    if (!value) {
-      getTitleData();
-    }
-  }
 
   const items = useMemo(
     () =>
@@ -510,6 +539,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     setAllowPersonalMail(!allowPersonalMail);
     setContractorEmail('')
   }
+
+  console.log('dept', departmentTitleValues, 'site', siteTitleValues);
 
   return (
     <div className={style.cloneBlockStyle}>
@@ -635,7 +666,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           <CommonLabel value='Site Level Responsibility*' />
           <div>
             <div className={style.flexLeft}>
-              <CommonSwitch checked={siteLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} label={siteLevel ? 'YES' : "NO"} onChange={() => { setSiteLevel(!siteLevel); resetSiteLevel(!siteLevel); }} />
+              <CommonSwitch checked={siteLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} label={siteLevel ? 'YES' : "NO"} onChange={() => { setSiteLevel(!siteLevel); siteTitleReset(); }} />
             </div>
             {siteLevel && (
               <div className={`${style.siteLevelBoxStyle}`} onFocus={() => checkFieldAndPopAlert(siteTitleValues?.length, 'Site Level Responsibility')}>
@@ -646,8 +677,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                     onChange={(e) => setSiteLevelSite({ id: e.target.value, name: sites?.filter(data => data?.id === e.target.value)?.map(data => data?.name)[0] })}
                     firstOptionLabel={''} firstOptionValue={''}
                     valueList={siteList?.map(data => data?.id)}
-                    labelList={siteList?.map(data => data?.name)}
-                    disabledList={siteList?.map(data => data?.title !== '' ? true : false)} />
+                    labelList={siteList?.map(data => data?.siteName?.siteName)}
+                    disabledList={sites?.map(data => (data?.title !== '' && data?.title !== null) ? true : false)} />
                 </div>
                 {/* )} */}
                 <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
@@ -674,7 +705,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           <CommonLabel value='Department Level Responsibility*' />
           <div>
             <div className={style.flexLeft}>
-              <CommonSwitch checked={departmentLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} label={departmentLevel ? 'YES' : "NO"} onChange={() => { setDepartmentLevel(!departmentLevel); resetDeptvalue(!departmentLevel) }} />
+              <CommonSwitch checked={departmentLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} label={departmentLevel ? 'YES' : "NO"} onChange={() => { setDepartmentLevel(!departmentLevel); deptTitleReset(); }} />
             </div>
             <div>
               {departmentLevel && (
@@ -743,8 +774,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
           <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
           <div>
-            <button className={`${style.newContractOutlinedButton}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => handleSave('Save In Progress') : {}}>SAVE IN-PROGRESS</button>
-            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { handleSave('Continue') } : {}}>CONTINUE</button>
+            <button className={`${style.newContractOutlinedButton}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={() => !continueLoading && handleSave('Save In Progress')}>SAVE IN-PROGRESS</button>
+            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={() => { !continueLoading && handleSave('Continue') }}>CONTINUE</button>
           </div>
         </div>
       }
