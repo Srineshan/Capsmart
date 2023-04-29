@@ -434,6 +434,7 @@ body {
     width: 70px;
     height: 70px;
     border-radius: 50%;
+    cursor: pointer;
 }
 
 .activeStepperStyle {
@@ -1351,10 +1352,17 @@ body {
     grid-gap: 20px;
 }
 
+.smallCardGrid {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    grid-gap: 20px;
+    margin-top: 20px;
+}
+
 .bigCardGrid {
     display: grid;
     grid-template-columns: 1fr 4fr;
-    grid-gap: 20px;
+    grid-gap: 10px;
     margin-top: 20px;
 }
 
@@ -1601,6 +1609,7 @@ body {
     margin-left: 20px;
     margin-right: 20px;
     margin-top: 5px;
+    cursor: pointer;
 }
 
 .fileIcon {
@@ -1934,6 +1943,7 @@ body {
         border: 0.4000000059604645px solid #B3B8BD;
         font-weight: 600;
         border-radius: 6px;
+        cursor: pointer;
     }
 }
 
