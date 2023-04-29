@@ -130,7 +130,7 @@ const SiteUsers = ({ getActiveStep }) => {
   }
 
   const getContracts = async () => {
-    await axios(`http://${window.location.hostname}:${window.location.port}/contract-managment-service/contracts`, {
+    await axios(`${window.location.protocol}://${window.location.hostname}/contract-managment-service/contracts`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ const SiteUsers = ({ getActiveStep }) => {
   }
 
   const getUserData = async () => {
-    await axios(`http://${window.location.hostname}:${window.location.port}/user-management-service/user`, {
+    await axios(`${window.location.protocol}://${window.location.hostname}/user-management-service/user`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

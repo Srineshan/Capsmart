@@ -62,7 +62,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
   }
 
   const getUserData = async () => {
-    // await axios(`http://${window.location.hostname}:${window.location.port}/user-management-service/user?partnerId=${partnerId}&userType=PARTNER_USER`, {
+    // await axios(`${window.location.protocol}://${window.location.hostname}/user-management-service/user?partnerId=${partnerId}&userType=PARTNER_USER`, {
     //   method: 'GET',
     //   headers: {
     //     'Content-Type': 'application/json',

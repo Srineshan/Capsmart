@@ -30,7 +30,7 @@ const SetPasswordWithoutPassword = () => {
 
 
   const getEntityId = async () => {
-    await axios(`http://${window.location.hostname}:${window.location.port}/entity-service/entityID`, {
+    await axios(`${window.location.protocol}://${window.location.hostname}/entity-service/entityID`, {
       method: 'GET',
       // headers: { 'X-subdomain': 'smmc-trial' }
     }).then(response => {
@@ -48,7 +48,7 @@ const SetPasswordWithoutPassword = () => {
   }
 
   const getUser = async () => {
-    await axios(`http://${window.location.hostname}:${window.location.port}/user-management-service/user`, {
+    await axios(`${window.location.protocol}://${window.location.hostname}/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -81,7 +81,7 @@ const SetPasswordWithoutPassword = () => {
           "password": password,
         }
       }
-      axios(`http://${window.location.hostname}:${window.location.port}/user-management-service/user/setpassword`, {
+      axios(`${window.location.protocol}://${window.location.hostname}/user-management-service/user/setpassword`, {
         method: 'POST',
         headers: headers,
         data: JSON.stringify(data),

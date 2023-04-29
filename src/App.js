@@ -179,7 +179,7 @@ const App = ({ props }) => {
   }, [entityId, cookie.get("user")])
 
   const getEntityId = async () => {
-    await axios(`http://${window.location.hostname}:${window.location.port}/entity-service/entityID`, {
+    await axios(`${window.location.protocol}://${window.location.hostname}/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -201,7 +201,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `http://${window.location.hostname}:${window.location.port}/user-management-service/auth/login`,
+      `${window.location.protocol}://${window.location.hostname}/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
@@ -212,7 +212,6 @@ const App = ({ props }) => {
     return true;
   };
 
-  console.log("token", accessToken);
   useEffect(() => {
     if (accessToken === false) {
       let authValue = cookie.get("user");

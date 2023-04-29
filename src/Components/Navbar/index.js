@@ -165,14 +165,14 @@ const Navbar = () => {
   const idHelp = open ? "mouse-over-popover" : undefined;
 
   const logoutURL = () => {
-    window.location.href = `http://${window.location.hostname}:${window.location.port}/logout`;
+    window.location.href = `${window.location.protocol}://${window.location.hostname}/logout`;
   }
 
   const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    // await fetch(`http://${window.location.hostname}:${window.location.port}/logout`, {
+    // await fetch(`${window.location.protocol}://${window.location.hostname}/logout`, {
     //   // redirect: 'manual',
     //   method: 'PUT',
     //   body: JSON.stringify({}),
@@ -184,7 +184,7 @@ const Navbar = () => {
     // })
 
     // let data = JSON.stringify({});
-    // await axios(`http://${window.location.hostname}:${window.location.port}/logout`, {
+    // await axios(`${window.location.protocol}://${window.location.hostname}/logout`, {
     //   method: 'PUT',
     //   data,
     // }).then(response => {
@@ -200,7 +200,7 @@ const Navbar = () => {
 
 
     // window.location.href = respose.headers?.get('Location')
-    // axios.post(`http://${window.location.hostname}:${window.location.port}/logout`, {
+    // axios.post(`${window.location.protocol}://${window.location.hostname}/logout`, {
     //   // Add parameters here
     //   // transformRequest: (data, headers) => {
     //   //   delete headers.common['X-XSRF-TOKEN'];
