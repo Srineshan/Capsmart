@@ -135,7 +135,7 @@ const SiteUsers = ({ getActiveStep }) => {
       headers: {
         'Content-Type': 'application/json',
         'X-tenantID': id,
-        'Authorization': `Bearer ${Auth()}`
+        'X-Authorization': `Bearer ${Auth()}`
       },
     }).then(response => {
       setContracts(response?.data?.contractList);
@@ -150,7 +150,7 @@ const SiteUsers = ({ getActiveStep }) => {
       headers: {
         'Content-Type': 'application/json',
         'X-tenantID': id,
-        'Authorization': `Bearer ${Auth()}`
+        'X-Authorization': `Bearer ${Auth()}`
       },
     }).then(response => {
       setUser(response?.data);

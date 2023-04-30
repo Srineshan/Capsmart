@@ -67,7 +67,7 @@ const EntitySystemAdmin = ({ getActiveStep }) => {
     //   headers: {
     //     'Content-Type': 'application/json',
     //     'X-tenantID': id,
-    //     'Authorization': `Bearer ${Auth()}`
+    //     'X-Authorization': `Bearer ${Auth()}`
     //   },
     // }).then(response => {
     //   setUsers(response?.data);

@@ -1,6 +1,9 @@
 import { useRef, useState, useEffect } from "react";
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import { useIdleTimer } from "react-idle-timer";
+import { POST, TenantID, PUT } from "./../../Screens/dataSaver";
+import axios from 'axios';
+import { ErrorToaster } from "./../../utils/toaster";
 import Cookies from "universal-cookie";
 import style from './index.module.scss';
 
@@ -30,27 +33,20 @@ export default function IdleTimer() {
         clearTimeout(sessionTimeoutRef.current);
     }
 
-    const logout = () => {
-        const requestOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-tenantID": entityId,
-                Authorization: `Bearer ${token}`,
-            },
-        };
-        fetch(
-            "https://rest.mytimesmart.com/user-management-service/auth/logout",
-            requestOptions
-        )
-            .then((response) => {
-                cookies.remove("user");
-                cookies.remove("entityId");
-                window.location.href = "/";
+
+    const logout = async () => {
+        await PUT(`logout`, null)
+            .then(response => {
+                const logouturi = response.headers['location'] || '';
+                cookies.remove("user", { path: '/' });
+                cookies.remove("entityId", { path: '/' });
+                if (logouturi) {
+                    window.location.href = logouturi;
+                }
+            }).catch(error => {
+                console.log('error msg', error);
+                ErrorToaster('Unexpected Error');
             })
-            .catch((data) => console.log("Unexpected Error Occured"));
-        setShowAlert(false);
-        clearTimeout(sessionTimeoutRef.current);
     };
 
     return (

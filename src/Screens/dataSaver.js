@@ -9,14 +9,16 @@ export const TenantID = GetEntityDetails();
 const accessToken = Auth();
 const roles = GetRoles();
 export const isSuperAdminAccess = roles.includes('Super Sys Admin') || roles.includes('Distributor Admin') ? true : false;
-const baseUrl = 'https://rest.mytimesmart.com';
+const baseUrl = `https://rest.mytimesmart.com`;
 let cookie = new Cookie();
 let tenantId = cookie.get('entityId');
 const headers = {
     'Content-Type': 'application/json',
     'X-tenantID': TenantID,
-    'Authorization': `Bearer ${accessToken}`
+    'X-Authorization': `Bearer ${accessToken}`
 }
+
+console.log('hostname', baseUrl, window.location.hostname);
 
 export const GET = (url) => {
     return axios(`${baseUrl}/${url}`, {

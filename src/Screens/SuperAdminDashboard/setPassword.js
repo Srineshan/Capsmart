@@ -121,7 +121,7 @@ const SetPassword = () => {
   }
 
   const getUser = async () => {
-    await axios('https://rest.mytimesmart.com/user-management-service/user', {
+    await axios(`https://rest.mytimesmart.com/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -152,7 +152,7 @@ const SetPassword = () => {
           "password": password,
         }
       }
-      axios('https://rest.mytimesmart.com/user-management-service/user/updatepassword', {
+      axios(`https://rest.mytimesmart.com/user-management-service/user/updatepassword`, {
         method: 'POST',
         headers: headers,
         data: JSON.stringify(data),
