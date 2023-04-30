@@ -25,6 +25,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     npin: "",
     missing: false
   });
+  const [ssoId, setSsoId] = useState('');
   const [contractorEntityTaxId, setContractorEntityTaxId] = useState({
     taxId: "",
     missing: false,
@@ -46,9 +47,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     contactNumber: {
       number: 0,
       missing: false
-    },
-    ssoId: {
-      id: ''
     }
   });
   const [roles, setRoles] = useState([]);
@@ -160,7 +158,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
           "tenant": {
             "tenantId": TenantID
           },
-          "ssoId": businessEntityUser?.ssoId
+          // "ssoId": { "id": ssoId }
         }
 
         if (userId === '0') {
@@ -258,6 +256,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     setBusinessEntityData();
   }, [contractorBusinessEntity])
 
+  // useEffect(() => {
+  //   setSsoId(contractUser?.ssoId?.id);
+  // }, [contractUser])
 
   const handleInput = (e) => {
     const formattedPhoneNumber = FormatPhoneNumber(e.target.value);
@@ -272,9 +273,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
         contactNumber: {
           number: contractUser?.communication?.mobileNumber,
           missing: contractUser?.communication?.mobileNumberNotApplicable,
-        },
-        ssoId: contractUser?.ssoId
+        }
       });
+      setSsoId(contractUser?.ssoId?.id)
       setMailingAddress({
         addressLine: contractUser?.address?.addressLine,
         city: contractUser?.address?.city,
@@ -298,9 +299,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
         contactNumber: {
           number: '',
           missing: false
-        },
-        ssoId: {
-          id: ''
         }
       });
       setMailingAddress({
@@ -335,6 +333,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     setSameAsContractor(value);
     getContractorData(value);
   }
+
+  console.log(ssoId, contractUser?.ssoId?.id)
 
   if (isLoading) {
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
@@ -441,15 +441,15 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   }}
                 />
               </div>
-              <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+              {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <CommonLabel value='SSO ID*' />
-                <CommonInputField className={style.fullWidth} value={businessEntityUser?.ssoId?.id} placeholder="Enter SSO ID"
+                <CommonInputField className={style.fullWidth} value={ssoId} placeholder="Enter SSO ID"
                   onChange={(e) => {
-                    setBusinessEntityUser({ ...businessEntityUser, ssoId: { id: e.target.value } });
+                    setSsoId(e.target.value);
                     setIsUserUpdated(true);
                   }}
                 />
-              </div>
+              </div> */}
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
                 onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.contactNumber?.number, 'Cell Phone') }}
               >
