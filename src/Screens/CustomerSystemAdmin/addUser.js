@@ -16,7 +16,7 @@ import style from './index.module.scss';
 const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const [selectedDepartments, setSelectedDepartments] = useState([])
     const [selectedSites, setSelectedSites] = useState([])
-    const [addUser, setAddUser] = useState({ firstName: "", lastName: "", email: "", phone: "", roles: [], sites: [], title: { title: "", id: "" } });
+    const [addUser, setAddUser] = useState({ firstName: "", lastName: "", email: "", phone: "", roles: [], sites: [], title: { title: "", id: "" }, ssoId: { id: '' } });
     const [userDataById, setUserDataById] = useState([]);
     const [roles, setRoles] = useState([]);
     const [selectedRolesToShow, setSelectedRolesToShow] = useState([]);
@@ -151,6 +151,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 sites: { sites: user?.sites?.sites },
                 title: user?.title,
                 userType: user?.userType,
+                ssoId: user?.ssoId
             });
             setSiteTitle(user?.sites?.sites?.[0]?.siteResponsibility);
             setDeptTitle(user?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentResponsibility)
@@ -168,7 +169,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         }
     }
 
-    console.log('site title', siteTitle, deptTitle);
+    console.log('site title', siteTitle, deptTitle, addUser);
 
     const handleRolesChange = (value) => {
         setSelectedRolesToShow(typeof value === 'string' ? value.split(',') : value,)
@@ -230,6 +231,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             "userType": isEdit ? addUser?.userType : "REGISTERED_USER",
             ...(isEdit && { "contracts": userDataById?.contracts }),
             "title": addUser?.title,
+            "ssoId": addUser?.ssoId,
             "email": {
                 "officialEmail": addUser?.email
             },
@@ -448,7 +450,12 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                             </FormControl>
                         </div>
                     </div>
-
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div>
+                            <div className={style.extentionLableStyle}>SSO ID*</div>
+                            <TextField size="small" className={style.fullWidth} value={addUser?.ssoId?.id} onChange={(e) => setAddUser({ ...addUser, ssoId: { id: e.target.value } })} />
+                        </div>
+                    </div>
                 </div>
                 <div className={`${style.floatRight} ${style.marginTop10}`}>
                     <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => submitUserDetails()} >SAVE & EXIT</button>

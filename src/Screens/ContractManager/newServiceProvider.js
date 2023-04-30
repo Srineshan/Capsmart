@@ -26,7 +26,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
   const [roles, setRoles] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [nPin, setNpin] = useState({ npin: '', missing: false, na: false });
-  const [userDetails, setUserDetails] = useState({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '' });
+  const [userDetails, setUserDetails] = useState({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '', ssoId: { id: '' } });
   const [providerType, setProviderType] = useState({ contractedServiceProviderType: '', id: '' });
   const [address, setAddress] = useState({ addressLine: '', city: '', state: '', zipcode: '' });
   const [siteLevel, setSiteLevel] = useState(false);
@@ -235,6 +235,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
       "email": {
         "officialEmail": userDetails?.email
       },
+      "ssoId": userDetails?.ssoId,
       "password": {
         "password": ''
       },
@@ -269,7 +270,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
         ErrorToaster('Unexpected Error');
       })
     setContinueLoading(false);
-    setUserDetails({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '' });
+    setUserDetails({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '', ssoId: { id: '' } });
     setProviderType({});
     setAddress({ city: '', state: '', zipcode: '' });
     setSiteLevel(false);
@@ -483,6 +484,13 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
               </div>
             </div>
           }
+
+          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+            <CommonLabel value='SSO ID*' />
+            <div className={style.displayInRow}>
+              <CommonInputField placeholder="Enter SSO Id" value={userDetails?.ssoId?.id} className={`${style.entityFieldWidth}`} onChange={(e) => setUserDetails({ ...userDetails, ssoId: { id: e.target.value } })} />
+            </div>
+          </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <CommonLabel value='Cell Phone*' />

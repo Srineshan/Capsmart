@@ -74,7 +74,7 @@ const AddContract = ({ getAddContract, getNewContract, getContractType, getSelec
                         <div className={`${style.contractCards} ${contractType === "INDIVIDUAL" && style.selectedContractCard}`} onClick={() => { setSelectedContractOnClick(true); setContractType('INDIVIDUAL') }}>
                             <div className={style.alignCenter}>
                                 <div>
-                                    <img src={selectedContractOnClick && contractType === "INDIVIDUAL" ? HighlightedDoctor : Doctor} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract' ? '' : style.reducedOpacity}`} />
+                                    <img src={selectedContractOnClick && contractType === "INDIVIDUAL" ? HighlightedDoctor : Doctor} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract !== '0' ? '' : style.reducedOpacity}`} />
                                     <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
                                         Individual Contractor Contract
                                     </div>
@@ -84,7 +84,7 @@ const AddContract = ({ getAddContract, getNewContract, getContractType, getSelec
                         <div className={`${style.contractCards} ${contractType === "MULTIPLE" && style.selectedContractCard}`} onClick={() => { setSelectedContractOnClick(true); setContractType('MULTIPLE') }}>
                             <div className={style.alignCenter}>
                                 <div>
-                                    <img src={contractType === "MULTIPLE" && selectedContractOnClick ? HighlightedDoctorTeam : DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract === 'New Contract' ? '' : style.reducedOpacity}`} />
+                                    <img src={contractType === "MULTIPLE" && selectedContractOnClick ? HighlightedDoctorTeam : DoctorTeam} alt="doctor" className={`${style.contractCardImage} ${style.alignCenter} ${selectedContract !== '0' ? '' : style.reducedOpacity}`} />
                                     <div className={`${style.contractCardData} ${selectedContract !== '0' ? style.activeContractText : ''}`}>
                                         Multiple Contractors Contract
                                     </div>

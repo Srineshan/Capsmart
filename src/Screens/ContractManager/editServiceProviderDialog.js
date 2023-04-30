@@ -22,7 +22,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   const [workFlowUser, setWorkFlowUser] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState(userProviderData?.roles);
   const [npin, setNpin] = useState({ npin: '', missing: false, na: false });
-  const [userDetails, setUserDetails] = useState({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '' });
+  const [userDetails, setUserDetails] = useState({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '', ssoId: { id: '' } });
   const [providerType, setProviderType] = useState({ contractedServiceProviderType: '', id: '' });
   const [address, setAddress] = useState({ addressLine: '', city: '', state: '', zipcode: '' });
   const [contractName, setContractName] = useState('');
@@ -60,7 +60,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   useEffect(() => {
     setNpin({ npin: userProviderData?.npin?.npin, missing: userProviderData?.npin?.missing, na: userProviderData?.npin?.notApplicable });
     setSelectedRoles(userProviderData?.roles || []);
-    setUserDetails({ ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: { suffix: userProviderData?.name?.suffix?.suffix || '', id: userProviderData?.name?.suffix?.id }, email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '' });
+    setUserDetails({ ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: { suffix: userProviderData?.name?.suffix?.suffix || '', id: userProviderData?.name?.suffix?.id }, email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '', ssoId: userProviderData?.ssoId || '' });
     setProviderType(userProviderData?.serviceProviderType || {});
     setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
     setAddress({ addressLine: userProviderData?.address?.addressLine || '', city: userProviderData?.address?.city || '', state: userProviderData?.address?.state || '', zipcode: userProviderData?.address?.zipcode || '' });
@@ -374,6 +374,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       "email": {
         "officialEmail": userDetails?.email
       },
+      "ssoId": userDetails?.ssoId,
       "communication": {
         "personalEmail": userDetails?.email,
         "mobileNumber": userDetails?.phone,
@@ -521,6 +522,12 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
               </div>
             </div>
           }
+          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+            <CommonLabel value='SSO ID*' />
+            <div className={style.displayInRow}>
+              <CommonInputField placeholder="Enter SSO Id" value={userDetails?.ssoId?.id} className={`${style.entityFieldWidth}`} onChange={(e) => setUserDetails({ ...userDetails, ssoId: { id: e.target.value } })} />
+            </div>
+          </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <CommonLabel value='Service Provider Type*' />
             <div className={style.grid3}>
