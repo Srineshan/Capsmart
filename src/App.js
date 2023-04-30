@@ -179,7 +179,7 @@ const App = ({ props }) => {
   }, [entityId, cookie.get("user")])
 
   const getEntityId = async () => {
-    await axios(`${window.location.protocol}://${window.location.hostname}/entity-service/entityID`, {
+    await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -201,7 +201,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `${window.location.protocol}://${window.location.hostname}/user-management-service/auth/login`,
+      `https://rest.mytimesmart.com/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())

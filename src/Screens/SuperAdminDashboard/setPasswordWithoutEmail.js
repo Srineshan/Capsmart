@@ -30,7 +30,7 @@ const SetPasswordWithoutPassword = () => {
 
 
   const getEntityId = async () => {
-    await axios(`${window.location.protocol}://${window.location.hostname}/entity-service/entityID`, {
+    await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
       method: 'GET',
       // headers: { 'X-subdomain': 'smmc-trial' }
     }).then(response => {
@@ -48,7 +48,7 @@ const SetPasswordWithoutPassword = () => {
   }
 
   const getUser = async () => {
-    await axios(`${window.location.protocol}://${window.location.hostname}/user-management-service/user`, {
+    await axios(`https://rest.mytimesmart.com/user-management-service/user`, {
       method: 'GET',
       headers: headers,
     }).then(response => {
@@ -81,7 +81,7 @@ const SetPasswordWithoutPassword = () => {
           "password": password,
         }
       }
-      axios(`${window.location.protocol}://${window.location.hostname}/user-management-service/user/setpassword`, {
+      axios(`https://rest.mytimesmart.com/user-management-service/user/setpassword`, {
         method: 'POST',
         headers: headers,
         data: JSON.stringify(data),

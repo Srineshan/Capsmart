@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import { useIdleTimer } from "react-idle-timer";
-import { POST, TenantID } from "./../../Screens/dataSaver";
+import { POST, TenantID, PUT } from "./../../Screens/dataSaver";
 import axios from 'axios';
 import { ErrorToaster } from "./../../utils/toaster";
 import Cookies from "universal-cookie";

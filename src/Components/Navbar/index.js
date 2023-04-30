@@ -165,14 +165,14 @@ const Navbar = () => {
   const idHelp = open ? "mouse-over-popover" : undefined;
 
   const logoutURL = () => {
-    window.location.href = `${window.location.protocol}://${window.location.hostname}/logout`;
+    window.location.href = `https://rest.mytimesmart.com/logout`;
   }
 
   const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    // await fetch(`${window.location.protocol}://${window.location.hostname}/logout`, {
+    // await fetch(`https://rest.mytimesmart.com/logout`, {
     //   // redirect: 'manual',
     //   method: 'PUT',
     //   body: JSON.stringify({}),
@@ -184,7 +184,7 @@ const Navbar = () => {
     // })
 
     // let data = JSON.stringify({});
-    // await axios(`${window.location.protocol}://${window.location.hostname}/logout`, {
+    // await axios(`https://rest.mytimesmart.com/logout`, {
     //   method: 'PUT',
     //   data,
     // }).then(response => {
@@ -200,7 +200,7 @@ const Navbar = () => {
 
 
     // window.location.href = respose.headers?.get('Location')
-    // axios.post(`${window.location.protocol}://${window.location.hostname}/logout`, {
+    // axios.post(`https://rest.mytimesmart.com/logout`, {
     //   // Add parameters here
     //   // transformRequest: (data, headers) => {
     //   //   delete headers.common['X-XSRF-TOKEN'];
