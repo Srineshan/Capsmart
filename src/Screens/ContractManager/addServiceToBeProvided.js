@@ -531,10 +531,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     if (serviceTypeTemplate === ADDON && !editService) {
       data = metadata;
       data.map((item, index) => {
-        item.workingPeriod = {
-          "from": metadata?.[index]?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
-          "to": metadata?.[index]?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
-        }
+        item.workingPeriod = metadata?.[index]?.workingPeriod;
         item.serviceLocations = item?.locationSpecified ? data?.locations : locationItems;
         item.duration = {
           "hours": parseInt(item?.sessionDuration)
@@ -774,6 +771,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     if (editService && serviceTypeTemplate === ADDON) {
       data[0].activities = metadata?.[0]?.activities;
       data[0].performingActivity = { activity: metadata?.[0]?.performingActivity };
+      data[0].workingHours = metadata?.[0]?.workingHours;
     }
     let services = existingServices || [];
     if (editService) {
@@ -781,7 +779,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       temp.push(...data);
       services = temp;
     } else {
-      console.log('services in else', data, existingServices, services);
       if (existingServices?.length === services?.length) {
         data?.map(data => {
           if (!services?.map(service => service?.refId)?.includes(data?.refId)) {

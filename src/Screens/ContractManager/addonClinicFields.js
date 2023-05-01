@@ -273,6 +273,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     if (checked) {
       let temp = metadata;
       const selectedData = cloneDeep(services?.filter(data => getServiceName(data?.activityType?.activityType, data?.activities?.map(data => data?.activity)) === name)?.map(data => data)[0]);
+      console.log('selected service before adding', selectedData);
       selectedData.performingActivity = name;
       selectedData.activityType = { activityType: ADDON };
       selectedData.selectedActivityId = selectedData?.refId;
@@ -281,6 +282,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       selectedData.contractedSchedules = [];
       selectedData.patientsSeenTargets = [];
       selectedData.scheduledPatientsTargets = [];
+      selectedData.workingTimeFrom = selectedData?.workingTimeFrom
+      selectedData.workingTimeTo = selectedData?.workingTimeTo
       temp.push(selectedData);
       setSelectedServices(temp?.map(data => data?.performingActivity));
       setMetadata(temp);
@@ -489,6 +492,37 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     getFields();
   }
 
+  const additionalDetailSelectionChange = (data) => {
+    let temp = metadata?.[0]?.activityResponse?.dataMap?.additionalDetails || [];
+    let approver = metadata?.[0]?.approver;
+    let paymentApprover = metadata?.[0]?.paymentApprover;
+    if (temp?.includes(data)) {
+      if (data === 'Prior Pre-Authorization Required') {
+        approver = undefined;
+        paymentApprover = undefined;
+        temp = temp?.filter(detail => detail !== 'Administrative Approval For Payment Required')?.map(data => data);
+      }
+      if (data === 'Administrative Approval For Payment Required') {
+        paymentApprover = undefined;
+      }
+      temp = temp?.filter(detail => detail !== data)?.map(data => data);
+    } else {
+      if (data === 'Administrative Approval For Payment Required' && !temp?.includes('Prior Pre-Authorization Required')) {
+        return;
+      }
+      temp?.push(data);
+    }
+    let tempData = metadata;
+    tempData[0].approver = approver;
+    tempData[0].paymentApprover = paymentApprover;
+    tempData[0].activityResponse = { dataMap: { additionalDetails: temp } };
+    // setMetadata({ ...metadata, 'activityResponse': { 'dataMap': { 'additionalDetails': temp } } });
+    setMetadata(tempData);
+    getFields();
+  }
+
+  console.log('metadata', metadata);
+
 
   return (
     <div>
@@ -612,7 +646,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   {
                     additionalDetails?.map((details, index) => (
                       <>
-                        <div className={`${style.additionalDetails} ${data?.activityResponse?.dataMap?.additionalDetails?.includes(details) ? style.additionalDetailsSelected : ''} ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ''}`} onClick={() => handleAdditionalDetailSelection(details)}>
+                        <div className={`${style.additionalDetails} ${data?.activityResponse?.dataMap?.additionalDetails?.includes(details) ? style.additionalDetailsSelected : ''} ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ''}`} onClick={() => additionalDetailSelectionChange(details)}>
                           <div className={style.alignCenter}>
                             <TaskAltIcon sx={{ color: data?.activityResponse?.dataMap?.additionalDetails?.includes(details) ? '#7165E3' : '#E4E4E4' }} />
                           </div>
