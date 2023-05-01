@@ -191,7 +191,7 @@ const App = ({ props }) => {
   }, [])
 
   const getEntityId = async () => {
-    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
+    await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -213,7 +213,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `https://${window.location.hostname}/user-management-service/auth/login`,
+      `https://rest.mytimesmart.com/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
