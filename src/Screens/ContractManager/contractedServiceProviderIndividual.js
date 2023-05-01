@@ -69,6 +69,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const [allowPersonalMail, setAllowPersonalMail] = useState(false);
   const [mobileNA, setMobileNA] = useState(false);
   const [continueLoading, setContinueLoading] = useState(false);
+  const [ssoId, setSsoId] = useState({ id: '' });
 
   useEffect(() => {
     getRoles();
@@ -112,6 +113,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       setSites(siteTemp || []);
       setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
       setMobileNA(userProviderData?.communication?.mobileNumberNotApplicable);
+      setSsoId(userProviderData?.ssoId);
     } else {
       getSites();
     }
@@ -389,6 +391,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       "email": {
         "officialEmail": contractorEmail
       },
+      "ssoId": ssoId,
       ...(!isUserPresent && {
         "password": {
           "password": "string"
@@ -618,6 +621,16 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               </div>
             </div>
           }
+
+          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+            <CommonLabel value='SSO ID*' />
+            <div className={style.displayInRow}>
+              <CommonInputField placeholder="Enter SSO ID" className={`${style.entityFieldWidth}`}
+                value={ssoId?.id}
+                maxLength={30}
+                onChange={(e) => setSsoId({ ...ssoId, id: e.target.value })} />
+            </div>
+          </div>
 
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}

@@ -130,12 +130,12 @@ const SiteUsers = ({ getActiveStep }) => {
   }
 
   const getContracts = async () => {
-    await axios(`https://rest.timesmart.io/contract-managment-service/contracts`, {
+    await axios(`https://${window.location.hostname}/contract-managment-service/contracts`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'X-tenantID': id,
-        'Authorization': `Bearer ${Auth()}`
+        'X-Authorization': `Bearer ${Auth()}`
       },
     }).then(response => {
       setContracts(response?.data?.contractList);
@@ -145,12 +145,12 @@ const SiteUsers = ({ getActiveStep }) => {
   }
 
   const getUserData = async () => {
-    await axios(`https://rest.timesmart.io/user-management-service/user`, {
+    await axios(`https://${window.location.hostname}/user-management-service/user`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'X-tenantID': id,
-        'Authorization': `Bearer ${Auth()}`
+        'X-Authorization': `Bearer ${Auth()}`
       },
     }).then(response => {
       setUser(response?.data);

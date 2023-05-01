@@ -25,6 +25,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     npin: "",
     missing: false
   });
+  const [ssoId, setSsoId] = useState('');
   const [contractorEntityTaxId, setContractorEntityTaxId] = useState({
     taxId: "",
     missing: false,
@@ -157,6 +158,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
           "tenant": {
             "tenantId": TenantID
           },
+          // "ssoId": { "id": ssoId }
         }
 
         if (userId === '0') {
@@ -254,6 +256,9 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     setBusinessEntityData();
   }, [contractorBusinessEntity])
 
+  // useEffect(() => {
+  //   setSsoId(contractUser?.ssoId?.id);
+  // }, [contractUser])
 
   const handleInput = (e) => {
     const formattedPhoneNumber = FormatPhoneNumber(e.target.value);
@@ -270,6 +275,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
           missing: contractUser?.communication?.mobileNumberNotApplicable,
         }
       });
+      setSsoId(contractUser?.ssoId?.id)
       setMailingAddress({
         addressLine: contractUser?.address?.addressLine,
         city: contractUser?.address?.city,
@@ -327,6 +333,8 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
     setSameAsContractor(value);
     getContractorData(value);
   }
+
+  console.log(ssoId, contractUser?.ssoId?.id)
 
   if (isLoading) {
     return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
@@ -433,6 +441,15 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
                   }}
                 />
               </div>
+              {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <CommonLabel value='SSO ID*' />
+                <CommonInputField className={style.fullWidth} value={ssoId} placeholder="Enter SSO ID"
+                  onChange={(e) => {
+                    setSsoId(e.target.value);
+                    setIsUserUpdated(true);
+                  }}
+                />
+              </div> */}
               <div className={`${style.extentionGrid} ${style.marginTop20}`}
                 onFocus={() => { checkFieldAndPopAlert(businessEntityUser?.contactNumber?.number, 'Cell Phone') }}
               >

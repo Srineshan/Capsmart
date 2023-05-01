@@ -14,10 +14,11 @@ import LogoutIcon from "./../../images/logoutIcon.png";
 import Cookies from "universal-cookie";
 import Popover from "@mui/material/Popover";
 import { isSuperAdminAccess } from "../../Screens/dataSaver";
-import { TenantID, GET } from "./../../Screens/dataSaver";
+import { TenantID, GET, POST, PUT } from "./../../Screens/dataSaver";
 import { ErrorToaster } from "./../../utils/toaster";
 import html2canvas from "html2canvas";
 import jwt from "jwt-decode";
+import axios from "axios";
 
 import style from "./index.module.scss";
 
@@ -163,28 +164,76 @@ const Navbar = () => {
 
   const idHelp = open ? "mouse-over-popover" : undefined;
 
-  const logout = () => {
+  const logoutURL = () => {
+    window.location.href = `https://${window.location.hostname}/logout`;
+  }
+
+  const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-tenantID": entityId,
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    fetch(
-      "https://rest.timesmart.io/user-management-service/auth/logout",
-      requestOptions
-    )
-      .then((response) => {
-        cookies.remove("user");
-        cookies.remove("entityId");
-        window.location.href = "/";
+    // await fetch(`https://${window.location.hostname}/logout`, {
+    //   // redirect: 'manual',
+    //   method: 'PUT',
+    //   body: JSON.stringify({}),
+    // }).then(response => {
+    //   console.log('response', response.headers, response.status, response);
+    //   const logouturi = response.headers.get('location') || '';
+    //   console.log('logouturi', logouturi)
+    //   window.location.href = logouturi;
+    // })
+
+    // let data = JSON.stringify({});
+    // await axios(`https://${window.location.hostname}/logout`, {
+    //   method: 'PUT',
+    //   data,
+    // }).then(response => {
+    //   const logouturi = response.headers.get('location') || '';
+    //   cookies.remove("user", { path: '/' });
+    //   cookies.remove("entityId", { path: '/' });
+    //   if (logouturi) {
+    //     window.location.href = logouturi;
+    //   }
+    // })
+
+
+
+
+    // window.location.href = respose.headers?.get('Location')
+    // axios.post(`https://${window.location.hostname}/logout`, {
+    //   // Add parameters here
+    //   // transformRequest: (data, headers) => {
+    //   //   delete headers.common['X-XSRF-TOKEN'];
+    //   //   return data;
+    //   // }
+    // })
+    //   .then((response) => {
+    //     const logouturi = response.headers.get('location') || '';
+    //     cookies.remove("user", { path: '/' });
+    //     cookies.remove("entityId", { path: '/' });
+    //     if (logouturi) {
+    //       window.location.href = logouturi;
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   })
+    await PUT(`logout`, null)
+      .then(response => {
+        console.log('respose', response, response?.data, response?.headers);
+        console.log('response from data', response.data.redirectURL);
+        console.log('response from header', response.headers['location']);
+        const logouturi = response.headers['location'] || '';
+        console.log('redirectURI', logouturi);
+        cookies.remove("user", { path: '/' });
+        cookies.remove("entityId", { path: '/' });
+        if (logouturi) {
+          window.location.href = logouturi;
+        }
+      }).catch(error => {
+        console.log('error msg', error);
+        ErrorToaster('Unexpected Error');
       })
-      .catch((data) => ErrorToaster("Unexpected Error Occured"));
   };
 
   useEffect(() => {

@@ -7,10 +7,7 @@ import DatalistInput from 'react-datalist-input';
 import { GET, PUT, POST, role, TenantID } from './../dataSaver';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
 import AddNewContractManager from './addNewContractManager';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
-import { Auth } from './../../utils/auth'
-import { format, sub, add, getMonth, differenceInCalendarMonths, differenceInCalendarWeeks } from 'date-fns';
+import { format, sub, add, getMonth, differenceInCalendarMonths } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { GetDateFromHours } from './../../utils/formatting';
 import axios from 'axios';

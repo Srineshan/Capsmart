@@ -9,13 +9,13 @@ export const TenantID = GetEntityDetails();
 const accessToken = Auth();
 const roles = GetRoles();
 export const isSuperAdminAccess = roles.includes('Super Sys Admin') || roles.includes('Distributor Admin') ? true : false;
-const baseUrl = 'https://rest.timesmart.io';
+const baseUrl = `https://${window.location.hostname}`;
 let cookie = new Cookie();
 let tenantId = cookie.get('entityId');
 const headers = {
     'Content-Type': 'application/json',
     'X-tenantID': TenantID,
-    'Authorization': `Bearer ${accessToken}`
+    'X-Authorization': `Bearer ${accessToken}`
 }
 
 export const GET = (url) => {

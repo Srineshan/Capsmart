@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import history from "./routes/history";
 import Loader from "./Components/LoadingScreen";
@@ -7,6 +7,9 @@ import IdleTimer from "./Components/IdleTimer";
 import Cookie from "universal-cookie";
 import { Auth, GetEntityDetails } from "./utils/auth";
 import { TenantID, GET } from "./Screens/dataSaver";
+import axios from "axios";
+import jwt from "jwt-decode";
+
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
@@ -162,21 +165,78 @@ const App = ({ props }) => {
   const [tenantId, setTenantId] = useState(GetEntityDetails());
   const [logo, setLogo] = useState(null);
   const [title, setTitle] = useState("TimeSmartAI");
-  console.log("token", accessToken);
+  const [entityId, setEntityId] = useState("");
+  var cookie = new Cookie();
+  // const navigate = useNavigate();
+
+
+  // useEffect(() => {
+  //   getEntityId();
+  // }, [cookie.get("user")])
+
+  // useEffect(() => {
+  //   if(!cookie.get("user")){
+  //     login();
+  //   }
+  // }, [entityId])
+
   useEffect(() => {
-    if (accessToken === false) {
-      let cookie = new Cookie();
-      let authValue = cookie.get("user");
-      setAccessToken(authValue);
+    const reloadCount = sessionStorage.getItem('reloadCount');
+    if (reloadCount < 1) {
+      sessionStorage.setItem('reloadCount', String(reloadCount + 1));
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem('reloadCount');
     }
-    if (
-      accessToken === false &&
-      window.location.pathname !== "/app" &&
-      !window.location.pathname.includes("/app/setPassword")
-    ) {
-      window.location.pathname = "/app";
-    }
-  }, [window.location.pathname]);
+  }, [])
+
+  const getEntityId = async () => {
+    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
+      method: "GET",
+      // headers: { "X-subdomain": "hopkins" },
+    })
+      .then((response) => {
+        cookie.set("entityId", response?.data?.id);
+        setEntityId(response?.data?.id);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  };
+
+  const login = () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-tenantID": entityId,
+      }
+    };
+    fetch(
+      `https://${window.location.hostname}/user-management-service/auth/login`,
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        cookie.set("user", data?.accessToken);
+
+      });
+    return true;
+  };
+
+  // useEffect(() => {
+  //   if (accessToken === false) {
+  //     let authValue = cookie.get("user");
+  //     setAccessToken(authValue);
+  //   }
+  //   if (
+  //     accessToken === false &&
+  //     window.location.pathname !== "/app" &&
+  //     !window.location.pathname.includes("/app/setPassword")
+  //   ) {
+  //     window.location.pathname = "/app";
+  //   }
+  // }, [window.location.pathname]);
 
   useEffect(() => {
     changeFavicon();
@@ -205,13 +265,46 @@ const App = ({ props }) => {
     document.title = title;
   };
 
-  if (
-    accessToken === false &&
-    window.location.pathname !== "/app" &&
-    !window.location.pathname.includes("/app/setPassword")
-  ) {
-    window.location.pathname = "/app";
-    history.push("/app");
+  // if (
+  //   accessToken === false &&
+  //   window.location.pathname !== "/app" &&
+  //   !window.location.pathname.includes("/app/setPassword")
+  // ) {
+  //   window.location.pathname = "/app";
+  //   history.push("/app");
+  // }
+
+  const LoginRoute = () => {
+    let roles = jwt(Auth())?.roles?.split(",");
+    let isAppUser =
+      roles.includes("Approver") ||
+      roles.includes("Reviewer") ||
+      roles.includes("Activity Logger");
+    let isContractManager = roles.includes("Contract Manager");
+    let isEntityLevelAdmin =
+      roles.includes("Super Sys Admin") ||
+      roles.includes("Entity Sys Admin") ||
+      roles.includes("Entity Sys User") ||
+      roles.includes("Distributor Admin");
+    if (isAppUser) {
+      window.location.href = "/";
+      return <Login />;
+    } else if (isContractManager) {
+      window.location.pathname = '/app/contracts';
+      // navigate("/contracts");
+      // window.location.reload();
+      return <ActiveContracts />;
+    } else if (isEntityLevelAdmin) {
+      window.location.pathname = '/app/entitySitePortal';
+      // navigate("/entitySitePortal");
+      // window.location.reload();
+      return <Home />;
+    } else {
+      window.location.pathname = '/app/entitySitePortal';
+      // navigate("/entitySitePortal");
+      // window.location.reload();
+      return <Home />;
+    }
   }
 
   return (
@@ -221,175 +314,175 @@ const App = ({ props }) => {
           <IdleTimer></IdleTimer>
         )}
         <div className="App">
-          {accessToken !== false ? (
-            <>
-              <Routes>
-                <Route path="/" element={<Login />} {...props} />
-                <Route path="/contracts" element={<ActiveContracts />} />
-                <Route path="/profile" element={<Profile />} />
-                {/* <Route path="/user" element={<Users />} /> */}
-                <Route path="/pages" element={<EntryPage />} />
-                <Route path="/setPassword/:randomId" element={<SetPassword />} />
-                <Route path="/setPassword" element={<SetPasswordWithoutEmail />} />
-                <Route path="/welcome" element={<Welcome />} />
-                <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />
-                <Route
-                  path="/entitySystemAdmin"
-                  element={<EntitySystemAdmin />}
-                />
-                <Route path="/siteInformation" element={<SiteInformation />} />
-                <Route path="/siteUsers" element={<SiteUsers />} />
-                <Route path="/appSubscription" element={<AppSubscription />} />
-                <Route path="/setupComplete" element={<SetupComplete />} />
-                <Route path="/otpPage" element={<OTPPage />} />
-                <Route
-                  path="/welcomeToDashboard"
-                  element={<WelcomeToDashboard />}
-                />
-                <Route path="/tasks" element={<ReportsHome />} />
-                <Route
-                  path="/reports/:reportType"
-                  element={<TimeSheetReportsBase />}
-                />
-                <Route path="/chart" element={<ChartPage />} />
-                <Route path="/help" element={<HelpHome />} />
-                <Route path="/partnerPortal" element={<TasksAndAlerts />} />
-                <Route
-                  path="/activeCustomers"
-                  element={<CustomerManagement />}
-                />
-                <Route path="/customerSetup" element={<CustomerSetup />} />
-                <Route path="/referenceList" element={<ReferenceList />} />
-                <Route
-                  path="/Screens/ReferenceList/superAdminDashboard"
-                  element={<SuperAdminDashboard />}
-                />
-                <Route
-                  path="/Screens/ReferenceList/customerAdminDashboard"
-                  element={<ClientAdminDashboard />}
-                />
-                <Route
-                  path="/referenceList/industriesWithEntityTypes"
-                  element={<IndustriesWithEntityTypes />}
-                />
-                <Route
-                  path="/referenceList/departmentsByEntityTypes"
-                  element={<DepartmentsByEntityTypes />}
-                />
-                <Route
-                  path="/referenceList/functionalTitles"
-                  element={<FunctionalTitles />}
-                />
-                <Route
-                  path="/referenceList/boardCertification"
-                  element={<BoardCertification />}
-                />
-                <Route
-                  path="/referenceList/holidayListByIndustries"
-                  element={<HolidayListByIndustries />}
-                />
-                <Route
-                  path="/referenceList/terminationReasons"
-                  element={<TerminationReasons />}
-                />
-                <Route
-                  path="/referenceList/absenseReasonsByIndustries"
-                  element={<AbsenseReasonsByIndustries />}
-                />
-                <Route
-                  path="/referenceList/suffixByIndustries"
-                  element={<SuffixByIndustries />}
-                />
-                <Route
-                  path="/referenceList/contractedServiceProviderByIndustries"
-                  element={<ContractedServiceProvidedByIndustries />}
-                />
-                <Route
-                  path="/referenceList/proofOfDocumentByEntity"
-                  element={<ProofOfDocumentationByEntity />}
-                />
-                <Route
-                  path="/referenceList/contractDoumentTypeForUpload"
-                  element={<ContractDocumentTypeForUpload />}
-                />
-                <Route
-                  path="/referenceList/holidayScheduleForCustomers"
-                  element={<HolidayScheduleForCustomers />}
-                />
-                <Route
-                  path="/referenceList/countriesSupportedWithStates"
-                  element={<CountriesSupportedWithStates />}
-                />
-                <Route
-                  path="/referenceList/departmentsForCustomers"
-                  element={<DepartmentsForCustomers />}
-                />
-                <Route
-                  path="/referenceList/departmentsForCustomerMultiSite"
-                  element={<DepartmentsForCustomersMultiSite />}
-                />
-                <Route
-                  path="/referenceList/absenceReasonsForCustomer"
-                  element={<AbsenceReasonsForCustomer />}
-                />
-                <Route
-                  path="/referenceList/suffixByCustomer"
-                  element={<SuffixByCustomer />}
-                />
-                <Route
-                  path="/referenceList/contractDocumentTypeUploadForCustomer"
-                  element={<ContractDocumentUploadForCustomer />}
-                />
-                <Route
-                  path="/referenceList/contractedServicesByEntityType"
-                  element={<ContractServicesByEntityType />}
-                />
-                <Route
-                  path="/referenceList/contractServiceProviderBySiteType"
-                  element={<ContractServiceProviderBySiteType />}
-                />
-                <Route
-                  path="/referenceList/contractServiceProviderMultiSite"
-                  element={<ContractServiceProviderForMultiSite />}
-                />
-                <Route
-                  path="/referenceList/functionalTitleForCustomer"
-                  element={<FunctionalTitleForCustomer />}
-                />
-                <Route
-                  path="/referenceList/functionalTitleMultiSitesForCustomer"
-                  element={<FunctionalTitleMultiSitesForCustomer />}
-                />
-                <Route
-                  path="/referenceList/contractTerminationReasonForCustomer"
-                  element={<TerminationReasonForCustomer />}
-                />
-                <Route
-                  path="/referenceList/holidayScheduleForCustomers"
-                  element={<HolidayScheduleForCustomers />}
-                />
-                <Route
-                  path="/referenceList/organizationCostCenters"
-                  element={<CostCenterAndLocations />}
-                />
-                <Route
-                  path="/referenceList/departmentsForCustomers"
-                  element={<DepartmentsForCustomers />}
-                />
-                <Route path="/entitySitePortal" element={<Home />} />
-                <Route path="/thankyou" element={<Thankyou />} />
-                <Route path="/reportType" element={<ReportType />} />
-                <Route
-                  path="/reportTypeOverview/:reportType"
-                  element={<ReportTypeOverview />}
-                />
-              </Routes>
-            </>
-          ) : (
+          {/* {(accessToken !== false && accessToken !== undefined) ? ( */}
+          <>
+            <Routes>
+              <Route path="/" element={<LoginRoute />} />
+              <Route path="/contracts" element={<ActiveContracts />} />
+              <Route path="/profile" element={<Profile />} />
+              {/* <Route path="/user" element={<Users />} /> */}
+              <Route path="/pages" element={<EntryPage />} />
+              <Route path="/setPassword/:randomId" element={<SetPassword />} />
+              <Route path="/setPassword" element={<SetPasswordWithoutEmail />} />
+              <Route path="/welcome" element={<Welcome />} />
+              <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />
+              <Route
+                path="/entitySystemAdmin"
+                element={<EntitySystemAdmin />}
+              />
+              <Route path="/siteInformation" element={<SiteInformation />} />
+              <Route path="/siteUsers" element={<SiteUsers />} />
+              <Route path="/appSubscription" element={<AppSubscription />} />
+              <Route path="/setupComplete" element={<SetupComplete />} />
+              <Route path="/otpPage" element={<OTPPage />} />
+              <Route
+                path="/welcomeToDashboard"
+                element={<WelcomeToDashboard />}
+              />
+              <Route path="/tasks" element={<ReportsHome />} />
+              <Route
+                path="/reports/:reportType"
+                element={<TimeSheetReportsBase />}
+              />
+              <Route path="/chart" element={<ChartPage />} />
+              <Route path="/help" element={<HelpHome />} />
+              <Route path="/partnerPortal" element={<TasksAndAlerts />} />
+              <Route
+                path="/activeCustomers"
+                element={<CustomerManagement />}
+              />
+              <Route path="/customerSetup" element={<CustomerSetup />} />
+              <Route path="/referenceList" element={<ReferenceList />} />
+              <Route
+                path="/Screens/ReferenceList/superAdminDashboard"
+                element={<SuperAdminDashboard />}
+              />
+              <Route
+                path="/Screens/ReferenceList/customerAdminDashboard"
+                element={<ClientAdminDashboard />}
+              />
+              <Route
+                path="/referenceList/industriesWithEntityTypes"
+                element={<IndustriesWithEntityTypes />}
+              />
+              <Route
+                path="/referenceList/departmentsByEntityTypes"
+                element={<DepartmentsByEntityTypes />}
+              />
+              <Route
+                path="/referenceList/functionalTitles"
+                element={<FunctionalTitles />}
+              />
+              <Route
+                path="/referenceList/boardCertification"
+                element={<BoardCertification />}
+              />
+              <Route
+                path="/referenceList/holidayListByIndustries"
+                element={<HolidayListByIndustries />}
+              />
+              <Route
+                path="/referenceList/terminationReasons"
+                element={<TerminationReasons />}
+              />
+              <Route
+                path="/referenceList/absenseReasonsByIndustries"
+                element={<AbsenseReasonsByIndustries />}
+              />
+              <Route
+                path="/referenceList/suffixByIndustries"
+                element={<SuffixByIndustries />}
+              />
+              <Route
+                path="/referenceList/contractedServiceProviderByIndustries"
+                element={<ContractedServiceProvidedByIndustries />}
+              />
+              <Route
+                path="/referenceList/proofOfDocumentByEntity"
+                element={<ProofOfDocumentationByEntity />}
+              />
+              <Route
+                path="/referenceList/contractDoumentTypeForUpload"
+                element={<ContractDocumentTypeForUpload />}
+              />
+              <Route
+                path="/referenceList/holidayScheduleForCustomers"
+                element={<HolidayScheduleForCustomers />}
+              />
+              <Route
+                path="/referenceList/countriesSupportedWithStates"
+                element={<CountriesSupportedWithStates />}
+              />
+              <Route
+                path="/referenceList/departmentsForCustomers"
+                element={<DepartmentsForCustomers />}
+              />
+              <Route
+                path="/referenceList/departmentsForCustomerMultiSite"
+                element={<DepartmentsForCustomersMultiSite />}
+              />
+              <Route
+                path="/referenceList/absenceReasonsForCustomer"
+                element={<AbsenceReasonsForCustomer />}
+              />
+              <Route
+                path="/referenceList/suffixByCustomer"
+                element={<SuffixByCustomer />}
+              />
+              <Route
+                path="/referenceList/contractDocumentTypeUploadForCustomer"
+                element={<ContractDocumentUploadForCustomer />}
+              />
+              <Route
+                path="/referenceList/contractedServicesByEntityType"
+                element={<ContractServicesByEntityType />}
+              />
+              <Route
+                path="/referenceList/contractServiceProviderBySiteType"
+                element={<ContractServiceProviderBySiteType />}
+              />
+              <Route
+                path="/referenceList/contractServiceProviderMultiSite"
+                element={<ContractServiceProviderForMultiSite />}
+              />
+              <Route
+                path="/referenceList/functionalTitleForCustomer"
+                element={<FunctionalTitleForCustomer />}
+              />
+              <Route
+                path="/referenceList/functionalTitleMultiSitesForCustomer"
+                element={<FunctionalTitleMultiSitesForCustomer />}
+              />
+              <Route
+                path="/referenceList/contractTerminationReasonForCustomer"
+                element={<TerminationReasonForCustomer />}
+              />
+              <Route
+                path="/referenceList/holidayScheduleForCustomers"
+                element={<HolidayScheduleForCustomers />}
+              />
+              <Route
+                path="/referenceList/organizationCostCenters"
+                element={<CostCenterAndLocations />}
+              />
+              <Route
+                path="/referenceList/departmentsForCustomers"
+                element={<DepartmentsForCustomers />}
+              />
+              <Route path="/entitySitePortal" element={<Home />} />
+              <Route path="/thankyou" element={<Thankyou />} />
+              <Route path="/reportType" element={<ReportType />} />
+              <Route
+                path="/reportTypeOverview/:reportType"
+                element={<ReportTypeOverview />}
+              />
+            </Routes>
+          </>
+          {/* ) : (
             <Routes>
               <Route path="*" element={<Login />} {...props} exact={true} />
             </Routes>
-          )}
+          )} */}
         </div>
       </Suspense>
     </BrowserRouter>
