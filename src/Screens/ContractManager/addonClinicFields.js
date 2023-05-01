@@ -165,7 +165,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       deptId.push(`${data?.id}#${dept?.id}`);
     }))
     let encodedDept = encodeURIComponent(deptId);
-    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&&contractIdToIgnore=${contractId}`;
+    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&contractIdToIgnore=${contractId}`;
     const { data: userList } = await GET(uri);
     if (userList) {
       setUsers(userList);
@@ -278,6 +278,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       selectedData.selectedActivityId = selectedData?.refId;
       selectedData.refId = null;
       selectedData.sessionDuration = selectedData?.duration?.hours;
+      selectedData.contractedSchedules = [];
+      selectedData.patientsSeenTargets = [];
+      selectedData.scheduledPatientsTargets = [];
       temp.push(selectedData);
       setSelectedServices(temp?.map(data => data?.performingActivity));
       setMetadata(temp);
@@ -588,13 +591,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   </div>
                 </div>
               }
-              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Add-On Working Hours*' />
-                <div className={style.twoCol}>
-                  <CommonCheckBox checked={data?.workingHours?.normalWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'normalWorkingHours')} label="During Normal Working Hours" />
-                  <CommonCheckBox checked={data?.workingHours?.afterWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'afterWorkingHours')} label="After Working Hours" />
-                </div>
-              </div>
+
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Specify Service Facility / Location' />
                 <div>
@@ -658,6 +655,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                       </>
                     ))
                   }
+                </div>
+              </div>
+              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Allowable Add-On Working Hours*' />
+                <div className={style.twoCol}>
+                  <CommonCheckBox checked={data?.workingHours?.normalWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'normalWorkingHours')} label="During Normal Working Hours" />
+                  <CommonCheckBox checked={data?.workingHours?.afterWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'afterWorkingHours')} label="After Working Hours" />
                 </div>
               </div>
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -797,15 +801,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
             </div>
           }
 
-
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value='Allowable Add-On Working Hours*' />
-            <div className={style.twoCol}>
-              <CommonCheckBox checked={newServices?.duringNormalWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => { handleNewServiceChange('duringNormalWorkingHours', e.target.checked) }} label="During Normal Working Hours" />
-              <CommonCheckBox checked={newServices?.afterWorkingHours} className={`${style.marginLeft10}`} onChange={(e => handleNewServiceChange('afterWorkingHours', e.target.checked))} label="After Working Hours" />
-            </div>
-          </div>
-
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value='Specify Service Facility / Location' />
             <div>
@@ -878,7 +873,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               }
             </div>
           </div>
-
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <CommonLabel value='Allowable Add-On Working Hours*' />
+            <div className={style.twoCol}>
+              <CommonCheckBox checked={newServices?.duringNormalWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => { handleNewServiceChange('duringNormalWorkingHours', e.target.checked) }} label="During Normal Working Hours" />
+              <CommonCheckBox checked={newServices?.afterWorkingHours} className={`${style.marginLeft10}`} onChange={(e => handleNewServiceChange('afterWorkingHours', e.target.checked))} label="After Working Hours" />
+            </div>
+          </div>
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value='Allowable Working Day Hours For Service*' />
             <div className={style.displayInRow}>

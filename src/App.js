@@ -170,18 +170,28 @@ const App = ({ props }) => {
   // const navigate = useNavigate();
 
 
-  useEffect(() => {
-    getEntityId();
-  }, [cookie.get("user")])
+  // useEffect(() => {
+  //   getEntityId();
+  // }, [cookie.get("user")])
+
+  // useEffect(() => {
+  //   if(!cookie.get("user")){
+  //     login();
+  //   }
+  // }, [entityId])
 
   useEffect(() => {
-    if(!cookie.get("user")){
-      login();
+    const reloadCount = sessionStorage.getItem('reloadCount');
+    if (reloadCount < 1) {
+      sessionStorage.setItem('reloadCount', String(reloadCount + 1));
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem('reloadCount');
     }
-  }, [entityId])
+  }, [])
 
   const getEntityId = async () => {
-    await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
+    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -203,7 +213,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `https://rest.mytimesmart.com/user-management-service/auth/login`,
+      `https://${window.location.hostname}/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
