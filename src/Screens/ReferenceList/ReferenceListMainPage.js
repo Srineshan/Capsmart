@@ -13,138 +13,180 @@ import TerminationReasons from "./terminationReasons";
 import ProofOfDocumentationByEntity from "./proofOfDocumentationByEntity";
 import HolidayListByIndustries from "./holidayListByIndustries";
 import CountriesSupportedWithStates from "./countriesSupportedWithStates";
-import style from './index.module.scss';
+import style from "./index.module.scss";
 import LevelTwoHeader from "../../Components/LevelTwoHeader";
 
 const ReferenceListMainPage = () => {
-    let location = useLocation();
+  let location = useLocation();
 
-    const [headerName, setHeaderName] = useState([]);
-    const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
-    const [isEdit, setIsEdit] = useState(false);
+  const [headerName, setHeaderName] = useState([]);
+  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [lastDate, setLastDate] = useState("");
+  const [isExpanded, setIsExpanded] = useState(true);
 
-    const getAddEntityDialog = (value) => {
-        setShowAddEntityDialog(value);
-    }
-    const headerArray = [
-        {
-            name: "INDUSTRIES WITH ENTITY TYPES",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/industriesWithEntityTypes",
-            tableComponent: industriesWithEntityTypes,
-        },
-        {
-            name: "DEPARTMENTS / SERVICE AREAS BY ENTITY TYPES",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/departmentsByEntityTypes",
-            tableComponent: DepartmentsByEntityTypes,
-        },
-        {
-            name: "ABSENCE REASONS BY INDUSTRIES",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/absenseReasonsByIndustries",
-            tableComponent: AbsenseReasonsByIndustries,
-        },
-        {
-            name: "SUFFIX BY INDUSTRIES",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/suffixByIndustries",
-            tableComponent: SuffixByIndustries,
-        },
-        {
-            name: "CONTRACTED SERVICE PROVIDERS BY INDUSTRY & ENTITY TYPES",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/contractedServiceProviderByIndustries",
-            tableComponent: ContractedServiceProvidedByIndustries,
-        },
-        {
-            name: "FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/functionalTitles",
-            tableComponent: FunctionalTitles,
-        },
-        {
-            name: "BOARD CERTIFICATION SPECIALTIES BY INDUSTRIES",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/boardCertification",
-            tableComponent: BoardCertification,
-        },
-        {
-            name: "TERMINATION REASONS BY ENTITY",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/terminationReasons",
-            tableComponent: TerminationReasons,
-        },
-        {
-            name: "PROOF OF DOCUMENTATION BY ENTITY",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/proofOfDocumentByEntity",
-            tableComponent: ProofOfDocumentationByEntity,
-        },
-        {
-            name: "HOLIDAY SCHEDULE BY INDUSTRIES",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/holidayListByIndustries",
-            tableComponent: HolidayListByIndustries,
-        },
-        {
-            name: "CONTRACT DOCUMENT TYPE FOR UPLOAD",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/contractDoumentTypeForUpload",
-            tableComponent: industriesWithEntityTypes,
-        },
-        {
-            name: "COUNTRY",
-            status: "UPDATED ON FEB 16, 2022 16:45 EST",
-            pathName: "/referenceList/countriesSupportedWithStates",
-            tableComponent: CountriesSupportedWithStates,
-        },
-    ];
+  const getAddEntityDialog = (value) => {
+    setShowAddEntityDialog(value);
+  };
 
-    useEffect(() => {
-        const getArrayHandler = () => {
-            setHeaderName(
-                headerArray.filter((data) => data.pathName === location.pathname)
-            );
-        };
-        getArrayHandler();
-    }, [location.pathname]);
+  const getLastDate = (data) => {
+    setLastDate(data);
+  };
 
-    return (<Fragment>
-        <Navbar />
-        <div className={style.margin20}>
-            <div className={style.bigCardGrid}>
-                <SideBar />
-                <div>
-                    {
-                        headerName?.map((data) => (
-                            <>
-                                <LevelTwoHeader heading={data.name} updatedTime={data.status} getAddEntityDialog={getAddEntityDialog} isEdit={isEdit} setIsEdit={setIsEdit} needHeader={true} />
-                            </>
-                        ))
-                    }
+  const headerArray = [
+    {
+      name: "INDUSTRIES WITH ENTITY TYPES",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/industriesWithEntityTypes",
+      tableComponent: industriesWithEntityTypes,
+      Title: "ADD INDUSTRY",
+    },
+    {
+      name: "DEPARTMENTS / SERVICE AREAS BY ENTITY TYPES",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/departmentsByEntityTypes",
+      tableComponent: DepartmentsByEntityTypes,
+      Title: "ADD DEPARTMENT",
+    },
+    {
+      name: "ABSENCE REASONS BY INDUSTRIES",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/absenseReasonsByIndustries",
+      tableComponent: AbsenseReasonsByIndustries,
+      Title: "ADD ABSENSE REASONS",
+    },
+    {
+      name: "SUFFIX BY INDUSTRIES",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/suffixByIndustries",
+      tableComponent: SuffixByIndustries,
+      Title: "ADD SUFFIX",
+    },
+    {
+      name: "CONTRACTED SERVICE PROVIDERS BY INDUSTRY & ENTITY TYPES",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/contractedServiceProviderByIndustries",
+      tableComponent: ContractedServiceProvidedByIndustries,
+      Title: "ADD CSP",
+    },
+    {
+      name: "FUNCTIONAL TITLES FOR CONTRACTED SERVICE PROVIDERS",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/functionalTitles",
+      tableComponent: FunctionalTitles,
+      Title: "ADD FUNCTIONAL TITLES",
+    },
+    {
+      name: "BOARD CERTIFICATION SPECIALTIES BY INDUSTRIES",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/boardCertification",
+      tableComponent: BoardCertification,
+      Title: "ADD BOARD CERTIFICATION",
+    },
+    {
+      name: "TERMINATION REASONS BY ENTITY",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/terminationReasons",
+      tableComponent: TerminationReasons,
+      Title: "ADD TERMINATION",
+    },
+    {
+      name: "PROOF OF DOCUMENTATION BY ENTITY",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/proofOfDocumentByEntity",
+      tableComponent: ProofOfDocumentationByEntity,
+      Title: "ADD POD",
+    },
+    {
+      name: "HOLIDAY SCHEDULE BY INDUSTRIES",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/holidayListByIndustries",
+      tableComponent: HolidayListByIndustries,
+      Title: "ADD HOLIDAY",
+    },
+    {
+      name: "CONTRACT DOCUMENT TYPE FOR UPLOAD",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/contractDoumentTypeForUpload",
+      tableComponent: industriesWithEntityTypes,
+      Title: "ADD CONTRACT DOCUMENT",
+    },
+    {
+      name: "COUNTRY",
+      status: "UPDATED ON FEB 16, 2022 16:45 EST",
+      pathName: "/referenceList/countriesSupportedWithStates",
+      tableComponent: CountriesSupportedWithStates,
+      Title: "ADD COUNTRY",
+    },
+  ];
 
-                    <div className={style.marginTop35}>
-                        <div className={style.centreCardStyle}>
-                            <div className={style.margin20}>
-                                {headerName.map((data) => {
-                                    return (
-                                        <data.tableComponent showAddEntityDialog={showAddEntityDialog} getAddEntityDialog={getAddEntityDialog} isEdit={isEdit} setIsEdit={setIsEdit} />
-                                    )
-                                })}
-                            </div>
-                        </div>
-                    </div>
+  const getIsExpanded = (value) => {
+    setIsExpanded(value);
+  };
+
+  useEffect(() => {
+    const getArrayHandler = () => {
+      setHeaderName(
+        headerArray.filter((data) => data.pathName === location.pathname)
+      );
+    };
+    getArrayHandler();
+  }, [location.pathname]);
+
+  return (
+    <Fragment>
+      <Navbar />
+      <div className={style.margin20}>
+        <div
+          className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid}`}
+        >
+          <div>
+            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+              <div></div>
+            </SideBar>
+          </div>
+
+          <div>
+            {headerName?.map((data) => (
+              <LevelTwoHeader
+                heading={data.name}
+                updatedTime={`UPDATED ON ${lastDate.toUpperCase()} EST`}
+                getAddEntityDialog={getAddEntityDialog}
+                isEdit={isEdit}
+                setIsEdit={setIsEdit}
+                needHeader={true}
+                Title={data.Title}
+                path={"/Screens/ReferenceList/superAdminDashboard"}
+                callingFrom={"Super Admin"}
+              />
+            ))}
+
+            <div className={style.marginTop35}>
+              <div className={style.centreCardStyle}>
+                <div className={style.margin20}>
+                  {headerName.map((data) => {
+                    return (
+                      <data.tableComponent
+                        showAddEntityDialog={showAddEntityDialog}
+                        getAddEntityDialog={getAddEntityDialog}
+                        isEdit={isEdit}
+                        setIsEdit={setIsEdit}
+                        sendLastDate={getLastDate}
+                      />
+                    );
+                  })}
                 </div>
+              </div>
             </div>
-            <div className={style.spaceBetween}>
-                <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                <p className={style.poweredBy}>© TimeSmart.AI</p>
-            </div>
+          </div>
         </div>
-
-    </Fragment >
-    );
+        <div className={style.spaceBetween}>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI</p>
+        </div>
+      </div>
+    </Fragment>
+  );
 };
 
 export default ReferenceListMainPage;

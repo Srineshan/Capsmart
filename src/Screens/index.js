@@ -1,10 +1,10 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
-import {isSuperAdminAccess,TenantID} from './dataSaver';
+import { Link } from 'react-router-dom';
+import { isSuperAdminAccess, TenantID } from './dataSaver';
 import style from './index.module.scss';
 
 const EntryPage = () => {
-    return(
+    return (
         <div className={`${style.backgroundColor} ${style.alignCenter}`}>
             <div className={style.spaceBetween}>
                 <Link to={'/tasks'}>
@@ -35,7 +35,7 @@ const EntryPage = () => {
                         <div className={style.headingStyle}>User Management</div>
                     </div>
                 </Link>
-                <Link to={isSuperAdminAccess ? '/tasksAndAlerts' : `/entitySetup/${TenantID}`}>
+                <Link to={isSuperAdminAccess ? '/partnerPortal' : `/entitySetup/${TenantID}/appSubscription`}>
                     <div className={`${style.padding} ${style.cursorPointer}`}>
                         <div className={style.roundedBackgrounds}>
                         </div>

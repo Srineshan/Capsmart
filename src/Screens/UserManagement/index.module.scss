@@ -5,6 +5,7 @@ body {
 
     ::-webkit-scrollbar {
         display: none !important;
+        background: transparent !important;
     }
 }
 
@@ -14,6 +15,10 @@ body {
 
 .marginTop20 {
     margin-top: 20px !important;
+}
+
+.marginTop25 {
+    margin-top: 25px !important;
 }
 
 .marginTop {
@@ -59,16 +64,29 @@ body {
     padding: 5px;
 }
 
+.grid4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
 .grid5 {
     display: grid;
     grid-template-columns: 80px 1fr 1fr 1fr 1fr;
     grid-gap: 20px;
 }
 
-.bigCardGrid {
+.smallCardGrid {
     display: grid;
     grid-template-columns: 80px 1fr;
     grid-gap: 20px;
+    margin-top: 20px;
+}
+
+.bigCardGrid {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-gap: 10px;
     margin-top: 20px;
 }
 
@@ -1476,6 +1494,7 @@ select {
     width: 0 !important;
     height: 0 !important;
     display: none !important;
+    background: transparent !important;
 }
 
 .tagStyle {

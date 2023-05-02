@@ -1,45 +1,57 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import DoctorAnime from './../../images/doctorAnime.png';
 import ChevronRight from './../../images/chevronRight.png';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import { GET } from '../dataSaver';
-import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz'
+import { Link } from 'react-router-dom';
 
 import style from './index.module.scss';
 
-const UserCard = () => {
+const UserCard = ({ getIsExpanded, updateProfileData }) => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
     const [currentUserDetails, setCurrentUserDetails] = useState();
     const [userId, setUserId] = useState(user?.id);
-
+    console.log('in user card', user?.id);
     useEffect(() => {
+        console.log('inside func call useEffect 1', user?.id)
         setUserId(user?.id);
         setUserDetails();
     }, [])
 
-    const setUserDetails = async() => {
-        const {data: user} = await GET(`user-management-service/user/${userId}`);
+    useEffect(() => {
+        console.log('inside the func call useeffect', user?.id);
+        setUserDetails();
+    }, [userId])
+
+    const setUserDetails = async () => {
+        const { data: user } = await GET(`user-management-service/user/${userId}`);
         setCurrentUserDetails(user);
+        console.log('users', user)
     }
-    return(
+    console.log('currentUserDetails', currentUserDetails, currentUserDetails?.lastLogin);
+
+    return (
         <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
             <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                <label for="file-upload">
-                    <img src={DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
-                </label>
-                <input id="file-upload" type="file"/>
+                <Link to={'/profile'} className={style.noFontStyle}>
+                    <label for="file-upload">
+                        <img src={updateProfileData ? updateProfileData?.profilePic?.file?.fileURL : currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={`${style.userLogo} ${style.cursorPointer}`} />
+                    </label>
+                </Link>
+                <input id="file-upload" type="file" />
                 <div className={style.marginLeft20}>
                     <div className={style.userNameStyle}>
-                     Hi, {user?.userName}
+                        Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
                     </div>
                     <div className={style.loginStatus}>
-                        last login {format(new Date(currentUserDetails?.lastLogin || new Date()), 'MMM d,yy h:mm a')}
+                        last login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), 'America/New_York', 'MMM d, yy h:mm zzz')}
                     </div>
                 </div>
-                <img src={ChevronRight} className={style.chevronRightStyle}/>
+                <img src={ChevronRight} className={style.chevronRightStyle} onClick={() => getIsExpanded(false)} />
             </div>
         </div>
     )

@@ -526,7 +526,7 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                 </div>
                                             </div>
                                         )} */}
-                                        <div className={`${style.resolutionProgressCard} ${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop20}`} onClick={()=> setShowFeedbackTicketResolutionLog(true)}>
+                                        <div className={`${style.resolutionProgressCard} ${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop20} ${style.cursorPointer}`} onClick={()=> setShowFeedbackTicketResolutionLog(true)}>
                                             <div className={`${style.resolutionProgressTextStyle} ${style.marginLeft20}`}>Track Resolution Progress</div>
 
                                         </div>
@@ -588,9 +588,9 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                 </div>
             </div>
         </Dialog>
-        {/* {showFeedbackTicketResolutionLog && (
+        {showFeedbackTicketResolutionLog && (
             <FeedbackTicketResolutionLog getShowFeedbackTicketResolutionLog={getShowFeedbackTicketResolutionLog} />
-        )} */}
+        )}
         </>
     )
 }

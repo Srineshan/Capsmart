@@ -1,53 +1,29 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { InputGroup, RadioGroup, Radio, Tag, TagInput } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
+import { Tag, TagInput } from '@blueprintjs/core';
 import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import FormGroup from '@mui/material/FormGroup';
+import FormControl from '@mui/material/FormControl';
 import { FormatPhoneNumber } from './../../utils/formatting';
-import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Typography from '@mui/material/Typography';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
-import Checkbox from '@mui/material/Checkbox';
+import { useTheme } from '@mui/material/styles';
 import { POST, GET, PUT, TenantID } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import SuffixList from './../../Components/SuffixList';
 import ProviderTypeList from './../../Components/ProviderTypeList';
 import FunctionalTitleList from './../../Components/FunctionalTitleList';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
 
-function getStyles(role, personName, theme) {
-  return {
-    fontWeight:
-      personName.indexOf(role) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
-
-const switchTheme = createTheme({
-  palette: {
-    primary: {
-      main: '#7165E3',
-    },
-  },
-});
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
-const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, getSelectedField, getShowAlert }) => {
+const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, contractId, contractType, contractName, checkFieldAndPopAlert, getShowAlert, isEditable, getTabDataStatus }) => {
   const testContractId = contractId;
   const [user, setUsers] = useState([]);
   const [userName, setUserName] = useState('');
@@ -67,9 +43,12 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const [contractorNameSuffix, setContractorNameSuffix] = useState({ id: '', suffix: '' });
   const [contractorEmail, setContractorEmail] = useState('');
   const [contractorPhone, setContractorPhone] = useState(0);
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [zipCode, setZipCode] = useState('');
+  const [address, setAddress] = useState({
+    addressLine: '',
+    city: '',
+    state: '',
+    zipcode: ''
+  })
   const [siteLevelTitle, setSiteLevelTitle] = useState({ title: '', id: '' });
   const [departmentLevelDepartment, setDepartmentLevelDepartment] = useState('');
   const [departmentLevelTitle, setDepartmentLevelTitle] = useState({ title: '', id: '' });
@@ -89,6 +68,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const [contracts, setContracts] = useState([]);
   const [allowPersonalMail, setAllowPersonalMail] = useState(false);
   const [mobileNA, setMobileNA] = useState(false);
+  const [continueLoading, setContinueLoading] = useState(false);
+  const [ssoId, setSsoId] = useState({ id: '' });
 
   useEffect(() => {
     getRoles();
@@ -114,54 +95,69 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       setContractorMiddleName(userProviderData?.name?.middleName);
       setContractorPhone(userProviderData?.communication?.mobileNumber);
       setContractorEmail(userProviderData?.email?.officialEmail);
-      setCity(userProviderData?.address?.city);
-      setState(userProviderData?.address?.state);
-      setZipCode(userProviderData?.address?.zipcode);
+      setAddress(userProviderData?.address);
       setSelectedRoles(userProviderData?.roles || []);
       setContracts(userProviderData?.contracts);
       let contractData = userProviderData?.contracts?.filter(data => data?.id === contractId)?.map(data => data)[0];
       setSiteList(contractData?.sites?.sites ? contractData?.sites?.sites : []);
       setSiteLevel(contractData?.siteLevelResponsible);
       setDepartmentLevel(contractData?.departmentLevelResponsible);
-      setSites(contractData?.sites?.sites || []);
+      let siteTemp = [];
+      contractData?.sites?.sites?.map(site => {
+        let deptTemp = [];
+        site?.departmentList?.departments?.map(dept => {
+          deptTemp.push({ id: dept?.id, name: dept?.departmentName?.name, title: dept?.departmentResponsibility?.title || '', title_id: dept?.departmentResponsibility?.id || '' })
+        })
+        siteTemp.push({ id: site?.id, name: site?.siteName?.siteName, title: site?.siteResponsibility?.title, title_id: site?.siteResponsibility?.id, department: deptTemp })
+      })
+      setSites(siteTemp || []);
       setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
       setMobileNA(userProviderData?.communication?.mobileNumberNotApplicable);
+      setSsoId(userProviderData?.ssoId);
     } else {
       getSites();
     }
-  }, [contractId, userProviderData, isUserPresent])
+  }, [contractId, userProviderData, isUserPresent, user])
 
   useEffect(() => {
     getTitleData();
-  }, [siteList])
+  }, [siteList?.length, siteList, userProviderData, isUserPresent])
 
   const getTitleData = () => {
+    console.log('inside titledata', siteList, siteTitleValues, departmentTitleValues);
     let temp = [];
-    let siteValue = siteTitleValues;
-    let deptValue = departmentTitleValues;
+    let siteValue = siteTitleValues || [];
+    let deptValue = departmentTitleValues || [];
+    console.log('above values', deptValue, siteValue);
     siteList?.map(data => {
       let dept = [];
       data?.departmentList?.departments?.map(deptData => {
         dept.push({ id: deptData?.id, name: deptData?.departmentName?.name, title: deptData?.departmentResponsibility?.title || '', title_id: deptData?.departmentResponsibility?.id || '' });
         if (deptData?.departmentResponsibility?.title !== '' && deptData?.departmentResponsibility?.title !== undefined) {
-          let valueString = `${data?.siteName?.siteName} - ${deptData?.departmentName?.name} - ${deptData?.departmentResponsibility?.title}`
+          let valueString = `${data?.siteName?.siteName} -- ${deptData?.departmentName?.name} -- ${deptData?.departmentResponsibility?.title}`
           if (!deptValue.includes(valueString)) {
             deptValue.push(valueString);
+            console.log('deptvalue', valueString)
           }
         }
       })
       temp.push({ id: data?.id, name: data?.siteName?.siteName, title: data?.siteResponsibility?.title || '', title_id: data?.siteResponsibility?.id, department: dept });
       if (data?.siteResponsibility?.title !== '' && data?.siteResponsibility?.title !== undefined) {
-        let valueString = `${data?.siteName?.siteName} - ${data?.siteResponsibility?.title}`;
+        let valueString = `${data?.siteName?.siteName} -- ${data?.siteResponsibility?.title}`;
         if (!siteValue.includes(valueString)) {
           siteValue.push(valueString);
+          console.log('siteValue', valueString)
         }
       }
     })
+    console.log('under site title value', siteValue, deptValue);
     setSites(temp);
     setSiteTitleValues(siteValue);
     setDepartmentTitleValues(deptValue);
   }
+
+  console.log('siteList', siteList);
+  console.log('sites', sites);
 
   const getUserData = async () => {
     if (contractId !== '' && contractId !== undefined) {
@@ -186,11 +182,42 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const getSites = async () => {
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
-    let sites = contractDetail?.site?.sites;
-    if (sites && siteList?.length === 0) {
-      setSiteList(sites);
-      getTitleData();
+    let sitesValue = contractDetail?.site?.sites;
+    if (sitesValue && siteList?.length === 0) {
+      setSiteList(sitesValue);
+      let siteTemp = [];
+      sitesValue?.map(site => {
+        let deptTemp = [];
+        site?.departmentList?.departments?.map(dept => {
+          deptTemp.push({ id: dept?.id, name: dept?.departmentName?.name, title: dept?.departmentResponsibility?.title || '', title_id: dept?.departmentResponsibility?.id || '' })
+        })
+        siteTemp.push({ id: site?.id, name: site?.siteName?.siteName, title: site?.siteResponsibility?.title, title_id: site?.siteResponsibility?.id, department: deptTemp })
+      })
+      setSites(siteTemp || []);
+      // getTitleData();
     }
+  }
+
+  const deptTitleReset = () => {
+    let temp = sites;
+    temp?.map(site => {
+      site?.department?.map(dept => {
+        dept.title = '';
+        dept.title_id = '';
+      })
+    })
+    setSites(temp);
+    setDepartmentTitleValues([]);
+  }
+
+  const siteTitleReset = () => {
+    let temp = sites;
+    temp?.map(site => {
+      site.title = '';
+      site.title_id = '';
+    })
+    setSites(temp);
+    setSiteTitleValues([]);
   }
 
   const getTagProps = (_v, index) => ({
@@ -202,7 +229,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} - ${siteLevelTitle?.title}`]);
+    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} -- ${siteLevelTitle?.title}`]);
     let temp = sites;
     temp?.filter(data => data?.id === siteLevelSite?.id)?.map(data => {
       data.title = siteLevelTitle?.title;
@@ -218,7 +245,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    let valueString = `${departmentLevelSite?.name} - ${departmentLevelDepartment?.name} - ${departmentLevelTitle?.title}`
+    let valueString = `${departmentLevelSite?.name} -- ${departmentLevelDepartment?.name} -- ${departmentLevelTitle?.title}`
     setDepartmentTitleValues([...departmentTitleValues, valueString]);
     let temp = sites;
     let siteDepartment = sites?.filter(data => data?.id === departmentLevelSite?.id)?.map(data => data?.department)[0];
@@ -242,6 +269,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const getSiteData = () => {
     let siteData = [];
     sites?.map(data => {
+      console.log('site data', sites, 'data', data);
       let deptData = [];
       data?.department?.map(dept => {
         deptData.push({
@@ -285,7 +313,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         "contractName": {
           "contractName": contractName
         },
-        "roles": [],
+        "roles": selectedRoles,
         "sites": {
           "sites": getSiteData()
         },
@@ -312,41 +340,41 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   }
 
   const handleSave = async (buttonType) => {
+    setContinueLoading(true);
     let roles = userProviderData?.roles || [];
     selectedRoles?.map(data => {
       if (!roles?.map(role => role?.id).includes(data?.id)) {
         roles.push(data);
       }
     });
-    let sites = userProviderData?.sites?.sites || [];
-    let selectedSite = getSiteData();
-    selectedSite?.map(data => {
-      if (!sites?.map(site => site?.id).includes(data?.id)) {
-        sites.push(data);
-      }
-    });
     if (!npinMissing && !npinNotApplicable && npin === '') {
       ErrorToaster('NPIN is Mandatory if not Missing/NA');
+      setContinueLoading(false);
       return;
     }
     if (contractorFirstName === '') {
       ErrorToaster('First Name is Mandatory');
+      setContinueLoading(false);
       return;
     }
     if (contractorLastName === '') {
       ErrorToaster('Last Name is Mandatory');
+      setContinueLoading(false);
       return;
     }
     if (!contractorEmail?.includes('@') || !contractorEmail?.includes('.')) {
       ErrorToaster('Enter a Valid Email');
+      setContinueLoading(false);
       return;
     }
     if (!mobileNA && contractorPhone?.length !== 14) {
       ErrorToaster('Enter Valid Phone Number');
+      setContinueLoading(false);
       return;
     }
     if (roles?.length === 0) {
       ErrorToaster('Select User Role');
+      setContinueLoading(false);
       return;
     }
     const data = {
@@ -363,6 +391,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       "email": {
         "officialEmail": contractorEmail
       },
+      "ssoId": ssoId,
       ...(!isUserPresent && {
         "password": {
           "password": "string"
@@ -375,16 +404,12 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         "mobileNumberNotApplicable": mobileNA,
       },
       "roles": roles,
-      "address": {
-        "city": city,
-        "state": state,
-        "zipcode": zipCode
-      },
+      "address": address,
       "tenant": {
         "tenantId": TenantID
       },
       "sites": {
-        "sites": sites
+        "sites": getSiteData(),
       },
       "serviceProviderType": serviceProviderType,
       "npin": {
@@ -392,8 +417,9 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         "notApplicable": npinNotApplicable,
         "npin": npin
       },
-      "personalEmailAddressAllowed":allowPersonalMail,
+      "personalEmailAddressAllowed": allowPersonalMail,
     }
+    console.log('final data', data);
     if (!isUserPresent) {
       await POST('user-management-service/user/register', JSON.stringify(data))
         .then(response => {
@@ -412,12 +438,14 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           ErrorToaster('Unexpected Error');
         });
     }
-    if(buttonType==='Continue'){
+    setContinueLoading(false);
+    if (buttonType === 'Continue') {
       getViewPage3(true);
       getCurrentPage('Contractor Business Entity')
-    }else{
+    } else {
       getShowAlert(true);
     }
+    getTabDataStatus();
   }
 
   const handleRoles = (value) => {
@@ -443,11 +471,12 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     });
 
   const getRoles = async () => {
-    const { data: roles } = await GET('user-management-service/roles?roleType=APP');
+    let role = ['APP', 'APP_SYSTEM'];
+    const { data: roles } = await GET(`user-management-service/roles?roleType=${role}`);
     setRoles(roles);
     let temp = selectedRoles;
-    if(!selectedRoles?.map(data=>data?.roleName)?.includes('Activity Logger')){
-      temp.push(roles?.filter(role=>role?.roleName === 'Activity Logger')?.map(data=>data)[0]);
+    if (!selectedRoles?.map(data => data?.roleName)?.includes('Activity Logger')) {
+      temp.push(roles?.filter(role => role?.roleName === 'Activity Logger')?.map(data => data)[0]);
       setSelectedRoles(temp);
     }
   };
@@ -459,7 +488,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   }
 
   const handleDeptRemove = (values, index) => {
-    let data = values?.split(' - ');
+    let data = values?.split(' -- ');
     let site = data?.[0];
     let dept = data?.[1];
     let title = data?.[2];
@@ -477,7 +506,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   }
 
   const handleSiteRemove = (values, index) => {
-    let data = values?.split(' - ');
+    let data = values?.split(' -- ');
     let site = data?.[0];
     let title = data?.[1];
     let temp = sites;
@@ -489,17 +518,6 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     setSiteTitleValues(siteTitleValues?.filter((data, indexVal) => index !== indexVal)?.map(data => data));
   }
 
-  const resetSiteLevel = (value) => {
-    if (!value) {
-      getTitleData();
-    }
-  }
-
-  const resetDeptvalue = (value) => {
-    if (!value) {
-      getTitleData();
-    }
-  }
 
   const items = useMemo(
     () =>
@@ -525,77 +543,67 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     setContractorEmail('')
   }
 
+  console.log('dept', departmentTitleValues, 'site', siteTitleValues);
+
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div>
-          <div className={`${style.extentionGrid}`} onFocus={() => { getSelectedField('Service Provider Type') }}>
-            <div className={style.extentionLableStyle}>Service Provider Type*</div>
-            <div className={style.grid3}>
-              <ProviderTypeList value={serviceProviderType?.id} onChangeFunc={(id, value) => setServiceProviderType({ id: id, contractedServiceProviderType: value })} className={[style.fullWidth]} />
-            </div>
+          <div className={`${style.extentionGrid}`} onFocus={() => { checkFieldAndPopAlert(serviceProviderType?.id, 'Service Provider Type') }}>
+            <CommonLabel value='Service Provider Type*' />
+            {/* <div className={style.grid2}> */}
+            <ProviderTypeList value={serviceProviderType?.id} onChangeFunc={(id, value) => setServiceProviderType({ id: id, contractedServiceProviderType: value })} className={[style.fullWidth]} />
+            {/* </div> */}
           </div>
-          <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { getSelectedField('NPIN') }}>
-            <div className={style.extentionLableStyle}>NPIN*</div>
+          <div className={`${style.extentionGrid} ${style.marginTop20}`} onFocus={() => { checkFieldAndPopAlert(npin, 'NPIN') }}>
+            <CommonLabel value='NPIN*' />
             <div className={style.grid3}>
-              <InputGroup className={style.fullWidth}
+              <CommonInputField className={style.fullWidth}
                 placeholder="NPIN"
                 value={npin}
                 type="tel"
                 maxLength={10}
                 disabled={npinMissing || npinNotApplicable}
-                onChange={(e) =>e.target.value >= 0 && setNpin(e.target.value)} />
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value="Missing" checked={npinMissing} onChange={(e) => {setNpinMissing(e.target.checked);setNpin('');setNpinNotApplicable(false);}} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
-              </FormGroup>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={npinNotApplicable} onChange={(e) => {setNpinNotApplicable(e.target.checked);setNpin('');setNpinMissing(false);}} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
-              </FormGroup>
+                onChange={(e) => e.target.value >= 0 && setNpin(e.target.value)} />
+              <CommonCheckBox value="Missing" checked={npinMissing} onChange={(e) => { setNpinMissing(e.target.checked); setNpin(''); setNpinNotApplicable(false); }} label="Missing" />
+              <CommonCheckBox value="NA" checked={npinNotApplicable} onChange={(e) => { setNpinNotApplicable(e.target.checked); setNpin(''); setNpinMissing(false); }} label="NA" />
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Contractor Name*</div>
+            <CommonLabel value='Contractor Name*' />
             <div className={style.grid3}>
-              <InputGroup className={style.fullWidth} placeholder="First"
+              <CommonInputField className={style.fullWidth} placeholder="First"
                 value={contractorFirstName}
                 maxLength={30}
-                onFocus={() => { getSelectedField('Contractor First Name') }}
+                onFocus={() => { checkFieldAndPopAlert(contractorFirstName, 'Contractor First Name') }}
                 onChange={(e) => setContractorFirstName(e.target.value)} />
-              <InputGroup className={style.fullWidth} placeholder="Middle"
+              <CommonInputField className={style.fullWidth} placeholder="Middle"
                 value={contractorMiddleName}
                 maxLength={30}
-                onFocus={() => { getSelectedField('Contractor Middle Initials') }}
+                onFocus={() => { checkFieldAndPopAlert(contractorMiddleName, 'Contractor Middle Initials') }}
                 onChange={(e) => setContractorMiddleName(e.target.value)} />
-              <InputGroup className={style.fullWidth} placeholder="Last"
+              <CommonInputField className={style.fullWidth} placeholder="Last"
                 value={contractorLastName}
                 maxLength={30}
-                onFocus={() => { getSelectedField('Contractor Last Name') }}
+                onFocus={() => { checkFieldAndPopAlert(contractorLastName, 'Contractor Last Name') }}
                 onChange={(e) => setContractorLastName(e.target.value)} />
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
-            onFocus={() => { getSelectedField('Suffix') }}>
-            <div className={style.extentionLableStyle}>Suffix*</div>
+            onFocus={() => { checkFieldAndPopAlert(contractorNameSuffix?.id, 'Suffix') }}>
+            <CommonLabel value='Suffix*' />
             <div className={style.grid3}>
               <SuffixList value={contractorNameSuffix?.id} onChangeFunc={(id, value) => setContractorNameSuffix({ ...contractorNameSuffix, id: id, suffix: value })} className={[style.fullWidth]} />
             </div>
           </div>
 
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Allow Use of Alternate/ Personal Email Address</div>
+          <div className={`${style.extentionGrid} ${style.marginTop20}`} >
+            <CommonLabel value='Allow Use of Alternate/ Personal Email Address' />
             <div className={style.displayInRow}>
-              <ThemeProvider theme={switchTheme}>
-                <FormControlLabel
-                  control={
-                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={changePersonalMail}/>
-                  }
-                  className={`${style.switchFontStyle}`}
-                  label={allowPersonalMail ? 'YES' : 'NO'}
-                />
-              </ThemeProvider>
+              <CommonSwitch className={`${style.flexLeft} ${style.switchFontStyle}`} label={allowPersonalMail ? 'YES' : 'NO'} checked={allowPersonalMail} onChange={changePersonalMail} />
               {allowPersonalMail &&
-                <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
-                  <InputGroup placeholder="Enter Personal email" className={`${style.fullWidth}`} value={contractorEmail} onChange={(e)=>setContractorEmail(e.target.value)}/>
+                <div className={`${style.fullWidth} ${style.verticalAlignCenter}`} onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
+                  <CommonInputField placeholder="Enter Personal email" className={`${style.fullWidth}`} value={contractorEmail} onChange={(e) => setContractorEmail(e.target.value)} />
                 </div>
               }
 
@@ -603,10 +611,10 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           </div>
           {
             !allowPersonalMail && <div className={`${style.extentionGrid} ${style.marginTop20}`}
-              onFocus={() => { getSelectedField('Email Contractor id') }}>
-              <div className={style.extentionLableStyle}>Email Contractor id*</div>
+              onFocus={() => { checkFieldAndPopAlert(contractorEmail, 'Email Contractor id') }}>
+              <CommonLabel value='Contract Entity Email*' />
               <div className={style.displayInRow}>
-                <InputGroup placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
+                <CommonInputField placeholder="Enter entity specific email" className={`${style.entityFieldWidth}`}
                   value={contractorEmail}
                   maxLength={30}
                   onChange={(e) => setContractorEmail(e.target.value)} />
@@ -614,78 +622,76 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
             </div>
           }
 
+          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+            <CommonLabel value='SSO ID*' />
+            <div className={style.displayInRow}>
+              <CommonInputField placeholder="Enter SSO ID" className={`${style.entityFieldWidth}`}
+                value={ssoId?.id}
+                maxLength={30}
+                onChange={(e) => setSsoId({ ...ssoId, id: e.target.value })} />
+            </div>
+          </div>
+
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}
-            onFocus={() => { getSelectedField('Cell Phone') }}>
-            <div className={style.extentionLableStyle}>Cell Phone*</div>
+            onFocus={() => { checkFieldAndPopAlert(contractorPhone, 'Cell Phone') }}>
+            <CommonLabel value='Cell Phone*' />
             <div className={style.twoCol}>
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                 <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
-                <InputGroup placeholder="Numeric" value={contractorPhone} disabled={mobileNA} maxLength={15}
-                  onChange={(e) => {setContractorPhone(FormatPhoneNumber(e.target.value)); setMobileNA(false);}} className={`${style.fullWidth}`} />
+                <CommonInputField placeholder="Numeric" value={contractorPhone} disabled={mobileNA} maxLength={15}
+                  onChange={(e) => { setContractorPhone(FormatPhoneNumber(e.target.value)); setMobileNA(false); }} className={`${style.fullWidth}`} />
               </div>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={mobileNA} onChange={(e)=>{setMobileNA(e.target.checked);if(e.target.checked){setContractorPhone('')}}}/>} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
-              </FormGroup>
+              <CommonCheckBox value="NA" checked={mobileNA} onChange={(e) => { setMobileNA(e.target.checked); if (e.target.checked) { setContractorPhone('') } }} label="NA" />
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Address*</div>
-            <div className={style.grid3}>
-              <InputGroup className={style.fullWidth} placeholder="City"
-                value={city}
-                maxLength={50}
-                onFocus={() => { getSelectedField('Address City') }}
-                onChange={(e) => setCity(e.target.value)} />
-              <InputGroup className={style.fullWidth} placeholder="State"
-                value={state}
-                maxLength={20}
-                onFocus={() => { getSelectedField('Address State') }}
-                onChange={(e) => setState(e.target.value)} />
-              <InputGroup className={style.fullWidth} placeholder="Zipcode"
-                value={zipCode}
-                maxLength={5}
-                onFocus={() => { getSelectedField('Address Zip Code') }}
-                onChange={(e) => setZipCode(e.target.value)} />
+            <CommonLabel value='Address' />
+            <div>
+              <CommonInputField className={style.fullWidth} placeholder="Street"
+                value={address?.addressLine}
+                onChange={(e) => setAddress({ ...address, addressLine: e.target.value })}
+                onFocus={() => { checkFieldAndPopAlert(address?.addressLine, 'Address Street') }} />
+              <div className={`${style.grid3} ${style.marginTop20}`}>
+                <CommonInputField className={style.fullWidth} placeholder="City"
+                  value={address?.city}
+                  maxLength={50}
+                  onFocus={() => { checkFieldAndPopAlert(address?.city, 'Address City') }}
+                  onChange={(e) => setAddress({ ...address, city: e.target.value })} />
+                <CommonInputField className={style.fullWidth} placeholder="State"
+                  value={address?.state}
+                  maxLength={20}
+                  onFocus={() => { checkFieldAndPopAlert(address?.state, 'Address State') }}
+                  onChange={(e) => setAddress({ ...address, state: e.target.value })} />
+                <CommonInputField className={style.fullWidth} placeholder="Zipcode"
+                  value={address?.zipcode}
+                  maxLength={5}
+                  onFocus={() => { checkFieldAndPopAlert(address?.zipcode, 'Address Zip Code') }}
+                  onChange={(e) => setAddress({ ...address, zipcode: e.target.value })} />
+              </div>
             </div>
           </div>
         </div>
 
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { getSelectedField('Site Level Responsibility') }}>
-          <div className={style.extentionLableStyle}>Site Level Responsibility*</div>
+          onFocus={() => { checkFieldAndPopAlert(siteLevel ? siteTitleValues?.length : true, 'Site Level Responsibility') }}>
+          <CommonLabel value='Site Level Responsibility*' />
           <div>
             <div className={style.flexLeft}>
-              <ThemeProvider theme={switchTheme}>
-                <FormControlLabel
-                  control={
-                    <Switch checked={siteLevel} className={`${style.flexLeft}`} color='primary' onChange={() => { setSiteLevel(!siteLevel); resetSiteLevel(!siteLevel); }} />
-                  }
-                  className={`${style.switchFontStyle} ${style.marginTop}`}
-                  label={siteLevel ? 'YES' : "NO"}
-                />
-              </ThemeProvider>
+              <CommonSwitch checked={siteLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} label={siteLevel ? 'YES' : "NO"} onChange={() => { setSiteLevel(!siteLevel); siteTitleReset(); }} />
             </div>
             {siteLevel && (
-              <div className={`${style.siteLevelBoxStyle}`}>
+              <div className={`${style.siteLevelBoxStyle}`} onFocus={() => checkFieldAndPopAlert(siteTitleValues?.length, 'Site Level Responsibility')}>
                 <div className={`${style.siteLevelGrid}`}>
                   <div className={style.marginTop}>Site*</div>
-                  <select
-                    name="class"
-                    id="Class"
-                    value={siteLevelSite?.id}
+                  <CommonSelectField value={siteLevelSite?.id}
+                    className={`${style.marginLeft20} ${style.weekSelectStyle}`}
                     onChange={(e) => setSiteLevelSite({ id: e.target.value, name: sites?.filter(data => data?.id === e.target.value)?.map(data => data?.name)[0] })}
-                    className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                    <option value="Select Site" >
-                      Select Site
-                    </option>
-                    {sites?.map((data, index) => (
-                      <option key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>
-                        {data?.name}
-                      </option>
-                    ))}
-                  </select>
+                    firstOptionLabel={''} firstOptionValue={''}
+                    valueList={siteList?.map(data => data?.id)}
+                    labelList={siteList?.map(data => data?.siteName?.siteName)}
+                    disabledList={sites?.map(data => (data?.title !== '' && data?.title !== null) ? true : false)} />
                 </div>
                 {/* )} */}
                 <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
@@ -708,61 +714,36 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
           </div>
         </div>
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { getSelectedField('Department Level Responsibility') }}>
-          <div className={style.extentionLableStyle}>Department Level Responsibility*</div>
+          onFocus={() => { checkFieldAndPopAlert(departmentLevel ? departmentTitleValues?.length : true, 'Department Level Responsibility') }}>
+          <CommonLabel value='Department Level Responsibility*' />
           <div>
             <div className={style.flexLeft}>
-              <ThemeProvider theme={switchTheme}>
-                <FormControlLabel
-                  control={
-                    <Switch checked={departmentLevel} className={`${style.flexLeft}`} color='primary' onChange={() => { setDepartmentLevel(!departmentLevel); resetDeptvalue(!departmentLevel) }} />
-                  }
-                  className={`${style.switchFontStyle} ${style.marginTop}`}
-                  label={departmentLevel ? 'YES' : "NO"}
-                />
-              </ThemeProvider>
+              <CommonSwitch checked={departmentLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} label={departmentLevel ? 'YES' : "NO"} onChange={() => { setDepartmentLevel(!departmentLevel); deptTitleReset(); }} />
             </div>
             <div>
               {departmentLevel && (
-                <div className={`${style.departmentLevelBoxStyle}`}>
+                <div className={`${style.departmentLevelBoxStyle}`} onFocus={() => { checkFieldAndPopAlert(departmentTitleValues?.length, 'Department Level Responsibility') }}>
                   {/* {selectedContract === "Multiple Contractor" && ( */}
                   <div className={`${style.siteLevelGrid}`}>
                     <div className={style.marginTop}>Site*</div>
-                    <select
-                      name="class"
-                      id="Class"
-                      value={departmentLevelSite?.id}
+                    <CommonSelectField value={departmentLevelSite?.id}
                       onChange={(e) => handleSelectedDepartmentSite(e.target.value)}
-                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                      <option value="Select Site" >
-                        Select Site
-                      </option>
-                      {sites?.map((data, index) => (
-                        <option key={index} value={data?.id}>
-                          {data?.name}
-                        </option>
-                      ))}
-                    </select>
+                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                      firstOptionLabel={''} firstOptionValue={''}
+                      valueList={sites?.map(data => data?.id)}
+                      labelList={sites?.map(data => data?.name)}
+                      disabledList={sites?.map(data => false)} />
                   </div>
                   {/* )} */}
                   <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                     <div className={style.marginTop}>Department*</div>
-                    <select
-                      name="class"
-                      id="Class"
-                      value={departmentLevelDepartment?.id}
+                    <CommonSelectField value={departmentLevelDepartment?.id}
                       onChange={(e) => onSelectDepartment(e.target.value)}
-                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                      <option value="Select Department" >
-                        Select Department
-                      </option>
-                      {selectedSitesDept?.map((data, index) =>
-                        <option key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>
-                          {data?.name}
-                        </option>
-                      )
-                      }
-                    </select>
+                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                      firstOptionLabel={'Select Department'} firstOptionValue={'Select Department'}
+                      valueList={selectedSitesDept?.map(data => data?.id)}
+                      labelList={selectedSitesDept?.map(data => data?.name)}
+                      disabledList={selectedSitesDept?.map(data => data?.title !== '' ? true : false)} />
                   </div>
                   <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                     <div className={style.marginTop}>Title*</div>
@@ -786,38 +767,32 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         </div>
 
         <div className={`${style.extentionGrid} ${style.marginTop20}`}
-          onFocus={() => { getSelectedField('Assign Contractor With App User Role') }}>
-          <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
-          <div className={`${style.reduce10Left} ${style.marginRight}`}>
-            <select
-              name="class"
-              id="Class"
-              onChange={(e) => handleRoles(e.target.value)}
-              className={`${style.fullWidth} ${style.marginLeft20} `}>
-              <option value="0" >
-                Select Role-multi select
-              </option>
-              {roles?.map((data, index) => (
-                <option key={`${data}-${index}`} value={data?.roleName} >
-                  {data?.roleName}
-                </option>
-              ))}
-            </select>
-            <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+          onFocus={() => { checkFieldAndPopAlert(true, 'Assign Contractor With App User Role') }}>
+          <CommonLabel value='Assign Contractor With App User Role*' />
+          <div>
+            <CommonSelectField onChange={(e) => handleRoles(e.target.value)}
+              className={`${style.fullWidth}`}
+              firstOptionLabel={'Select Role-multi select'} firstOptionValue={'0'}
+              valueList={roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+              labelList={roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+              disabledList={roles?.map(data => false)} />
+            <div className={`${style.marginTop20}`}>
               {rolesTags}
             </div>
           </div>
         </div>
       </div>
-      <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-        <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
-        <div>
-          <button className={style.newContractOutlinedButton} onClick={() => handleSave('Save In Progress')}>SAVE IN-PROGRESS</button>
-          <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { handleSave('Continue')}}>CONTINUE</button>
+      {
+        isEditable &&
+        <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+          <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
+          <div>
+            <button className={`${style.newContractOutlinedButton}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={() => !continueLoading && handleSave('Save In Progress')}>SAVE IN-PROGRESS</button>
+            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}  ${style.cursorPointer} ${continueLoading ? style.disabled : ''}`} onClick={() => { !continueLoading && handleSave('Continue') }}>CONTINUE</button>
+          </div>
         </div>
-      </div>
-
-    </div>
+      }
+    </div >
   )
 }
 

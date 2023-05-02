@@ -8,10 +8,129 @@ import { Checkbox } from '@material-ui/core';
 import SideBar from '../../Components/Sidebar';
 import SearchBar from './../../Components/SearchBar';
 import Navbar from '../../Components/Navbar';
+import Table from '../../Components/TableDesign';
 
-const TerminatedCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
-    return(
-        <Fragment>
+const TerminatedCustomers = ({ getSelectedCustomer, getAddContract, entityList, viewPendingActivation, viewOnHold, viewTerminated }) => {
+    const pendingActivationTableHeaderValues = ['', 'CUSTOMER', 'TYPE OF CUSTOMER', 'SUBSCRIPTION', 'CITY', 'STATE', 'PENDING ACTIVATION DAYS', 'PARTNER', 'ACTION'];
+    const onHoldTableHeaderValues = ['', 'CUSTOMER', 'TYPE OF CUSTOMER', 'CITY', 'STATE', 'SUBSCRIPTION', 'ON HOLD REASON', 'ON HOLD DAYS', 'PARTNER', 'ACTION'];
+    const terminatedTableHeaderValues = ['CUSTOMER', 'TYPE OF CUSTOMER', 'CITY', 'STATE', 'SUBSCRIPTION', 'TERMINATION REASON', 'TERMINATION DATE', 'TERMINATED BY', 'PARTNER'];
+    const tableHeaderValues = viewPendingActivation ? pendingActivationTableHeaderValues : viewOnHold ? onHoldTableHeaderValues : terminatedTableHeaderValues;
+
+    let customer = [];
+    let customerType = [];
+    let subscription = [];
+    let city = [];
+    let state = [];
+    let dateCreated = [];
+    let partner = [];
+    let lastUpdated = [];
+    let setupDelay = [];
+    let lastUpdatedBy = [];
+    let dot = [];
+    let dotTooltipValues = [];
+    let action = [];
+    let trialStartDate = [];
+    let trialExpiringIn = [];
+    let pendingActivationDays = [];
+    let onHoldReason = [];
+    let onHoldDays = [];
+    let terminationReason = [];
+    let terminationDate = [];
+    let terminatedBy = [];
+
+    const getTableValues = () => {
+        customer = [];
+        customerType = [];
+        city = [];
+        state = [];
+        dateCreated = [];
+        subscription = [];
+        partner = [];
+        lastUpdated = [];
+        setupDelay = [];
+        lastUpdatedBy = [];
+        dot = [];
+        dotTooltipValues = [];
+        action = [];
+        trialStartDate = [];
+        trialExpiringIn = [];
+        pendingActivationDays = [];
+        onHoldReason = [];
+        onHoldDays = [];
+        terminationReason = [];
+        terminationDate = [];
+        terminatedBy = [];
+
+        entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map((data, index) => {
+            dot.push('green');
+            dotTooltipValues.push('Active');
+            customer.push(data?.entityName?.entityName || '-');
+            customerType.push(data?.entityType?.type || '-');
+            city.push(data?.mailingAddress?.city || '-');
+            state.push(data?.mailingAddress?.state || '-');
+            dateCreated.push('-');
+            subscription.push(data?.subscriptionPlan?.subscriptionStatus || '-');
+            setupDelay.push('-');
+            lastUpdatedBy.push(data?.updatedBy?.name || '-');
+            partner.push(data?.partner?.partnerName || '-');
+            lastUpdated.push(data?.updatedDate || '-');
+            trialStartDate.push('-');
+            trialExpiringIn.push('-');
+            pendingActivationDays.push('-');
+            onHoldReason.push('-');
+            onHoldDays.push('-');
+            terminationReason.push('-');
+            terminationDate.push('-');
+            terminatedBy.push('-');
+            action.push(true);
+        })
+
+        return viewPendingActivation ? [
+            { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
+            { "type": "text", "value": customer, "onClickFunction": () => { } },
+            { "type": "text", "value": customerType, "onClickFunction": () => { } },
+            { "type": "text", "value": subscription, "onClickFunction": () => { } },
+            { "type": "text", "value": city, "onClickFunction": () => { } },
+            { "type": "text", "value": state, "onClickFunction": () => { } },
+            { "type": "text", "value": pendingActivationDays, "onClickFunction": () => { } },
+            { "type": "text", "value": partner, "onClickFunction": () => { } },
+            { "type": "action", "value": action },
+        ] : viewOnHold ? [
+            { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
+            { "type": "text", "value": customer, "onClickFunction": () => { } },
+            { "type": "text", "value": customerType, "onClickFunction": () => { } },
+            { "type": "text", "value": city, "onClickFunction": () => { } },
+            { "type": "text", "value": state, "onClickFunction": () => { } },
+            { "type": "text", "value": subscription, "onClickFunction": () => { } },
+            { "type": "text", "value": onHoldReason, "onClickFunction": () => { } },
+            { "type": "text", "value": onHoldDays, "onClickFunction": () => { } },
+            { "type": "text", "value": partner, "onClickFunction": () => { } },
+            { "type": "action", "value": action },
+        ] : [
+            { "type": "text", "value": customer, "onClickFunction": () => { } },
+            { "type": "text", "value": customerType, "onClickFunction": () => { } },
+            { "type": "text", "value": city, "onClickFunction": () => { } },
+            { "type": "text", "value": state, "onClickFunction": () => { } },
+            { "type": "text", "value": subscription, "onClickFunction": () => { } },
+            { "type": "text", "value": terminationReason, "onClickFunction": () => { } },
+            { "type": "text", "value": terminationDate, "onClickFunction": () => { } },
+            { "type": "text", "value": terminatedBy, "onClickFunction": () => { } },
+            { "type": "text", "value": partner, "onClickFunction": () => { } },
+        ];
+    }
+
+    const pendingActivationActionsData = [
+        { 'data': 'Delete', 'onClick': () => { }, 'requiredValue': 'boolean' },
+        { 'data': 'Mail', 'onClick': () => { }, 'requiredValue': 'id' },
+    ]
+
+    const onHoldActionsData = [
+        { 'data': 'Delete', 'onClick': () => { }, 'requiredValue': 'boolean' },
+        { 'data': 'Mail', 'onClick': () => { }, 'requiredValue': 'id' },
+    ]
+    return (
+        <>
+            {/* <Fragment>
             <Navbar />
             <div className={style.margin20}>
                 <div className={`${style.bigCardGrid2}`}>
@@ -29,7 +148,7 @@ const TerminatedCustomers = ({getSelectedCustomer, getAddContract, entityList}) 
                             <div className={`${style.cardStyle}`} onClick={() => getSelectedCustomer('ACTIVE CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>ACTIVE CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data=>data)?.length || 0}</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data => data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.red}>1 </span> RENEWAL PAST DUE</span>
                                         <span><span className={style.yellow}>1 </span> AUTO RENEWED</span>
@@ -40,7 +159,7 @@ const TerminatedCustomers = ({getSelectedCustomer, getAddContract, entityList}) 
                             <div className={style.cardStyle} onClick={() => getSelectedCustomer('IN-PROGRESS / TRIAL CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>IN-PROGRESS / TRIAL CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data=>data)?.length || 0}</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data => data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.green}>1 </span> ON TRIAL</span>
                                         <span><span className={style.yellow}>1 </span> OVER 30 DAYS</span>
@@ -69,81 +188,89 @@ const TerminatedCustomers = ({getSelectedCustomer, getAddContract, entityList}) 
                                     </div>
                                 </div>
                             </div>
+                        </div> */}
+            {/* <div className={style.marginTop20}> */}
+            {/* <div className={style.bigCardStyle}> */}
+            {/* <div className={style.spaceBetween}>
+                        <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginLeft30}`}>
+                            <p className={`${style.blue} ${style.activeContractsWidth}`}>LIST OFON-HOLD/ TERMINATED CUSTOMER</p>
                         </div>
-                        <div className={style.marginTop20}>
-                            <div className={style.bigCardStyle}>
-                                <div className={style.spaceBetween}>
-                                    <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginLeft30}`}>
-                                        <p className={`${style.blue} ${style.activeContractsWidth}`}>LIST OFON-HOLD/ TERMINATED CUSTOMER</p>
-                                    </div>
-                                    <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                        <SearchBar />
-                                        <img src={Envelope} alt="Envelope" className={style.smallIcons} />
-                                        <img src={Bell} alt="Bell" className={style.smallIcons} />
-                                        <img src={Filter} alt="Filter" className={style.filterIcon} />
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className={`${style.tableHeaderTerminatedCustomer} ${style.marginTop20}`}>
-                                        <Checkbox />
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>CUSTOMER</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>TYPE OF CUSTOMER</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>CITY</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>STATE</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>TYPE</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>REASON</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>LAST UPDATED/ TERMINATION DATE</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>LAST UPDATED BY</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>PARTNER</p>
-                                    </div>
-                                    <div className={`${style.tableDataTerminatedCustomer}`}>
-                                        <div className={`${style.displayInRow}`}>
-                                            <Checkbox />
-                                            <div className={`${style.red} ${style.redDotStyle} ${style.marginTop20}`}></div>
-                                        </div>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>lorem Ipsum</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Healthcare</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>lorem</p>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>NY</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>terminated</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Subscription Expired</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                    </div>
-                                    <div className={`${style.tableDataTerminatedCustomer}`}>
-                                        <div className={`${style.displayInRow}`}>
-                                            <Checkbox />
-                                            <div className={`${style.yellow} ${style.yellowDotStyle} ${style.marginTop20}`}></div>
-                                        </div>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>lorem Ipsum</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Healthcare</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>lorem</p>
-                                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>NY</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>terminated</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Subscription Expired</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                    </div>
-                                    <div className={style.spaceBetween}>
-                                        <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
-                                        <div className={style.displayInRow}>
-                                        <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                                        <img src={ChevronRight} className={style.roundChevron} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                            <SearchBar />
+                            <img src={Envelope} alt="Envelope" className={style.smallIcons} />
+                            <img src={Bell} alt="Bell" className={style.smallIcons} />
+                            <img src={Filter} alt="Filter" className={style.filterIcon} />
+                        </div>
+                    </div> */}
+            {/* <div>
+                    <div className={`${style.tableHeaderTerminatedCustomer} ${style.marginTop20}`}>
+                        <Checkbox />
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>CUSTOMER</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>TYPE OF CUSTOMER</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>CITY</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>STATE</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>TYPE</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>REASON</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>LAST UPDATED/ TERMINATION DATE</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>LAST UPDATED BY</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>PARTNER</p>
+                    </div>
+                    <div className={`${style.tableDataTerminatedCustomer}`}>
+                        <div className={`${style.displayInRow}`}>
+                            <Checkbox />
+                            <div className={`${style.red} ${style.redDotStyle} ${style.marginTop20}`}></div>
+                        </div>
+                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>lorem Ipsum</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>Healthcare</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>lorem</p>
+                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>NY</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>terminated</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>Subscription Expired</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
+                    </div>
+                    <div className={`${style.tableDataTerminatedCustomer}`}>
+                        <div className={`${style.displayInRow}`}>
+                            <Checkbox />
+                            <div className={`${style.yellow} ${style.yellowDotStyle} ${style.marginTop20}`}></div>
+                        </div>
+                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>lorem Ipsum</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>Healthcare</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>lorem</p>
+                        <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>NY</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>terminated</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>Subscription Expired</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
+                        <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
+                    </div>
+                    <div className={style.spaceBetween}>
+                        <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
+                        <div className={style.displayInRow}>
+                            <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                            <img src={ChevronRight} className={style.roundChevron} />
                         </div>
                     </div>
+                </div> */}
+            {/* </div> */}
+            {/* </div> */}
+            {/* </div>
                 </div>
                 <div className={style.spaceBetween}>
-                    <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                    <p className={style.poweredBy}>© TimeSmart.AI</p>
+                    <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+                    <p className={style.poweredBy}>© TimeSmartAI</p>
                 </div>
             </div>
-        </Fragment>
+        </Fragment> */}
+            <Table
+                tableHeaderValues={tableHeaderValues}
+                tableDataValues={getTableValues()}
+                tableData={entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')}
+                gridStyle={viewPendingActivation ? style.pendingActivationTableGrid : viewOnHold ? style.onHoldTableGrid : style.terminatedTableGrid}
+                actions={viewPendingActivation ? pendingActivationActionsData : onHoldActionsData}
+            />
+        </>
     )
 }
 

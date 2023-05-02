@@ -14,13 +14,14 @@ import FeedbackStepper7 from '../../images/feedbackStepper7.png';
 import FeedbackStepper8 from '../../images/feedbackStepper8.png';
 import FeedbackStepper9 from '../../images/feedbackStepper9.png';
 
-import {format} from 'date-fns';
+import { format } from 'date-fns';
 
 import style from './index.module.scss';
 
 const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
-    return(
-        <Dialog isOpen={getShowFeedbackTicketResolutionLog} onClose={() => getShowFeedbackTicketResolutionLog(false)} className={`${style.addManagerDialogBackground} ${style.feedbackLogDialog}`}>
+    return (
+        <Dialog isOpen={getShowFeedbackTicketResolutionLog} onClose={() => getShowFeedbackTicketResolutionLog(false)} className={`${style.addManagerDialogBackground} ${style.feedbackLogDialog}`}
+            canOutsideClickClose={true}>
             <div className={`${Classes.DIALOG_BODY} `}>
                 <div className={style.feedbackLogHeaderGrid}>
                     <div>
@@ -29,7 +30,7 @@ const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
                     <div>
                         <div className={style.headerTitle}>FEEDBACK TICKET RESOLUTION LOG</div>
                         <div className={`${style.subHeading} ${style.marginTop5}`}>REPORT NOT WORKING LOREM IPSUM LOREM IPSUM</div>
-                        <div className={`${style.displayInRow} ${style.justifyCenter} ${style.marginTop5}`}>                         
+                        <div className={`${style.displayInRow} ${style.justifyCenter} ${style.marginTop5}`}>
                             <img src={RedWarning} alt="warning" className={`${style.warningStyle} ${style.marginRight}`} />
                             <div className={style.subHeading}>FBTID-001</div>
                         </div>
@@ -235,7 +236,7 @@ const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
                                 <div className={`${style.smallTextStyle} ${style.marginLeft20}`}>3 days ago</div>
                             </div>
                             <div className={style.descriptionStyle}>
-                            lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo
+                                lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo
                             </div>
                         </div>
                         <div>
@@ -245,7 +246,7 @@ const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
                                 <div className={`${style.smallTextStyle} ${style.marginLeft20}`}>3 days ago</div>
                             </div>
                             <div className={style.descriptionStyle}>
-                            lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo
+                                lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo
                             </div>
                         </div>
                         <div>
@@ -255,7 +256,7 @@ const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
                                 <div className={`${style.smallTextStyle} ${style.marginLeft20}`}>3 days ago</div>
                             </div>
                             <div className={style.descriptionStyle}>
-                            lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo
+                                lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo
                             </div>
                         </div>
                         <div className={`${style.miniHeadingTitles} ${style.blue} ${style.marginTop20}`}>
@@ -268,11 +269,11 @@ const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
                                 <div className={`${style.smallTextStyle} ${style.marginLeft20}`}>3 days ago</div>
                             </div>
                             <div className={style.descriptionStyle}>
-                            lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo
+                                lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo
                             </div>
                         </div>
                         <div className={`${style.miniHeadingTitles} ${style.red} ${style.marginTop20}`}>
-                        Status Response To Customer
+                            Status Response To Customer
                         </div>
                         <div>
                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
@@ -281,7 +282,7 @@ const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
                                 <div className={`${style.smallTextStyle} ${style.marginLeft20}`}>3 days ago</div>
                             </div>
                             <div className={style.descriptionStyle}>
-                            lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo
+                                lorem ipsum dolor sit amet, consectetur adipiscing elit. sed finibus ac nisl tempor elementum. aliquam a eros porttitor, commodo
                             </div>
                         </div>
                     </div>
@@ -291,7 +292,7 @@ const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
                 <div className={`${style.footerLogoStyle} ${style.justifyCenter}`}>
                     <img src={WhiteTimeSmartLogo} alt="logo" className={style.logoStyle} />
                 </div>
-                <div className={style.copyrightText}>Copyright © 2022 TimeSmart.AI. All rights reserved.</div>
+                <div className={style.copyrightText}>Copyright © 2022 TimeSmartAI. All rights reserved.</div>
             </div>
         </Dialog>
     )

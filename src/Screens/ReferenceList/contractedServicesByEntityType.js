@@ -1,0 +1,392 @@
+import React, { Fragment, useState, useEffect } from "react";
+import Navbar from "../../Components/Navbar";
+import SideBar from "./../../Components/Sidebar";
+import { Icon, Intent, Checkbox } from "@blueprintjs/core";
+import style from "./index.module.scss";
+import SubNavbar from "../../Components/SubNavbar";
+import CrossPink from "./../../images/crossPink.png";
+import OpenFolderBlue from "./../../images/openFolderBlue.png";
+import CloseFolderBlue from "./../../images/closeFolderBlue.png";
+import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
+import SelectArrow from "./../../images/selectArrow.png";
+import AddNewEntity from "./../../images/addEntity.png";
+import AddContractedServiceForHospital from "./addContractServiceProviderForHospital";
+import EditBlue from "./../../images/editBlue.png";
+import { Link } from "react-router-dom";
+import { DELETE, GET, POST, TenantID } from "../dataSaver";
+import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
+import DeleteHcRow from "./../../images/deleteHcRow.png";
+import AddContractedServices from "./addContractedServices";
+import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import { format } from "date-fns";
+import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
+
+const ContractServicesByEntityType = () => {
+  const [contractedServiceTypeMaster, setContractedServiceTypeMaster] =
+    useState([]);
+  const [contractedServiceType, setContractedServiceType] = useState([]);
+  const [showAddContractedServiceDialog, setAddContractedServiceDialog] =
+    useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [selectedContractedService, setSelectedContractedService] = useState(
+    {}
+  );
+  const [selectedContractedServiceTypes, setSelectedContractedServiceTypes] =
+    useState([]);
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [entityId, setEntityId] = useState("");
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+
+  const [selectAllList, setSelectAllList] = useState([]);
+  const [checkedAll, setCheckedAll] = useState(false);
+
+  useEffect(() => {
+    getContractedServiceTypeMaster();
+    getContractedServiceType();
+    getIndustryId();
+  }, []);
+
+  useEffect(() => {
+    if (entityId !== "" && entityId !== undefined) {
+      getLastModifiedDate();
+    }
+  }, [entityId]);
+
+  const getIsExpanded = (value) => {
+    setIsExpanded(value);
+  };
+
+  const getAddContractedServicesDialog = (value) => {
+    setAddContractedServiceDialog(value);
+  };
+
+  const getIndustryId = async () => {
+    const { data: entity } = await GET(`entity-service/entity`);
+    setEntityId(entity?.[0]?.id);
+  };
+
+  const getLastModifiedDate = async () => {
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/entity/${entityId}`
+    );
+    const date = new Date(lastModifiedDate.contractedService?.lastModified);
+    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
+  };
+
+  const getContractedServiceTypeMaster = async () => {
+    const { data: contractedServiceTypeMaster } = await GET(
+      `entity-service/contractedServiceTypeMaster`
+    );
+    setContractedServiceTypeMaster(contractedServiceTypeMaster);
+  };
+
+  const getContractedServiceType = async () => {
+    const { data: contractedServiceType } = await GET(
+      `entity-service/contractedServiceType`
+    );
+    setContractedServiceType(contractedServiceType);
+  };
+
+  const handleDeleteContractedServiceType = async (id) => {
+    await DELETE(`entity-service/contractedServiceType/${id}`)
+      .then((response) => {
+        SuccessToaster("Customer Services Deleted Successfully");
+        getContractedServiceType();
+        getLastModifiedDate();
+      })
+      .catch((error) => {
+        ErrorToaster(error);
+      });
+  };
+
+  const handleSelectContractedServiceProvider = (e, innerData) => {
+    if (e.target.checked) {
+      setSelectedContractedServiceTypes([
+        ...selectedContractedServiceTypes,
+        innerData,
+      ]);
+    } else {
+      setSelectedContractedServiceTypes(
+        selectedContractedServiceTypes
+          ?.filter((data) => data?.serviceType !== innerData?.serviceType)
+          ?.map((data) => data)
+      );
+    }
+  };
+
+  const selectAll = (value) => {
+    if (value) {
+      let tempContractedServices = contractedServiceTypeMaster
+        ?.filter(
+          (data) =>
+            !contractedServiceType.some(
+              (customerData) =>
+                customerData?.serviceTypeTemplate === data?.serviceTypeTemplate
+            )
+        )
+        ?.map((data) => {
+          return { ...data };
+        });
+      setSelectedContractedServiceTypes(tempContractedServices);
+    } else {
+      setSelectedContractedServiceTypes([]);
+    }
+    setCheckedAll(value);
+  };
+
+  useEffect(() => {
+    let tempContractedServices = contractedServiceTypeMaster
+      ?.filter(
+        (data) =>
+          !contractedServiceType.some(
+            (customerData) =>
+              customerData?.serviceTypeTemplate === data?.serviceTypeTemplate
+          )
+      )
+      ?.map((data) => {
+        return { ...data };
+      });
+    setSelectAllList(tempContractedServices);
+
+    let allChecked = true;
+
+    if (tempContractedServices.length > selectedContractedServiceTypes.length) {
+      allChecked = false;
+    }
+
+    if (allChecked) {
+      setCheckedAll(true);
+    } else {
+      setCheckedAll(false);
+    }
+  }, [selectedContractedServiceTypes]);
+
+  const handlePostContractedServiceType = async () => {
+    let data = selectedContractedServiceTypes?.map((data) => ({
+      ...data,
+      entityId: { id: TenantID },
+    }));
+    if (selectedContractedServiceTypes?.length !== 0) {
+      await POST("entity-service/contractedServiceType", JSON.stringify(data))
+        .then((response) => {
+          SuccessToaster("Contracted Services Added Successfully");
+          getContractedServiceType();
+          setSelectedContractedServiceTypes([]);
+          getLastModifiedDate();
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      ErrorToaster(
+        "Select some Contracted Services from Standard List to add in My Custom List"
+      );
+    }
+  };
+
+  return (
+    <Fragment>
+      <Navbar />
+      <div className={style.margin20}>
+        <div
+          className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid}`}
+        >
+          <div>
+            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+              <div></div>
+            </SideBar>
+          </div>
+          <div>
+            {/* <SubNavbar/> */}
+            <LevelTwoHeader
+              heading={"CONTRACTED SERVICES FOR HEALTHCARE"}
+              updatedTime={`UPDATED ON ${lastUpdatedDate} `}
+              path={"/Screens/ReferenceList/customerAdminDashboard"}
+              callingFrom={"Customer Admin"}
+              needHeader={true}
+            />
+
+            <div className={style.marginTop35}>
+              <div className={style.centreCardStyle}>
+                <div className={style.margin20}>
+                  <div className={style.customersAdminColumngrid1}>
+                    <div>
+                      <div className={style.holidayScheduleHeader1}>
+                        <p
+                          className={`${style.holidayScheduleHeadertextStyle1} ${style.marginLeft20}`}
+                        >
+                          {" "}
+                          STANDARD LIST IN USE- DEFAULT{" "}
+                        </p>
+                      </div>
+                      <div className={style.customersAdminCardStyle1}>
+                        <>
+                          {contractedServiceTypeMaster?.filter(
+                            (data) =>
+                              !contractedServiceType.some(
+                                (customerData) =>
+                                  customerData?.serviceTypeTemplate ===
+                                  data?.serviceTypeTemplate
+                              )
+                          )?.length > 1 ? (
+                            <>
+                              <div
+                                className={`${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground3} ${style.displayInRow}`}
+                              >
+                                <CommonPurpleCheckBox
+                                  name="allSelect"
+                                  onChange={(event) =>
+                                    selectAll(event.target.checked)
+                                  }
+                                  checked={
+                                    selectAllList.length !== 0
+                                      ? checkedAll
+                                      : false
+                                  }
+                                />
+                                <p
+                                  className={`${style.TextStyle4} ${style.marginLeft10}`}
+                                >
+                                  SELECT ALL
+                                </p>
+                              </div>
+                            </>
+                          ) : (
+                            <></>
+                          )}
+
+                          {contractedServiceTypeMaster
+                            ?.filter(
+                              (data) =>
+                                !contractedServiceType.some(
+                                  (customerData) =>
+                                    customerData?.serviceTypeTemplate ===
+                                    data?.serviceTypeTemplate
+                                )
+                            )
+                            ?.map((data, index) => (
+                              <div
+                                className={`${style.customersAdminInnerRowsStyle5} ${style.customersAdminBackground1} ${style.displayInRow}`}
+                                key={index}
+                              >
+                                <CommonPurpleCheckBox
+                                  checked={
+                                    selectedContractedServiceTypes?.filter(
+                                      (innerData) =>
+                                        innerData?.serviceType ===
+                                        data?.serviceType
+                                    )?.length !== 0
+                                  }
+                                  onChange={(e) =>
+                                    handleSelectContractedServiceProvider(
+                                      e,
+                                      data
+                                    )
+                                  }
+                                />
+                                <p
+                                  className={`${style.TextStyle4} ${style.marginLeft10} `}
+                                >
+                                  {data?.serviceType}
+                                </p>
+                              </div>
+                            ))}
+                        </>
+                      </div>
+                    </div>
+                    <div className={style.customersAdminCardStyle2}>
+                      <p
+                        className={`${style.holidayScheduleHeadertextStyle1} ${style.colorWhite} ${style.marginTop3}`}
+                      >
+                        Select
+                      </p>
+                      <img
+                        src={SelectArrow}
+                        alt=""
+                        className={`${style.colorFileStyle4}`}
+                        onClick={() => {
+                          handlePostContractedServiceType();
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <div className={`${style.holidayScheduleHeader2}`}>
+                        <p></p>
+                        <p
+                          className={`${style.holidayScheduleHeadertextStyle1}`}
+                        >
+                          MY CUSTOM LIST TO USE
+                        </p>
+                        <img
+                          src={AddNewEntity}
+                          alt=""
+                          className={`${style.colorFileStyle} ${style.marginLeft70} `}
+                          onClick={() => {
+                            getAddContractedServicesDialog(true);
+                            setIsEdit(false);
+                          }}
+                        ></img>
+                      </div>
+                      <div className={style.customersAdminCardStyle3}>
+                        {contractedServiceType?.length !== 0 ? (
+                          contractedServiceType?.map((data, index) => (
+                            <div
+                              className={`${style.contractedServiceProviderCard} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
+                              key={index}
+                            >
+                              <p className={style.tableDataFontStyle}>
+                                {data?.serviceType}
+                              </p>
+                              <div className={style.displayInRow}>
+                                <img
+                                  src={EditBlue}
+                                  alt=""
+                                  className={style.colorFileStyle}
+                                  onClick={() => {
+                                    setIsEdit(true);
+                                    getAddContractedServicesDialog(true);
+                                    setSelectedContractedService(data);
+                                  }}
+                                />
+                                <img
+                                  src={DeleteHcRow}
+                                  alt=""
+                                  className={`${style.colorFileStyle} ${style.marginLeft20}`}
+                                  onClick={() =>
+                                    handleDeleteContractedServiceType(data?.id)
+                                  }
+                                />
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className={style.holidayScheduleCardtextStyle1}>
+                            if you would like to setup your custom list for your
+                            site(s) you can select from the default list on the
+                            left, edit to change labels as needed, and also add
+                            new Contracted Services by Entity Type by clicking
+                            on the add icon
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showAddContractedServiceDialog && (
+        <AddContractedServices
+          getAddContractedServicesDialog={getAddContractedServicesDialog}
+          isEdit={isEdit}
+          selectedContractedService={selectedContractedService}
+          getContractedServiceType={getContractedServiceType}
+        />
+      )}
+    </Fragment>
+  );
+};
+
+export default ContractServicesByEntityType;

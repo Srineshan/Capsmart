@@ -5,6 +5,10 @@ import Typography from '@mui/material/Typography';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Tooltip from '@mui/material/Tooltip';
 import Pagination from './../Pagination';
+import AscendingSort from './../../images/ascendingSort.png';
+import DescendingSort from './../../images/descendingSort.png';
+import Sort from './../../images/sort.png';
+
 import style from './index.module.scss';
 
 const useStyles = makeStyles(theme => ({
@@ -17,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle }) => {
+const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -132,7 +136,17 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
             <div>
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
-                        <p className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle} ${style.verticalAlignCenter}`} key={index}>{data}</p>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} key={index}>
+                            {
+                                // tableSortValues?.[index] && (
+                                //     <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} />
+                                // )
+                                //  : (
+                                //     <img src={DescendingSort} alt="" className={style.sortImgStyle} />
+                                // )
+                            }
+                            <div className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle}`}>{data}</div>
+                        </div>
                     ))}
                 </div>
                 <div className={`${scrollStyle}`}>
@@ -147,7 +161,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                             </Tooltip>
                                         </div>
                                     ) : tableData?.type === "text" ? (
-                                        <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={() => tableData?.onClickFunction(data)}>{tableData?.value?.[index]}</p>
+                                        <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={() => tableData?.onClickFunction(data, index)}>{tableData?.value?.[index]}</p>
                                     ) : tableData?.type === "textWithHover" ? (
                                         <div>
                                             <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`}
@@ -155,24 +169,28 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                 onMouseLeave={() => handleCloseTextWithHover()}
                                                 aria-owns={openTextWithHover ? 'mouse-over-popover' : undefined}
                                                 aria-haspopup="true">{tableData?.value?.[index]}</p>
-                                            <Popover
-                                                id={'mouse-over-popover'}
-                                                sx={{
-                                                    pointerEvents: 'none',
-                                                }}
-                                                open={openTextWithHover}
-                                                anchorEl={anchorElTextWithHover}
-                                                onClose={handleCloseTextWithHover}
-                                                anchorOrigin={{
-                                                    vertical: 'bottom',
-                                                    horizontal: 'left',
-                                                }}
-                                                disableRestoreFocus
-                                            >
-                                                <div className={style.actionsCard} ref={countHoverRef}>
-                                                    <div className={`${style.specificActionCard} ${style.cursorPointer}`}>{`Jade Dsa. { Role } { Department}`}</div>
-                                                </div>
-                                            </Popover>
+                                            {index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
+                                                <Popover
+                                                    id={'mouse-over-popover'}
+                                                    sx={{
+                                                        pointerEvents: 'none',
+                                                    }}
+                                                    open={openTextWithHover}
+                                                    anchorEl={anchorElTextWithHover}
+                                                    onClose={handleCloseTextWithHover}
+                                                    anchorOrigin={{
+                                                        vertical: 'bottom',
+                                                        horizontal: 'left',
+                                                    }}
+                                                    disableRestoreFocus
+                                                >
+                                                    {tableData?.hoverText?.[index]?.map((data, innerIndex) => (
+                                                        <div className={style.multipleOptionsCard}>
+                                                            <div className={`${style.specificActionCard} ${style.cursorPointer}`}>{data}</div>
+                                                        </div>
+                                                    ))}
+                                                </Popover>
+                                            )}
                                         </div>
                                     ) : tableData?.type === "countWithHover" ? (
                                         <div>
@@ -208,9 +226,9 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                             aria-owns={openIconWithCount ? 'mouse-over-popover' : undefined}
                                             aria-haspopup="true">
                                             <Typography className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`}  >
-                                                {tableData?.icon}
+                                                {tableData?.icon?.[index]}
                                                 <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
-                                                {index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && (
+                                                {index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
                                                     <Popover
                                                         id={'mouse-over-popover'}
                                                         sx={{
@@ -338,7 +356,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
                                                 -
                                             </div>
                                     ) : tableData?.type === "action" ? (
-                                        <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={() => { setShowOptions(true); setSelectedMenuIndex(index) }}>
+                                        <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={() => { setShowOptions(true); setSelectedMenuIndex(index) }}>
                                             <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
                                             {showOptions && index === selectedMenuIndex && (
                                                 <Popover
@@ -373,7 +391,7 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, getNewContract, 
 
 
                 {
-                    (totalCount || tableData?.length) > 10 &&
+                    !hidePagination && (totalCount || tableData?.length) > 10 &&
                     <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} />
                 }
                 {

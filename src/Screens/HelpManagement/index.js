@@ -11,8 +11,7 @@ import { formatInTimeZone } from 'date-fns-tz'
 import { GET } from './../dataSaver';
 import MessageIcon from '@mui/icons-material/Message';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import Cookie from 'universal-cookie';
-import jwt from 'jwt-decode';
+import { currentUser } from './../../utils/auth';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Tickets from './tickets';
 import Tutorials from './tutorials';
@@ -37,12 +36,13 @@ const HelpHome = () => {
     const [showChatView, setShowChatView] = useState(false);
     const [selectedOption, setSelectedOption] = useState('TICKETS');
     const [showFeedbackTicketResolution, setShowFeedbackTicketResolution] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
     const [ticketId, setTicketId] = useState('');
     const [isEdit, setIsEdit] = useState(false);
     const [users, setUsers] = useState([]);
     const [from, setFrom] = useState(subDays(new Date(), 30));
     const [to, setTo] = useState(new Date());
-    const [currentUser, setCurrentUser] = useState({});
+    const [currentUserDetails, setCurrentUserDetails] = useState({});
     const ticketsTableHeaderValues = ["", "TICKET ID", "TYPE", "SUBJECT/ ISSUE", "CUSTOMER", "START DATE/TIME", "LAST UPDATED", "USER NAME"];
     const tutorialsTableHeaderValues = ["", "TITLE", "DESCRIPTION", "AUTHOR", "TYPE", "DATE / TIME", "LINK", "COMMENT"];
     const releaseTableHeaderValues = ["", "TITLE", "DESCRIPTION", "AUTHOR", "TYPE", "DATE / TIME", "UPLOAD", "COMMENT", "ACTION"];
@@ -51,9 +51,7 @@ const HelpHome = () => {
         (selectedOption === "RELEASE NOTES") ? releaseTableHeaderValues : selectedOption === "Messages" ? messageTableHeaderValues : '';
     const [allMessages, setAllMessages] = useState();
     let customerName = sessionStorage.getItem('title');
-    var cookie = new Cookie();
-    let authValue = cookie.get('user');
-    const loggedUser = jwt(authValue);
+    const currentUserData = currentUser();
 
     useEffect(() => {
         getTicket();
@@ -61,14 +59,14 @@ const HelpHome = () => {
 
     useEffect(() => {
         getCommentMessages();
-    }, [currentUser]);
+    }, [currentUserDetails]);
 
     useEffect(() => {
         getUser();
     }, []);
 
     useEffect(() => {
-        setCurrentUser(users?.filter(data => data?.id === loggedUser?.id)?.map(data => data));
+        setCurrentUserDetails(users?.filter(data => data?.id === currentUserData?.id)?.map(data => data));
     }, [users]);
 
     const getSelectedContract = (value) => {
@@ -80,19 +78,24 @@ const HelpHome = () => {
     }
 
     const getTicket = async () => {
-        const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
-        setMyTicket(ticket?.map(data => data));
+        if (currentUserData?.roles?.includes('Entity Sys Admin')) {
+            const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
+            setMyTicket(ticket?.map(data => data));
+        } else {
+            const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}&userId=${currentUserData?.id}`);
+            setMyTicket(ticket?.map(data => data));
+        }
     };
 
     const getCommentMessages = async () => {
-        const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUser?.[0]?.id}`);
+        const { data: messages } = await GET(`feedback-management-service/ticket_comment/message?userId=${currentUserData?.id}`);
         setAllMessages(messages);
     }
 
     const getUser = async () => {
         const { data: user } = await GET('user-management-service/user');
         setUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
-        setCurrentUser(users?.filter(data => data?.id === loggedUser?.id)?.map(data => data))
+        setCurrentUserDetails(users?.filter(data => data?.id === currentUserData?.id)?.map(data => data))
     };
 
     const onClickFunction = (data) => {
@@ -105,6 +108,10 @@ const HelpHome = () => {
         setShowFeedbackTicketResolution(true);
         setTicketId(value?.ticketId?.id);
         setIsEdit(true);
+    }
+
+    const getIsExpanded = (value) => {
+        setIsExpanded(value);
     }
 
     const messagesOnClickFunction = (data) => {
@@ -210,15 +217,19 @@ const HelpHome = () => {
     return (
         <Fragment>
             <Navbar />
-            <div className={`${style.bigCardGrid} ${style.margin20}`}>
-                <SideBar />
+            <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20}`}>
+                <div>
+                    <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+                        <div></div>
+                    </SideBar>
+                </div>
                 <div>
                     <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={'UPDATED ON FEB 16, 2022 16:45 EST'} hideClose={true} />
                     <div className={`${style.grid4} ${style.marginTop20}`}>
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={myTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" bottomText='LAST 30 DAYS' />
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TUTORIALS & VIDEOS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TUTORIALS & VIDEOS" bottomText='LAST 30 DAYS' />
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="FAQS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="FAQS" bottomText='LAST 7 DAYS' />
-                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="RELEASE NOTES" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="RELEASE NOTES" bottomText='LAST 30 DAYS' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={myTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" topText='' bottomText='LAST 30 DAYS' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TUTORIALS & VIDEOS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TUTORIALS & VIDEOS" topText='' bottomText='LAST 30 DAYS' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="FAQS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="FAQS" topText='' bottomText='LAST 7 DAYS' />
+                        <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="RELEASE NOTES" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="RELEASE NOTES" topText='' bottomText='LAST 30 DAYS' />
                     </div>
                     {selectedOption !== "FAQS" ? (
                         <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
@@ -262,7 +273,7 @@ const HelpHome = () => {
                 {showChatView && (
                     <div className={style.chatContainer}>
                         <div className={style.blueChatPart}>
-                            <div className={style.justifyCenter}>TimeSmart.AI Team</div>
+                            <div className={style.justifyCenter}>TimeSmartAI Team</div>
                             <div className={`${style.justifyCenter}`}>
                                 <div className={`${style.displayInRow} ${style.marginTop10}`}>
                                     <div>
@@ -301,7 +312,7 @@ const HelpHome = () => {
                                     </div>
                                     <div className={style.messageContainer}>
                                         Hi there, <br /><br />
-                                        Welcome to TimeSmart.AI Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
+                                        Welcome to TimeSmartAI Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
                                     </div>
                                 </div>
                             </div>
@@ -315,14 +326,14 @@ const HelpHome = () => {
                         </div>
                     </div>
                 )}
-                <div className={`${style.displayInRow} ${style.blueCircleContainer}`}>
+                {/* <div className={`${style.displayInRow} ${style.blueCircleContainer}`}>
                     <div className={style.blueCircle} onClick={() => setShowChatView(!showChatView)}>
                         {showChatView ? <CloseOutlinedIcon /> : <ChatOutlinedIcon />}
                     </div>
                     <div className={style.blueCircle} onClick={() => setShowVideoOptions(true)}>
                         <VideocamOutlinedIcon />
                     </div>
-                </div>
+                </div> */}
             </div>
             <Dialog isOpen={showVideoOptions} onClose={() => setShowVideoOptions(false)} className={`${style.videoOptionsDialogStyle} ${style.dialogPaddingBottom}`}>
                 <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>

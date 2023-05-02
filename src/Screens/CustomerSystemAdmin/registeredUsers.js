@@ -47,12 +47,12 @@ const RegisteredUsers = ({ getSelectedOption }) => {
 
     const getUser = async () => {
         if (selectedOption === 'ENTITY REGISTERED USERS') {
-            const { data: user } = await GET(`user-management-service/user?userType=REGISTERED_USER`);
+            const { data: user } = await GET(`user-management-service/user?userType=REGISTERED_USER&activated=true`);
             setRegisteredUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
             setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
         }
         if (selectedOption === 'CONTRACTED SERVICE PROVIDER USERS') {
-            const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER`);
+            const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER&activated=true`);
             setContractedServiceProviderUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
             setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
         }
@@ -347,11 +347,13 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                             </div>
                         )}
                     </div>
-                    <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginRight30}`}>
-                        <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => setShowAddUserDialog(true)} />
-                    </div>
+                    {selectedOption === 'ENTITY REGISTERED USERS' && (
+                        <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginRight30} ${style.cursorPointer}`}>
+                            <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#7165E3' }} onClick={() => setShowAddUserDialog(true)} />
+                        </div>
+                    )}
                 </div>
-                <div className={style.reduceMarginTop20}>
+                <div className={style.reduceMarginTop10}>
                     <Table
                         tableHeaderValues={tableHeaderValues}
                         tableDataValues={getValues()}
