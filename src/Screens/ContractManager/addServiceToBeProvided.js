@@ -447,7 +447,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setContinueLoading(false);
   }
 
-  console.log('metadata', metadata);
+  console.log('metadata in add service', metadata);
 
   const handleSave = async (buttonType) => {
     if (serviceType === '') {
@@ -529,10 +529,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     let data = [];
     if (serviceTypeTemplate === ADDON && !editService) {
+      console.log('inside if', metadata);
       data = metadata;
       data.map((item, index) => {
         item.workingPeriod = metadata?.[index]?.workingPeriod;
-        item.serviceLocations = item?.locationSpecified ? data?.locations : locationItems;
+        item.serviceLocations = metadata?.[index]?.serviceLocations ? metadata?.[index]?.serviceLocations : metadata?.[index]?.locations;
         item.duration = {
           "hours": parseInt(item?.sessionDuration)
         };

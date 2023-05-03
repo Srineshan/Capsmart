@@ -69,7 +69,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const [allowPersonalMail, setAllowPersonalMail] = useState(false);
   const [mobileNA, setMobileNA] = useState(false);
   const [continueLoading, setContinueLoading] = useState(false);
-  const [ssoId, setSsoId] = useState({ id: '' });
+  // const [ssoId, setSsoId] = useState({ id: '' });
 
   useEffect(() => {
     getRoles();
@@ -113,7 +113,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       setSites(siteTemp || []);
       setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
       setMobileNA(userProviderData?.communication?.mobileNumberNotApplicable);
-      setSsoId(userProviderData?.ssoId);
+      // setSsoId(userProviderData?.ssoId);
     } else {
       getSites();
     }
@@ -155,9 +155,6 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     setSiteTitleValues(siteValue);
     setDepartmentTitleValues(deptValue);
   }
-
-  console.log('siteList', siteList);
-  console.log('sites', sites);
 
   const getUserData = async () => {
     if (contractId !== '' && contractId !== undefined) {
@@ -391,7 +388,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       "email": {
         "officialEmail": contractorEmail
       },
-      "ssoId": ssoId,
+      // "ssoId": ssoId,
       ...(!isUserPresent && {
         "password": {
           "password": "string"
@@ -621,7 +618,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
               </div>
             </div>
           }
-
+          {/* 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <CommonLabel value='SSO ID*' />
             <div className={style.displayInRow}>
@@ -630,7 +627,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
                 maxLength={30}
                 onChange={(e) => setSsoId({ ...ssoId, id: e.target.value })} />
             </div>
-          </div>
+          </div> */}
 
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}

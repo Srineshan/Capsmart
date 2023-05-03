@@ -7,7 +7,7 @@ import DatalistInput from 'react-datalist-input';
 import { GET, PUT, POST, role, TenantID } from './../dataSaver';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
 import AddNewContractManager from './addNewContractManager';
-import { format, sub, add, getMonth, differenceInCalendarMonths, differenceInCalendarWeeks } from 'date-fns';
+import { format, sub, add, getMonth, differenceInCalendarMonths, differenceInCalendarWeeks, parseISO } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { GetDateFromHours } from './../../utils/formatting';
 import axios from 'axios';
@@ -156,9 +156,9 @@ const ContractIdTermLimitIndividual = (
       setFullyExecutedContract(contractDetail?.fullyExecutedContract);
       // setSelectContractManager(user?.filter(data => data?.id === contractDetail?.contractManager?.userID)?.map(data => data)[0] || undefined);
       setContractPriorId({ id: contractDetail?.priorContract?.id, na: contractDetail?.priorContract?.notApplicable });
-      setContractTermPeriodFrom(contractDetail?.contractTerm?.startDate !== null ? new Date(contractDetail?.contractTerm?.startDate) : null);
-      setContractTermPeriodTo(contractDetail?.contractTerm?.endDate !== null ? new Date(contractDetail?.contractTerm?.endDate) : null);
-      setContractEffectiveDate(contractDetail?.contractTerm?.effectiveDate !== null ? new Date(contractDetail?.contractTerm?.effectiveDate) : null);
+      setContractTermPeriodFrom(contractDetail?.contractTerm?.startDate !== null ? new Date(contractDetail?.contractTerm?.startDate?.replace('-', '/')) : null);
+      setContractTermPeriodTo(contractDetail?.contractTerm?.endDate !== null ? new Date(contractDetail?.contractTerm?.endDate?.replace('-', '/')) : null);
+      setContractEffectiveDate(contractDetail?.contractTerm?.effectiveDate !== null ? new Date(contractDetail?.contractTerm?.effectiveDate?.replace('-', '/')) : null);
       setSelectedContractContinuationPolicy(contractDetail?.continuationPolicy?.contractPolicyType);
       let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
       setAutoRenewal({ renewalTerm: continuation?.autoRenewalTerm?.term.toString(), allowableRenewalTerm: continuation?.allowableAutoRenewalTerm?.term.toString(), calendar: continuation?.autoRenewalCalender })
@@ -194,9 +194,9 @@ const ContractIdTermLimitIndividual = (
       setFullyExecutedContract(contractDetail?.fullyExecutedContract);
       // setSelectContractManager(user?.filter(data => data?.id === contractDetail?.contractManager?.userID)?.map(data => data)[0] || undefined);
       setContractPriorId({ id: contractDetail?.priorContract?.id, na: contractDetail?.priorContract?.notApplicable });
-      setContractTermPeriodFrom(contractDetail?.contractTerm?.startDate !== null ? new Date(contractDetail?.contractTerm?.startDate) : null);
-      setContractTermPeriodTo(contractDetail?.contractTerm?.endDate !== null ? new Date(contractDetail?.contractTerm?.endDate) : null);
-      setContractEffectiveDate(contractDetail?.contractTerm?.effectiveDate !== null ? new Date(contractDetail?.contractTerm?.effectiveDate) : null);
+      setContractTermPeriodFrom(contractDetail?.contractTerm?.startDate !== null ? new Date(contractDetail?.contractTerm?.startDate?.replace('-', '/')) : null);
+      setContractTermPeriodTo(contractDetail?.contractTerm?.endDate !== null ? new Date(contractDetail?.contractTerm?.endDate?.replace('-', '/')) : null);
+      setContractEffectiveDate(contractDetail?.contractTerm?.effectiveDate !== null ? new Date(contractDetail?.contractTerm?.effectiveDate?.replace('-', '/')) : null);
       setSelectedContractContinuationPolicy(contractDetail?.continuationPolicy?.contractPolicyType);
       let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
       setAutoRenewal({ renewalTerm: continuation?.autoRenewalTerm?.term.toString(), allowableRenewalTerm: continuation?.allowableAutoRenewalTerm?.term.toString(), calendar: continuation?.autoRenewalCalender })
@@ -216,6 +216,8 @@ const ContractIdTermLimitIndividual = (
       }
     }
   }
+
+  console.log('contract start date', contractTermPeriodFrom, contractTermPeriodTo);
 
   const getUserData = async () => {
     const { data: user } = await GET('user-management-service/user/role?role=Contract Manager');
@@ -638,6 +640,9 @@ const ContractIdTermLimitIndividual = (
     );
   }
 
+  console.log('date test', new Date("2023-05-01"), new Date("2023/05/01"));
+
+
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
@@ -886,8 +891,9 @@ const ContractIdTermLimitIndividual = (
               onClose={() => setCalendarEffective(false)}
               value={contractEffectiveDate}
               onChange={(newValue) => {
+                const offsetDate = new Date(newValue.getTime() - (newValue.getTimezoneOffset() * 60000));
                 setIsDateUpdated(true);
-                setContractEffectiveDate(newValue);
+                setContractEffectiveDate(offsetDate);
                 getContractedServices();
               }}
               InputProps={{
@@ -946,7 +952,7 @@ const ContractIdTermLimitIndividual = (
                   <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm} onChange={(e) => (e <= 52 && setAutoRenewal({ ...autoRenewal, renewalTerm: e, calendar: '' }))} type="tel" />
                   <CommonSelectField value={autoRenewal.calendar}
                     onChange={(e) => setAutoRenewal({ ...autoRenewal, calendar: e.target.value })}
-                    className={`${style.marginLeft20} ${style.weekSelectStyle}`} firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                    className={`${style.marginLeft20} ${style.weekSelectStyle}`} firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                     valueList={['WEEKS', 'MONTHS']}
                     labelList={['Weeks', 'Months']}
                     disabledList={[false, autoRenewal?.renewalTerm > 12]} />

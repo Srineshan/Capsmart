@@ -192,7 +192,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                     <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                         onChange={(e) => handleValueChange('frequency', e.target.value)}
                         value={metadata?.frequency}
-                        firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                        firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                         valueList={['WEEK', 'MONTH']}
                         labelList={['Per Week', 'Per Month']}
                         disabledList={[false, false]} />
@@ -222,7 +222,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                                     value={metadata?.additionalScheduleFrequency || 'NA'}
                                     onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
-                                    firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                     valueList={['WEEK', 'EVERY_OTHER_WEEK', 'MONTH', 'EVERY_OTHER_MONTH']}
                                     labelList={['Every Week', 'Every Other Week', 'Every Month', 'Every Other Month']}
                                     disabledList={[false, false, false, false]} />
@@ -250,7 +250,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         //     onChange={(e)=>handleValueChange('rateType', e.target.value)}
                         //     value={metadata?.rateType}
                         // >
-                        //     <MenuItem value="">Select Frequecy</MenuItem>
+                        //     <MenuItem value="">Select Frequency</MenuItem>
                         //     <MenuItem value={'HOURLY'}>Hourly</MenuItem>
                         // </Select>
                     }

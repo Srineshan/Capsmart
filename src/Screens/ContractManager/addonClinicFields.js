@@ -54,6 +54,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   }, [locationItems])
 
   useEffect(() => {
+    console.log('metadata in useEffect', metadata);
     getMetaData(metadata);
   }, [metadata])
 
@@ -137,8 +138,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       setSelectedServices(selectedServiceTemp);
     }
   }
-
-  console.log('metadata', metadata);
 
   const resetNewServices = () => {
     setNewServices({
@@ -282,8 +281,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       selectedData.contractedSchedules = [];
       selectedData.patientsSeenTargets = [];
       selectedData.scheduledPatientsTargets = [];
-      selectedData.workingTimeFrom = selectedData?.workingTimeFrom
-      selectedData.workingTimeTo = selectedData?.workingTimeTo
+      selectedData.workingTimeFrom = selectedData?.workingTimeFrom;
+      selectedData.workingTimeTo = selectedData?.workingTimeTo;
+      selectedData.locations = selectedData?.serviceLocations;
       temp.push(selectedData);
       setSelectedServices(temp?.map(data => data?.performingActivity));
       setMetadata(temp);
@@ -324,6 +324,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     }
   }
 
+  console.log()
+
   const updateWorkingHours = (name, value) => {
     let temp = metadata;
     temp?.map(data => {
@@ -333,12 +335,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   }
 
   const handleNewServiceLocation = (selectedItem) => {
-    if (newServices?.locations?.map(data => data?.location)?.includes(selectedItem?.location)) {
+    if (newServices?.locations?.map(data => data)?.includes(selectedItem)) {
       ErrorToaster('Location Already Exists');
       return;
     }
     let temp = newServices?.locations;
-    temp.push({ 'location': selectedItem?.location });
+    console.log('selected item ', selectedItem, temp)
+    temp.push(selectedItem);
     setNewServices({ ...newServices, locations: temp });
   }
 
@@ -357,26 +360,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     }
     setNewServices({ ...newServices, 'additionalDetails': temp });
   }
-
-  // const handleMetadataAdditional = (data) => {
-  //   let item = metadata;
-  //   item?.map(element => {
-  //     let temp = element?.activityResponse?.dataMap?.additionalDetails;
-  //     if (element?.activityResponse?.dataMap?.additionalDetails?.includes(data)) {
-  //       if (data === 'Prior Pre-Authorization Required') {
-  //         temp = element?.activityResponse?.dataMap?.additionalDetails?.filter(detail => detail !== 'Administrative Approval For Payment Required')?.map(data => data);
-  //       }
-  //       temp = element?.activityResponse?.dataMap?.additionalDetails?.filter(detail => detail !== data)?.map(data => data);
-  //     } else {
-  //       if (data === 'Administrative Approval For Payment Required' && !temp?.includes('Prior Pre-Authorization Required')) {
-  //         return;
-  //       }
-  //       temp?.push(data);
-  //     }
-  //   })
-
-  //   setMetadata();
-  // }
 
   const addToMetaData = () => {
     console.log('new services', newServices);
@@ -401,6 +384,10 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       },
       workingTimeFrom: newServices?.workingTimeFrom,
       workingTimeTo: newServices?.workingTimeTo,
+      workingPeriod: {
+        from: newServices?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
+        to: newServices?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
+      },
       activityResponse: {
         dataMap: {
           additionalDetails: newServices?.additionalDetails

@@ -79,7 +79,7 @@ export const validateServices = (contract) => {
   let services = contract?.contractedServices;
   let emptyFields = [];
   if (services?.length === 0) {
-    emptyFields.push(['Sites', 'Activities', 'Service Schedule', 'Service Schedule Frequecy', 'Duration', 'Service Days', 'Total Session', 'Working Hours - From', 'Working Hours - To']);
+    emptyFields.push(['Sites', 'Activities', 'Service Schedule', 'Service Schedule Frequency', 'Duration', 'Service Days', 'Total Session', 'Working Hours - From', 'Working Hours - To']);
 
   }
   services?.map((service, index) => {
@@ -129,7 +129,7 @@ export const validatePaymentsAndCompensation = (contract) => {
   if (payments?.compensationBasis === 'RVUBASED') {
     fieldData.push(...[
       { field: 'RVU Quantity', value: payments?.rvuQuantity?.quantity },
-      { field: 'Frequecy', value: payments?.frequency },
+      { field: 'Frequency', value: payments?.frequency },
       { field: 'FTE Equivalent', value: payments?.fteEquivalent?.value },
       { field: 'RVU Reference Used', value: payments?.rvuQuantityVariance?.value },
       { field: 'RVU Quantity Variance', value: payments?.rvuQuantityVariance?.value },
@@ -138,7 +138,7 @@ export const validatePaymentsAndCompensation = (contract) => {
   }
   payments?.timesheetPayments?.map((data, index) => {
     fieldData?.push(...[{ field: `Timesheet Label ${index + 1}`, value: data?.timesheetLabel?.label },
-    { field: `Payment Frequecy ${index + 1}`, value: data?.paymentFrequency },
+    { field: `Payment Frequency ${index + 1}`, value: data?.paymentFrequency },
     { field: `Max Payment Per Timesheet Submission ${index + 1}`, value: data?.maxPaymentPerTimesheetSubmission },
     { field: `Max Payment Per Contract ${index + 1}`, value: data?.maxPaymentPerContract },
     { field: `Reduced Number Of Services ${index + 1}`, value: data?.reducedNumberOfServices },

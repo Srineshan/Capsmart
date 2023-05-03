@@ -342,7 +342,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                 <CommonSelectField className={`${style.threeFieldWidth} ${style.marginLeft20}`}
                                     onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
                                     value={metadata?.totalSessionFrequency || 'NA'}
-                                    firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                     valueList={['WEEK', 'MONTH', 'YEAR']}
                                     labelList={['Per Week', 'Per Month', 'Per Contract Year']}
                                     disabledList={[false, false, false]}

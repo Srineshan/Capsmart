@@ -777,7 +777,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
                                                     {/* <EditableText className={`${style.inputRenewalStyle}`} placeholder="" value={autoRenewal.renewalTerm === ('0' || 0) ? '' : autoRenewal.renewalTerm} onChange={(e) => (e <= 52 && setAutoRenewal({ ...autoRenewal, renewalTerm: e, calendar: '' }))} type="tel" /> */}
                                                     <CommonSelectField value={autoRenewal.calendar}
                                                         onChange={(e) => setAutoRenewal({ ...autoRenewal, calendar: e.target.value })}
-                                                        className={`${style.marginLeft20} ${style.weekSelectStyle}`} firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                                        className={`${style.marginLeft20} ${style.weekSelectStyle}`} firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                                         valueList={['WEEKS', 'MONTHS']}
                                                         labelList={['Weeks', 'Months']}
                                                         disabledList={[false, autoRenewal?.renewalTerm > 12]} />

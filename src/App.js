@@ -27,6 +27,7 @@ const Welcome = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcome")
 );
 const Login = React.lazy(() => import("./Screens/SuperAdminDashboard/login"));
+const Notify = React.lazy(() => import("./Screens/SuperAdminDashboard/notify"));
 const SetPassword = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/setPassword")
 );
@@ -190,8 +191,25 @@ const App = ({ props }) => {
     }
   }, [])
 
+  axios.interceptors.request.use((request) => {
+    console.log('request interceptors', request);
+    return request;
+  }, (error) => {
+    console.log('request error', error);
+    return error;
+  })
+
+  axios.interceptors.response.use((response) => {
+    console.log('response interceptors', response);
+    return response;
+  }, (error) => {
+    console.log('response error', error);
+    return error;
+  })
+
+
   const getEntityId = async () => {
-    await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
+    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -204,6 +222,7 @@ const App = ({ props }) => {
       });
   };
 
+
   const login = () => {
     const requestOptions = {
       method: "GET",
@@ -213,7 +232,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `https://rest.mytimesmart.com/user-management-service/auth/login`,
+      `https://${window.location.hostname}/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
@@ -320,6 +339,7 @@ const App = ({ props }) => {
               <Route path="/" element={<LoginRoute />} />
               <Route path="/contracts" element={<ActiveContracts />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/notifyUser" element={<Notify />} />
               {/* <Route path="/user" element={<Users />} /> */}
               <Route path="/pages" element={<EntryPage />} />
               <Route path="/setPassword/:randomId" element={<SetPassword />} />
