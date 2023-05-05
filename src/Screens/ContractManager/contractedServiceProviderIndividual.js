@@ -69,7 +69,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const [allowPersonalMail, setAllowPersonalMail] = useState(false);
   const [mobileNA, setMobileNA] = useState(false);
   const [continueLoading, setContinueLoading] = useState(false);
-  // const [ssoId, setSsoId] = useState({ id: '' });
+  const [ssoId, setSsoId] = useState(null);
 
   useEffect(() => {
     getRoles();
@@ -113,7 +113,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       setSites(siteTemp || []);
       setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
       setMobileNA(userProviderData?.communication?.mobileNumberNotApplicable);
-      // setSsoId(userProviderData?.ssoId);
+      setSsoId(userProviderData?.ssoId);
     } else {
       getSites();
     }
@@ -180,6 +180,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
     let sitesValue = contractDetail?.site?.sites;
+    setTempSites(contractDetail?.site);
     if (sitesValue && siteList?.length === 0) {
       setSiteList(sitesValue);
       let siteTemp = [];
@@ -388,7 +389,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       "email": {
         "officialEmail": contractorEmail
       },
-      // "ssoId": ssoId,
+      "ssoId": ssoId,
       ...(!isUserPresent && {
         "password": {
           "password": "string"

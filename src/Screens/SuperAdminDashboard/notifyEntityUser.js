@@ -7,11 +7,11 @@ import { TenantID, GET } from "./../dataSaver";
 
 import style from './index.module.scss';
 
-const Notify = () => {
+const NotifyEntityUser = () => {
     const [userId, setUserId] = useState('');
 
     const notifyFunction = async () => {
-        await axios(`https://rest.mytimesmart.com/user-management-service/user/${userId}/notify`, {
+        await axios(`https://rest.mytimesmart.com/user-management-service/user/${userId}/notifyEntityUser`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -36,4 +36,4 @@ const Notify = () => {
 
     )
 }
-export default Notify;
+export default NotifyEntityUser;

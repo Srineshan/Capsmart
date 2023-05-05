@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import cloneDeep from 'lodash.clonedeep';
 import AddIcon from '@mui/icons-material/Add';
 import { TimePicker } from "@blueprintjs/datetime";
-import DatalistInput from 'react-datalist-input';
+import DatalistInput, { useComboboxControls } from 'react-datalist-input';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import InputAdornment from '@mui/material/InputAdornment';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
@@ -48,6 +48,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   const [metadata, setMetadata] = useState([]);
   const [users, setUsers] = useState([]);
   const [title, setTitle] = useState([]);
+  const { setValue, value } = useComboboxControls({ initialValue: '' });
 
   useEffect(() => {
     getFields();
@@ -260,6 +261,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       })
       setMetadata(temp)
     }
+    setValue('')
     getFields();
   }
 
@@ -272,7 +274,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     if (checked) {
       let temp = metadata;
       const selectedData = cloneDeep(services?.filter(data => getServiceName(data?.activityType?.activityType, data?.activities?.map(data => data?.activity)) === name)?.map(data => data)[0]);
-      console.log('selected service before adding', selectedData);
       selectedData.performingActivity = name;
       selectedData.activityType = { activityType: ADDON };
       selectedData.selectedActivityId = selectedData?.refId;
@@ -340,9 +341,9 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       return;
     }
     let temp = newServices?.locations;
-    console.log('selected item ', selectedItem, temp)
     temp.push(selectedItem);
     setNewServices({ ...newServices, locations: temp });
+    setValue('')
   }
 
   const handleAdditionalDetailSelection = (data) => {
@@ -362,7 +363,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   }
 
   const addToMetaData = () => {
-    console.log('new services', newServices);
     if (newServices?.billableService && newServices?.rate === '0') {
       ErrorToaster('Payment Rate Cannot be 0 if Billable');
       return;
@@ -619,7 +619,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   <div className={`${style.displayInRow} `}>
                     <CommonSwitch checked={data?.locationSpecified} className={`${style.textAlignLeft}`} onChange={() => switchShowLocation(data?.performingActivity)} label={data?.locationSpecified ? 'YES' : 'NO'} />
                     {data?.locationSpecified && <div className={`${style.fullWidth}`}>
-                      <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
+                      <DatalistInput items={locationItems} setValue={setValue}
+                        onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
                     </div>}
                   </div>
                   {data?.locationSpecified && data?.locations?.length !== 0 &&
@@ -828,7 +829,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               <div className={`${style.displayInRow}`}>
                 <CommonSwitch className={`${style.textAlignLeft}`} checked={newServices?.showLocation} onChange={e => handleNewServiceChange('showLocation', !newServices?.showLocation)} label={newServices?.showLocation ? 'YES' : 'NO'} />
                 {newServices?.showLocation && <div className={` ${style.fullWidth}`}>
-                  <DatalistInput items={locationItems || []} onSelect={handleNewServiceLocation} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} clearInputOnSelect={true} />
+                  <DatalistInput items={locationItems || []} setValue={setValue} onSelect={handleNewServiceLocation} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} clearInputOnSelect={true} />
                   {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                       <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                     </div> */}

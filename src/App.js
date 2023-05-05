@@ -28,6 +28,7 @@ const Welcome = React.lazy(() =>
 );
 const Login = React.lazy(() => import("./Screens/SuperAdminDashboard/login"));
 const Notify = React.lazy(() => import("./Screens/SuperAdminDashboard/notify"));
+const NotifyEntityUser = React.lazy(() => import("./Screens/SuperAdminDashboard/notifyEntityUser"));
 const SetPassword = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/setPassword")
 );
@@ -209,7 +210,7 @@ const App = ({ props }) => {
 
 
   const getEntityId = async () => {
-    await axios(`https://${window.location.hostname}/entity-service/entityID`, {
+    await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -232,7 +233,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `https://${window.location.hostname}/user-management-service/auth/login`,
+      `https://rest.mytimesmart.com/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())
@@ -340,6 +341,7 @@ const App = ({ props }) => {
               <Route path="/contracts" element={<ActiveContracts />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifyUser" element={<Notify />} />
+              <Route path="notifyEntityUser" element={<NotifyEntityUser />} />
               {/* <Route path="/user" element={<Users />} /> */}
               <Route path="/pages" element={<EntryPage />} />
               <Route path="/setPassword/:randomId" element={<SetPassword />} />

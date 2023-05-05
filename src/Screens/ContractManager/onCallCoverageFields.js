@@ -249,7 +249,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             }]
             setSpecified(SpecifiedCountCalculator(contractedSchedules, timeCommitment, metadata?.additionalScheduleFrequency, metadata?.additionalScheduleValue));
         }
-    }, [metadata?.frequency, metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value, metadata?.weekdayMin, metadata?.weekdayFrequency, metadata?.weekendMin, metadata?.weekendFrequency, metadata?.holidayMin, metadata?.holidayFrequency])
+    }, [metadata?.frequency, metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value, metadata?.weekdayMin, metadata?.weekdayFrequency, metadata?.weekendMin, metadata?.weekendFrequency, metadata?.holidayMin, metadata?.holidayFrequency, metadata?.customizedSchedule])
 
     useEffect(() => {
         if (Object.entries(serviceSelected)?.length !== 0) {
@@ -490,7 +490,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 disabledSelect={!metadata?.serviceDays?.weekDays}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Contract Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -607,7 +607,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 disabled={!metadata?.serviceDays?.weekEnds}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Contract Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -743,7 +743,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 disabled={!metadata?.serviceDays?.isholidays}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Year']}
+                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Contract Year']}
                                 disabledList={[false, false, false, false]} />
                         </div>
                     </div>
@@ -819,7 +819,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => handleValueChange('frequency', e.target.value)}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={'NA'}
                                 valueList={['WEEK', 'MONTH', 'CONTRACT_YEAR']}
-                                labelList={['Per Week', 'Per Month', 'Per Year']}
+                                labelList={['Per Week', 'Per Month', 'Per Contract Year']}
                                 disabledList={[false, false]} />
                         </div>
                     </div>

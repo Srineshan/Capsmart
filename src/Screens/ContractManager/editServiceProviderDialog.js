@@ -24,7 +24,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   const [npin, setNpin] = useState({ npin: '', missing: false, na: false });
   const [userDetails, setUserDetails] = useState({
     firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '',
-    //  ssoId: { id: '' }
+    ssoId: { id: '' }
   });
   const [providerType, setProviderType] = useState({ contractedServiceProviderType: '', id: '' });
   const [address, setAddress] = useState({ addressLine: '', city: '', state: '', zipcode: '' });
@@ -65,7 +65,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
     setSelectedRoles(userProviderData?.roles || []);
     setUserDetails({
       ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: { suffix: userProviderData?.name?.suffix?.suffix || '', id: userProviderData?.name?.suffix?.id }, email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '',
-      // ssoId: userProviderData?.ssoId || '' 
+      ssoId: userProviderData?.ssoId || ''
     });
     setProviderType(userProviderData?.serviceProviderType || {});
     setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
@@ -402,7 +402,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       "email": {
         "officialEmail": userDetails?.email
       },
-      // "ssoId": userDetails?.ssoId,
+      "ssoId": userDetails?.ssoId,
       "communication": {
         "personalEmail": userDetails?.email,
         "mobileNumber": userDetails?.phone,
