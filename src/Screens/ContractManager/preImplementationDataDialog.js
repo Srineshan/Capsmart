@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent, TextArea, RadioGroup, Radio } from '@blueprintjs/core';
 import style from './index.module.scss';
+import { GET, PUT, POST, TenantID } from './../dataSaver';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import InputAdornment from '@mui/material/InputAdornment';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
-const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplementationDialogBoolean }) => {
+const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplementationDialogBoolean, contractId }) => {
+    useEffect(() => {
+        getPreImplementationValue();
+    }, [showPreImplementationDialog]);
+
+    const getPreImplementationValue = async () => {
+        const { data: preImplementationData } = await GET(`timesheet-management-service/timesheet/preImplementationData/${contractId}`);
+        console.log('preimplementation data', preImplementationData);
+    }
+
     return (
         <Dialog isOpen={showPreImplementationDialog} onClose={() => getPreImplementationDialogBoolean(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>

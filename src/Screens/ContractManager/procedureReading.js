@@ -543,7 +543,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                             <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                                 value={metadata?.contractedSchedules?.[0]?.frequency || ''}
                                 onChange={(e) => onSameTargetChange('contractedSchedules', e.target.value, 'frequency')}
-                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['WEEK', 'MONTH']}
                                 labelList={['Per Week', 'Per Month']}
                                 disabledList={[false, false]} />
@@ -651,7 +651,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                     {
                         metadata?.contractedSchedules?.map((data, index) => (
                             <div className={`${style.tableData} ${style.scheduleTableGrid2} ${style.alternativeBackgroundColor}`}>
-                                <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} >{`${format(new Date(data?.startDate), 'MMMM d, yyyy')} - ${format(new Date(data?.endDate), 'MMMM d, yyyy')}`}</p>
+                                <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`} >{`${format(new Date(data?.startDate?.replace('-', '/')), 'MMMM d, yyyy')} - ${format(new Date(data?.endDate?.replace('-', '/')), 'MMMM d, yyyy')}`}</p>
                                 <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{data?.minimum?.value || '-'}</p>
                                 <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>{data?.maximum?.value || '-'}</p>
                                 <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}></p>
@@ -686,7 +686,7 @@ const ProcedureReading = ({ getMetaData, serviceSelected, timeCommitment, contra
                             <CommonSelectField className={`${style.fullWidth}`}
                                 value={metadata?.additionalScheduleFrequency || 'NA'}
                                 onChange={(e) => handleValueChange('additionalScheduleFrequency', e.target.value)}
-                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['WEEK', 'EVERY_OTHER_WEEK', 'MONTH', 'EVERY_OTHER_MONTH']}
                                 labelList={['Every Week', 'Every Other Week', 'Every Month', 'Every Other Month']}
                                 disabledList={[false, false, false, false]} />

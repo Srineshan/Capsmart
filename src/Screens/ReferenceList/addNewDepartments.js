@@ -43,10 +43,9 @@ const AddNewDepartments = ({
     { name: "", serviceLocations: [] },
   ]);
 
-  console.log(DepartmentService);
-
   useEffect(() => {
     if (
+      isEdit &&
       selectedLocationDeleteId !== "" &&
       selectedLocationDeleteId !== undefined
     ) {
@@ -63,9 +62,9 @@ const AddNewDepartments = ({
 
   const getServiceLocationDelete = async () => {
     const { data: serviceLocationDelete } = await PUT(
-      `entity-service/servicelocation/${selectedLocationDeleteId}/unMapDepartment`
+      `entity-service/servicelocation/${selectedLocationDeleteId}/unMapDepartment/${departId}`
     );
-    // console.log(serviceLocationDelete);
+    console.log(serviceLocationDelete);
   };
 
   useEffect(() => {
@@ -228,6 +227,7 @@ const AddNewDepartments = ({
 
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
+    // console.log(name, value);
     // console.log(name, value, index, serviceAreaList, serviceLocation);
     const list = [...serviceAreaList];
     if (name === "location") {
@@ -254,13 +254,25 @@ const AddNewDepartments = ({
             serviceAreaList
               ?.filter((data, indexVal) => index === indexVal)
               ?.map((data) => data?.serviceLocations)[0] || [];
-          // console.log("temp", temp);
+          console.log("temp", temp);
           temp.push(tempSelectedLocation);
           // console.log("after pushing", temp);
           list[index]["serviceLocations"] = temp;
         }
       }
       // console.log(selectedLocations);
+    } else if (name === "name") {
+      let ListArray = [
+        ...list.filter(
+          (item) => item.name.toLocaleLowerCase() === value.toLocaleLowerCase()
+        ),
+      ];
+
+      if (ListArray.length > 0) {
+        ErrorToaster("Already This Name Exists");
+        return;
+      }
+      list[index][name] = value;
     } else {
       list[index][name] = value;
     }
@@ -285,7 +297,7 @@ const AddNewDepartments = ({
     // });
     // console.log(isServiceAreas);
 
-    if (isPresent) {
+    if (isPresent && !isEdit) {
       ErrorToaster("Already This Name Exists");
       document.getElementById("departmentEl").focus();
       getAddEntityDialog(true);
@@ -355,7 +367,6 @@ const AddNewDepartments = ({
       setDepartId(selectedDepart?.id);
       setDepartName(selectedDepart?.departmentName?.name);
       setCreatedDate(selectedDepart?.createdDate);
-
       if (selectedDepart?.serviceAreas.length > 0) {
         setServiceAreaList(selectedDepart?.serviceAreas);
         setAddService(true);

@@ -315,23 +315,29 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
                 </div>
                 {(showSelectBox && i === selectBoxIndex) && (
                   <div className={style.selectOptionsBox} ref={menuRef}>
-                    <div className={`${style.selectOptionsMenuStyle}`}>
+                    {/* <div className={`${style.selectOptionsMenuStyle}`}>
                       <CommonCheckBox disabled={contractedServices?.length === contractedActivityTags?.length} checked={contractedServices?.length === contractedActivityTags?.length} onChange={() => handleContractedActivityTagsAdd('all', 'all', i)} label="All Activities" />
-                    </div>
+                    </div> */}
                     {activityTypes?.map(data => (
                       <>
-                        <div className={`${style.selectOptionsMenuStyle} ${style.selectedOptionstyle}`}>
-                          <CommonCheckBox onChange={() => handleContractedActivityTagsAdd(data, 'all', i)} disabled={isGroupChecked(data)} checked={isGroupChecked(data)} label={data} />
-                        </div>
                         {
-                          contractedServices?.filter(service => service?.activityType?.activityType === data)?.map(service => (
-                            <div className={`${style.selectOptionsMenuStyle} ${style.marginLeft30}`}>
-                              <FormGroup>
-                                <FormControlLabel control={<Checkbox onChange={() => handleContractedActivityTagsAdd(data, service?.performingActivity?.activity, i)} disabled={contractedActivityTags?.map(data => data?.activity)?.includes(service?.performingActivity?.activity)} checked={contractedActivityTags?.map(data => data?.activity)?.includes(service?.performingActivity?.activity)} />} label={<Typography variant="body2" className={style.disabledView}>{service?.performingActivity?.activity}</Typography>} />
-                              </FormGroup>
+                          !isGroupChecked(data) &&
+                          <div>
+                            <div className={`${style.selectOptionsMenuStyle} ${style.selectedOptionstyle}`}>
+                              <CommonCheckBox onChange={() => handleContractedActivityTagsAdd(data, 'all', i)} disabled={isGroupChecked(data)} checked={isGroupChecked(data)} label={data} />
                             </div>
-                          ))
+                            {
+                              contractedServices?.filter(service => service?.activityType?.activityType === data)?.map(service => (
+                                <div className={`${style.selectOptionsMenuStyle} ${style.marginLeft30}`}>
+                                  <FormGroup>
+                                    <FormControlLabel control={<Checkbox onChange={() => handleContractedActivityTagsAdd(data, service?.performingActivity?.activity, i)} disabled={contractedActivityTags?.map(data => data?.activity)?.includes(service?.performingActivity?.activity)} checked={contractedActivityTags?.map(data => data?.activity)?.includes(service?.performingActivity?.activity)} />} label={<Typography variant="body2" className={style.disabledView}>{service?.performingActivity?.activity}</Typography>} />
+                                  </FormGroup>
+                                </div>
+                              ))
+                            }
+                          </div>
                         }
+
                       </>
                     ))
                     }
@@ -490,10 +496,10 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
   const handleContinue = async (buttonType) => {
     setContinueLoading(true);
-    if (absence?.reviewer === null || absence?.reviewer === '0') {
-      ErrorToaster('Select Approver for Absence Request');
-      return;
-    }
+    // if (absence?.reviewer === null || absence?.reviewer === '0') {
+    //   ErrorToaster('Select Approver for Absence Request');
+    //   return;
+    // }
     let absenceData = handleTimeSheetWorkFlow(`Absence-${contractName}`, absence.reviewer, absence.approver, 'requests');
     await updateTimeSheetWorkflow(absenceData, `Absence-${contractName}`, 'Absence');
 

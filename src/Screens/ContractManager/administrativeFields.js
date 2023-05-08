@@ -259,18 +259,21 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const editActivitySelected = () => {
-        let editableData = metadata?.selectedActivities?.filter(data => data?.activity === adminActivity?.activity)?.map(data => data)[0];
-        let temp = metadata?.selectedActivities?.filter(data => data?.activity !== adminActivity?.activity)?.map(data => data);
-        temp.push({ activity: adminActivity?.activity, billable: adminActivity?.billable, podRequired: adminActivity?.podRequired, id: editableData?.id, tenant: editableData?.tenant, schedule: adminActivity?.schedule });
+        let editableData = metadata?.selectedActivities?.filter(data => data?.id === adminActivity?.id)?.map(data => data)[0];
+        let temp = metadata?.selectedActivities?.filter(data => data?.id !== adminActivity?.id)?.map(data => data);
+        temp.push({ activity: adminActivity?.activity, billable: adminActivity?.billable, podRequired: adminActivity?.podRequired, id: adminActivity?.id, tenant: editableData?.tenant, schedule: adminActivity?.schedule });
         setMetadata({ ...metadata, selectedActivities: temp });
         setShowAdminActivity(false);
         setEditAdminActivitySelected(false);
     }
 
     const submit = () => {
+        console.log('submit func', showAdminActivity);
         if (showAdminActivity) {
+            console.log('inside if func', showAdminActivity);
             activityToAdd();
         } else {
+            console.log('inside else func', showAdminActivity);
             editActivitySelected();
         }
     }
@@ -337,7 +340,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                             <CommonSelectField className={` ${style.marginLeft20}`}
                                 value={metadata?.totalSessionFrequency || 'NA'}
                                 onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
-                                firstOptionLabel={'Select Frequecy'} firstOptionValue={'NA'}
+                                firstOptionLabel={'Select Frequency'} firstOptionValue={'NA'}
                                 valueList={['WEEK', 'MONTH']}
                                 labelList={['Per Week', 'Per Month']}
                                 disabledList={[false, false]} />
@@ -372,14 +375,17 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     {
                         activity?.map((data, index) => (
                             <div className={`${style.displayInRow} ${style.marginBottom10}`}>
-                                <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={data?.activity} />
                                 {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) ? (
                                     <>
+                                        <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.activity)?.[0]} />
+
                                         <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.schedule)[0]}</div>
                                         {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.billable)[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                         {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.podRequired)[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                     </>
                                 ) : (<>
+                                    <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={data?.activity} />
+
                                     <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
                                     {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                     {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
@@ -402,6 +408,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     setEditAdminActivitySelected(true);
                                     let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
+                                        id: adminActivity?.id,
                                         activity: adminActivity?.activity,
                                         podRequired: adminActivity?.podRequired,
                                         schedule: adminActivity?.schedule,
@@ -442,7 +449,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                 <CommonSelectField className={`${style.fullWidth}`}
                                     value={adminActivity?.schedule || ''}
                                     onChange={(e) => handleAdminActivity('schedule', e.target.value)}
-                                    firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                     valueList={['NA', 'WEEK', 'MONTH', 'YEAR']}
                                     labelList={['NA', 'Per Week', 'Per Month', 'Per Contract Year']}
                                     disabledList={[false, false, false, false, false]} />

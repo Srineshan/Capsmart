@@ -161,7 +161,6 @@ const SetPassword = () => {
           navigate('/thankyou');
         })
         .catch(error => {
-          console.log('Error', error);
           ErrorToaster(error?.response?.data);
 
         })

@@ -102,7 +102,7 @@ const TerminationReasonForCustomer = () => {
   const getTerminationReason = async () => {
     if (siteTypeId !== "" && siteTypeId !== undefined) {
       const { data: terminationReason } = await GET(
-        `entity-service/terminationReason?siteTypeId=${siteTypeId}`
+        `entity-service/terminationReason?X-tenantID=${TenantID}&siteTypeId=${siteTypeId}`
       );
       setTerminationReason(terminationReason);
     }
@@ -222,11 +222,11 @@ const TerminationReasonForCustomer = () => {
         ?.map((data) => data);
     temp.secondary_reasons = selectedSecondaryReasonListPerTerminationReasons;
     temp.entityId = { id: TenantID };
-    // console.log(
-    //   selectedData,
-    //   temp,
-    //   selectedSecondaryReasonListPerTerminationReasons
-    // );
+    console.log(
+      selectedData,
+      temp,
+      selectedSecondaryReasonListPerTerminationReasons
+    );
     await PUT(
       `entity-service/terminationReason/${selectedData?.id}`,
       JSON.stringify(temp)

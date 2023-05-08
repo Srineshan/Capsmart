@@ -210,10 +210,10 @@ const ContractedServiceProvidedByIndustries = () => {
                           ENTITY TYPE
                         </p>
                         <p className={style.tableHeaderIndustriesFontStyle}>
-                          {/* CREATED DATE */}
+                          LAST UPDATED
                         </p>
                         <p className={style.tableHeaderIndustriesFontStyle}>
-                          LAST UPDATED
+                          {/* LAST UPDATED */}
                         </p>
                       </div>
                       {siteTypeTableData?.map((data) =>

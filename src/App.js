@@ -27,6 +27,8 @@ const Welcome = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcome")
 );
 const Login = React.lazy(() => import("./Screens/SuperAdminDashboard/login"));
+const Notify = React.lazy(() => import("./Screens/SuperAdminDashboard/notify"));
+const NotifyEntityUser = React.lazy(() => import("./Screens/SuperAdminDashboard/notifyEntityUser"));
 const SetPassword = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/setPassword")
 );
@@ -173,15 +175,42 @@ const App = ({ props }) => {
   // const navigate = useNavigate();
 
 
-  useEffect(() => {
-    getEntityId();
-  }, [cookie.get("user")])
+  // useEffect(() => {
+  //   getEntityId();
+  // }, [cookie.get("user")])
+
+  // useEffect(() => {
+  //   if(!cookie.get("user")){
+  //     login();
+  //   }
+  // }, [entityId])
 
   useEffect(() => {
-    if (!cookie.get("user")) {
-      login();
+    const reloadCount = sessionStorage.getItem('reloadCount');
+    if (reloadCount < 1) {
+      sessionStorage.setItem('reloadCount', String(reloadCount + 1));
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem('reloadCount');
     }
-  }, [entityId])
+  }, [])
+
+  axios.interceptors.request.use((request) => {
+    console.log('request interceptors', request);
+    return request;
+  }, (error) => {
+    console.log('request error', error);
+    return error;
+  })
+
+  axios.interceptors.response.use((response) => {
+    console.log('response interceptors', response);
+    return response;
+  }, (error) => {
+    console.log('response error', error);
+    return error;
+  })
+
 
   const getEntityId = async () => {
     await axios(`https://rest.mytimesmart.com/entity-service/entityID`, {
@@ -196,6 +225,7 @@ const App = ({ props }) => {
         console.log("error", error);
       });
   };
+
 
   const login = () => {
     const requestOptions = {
@@ -313,6 +343,8 @@ const App = ({ props }) => {
               <Route path="/" element={<LoginRoute />} />
               <Route path="/contracts" element={<ActiveContracts />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/notifyUser" element={<Notify />} />
+              <Route path="notifyEntityUser" element={<NotifyEntityUser />} />
               {/* <Route path="/user" element={<Users />} /> */}
               <Route path="/pages" element={<EntryPage />} />
               <Route path="/setPassword/:randomId" element={<SetPassword />} />

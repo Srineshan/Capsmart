@@ -120,12 +120,12 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     }, [timeSheetTabs?.length, timesheetPayments?.length])
 
     const setTimesheetPaymentsValue = () => {
-        if (timeSheetTabs?.length && timesheetPayments?.length === 0) {
+        if (timeSheetTabs?.length !== timesheetPayments?.length) {
             let temp = [];
-            timeSheetTabs?.map(data => {
+            timeSheetTabs?.map((data, index) => {
                 temp.push({
                     timesheetLabel: {
-                        label: data?.timesheetLabel?.label
+                        label: timeSheetTabs?.[index]?.timesheetLabel?.label
                     },
                     paymentFrequency: data?.servicePeriod?.value,
                     maxPaymentPerTimesheetSubmission: parseFloat(0),
@@ -190,7 +190,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                 <div className={`${style.contractedBorderStyle} ${style.marginTop20}`}>
                     <div className={`${style.extentionGrid}`}>
                         <CommonLabel value='Timesheet Name*' />
-                        <CommonInputField className={style.fullWidth} value={timesheetPayments?.[i]?.timesheetLabel?.label || ''} readOnly={true} />
+                        <CommonInputField className={style.fullWidth} value={timeSheetTabs?.[i]?.timesheetLabel?.label || ''} readOnly={true} />
                     </div>
                     {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                         <CommonLabel value='Payment Processing Criteria*' /> */}

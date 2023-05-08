@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import cloneDeep from 'lodash.clonedeep';
 import AddIcon from '@mui/icons-material/Add';
 import { TimePicker } from "@blueprintjs/datetime";
-import DatalistInput from 'react-datalist-input';
+import DatalistInput, { useComboboxControls } from 'react-datalist-input';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import InputAdornment from '@mui/material/InputAdornment';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
@@ -48,12 +48,14 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   const [metadata, setMetadata] = useState([]);
   const [users, setUsers] = useState([]);
   const [title, setTitle] = useState([]);
+  const { setValue, value } = useComboboxControls({ initialValue: '' });
 
   useEffect(() => {
     getFields();
   }, [locationItems])
 
   useEffect(() => {
+    console.log('metadata in useEffect', metadata);
     getMetaData(metadata);
   }, [metadata])
 
@@ -138,8 +140,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     }
   }
 
-  console.log('metadata', metadata);
-
   const resetNewServices = () => {
     setNewServices({
       name: '',
@@ -165,7 +165,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       deptId.push(`${data?.id}#${dept?.id}`);
     }))
     let encodedDept = encodeURIComponent(deptId);
-    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&&contractIdToIgnore=${contractId}`;
+    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&contractIdToIgnore=${contractId}`;
     const { data: userList } = await GET(uri);
     if (userList) {
       setUsers(userList);
@@ -261,6 +261,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       })
       setMetadata(temp)
     }
+    setValue('')
     getFields();
   }
 
@@ -278,6 +279,12 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       selectedData.selectedActivityId = selectedData?.refId;
       selectedData.refId = null;
       selectedData.sessionDuration = selectedData?.duration?.hours;
+      selectedData.contractedSchedules = [];
+      selectedData.patientsSeenTargets = [];
+      selectedData.scheduledPatientsTargets = [];
+      selectedData.workingTimeFrom = selectedData?.workingTimeFrom;
+      selectedData.workingTimeTo = selectedData?.workingTimeTo;
+      selectedData.locations = selectedData?.serviceLocations;
       temp.push(selectedData);
       setSelectedServices(temp?.map(data => data?.performingActivity));
       setMetadata(temp);
@@ -318,6 +325,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     }
   }
 
+  console.log()
+
   const updateWorkingHours = (name, value) => {
     let temp = metadata;
     temp?.map(data => {
@@ -327,13 +336,14 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
   }
 
   const handleNewServiceLocation = (selectedItem) => {
-    if (newServices?.locations?.map(data => data?.location)?.includes(selectedItem?.location)) {
+    if (newServices?.locations?.map(data => data)?.includes(selectedItem)) {
       ErrorToaster('Location Already Exists');
       return;
     }
     let temp = newServices?.locations;
-    temp.push({ 'location': selectedItem?.location });
+    temp.push(selectedItem);
     setNewServices({ ...newServices, locations: temp });
+    setValue('')
   }
 
   const handleAdditionalDetailSelection = (data) => {
@@ -352,28 +362,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     setNewServices({ ...newServices, 'additionalDetails': temp });
   }
 
-  // const handleMetadataAdditional = (data) => {
-  //   let item = metadata;
-  //   item?.map(element => {
-  //     let temp = element?.activityResponse?.dataMap?.additionalDetails;
-  //     if (element?.activityResponse?.dataMap?.additionalDetails?.includes(data)) {
-  //       if (data === 'Prior Pre-Authorization Required') {
-  //         temp = element?.activityResponse?.dataMap?.additionalDetails?.filter(detail => detail !== 'Administrative Approval For Payment Required')?.map(data => data);
-  //       }
-  //       temp = element?.activityResponse?.dataMap?.additionalDetails?.filter(detail => detail !== data)?.map(data => data);
-  //     } else {
-  //       if (data === 'Administrative Approval For Payment Required' && !temp?.includes('Prior Pre-Authorization Required')) {
-  //         return;
-  //       }
-  //       temp?.push(data);
-  //     }
-  //   })
-
-  //   setMetadata();
-  // }
-
   const addToMetaData = () => {
-    console.log('new services', newServices);
     if (newServices?.billableService && newServices?.rate === '0') {
       ErrorToaster('Payment Rate Cannot be 0 if Billable');
       return;
@@ -395,6 +384,10 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       },
       workingTimeFrom: newServices?.workingTimeFrom,
       workingTimeTo: newServices?.workingTimeTo,
+      workingPeriod: {
+        from: newServices?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
+        to: newServices?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
+      },
       activityResponse: {
         dataMap: {
           additionalDetails: newServices?.additionalDetails
@@ -485,6 +478,37 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     setMetadata(temp);
     getFields();
   }
+
+  const additionalDetailSelectionChange = (data) => {
+    let temp = metadata?.[0]?.activityResponse?.dataMap?.additionalDetails || [];
+    let approver = metadata?.[0]?.approver;
+    let paymentApprover = metadata?.[0]?.paymentApprover;
+    if (temp?.includes(data)) {
+      if (data === 'Prior Pre-Authorization Required') {
+        approver = undefined;
+        paymentApprover = undefined;
+        temp = temp?.filter(detail => detail !== 'Administrative Approval For Payment Required')?.map(data => data);
+      }
+      if (data === 'Administrative Approval For Payment Required') {
+        paymentApprover = undefined;
+      }
+      temp = temp?.filter(detail => detail !== data)?.map(data => data);
+    } else {
+      if (data === 'Administrative Approval For Payment Required' && !temp?.includes('Prior Pre-Authorization Required')) {
+        return;
+      }
+      temp?.push(data);
+    }
+    let tempData = metadata;
+    tempData[0].approver = approver;
+    tempData[0].paymentApprover = paymentApprover;
+    tempData[0].activityResponse = { dataMap: { additionalDetails: temp } };
+    // setMetadata({ ...metadata, 'activityResponse': { 'dataMap': { 'additionalDetails': temp } } });
+    setMetadata(tempData);
+    getFields();
+  }
+
+  console.log('metadata', metadata);
 
 
   return (
@@ -588,20 +612,15 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   </div>
                 </div>
               }
-              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <CommonLabel value='Allowable Add-On Working Hours*' />
-                <div className={style.twoCol}>
-                  <CommonCheckBox checked={data?.workingHours?.normalWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'normalWorkingHours')} label="During Normal Working Hours" />
-                  <CommonCheckBox checked={data?.workingHours?.afterWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'afterWorkingHours')} label="After Working Hours" />
-                </div>
-              </div>
+
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Specify Service Facility / Location' />
                 <div>
                   <div className={`${style.displayInRow} `}>
                     <CommonSwitch checked={data?.locationSpecified} className={`${style.textAlignLeft}`} onChange={() => switchShowLocation(data?.performingActivity)} label={data?.locationSpecified ? 'YES' : 'NO'} />
                     {data?.locationSpecified && <div className={`${style.fullWidth}`}>
-                      <DatalistInput items={locationItems} onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
+                      <DatalistInput items={locationItems} setValue={setValue}
+                        onSelect={(location) => selectLocation(location, data?.performingActivity)} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} />
                     </div>}
                   </div>
                   {data?.locationSpecified && data?.locations?.length !== 0 &&
@@ -615,7 +634,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                   {
                     additionalDetails?.map((details, index) => (
                       <>
-                        <div className={`${style.additionalDetails} ${data?.activityResponse?.dataMap?.additionalDetails?.includes(details) ? style.additionalDetailsSelected : ''} ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ''}`} onClick={() => handleAdditionalDetailSelection(details)}>
+                        <div className={`${style.additionalDetails} ${data?.activityResponse?.dataMap?.additionalDetails?.includes(details) ? style.additionalDetailsSelected : ''} ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ''}`} onClick={() => additionalDetailSelectionChange(details)}>
                           <div className={style.alignCenter}>
                             <TaskAltIcon sx={{ color: data?.activityResponse?.dataMap?.additionalDetails?.includes(details) ? '#7165E3' : '#E4E4E4' }} />
                           </div>
@@ -658,6 +677,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                       </>
                     ))
                   }
+                </div>
+              </div>
+              <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                <CommonLabel value='Allowable Add-On Working Hours*' />
+                <div className={style.twoCol}>
+                  <CommonCheckBox checked={data?.workingHours?.normalWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'normalWorkingHours')} label="During Normal Working Hours" />
+                  <CommonCheckBox checked={data?.workingHours?.afterWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => handleWorkingHoursChange(data?.performingActivity, e.target.checked, 'afterWorkingHours')} label="After Working Hours" />
                 </div>
               </div>
               <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -797,22 +823,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
             </div>
           }
 
-
-          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-            <CommonLabel value='Allowable Add-On Working Hours*' />
-            <div className={style.twoCol}>
-              <CommonCheckBox checked={newServices?.duringNormalWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => { handleNewServiceChange('duringNormalWorkingHours', e.target.checked) }} label="During Normal Working Hours" />
-              <CommonCheckBox checked={newServices?.afterWorkingHours} className={`${style.marginLeft10}`} onChange={(e => handleNewServiceChange('afterWorkingHours', e.target.checked))} label="After Working Hours" />
-            </div>
-          </div>
-
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value='Specify Service Facility / Location' />
             <div>
               <div className={`${style.displayInRow}`}>
                 <CommonSwitch className={`${style.textAlignLeft}`} checked={newServices?.showLocation} onChange={e => handleNewServiceChange('showLocation', !newServices?.showLocation)} label={newServices?.showLocation ? 'YES' : 'NO'} />
                 {newServices?.showLocation && <div className={` ${style.fullWidth}`}>
-                  <DatalistInput items={locationItems || []} onSelect={handleNewServiceLocation} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} clearInputOnSelect={true} />
+                  <DatalistInput items={locationItems || []} setValue={setValue} onSelect={handleNewServiceLocation} className={style.fullWidth} onChange={(e) => getNewLocation(e.target.value)} clearInputOnSelect={true} />
                   {/* <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                       <AddIcon sx={{ fontSize: 25, color: 'white' }} onClick={locationToAdd} />
                     </div> */}
@@ -878,7 +895,13 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               }
             </div>
           </div>
-
+          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+            <CommonLabel value='Allowable Add-On Working Hours*' />
+            <div className={style.twoCol}>
+              <CommonCheckBox checked={newServices?.duringNormalWorkingHours} className={`${style.marginLeft10}`} onChange={(e) => { handleNewServiceChange('duringNormalWorkingHours', e.target.checked) }} label="During Normal Working Hours" />
+              <CommonCheckBox checked={newServices?.afterWorkingHours} className={`${style.marginLeft10}`} onChange={(e => handleNewServiceChange('afterWorkingHours', e.target.checked))} label="After Working Hours" />
+            </div>
+          </div>
           <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
             <CommonLabel value='Allowable Working Day Hours For Service*' />
             <div className={style.displayInRow}>

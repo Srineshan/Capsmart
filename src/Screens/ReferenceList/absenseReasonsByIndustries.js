@@ -25,6 +25,7 @@ const AbsenseReasonsByIndustries = () => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+  const [absenceDataList, setAbsenceDataList] = useState([]);
 
   const getAddEntityDialog = (value) => {
     setShowAddEntityDialog(value);
@@ -40,28 +41,15 @@ const AbsenseReasonsByIndustries = () => {
 
   useEffect(() => {
     if (industryId !== "" && industryId !== undefined) {
-      getEntityData();
+      getAllAbsenceData();
     }
   }, [industryId]);
-
-  const entityAllData = async (industry) => {
-    const { data: entities } = await GET(
-      `entity-service/entityTypeMaster?industryId=${industry.id}`
-    );
-    const { data: absenceReason } = await GET(
-      `entity-service/absenceReasonMaster?industryId=${industry.id}`
-    );
-    return await { ...industry, entities, absenceReason };
-  };
 
   const getIndustryData = async () => {
     const { data: industryData } = await GET(`entity-service/industryMaster`);
     setSelectedTitle(industryData?.[0]?.industry);
     setIndustryId(industryData?.[0]?.id);
     setSideMenu(industryData);
-
-    // let allEntries = await Promise.all(industryData.map(entityAllData));
-    // setSideMenu(allEntries);
 
     const { data: lastModifiedDate } = await GET(
       `entity-service/referenceList/master`
@@ -78,9 +66,11 @@ const AbsenseReasonsByIndustries = () => {
     setTableEntityData(entities);
   };
 
-  const SelectedHandler = (data) => {
-    setSelectedTitle(data.industry);
-    setIndustryId(data.id);
+  const getAllAbsenceData = async () => {
+    const { data: AbsenceData } = await GET(
+      `entity-service/absenceReasonMaster`
+    );
+    setAbsenceDataList(AbsenceData);
   };
 
   const deleteHandler = (data) => {
@@ -102,11 +92,19 @@ const AbsenseReasonsByIndustries = () => {
     await DELETE(`entity-service/absenceReasonMaster/${id}`)
       .then((response) => {
         SuccessToaster("Absence Deleted Successfully");
-        getEntityData();
+        // getEntityData();
+        getAllAbsenceData();
       })
       .catch((error) => {
         ErrorToaster(error);
       });
+  };
+
+  const getCountValue = (id) => {
+    let countValue = absenceDataList?.filter(
+      (entity) => entity?.industryId?.id === id
+    );
+    return countValue?.length;
   };
 
   return (
@@ -148,7 +146,9 @@ const AbsenseReasonsByIndustries = () => {
                                 : `${style.industriesCardStyle} ${style.marginTop10}`
                             }
                             onClick={() => {
-                              SelectedHandler(data);
+                              // SelectedHandler(data);
+                              setSelectedTitle(data?.industry);
+                              setIndustryId(data?.id);
                             }}
                           >
                             <div className={style.spaceBetween}>
@@ -156,7 +156,8 @@ const AbsenseReasonsByIndustries = () => {
                                 {data.industry}
                               </p>
                               <p className={style.industriesCardTextStyle1}>
-                                {/* {data.absenceReason.length} */} 0
+                                {/* {data.absenceReason.length} */}
+                                {getCountValue(data?.id)}
                               </p>
                             </div>
                           </div>
@@ -176,8 +177,10 @@ const AbsenseReasonsByIndustries = () => {
                           LAST UPDATED
                         </p>
                       </div>
-                      {tableEntityData?.filter(
-                        (data) => data.absenceType === "PLANNED"
+                      {absenceDataList?.filter(
+                        (data) =>
+                          data?.industryId?.id === industryId &&
+                          data.absenceType === "PLANNED"
                       ).length !== 0 ? (
                         <div className={style.terminationHeader}>
                           <img
@@ -193,8 +196,12 @@ const AbsenseReasonsByIndustries = () => {
                         <></>
                       )}
 
-                      {tableEntityData
-                        ?.filter((data) => data.absenceType === "PLANNED")
+                      {absenceDataList
+                        ?.filter(
+                          (data) =>
+                            data?.industryId?.id === industryId &&
+                            data.absenceType === "PLANNED"
+                        )
                         .map((data, innerIndex) => {
                           return (
                             <>
@@ -240,8 +247,10 @@ const AbsenseReasonsByIndustries = () => {
                           );
                         })}
 
-                      {tableEntityData?.filter(
-                        (data) => data.absenceType === "UNPLANNED"
+                      {absenceDataList?.filter(
+                        (data) =>
+                          data?.industryId?.id === industryId &&
+                          data.absenceType === "UNPLANNED"
                       ).length !== 0 ? (
                         <div className={style.terminationHeader}>
                           <img
@@ -257,8 +266,12 @@ const AbsenseReasonsByIndustries = () => {
                         <></>
                       )}
 
-                      {tableEntityData
-                        ?.filter((data) => data.absenceType === "UNPLANNED")
+                      {absenceDataList
+                        ?.filter(
+                          (data) =>
+                            data?.industryId?.id === industryId &&
+                            data.absenceType === "UNPLANNED"
+                        )
                         .map((data, innerIndex) => {
                           return (
                             <>
@@ -322,7 +335,7 @@ const AbsenseReasonsByIndustries = () => {
           IndustryId={industryId}
           isEdit={isEdit}
           selectedAbsence={selectedAbsence}
-          getEntityData={getEntityData}
+          getEntityData={getAllAbsenceData}
           tableEntityData={tableEntityData}
           selectedTitle={selectedTitle}
           getIndustryData={getIndustryData}

@@ -447,7 +447,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     setContinueLoading(false);
   }
 
-  console.log('metadata', metadata);
+  console.log('metadata in add service', metadata);
 
   const handleSave = async (buttonType) => {
     if (serviceType === '') {
@@ -529,13 +529,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     let data = [];
     if (serviceTypeTemplate === ADDON && !editService) {
+      console.log('inside if', metadata);
       data = metadata;
       data.map((item, index) => {
-        item.workingPeriod = {
-          "from": metadata?.[index]?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
-          "to": metadata?.[index]?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
-        }
-        item.serviceLocations = item?.locationSpecified ? data?.locations : locationItems;
+        item.workingPeriod = metadata?.[index]?.workingPeriod;
+        item.serviceLocations = metadata?.[index]?.serviceLocations ? metadata?.[index]?.serviceLocations : metadata?.[index]?.locations;
         item.duration = {
           "hours": parseInt(item?.sessionDuration)
         };
@@ -774,6 +772,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     if (editService && serviceTypeTemplate === ADDON) {
       data[0].activities = metadata?.[0]?.activities;
       data[0].performingActivity = { activity: metadata?.[0]?.performingActivity };
+      data[0].workingHours = metadata?.[0]?.workingHours;
     }
     let services = existingServices || [];
     if (editService) {
@@ -781,7 +780,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       temp.push(...data);
       services = temp;
     } else {
-      console.log('services in else', data, existingServices, services);
       if (existingServices?.length === services?.length) {
         data?.map(data => {
           if (!services?.map(service => service?.refId)?.includes(data?.refId)) {

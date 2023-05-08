@@ -26,7 +26,10 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
   const [roles, setRoles] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [nPin, setNpin] = useState({ npin: '', missing: false, na: false });
-  const [userDetails, setUserDetails] = useState({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '', ssoId: { id: '' } });
+  const [userDetails, setUserDetails] = useState({
+    firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '',
+    // ssoId: { id: '' } 
+  });
   const [providerType, setProviderType] = useState({ contractedServiceProviderType: '', id: '' });
   const [address, setAddress] = useState({ addressLine: '', city: '', state: '', zipcode: '' });
   const [siteLevel, setSiteLevel] = useState(false);
@@ -165,6 +168,28 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
     }
   });
 
+  const deptTitleReset = () => {
+    let temp = sites;
+    temp?.map(site => {
+      site?.department?.map(dept => {
+        dept.title = '';
+        dept.title_id = '';
+      })
+    })
+    setSites(temp);
+    setDepartmentTitleValues([]);
+  }
+
+  const siteTitleReset = () => {
+    let temp = sites;
+    temp?.map(site => {
+      site.title = '';
+      site.title_id = '';
+    })
+    setSites(temp);
+    setSiteTitleValues([]);
+  }
+
   const handleSave = async (type) => {
     setContinueLoading(true);
     let contractData = [];
@@ -235,7 +260,8 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
       "email": {
         "officialEmail": userDetails?.email
       },
-      "ssoId": userDetails?.ssoId,
+      // "ssoId": userDetails?.ssoId,
+      "ssoId": null,
       "password": {
         "password": ''
       },
@@ -270,7 +296,10 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
         ErrorToaster('Unexpected Error');
       })
     setContinueLoading(false);
-    setUserDetails({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '', ssoId: { id: '' } });
+    setUserDetails({
+      firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '',
+      //  ssoId: { id: '' } 
+    });
     setProviderType({});
     setAddress({ city: '', state: '', zipcode: '' });
     setSiteLevel(false);
@@ -485,12 +514,12 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
             </div>
           }
 
-          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+          {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <CommonLabel value='SSO ID*' />
             <div className={style.displayInRow}>
               <CommonInputField placeholder="Enter SSO Id" value={userDetails?.ssoId?.id} className={`${style.entityFieldWidth}`} onChange={(e) => setUserDetails({ ...userDetails, ssoId: { id: e.target.value } })} />
             </div>
-          </div>
+          </div> */}
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <CommonLabel value='Cell Phone*' />
@@ -522,7 +551,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
             <CommonLabel value='Site Level Responsibility*' />
             <div>
               <div className={style.flexLeft}>
-                <CommonSwitch checked={siteLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setSiteLevel(!siteLevel); resetSiteLevel(!siteLevel); }} label={siteLevel ? 'YES' : "NO"} />
+                <CommonSwitch checked={siteLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setSiteLevel(!siteLevel); siteTitleReset(); }} label={siteLevel ? 'YES' : "NO"} />
               </div>
               {siteLevel && (
                 <div className={`${style.siteLevelBoxStyle}`}>
@@ -561,7 +590,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
             <CommonLabel value='Department Level Responsibility*' />
             <div>
               <div className={style.flexLeft}>
-                <CommonSwitch checked={departmentLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setDepartmentLevel(!departmentLevel); resetDeptvalue(!departmentLevel) }} label={departmentLevel ? 'YES' : "NO"} />
+                <CommonSwitch checked={departmentLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setDepartmentLevel(!departmentLevel); deptTitleReset(); }} label={departmentLevel ? 'YES' : "NO"} />
               </div>
               <div>
                 {departmentLevel && (

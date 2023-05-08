@@ -210,7 +210,7 @@ const BoardCertification = () => {
                               }
                             >
                               <div
-                                className={`${style.boardCertificationInnerFolderRows} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
+                                className={`${style.boardCertificationInnerFolderRows} ${style.HolidayListBackground} ${style.spaceBetween}`}
                                 onClick={() => handleToggleYear()}
                               >
                                 <img
@@ -219,7 +219,7 @@ const BoardCertification = () => {
                                   alt=""
                                 />
                                 <p
-                                  className={`${style.healthCareHeaderTextStyle} ${style.textColorBlue} `}
+                                  className={`${style.holidayHeaderTextStyle} ${style.textColorBlue} `}
                                 >
                                   YEAR - {selectedYear}
                                 </p>
@@ -235,7 +235,7 @@ const BoardCertification = () => {
                                   return (
                                     <>
                                       <div
-                                        className={`${style.boardCertificationInnerFolderRows} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
+                                        className={`${style.boardCertificationInnerFolderRows} ${style.HolidayListBackground} ${style.spaceBetween}`}
                                         key={indx}
                                         onClick={() =>
                                           SelectedYearHandler(year)
@@ -249,8 +249,8 @@ const BoardCertification = () => {
                                         <p
                                           className={
                                             year?.year === selectedYear
-                                              ? `${style.healthCareHeaderTextStyle} ${style.textColorBlue} `
-                                              : `${style.healthCareHeaderTextStyle}`
+                                              ? `${style.holidayHeaderTextStyle} ${style.textColorBlue} `
+                                              : `${style.holidayHeaderTextStyle}`
                                           }
                                         >
                                           {`YEAR - ${year.year}`}
@@ -262,7 +262,7 @@ const BoardCertification = () => {
                                 })}
 
                               <div
-                                className={`${style.boardCertificationInnerFolderRows} ${style.HealthCareListBackground1} ${style.spaceBetween}`}
+                                className={`${style.boardCertificationInnerFolderRows} ${style.HolidayListBackground} ${style.spaceBetween}`}
                               >
                                 <img
                                   src={TransparentFolder}
