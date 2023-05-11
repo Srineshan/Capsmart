@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Dialog, Classes, Icon, Intent, TextArea, RadioGroup, Radio } from '@blueprintjs/core';
+import React, { useEffect, useState } from 'react';
+import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import style from './index.module.scss';
 import { GET, PUT, POST, TenantID } from './../dataSaver';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
@@ -9,6 +9,17 @@ import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplementationDialogBoolean, contractId }) => {
+    const [clinicBlockCompleted, setClinicBlockCompleted] = useState('');
+    const [surgeryBlockCompleted, setSurgeryBlockCompleted] = useState('');
+    const [procedureBlockCompleted, setProcedureBlockCompleted] = useState('');
+    const [onCallCompleted, setOnCallCompleted] = useState('');
+    const [supplementalCompleted, setSupplementalCompleted] = useState('');
+    const [clinicalCareServiceRendered, setClinicalCareServiceRendered] = useState({ value: 0, na: false });
+    const [administrativeResponsibilities, setAdministrativeResponsibilities] = useState({ value: 0, na: false });
+    const [totalCompensation, setTotalCompensation] = useState({ value: 0, na: false });
+    const [absenseDays, setAbsenseDays] = useState({ value: 0, na: false });
+    const [activitiesCompleted, setActivitiesCompleted] = useState(false);
+
     useEffect(() => {
         getPreImplementationValue();
     }, [showPreImplementationDialog]);
@@ -35,62 +46,47 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
                             <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                                 <div className={style.popUpPreImplementationTitle}>Obligated Activities Completed</div>
                                 <CommonCheckBox
-                                    // checked={metadata?.onCallCoverageFor?.includes('InPatient')} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} 
+                                    checked={activitiesCompleted} onChange={(e) => setActivitiesCompleted(!activitiesCompleted)}
                                     label="NA" />
                             </div>
                             <div className={`${style.marginTop20}`}>
                                 <CommonLabel value='Clinic Block Completed ( Fracture Clinic, orthopedics Clinic )' />
                                 <CommonInputField className={style.fullWidth}
-                                //  value={rvuQuantity?.quantity} placeholder="0"
-                                // type='number'
-                                // min="0"
-                                // onChange={(e) => e.target.value >= 0 && setRvuQuantity({
-                                //     ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
-                                // })} 
+                                    value={clinicBlockCompleted}
+                                    type='number'
+                                    onChange={(e) => e.target.value >= 0 && setClinicBlockCompleted(e.target.value)}
                                 />
                             </div>
                             <div className={`${style.marginTop20}`}>
                                 <CommonLabel value='Surgery Blocks Completed' />
                                 <CommonInputField className={style.fullWidth}
-                                //  value={rvuQuantity?.quantity} placeholder="0"
-                                // type='number'
-                                // min="0"
-                                // onChange={(e) => e.target.value >= 0 && setRvuQuantity({
-                                //     ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
-                                // })} 
+                                    value={surgeryBlockCompleted}
+                                    type='number'
+                                    onChange={(e) => e.target.value >= 0 && setSurgeryBlockCompleted(e.target.value)}
                                 />
                             </div>
                             <div className={`${style.marginTop20}`}>
                                 <CommonLabel value='Procedure reading / Implant block completed' />
                                 <CommonInputField className={style.fullWidth}
-                                //  value={rvuQuantity?.quantity} placeholder="0"
-                                // type='number'
-                                // min="0"
-                                // onChange={(e) => e.target.value >= 0 && setRvuQuantity({
-                                //     ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
-                                // })} 
+                                    value={procedureBlockCompleted}
+                                    type='number'
+                                    onChange={(e) => e.target.value >= 0 && setProcedureBlockCompleted(e.target.value)}
                                 />
                             </div>
                             <div className={`${style.marginTop20}`}>
                                 <CommonLabel value='On Call Coverage Duty Days Completed' />
                                 <CommonInputField className={style.fullWidth}
-                                //  value={rvuQuantity?.quantity} placeholder="0"
-                                // type='number'
-                                // min="0"
-                                // onChange={(e) => e.target.value >= 0 && setRvuQuantity({
-                                //     ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
-                                // })} 
+                                    value={onCallCompleted}
+                                    type='number'
+                                    onChange={(e) => e.target.value >= 0 && setOnCallCompleted(e.target.value)}
                                 />
                             </div>
                             <div className={`${style.marginTop20}`}>
                                 <CommonLabel value='Suppliemetal Service Hours Used' />
                                 <CommonInputField className={style.fullWidth}
-                                //  value={rvuQuantity?.quantity} placeholder="0"
-                                // type='number'
-                                // min="0"
-                                // onChange={(e) => e.target.value >= 0 && setRvuQuantity({
-                                //     ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
-                                // })} 
+                                    value={supplementalCompleted}
+                                    type='number'
+                                    onChange={(e) => e.target.value >= 0 && setSupplementalCompleted(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -102,16 +98,15 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
                             <div className={style.displayInRow}>
                                 <CommonTextField
                                     className={style.fullWidth}
-                                    // type="number"
-                                    min="0"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                // onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
-                                // value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString()}
+                                    onChange={(e) => e.target.value >= 0 && setClinicalCareServiceRendered({ ...clinicalCareServiceRendered, value: e.target.value.slice(0, 9).replace(/,/g, "") })}
+                                    value={Number(clinicalCareServiceRendered?.value)?.toLocaleString()}
+                                // disabled={clinicalCareServiceRendered?.na}
                                 />
                                 <CommonCheckBox className={style.marginLeft20}
-                                    // checked={metadata?.onCallCoverageFor?.includes('InPatient')} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} 
+                                    checked={clinicalCareServiceRendered?.na} onChange={(e) => setClinicalCareServiceRendered({ ...clinicalCareServiceRendered, na: !clinicalCareServiceRendered?.na, value: 0 })}
                                     label="NA" />
                             </div>
                         </div>
@@ -125,12 +120,12 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                // onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
-                                // value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString()}
+                                    onChange={(e) => e.target.value >= 0 && setAdministrativeResponsibilities({ ...administrativeResponsibilities, value: e.target.value.slice(0, 9).replace(/,/g, "") })}
+                                    value={Number(administrativeResponsibilities?.value)?.toLocaleString()}
+                                // disabled={administrativeResponsibilities?.na}
                                 />
                                 <CommonCheckBox className={style.marginLeft20}
-                                    // checked={metadata?.onCallCoverageFor?.includes('InPatient')} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} 
-                                    label="NA" />
+                                    checked={administrativeResponsibilities?.na} onChange={(e) => setAdministrativeResponsibilities({ ...administrativeResponsibilities, na: !administrativeResponsibilities?.na, value: 0 })} label="NA" />
                             </div>
                         </div>
                         <div className={`${style.marginTop20}`}>
@@ -143,12 +138,12 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                // onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
-                                // value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString()}
+                                    onChange={(e) => e.target.value >= 0 && setTotalCompensation({ ...totalCompensation, value: e.target.value.slice(0, 9).replace(/,/g, "") })}
+                                    value={Number(totalCompensation?.value)?.toLocaleString()}
+                                // disabled={totalCompensation?.na}
                                 />
                                 <CommonCheckBox className={style.marginLeft20}
-                                    // checked={metadata?.onCallCoverageFor?.includes('InPatient')} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} 
-                                    label="NA" />
+                                    checked={totalCompensation?.na} onChange={(e) => setTotalCompensation({ ...totalCompensation, na: !totalCompensation?.na, value: 0 })} label="NA" />
                             </div>
                         </div>
                     </div>
@@ -158,15 +153,14 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
                             <CommonLabel value='Days' />
                             <div className={style.displayInRow}>
                                 <CommonInputField className={style.fullWidth}
-                                //  value={rvuQuantity?.quantity} placeholder="0"
-                                // type='number'
-                                // min="0"
-                                // onChange={(e) => e.target.value >= 0 && setRvuQuantity({
-                                //     ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
-                                // })} 
+                                    value={absenseDays?.value}
+                                    type='number'
+                                    // min="0"
+                                    // disabled={absenseDays?.na}
+                                    onChange={(e) => e.target.value >= 0 && setAbsenseDays({ ...absenseDays, value: e.target.value })}
                                 />
                                 <CommonCheckBox className={style.marginLeft20}
-                                    // checked={metadata?.onCallCoverageFor?.includes('InPatient')} onChange={(e) => handleOnCallCoverageFor('InPatient', e)} 
+                                    checked={absenseDays?.na} onChange={(e) => setAbsenseDays({ ...absenseDays, na: !absenseDays?.na, value: 0 })}
                                     label="NA" />
                             </div>
                         </div>
@@ -174,7 +168,7 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
                 </div>
                 <div>
                     <div className={`${style.floatRight} ${style.marginTop20}`}>
-                        <button className={style.outlinedButton}>CANCEL</button>
+                        <button className={`${style.buttonStyle} `}>CANCEL</button>
                         <button className={`${style.buttonStyle} ${style.marginLeft20}`}>SAVE AS DONE</button>
                     </div>
                 </div>

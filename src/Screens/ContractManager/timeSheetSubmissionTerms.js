@@ -254,8 +254,12 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getTimesheetFields();
   }
 
-  const handleContractedActivityTagsRemove = (index) => {
-    setContractedActivityTags(contractedActivityTags?.filter((data, indexValue) => index !== indexValue)?.map(data => data));
+  const handleContractedActivityTagsRemove = (index, dataIndex) => {
+    let temp = contractedActivityTags;
+    let selectedIndexValues = temp?.filter((data, indexValue) => dataIndex === data?.index)?.map(data => data);
+    let afterRemoving = selectedIndexValues?.filter((data, indexValue) => index !== indexValue)?.map(data => data)
+    afterRemoving = afterRemoving.concat(contractedActivityTags?.filter((data, indexValue) => dataIndex !== data?.index)?.map(data => data));
+    setContractedActivityTags(afterRemoving);
   }
 
   const isGroupChecked = (type) => {
@@ -275,6 +279,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     formatActivities();
     getTimesheetFields();
   }
+
 
   const getTimesheetFields = () => {
     let temp = [];
@@ -349,7 +354,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
                       contractedActivityTags?.filter((data, index) => data?.index === i)?.map((data, index) => (
                         <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
                           <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{data?.type}-{data?.activity}</div>
-                          <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => handleContractedActivityTagsRemove(index)} />
+                          <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => handleContractedActivityTagsRemove(index, data?.index)} />
                         </div>
                       ))
                     }

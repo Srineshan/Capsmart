@@ -203,6 +203,15 @@ body {
     overflow: scroll;
 }
 
+.activateAccessBackground {
+    background-color: #F8FCFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: scroll;
+}
+
 .passwordStrengthGrid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -219,6 +228,12 @@ body {
     padding: 40px 100px;
     width: 40%;
     margin-left: 30%;
+}
+
+.activateAccessCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    padding: 40px 100px;
+    width: 40%;
 }
 
 .otpCard {
@@ -2325,4 +2340,37 @@ input[type="file"] {
     grid-template-columns: 10% 10% 10% 10% 10% 10% 10% 10% 10%;
     grid-gap: 1%;
     padding-left: 40px;
+}
+
+.activateHeaderText {
+    color: #7165E3;
+    font: normal normal normal 25px/25px Montserrat;
+    letter-spacing: 0px;
+}
+
+.activateAccessHelpText {
+    font: italic normal normal 12px/15px Roboto;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+    opacity: 0.7;
+}
+
+.activateAccessAlertText {
+    text-align: center;
+    font: normal normal normal 13px/23px Montserrat;
+    letter-spacing: 0px;
+    color: #FF0000;
+}
+
+.redWarningStyle {
+    height: 50px;
+    width: 50px;
+}
+
+.failureCheckDesc {
+    text-align: left;
+    font: normal normal 600 14px/18px Montserrat;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+    text-transform: capitalize;
 }

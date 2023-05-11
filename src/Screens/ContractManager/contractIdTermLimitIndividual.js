@@ -924,7 +924,7 @@ const ContractIdTermLimitIndividual = (
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Contract Time Commitment*' />
           <div className={style.contractedTime}>
-            <CommonInputField type="tel" maxLength={2} value={(contractedTimeCommitment?.value === 0 || contractedTimeCommitment?.value === '0') ? '' : contractedTimeCommitment?.value} onChange={(e) => e.target.value >= 0 && e.target.value < 53 && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value, frequency: 'NA' })} />
+            <CommonInputField type="tel" value={(contractedTimeCommitment?.value === 0 || contractedTimeCommitment?.value === '0') ? '' : contractedTimeCommitment?.value} onChange={(e) => e.target.value >= 0 && e.target.value <= differenceInCalendarWeeks(new Date(contractTermPeriodTo), new Date(contractTermPeriodFrom)) && setContractTimeCommitment({ ...contractedTimeCommitment, value: e.target.value, frequency: 'NA' })} />
             <CommonSelectField value={contractedTimeCommitment?.frequency || 'Select...'}
               onChange={(e) => setContractTimeCommitment({ ...contractedTimeCommitment, frequency: e.target.value })}
               className={`${style.timeCommitment}`} firstOptionLabel={'Select...'} firstOptionValue={'Select...'}
