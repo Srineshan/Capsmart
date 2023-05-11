@@ -165,14 +165,14 @@ const Navbar = () => {
   const idHelp = open ? "mouse-over-popover" : undefined;
 
   const logoutURL = () => {
-    window.location.href = `https://rest.mytimesmart.com/logout`;
+    window.location.href = `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`;
   }
 
   const logout = async () => {
     const cookies = new Cookies();
     let token = cookies.get("user");
     let entityId = cookies.get("entityId");
-    // await fetch(`https://rest.mytimesmart.com/logout`, {
+    // await fetch(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
     //   // redirect: 'manual',
     //   method: 'PUT',
     //   body: JSON.stringify({}),
@@ -184,7 +184,7 @@ const Navbar = () => {
     // })
 
     // let data = JSON.stringify({});
-    // await axios(`https://rest.mytimesmart.com/logout`, {
+    // await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
     //   method: 'PUT',
     //   data,
     // }).then(response => {
@@ -200,7 +200,7 @@ const Navbar = () => {
 
 
     // window.location.href = respose.headers?.get('Location')
-    // axios.post(`https://rest.mytimesmart.com/logout`, {
+    // axios.post(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/logout`, {
     //   // Add parameters here
     //   // transformRequest: (data, headers) => {
     //   //   delete headers.common['X-XSRF-TOKEN'];
@@ -220,18 +220,13 @@ const Navbar = () => {
     //   })
     await PUT(`logout`, null)
       .then(response => {
-        console.log('respose', response, response?.data, response?.headers);
-        console.log('response from data', response.data.redirectURL);
-        console.log('response from header', response.headers['location']);
         const logouturi = response.headers['location'] || '';
-        console.log('redirectURI', logouturi);
         cookies.remove("user", { path: '/' });
         cookies.remove("entityId", { path: '/' });
         if (logouturi) {
           window.location.href = logouturi;
         }
       }).catch(error => {
-        console.log('error msg', error);
         ErrorToaster('Unexpected Error');
       })
   };

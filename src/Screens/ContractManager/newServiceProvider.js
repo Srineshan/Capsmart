@@ -261,7 +261,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
         "officialEmail": userDetails?.email
       },
       // "ssoId": userDetails?.ssoId,
-      "ssoId": null,
+      "ssoId": { "id": userDetails?.email },
       "password": {
         "password": ''
       },

@@ -180,7 +180,6 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
     let sitesValue = contractDetail?.site?.sites;
-    setTempSites(contractDetail?.site);
     if (sitesValue && siteList?.length === 0) {
       setSiteList(sitesValue);
       let siteTemp = [];
@@ -389,7 +388,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
       "email": {
         "officialEmail": contractorEmail
       },
-      "ssoId": ssoId,
+      "ssoId": isUserPresent ? ssoId : { "id": contractorEmail },
       ...(!isUserPresent && {
         "password": {
           "password": "string"
