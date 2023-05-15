@@ -294,11 +294,11 @@ const DepartmentsForCustomers = () => {
                                 }
                                 alt="OpenFolder"
                                 className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                                // onClick={() => {
-                                //   setSelectedIndex(index);
-                                //   setSiteTypeId(data?.siteTypeId);
-                                //   setSelectedEntityType(data?.siteTypeName);
-                                // }}
+                              // onClick={() => {
+                              //   setSelectedIndex(index);
+                              //   setSiteTypeId(data?.siteTypeId);
+                              //   setSelectedEntityType(data?.siteTypeName);
+                              // }}
                               />
                             </div>
                             <div
@@ -508,11 +508,11 @@ const DepartmentsForCustomers = () => {
                                                   src={DeleteHcFolder}
                                                   alt=""
                                                   className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                  // onClick={() =>
-                                                  //   handleDeleteDepartmentService(
-                                                  //     data?.id
-                                                  //   )
-                                                  // }
+                                                // onClick={() =>
+                                                //   handleDeleteDepartmentService(
+                                                //     data?.id
+                                                //   )
+                                                // }
                                                 />
                                               </div>
                                             </div>
@@ -563,11 +563,11 @@ const DepartmentsForCustomers = () => {
                                                           src={DeleteHcRow}
                                                           alt=""
                                                           className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                          // onClick={() =>
-                                                          //   handleDeleteDepartmentService(
-                                                          //     data?.id
-                                                          //   )
-                                                          // }
+                                                        // onClick={() =>
+                                                        //   handleDeleteDepartmentService(
+                                                        //     data?.id
+                                                        //   )
+                                                        // }
                                                         />
                                                       </div>
                                                     </div>
@@ -617,11 +617,11 @@ const DepartmentsForCustomers = () => {
                                                                 }
                                                                 alt=""
                                                                 className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                                // onClick={() =>
-                                                                //   handleDeleteDepartmentService(
-                                                                //     data?.id
-                                                                //   )
-                                                                // }
+                                                              // onClick={() =>
+                                                              //   handleDeleteDepartmentService(
+                                                              //     data?.id
+                                                              //   )
+                                                              // }
                                                               />
                                                             </div>
                                                           </div>
@@ -670,11 +670,11 @@ const DepartmentsForCustomers = () => {
                                                   src={DeleteHcRow}
                                                   alt=""
                                                   className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                  // onClick={() =>
-                                                  //   handleDeleteDepartmentService(
-                                                  //     data?.id
-                                                  //   )
-                                                  // }
+                                                // onClick={() =>
+                                                //   handleDeleteDepartmentService(
+                                                //     data?.id
+                                                //   )
+                                                // }
                                                 />
                                               </div>
                                             </div>
@@ -718,11 +718,11 @@ const DepartmentsForCustomers = () => {
                                                         src={DeleteHcRow}
                                                         alt=""
                                                         className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                                                        // onClick={() =>
-                                                        //   handleDeleteDepartmentService(
-                                                        //     data?.id
-                                                        //   )
-                                                        // }
+                                                      // onClick={() =>
+                                                      //   handleDeleteDepartmentService(
+                                                      //     data?.id
+                                                      //   )
+                                                      // }
                                                       />
                                                     </div>
                                                   </div>
@@ -789,8 +789,8 @@ const DepartmentsForCustomers = () => {
         )}
 
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-          <p className={style.poweredBy}>© TimeSmartAI</p>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
         </div>
       </div>
     </Fragment>

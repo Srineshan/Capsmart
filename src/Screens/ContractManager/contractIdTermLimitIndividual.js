@@ -3,7 +3,7 @@ import { TextArea, Icon, TagInput, FileInput, EditableText, Divider } from '@blu
 import cloneDeep from 'lodash.clonedeep';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-import DatalistInput from 'react-datalist-input';
+import DatalistInput, { useComboboxControls } from 'react-datalist-input';
 import { GET, PUT, POST, role, TenantID } from './../dataSaver';
 import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDepartmentField';
 import AddNewContractManager from './addNewContractManager';
@@ -82,6 +82,7 @@ const ContractIdTermLimitIndividual = (
   const [continueLoading, setContinueLoading] = useState(false);
   const [contractedServices, setContractedServices] = useState([]);
   const [isDateUpdated, setIsDateUpdated] = useState(false);
+  const { setValue, value } = useComboboxControls({ initialValue: '' });
 
   useEffect(() => {
     if (method === 'PUT' && createdContractId !== '') {
@@ -425,15 +426,18 @@ const ContractIdTermLimitIndividual = (
   }
 
   const onSelectSite = (selectedItem) => {
+    console.log(selectedSites, selectedItem, 'site')
     setItem(selectedItem);
     let temp = selectedSites || [];
-    if (!selectedSites?.includes(selectedItem)) {
+    if (selectedSites?.filter(data => data?.id === selectedItem?.id)?.map(data => data)?.length === 0) {
       temp.push(selectedItem);
     }
     setSelectedSites(temp);
     setDepartmentSpecific(false);
-    siteFieldCheck(siteSpecific)
+    siteFieldCheck(siteSpecific);
+    setValue('');
   }
+  console.log(selectedSites, 'site')
 
 
   const onSelectContractId = (selectedItem) => {
@@ -771,7 +775,7 @@ const ContractIdTermLimitIndividual = (
                 <CommonSwitch checked={siteSpecific} className={`${style.textAlignLeft} ${style.switchFontStyle}`} label={siteSpecific ? 'YES' : "NO"} onChange={() => { setSiteSpecific(!siteSpecific); siteFieldCheck(!siteSpecific); }} />
                 {siteSpecific && (
                   <div className={style.displayInRow}>
-                    <DatalistInput items={siteItems || []} placeholder="Select Sites" onSelect={onSelectSite} className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
+                    <DatalistInput value={value} setValue={setValue} items={siteItems || []} placeholder="Select Sites" onSelect={onSelectSite} className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
                     {
                       // <div className={`${style.addSymbolStyle} ${style.marginLeft20}`} onClick={()=>{setSelectedSites([...selectedSites,])}}><span className={style.plusSymbolPosition}>+</span></div>
                     }
