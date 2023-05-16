@@ -495,7 +495,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
           <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by -</p>
           <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI.Inc</p>
       </div>
       <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} />
     </div>

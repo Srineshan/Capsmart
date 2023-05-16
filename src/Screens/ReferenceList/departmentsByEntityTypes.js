@@ -342,9 +342,9 @@ const DepartmentsByEntityTypes = () => {
                                     src={DeleteHcFolder}
                                     className={style.colorFileStyle}
                                     alt=""
-                                    // onClick={() => {
-                                    //   deleteHandler(data);
-                                    // }}
+                                  // onClick={() => {
+                                  //   deleteHandler(data);
+                                  // }}
                                   />
                                 </div>
                                 {data?.serviceAreas.map((service, idx) => {
@@ -388,12 +388,12 @@ const DepartmentsByEntityTypes = () => {
                                         src={DeleteHcRow}
                                         className={style.colorFileStyle}
                                         alt=""
-                                        // onClick={() => {
-                                        //   DeleteSecondaryBoardHandler(
-                                        //     data?.id,
-                                        //     secondary?.name
-                                        //   );
-                                        // }}
+                                      // onClick={() => {
+                                      //   DeleteSecondaryBoardHandler(
+                                      //     data?.id,
+                                      //     secondary?.name
+                                      //   );
+                                      // }}
                                       />
                                     </div>
                                   );
@@ -469,8 +469,8 @@ const DepartmentsByEntityTypes = () => {
           </div>
         </div>
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-          <p className={style.poweredBy}>© TimeSmartAI</p>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
         </div>
       </div>
 

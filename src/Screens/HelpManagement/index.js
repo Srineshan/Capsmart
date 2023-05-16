@@ -273,7 +273,7 @@ const HelpHome = () => {
                 {showChatView && (
                     <div className={style.chatContainer}>
                         <div className={style.blueChatPart}>
-                            <div className={style.justifyCenter}>TimeSmartAI Team</div>
+                            <div className={style.justifyCenter}>TimeSmartAI.Inc Team</div>
                             <div className={`${style.justifyCenter}`}>
                                 <div className={`${style.displayInRow} ${style.marginTop10}`}>
                                     <div>
@@ -312,7 +312,7 @@ const HelpHome = () => {
                                     </div>
                                     <div className={style.messageContainer}>
                                         Hi there, <br /><br />
-                                        Welcome to TimeSmartAI Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
+                                        Welcome to TimeSmartAI.Inc Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
                                     </div>
                                 </div>
                             </div>

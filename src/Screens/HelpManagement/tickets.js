@@ -380,8 +380,8 @@ const Tickets = ({ getSelectedHelp }) => {
                         </div>
                     </div>
                     <div className={style.spaceBetween}>
-                        <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-                        <p className={style.poweredBy}>© TimeSmartAI</p>
+                        <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+                        <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
                     </div>
                     {showAddTicketDialog && <AddTicket getAddTicketDialog={getAddTicketDialog} />}
                 </div>
@@ -674,8 +674,8 @@ const Tickets = ({ getSelectedHelp }) => {
                         </div>
                     </div>
                     <div className={style.spaceBetween}>
-                        <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-                        <p className={style.poweredBy}>© TimeSmartAI</p>
+                        <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+                        <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
                     </div>
                     {showAddFeedbackTicketDialog && <AddFeedbackTicket getAddFeedbackTicketDialog={getAddFeedbackTicketDialog} />}
                 </div>

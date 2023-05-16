@@ -238,9 +238,8 @@ const HolidayScheduleForCustomers = () => {
         <Navbar />
         <div className={style.margin20}>
           <div
-            className={`${
-              isExpanded ? style.bigCardGrid : style.smallCardGrid
-            }`}
+            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
+              }`}
           >
             <div>
               <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
@@ -533,8 +532,8 @@ const HolidayScheduleForCustomers = () => {
             </div>
           </div>
           <div className={style.spaceBetween}>
-            <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-            <p className={style.poweredBy}>© TimeSmartAI</p>
+            <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+            <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
           </div>
         </div>
       </div>

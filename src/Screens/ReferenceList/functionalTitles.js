@@ -277,7 +277,7 @@ const FunctionalTitles = () => {
                                           <div
                                             className={
                                               siteType?.contractedServiceProviderType ===
-                                              selectedTitle
+                                                selectedTitle
                                                 ? `${style.healthCareListCardStyle}  ${style.marginTop10} ${style.HealthCareListBackground2} ${style.spaceBetween}`
                                                 : `${style.healthCareListCardStyle}  ${style.marginTop10}  ${style.spaceBetween}`
                                             }
@@ -419,8 +419,8 @@ const FunctionalTitles = () => {
           </div>
         </div>
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-          <p className={style.poweredBy}>© TimeSmartAI</p>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
         </div>
       </div>
 

@@ -292,7 +292,7 @@ const BoardCertification = () => {
                                           <div
                                             className={
                                               siteType?.contractedServiceProviderType ===
-                                              selectedTitle
+                                                selectedTitle
                                                 ? `${style.healthCareListCardStyle}  ${style.marginTop10} ${style.HealthCareListBackground5} ${style.spaceBetween}`
                                                 : `${style.healthCareListCardStyle2}  ${style.marginTop10}  ${style.spaceBetween}`
                                             }
@@ -307,7 +307,7 @@ const BoardCertification = () => {
                                             <img
                                               src={
                                                 siteType?.contractedServiceProviderType ===
-                                                selectedTitle
+                                                  selectedTitle
                                                   ? BlueFolder
                                                   : IndustriesEntityFolder
                                               }
@@ -511,8 +511,8 @@ const BoardCertification = () => {
           </div>
         </div>
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-          <p className={style.poweredBy}>© TimeSmartAI</p>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
         </div>
       </div>
 
