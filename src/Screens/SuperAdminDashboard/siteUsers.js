@@ -130,7 +130,7 @@ const SiteUsers = ({ getActiveStep }) => {
   }
 
   const getContracts = async () => {
-    await axios(`http://ec2-18-232-204-138.compute-1.amazonaws.com:8010/contract-managment-service/contracts`, {
+    await axios(`https://${window.location.hostname}/contract-managment-service/contracts`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ const SiteUsers = ({ getActiveStep }) => {
   }
 
   const getUserData = async () => {
-    await axios(`http://ec2-18-232-204-138.compute-1.amazonaws.com:8010/user-management-service/user`, {
+    await axios(`https://${window.location.hostname}/user-management-service/user`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
