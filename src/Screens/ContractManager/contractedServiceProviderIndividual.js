@@ -70,6 +70,8 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
   const [mobileNA, setMobileNA] = useState(false);
   const [continueLoading, setContinueLoading] = useState(false);
   const [ssoId, setSsoId] = useState(null);
+  const [tempSite, setTempSite] = useState([]);
+
 
   useEffect(() => {
     getRoles();
@@ -180,6 +182,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
     const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
     let contractDetail = contractData?.contractDetail;
     let sitesValue = contractDetail?.site?.sites;
+    setTempSite(contractDetail?.site);
     if (sitesValue && siteList?.length === 0) {
       setSiteList(sitesValue);
       let siteTemp = [];
@@ -191,6 +194,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         siteTemp.push({ id: site?.id, name: site?.siteName?.siteName, title: site?.siteResponsibility?.title, title_id: site?.siteResponsibility?.id, department: deptTemp })
       })
       setSites(siteTemp || []);
+
       // getTitleData();
     }
   }
@@ -326,7 +330,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         let siteValue = {
           sites: getSiteData()
         }
-        data.sites = siteValue;
+        // data.sites = tempSite;
         data.siteLevelResponsible = siteLevel;
         data.departmentLevelResponsible = departmentLevel;
       })
