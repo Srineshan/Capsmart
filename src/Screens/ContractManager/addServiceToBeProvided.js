@@ -641,7 +641,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         },
         ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && {
           "hourlyRate": {
-            "value": (dataValues?.sessionAmount / dataValues?.totalSession).toFixed(2)
+            "value": serviceTypeTemplate === SUPPLEMENTAL && dataValues?.totalSession === 0 ? dataValues?.sessionAmount.toFixed(2) : (dataValues?.sessionAmount / dataValues?.totalSession).toFixed(2)
           },
         }),
         ...(serviceTypeTemplate === ADDON && {

@@ -220,18 +220,13 @@ const Navbar = () => {
     //   })
     await PUT(`logout`, null)
       .then(response => {
-        console.log('respose', response, response?.data, response?.headers);
-        console.log('response from data', response.data.redirectURL);
-        console.log('response from header', response.headers['location']);
         const logouturi = response.headers['location'] || '';
-        console.log('redirectURI', logouturi);
         cookies.remove("user", { path: '/' });
         cookies.remove("entityId", { path: '/' });
         if (logouturi) {
           window.location.href = logouturi;
         }
       }).catch(error => {
-        console.log('error msg', error);
         ErrorToaster('Unexpected Error');
       })
   };

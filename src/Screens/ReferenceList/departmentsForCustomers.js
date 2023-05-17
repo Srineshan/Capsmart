@@ -108,6 +108,7 @@ const DepartmentsForCustomers = () => {
   };
 
   const getSearchKey = (value) => {
+    console.log('search text', value);
     setSearchKey(value);
   };
 
