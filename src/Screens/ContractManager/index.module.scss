@@ -2047,14 +2047,14 @@ input[type=number] {
 
 .serviceSpecificationGrid {
     display: grid;
-    grid-template-columns: 8% 20% 20% 20% 15% 8%;
+    grid-template-columns: 8% 22% 22% 22% 10% 7%;
     grid-gap: 10px;
     padding-left: 10px;
 }
 
 .serviceSpecificationGridActive {
     display: grid;
-    grid-template-columns: 8% 22% 22% 22% 17%;
+    grid-template-columns: 8% 22% 22% 22% 10% 7%;
     grid-gap: 10px;
     padding-left: 10px;
 }
@@ -2068,7 +2068,7 @@ input[type=number] {
 
 .serviceSpecificationGridIndividualActive {
     display: grid;
-    grid-template-columns: 8% 33% 28% 22%;
+    grid-template-columns: 8% 30% 25% 20% 8%;
     grid-gap: 10px;
     padding-left: 10px;
 }
