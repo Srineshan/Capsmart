@@ -114,6 +114,8 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     getSelectedSites(temp);
   }
 
+  console.log(siteData, 'selected site')
+
   return (
     <div>
       <div className={style.siteDeptGrid}>

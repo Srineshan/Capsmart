@@ -113,6 +113,15 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
   }
 
   const handleContinue = async (buttonType) => {
+    if ((!businessEntity?.notApplicable && EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory')) ||
+      ((!contractorNPIN?.notApplicable && !contractorNPIN?.missing) && EmptyStringCheck(contractorNPIN?.npin, 'NPIN is Mandatory')) ||
+      ((!contractorEntityTaxId?.missing && !contractorEntityTaxId?.notApplicable) && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory')) ||
+      EmptyStringCheck(businessEntityUser?.name?.firstName, 'First Name is Mandatory') ||
+      EmptyStringCheck(businessEntityUser?.name?.lastName, 'Last Name is Mandatory') ||
+      EmailValidator(businessEntityUser?.email?.officialEmail) ||
+      (!businessEntityUser?.contactNumber?.missing && PhoneValidator(businessEntityUser?.contactNumber?.number))) {
+      return;
+    }
     if (!continueLoading) {
       setContinueLoading(true);
 
@@ -179,16 +188,6 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               ErrorToaster('Unexpected Error');
             });
         }
-      }
-
-      if ((!businessEntity?.notApplicable && EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory')) ||
-        !contractorNPIN?.notApplicable && !contractorNPIN?.missing && EmptyStringCheck(contractorNPIN?.npin, 'NPIN is Mandatory') ||
-        !contractorEntityTaxId?.missing && !contractorEntityTaxId?.notApplicable && EmptyStringCheck(contractorEntityTaxId?.taxId, 'Tax Id is Mandatory') ||
-        EmptyStringCheck(businessEntityUser?.name?.firstName, 'First Name is Mandatory') ||
-        EmptyStringCheck(businessEntityUser?.name?.lastName, 'Last Name is Mandatory') ||
-        EmailValidator(businessEntityUser?.email?.officialEmail) ||
-        !businessEntityUser?.contactNumber?.missing && PhoneValidator(businessEntityUser?.contactNumber?.number)) {
-        return;
       }
 
       const data = {

@@ -960,7 +960,8 @@ select {
 
 .cloneBlockStyle {
     height: calc(100vh - 80px);
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
     border-right: 4px solid #EBF2F7;
     margin-top: -10px;
     margin-bottom: -20px;

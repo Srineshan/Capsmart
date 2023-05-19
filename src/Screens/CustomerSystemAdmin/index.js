@@ -81,21 +81,21 @@ const Home = () => {
       mappedDataArray.push(mappedData);
     }
 
-    let DefaultData = mappedDataArray.filter((data) => {
+    let DefaultData = mappedDataArray?.filter((data) => {
       if (data.standardList === true) {
         return data;
       }
     });
     // setRefMetadata({ ...refMetadata, defaultCount: DefaultData });
 
-    let CustomData = mappedDataArray.filter((data) => {
+    let CustomData = mappedDataArray?.filter((data) => {
       if (data.standardList === false) {
         return data;
       }
     });
     // setRefMetadata({ ...refMetadata, customCount: CustomData });
 
-    let setupRequired = mappedDataArray.filter((data) => {
+    let setupRequired = mappedDataArray?.filter((data) => {
       if (data.lastModified === null) {
         return data;
       }
