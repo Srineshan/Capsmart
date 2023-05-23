@@ -106,11 +106,13 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
       temp.push(roles?.filter(role => role?.roleName === 'Aggregator')?.map(data => data)[0]);
       setAllowAggregator(value);
     } else {
-      temp = selectedRoles?.filter(role => role?.roleName === 'Aggregator')?.map(data => data);
+      temp = selectedRoles?.filter(role => role?.roleName !== 'Aggregator')?.map(data => data);
       setAllowAggregator(value)
     }
     setSelectedRoles(temp);
   }
+
+  console.log(selectedRoles)
 
   const handleContinue = async (buttonType) => {
     if ((!businessEntity?.notApplicable && EmptyStringCheck(businessEntity?.name, 'Business Entity Name is Mandatory')) ||
@@ -143,7 +145,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
             "contractName": {
               "contractName": contractName
             },
-            "roles": roles?.filter(data => data?.roleName === 'Contract Business Entity Manager' || data?.roleName === 'Aggregator')?.map(data => data),
+            "roles": selectedRoles,
             "sites": {
               "sites": []
             },
@@ -163,11 +165,11 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
             "mobileNumber": businessEntityUser?.contactNumber?.number,
             "landlineNumber": ""
           },
-          "roles": roles?.filter(data => data?.roleName === 'Contract Business Entity Manager' || data?.roleName === 'Aggregator')?.map(data => data),
+          "roles": selectedRoles,
           "tenant": {
             "tenantId": TenantID
           },
-          // "ssoId": { "id": ssoId }
+          "ssoId": { "id": businessEntityUser?.email?.officialEmail }
         }
 
         if (userId === '0') {
@@ -195,7 +197,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
         contractorEntityTaxId: contractorEntityTaxId,
         businessEntity: businessEntity,
         businessEntityUser: businessEntityUser,
-        roles: roles?.filter(data => data?.id === 'Contract Business Entity Manager')?.map(data => data),
+        roles: roles?.filter(data => data?.roleName === 'Contract Business Entity Manager')?.map(data => data),
         mailingAddress: mailingAddress,
         contractorContact: sameAsContractor,
         appRoleRequired: appRoleRequired,
@@ -514,7 +516,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               </div>
 
               {
-                selectContractInfo !== 'INDIVIDUAL' &&
+                (selectContractInfo !== 'INDIVIDUAL' && allowBEM) &&
                 (
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <CommonLabel value='Allow user as Aggregator*' />
@@ -524,7 +526,7 @@ const ContractorBusinessEntity = ({ getViewPage5, getCurrentPage, selectContract
               }
 
               {
-                selectContractInfo !== 'INDIVIDUAL' &&
+                (selectContractInfo !== 'INDIVIDUAL' && allowBEM) &&
                 (
                   <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                     <CommonLabel value='Keep Contract Payment Data Confidential*' />

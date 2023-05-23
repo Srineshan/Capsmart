@@ -5,6 +5,7 @@ import DatalistInput, { useComboboxControls } from 'react-datalist-input';
 import { CLINIC, SURGERY, ONCALL, PROCEDUREREADING } from '../../Constants';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import { TimePicker } from "@blueprintjs/datetime";
+import FormControl from '@mui/material/FormControl';
 import { GetDateFromHours } from './../../utils/formatting';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
@@ -60,7 +61,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
             let activities = data?.activities?.map(data => data?.activity);
             if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
                 let dedicatedHoursActivityType = data?.activityType?.activityType;
-                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join('-');
+                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join(', ');
                 setMetadata({
                     ...metadata,
                     dedicatedHoursActivityType: dedicatedHoursActivityType,
@@ -239,13 +240,15 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                 <div className={`${style.displayInRow} `}>
                     <CommonSwitch className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'} checked={metadata?.dedicatedHoursSpecified} onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)} />
                     {!metadata?.dedicatedHoursSpecified && (
-                        <CommonSelectField className={`${style.fullWidth}`}
-                            value={getSelectedActivity() || ''}
-                            onChange={(e) => selectedHours(e.target.value)}
-                            firstOptionLabel={'Select source of hours for this service'} firstOptionValue={''}
-                            valueList={specificDedicatedHoursList}
-                            labelList={specificDedicatedHoursList}
-                            disabledList={specificDedicatedHoursList?.map(data => false)} />
+                        <FormControl sx={{ width: 480 }}>
+                            <CommonSelectField className={`${style.fullWidth}`}
+                                value={getSelectedActivity() || ''}
+                                onChange={(e) => selectedHours(e.target.value)}
+                                firstOptionLabel={'Select source of hours for this service'} firstOptionValue={''}
+                                valueList={specificDedicatedHoursList}
+                                labelList={specificDedicatedHoursList}
+                                disabledList={specificDedicatedHoursList?.map(data => false)} />
+                        </FormControl>
                     )}
                 </div>
             </div>
