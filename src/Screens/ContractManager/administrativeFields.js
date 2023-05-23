@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
@@ -212,7 +213,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             let activities = data?.activities?.map(data => data?.activity);
             if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
                 let dedicatedHoursActivityType = data?.activityType?.activityType;
-                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join('-');
+                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join(', ');
                 console.log('data', data);
                 setMetadata({
                     ...metadata,
@@ -290,29 +291,30 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Dedicated Hours For Administrative Services*' />
                 <div className={style.displayInRow}>
-                    <div className={`${style.threeFieldWidth}`} >
-                        <CommonSwitch
-                            className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
-                            checked={metadata?.dedicatedHoursSpecified} label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'}
-                            onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)}
-                        />
-                    </div>
+                    {/* <div className={`${style.threeFieldWidth}`} > */}
+                    <CommonSwitch
+                        className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+                        checked={metadata?.dedicatedHoursSpecified} label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'}
+                        onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)}
+                    />
+                    {/* </div> */}
                     {!metadata?.dedicatedHoursSpecified && (
-                        <Select
-                            displayEmpty
-                            defaultValue={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})`}
-                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                            className={`${style.fullWidth}`}
-                            onChange={(e) => selectedHours(e.target.value)}
-                            value={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})`}
-                        >
-                            <MenuItem value="">Select Dedicated Hours</MenuItem>
-                            {
-                                specificDedicatedHoursList?.map((data, index) => (
-                                    <MenuItem value={data}>{data}</MenuItem>
-                                ))
-                            }
-                        </Select>
+                        <FormControl sx={{ width: 480 }}>
+                            <Select
+                                displayEmpty
+                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                className={`${style.fullWidth}`}
+                                onChange={(e) => selectedHours(e.target.value)}
+                                value={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity})`}
+                            >
+                                <MenuItem value="">Select Dedicated Hours</MenuItem>
+                                {
+                                    specificDedicatedHoursList?.map((data, index) => (
+                                        <MenuItem value={data}>{data}</MenuItem>
+                                    ))
+                                }
+                            </Select>
+                        </FormControl>
                         // <CommonSelectField className={`${style.fullWidth}`}
                         // onChange={(e) => selectedHours(e.target.value)}
                         // value={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})` || ''}

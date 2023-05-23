@@ -64,9 +64,9 @@ const FeedbackTicket = ({ getSelectedOption }) => {
 
     const getTicket = async () => {
         const { data: ticket } = await GET(`feedback-management-service/ticket?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
-        setOpenTicket(ticket.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
-        setNewTicket(ticket.filter(data => data?.status === "NEW")?.map(data => data));
-        setResolvedTicket(ticket.filter(data => data?.status === "RESOLVED")?.map(data => data));
+        setOpenTicket(ticket?.filter(data => (data?.status !== "NEW" && data?.status !== "RESOLVED"))?.map(data => data));
+        setNewTicket(ticket?.filter(data => data?.status === "NEW")?.map(data => data));
+        setResolvedTicket(ticket?.filter(data => data?.status === "RESOLVED")?.map(data => data));
     };
 
     const getCommentMessages = async () => {

@@ -163,7 +163,7 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
         </div>
       }
       {editServiceProviderDialog && (
-        <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId} isEditable={isEditable} />
+        <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId} isEditable={isEditable} users={users} />
       )}
     </div>
   )

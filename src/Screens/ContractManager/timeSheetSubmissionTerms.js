@@ -58,6 +58,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [paymentSource, setPaymentSource] = useState(new Array(timeSheetCount || 0));
   const [contractName, setContractName] = useState('');
   const [continueLoading, setContinueLoading] = useState(false);
+  const [paymentSourceState, setPaymentSourceState] = useState([]);
 
   const menuRef = useRef(null);
   useOptionsHide(menuRef);
@@ -398,14 +399,19 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         data?.activities?.map(activityData => {
           temp.push({ index: index, type: activityData?.activityType?.activityType, activity: activityData?.performingActivity?.activity });
         })
-        paymentSourceTemp?.push(data?.paymentSource?.site !== null ? data?.paymentSource?.site : undefined);
+        paymentSourceTemp?.push(data?.paymentSource?.site);
+        setPaymentSourceState(paymentSourceTemp)
+        console.log(data?.paymentSource?.site, 'payment', paymentSourceTemp);
       });
       setTimeSheetLabelData(labelTemp);
       setContractedActivityTags(temp);
+      console.log(paymentSourceTemp, 'payment', timesheetSubmissionTerms?.timesheetActivitiesPeriods);
       setPaymentSource(paymentSourceTemp);
     }
     getTimesheetFields();
   };
+
+  console.log(paymentSource, 'payment', paymentSourceState);
 
   const getSelectedUserDetails = (id) => {
     let user = users?.filter(user => user?.id === id)?.map(data => data)[0];
@@ -576,6 +582,8 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     setDayLimitForSubmissionBasedOnContractEndDate(timesheetSubmissionTerms?.dayLimit?.contractEndDate?.days);
     setTimesheetValues(timesheetSubmissionTerms?.timesheetActivitiesPeriods);
   }, [timesheetSubmissionTerms]);
+
+  console.log(Array.isArray(paymentSource?.[0]), paymentSource?.[0], new Array(1).fill(paymentSource?.[0]))
 
 
   return (

@@ -14,7 +14,7 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
 
-const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractId, isEditable }) => {
+const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractId, isEditable, users }) => {
   const [selectedContract, setSelectedContract] = useState('Written Contract Extension For Fixed Term');
   const [startDate, setStartDate] = useState(new Date);
   const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration');
@@ -685,9 +685,10 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
               <CommonSelectField onChange={(e) => handleRoles(e.target.value)}
                 className={style.fullWidth}
                 firstOptionLabel={'Select Role...'} firstOptionValue={''}
-                valueList={roles?.map(data => data?.roleName)}
-                labelList={roles?.map(data => data?.roleName)}
-                disabledList={roles?.map(data => false)} />
+                valueList={users?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => data?.roleName) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+                labelList={users?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => data?.roleName) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+                disabledList={users?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => false) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => false)}
+              />
               <div className={`${style.marginTop20} ${style.marginLeft20}`}>{rolesTags}</div>
             </div>
           </div>
