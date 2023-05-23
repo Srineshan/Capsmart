@@ -225,9 +225,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const getContractedServices = async () => {
-    const { data: contractedServices } = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
-    setContractedServices(contractedServices?.contractedServices);
-    setExistingServices(contractedServices?.contractedServices);
+    if (contractedServices?.length === 0) {
+      const { data: contractedServices } = await GET(`contract-managment-service/contracts/${contractId}/ContractedService`);
+      setContractedServices(contractedServices?.contractedServices);
+      setExistingServices(contractedServices?.contractedServices);
+    }
   }
 
   const getContractNotes = async () => {
@@ -395,7 +397,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           additionalDetails: data?.activityResponse?.dataMap?.additionalDetails,
         }
         if (!data?.selectedActivityId) {
-          data.payableAmount = { value: parseInt(data?.sessionAmount) };
+          data.payableAmount = { value: parseFloat(data?.sessionAmount) };
         }
         data.activityResponse = { dataMap: dataMap };
         data.sites = siteData;
@@ -441,13 +443,37 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }
       });
 
+    } else if (serviceTypeTemplate === ONCALL) {
+      let data = metadata;
+      if (data?.approver !== undefined) {
+        let workFlowData;
+        let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
+        workFlowData = workFlowDataGenerator("On-Call Administrative Workflow", [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+
+        if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
+          POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
+            then(response => {
+              data.workFlow = {
+                id: response?.data,
+                workFlowName: {
+                  name: data?.performingActivity?.activity,
+                }
+              }
+              setMetadata(data);
+              setIsWorkFlowUpdated(true);
+
+            }).catch(error => {
+              ErrorToaster('Unexpected Error');
+            })
+        }
+      } else {
+        handleSave(buttonType);
+      }
     } else {
       handleSave(buttonType);
     }
     setContinueLoading(false);
   }
-
-  console.log('metadata in add service', metadata);
 
   const handleSave = async (buttonType) => {
     if (serviceType === '') {
@@ -564,7 +590,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         },
         "activities": activities,
 
-        ...(((serviceTypeTemplate === SUPPLEMENTAL && dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === ADMINISTRATIVE && dataValues?.dedicatedHoursSpecified)) &&
+        ...(((serviceTypeTemplate === SUPPLEMENTAL && !dataValues?.dedicatedHoursSpecified) || (serviceTypeTemplate === ADMINISTRATIVE && !dataValues?.dedicatedHoursSpecified)) &&
         {
           "hoursBorrowed": {
             "activityType": {
@@ -634,10 +660,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           }
         },
         "duration": {
-          "hours": parseInt(dataValues?.sessionDuration)
+          "hours": parseFloat(dataValues?.sessionDuration)
         },
         "payableAmount": {
-          "value": parseInt(dataValues?.sessionAmount)
+          "value": parseFloat(dataValues?.sessionAmount)
         },
         ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && {
           "hourlyRate": {
@@ -755,7 +781,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
           "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
         },
-        ...(serviceTypeTemplate === ADDON && {
+        ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === ONCALL) && {
           workFlow: dataValues?.workFlow,
         }),
         "patientMRNRequired": dataValues?.patientMRNRequired || false,
@@ -1129,7 +1155,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                     : serviceTypeTemplate === SURGERY
                       ? <SurgerySessionFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} isReset={isReset} getIsReset={getIsReset} />
                       : serviceTypeTemplate === ONCALL
-                        ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} isReset={isReset} getIsReset={getIsReset} />
+                        ? <OnCallCoverageFields getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} isReset={isReset} getIsReset={getIsReset} sites={siteList} contractId={contractId} />
                         : serviceTypeTemplate === SUPPLEMENTAL
                           ? <SupplementalFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />
                           : serviceTypeTemplate === ADDON

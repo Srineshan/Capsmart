@@ -283,6 +283,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
+    console.log('selected format', `${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})`, specificDedicatedHoursList)
+
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
@@ -298,6 +300,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     {!metadata?.dedicatedHoursSpecified && (
                         <Select
                             displayEmpty
+                            defaultValue={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})`}
                             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                             className={`${style.fullWidth}`}
                             onChange={(e) => selectedHours(e.target.value)}
