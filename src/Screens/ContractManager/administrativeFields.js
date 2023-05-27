@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
@@ -212,7 +213,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             let activities = data?.activities?.map(data => data?.activity);
             if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
                 let dedicatedHoursActivityType = data?.activityType?.activityType;
-                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join('-');
+                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join(', ');
                 console.log('data', data);
                 setMetadata({
                     ...metadata,
@@ -283,33 +284,37 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
+    console.log('selected format', `${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})`, specificDedicatedHoursList)
+
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Dedicated Hours For Administrative Services*' />
                 <div className={style.displayInRow}>
-                    <div className={`${style.threeFieldWidth}`} >
-                        <CommonSwitch
-                            className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
-                            checked={metadata?.dedicatedHoursSpecified} label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'}
-                            onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)}
-                        />
-                    </div>
+                    {/* <div className={`${style.threeFieldWidth}`} > */}
+                    <CommonSwitch
+                        className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+                        checked={metadata?.dedicatedHoursSpecified} label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'}
+                        onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)}
+                    />
+                    {/* </div> */}
                     {!metadata?.dedicatedHoursSpecified && (
-                        <Select
-                            displayEmpty
-                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                            className={`${style.fullWidth}`}
-                            onChange={(e) => selectedHours(e.target.value)}
-                            value={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})`}
-                        >
-                            <MenuItem value="">Select Dedicated Hours</MenuItem>
-                            {
-                                specificDedicatedHoursList?.map((data, index) => (
-                                    <MenuItem value={data}>{data}</MenuItem>
-                                ))
-                            }
-                        </Select>
+                        <FormControl sx={{ width: 480 }}>
+                            <Select
+                                displayEmpty
+                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                className={`${style.fullWidth}`}
+                                onChange={(e) => selectedHours(e.target.value)}
+                                value={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity})`}
+                            >
+                                <MenuItem value="">Select Dedicated Hours</MenuItem>
+                                {
+                                    specificDedicatedHoursList?.map((data, index) => (
+                                        <MenuItem value={data}>{data}</MenuItem>
+                                    ))
+                                }
+                            </Select>
+                        </FormControl>
                         // <CommonSelectField className={`${style.fullWidth}`}
                         // onChange={(e) => selectedHours(e.target.value)}
                         // value={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})` || ''}
@@ -378,7 +383,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                 {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) ? (
                                     <>
                                         <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.activity)?.[0]} />
-
                                         <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.schedule)[0]}</div>
                                         {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.billable)[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
                                         {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.podRequired)[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}

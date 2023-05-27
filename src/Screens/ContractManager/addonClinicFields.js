@@ -73,7 +73,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
 
   useEffect(() => {
     setSelectedValues();
-  }, [addOnWorkFlow, serviceSelected]);
+  }, [addOnWorkFlow, serviceSelected, users]);
 
   const resetMetadata = () => {
     setMetadata([]);
@@ -127,6 +127,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
       if (workFlowValues?.length === 1) {
         data.approver = users?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
         data.paymentApprover = users?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+        console.log('approver', data?.approver);
       } else {
         data.approver = users?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
         data.paymentApprover = users?.filter(data => data?.id === workFlowValues?.[1]?.workFlowUser?.id)?.map(data => data)[0];

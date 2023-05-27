@@ -202,7 +202,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                 <CommonLabel value='Service Cases Target*' />
                 <div className={`${style.displayInRow}`}>
-                    <CommonInputField value={metadata?.withNurse} disabled={metadata?.noTargetApplicable} className={` ${style.threeFieldWidth}`} onChange={(e) => { setpatientTarget(e.target.value) }} />
+                    <CommonInputField value={metadata?.withNurse} disabled={metadata?.noTargetApplicable} className={` ${style.threeFieldWidth}`} onChange={(e) => { setpatientTarget(e.target.value.slice(0, 4)) }} />
                     <CommonCheckBox label="No Target Applicable" checked={metadata?.noTargetApplicable} value={metadata?.noTargetApplicable} className={`${style.marginLeft20} ${style.threeFieldWidth} `} onChange={(e) => { setMetadata({ ...metadata, noTargetApplicable: e.target.checked, withNurse: 0, withoutNurse: 0 }) }} />
                 </div>
             </div>

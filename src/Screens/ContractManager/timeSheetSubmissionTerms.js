@@ -58,6 +58,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [paymentSource, setPaymentSource] = useState(new Array(timeSheetCount || 0));
   const [contractName, setContractName] = useState('');
   const [continueLoading, setContinueLoading] = useState(false);
+  const [paymentSourceState, setPaymentSourceState] = useState([]);
 
   const menuRef = useRef(null);
   useOptionsHide(menuRef);
@@ -254,8 +255,12 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getTimesheetFields();
   }
 
-  const handleContractedActivityTagsRemove = (index) => {
-    setContractedActivityTags(contractedActivityTags?.filter((data, indexValue) => index !== indexValue)?.map(data => data));
+  const handleContractedActivityTagsRemove = (index, dataIndex) => {
+    let temp = contractedActivityTags;
+    let selectedIndexValues = temp?.filter((data, indexValue) => dataIndex === data?.index)?.map(data => data);
+    let afterRemoving = selectedIndexValues?.filter((data, indexValue) => index !== indexValue)?.map(data => data)
+    afterRemoving = afterRemoving.concat(contractedActivityTags?.filter((data, indexValue) => dataIndex !== data?.index)?.map(data => data));
+    setContractedActivityTags(afterRemoving);
   }
 
   const isGroupChecked = (type) => {
@@ -275,6 +280,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     formatActivities();
     getTimesheetFields();
   }
+
 
   const getTimesheetFields = () => {
     let temp = [];
@@ -349,7 +355,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
                       contractedActivityTags?.filter((data, index) => data?.index === i)?.map((data, index) => (
                         <div className={`${style.deptCard} ${style.displayInRow} ${style.verticalAlignCenter} ${style.marginRight5}`}>
                           <div className={`${style.siteDeptTextStyle} ${style.marginLeft10}`}>{data?.type}-{data?.activity}</div>
-                          <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => handleContractedActivityTagsRemove(index)} />
+                          <CloseIcon fontSize="20px" className={`${style.siteDeptCrossStyle} ${style.marginLeft10} ${style.cursorPointer}`} onClick={() => handleContractedActivityTagsRemove(index, data?.index)} />
                         </div>
                       ))
                     }
@@ -393,14 +399,19 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
         data?.activities?.map(activityData => {
           temp.push({ index: index, type: activityData?.activityType?.activityType, activity: activityData?.performingActivity?.activity });
         })
-        paymentSourceTemp?.push(data?.paymentSource?.site !== null ? data?.paymentSource?.site : undefined);
+        paymentSourceTemp?.push(data?.paymentSource?.site);
+        setPaymentSourceState(paymentSourceTemp)
+        console.log(data?.paymentSource?.site, 'payment', paymentSourceTemp);
       });
       setTimeSheetLabelData(labelTemp);
       setContractedActivityTags(temp);
+      console.log(paymentSourceTemp, 'payment', timesheetSubmissionTerms?.timesheetActivitiesPeriods);
       setPaymentSource(paymentSourceTemp);
     }
     getTimesheetFields();
   };
+
+  console.log(paymentSource, 'payment', paymentSourceState);
 
   const getSelectedUserDetails = (id) => {
     let user = users?.filter(user => user?.id === id)?.map(data => data)[0];
@@ -572,13 +583,15 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     setTimesheetValues(timesheetSubmissionTerms?.timesheetActivitiesPeriods);
   }, [timesheetSubmissionTerms]);
 
+  console.log(Array.isArray(paymentSource?.[0]), paymentSource?.[0], new Array(1).fill(paymentSource?.[0]))
+
 
   return (
     <div className={style.cloneBlockStyle}>
       <div className={`${style.newContractFromCloneBoxStyle}`}>
         <div className={`${style.extentionGrid}`}>
           <CommonLabel value='Number of Timesheets to Submit for Services Performed' />
-          <CommonInputField className={style.fourFieldWidth} type="number" min="0" value={timeSheetCount} onChange={(e) => setTimeSheetCount(parseInt(e.target.value))} />
+          <CommonInputField className={style.fourFieldWidth} type="number" min="0" value={timeSheetCount} onChange={(e) => e.target.value <= 5 && setTimeSheetCount(parseInt(e.target.value))} />
         </div>
         <div>
           {timesheetFields}

@@ -4,6 +4,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
+import { GET } from '../../Screens/dataSaver.js';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
@@ -16,7 +17,8 @@ import style from './index.module.scss';
 import EditableTable from './editableTable';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, isReset, getIsReset }) => {
+const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, isReset, getIsReset, sites, contractId }) => {
+    const [timesheetWorkFlow, setTimesheetWorkflow] = useState([]);
     const [metadata, setMetadata] = useState({
         min: 0,
         max: 99999999,
@@ -218,11 +220,22 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         }
     }
 
+    const [user, setUsers] = useState([]);
+    const [addOnWorkFlow, setAddOnWorkFlow] = useState([]);
+    const [specified, setSpecified] = useState(0);
+    const [title, setTitle] = useState([]);
+
+    const getTimeSheetWorkFlow = async () => {
+        const { data: timesheetWorkFlow } = await GET('timesheet-management-service/workflow');
+        if (timesheetWorkFlow) {
+            setAddOnWorkFlow(timesheetWorkFlow);
+        }
+    }
+
     const getAdditionalActivityData = (value) => {
         setMetadata({ ...metadata, additionalActivity: value });
     }
 
-    const [specified, setSpecified] = useState(0);
 
     useEffect(() => {
         if (!metadata?.customizedSchedule) {
@@ -252,10 +265,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     }, [metadata?.frequency, metadata?.min, metadata?.additionalScheduleValue, metadata?.additionalScheduleFrequency, timeCommitment?.value, metadata?.weekdayMin, metadata?.weekdayFrequency, metadata?.weekendMin, metadata?.weekendFrequency, metadata?.holidayMin, metadata?.holidayFrequency, metadata?.customizedSchedule])
 
     useEffect(() => {
-        if (Object.entries(serviceSelected)?.length !== 0) {
-            setSelectedValues();
-        }
-    }, [serviceSelected]);
+        setSelectedValues();
+    }, [serviceSelected, timesheetWorkFlow, user]);
 
 
     const setSelectedValues = () => {
@@ -265,6 +276,10 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 { activity: data?.activity?.activity, weekdayFrom: GetDateFromHours(data?.weekday?.from?.toString() || ''), weekdayTo: GetDateFromHours(data?.weekday?.to?.toString() || ''), weekendFrom: GetDateFromHours(data?.weekend?.from?.toString() || ''), weekendTo: GetDateFromHours(data?.weekend?.to?.toString() || ''), holidayFrom: GetDateFromHours(data?.holiday?.from?.toString() || ''), holidayTo: GetDateFromHours(data?.holiday?.to?.toString() || ''), patientMRNRequired: data?.patientMRNRequired, attendingDocRequired: data?.attendingDocRequired }
             )
         })
+        let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
+        let workFlowValues = Object?.values(workflowData);
+        let approver = user?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+
 
         setMetadata({
             ...metadata,
@@ -321,18 +336,53 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             patientMRNRequired: serviceSelected?.patientMRNRequired,
             attendingDocRequired: serviceSelected?.attendingDocRequired,
             customizedSchedule: serviceSelected?.customizedSchedule,
+            approver: approver,
         });
-    }
 
+    }
     const limit5 = 5;
 
+    useEffect(() => {
+        getMetaData(metadata);
+    }, [metadata])
 
     useEffect(() => {
-        getMetaData(metadata)
-    }, [metadata])
+        getTimeSheetWorkFlow();
+        getUserData();
+    }, [])
 
     const handleValueChange = (name, value) => {
         setMetadata({ ...metadata, [name]: value });
+    }
+
+
+    const getUserData = async () => {
+        let siteId = sites?.map(data => data?.id);
+        let deptId = [];
+        sites?.map(data => data?.departmentList?.departments?.map(dept => {
+            deptId.push(`${data?.id}#${dept?.id}`);
+        }))
+        let encodedDept = encodeURIComponent(deptId);
+        let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&contractIdToIgnore=${contractId}`;
+        const { data: userList } = await GET(uri);
+        if (userList) {
+            setUsers(userList);
+            let temp = [];
+            userList?.map(data => data?.sites?.sites?.map(site => {
+                if (data?.name?.firstName && site?.siteName?.siteName && site?.siteResponsibility?.title) {
+                    if (site?.siteResponsibility?.title !== "" && site?.siteResponsibility?.title !== undefined && site?.siteResponsibility?.title !== null) {
+                        temp.push({ fname: data?.name?.firstName, lname: data?.name?.lastName, suffix: data?.name?.suffix?.suffix || '', site: site?.siteName?.siteName, title: site?.siteResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+                    }
+
+                    site?.departmentList?.departments?.map(dept => {
+                        if (dept?.departmentResponsibility?.title !== "" && dept?.departmentResponsibility?.title !== undefined && dept?.departmentResponsibility?.title !== null) {
+                            temp.push({ fname: data?.name?.firstName, lname: data?.name?.lastName, suffix: data?.name?.suffix?.suffix || '', site: dept?.departmentName?.name, title: dept?.departmentResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+                        }
+                    })
+                }
+            }))
+            setTitle(temp);
+        }
     }
 
     const getServiceDaysMetadata = (serviceDays) => {
@@ -383,6 +433,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             setMetadata({ ...metadata, [name]: value });
         }
     }
+
+    console.log('metadata', metadata);
 
     return (
         <div>
@@ -1017,25 +1069,29 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                             <CommonLabel value='Require Approval For Payment' />
                             <CommonSwitch
                                 checked={metadata?.additionalActivityPaymentApprovalRequired} label={metadata?.additionalActivityPaymentApprovalRequired ? 'YES' : 'NO'}
-                                onChange={e => setMetadata({ ...metadata, additionalActivityPaymentApprovalRequired: !metadata?.additionalActivityPaymentApprovalRequired })} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} />
+                                onChange={e => setMetadata({ ...metadata, additionalActivityPaymentApprovalRequired: !metadata?.additionalActivityPaymentApprovalRequired, approver: undefined })} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} />
                         </div>
                         {metadata?.additionalActivityPaymentApprovalRequired &&
                             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                                 <CommonLabel value='Designate Request Approver*' />
-                                <CommonSelectField className={`${style.fullWidth}`}
-                                    value={''}
-                                    firstOptionLabel={'Select Approver'} firstOptionValue={''}
-                                    valueList={[]}
-                                    labelList={[]}
-                                    disabledList={[]} />
+                                <CommonSelectField className={`${style.fullWidth} `}
+                                    defaultValue={metadata?.approver}
+                                    value={metadata?.approver ? metadata?.approver?.id : '0'}
+                                    onChange={(e) => { setMetadata({ ...metadata, approver: user.filter(data => data?.id === e.target.value)?.map(data => data)[0], approverTitle: title?.filter(titleData => titleData?.approver === true)?.map(data => data)[0] }) }}
+                                    firstOptionLabel={'Select Payment Approver'}
+                                    firstOptionValue={'0'}
+                                    valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
+                                    labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
+                                    disabledList={title?.map(data => false)} />
                             </div>
                         }
                     </>
 
 
                 </>
-            )}
-        </div>
+            )
+            }
+        </div >
     )
 }
 

@@ -309,8 +309,8 @@ const ReleaseNotes = ({ getSelectedHelp }) => {
                         </div>
                     </div>
                     <div className={style.spaceBetween}>
-                        <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-                        <p className={style.poweredBy}>© TimeSmartAI</p>
+                        <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+                        <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
                     </div>
                     <Dialog isOpen={showFeedbackPage} onClose={() => setShowFeedbackPage(false)} className={`${style.addManagerDialogBackground} ${style.feedbackDialog}`}>
                         <div className={`${Classes.DIALOG_BODY} `}>
@@ -729,8 +729,8 @@ const ReleaseNotes = ({ getSelectedHelp }) => {
                         </div>
                     </div>
                     <div className={style.spaceBetween}>
-                        <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-                        <p className={style.poweredBy}>© TimeSmartAI</p>
+                        <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+                        <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
                     </div>
                     <Dialog isOpen={showFeedbackPage} onClose={() => setShowFeedbackPage(false)} className={`${style.addManagerDialogBackground} ${style.feedbackDialog}`}>
                         <div className={`${Classes.DIALOG_BODY} `}>

@@ -224,7 +224,7 @@ const HelpHome = () => {
                     </SideBar>
                 </div>
                 <div>
-                    <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={'UPDATED ON FEB 16, 2022 16:45 EST'} hideClose={true} />
+                    <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={`UPDATED ON ${formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yy h:mm zzz')}`} hideClose={true} />
                     <div className={`${style.grid4} ${style.marginTop20}`}>
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={myTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" topText='' bottomText='LAST 30 DAYS' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TUTORIALS & VIDEOS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TUTORIALS & VIDEOS" topText='' bottomText='LAST 30 DAYS' />
@@ -234,7 +234,7 @@ const HelpHome = () => {
                     {selectedOption !== "FAQS" ? (
                         <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                             <div className={style.spaceBetween}>
-                                <p className={`${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yyyy H:m zzz')}</p>
+                                <p className={`${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yy h:mm zzz')}</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
                                     <SearchBar />
                                     <button className={style.contractButton} onClick={() => { setIsEdit(false); setShowFeedbackTicketResolution(true); handleFromUpload() }}>ADD TICKET</button>
@@ -248,11 +248,11 @@ const HelpHome = () => {
                             {selectedOption !== "Exception Error Tickets" && (
                                 <Table
                                     tableHeaderValues={tableHeaderValues}
-                                    tableDataValues={(selectedOption === 'TICKETS' || selectedOption === "TUTORIALS & VIDEOS")
-                                        ? getTicketValues() : selectedOption === "RELEASE NOTES" ? getTicketValues()
-                                            : selectedOption === "Messages" ? getMessagesValues() : []}
-                                    tableData={(selectedOption === 'TICKETS' || selectedOption === "TUTORIALS & VIDEOS" || selectedOption === "RELEASE NOTES")
-                                        ? myTicket : selectedOption === "Messages" ? allMessages : []}
+                                    tableDataValues={selectedOption === 'TICKETS' ? getTicketValues() : (selectedOption === "TUTORIALS & VIDEOS"
+                                        || selectedOption === "RELEASE NOTES") ? []
+                                        : selectedOption === "Messages" ? getMessagesValues() : []}
+                                    tableData={selectedOption === 'TICKETS' ? myTicket : (selectedOption === "TUTORIALS & VIDEOS" || selectedOption === "RELEASE NOTES")
+                                        ? [] : selectedOption === "Messages" ? allMessages : []}
                                     gridStyle={selectedOption === 'TICKETS' ? style.ticketTableDataGrid : selectedOption === "TUTORIALS & VIDEOS" ? style.tutorialTableDataGrid
                                         : selectedOption === "RELEASE NOTES" ? style.releaseTableDataGrid
                                             : selectedOption === "Messages" ? style.messageTableDataGrid : ''}
@@ -273,7 +273,7 @@ const HelpHome = () => {
                 {showChatView && (
                     <div className={style.chatContainer}>
                         <div className={style.blueChatPart}>
-                            <div className={style.justifyCenter}>TimeSmartAI Team</div>
+                            <div className={style.justifyCenter}>TimeSmartAI.Inc Team</div>
                             <div className={`${style.justifyCenter}`}>
                                 <div className={`${style.displayInRow} ${style.marginTop10}`}>
                                     <div>
@@ -312,7 +312,7 @@ const HelpHome = () => {
                                     </div>
                                     <div className={style.messageContainer}>
                                         Hi there, <br /><br />
-                                        Welcome to TimeSmartAI Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
+                                        Welcome to TimeSmartAI.Inc Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
                                     </div>
                                 </div>
                             </div>

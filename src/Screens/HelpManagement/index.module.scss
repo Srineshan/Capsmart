@@ -413,7 +413,8 @@ body {
 
 .ticketTableDataGrid {
     display: grid;
-    grid-template-columns: 5% 10% 15% 15% 15% 15% 15% 10%;
+    grid-template-columns: 5% 10% 13% 13% 13% 13% 13% 12%;
+    grid-gap: 1%;
 }
 
 .tutorialTableDataGrid {

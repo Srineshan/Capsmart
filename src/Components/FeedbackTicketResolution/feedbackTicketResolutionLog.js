@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, Classes } from "@blueprintjs/core";
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
-import TimeSmartLogo from '../../images/timeSmartAI-logo.png';
+import TimeSmartLogo from '../../images/timeSmartAI-logo.jpeg';
 import WhiteTimeSmartLogo from '../../images/whiteLogo.png';
 import RedWarning from '../../images/redWarning.png';
 import FeedbackStepper1 from '../../images/feedbackStepper1.png';
@@ -292,7 +292,7 @@ const FeedbackTicketResolutionLog = (getShowFeedbackTicketResolutionLog) => {
                 <div className={`${style.footerLogoStyle} ${style.justifyCenter}`}>
                     <img src={WhiteTimeSmartLogo} alt="logo" className={style.logoStyle} />
                 </div>
-                <div className={style.copyrightText}>Copyright © 2022 TimeSmartAI. All rights reserved.</div>
+                <div className={style.copyrightText}>Copyright © 2022 TimeSmartAI.Inc. All rights reserved.</div>
             </div>
         </Dialog>
     )

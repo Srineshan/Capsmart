@@ -113,7 +113,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         if (paymentAndCompensation?.timesheetPayments?.length !== 0) {
             setTimesheetPaymentsValue()
         }
-    }, [paymentAndCompensation])
+    }, [paymentAndCompensation, timeSheetTabs])
 
     useEffect(() => {
         setTimesheetPaymentsValue()

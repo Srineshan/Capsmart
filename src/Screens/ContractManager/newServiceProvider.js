@@ -49,6 +49,8 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
   const [allowPersonalMail, setAllowPersonalMail] = useState(false);
   const [phoneNA, setPhoneNA] = useState(false);
   const [continueLoading, setContinueLoading] = useState(false);
+  const [contractUsers, setContractUsers] = useState([]);
+
 
   const leftElement = () => {
     return (
@@ -66,6 +68,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
     getRolesData();
     getUsersData();
     getContractDetail();
+    getContractUserData()
   }, [])
 
   useEffect(() => {
@@ -261,7 +264,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
         "officialEmail": userDetails?.email
       },
       // "ssoId": userDetails?.ssoId,
-      "ssoId": null,
+      "ssoId": { "id": userDetails?.email },
       "password": {
         "password": ''
       },
@@ -316,6 +319,15 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
     const { data: user } = await GET('user-management-service/user');
     if (user) {
       setUsers(user);
+    }
+  }
+
+  const getContractUserData = async () => {
+    if (contractId !== '') {
+      const { data: userData } = await GET(`user-management-service/user?contractID=${contractId}`);
+      if (userData) {
+        setContractUsers(userData?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Activity Logger')));
+      }
     }
   }
 
@@ -451,7 +463,7 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
     return siteData;
   }
 
-  console.log(userDetails);
+  console.log(contractUsers);
 
   return (
     <Dialog isOpen={getNewServiceProviderDialog} onClose={() => getNewServiceProviderDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
@@ -641,9 +653,10 @@ const NewServiceProvider = ({ getNewServiceProviderDialog, contractId, contractT
               <CommonSelectField onChange={(e) => handleRoles(e.target.value)}
                 className={`${style.fullWidth}`}
                 firstOptionLabel={'Select Role-multi select'} firstOptionValue={'0'}
-                valueList={roles?.map(data => data?.roleName)}
-                labelList={roles?.map(data => data?.roleName)}
-                disabledList={roles?.map(data => false)} />
+                valueList={contractUsers?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => data?.roleName) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+                labelList={contractUsers?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => data?.roleName) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+                disabledList={contractUsers?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => false) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => false)}
+              />
               <div className={`${style.marginTop20} ${style.marginLeft20}`}>
                 {rolesTags}
               </div>
