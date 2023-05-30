@@ -62,6 +62,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
   const currentUserData = currentUser();
+  const [selectedContractPreImplementationData, setSelectedContractPreImplementationData] = useState();
   const [metadata, setMetadata] = useState();
   const activateContracts = async (data) => {
     let status = 'ACTIVE';
@@ -114,6 +115,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const getShowPreImplementationDialog = (data) => {
     setShowPreImplementationDialog(true);
     setSelectedContractId(data?.id);
+    setSelectedContractPreImplementationData(data);
   }
 
   const getPreImplementationDialogBoolean = (value) => {
@@ -497,7 +499,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI.Inc</p>
       </div>
-      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} />
+      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} selectedContractPreImplementationData={selectedContractPreImplementationData} />
     </div>
   )
 }
