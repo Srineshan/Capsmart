@@ -326,8 +326,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     }
   }
 
-  console.log()
-
   const updateWorkingHours = (name, value) => {
     let temp = metadata;
     temp?.map(data => {

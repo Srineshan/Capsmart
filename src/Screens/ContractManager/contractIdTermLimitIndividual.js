@@ -83,6 +83,7 @@ const ContractIdTermLimitIndividual = (
   const [contractedServices, setContractedServices] = useState([]);
   const [isDateUpdated, setIsDateUpdated] = useState(false);
   const { setValue, value } = useComboboxControls({ initialValue: '' });
+  const [compensationPolicy, setCompensationPolicy] = useState('');
 
   useEffect(() => {
     if (method === 'PUT' && createdContractId !== '') {
@@ -164,6 +165,7 @@ const ContractIdTermLimitIndividual = (
       let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
       setAutoRenewal({ renewalTerm: continuation?.autoRenewalTerm?.term.toString(), allowableRenewalTerm: continuation?.allowableAutoRenewalTerm?.term.toString(), calendar: continuation?.autoRenewalCalender })
       setRenewalreminder(contractDetail?.continuationPolicy?.reminderList?.renewalReminderList || [{ days: 0 }]);
+      setCompensationPolicy(contractDetail?.compensationPolicy);
       let fileData = [];
       contractDetail?.contractFiles?.map(data => {
         fileData.push({ id: data?.id, type: data?.documentType, name: data?.documentName, desc: data?.documentDescription, fileName: data?.fileName, file: null, filePath: data?.fileURL })
@@ -198,6 +200,7 @@ const ContractIdTermLimitIndividual = (
       setContractTermPeriodFrom(contractDetail?.contractTerm?.startDate !== null ? new Date(contractDetail?.contractTerm?.startDate?.replace('-', '/')) : null);
       setContractTermPeriodTo(contractDetail?.contractTerm?.endDate !== null ? new Date(contractDetail?.contractTerm?.endDate?.replace('-', '/')) : null);
       setContractEffectiveDate(contractDetail?.contractTerm?.effectiveDate !== null ? new Date(contractDetail?.contractTerm?.effectiveDate?.replace('-', '/')) : null);
+      setCompensationPolicy(contractDetail?.compensationPolicy);
       setSelectedContractContinuationPolicy(contractDetail?.continuationPolicy?.contractPolicyType);
       let continuation = contractDetail?.continuationPolicy?.autoRenewalPeriod;
       setAutoRenewal({ renewalTerm: continuation?.autoRenewalTerm?.term.toString(), allowableRenewalTerm: continuation?.allowableAutoRenewalTerm?.term.toString(), calendar: continuation?.autoRenewalCalender })
@@ -292,6 +295,11 @@ const ContractIdTermLimitIndividual = (
       setContinueLoading(false);
       return;
     }
+    if (compensationPolicy === '') {
+      ErrorToaster('Select a Compensation Policy to proceed');
+      setContinueLoading(false);
+      return;
+    }
     if (departmentSpecific && sites?.some(data => data?.departmentList?.departments?.length === 0)) {
       ErrorToaster('Select Departments for all the selected Sites');
       setContinueLoading(false);
@@ -348,6 +356,7 @@ const ContractIdTermLimitIndividual = (
           "endDate": contractTermPeriodTo === null ? null : format(contractTermPeriodTo, 'yyyy-MM-dd').toString(),
           "effectiveDate": contractEffectiveDate === null ? null : format(contractEffectiveDate, 'yyyy-MM-dd').toString(),
         },
+        "compensationPolicy": compensationPolicy,
         ...(selectedContractContinuationPolicy !== '' && {
           "continuationPolicy": {
             "contractPolicyType": selectedContractContinuationPolicy,
@@ -924,7 +933,6 @@ const ContractIdTermLimitIndividual = (
           </div>
         </div>
 
-
         <div className={`${style.extentionGrid} ${style.marginTop20}`}>
           <CommonLabel value='Contract Time Commitment*' />
           <div className={style.contractedTime}>
@@ -935,6 +943,21 @@ const ContractIdTermLimitIndividual = (
               valueList={['WEEK', 'MONTH']}
               labelList={['Weeks Per Contract Year', 'Months Per Contract Year']}
               disabledList={(parseInt(contractedTimeCommitment?.value) <= differenceInCalendarMonths(new Date(contractTermPeriodTo), new Date(contractTermPeriodFrom))) ? [false, false] : parseInt(contractedTimeCommitment?.value) <= differenceInCalendarWeeks(new Date(contractTermPeriodTo), new Date(contractTermPeriodFrom)) ? [false, true] : [true, true]} />
+          </div>
+        </div>
+
+        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+          <CommonLabel value='Compensation policy to Apply*' />
+          <div>
+            <div>
+              <CommonSelectField value={compensationPolicy || ''}
+                onChange={(e) => setCompensationPolicy(e.target.value)}
+                className={`${style.fullWidth}`} firstOptionLabel={'Choose Your Compensation Policy'} firstOptionValue={''}
+                valueList={['ACTIVITY_BASED', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET', 'SHIFT_OR_PER_DAY_BASED',]}
+                labelList={['Activity Based', 'Fixed Amount for Timesheet Period WITH Offset Applied', 'Fixed Amount fot Timesheet Period WITHOUT Offset Applied', 'Shift OR Per diem Based']}
+                disabledList={[false, false]}
+                widthValue={390} />
+            </div>
           </div>
         </div>
 

@@ -448,8 +448,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       if (data?.approver !== undefined) {
         let workFlowData;
         let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
-        workFlowData = workFlowDataGenerator("On-Call Administrative Workflow", [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
-
+        workFlowData = workFlowDataGenerator("On-Call Additional Activity Workflow", [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+        console.log('OnCall Workflow', data.workflowId)
         if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
           POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
             then(response => {
@@ -463,6 +463,62 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
               setIsWorkFlowUpdated(true);
 
             }).catch(error => {
+              ErrorToaster('Unexpected Error');
+            })
+        } else {
+          PUT(`timesheet-management-service/workflow/${data.workflowId}`, workFlowData)
+            .then(response => {
+              data.workFlow = {
+                id: data?.workflowId,
+                workFlowName: {
+                  name: data?.workflowName,
+                }
+              }
+              setMetadata(data);
+              setIsWorkFlowUpdated(true);
+            })
+            .catch(error => {
+              ErrorToaster('Unexpected Error');
+            })
+        }
+      } else {
+        handleSave(buttonType);
+      }
+    } else if (serviceTypeTemplate === ADMINISTRATIVE) {
+      let data = metadata;
+      if (data?.approver !== undefined) {
+        let workFlowData;
+        let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
+        workFlowData = workFlowDataGenerator("Administrative Service Workflow", [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+        console.log('Administrative Workflow', data.workflowId)
+        if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
+          POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
+            then(response => {
+              data.workFlow = {
+                id: response?.data,
+                workFlowName: {
+                  name: data?.performingActivity?.activity,
+                }
+              }
+              setMetadata(data);
+              setIsWorkFlowUpdated(true);
+
+            }).catch(error => {
+              ErrorToaster('Unexpected Error');
+            })
+        } else {
+          PUT(`timesheet-management-service/workflow/${data.workflowId}`, workFlowData)
+            .then(response => {
+              data.workFlow = {
+                id: data?.workflowId,
+                workFlowName: {
+                  name: data?.workflowName,
+                }
+              }
+              setMetadata(data);
+              setIsWorkFlowUpdated(true);
+            })
+            .catch(error => {
               ErrorToaster('Unexpected Error');
             })
         }
@@ -575,6 +631,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
       }
+      console.log('administrative', dataValues);
       data = [{
         "refId": dataValues?.refId?.toString() ? dataValues?.refId?.toString() : (new Date()).getTime()?.toString(),
         "sites": siteData,
@@ -691,12 +748,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             },
             "frequency": dataValues?.dependencyFrequency,
             "additionalServices": dependentActivities,
-            // "workFlow": {
-            //   "id": "string",
-            //   "workFlowName": {
-            //     "name": "string"
-            //   }
-            // },
+            "workFlow": dataValues?.workFlow,
             "billableService": dataValues?.additionalActivityBillable,
             "paymentApprovalRequired": dataValues?.additionalActivityPaymentApprovalRequired,
           },
@@ -781,7 +833,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
           "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
         },
-        ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === ONCALL) && {
+        ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === ADMINISTRATIVE) && {
           workFlow: dataValues?.workFlow,
         }),
         "patientMRNRequired": dataValues?.patientMRNRequired || false,
@@ -1162,7 +1214,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} contractId={contractId} />
                             : serviceTypeTemplate === PROCEDUREREADING
                               ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
-                              : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />}
+                              : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} contractId={contractId} />}
                 </div>
               </div>
             ) : (
