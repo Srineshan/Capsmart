@@ -488,11 +488,14 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getTimeSheetWorkFlow();
   }
 
+  console.log('timesheet', absence);
+
 
   const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
     let id = absence?.id;
     if (addApprover) {
       if (id === '') {
+        console.log('inside post id is empty')
         await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
           .then(response => {
             updateWorkflow(response?.data, workFlowName, type);
@@ -502,6 +505,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           })
       }
       else {
+        console.log('inside put id has value')
         await PUT(`timesheet-management-service/workflow/${id}`, data)
           .then(response => {
             updateWorkflow(absence.id, workFlowName, type);
@@ -512,6 +516,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           })
       }
     } else {
+      console.log('inside else')
       updateWorkflow(absence.id, workFlowName, type);
     }
     getTabDataStatus();
