@@ -105,6 +105,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setPaymentAndCompensation(paymentAndCompensation);
     };
 
+    console.log('timesheetpayments', timesheetPayments);
+
     useEffect(() => {
         setCompensation(paymentAndCompensation?.compensationBasis || 'RVUBASED');
         setRvuQuantity(paymentAndCompensation?.rvuQuantity);
@@ -148,6 +150,16 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
             });
             setTimesheetPayments(temp);
             getPaymentFields();
+        } else if (timesheetPayments?.length !== 0) {
+            let temp = timesheetPayments;
+            timeSheetTabs.map((data, index) => {
+                temp[index].timesheetLabel = {
+                    label: timeSheetTabs?.[index].timesheetLabel?.label
+                }
+            });
+            setTimesheetPayments(temp);
+        } else {
+
         }
     }
 
@@ -192,8 +204,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setTimesheetPayments(temp);
         getPaymentFields();
     }
-
-    console.log('timesheet', timesheetPayments);
 
     const getPaymentFields = () => {
         let temp = [];
