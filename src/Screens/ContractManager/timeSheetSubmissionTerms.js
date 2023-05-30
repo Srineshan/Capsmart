@@ -12,6 +12,7 @@ import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDe
 import Typography from '@mui/material/Typography';
 import { POST, GET, PUT, TenantID } from './../dataSaver';
 import ReviewerApproverField from './reviewerApproverField';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
@@ -59,6 +60,8 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [contractName, setContractName] = useState('');
   const [continueLoading, setContinueLoading] = useState(false);
   const [paymentSourceState, setPaymentSourceState] = useState([]);
+  const [addApprover, setAddApprover] = useState(false);
+  const [workFlowId, setWorkFlowId] = useState('');
 
   const menuRef = useRef(null);
   useOptionsHide(menuRef);
@@ -117,6 +120,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     if (absenceWorkFlow) {
       let workflowData = timesheetWorkFlow?.filter(data => data?.id === absenceWorkFlow?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
       let workFlowValues = Object.values(workflowData);
+      setAddApprover(absenceWorkFlow?.workFlowRequired);
       let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
       let approver = workFlowValues?.[1]?.workFlowUser?.id;
       setAbsence({ ...absence, id: absenceWorkFlow?.workFlow?.id, reviewer: reviewer, reviewerTitle: workFlowValues?.[0]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[1]?.workFlowUser?.title });
@@ -415,7 +419,6 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
   const getSelectedUserDetails = (id) => {
     let user = users?.filter(user => user?.id === id)?.map(data => data)[0];
-    console.log('user', user);
     return user;
   }
 
@@ -447,14 +450,21 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   }
 
   const updateWorkflow = async (workflowId, workFlowName, type) => {
-    let data = {
+    let workFlowValue = {
       "workFlow": {
         "id": workflowId,
         "workFlowName": {
           "name": workFlowName,
         }
-      }
+      },
+      "workFlowRequired": addApprover,
+    };
+    let workFlowNull = {
+      "workFlow": null,
+      "workFlowRequired": addApprover,
     }
+    let workflow = addApprover ? workFlowValue : workFlowNull;
+    let data = workflow;
     if (type === 'AddOn') {
       await PUT(`contract-managment-service/contracts/${contractId}/addOnRequestWorkFlow`, data)
         .then(response => {
@@ -481,23 +491,28 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
 
   const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
     let id = absence?.id;
-    if (id === '') {
-      await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
-        .then(response => {
-          updateWorkflow(response?.data, workFlowName, type);
-        })
-        .catch(error => {
-          ErrorToaster('Unexpected Error');
-        })
-    }
-    else {
-      await PUT(`timesheet-management-service/workflow/${id}`, data)
-        .then(response => {
-          console.log('Success!');
-        })
-        .catch(error => {
-          ErrorToaster('Unexpected Error');
-        })
+    if (addApprover) {
+      if (id === '') {
+        await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
+          .then(response => {
+            updateWorkflow(response?.data, workFlowName, type);
+          })
+          .catch(error => {
+            ErrorToaster('Unexpected Error');
+          })
+      }
+      else {
+        await PUT(`timesheet-management-service/workflow/${id}`, data)
+          .then(response => {
+            updateWorkflow(absence.id, workFlowName, type);
+            console.log('Success!');
+          })
+          .catch(error => {
+            ErrorToaster('Unexpected Error');
+          })
+      }
+    } else {
+      updateWorkflow(absence.id, workFlowName, type);
     }
     getTabDataStatus();
     refresh();
@@ -609,7 +624,18 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           <div className={style.purpleTitle}>
             PLANNED ABSENCE REQUESTS
           </div>
-          <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value, title) => { setAbsence({ ...absence, reviewer: value, reviewerTitle: title }) }} value={absence?.reviewer} approverReviewer='approver' />
+          <div className={`${style.addManagerGrid}  ${style.marginTop20}`}>
+            <CommonLabel value='Only Allow Upon Request / Notification Approval' />
+            <CommonSwitch onChange={() => {
+              setAddApprover(!addApprover);
+              setAbsence({ ...absence, reviewer: '', reviewerTitle: '', id: '' })
+            }}
+              checked={addApprover}
+            />
+          </div>
+          {addApprover &&
+            <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value, title) => { setAbsence({ ...absence, reviewer: value, reviewerTitle: title }) }} value={absence?.reviewer} approverReviewer='approver' />
+          }
         </div>
 
         {/* <div className={`${style.welcomeBorder} ${style.marginTop20}`}></div> */}

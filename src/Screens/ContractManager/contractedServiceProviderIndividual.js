@@ -330,6 +330,7 @@ const ContractedServicesProviderIndividual = ({ getViewPage3, getCurrentPage, co
         let siteValue = {
           sites: getSiteData()
         }
+        data.sites = siteValue;
         // data.sites = tempSite;
         data.siteLevelResponsible = siteLevel;
         data.departmentLevelResponsible = departmentLevel;

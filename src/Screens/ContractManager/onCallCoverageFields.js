@@ -266,7 +266,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
 
     useEffect(() => {
         setSelectedValues();
-    }, [serviceSelected, timesheetWorkFlow, user]);
+    }, [serviceSelected, addOnWorkFlow, user]);
 
 
     const setSelectedValues = () => {
@@ -276,7 +276,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                 { activity: data?.activity?.activity, weekdayFrom: GetDateFromHours(data?.weekday?.from?.toString() || ''), weekdayTo: GetDateFromHours(data?.weekday?.to?.toString() || ''), weekendFrom: GetDateFromHours(data?.weekend?.from?.toString() || ''), weekendTo: GetDateFromHours(data?.weekend?.to?.toString() || ''), holidayFrom: GetDateFromHours(data?.holiday?.from?.toString() || ''), holidayTo: GetDateFromHours(data?.holiday?.to?.toString() || ''), patientMRNRequired: data?.patientMRNRequired, attendingDocRequired: data?.attendingDocRequired }
             )
         })
-        let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
+
+        let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.dependentService?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
         let workFlowValues = Object?.values(workflowData);
         let approver = user?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
 
@@ -337,6 +338,8 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
             attendingDocRequired: serviceSelected?.attendingDocRequired,
             customizedSchedule: serviceSelected?.customizedSchedule,
             approver: approver,
+            workflowId: serviceSelected?.dependentService?.workFlow?.id,
+            workflowName: serviceSelected?.dependentService?.workFlow?.workFlowName?.name,
         });
 
     }
