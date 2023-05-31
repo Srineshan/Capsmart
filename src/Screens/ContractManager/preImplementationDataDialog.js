@@ -135,7 +135,7 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
         for (let i = 0; i < obligatedActivities?.length; i++) {
             temp[i] = (
                 <div className={`${style.marginTop20}`} key={`obligatedActivities${i}-${obligatedActivities?.[i]?.activityType?.activityType}`} >
-                    <CommonLabel value={obligatedActivities?.[i]?.activityType?.activityType} />
+                    <CommonLabel value={`${obligatedActivities?.[i]?.activityType?.activityType} ${obligatedActivities?.[i]?.activityTypeTemplate?.activityTypeTemplate !== 'Administrative / Miscellaneous Service' ? `(${obligatedActivities?.[i]?.performingActivity?.activity})` : ''}`} />
                     <CommonInputField className={style.fullWidth}
                         key={`completed${i}${obligatedActivities?.[i]?.completed}`}
                         defaultValue={obligatedActivities?.[i]?.completed}
@@ -240,8 +240,8 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => e.target.value >= 0 && setAdministrativeResponsibilities({ ...administrativeResponsibilities, value: e.target.value.slice(0, 9).replace(/,/g, "") })}
-                                    value={Number(administrativeResponsibilities?.value)?.toLocaleString()}
+                                    onChange={(e) => setAdministrativeResponsibilities({ ...administrativeResponsibilities, value: (e.target.value.slice(0, 9)).replace(/,/g, "") })}
+                                    value={administrativeResponsibilities?.value ? Number(administrativeResponsibilities?.value)?.toLocaleString() : null}
                                 // disabled={administrativeResponsibilities?.na}
                                 />
                                 <CommonCheckBox className={style.marginLeft20}
