@@ -58,7 +58,7 @@ const ReviewerApproverField = ({ data, label, onValueChange, selectLabel, value,
           valueList={label?.includes('Aggregator') ? data?.map(data => data?.id) : title?.filter(titleData => titleData[approverReviewer] === true)?.map(titleData => titleData?.id)}
           labelList={label?.includes('Aggregator') ? data?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`) : title?.filter(titleData => titleData[approverReviewer] === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
           disabledList={data?.map(data => false)}
-          widthValue={390} />
+          widthValue={370} />
       </div>
     </div>
   )
