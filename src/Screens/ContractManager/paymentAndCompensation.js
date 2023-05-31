@@ -105,6 +105,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setPaymentAndCompensation(paymentAndCompensation);
     };
 
+    console.log('timesheetpayments', timesheetPayments);
+
     useEffect(() => {
         setCompensation(paymentAndCompensation?.compensationBasis || 'RVUBASED');
         setRvuQuantity(paymentAndCompensation?.rvuQuantity);
@@ -117,9 +119,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setDollarValue(paymentAndCompensation?.dollarValue);
         setCompensationOffsetCriteria(paymentAndCompensation?.compensationOffsetCriteria);
         setTimesheetPayments(paymentAndCompensation?.timesheetPayments || []);
-        if (paymentAndCompensation?.timesheetPayments?.length !== 0) {
-            setTimesheetPaymentsValue()
-        }
     }, [paymentAndCompensation, timeSheetTabs])
 
     useEffect(() => {
@@ -133,17 +132,18 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const setTimesheetPaymentsValue = () => {
         if (timeSheetTabs?.length !== timesheetPayments?.length) {
             let temp = [];
+            console.log('inside func', timesheetPayments);
             timeSheetTabs?.map((data, index) => {
                 temp.push({
                     timesheetLabel: {
                         label: timeSheetTabs?.[index]?.timesheetLabel?.label
                     },
                     paymentFrequency: data?.servicePeriod?.value,
-                    maxPaymentPerTimesheetSubmission: parseFloat(0),
-                    maxPaymentPerContract: parseFloat(0),
-                    reducedNumberOfServices: "NA",
-                    providingAdditionalServices: "NA",
-                    paymentBasedonFixedHoursVsActual: true
+                    maxPaymentPerTimesheetSubmission: timesheetPayments?.[index]?.maxPaymentPerTimesheetSubmission || parseFloat(0),
+                    maxPaymentPerContract: timesheetPayments?.[index]?.maxPaymentPerContract || parseFloat(0),
+                    reducedNumberOfServices: timesheetPayments?.[index]?.reducedNumberOfServices || "NA",
+                    providingAdditionalServices: timesheetPayments?.[index]?.providingAdditionalServices || "NA",
+                    paymentBasedonFixedHoursVsActual: timesheetPayments?.[index]?.paymentBasedonFixedHoursVsActual || true
                 });
             });
             setTimesheetPayments(temp);
@@ -153,7 +153,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     useEffect(() => {
         getPaymentAndCompensation();
-        setTimesheetPaymentsValue();
         getTimeSheetValues();
         getContractDetail();
     }, [])
@@ -192,8 +191,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setTimesheetPayments(temp);
         getPaymentFields();
     }
-
-    console.log('timesheet', timesheetPayments);
 
     const getPaymentFields = () => {
         let temp = [];
