@@ -1,0 +1,183 @@
+@import '../../styles/mixins.scss';
+
+.cardStyle {
+    height: 105px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 10px;
+    opacity: 1;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.reduceTop20 {
+    margin-top: -20px;
+}
+
+.reduceTop10 {
+    margin-top: -10px;
+}
+
+.reduceTop5 {
+    margin-top: -5px;
+}
+
+.selectedContractBackground {
+    background-color: #e8e7fe;
+    border: 1px solid #d1cefd;
+}
+
+.headingForContracts {
+    font: normal normal bolder 15px/20px Montserrat !important;
+    letter-spacing: 0px;
+    text-align: left;
+    color: #52575D;
+    text-transform: uppercase;
+    opacity: 1;
+
+    @include breakpoint(md) {
+        font: normal normal bold 14px/12px Montserrat;
+    }
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.spaceBetweenColumn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.displayInCol {
+    display: flex;
+    flex-direction: column;
+}
+
+.displayInColRev {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.marginTop30 {
+    margin-top: 30px !important;
+}
+
+.marginTop5 {
+    margin-top: 5px !important;
+}
+
+.marginLeft10 {
+    margin-left: 10px !important;
+}
+
+.next30Style {
+    text-align: left;
+    font: normal normal normal 10px/18px Roboto;
+    color: #B3B8BD;
+    opacity: 1;
+    margin-bottom: -5px;
+    margin-top: -10px;
+}
+
+.bottomTextStyle {
+    text-align: left;
+    font: normal normal normal 10px/18px Roboto;
+    color: #B3B8BD;
+    opacity: 1;
+    margin-top: -5px;
+}
+
+.headingCountForContracts {
+    color: #52575D;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: left;
+    line-height: 15px;
+}
+
+.green {
+    color: #00C07F;
+}
+
+.orange {
+    color: orange;
+}
+
+.red {
+    color: #FF6562;
+}
+
+.yellow {
+    color: #FEC106;
+}
+
+.purple {
+    color: #7165E3;
+}
+
+.optionsStyle {
+    margin: -3px 0px 0 0px;
+    text-align: left;
+    float: right !important;
+    font: normal normal bold 12px/12px Montserrat;
+    color: #52575D;
+
+    span {
+        @include breakpoint(md) {
+            font: normal normal bold 10px/12px Montserrat !important;
+        }
+    }
+}
+
+.descriptionText {
+    text-align: left;
+    float: right !important;
+    font: normal normal bold 10px/12px Montserrat;
+    color: #52575D;
+
+    span {
+        @include breakpoint(md) {
+            font: normal normal bold 10px/12px Montserrat !important;
+        }
+    }
+}
+
+.countDesign {
+    border-radius: 8px;
+    height: 20px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+}
+
+.defaultSmallNumber {
+    background-color: #d7d4f7;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.alignRight {
+    display: flex;
+    align-items: flex-end;
+    text-align: right;
+}
