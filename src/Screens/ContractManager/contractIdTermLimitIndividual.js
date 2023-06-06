@@ -954,7 +954,7 @@ const ContractIdTermLimitIndividual = (
                 onChange={(e) => setCompensationPolicy(e.target.value)}
                 className={`${style.fullWidth}`} firstOptionLabel={'Choose Your Compensation Policy'} firstOptionValue={''}
                 valueList={['ACTIVITY_BASED', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET', 'SHIFT_OR_PER_DAY_BASED',]}
-                labelList={['Activity Based', 'Fixed Amount for Timesheet Period WITH Offset Applied', 'Fixed Amount fot Timesheet Period WITHOUT Offset Applied', 'Shift OR Per diem Based']}
+                labelList={['Activity Based', 'Fixed Amount for Timesheet Period WITH Offset Applied', 'Fixed Amount for Timesheet Period WITHOUT Offset Applied', 'Shift OR Per diem Based']}
                 disabledList={[false, false]}
                 widthValue={370} />
             </div>
