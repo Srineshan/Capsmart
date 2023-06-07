@@ -473,6 +473,13 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
               page={page}
               scrollStyle={style.contractScrollStyle}
               tableSortValues={tableSortValues}
+              heading={'There are no contracts for you to manage'}
+              subHeading={'To add a new contract click on'}
+              onClickText={'Click To View A Short Tutorial On How To Add A Contract'}
+              buttonComponent={<div className={`${style.addStyle} ${style.alignCenter} ${style.marginLeft20}`}>
+                <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+              </div>}
+              onClickFunction={() => { }}
             />
             {
               //   <div className={`${style.noContractsBox} ${style.alignCenter}`}>
