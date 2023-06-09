@@ -184,9 +184,9 @@ const TasksAndAlerts = () => {
             </SideBar>
           </div>
           <div>
-            {/* <PartnerPortalTiles /> */}
+            <PartnerPortalTiles />
 
-            <div className={`${style.grid4}`}>
+            {/* <div className={`${style.grid4}`}>
               <Link to={"/activeCustomers"} className={style.linkStyle}>
                 <div
                   className={`${style.cardStyle} ${style.selectedContractBackground}`}
@@ -331,7 +331,7 @@ const TasksAndAlerts = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
             <div
               className={`${style.bigCardStyleEntryPage} ${style.marginTop20}`}
             >
