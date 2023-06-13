@@ -139,14 +139,11 @@ const Table = ({ tableHeaderValues, tableDataValues, tableData, hidePagination, 
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} key={index}>
-                            {
-                                // tableSortValues?.[index] && (
-                                //     <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} />
-                                // )
-                                //  : (
-                                //     <img src={DescendingSort} alt="" className={style.sortImgStyle} />
-                                // )
-                            }
+                            {/* {tableSortValues?.[index] ? (
+                                <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} />
+                            ) : (
+                                <img src={DescendingSort} alt="" className={style.sortImgStyle} />
+                            )} */}
                             <div className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle}`}>{data}</div>
                         </div>
                     ))}

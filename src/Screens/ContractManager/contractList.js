@@ -32,7 +32,7 @@ import PreImplementationDataDialog from './preImplementationDataDialog';
 const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page }) => {
   const [selectedContractId, setSelectedContractId] = useState();
   const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID",
-    // "",
+    "",
     "NAME", "CONTRACTORS",
     "EFFECTIVE DATE",
     // "POD STATUS",
@@ -47,7 +47,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   const activationPendingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "REVIEWS", "APPROVALS", "REF DOCS", "GO LIVE DATE", "EFFECTIVE DATE", "MANAGER", "ACTION"];
   const upcomingHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "EXPIRATION DATE", "EXPIRING IN", "LAST UPDATE", "MANAGER", "ACTION"];
   const expiredHeaderValues = ["", "CONTRACT TYPE", "ID", "NAME", "TERMINATION DATE", "NEW CONTRACT ID", "LAST UPDATE", "MANAGER"];
-  const activeColSortValues = [false, false, false, true, true, false, false, false, false];
+  const activeColSortValues = [false, false, false, false, true, true, false, false, false, false];
   const draftColSortValues = [false, false, true, true, false, false, false, false, false];
   const upcomingColSortValues = [false, false, true, true, false, false, false, false, false];
   const expiredColSortValues = [false, false, true, true, false, false, false, false];
@@ -229,7 +229,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
       { "type": "icon", "icon": notification, "hoverText": warningHoverText, 'isShowHoverText': true },
       { "type": "text", "value": contractType, "onClickFunction": onClickFunction },
       { "type": "text", "value": contractId, "onClickFunction": onClickFunction },
-      // { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
+      { "type": "icon", "icon": lock, "hoverText": lockHoverText, 'isShowHoverText': true },
       { "type": "text", "value": name, "onClickFunction": onClickFunction },
       { "type": "iconWithCount", "value": contractors, "hoverText": contractorHoverText, 'isShowHoverText': true, "icon": contractorsIcon },
       { "type": "text", "value": effectiveDate, "onClickFunction": onClickFunction },
@@ -345,7 +345,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
   const activeActionsData = [
     // {'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
-    //   {'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean'},
+    { 'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean' },
     //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'},
     { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' }
   ]
