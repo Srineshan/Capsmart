@@ -1,3 +1,5 @@
+"use client";
+
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
@@ -7,6 +9,8 @@ import "normalize.css";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
+import { ErrorBoundary } from "react-error-boundary";
+import Error404 from './Components/ErrorPage/404';
 
 // const root = ReactDOM.createRoot(document.getElementById('root'));
 // root.render(
@@ -15,10 +19,18 @@ import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 //   </React.StrictMode>
 // );
 
+const logError = (error, info) => {
+  // Do something with the error, e.g. log to an external API
+  console.log(error)
+};
 
 const rootElement = document.getElementById("root");
 if (window.self === window.top) {
-  ReactDOM.render(<App />, rootElement);
+  ReactDOM.render(
+    <ErrorBoundary FallbackComponent={Error404} onError={logError}>
+      <App />
+    </ErrorBoundary>
+    , rootElement);
 }
 // ReactDOM.render(
 //   <StrictMode>
