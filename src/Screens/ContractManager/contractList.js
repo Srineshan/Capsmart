@@ -499,8 +499,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} TimeSmartAI.Inc</p>
       </div>
-      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} selectedContractPreImplementationData={selectedContractPreImplementationData} />
-    </div>
+      <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} selectedContractPreImplementationData={selectedContractPreImplementationData} />    </div>
   )
 }
 

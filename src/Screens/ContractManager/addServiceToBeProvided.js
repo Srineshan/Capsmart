@@ -91,7 +91,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   useEffect(() => {
     if (editService) {
-      console.log('selectedSerice', selectedService);
       setSiteData(selectedService?.sites);
       getSelectedSites(selectedService?.sites);
       getNewLocation(selectedService?.locations);
@@ -449,7 +448,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         let workFlowData;
         let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
         workFlowData = workFlowDataGenerator("On-Call Additional Activity Workflow", [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
-        console.log('OnCall Workflow', data.workflowId)
         if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
           POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
             then(response => {
@@ -490,7 +488,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         let workFlowData;
         let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
         workFlowData = workFlowDataGenerator("Administrative Service Workflow", [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
-        console.log('Administrative Workflow', data.workflowId)
         if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
           POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
             then(response => {
@@ -611,7 +608,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     let data = [];
     if (serviceTypeTemplate === ADDON && !editService) {
-      console.log('inside if', metadata);
       data = metadata;
       data.map((item, index) => {
         item.workingPeriod = metadata?.[index]?.workingPeriod;
@@ -631,7 +627,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
       }
-      console.log('administrative', dataValues);
+      if (activities?.length === 0) {
+        ErrorToaster('Atleast One Activity needs to be added to create a service');
+        return;
+      }
       data = [{
         "refId": dataValues?.refId?.toString() ? dataValues?.refId?.toString() : (new Date()).getTime()?.toString(),
         "sites": siteData,
@@ -722,9 +721,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "payableAmount": {
           "value": parseFloat(dataValues?.sessionAmount)
         },
-        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && {
+        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && dataValues?.dedicatedHoursSpecified && {
           "hourlyRate": {
             "value": serviceTypeTemplate === SUPPLEMENTAL && dataValues?.totalSession === 0 ? dataValues?.sessionAmount.toFixed(2) : (dataValues?.sessionAmount / dataValues?.totalSession).toFixed(2)
+          },
+        }),
+        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && !dataValues?.dedicatedHoursSpecified && {
+          "hourlyRate": {
+            "value": dataValues?.hourlyRate,
           },
         }),
         ...(serviceTypeTemplate === ADDON && {
@@ -871,8 +875,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       contractedServices: services
     }
 
-    console.log('services data', formattedData)
-
     const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
     if (response) {
       SuccessToaster('Contracted Service Updated Successfully');
@@ -889,8 +891,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       reset();
       getIsReset(true);
     }
-    // getTabDataStatus();
-
+    getTabDataStatus();
   }
 
   const getIsReset = (value) => {
@@ -935,8 +936,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       })),
     [activity, usedActivity],
   );
-
-  console.log(activityItems)
 
   const locationItems = useMemo(
     () =>
@@ -1011,8 +1010,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const handleClosePopoverDoc = () => {
     setAnchorElDoc(null);
   };
-
-  console.log('sites in add services', siteData);
 
   return (
     <>
@@ -1238,8 +1235,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           <div>
             {isEditable && !isShowPDF &&
               <div className={`${style.floatRight} `}>
-                {!editService && <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('ADD MORE'); } : {}}>ADD MORE</button>}
-                <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('SAVE AND EXIT'); } : {}}>SAVE & EXIT</button>
+                {!editService && <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => addOnWorkFlow('ADD MORE') : null}>ADD MORE</button>}
+                <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => addOnWorkFlow('SAVE AND EXIT') : null}>SAVE & EXIT</button>
               </div>
             }
 

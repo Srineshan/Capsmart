@@ -232,8 +232,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const selectedHours = (index) => {
-        // let temp = services?.findIndexOf(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType));
-        // let temp;
         services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
             let activityName = data?.activityType?.activityType;
             let activities = data?.activities?.map(data => data?.activity);
@@ -249,19 +247,11 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     totalSession: data?.totalSessions?.value,
                     totalSessionFrequency: data?.totalSessions?.frequency,
                     sessionAmount: data?.payableAmount?.value,
+                    hourlyRate: data?.hourlyRate?.value,
                 });
             }
         });
     }
-
-    // const selectedHours = (index) => {
-    //     console.log('check', index)
-    //     let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => data);
-    //     let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
-    //     let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
-    //     console.log('check', dedicatedHoursActivityType, dedicatedHoursPerformingActivity);
-    //     setMetadata({ ...metadata, dedicatedHoursActivityType: dedicatedHoursActivityType, dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity, sessionAmount: temp[index]?.payableAmount?.value });
-    // }
 
     const handleAdminActivity = (name, value) => {
         if (name === 'schedule' && value !== 'NA') {
@@ -332,7 +322,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
 
     const updateWorkingPeriod = (e) => {
-        // let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
