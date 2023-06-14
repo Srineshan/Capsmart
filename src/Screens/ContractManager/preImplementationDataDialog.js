@@ -96,6 +96,7 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
             let temp = obligatedActivities;
             temp[i].completed = parseInt(e);
             setObligatedActivities(temp);
+            getObligatedActivities();
         }
     }
 
@@ -118,7 +119,7 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
                     <CommonInputField className={style.fullWidth}
                         key={i}
                         type='number'
-                        defaultValue={obligatedActivities?.[i]?.completed}
+                        value={obligatedActivities?.[i]?.completed}
                         onChange={(e) => handleObligatedActivities(e.target.value, i)}
                     />
                 </div >
