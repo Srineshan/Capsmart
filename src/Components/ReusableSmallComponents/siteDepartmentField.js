@@ -93,6 +93,8 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     getSelectedSites(temp);
   }
 
+  console.log('deparmentList', departmentList);
+
 
   const onRemoveDept = (siteIndex, deptIndex, deptId) => {
     setDepartmentsSelected(departmentsSelected?.filter(dept => dept !== deptId)?.map(data => data));

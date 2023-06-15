@@ -20,12 +20,14 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import style from './index.module.scss';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const AdministrativeFields = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset }) => {
+const AdministrativeFields = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset, sites, contractId }) => {
     const [activity, setActivity] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showAdminActivity, setShowAdminActivity] = useState(false);
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [title, setTitle] = useState([]);
+    const [user, setUsers] = useState([]);
     const [adminActivity, setAdminActivity] = useState({
         activity: '',
         podRequired: false,
@@ -67,7 +69,10 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         weekendsCount: '0',
         workingTimeFrom: null,
         workingTimeTo: null,
+        activityApprovalWFRequired: false,
     })
+
+    const [addOnWorkFlow, setAddOnWorkFlow] = useState([]);
 
     useEffect(() => {
         if (isReset) {
@@ -80,7 +85,24 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         if (serviceSelected !== {}) {
             setSelectedValues();
         }
-    }, [serviceSelected]);
+    }, [serviceSelected, addOnWorkFlow, user]);
+
+    const getTimeSheetWorkFlow = async () => {
+        const { data: timesheetWorkFlow } = await GET('timesheet-management-service/workflow');
+        if (timesheetWorkFlow) {
+            setAddOnWorkFlow(timesheetWorkFlow);
+        }
+    }
+
+    useEffect(() => {
+        getMetaData(metadata);
+    }, [metadata])
+
+    useEffect(() => {
+        getTimeSheetWorkFlow();
+        getUserData();
+        getAdminActivityList();
+    }, [])
 
     const resetMetadata = () => {
         setMetadata({
@@ -107,10 +129,16 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             weekendsCount: '0',
             workingTimeFrom: null,
             workingTimeTo: null,
+            activityApprovalWFRequired: false,
         })
     }
 
     const setSelectedValues = () => {
+
+        let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
+        let workFlowValues = Object?.values(workflowData);
+        let approver = user?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+
         setMetadata({
             ...metadata,
             refId: serviceSelected?.refId,
@@ -125,16 +153,14 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             serviceDays: serviceSelected?.serviceDays,
             sessionAmount: serviceSelected?.payableAmount?.value,
             sessionDuration: serviceSelected?.duration?.hours || '0',
+            workflowId: serviceSelected?.workFlow?.id,
+            workflowName: serviceSelected?.workFlow?.workFlowName?.name,
+            activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
+            approver: approver,
         });
     }
 
-    useEffect(() => {
-        getMetaData(metadata);
-    }, [metadata])
 
-    useEffect(() => {
-        getAdminActivityList();
-    }, [])
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -206,8 +232,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const selectedHours = (index) => {
-        // let temp = services?.findIndexOf(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType));
-        // let temp;
         services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
             let activityName = data?.activityType?.activityType;
             let activities = data?.activities?.map(data => data?.activity);
@@ -223,19 +247,11 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     totalSession: data?.totalSessions?.value,
                     totalSessionFrequency: data?.totalSessions?.frequency,
                     sessionAmount: data?.payableAmount?.value,
+                    hourlyRate: data?.hourlyRate?.value,
                 });
             }
         });
     }
-
-    // const selectedHours = (index) => {
-    //     console.log('check', index)
-    //     let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => data);
-    //     let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
-    //     let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
-    //     console.log('check', dedicatedHoursActivityType, dedicatedHoursPerformingActivity);
-    //     setMetadata({ ...metadata, dedicatedHoursActivityType: dedicatedHoursActivityType, dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity, sessionAmount: temp[index]?.payableAmount?.value });
-    // }
 
     const handleAdminActivity = (name, value) => {
         if (name === 'schedule' && value !== 'NA') {
@@ -248,7 +264,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const onSelectActivity = (id, checked) => {
-        console.log('activities', activity);
         if (checked) {
             let temp = metadata?.selectedActivities || [];
             temp.push(activity?.filter(data => data?.id === id)?.map(data => data)[0]);
@@ -269,22 +284,49 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const submit = () => {
-        console.log('submit func', showAdminActivity);
         if (showAdminActivity) {
-            console.log('inside if func', showAdminActivity);
             activityToAdd();
         } else {
-            console.log('inside else func', showAdminActivity);
             editActivitySelected();
         }
     }
 
+    const getUserData = async () => {
+        let siteId = sites?.map(data => data?.id);
+        let deptId = [];
+        sites?.map(data => data?.departmentList?.departments?.map(dept => {
+            deptId.push(`${data?.id}#${dept?.id}`);
+        }))
+        let encodedDept = encodeURIComponent(deptId);
+        let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&contractIdToIgnore=${contractId}`;
+        const { data: userList } = await GET(uri);
+        if (userList) {
+            setUsers(userList);
+            let temp = [];
+            userList?.map(data => data?.sites?.sites?.map(site => {
+                if (data?.name?.firstName && site?.siteName?.siteName && site?.siteResponsibility?.title) {
+                    if (site?.siteResponsibility?.title !== "" && site?.siteResponsibility?.title !== undefined && site?.siteResponsibility?.title !== null) {
+                        temp.push({ fname: data?.name?.firstName, lname: data?.name?.lastName, suffix: data?.name?.suffix?.suffix || '', site: site?.siteName?.siteName, title: site?.siteResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+                    }
+
+                    site?.departmentList?.departments?.map(dept => {
+                        if (dept?.departmentResponsibility?.title !== "" && dept?.departmentResponsibility?.title !== undefined && dept?.departmentResponsibility?.title !== null) {
+                            temp.push({ fname: data?.name?.firstName, lname: data?.name?.lastName, suffix: data?.name?.suffix?.suffix || '', site: dept?.departmentName?.name, title: dept?.departmentResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+                        }
+                    })
+                }
+            }))
+            setTitle(temp);
+        }
+    }
+
+
     const updateWorkingPeriod = (e) => {
-        // let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 
-    console.log('selected format', `${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})`, specificDedicatedHoursList)
+    console.log('Metadata', metadata);
+
 
     return (
         <div>
@@ -549,12 +591,33 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                     <TimePicker
                         useAmPm={false}
-                        onChange={(e) => handleValueChange('workingTimeTo', e)}
+                        onChange={(e) => {
+                            handleValueChange('workingTimeTo', e);
+                        }}
                         value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
                     // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                     />
+
                 </div>
             </div>
+            <div className={`${style.addManagerGrid}  ${style.marginTop20}`}>
+                <CommonLabel value='Only Allow Upon Request / Notification Approval' />
+                <CommonSwitch onChange={() => setMetadata({ ...metadata, activityApprovalWFRequired: !metadata?.activityApprovalWFRequired, approver: undefined })} checked={metadata?.activityApprovalWFRequired} />
+            </div>
+            {metadata?.activityApprovalWFRequired &&
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <CommonLabel value='Designate Request Approver*' />
+                    <CommonSelectField className={`${style.fullWidth} `}
+                        defaultValue={metadata?.approver}
+                        value={metadata?.approver ? metadata?.approver?.id : '0'}
+                        onChange={(e) => { setMetadata({ ...metadata, approver: user.filter(data => data?.id === e.target.value)?.map(data => data)[0], approverTitle: title?.filter(titleData => titleData?.approver === true)?.map(data => data)[0] }) }}
+                        firstOptionLabel={'Select Payment Approver'}
+                        firstOptionValue={'0'}
+                        valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
+                        labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
+                        disabledList={title?.map(data => false)} />
+                </div>
+            }
 
         </div>
     )

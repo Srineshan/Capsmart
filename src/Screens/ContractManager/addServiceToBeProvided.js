@@ -91,7 +91,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   useEffect(() => {
     if (editService) {
-      console.log('selectedSerice', selectedService);
       setSiteData(selectedService?.sites);
       getSelectedSites(selectedService?.sites);
       getNewLocation(selectedService?.locations);
@@ -448,8 +447,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       if (data?.approver !== undefined) {
         let workFlowData;
         let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
-        workFlowData = workFlowDataGenerator("On-Call Administrative Workflow", [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
-
+        workFlowData = workFlowDataGenerator("On-Call Additional Activity Workflow", [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
         if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
           POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
             then(response => {
@@ -463,6 +461,61 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
               setIsWorkFlowUpdated(true);
 
             }).catch(error => {
+              ErrorToaster('Unexpected Error');
+            })
+        } else {
+          PUT(`timesheet-management-service/workflow/${data.workflowId}`, workFlowData)
+            .then(response => {
+              data.workFlow = {
+                id: data?.workflowId,
+                workFlowName: {
+                  name: data?.workflowName,
+                }
+              }
+              setMetadata(data);
+              setIsWorkFlowUpdated(true);
+            })
+            .catch(error => {
+              ErrorToaster('Unexpected Error');
+            })
+        }
+      } else {
+        handleSave(buttonType);
+      }
+    } else if (serviceTypeTemplate === ADMINISTRATIVE) {
+      let data = metadata;
+      if (data?.approver !== undefined) {
+        let workFlowData;
+        let name = `${data?.approver?.name?.firstName} ${data?.approver?.name?.lastName}`
+        workFlowData = workFlowDataGenerator("Administrative Service Workflow", [{ step: 1, userId: data?.approver?.id, userName: name, userTitle: { title: data?.approverTitle?.title, id: data?.approverTitle?.id }, userSuffix: data?.approver?.name?.suffix, status: 'APPROVED' }]);
+        if (data.workflowId === undefined || data.workflowId === null || data.workflowId === '') {
+          POST(`timesheet-management-service/workflow`, JSON.stringify(workFlowData)).
+            then(response => {
+              data.workFlow = {
+                id: response?.data,
+                workFlowName: {
+                  name: data?.performingActivity?.activity,
+                }
+              }
+              setMetadata(data);
+              setIsWorkFlowUpdated(true);
+
+            }).catch(error => {
+              ErrorToaster('Unexpected Error');
+            })
+        } else {
+          PUT(`timesheet-management-service/workflow/${data.workflowId}`, workFlowData)
+            .then(response => {
+              data.workFlow = {
+                id: data?.workflowId,
+                workFlowName: {
+                  name: data?.workflowName,
+                }
+              }
+              setMetadata(data);
+              setIsWorkFlowUpdated(true);
+            })
+            .catch(error => {
               ErrorToaster('Unexpected Error');
             })
         }
@@ -555,7 +608,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
     let data = [];
     if (serviceTypeTemplate === ADDON && !editService) {
-      console.log('inside if', metadata);
       data = metadata;
       data.map((item, index) => {
         item.workingPeriod = metadata?.[index]?.workingPeriod;
@@ -574,6 +626,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       let dataValues = metadata;
       if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
+      }
+      if (activities?.length === 0) {
+        ErrorToaster('Atleast One Activity needs to be added to create a service');
+        return;
       }
       data = [{
         "refId": dataValues?.refId?.toString() ? dataValues?.refId?.toString() : (new Date()).getTime()?.toString(),
@@ -665,9 +721,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         "payableAmount": {
           "value": parseFloat(dataValues?.sessionAmount)
         },
-        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && {
+        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && dataValues?.dedicatedHoursSpecified && {
           "hourlyRate": {
             "value": serviceTypeTemplate === SUPPLEMENTAL && dataValues?.totalSession === 0 ? dataValues?.sessionAmount.toFixed(2) : (dataValues?.sessionAmount / dataValues?.totalSession).toFixed(2)
+          },
+        }),
+        ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && !dataValues?.dedicatedHoursSpecified && {
+          "hourlyRate": {
+            "value": dataValues?.hourlyRate,
           },
         }),
         ...(serviceTypeTemplate === ADDON && {
@@ -691,12 +752,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             },
             "frequency": dataValues?.dependencyFrequency,
             "additionalServices": dependentActivities,
-            // "workFlow": {
-            //   "id": "string",
-            //   "workFlowName": {
-            //     "name": "string"
-            //   }
-            // },
+            "workFlow": dataValues?.workFlow,
             "billableService": dataValues?.additionalActivityBillable,
             "paymentApprovalRequired": dataValues?.additionalActivityPaymentApprovalRequired,
           },
@@ -781,7 +837,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           "from": dataValues?.workingTimeFrom?.toLocaleTimeString('it-IT').toString(),
           "to": dataValues?.workingTimeTo?.toLocaleTimeString('it-IT').toString()
         },
-        ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === ONCALL) && {
+        ...((serviceTypeTemplate === ADDON || serviceTypeTemplate === ADMINISTRATIVE) && {
           workFlow: dataValues?.workFlow,
         }),
         "patientMRNRequired": dataValues?.patientMRNRequired || false,
@@ -819,8 +875,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       contractedServices: services
     }
 
-    console.log('services data', formattedData)
-
     const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
     if (response) {
       SuccessToaster('Contracted Service Updated Successfully');
@@ -837,8 +891,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       reset();
       getIsReset(true);
     }
-    // getTabDataStatus();
-
+    getTabDataStatus();
   }
 
   const getIsReset = (value) => {
@@ -883,8 +936,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       })),
     [activity, usedActivity],
   );
-
-  console.log(activityItems)
 
   const locationItems = useMemo(
     () =>
@@ -959,8 +1010,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const handleClosePopoverDoc = () => {
     setAnchorElDoc(null);
   };
-
-  console.log('sites in add services', siteData);
 
   return (
     <>
@@ -1162,7 +1211,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                             ? <AddonClinicFields getMetaData={getMetaData} services={contractedServices} locationItems={locationItems} getNewLocation={getNewLocation} locationToAdd={locationToAdd} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} contractId={contractId} />
                             : serviceTypeTemplate === PROCEDUREREADING
                               ? <ProcedureReading getMetaData={getMetaData} serviceSelected={selectedService} timeCommitment={timeCommitment} contractTermPeriod={contractTermPeriod} isReset={isReset} getIsReset={getIsReset} />
-                              : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} />}
+                              : <AdministrativeFields getMetaData={getMetaData} services={contractedServices} serviceSelected={selectedService} editService={editService} isReset={isReset} getIsReset={getIsReset} sites={siteList} contractId={contractId} />}
                 </div>
               </div>
             ) : (
@@ -1186,8 +1235,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           <div>
             {isEditable && !isShowPDF &&
               <div className={`${style.floatRight} `}>
-                {!editService && <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('ADD MORE'); } : {}}>ADD MORE</button>}
-                <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { addOnWorkFlow('SAVE AND EXIT'); } : {}}>SAVE & EXIT</button>
+                {!editService && <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => addOnWorkFlow('ADD MORE') : null}>ADD MORE</button>}
+                <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => addOnWorkFlow('SAVE AND EXIT') : null}>SAVE & EXIT</button>
               </div>
             }
 

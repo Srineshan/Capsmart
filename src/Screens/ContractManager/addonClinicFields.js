@@ -326,8 +326,6 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
     }
   }
 
-  console.log()
-
   const updateWorkingHours = (name, value) => {
     let temp = metadata;
     temp?.map(data => {
@@ -525,7 +523,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               </div>
               {metadata?.filter(item => item?.performingActivity === service)?.map(item => item)[0]?.activityApprovalWFRequired &&
                 // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], service) }} value={metadata?.filter(data => data?.performingActivity === service)?.map(data => data?.approver?.userId)[0]} approverReviewer='approver' />
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                   <CommonLabel value={'Designate Request Approver* '} />
                   <div className={style.fullWidth}>
                     <CommonSelectField className={`${style.fullWidth} `}
@@ -535,7 +533,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                       firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
                       valueList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData?.id)}
                       labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
-                      disabledList={title?.filter(titleData => titleData?.approver === true)?.map(data => false)} />
+                      disabledList={title?.filter(titleData => titleData?.approver === true)?.map(data => false)}
+                      widthValue={550} />
                   </div>
                 </div>
               }
@@ -644,7 +643,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                         {
                           data?.activityResponse?.dataMap?.additionalDetails?.includes('Prior Pre-Authorization Required') && details === 'Prior Pre-Authorization Required' &&
                           // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onAdditionalServiceApproverChange(data?.performingActivity, users?.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.approver?.userId} />
-                          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <CommonLabel value={'Designate Request Approver*'} />
                             <div className={style.fullWidth}>
                               <CommonSelectField className={`${style.fullWidth} `}
@@ -654,14 +653,15 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                                 firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
                                 valueList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => titleData?.id)}
                                 labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
-                                disabledList={title?.filter(titleData => titleData?.approver === true)?.map(data => false)} />
+                                disabledList={title?.filter(titleData => titleData?.approver === true)?.map(data => false)}
+                                widthValue={370} />
                             </div>
                           </div>
                         }
                         {
                           data?.activityResponse?.dataMap?.additionalDetails?.includes('Administrative Approval For Payment Required') && details === 'Administrative Approval For Payment Required' &&
                           // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { onAdditionalServicePaymentApproverChange(data?.performingActivity, users.filter(user => user?.userId === value)?.map(user => user)[0]) }} value={data?.paymentApprover?.userId} />
-                          <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                          <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                             <CommonLabel value={'Designate Payment Approver*'} />
                             <div className={style.fullWidth}>
                               <CommonSelectField className={`${style.fullWidth} `}
@@ -671,7 +671,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                                 firstOptionLabel={'Select Payment Approver'} firstOptionValue={'0'}
                                 valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
                                 labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
-                                disabledList={title?.map(data => false)} />
+                                disabledList={title?.map(data => false)}
+                                widthValue={370} />
                             </div>
                           </div>
                         }
@@ -723,7 +724,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
               </div>
               {data?.activityApprovalWFRequired &&
                 // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { onApproverSelected(users?.filter(data => data?.userId === value)?.map(data => data)[0], data?.performingActivity) }} value={metadata?.[0]?.approver?.userId} />
-                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                   <CommonLabel value={'Designate Request Approver*'} />
                   <div className={style.fullWidth}>
                     <CommonSelectField className={`${style.fullWidth} `}
@@ -733,7 +734,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                       firstOptionLabel={'Select Approver'} firstOptionValue={'0'}
                       valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
                       labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
-                      disabledList={title?.map(data => false)} />
+                      disabledList={title?.map(data => false)}
+                      widthValue={550} />
                   </div>
                 </div>
               }
@@ -858,7 +860,7 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                     {
                       newServices?.additionalDetails?.includes('Prior Pre-Authorization Required') && data === 'Prior Pre-Authorization Required' &&
                       // <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value) => { setNewServices({ ...newServices, approver: users?.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
-                      <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value={'Designate Request Approver*'} />
                         <div className={style.fullWidth} key={index}>
                           <CommonSelectField className={`${style.fullWidth} `}
@@ -869,14 +871,15 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                             firstOptionValue={'0'}
                             valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
                             labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
-                            disabledList={title?.map(data => false)} />
+                            disabledList={title?.map(data => false)}
+                            widthValue={370} />
                         </div>
                       </div>
                     }
                     {
                       newServices?.additionalDetails?.includes('Administrative Approval For Payment Required') && data === 'Administrative Approval For Payment Required' &&
                       // <ReviewerApproverField data={users} label="Designate Payment Approver*" selectLabel="Select Payment Approver" onValueChange={(value) => { setNewServices({ ...newServices, paymentApprover: users.filter(data => data?.userId === value)?.map(data => data)[0] }) }} />
-                      <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                      <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
                         <CommonLabel value={'Designate Payment Approver*'} />
                         <div className={style.fullWidth} key={index}>
                           <CommonSelectField className={`${style.fullWidth} `}
@@ -887,7 +890,8 @@ const AddonClinicFields = ({ getMetaData, services, locationItems, getNewLocatio
                             firstOptionValue={'0'}
                             valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
                             labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
-                            disabledList={title?.map(data => false)} />
+                            disabledList={title?.map(data => false)}
+                            widthValue={370} />
                         </div>
                       </div>
                     }

@@ -85,8 +85,6 @@ export const validateServices = (contract) => {
   services?.map((service, index) => {
     if (service?.activityType?.activityType !== ADMINISTRATIVE && service?.activityType?.activityType !== ADDON) {
       let fieldData = [{ field: 'sites', value: service?.sites?.length },
-      { field: 'Activities', value: service?.activities?.length },
-
       { field: 'Service Days', value: service?.serviceDays },
       { field: 'Total Sessions', value: service?.totalSessions?.value },
       { field: 'Working Hours - From', value: service?.workingPeriod?.from },
@@ -123,9 +121,11 @@ export const validatePaymentsAndCompensation = (contract) => {
       'Individual Timesheet Details'];
   }
 
-  fieldData = [{ field: 'Compensation Basis', value: payments?.compensationBasis },
-  { field: `Dollar Rate`, value: payments?.dollarRate?.hour },
+  fieldData = [{ field: 'Compensation Basis', value: payments?.compensationBasis }
   ];
+  if (!payments?.dollarRate?.notApplicable) {
+    fieldData.push({ field: `Dollar Rate`, value: payments?.dollarRate?.hour })
+  }
   if (payments?.compensationBasis === 'RVUBASED') {
     fieldData.push(...[
       { field: 'RVU Quantity', value: payments?.rvuQuantity?.quantity },
@@ -138,14 +138,22 @@ export const validatePaymentsAndCompensation = (contract) => {
   }
   payments?.timesheetPayments?.map((data, index) => {
     fieldData?.push(...[{ field: `Timesheet Label ${index + 1}`, value: data?.timesheetLabel?.label },
-    { field: `Payment Frequency ${index + 1}`, value: data?.paymentFrequency },
-    { field: `Max Payment Per Timesheet Submission ${index + 1}`, value: data?.maxPaymentPerTimesheetSubmission },
     { field: `Max Payment Per Contract ${index + 1}`, value: data?.maxPaymentPerContract },
-    { field: `Reduced Number Of Services ${index + 1}`, value: data?.reducedNumberOfServices },
     { field: `Providing Additional Services ${index + 1}`, value: data?.providingAdditionalServices },
     // { field: `OverUnderPayment ${index + 1}`, value: data?.overUnderPayment },
     { field: `Payment Based on Fixed Hours Vs Actual ${index + 1}`, value: data?.paymentBasedonFixedHoursVsActual }]
     );
+    if (contract?.contractDetail?.continuationPolicy?.contractPolicyType !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' && contract?.contractDetail?.continuationPolicy?.contractPolicyType !== 'ACTIVITY_BASED') {
+      fieldData.push(...[{ field: `Max Payment Per Timesheet Submission ${index + 1}`, value: data?.maxPaymentPerTimesheetSubmission },
+      { field: `Reduced Number Of Services ${index + 1}`, value: data?.reducedNumberOfServices },
+      ])
+    } else if (contract?.contractDetail?.continuationPolicy?.contractPolicyType === 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') {
+      fieldData.push(...[{ field: `Max Payment Per Timesheet Submission ${index + 1}`, value: data?.maxPaymentPerTimesheetSubmission },
+      ])
+    } else {
+
+    }
+
   })
 
   let temp = fieldData?.filter(data => data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data => data?.field);
@@ -192,21 +200,10 @@ export const validateTimesheetSubmission = (contract) => {
 
 export const validateTimesheetProcessingWorkflow = (contract) => {
   let isValid = false;
-  if (contract?.workFlowDetails?.length !== 0) {
+  if (contract?.workFlowDetails?.length === contract?.timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length) {
     isValid = true;
   };
   return isValid;
-}
-
-export const validateRequestProcessingWorkflow = (contract) => {
-  let emptyFields = [];
-  if (contract?.addOnRequestWorkFlow === null) {
-    emptyFields.push('Add-On Request Workflow');
-  }
-  if (contract?.absenceRequestWorkFlow === null) {
-    emptyFields.push('Absence Request Wokflow');
-  }
-  return emptyFields;
 }
 
 export const validateTabs = async (contractId) => {
@@ -219,7 +216,6 @@ export const validateTabs = async (contractId) => {
   let tab5 = validateTimesheetSubmission(contract);
   let tab6 = validatePaymentsAndCompensation(contract);
   let tab7 = validateTimesheetProcessingWorkflow(contract);
-  let tab8 = validateRequestProcessingWorkflow(contract);
   let isTabsValid = {
     tab1: tab1?.length === 0, value1: tab1,
     tab2: tab2?.length === 0, value2: tab2,
@@ -228,7 +224,6 @@ export const validateTabs = async (contractId) => {
     tab5: tab5?.length === 0, value5: tab5,
     tab6: tab6?.length === 0, value6: tab6,
     tab7: tab7, value7: tab7,
-    tab8: tab8?.length === 0, value8: tab8,
   };
   return isTabsValid;
 }

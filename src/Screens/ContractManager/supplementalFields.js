@@ -73,6 +73,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                     sessionDuration: data?.duration?.hours,
                     totalSession: data?.totalSessions?.value,
                     totalSessionFrequency: data?.totalSessions?.frequency,
+                    hourlyRate: data?.hourlyRate?.value,
                 });
             }
         });

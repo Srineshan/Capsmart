@@ -12,6 +12,7 @@ import SiteDepartmentField from '../../Components/ReusableSmallComponents/siteDe
 import Typography from '@mui/material/Typography';
 import { POST, GET, PUT, TenantID } from './../dataSaver';
 import ReviewerApproverField from './reviewerApproverField';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
@@ -59,6 +60,10 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   const [contractName, setContractName] = useState('');
   const [continueLoading, setContinueLoading] = useState(false);
   const [paymentSourceState, setPaymentSourceState] = useState([]);
+  const [addApprover, setAddApprover] = useState(false);
+  const [workFlowId, setWorkFlowId] = useState('');
+  const [paymentAndCompensation, setPaymentAndCompensation] = useState();
+  const [isNameEdited, setIsNameEdited] = useState(false);
 
   const menuRef = useRef(null);
   useOptionsHide(menuRef);
@@ -82,6 +87,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getContractSites();
     getTimeSheetWorkFlow();
     getAbsenceRequestWorkFlow();
+    getPaymentAndCompensation()
     setPaymentSource(new Array(timeSheetCount || 0));
   }, [])
 
@@ -99,11 +105,16 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   useEffect(() => {
     formatActivities();
     getTimesheetFields();
-  }, [contractedActivityTags?.length, timeSheetLabelData, contractedServices, showSelectBox, sites])
+  }, [contractedActivityTags?.length, timeSheetLabelData, contractedServices, showSelectBox, sites, timesheetSubmissionTerms])
 
   useEffect(() => {
     getAbsenceRequestWorkFlow();
   }, [timesheetWorkFlow])
+
+  const getPaymentAndCompensation = async () => {
+    const { data: paymentAndCompensation } = await GET(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`);
+    setPaymentAndCompensation(paymentAndCompensation);
+  };
 
   const getTimeSheetWorkFlow = async () => {
     const { data: timesheetWorkFlow } = await GET('timesheet-management-service/workflow');
@@ -117,6 +128,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     if (absenceWorkFlow) {
       let workflowData = timesheetWorkFlow?.filter(data => data?.id === absenceWorkFlow?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
       let workFlowValues = Object.values(workflowData);
+      setAddApprover(absenceWorkFlow?.workFlowRequired);
       let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
       let approver = workFlowValues?.[1]?.workFlowUser?.id;
       setAbsence({ ...absence, id: absenceWorkFlow?.workFlow?.id, reviewer: reviewer, reviewerTitle: workFlowValues?.[0]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[1]?.workFlowUser?.title });
@@ -290,7 +302,7 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           <div className={`${style.extentionGrid}`}>
             <CommonLabel value={`Timesheets label ${i + 1} for processing`} />
             <CommonInputField className={style.fullWidth} value={timeSheetLabelData?.[i]?.label}
-              onChange={(e) => handleTimesheetValue(i, 'label', e.target.value)}
+              onChange={(e) => { handleTimesheetValue(i, 'label', e.target.value); setIsNameEdited(true); }}
             />
           </div>
           {timeSheetCount > 1 && (
@@ -405,17 +417,12 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
       });
       setTimeSheetLabelData(labelTemp);
       setContractedActivityTags(temp);
-      console.log(paymentSourceTemp, 'payment', timesheetSubmissionTerms?.timesheetActivitiesPeriods);
       setPaymentSource(paymentSourceTemp);
     }
-    getTimesheetFields();
   };
-
-  console.log(paymentSource, 'payment', paymentSourceState);
 
   const getSelectedUserDetails = (id) => {
     let user = users?.filter(user => user?.id === id)?.map(data => data)[0];
-    console.log('user', user);
     return user;
   }
 
@@ -447,14 +454,21 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   }
 
   const updateWorkflow = async (workflowId, workFlowName, type) => {
-    let data = {
+    let workFlowValue = {
       "workFlow": {
         "id": workflowId,
         "workFlowName": {
           "name": workFlowName,
         }
-      }
+      },
+      "workFlowRequired": addApprover,
+    };
+    let workFlowNull = {
+      "workFlow": null,
+      "workFlowRequired": addApprover,
     }
+    let workflow = addApprover ? workFlowValue : workFlowNull;
+    let data = workflow;
     if (type === 'AddOn') {
       await PUT(`contract-managment-service/contracts/${contractId}/addOnRequestWorkFlow`, data)
         .then(response => {
@@ -478,26 +492,36 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     getTimeSheetWorkFlow();
   }
 
+  console.log('timesheet', absence);
+
 
   const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
     let id = absence?.id;
-    if (id === '') {
-      await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
-        .then(response => {
-          updateWorkflow(response?.data, workFlowName, type);
-        })
-        .catch(error => {
-          ErrorToaster('Unexpected Error');
-        })
-    }
-    else {
-      await PUT(`timesheet-management-service/workflow/${id}`, data)
-        .then(response => {
-          console.log('Success!');
-        })
-        .catch(error => {
-          ErrorToaster('Unexpected Error');
-        })
+    if (addApprover) {
+      if (id === '') {
+        console.log('inside post id is empty')
+        await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
+          .then(response => {
+            updateWorkflow(response?.data, workFlowName, type);
+          })
+          .catch(error => {
+            ErrorToaster('Unexpected Error');
+          })
+      }
+      else {
+        console.log('inside put id has value')
+        await PUT(`timesheet-management-service/workflow/${id}`, data)
+          .then(response => {
+            updateWorkflow(absence.id, workFlowName, type);
+            console.log('Success!');
+          })
+          .catch(error => {
+            ErrorToaster('Unexpected Error');
+          })
+      }
+    } else {
+      console.log('inside else')
+      updateWorkflow(absence.id, workFlowName, type);
     }
     getTabDataStatus();
     refresh();
@@ -557,6 +581,22 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     else {
       ErrorToaster('Unexpected Error');
     }
+    if (isNameEdited && paymentAndCompensation.timesheetPayments?.length) {
+      let data = paymentAndCompensation;
+      data.timesheetPayments?.map((payment, index) => {
+        payment.timesheetLabel = timesheetValues?.[index].timesheetLabel;
+      })
+
+      console.log('payments data', data);
+
+      const response = await PUT(`contract-managment-service/contracts/${contractId}/paymentAndCompensation`, JSON.stringify(data));
+      if (response) {
+        console.log('Timesheet name updated')
+      }
+      else {
+        console.log('Unexpected Error')
+      }
+    }
     setContinueLoading(false);
     if (buttonType !== 'Continue') {
       getShowAlert(true);
@@ -609,7 +649,18 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
           <div className={style.purpleTitle}>
             PLANNED ABSENCE REQUESTS
           </div>
-          <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value, title) => { setAbsence({ ...absence, reviewer: value, reviewerTitle: title }) }} value={absence?.reviewer} approverReviewer='approver' />
+          <div className={`${style.addManagerGrid}  ${style.marginTop20}`}>
+            <CommonLabel value='Only Allow Upon Request / Notification Approval' />
+            <CommonSwitch onChange={() => {
+              setAddApprover(!addApprover);
+              setAbsence({ ...absence, reviewer: '', reviewerTitle: '', id: '' })
+            }}
+              checked={addApprover}
+            />
+          </div>
+          {addApprover &&
+            <ReviewerApproverField data={users} label="Designate Request Approver*" selectLabel="Select Approver" onValueChange={(value, title) => { setAbsence({ ...absence, reviewer: value, reviewerTitle: title }) }} value={absence?.reviewer} approverReviewer='approver' />
+          }
         </div>
 
         {/* <div className={`${style.welcomeBorder} ${style.marginTop20}`}></div> */}

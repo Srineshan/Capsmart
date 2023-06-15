@@ -48,6 +48,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         reducedNumberOfServices: '',
         providingAdditionalServices: ''
     });
+    const [compensationPolicy, setCompensationPolicy] = useState('');
     const [timesheetPayments, setTimesheetPayments] = useState([]);
     const [paymentFields, setPaymentFields] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -58,6 +59,12 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const limit5 = 5;
     const limit7 = 7;
     const limit9 = 9;
+
+
+    const getContractDetail = async () => {
+        const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
+        setCompensationPolicy(contractData?.contractDetail?.compensationPolicy);
+    }
 
     const handleContinue = async (buttonType) => {
         if (!continueLoading) {
@@ -110,29 +117,35 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setDollarValue(paymentAndCompensation?.dollarValue);
         setCompensationOffsetCriteria(paymentAndCompensation?.compensationOffsetCriteria);
         setTimesheetPayments(paymentAndCompensation?.timesheetPayments || []);
-        if (paymentAndCompensation?.timesheetPayments?.length !== 0) {
-            setTimesheetPaymentsValue()
-        }
-    }, [paymentAndCompensation, timeSheetTabs])
+    }, [paymentAndCompensation])
 
     useEffect(() => {
         setTimesheetPaymentsValue()
-    }, [timeSheetTabs?.length, timesheetPayments?.length])
+    }, [timeSheetTabs?.length, timesheetPayments?.length, compensationPolicy])
+
+    useEffect(() => {
+        getPaymentFields();
+    }, [compensationPolicy])
+
+    console.log('Compensation Policy', compensationPolicy);
 
     const setTimesheetPaymentsValue = () => {
         if (timeSheetTabs?.length !== timesheetPayments?.length) {
             let temp = [];
+            console.log('inside func', timesheetPayments);
             timeSheetTabs?.map((data, index) => {
+                let reducedNumberOfServices = (compensationPolicy === 'ACTIVITY_BASED' || compensationPolicy === 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') ? 'NA' : timesheetPayments?.[index]?.reducedNumberOfServices || 'NA';
+                let maxPaymentPerTimesheetSubmission = compensationPolicy === 'ACTIVITY_BASED' ? parseFloat(0) : timesheetPayments?.[index]?.maxPaymentPerTimesheetSubmission || parseFloat(0);
                 temp.push({
                     timesheetLabel: {
                         label: timeSheetTabs?.[index]?.timesheetLabel?.label
                     },
                     paymentFrequency: data?.servicePeriod?.value,
-                    maxPaymentPerTimesheetSubmission: parseFloat(0),
-                    maxPaymentPerContract: parseFloat(0),
-                    reducedNumberOfServices: "",
-                    providingAdditionalServices: "",
-                    paymentBasedonFixedHoursVsActual: true
+                    maxPaymentPerTimesheetSubmission: maxPaymentPerTimesheetSubmission,
+                    maxPaymentPerContract: timesheetPayments?.[index]?.maxPaymentPerContract || parseFloat(0),
+                    reducedNumberOfServices: reducedNumberOfServices,
+                    providingAdditionalServices: timesheetPayments?.[index]?.providingAdditionalServices || "NA",
+                    paymentBasedonFixedHoursVsActual: timesheetPayments?.[index]?.paymentBasedonFixedHoursVsActual || true
                 });
             });
             setTimesheetPayments(temp);
@@ -142,8 +155,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     useEffect(() => {
         getPaymentAndCompensation();
-        setTimesheetPaymentsValue();
         getTimeSheetValues();
+        getContractDetail();
     }, [])
 
     useEffect(() => {
@@ -180,8 +193,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setTimesheetPayments(temp);
         getPaymentFields();
     }
-
-    console.log('timesheet', timesheetPayments);
 
     const getPaymentFields = () => {
         let temp = [];
@@ -251,29 +262,33 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                     </div>
                     {timesheetPayments?.[i]?.paymentBasedonFixedHoursVsActual &&
                         <>
-                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*' />
-                                <CommonTextField
-                                    className={style.twoFieldWidth}
-                                    // type="number"
-                                    min="0"
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                                    }}
-                                    onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
-                                    value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString()}
-                                />
-                            </div>
-                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <CommonLabel value='Compensation Offset Criteria For Reduced Number Of Agreed To Services*' />
-                                <CommonSelectField
-                                    value={timesheetPayments?.[i]?.reducedNumberOfServices}
-                                    onChange={(e) => updateTimesheetPayment(e.target.value, 'reducedNumberOfServices', i)}
-                                    firstOptionLabel={''} firstOptionValue={''}
-                                    valueList={['TIMESHEET', 'CONTRACT_END']}
-                                    labelList={['Per Timesheet Period', 'On Last Invoice For Contract Year']}
-                                    disabledList={[false, false]} />
-                            </div>
+                            {compensationPolicy !== 'ACTIVITY_BASED' && (
+                                <>
+                                    <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                        <CommonLabel value='Fixed Compensation Value Per Timesheet Submission*' />
+                                        <CommonTextField
+                                            className={style.twoFieldWidth}
+                                            // type="number"
+                                            min="0"
+                                            InputProps={{
+                                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                            }}
+                                            onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
+                                            value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString()}
+                                        />
+                                    </div>
+                                    {compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' &&
+                                        <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                            <CommonLabel value='Compensation Offset Criteria For Reduced Number Of Agreed To Services*' />
+                                            <CommonSelectField
+                                                value={timesheetPayments?.[i]?.reducedNumberOfServices}
+                                                onChange={(e) => updateTimesheetPayment(e.target.value, 'reducedNumberOfServices', i)}
+                                                firstOptionLabel={''} firstOptionValue={''}
+                                                valueList={['TIMESHEET', 'CONTRACT_END']}
+                                                labelList={['Per Timesheet Period', 'On Last Invoice For Contract Year']}
+                                                disabledList={[false, false]} />
+                                        </div>}
+                                </>)}
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                                 <CommonLabel value='Max. Compensation Value for Contract Period*' />
                                 <CommonTextField

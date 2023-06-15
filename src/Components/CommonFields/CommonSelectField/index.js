@@ -5,9 +5,9 @@ import { FormControl } from '@mui/material';
 
 import style from './index.module.scss';
 
-const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue }) => {
+const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue }) => {
     return (
-        <FormControl size="small" className={style.fullWidth}>
+        <FormControl size="small" className={!widthValue && style.fullWidth} sx={widthValue && { width: widthValue }}>
             <Select
                 labelId="demo-select-small"
                 id="demo-select-small"
