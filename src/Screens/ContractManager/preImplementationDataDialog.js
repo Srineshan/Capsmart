@@ -8,7 +8,7 @@ import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import { format } from 'date-fns';
+import { addDays, format } from 'date-fns';
 
 const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplementationDialogBoolean, contractId, selectedContractPreImplementationData }) => {
     const [totalCompensation, setTotalCompensation] = useState({ value: 0, na: false });
@@ -81,7 +81,7 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
         }
 
 
-        await POST('timesheet-management-service/timesheet/preImplementationData', data)
+        await PUT('timesheet-management-service/timesheet/preImplementationData', data)
             .then(response => {
                 SuccessToaster('Pre Implementation Data Saved Successfully');
                 reset();
@@ -170,7 +170,7 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
             <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
                 <div className={style.spaceBetween}>
                     <div>
-                        <p className={`${style.popUpPreImplementationHeading}`}>Obligated activities Completed & Payments in this contract year prior to <span className={style.purpleText}>April 1, 2023</span></p>
+                        <p className={`${style.popUpPreImplementationHeading}`}>Obligated activities Completed & Payments in this contract year prior to <span className={style.purpleText}>{format(addDays(new Date(selectedContractPreImplementationData?.contractDetail?.contractTerm?.endDate || new Date()), 1), 'MMMM d, yyyy')}</span></p>
                         <p className={`${style.popUpPreImplementationSubHeading}`}>For The Period - {format(new Date(selectedContractPreImplementationData?.contractDetail?.contractTerm?.startDate || new Date()), 'MMM d, yyyy')} - {format(new Date(selectedContractPreImplementationData?.contractDetail?.contractTerm?.endDate || new Date()), 'MMM d, yyyy')}</p>
                     </div>
                     <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => { getPreImplementationDialogBoolean(false); reset(); }} />
