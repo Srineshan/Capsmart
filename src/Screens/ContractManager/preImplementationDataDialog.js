@@ -20,6 +20,8 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
     const [contractPaymentFields, setContractPaymentFields] = useState([]);
     const [preImplementationDataId, setPreImplementationDataId] = useState('');
     const [datePeriod, setDatePeriod] = useState({ startDate: '', endDate: '' });
+    const [goLiveDate, setGoLiveDate] = useState('');
+
 
     useEffect(() => {
         if (showPreImplementationDialog) {
@@ -43,6 +45,7 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
         setTotalCompensation({ ...totalCompensation, value: preImplementationData?.totalCompensationPaid?.value, na: preImplementationData?.totalCompensationPaid?.upToDate })
         setDatePeriod({ ...datePeriod, startDate: preImplementationData?.dataPeriod?.startDate, endDate: preImplementationData?.dataPeriod?.endDate })
         setActivitiesCompleted(preImplementationData?.activitiesUpToDate);
+        setGoLiveDate(preImplementationData?.goLiveDate);
         setPreImplementationDataId(preImplementationData?.id);
     }
 
@@ -162,6 +165,7 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
         setDatePeriod({ ...datePeriod, startDate: '', endDate: '' })
         setActivitiesCompleted(false);
         setPreImplementationDataId('');
+        setGoLiveDate('')
     }
 
 
@@ -170,8 +174,8 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
             <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
                 <div className={style.spaceBetween}>
                     <div>
-                        <p className={`${style.popUpPreImplementationHeading}`}>Obligated activities Completed & Payments in this contract year prior to <span className={style.purpleText}>{format(addDays(new Date(selectedContractPreImplementationData?.contractDetail?.contractTerm?.endDate || new Date()), 1), 'MMMM d, yyyy')}</span></p>
-                        <p className={`${style.popUpPreImplementationSubHeading}`}>For The Period - {format(new Date(selectedContractPreImplementationData?.contractDetail?.contractTerm?.startDate || new Date()), 'MMM d, yyyy')} - {format(new Date(selectedContractPreImplementationData?.contractDetail?.contractTerm?.endDate || new Date()), 'MMM d, yyyy')}</p>
+                        <p className={`${style.popUpPreImplementationHeading}`}>Obligated activities Completed & Payments in this contract year prior to <span className={style.purpleText}>{format(new Date(goLiveDate || new Date()), 'MMM d, yyyy')}</span></p>
+                        <p className={`${style.popUpPreImplementationSubHeading}`}>For The Period - {format(new Date(datePeriod?.startDate || new Date()), 'MMM d, yyyy')} - {format(new Date(datePeriod?.endDate || new Date()), 'MMM d, yyyy')}</p>
                     </div>
                     <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => { getPreImplementationDialogBoolean(false); reset(); }} />
                 </div>
