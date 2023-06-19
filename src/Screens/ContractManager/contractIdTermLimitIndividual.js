@@ -81,6 +81,7 @@ const ContractIdTermLimitIndividual = (
   const { setValue, value } = useComboboxControls({ initialValue: '' });
   const [compensationPolicy, setCompensationPolicy] = useState('FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET');
   const [conflict, setConflict] = useState({ isPresent: false, data: [] });
+  const [isSiteDeptUpdated, setIsSiteDeptUpdated] = useState(false);
 
   useEffect(() => {
     if (method === 'PUT' && createdContractId !== '') {

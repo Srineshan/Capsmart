@@ -81,7 +81,7 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
         }
 
 
-        await POST('timesheet-management-service/timesheet/preImplementationData', data)
+        await PUT('timesheet-management-service/timesheet/preImplementationData', data)
             .then(response => {
                 SuccessToaster('Pre Implementation Data Saved Successfully');
                 reset();

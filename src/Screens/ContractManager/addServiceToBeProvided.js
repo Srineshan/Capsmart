@@ -628,7 +628,8 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         dataValues = metadata?.[0];
       }
       if (activities?.length === 0) {
-        ErrorToaster('Atleast One Activity needs to be added to create a service');
+        let message = serviceTypeTemplate === SUPPLEMENTAL ? 'Supplement Services' : serviceTypeTemplate === ADMINISTRATIVE ? 'Allowable Administrative Duties' : 'Activity To Be Performed';
+        ErrorToaster(`Atleast One ${message} needs to be added to create a service`);
         return;
       }
       data = [{
