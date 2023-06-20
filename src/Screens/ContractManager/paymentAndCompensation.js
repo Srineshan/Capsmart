@@ -110,29 +110,30 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         setDollarValue(paymentAndCompensation?.dollarValue);
         setCompensationOffsetCriteria(paymentAndCompensation?.compensationOffsetCriteria);
         setTimesheetPayments(paymentAndCompensation?.timesheetPayments || []);
-        if (paymentAndCompensation?.timesheetPayments?.length !== 0) {
-            setTimesheetPaymentsValue()
-        }
     }, [paymentAndCompensation])
 
     useEffect(() => {
         setTimesheetPaymentsValue()
     }, [timeSheetTabs?.length, timesheetPayments?.length])
 
+
     const setTimesheetPaymentsValue = () => {
-        if (timeSheetTabs?.length && timesheetPayments?.length === 0) {
+        if (timeSheetTabs?.length !== timesheetPayments?.length) {
             let temp = [];
-            timeSheetTabs?.map(data => {
+            console.log('inside func', timesheetPayments);
+            timeSheetTabs?.map((data, index) => {
+                // let reducedNumberOfServices = (compensationPolicy === 'ACTIVITY_BASED' || compensationPolicy === 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') ? 'NA' : timesheetPayments?.[index]?.reducedNumberOfServices || 'NA';
+                // let maxPaymentPerTimesheetSubmission = compensationPolicy === 'ACTIVITY_BASED' ? parseFloat(0) : timesheetPayments?.[index]?.maxPaymentPerTimesheetSubmission || parseFloat(0);
                 temp.push({
                     timesheetLabel: {
-                        label: data?.timesheetLabel?.label
+                        label: timeSheetTabs?.[index]?.timesheetLabel?.label
                     },
                     paymentFrequency: data?.servicePeriod?.value,
-                    maxPaymentPerTimesheetSubmission: parseFloat(0),
-                    maxPaymentPerContract: parseFloat(0),
-                    reducedNumberOfServices: "",
-                    providingAdditionalServices: "",
-                    paymentBasedonFixedHoursVsActual: true
+                    maxPaymentPerTimesheetSubmission: timesheetPayments?.[index]?.maxPaymentPerTimesheetSubmission || parseFloat(0),
+                    maxPaymentPerContract: timesheetPayments?.[index]?.maxPaymentPerContract || parseFloat(0),
+                    reducedNumberOfServices: timesheetPayments?.[index]?.reducedNumberOfServices || 'NA',
+                    providingAdditionalServices: timesheetPayments?.[index]?.providingAdditionalServices || "NA",
+                    paymentBasedonFixedHoursVsActual: timesheetPayments?.[index]?.paymentBasedonFixedHoursVsActual || true
                 });
             });
             setTimesheetPayments(temp);

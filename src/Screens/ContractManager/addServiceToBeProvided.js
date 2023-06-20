@@ -548,6 +548,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
       }
+      console.log('maximum value', dataValues?.max)
       data = [{
         "refId": dataValues?.refId?.toString() ? dataValues?.refId?.toString() : (new Date()).getTime()?.toString(),
         "sites": siteData,
