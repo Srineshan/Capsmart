@@ -345,7 +345,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
 
   const activeActionsData = [
     // {'data': 'Contract Extension', 'onClick': contractExtension, 'requiredValue': 'boolean'},
-    { 'data': 'Contract Termination', 'onClick': contractTermination, 'requiredValue': 'boolean' },
+    { 'data': 'Terminate Contract', 'onClick': contractTermination, 'requiredValue': 'boolean' },
     //   {'data': 'Clone Contract', 'onClick': contractClone, 'requiredValue': 'boolean'},
     { 'data': 'Pre Implementation Data', 'onClick': getShowPreImplementationDialog, 'requiredValue': 'boolean' }
   ]
@@ -400,9 +400,7 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
                 {selectedContract === 'activecontracts' ? (
                   <>
                     <button className={isMyContract ? style.myActiveContractsButton : style.otherContractsButton} onClick={() => setIsMyContract(true)}>My Active Contracts ( {metadata?.activeContract?.activeContractCount} )</button>
-                    {
-                      // <button className={`${!isMyContract ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsMyContract(false)}>Other Contracts ( 150 )</button>
-                    }
+                    <button className={`${!isMyContract ? style.myActiveContractsButton : style.otherContractsButton} ${style.marginLeft20}`} onClick={() => setIsMyContract(false)}>Other Contracts ( 150 )</button>
                   </>
                 ) : selectedContract === 'draft' ? (
                   <>
