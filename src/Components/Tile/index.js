@@ -11,8 +11,10 @@ const Tile = ({
   bigText2,
   smallNum1,
   smallNum2,
+  smallNum3,
   smallText1,
   smallText2,
+  smallText3,
   currentTile,
   topText,
   bottomText,
@@ -20,8 +22,10 @@ const Tile = ({
   bigNumber1Color,
   smallNum1Color,
   smallNum2Color,
+  smallNum3Color,
   smallNum1SelectedColor,
   smallNum2SelectedColor,
+  smallNum3SelectedColor,
 }) => {
   return (
     <div
@@ -39,42 +43,44 @@ const Tile = ({
           )}
         </div>
 
-        <div className={`${style.spaceBetween}`}>
-          <div className={style.displayInColRev}>
+        <div className={`${style.spaceBetween} ${style.marginTop5} `}>
+          <div className={`${style.displayInColRev}  ${style.reduceTop10}  `}>
             {bigText2 !== "" && (
-              <div className={`${style.displayInRow} ${style.alignLeft}`}>
-                <span
-                  className={`${style.headingCountForContracts} ${
+              <div className={` ${style.displayInGrid}  `}>
+                <div
+                  className={`${style.headingCountForContracts}  ${
+                    style.verticalAlignCenter
+                  } ${
                     // selectedContract === currentTile && bigNumberColor
                     bigNumber2 !== "-" ? bigNumber1Color : ""
-                  }`}
+                  } ${style.alignLeft}`}
                 >
                   {bigNumber2}
-                </span>
-                <span
+                </div>
+                <div
                   className={`${style.descriptionText} ${style.verticalAlignCenter} ${style.marginLeft10}`}
                 >
                   {bigText2}
-                </span>
+                </div>
               </div>
             )}
-            <div className={style.displayInRow}>
-              <p
+            <div className={`${style.displayInGrid} ${style.counterHeight}`}>
+              <div
                 className={`${style.headingCountForContracts} ${
                   bigNumber !== "-" ? bigNumberColor : ""
-                }`}
+                } ${style.alignLeft} ${style.verticalAlignCenter}`}
               >
                 {bigNumber}
-              </p>
-              <span
+              </div>
+              <div
                 className={`${style.descriptionText} ${style.verticalAlignCenter} ${style.marginLeft10}`}
               >
                 {bigText}
-              </span>
+              </div>
             </div>
           </div>
           <div
-            className={`${style.optionsStyle} ${style.displayInCol} ${style.reduceTop20} ${style.alignRight}`}
+            className={`${style.optionsStyle} ${style.displayInCol} ${style.reduceTop10} ${style.alignRight}`}
           >
             {smallNum1 !== "" && (
               <span
@@ -83,7 +89,7 @@ const Tile = ({
                 {smallText1}
                 <span
                   className={`${
-                    smallNum2 !== "-"
+                    smallNum1 !== "-"
                       ? selectedContract === currentTile
                         ? smallNum1SelectedColor
                         : smallNum1Color
@@ -109,6 +115,24 @@ const Tile = ({
                   } ${style.countDesign}`}
                 >
                   {smallNum2}
+                </span>
+              </span>
+            )}
+            {smallNum3 !== "" && (
+              <span
+                className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`}
+              >
+                {smallText3}
+                <span
+                  className={`${
+                    smallNum3 !== "-"
+                      ? selectedContract === currentTile
+                        ? smallNum3SelectedColor
+                        : smallNum3Color
+                      : style.defaultSmallNumber
+                  } ${style.countDesign}`}
+                >
+                  {smallNum3}
                 </span>
               </span>
             )}

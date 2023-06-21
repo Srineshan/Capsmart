@@ -1,7 +1,7 @@
 @import '../../styles/mixins.scss';
 
 .cardStyle {
-    height: 105px;
+    height: 115px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
     border-radius: 10px;
@@ -77,6 +77,10 @@
 
 .marginLeft10 {
     margin-left: 10px !important;
+}
+
+.marginLeft20 {
+    margin-left: 20px !important;
 }
 
 .next30Style {
@@ -180,4 +184,20 @@
     display: flex;
     align-items: flex-end;
     text-align: right;
+}
+
+.alignLeft {
+    display: flex;
+    align-items: center;
+    justify-content:flex-end;
+}
+
+.displayInGrid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.counterHeight{
+    height: fit-content;
+    min-height: 35px;
 }

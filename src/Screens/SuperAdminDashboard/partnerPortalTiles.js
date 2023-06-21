@@ -22,17 +22,21 @@ const PartnerPortalTiles = ({
         bigText="ACTIVE CUSTOMERS"
         bigNumber2={12}
         bigText2="ON GOING TRIALS"
-        smallNum1={1}
-        smallNum2={0}
+        smallNum1={"-"}
+        smallNum2={"-"}
+        smallNum3={"-"}
         smallText1="AUTO RENEWED"
         smallText2="UPCOMING RENEWAL"
-        currentTile="REFERENCE LISTS"
+        smallText3="TRIAL EXPIRING"
+        currentTile="expired/terminated"
         topText=""
         bigNumber1Color={style.yellowBigNumber}
-        smallNum1Color={style.greenSmallNumber}
+        smallNum1Color={style.redSmallNumber}
         smallNum2Color={style.redSmallNumber}
-        smallNum1SelectedColor={style.greenSmallNumberSelected}
+        smallNum1SelectedColor={style.redSmallNumberSelected}
         smallNum2SelectedColor={style.redSmallNumberSelected}
+        smallNum3Color={style.redSmallNumber}
+        smallNum3SelectedColor={style.redSmallNumberSelected}
       />
       <Tile
         selectedContract={selectedContract}
@@ -43,16 +47,16 @@ const PartnerPortalTiles = ({
         bigNumber2={14}
         bigText2="TRIAL USERS"
         // smallNum1={1}
-        smallNum2={1}
+        smallNum3={"-"}
         // smallText1="AUTO RENEWED"
-        smallText2="BLOCKED"
+        smallText3="BLOCKED"
         currentTile="REFERENCE LISTS"
         topText=""
         bigNumber1Color={style.yellowBigNumber}
         // smallNum1Color={style.redSmallNumber}
-        smallNum2Color={style.redSmallNumber}
-        smallNum1SelectedColor={style.redSmallNumberSelected}
-        smallNum2SelectedColor={style.redSmallNumberSelected}
+        smallNum3Color={style.redSmallNumber}
+        // smallNum1SelectedColor={style.redSmallNumberSelected}
+        smallNum3SelectedColor={style.redSmallNumberSelected}
       />
       <Tile
         selectedContract={selectedContract}
@@ -63,17 +67,17 @@ const PartnerPortalTiles = ({
         bigNumber2={14}
         bigText2="NO ACTIVITY IN LAST 30 DAYS"
         // smallNum1={1}
-        smallNum2={"$ 30,050"}
+        smallNum3={"-"}
         // smallText1="AUTO RENEWED"
-        smallText2="AT RISK"
+        smallText3="AT RISK"
         currentTile="REFERENCE LISTS"
         topText=""
         bigNumberColor={style.redBigNumber}
         bigNumber1Color={style.yellowBigNumber}
         // smallNum1Color={style.redSmallNumber}
-        smallNum2Color={style.redSmallNumber}
-        smallNum1SelectedColor={style.redSmallNumberSelected}
-        smallNum2SelectedColor={style.redSmallNumberSelected}
+        smallNum3Color={style.redSmallNumber}
+        // smallNum1SelectedColor={style.redSmallNumberSelected}
+        smallNum3SelectedColor={style.redSmallNumberSelected}
       />
       <Tile
         tileLabel="FEEDBACK TICKETS"
@@ -84,32 +88,38 @@ const PartnerPortalTiles = ({
             ?.expiredOrTerminatedContractCount || "25"
         }
         bigText="TOTAL TICKETS"
-        smallNum1={"13"}
-        smallNum2={"9"}
+        smallNum1={"-"}
+        smallNum2={"-"}
+        smallNum3={"-"}
         smallText1="EXCEPTION ERRORS"
         smallText2="HIGH PRIORITY"
+        smallText3="PAST DUE"
         currentTile=""
         topText=""
         smallNum1Color={style.redSmallNumber}
         smallNum2Color={style.redSmallNumber}
+        smallNum3Color={style.redSmallNumber}
         smallNum1SelectedColor={style.redSmallNumberSelected}
         smallNum2SelectedColor={style.redSmallNumberSelected}
+        smallNum3SelectedColor={style.redSmallNumberSelected}
       />
       <Tile
         tileLabel="PARTNERS"
         selectedContract={selectedContract}
         getSelectedContract={getSelectedContract}
         bigNumber={metadata?.activeContract?.activeContractCount || "3"}
-        smallNum1={"1"}
-        smallNum2={"1"}
+        smallNum1={"-"}
+        smallNum2={"-"}
+        smallNum3={"-"}
         smallText1="REFERRAL"
         smallText2="AFFILIATE"
+        smallText3="RESELLER"
         currentTile=""
         topText=""
-        smallNum1Color={style.redSmallNumber}
-        smallNum2Color={style.redSmallNumber}
-        smallNum1SelectedColor={style.redSmallNumberSelected}
-        smallNum2SelectedColor={style.redSmallNumberSelected}
+        // smallNum1Color={style.redSmallNumber}
+        // smallNum2Color={style.redSmallNumber}
+        // smallNum1SelectedColor={style.redSmallNumberSelected}
+        // smallNum2SelectedColor={style.redSmallNumberSelected}
       />
       <Tile
         tileLabel="TSAI / PARTNER USERS"
@@ -120,16 +130,16 @@ const PartnerPortalTiles = ({
         bigNumber2={120}
         bigText2="PARTNER USERS"
         // smallNum1={"-"}
-        smallNum2={"1"}
+        smallNum3={"-"}
         // smallText1=""
-        smallText2="BLOCKED"
+        smallText3="BLOCKED"
         currentTile="draft"
         topText=""
         bigNumber1Color={style.yellowBigNumber}
         // smallNum1Color={style.yellowSmallNumber}
-        smallNum2Color={style.redSmallNumber}
+        smallNum3Color={style.redSmallNumber}
         // smallNum1SelectedColor={style.yellowSmallNumberSelected}
-        smallNum2SelectedColor={style.redSmallNumberSelected}
+        smallNum3SelectedColor={style.redSmallNumberSelected}
       />
       <Tile
         tileLabel="REFERENCE LISTS"
@@ -139,16 +149,16 @@ const PartnerPortalTiles = ({
         bigText="CUSTOM"
         bigNumber2={5}
         bigText2="DEFAULT IN USE"
-        smallNum1={"5"}
-        smallNum2={"5"}
-        smallText1="REVIEW FOR USE"
-        smallText2="SETUP REQUIRED"
+        smallNum2={"-"}
+        smallNum3={"-"}
+        smallText2="REVIEW FOR USE"
+        smallText3="SETUP REQUIRED"
         currentTile=""
         topText=""
-        smallNum1Color={style.redSmallNumber}
         smallNum2Color={style.redSmallNumber}
-        smallNum1SelectedColor={style.redSmallNumberSelected}
+        smallNum3Color={style.redSmallNumber}
         smallNum2SelectedColor={style.redSmallNumberSelected}
+        smallNum3SelectedColor={style.redSmallNumberSelected}
       />
       <Tile
         tileLabel="DATA UPLOADS"
@@ -156,16 +166,16 @@ const PartnerPortalTiles = ({
         getSelectedContract={getSelectedContract}
         bigNumber2={2}
         bigText2="FILES TYPES"
-        smallNum1={"2"}
-        smallNum2={"1"}
-        smallText1="FAILED TO PROCESS"
-        smallText2="FAILED RECORDS"
+        smallNum2={"-"}
+        smallNum3={"-"}
+        smallText2="FAILED TO PROCESS"
+        smallText3="FAILED RECORDS"
         currentTile="expired/terminated"
         topText=""
-        smallNum1Color={style.redSmallNumber}
         smallNum2Color={style.redSmallNumber}
-        smallNum1SelectedColor={style.redSmallNumberSelected}
+        smallNum3Color={style.redSmallNumber}
         smallNum2SelectedColor={style.redSmallNumberSelected}
+        smallNum3SelectedColor={style.redSmallNumberSelected}
       />
     </div>
   );
