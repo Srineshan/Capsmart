@@ -1,5 +1,4 @@
 "use client";
-import React, { useState, useEffect, StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
@@ -9,8 +8,9 @@ import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 import { ErrorBoundary } from "react-error-boundary";
+import { browserName, browserVersion, osName, osVersion, isMobile, isDesktop, isTablet } from "react-device-detect";
 import Error404 from './Components/ErrorPage/404';
-import { POST, TenantID, GET } from './Screens/dataSaver';
+import { TenantID, POST } from './Screens/dataSaver';
 import { currentUser } from './utils/auth';
 import { SuccessToaster, ErrorToaster } from './utils/toaster';
 
@@ -37,9 +37,32 @@ const loggedInUser = currentUser();
 //   setUsers(user);
 // };
 
-console.log(loggedInUser)
+console.log(loggedInUser, browserName, browserVersion, osName, osVersion, isMobile, isDesktop, isTablet)
 const logError = async (error, info) => {
-  // Do something with the error, e.g. log to an external API
+  let browser = browserName === 'Chrome' ? 'CHROME' :
+    browserName === 'Firefox' ? 'FIREFOX' :
+      browserName === 'Safari' ? 'SAFARI' :
+        browserName === 'Opera' ? 'OPERA' :
+          browserName === 'Edge' ? 'EDGE' :
+            browserName === 'Internet Explorer' ? 'INTERNETEXPLORER' :
+              browserName === 'Chromium' ? 'CHROMIUM' :
+                browserName === 'Yandex' ? 'YANDEX' :
+                  browserName === 'IE' ? 'IE' :
+                    browserName === 'Mobile Safari' ? 'MOBILESAFARI' :
+                      browserName === 'Edge Chromium' ? 'EDGECHROMIUM' :
+                        browserName === 'MIUI Browser' ? 'MIUIBROWSER' :
+                          browserName === 'Samsung Browser' ? 'SAMSUNGBROWSER' : '';
+
+  let os = osName === 'Windows' ? 'WINDOWS' :
+    osName === 'Linux' ? 'LINUX' :
+      osName === 'Mac OS' ? 'MAC' :
+        osName === 'iOS' ? 'IOS' :
+          osName === 'Android' ? 'ANDROID' :
+            osName === 'Windows Phone' ? 'WINDOWSPHONE' : '';
+
+  let deviceType = isDesktop ? 'DESKTOP' : isMobile ? 'MOBILE' : isTablet ? 'TABLET' : '';
+  let errorInfo = sessionStorage.getItem('errorInfo');
+
   let data = {
     "subject": 'Auto Ticket',
     "description": error.message,
@@ -104,6 +127,15 @@ const logError = async (error, info) => {
       // ...(isEdit &&
       //     { 'fileURL': ticketDetails?.ticketFile?.fileURL }),
     },
+    "deviceDetails": {
+      "browser": browser,
+      "browserVersion": browserVersion,
+      "os": os,
+      "osVersion": osVersion,
+      "componentInfo": info?.componentStack.toString(),
+      "deviceType": deviceType,
+      "screenResolution": `width: ${window.innerWidth}, height: ${window.innerHeight}`,
+    },
     "dueDate": "2022-10-06",
     "screenCaptured": false,
     "externalBugTrackingSystem": true
@@ -118,16 +150,16 @@ const logError = async (error, info) => {
   //     const file = new File([blobFormat], fileName);
   //     formData.append('ticketFile', file);
   // }
-  // await POST(`feedback-management-service/ticket`, formData)
-  //   .then(response => {
-  //     SuccessToaster('Error Logged Successfully');
-  //     // sessionStorage.removeItem('screenCapture');
-  //     // sessionStorage.removeItem('fromUpload');
-  //     // getShowFeedbackTicketResolution(false);
-  //   })
-  //   .catch(error => {
-  //     ErrorToaster('Unexpected Error Occured');
-  //   })
+  if (errorInfo !== error.message) {
+    await POST(`feedback-management-service/ticket`, formData)
+      .then(response => {
+        sessionStorage.setItem('errorInfo', error.message);
+        SuccessToaster('Error Logged Successfully');
+      })
+      .catch(error => {
+        ErrorToaster('Unexpected Error Occured');
+      })
+  }
   console.log(error.message, data, info?.componentStack.toString())
 };
 
