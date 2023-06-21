@@ -190,6 +190,21 @@ const App = ({ props }) => {
     }
   }, [])
 
+  axios.interceptors.request.use((request) => {
+    return request;
+  }, (error) => {
+    console.log('request error', error);
+    return error;
+  })
+
+  axios.interceptors.response.use((response) => {
+    return response;
+  }, (error) => {
+    console.log('response error', error);
+    return error;
+  })
+
+
   const getEntityId = async () => {
     await axios(`https://${window.location.hostname}/entity-service/entityID`, {
       method: "GET",

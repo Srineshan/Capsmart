@@ -200,7 +200,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         value={metadata?.frequency}
                         firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
                         valueList={['NA', 'WEEK', 'MONTH']}
-                        labelList={['Not Applicable', 'Per Week', 'Per Month']}
+                        labelList={['As Needed', 'Per Week', 'Per Month']}
                         disabledList={[false, false]} />
                 </div>
             </div>

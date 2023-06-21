@@ -263,6 +263,10 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     }}
                                     onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
                                     value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString()}
+                                // value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString(undefined, {
+                                //     minimumFractionDigits: 2,
+                                //     maximumFractionDigits: 2
+                                // })}
                                 />
                             </div>
                             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
