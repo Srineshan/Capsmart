@@ -82,13 +82,17 @@ const ContractIdTermLimitIndividual = (
   const [compensationPolicy, setCompensationPolicy] = useState('FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET');
   const [conflict, setConflict] = useState({ isPresent: false, data: [] });
   const [isSiteDeptUpdated, setIsSiteDeptUpdated] = useState(false);
+  const [contractUsers, setContractUsers] = useState([]);
+
 
   useEffect(() => {
     if (method === 'PUT' && createdContractId !== '') {
       getContractDetail();
+      // getContractUser();
     }
     getUserData();
     getSites();
+    getContractUser();
   }, [])
 
   useEffect(() => {
@@ -139,6 +143,26 @@ const ContractIdTermLimitIndividual = (
       setSelectedDepartmentSites([]);
     }
   }, [selectedSites?.length, departmentSpecific, siteSpecific])
+
+  const getContractUser = async () => {
+    console.log('Inside Contract User get')
+    if (contractId !== '' && contractId !== undefined) {
+      const { data: contractUserData } = await GET(`user-management-service/user?contractID=${contractIdFromActive}`);
+      let contractUserId = [];
+      contractUserData?.map(data => data?.contracts?.map(contract => contract?.roles?.map(role => {
+        if (role.roleName === 'Activity Logger') {
+          console.log('contract role is filtered')
+          contractUserId.push(data?.id);
+        }
+      })))
+      console.log('contract User Id', contractUserId);
+      if (contractUserId?.length !== 0) {
+        setContractUsers(contractUserData?.filter(data => contractUserId?.includes(data?.id))?.map(data => data));
+      }
+    }
+  }
+
+  console.log('contract Users', contractUsers);
 
 
   const getContractDetail = async () => {
@@ -420,6 +444,25 @@ const ContractIdTermLimitIndividual = (
       } else {
         getShowAlert(true);
       }
+      if (isSiteDeptUpdated) {
+        let modifiedContractUser = contractUsers;
+        modifiedContractUser?.map(data => {
+          data?.contracts?.map(contract => {
+            if (contract?.id === contractIdFromActive) {
+              contract.sites = { sites: sites };
+            }
+          })
+          data.sites = { sites: sites };
+        })
+        console.log('modifiedContractUser', modifiedContractUser);
+        await PUT('user-management-service/user/bulk', JSON.stringify(modifiedContractUser))
+          .then(response => {
+            SuccessToaster('User Updated Successfully');
+          })
+          .catch(error => {
+            ErrorToaster('Unexpected Error');
+          });
+      }
       getTabDataStatus();
     }
   }
@@ -438,6 +481,7 @@ const ContractIdTermLimitIndividual = (
     setSelectedSites(temp);
     setDepartmentSpecific(false);
     siteFieldCheck(siteSpecific);
+    setIsSiteDeptUpdated(true);
     setValue('');
   }
 
@@ -449,6 +493,7 @@ const ContractIdTermLimitIndividual = (
     let siteId = selectedSites?.filter((data, indexVal) => index === indexVal)?.map(data => data?.id)[0];
     setSelectedSites(selectedSites?.filter((data, indexValue) => index !== indexValue)?.map(data => data));
     setDepartmentSpecific(false);
+    setIsSiteDeptUpdated(true);
   };
 
   const items = useMemo(
@@ -550,6 +595,7 @@ const ContractIdTermLimitIndividual = (
 
   const onSelectDepartment = (data) => {
     setSelectedDepartmentSites(data);
+    setIsSiteDeptUpdated(true);
   }
 
   const leftElement = () => {
@@ -733,7 +779,7 @@ const ContractIdTermLimitIndividual = (
             <CommonLabel value='Site Specific Contract*' />
             <div>
               <div className={style.displayInRow}>
-                <CommonSwitch checked={siteSpecific} className={`${style.textAlignLeft} ${style.switchFontStyle}`} label={siteSpecific ? 'YES' : "NO"} onChange={() => { setSiteSpecific(!siteSpecific); siteFieldCheck(!siteSpecific); }} />
+                <CommonSwitch checked={siteSpecific} className={`${style.textAlignLeft} ${style.switchFontStyle}`} label={siteSpecific ? 'YES' : "NO"} onChange={() => { setSiteSpecific(!siteSpecific); siteFieldCheck(!siteSpecific); setIsSiteDeptUpdated(true); }} />
                 {siteSpecific && (
                   <div className={style.displayInRow}>
                     <DatalistInput value={value} setValue={setValue} items={siteItems || []} placeholder="Select Sites" onSelect={onSelectSite} className={`${style.selectFieldSwitchWidth} ${style.marginLeft20}`} />
@@ -762,14 +808,14 @@ const ContractIdTermLimitIndividual = (
           onFocus={() => { deptFieldCheck(departmentSpecific) }}>
           <CommonLabel value='Department Specific Contract*' />
           <CommonSwitch checked={departmentSpecific} className={` ${style.textAlignLeft} ${style.switchFontStyle}`}
-            label={departmentSpecific ? 'YES' : "NO"} onChange={() => { handleDepartmentSpecific(); deptFieldCheck(!departmentSpecific) }} />
+            label={departmentSpecific ? 'YES' : "NO"} onChange={() => { handleDepartmentSpecific(); deptFieldCheck(!departmentSpecific); setIsSiteDeptUpdated(true); }} />
         </div>
 
         {
           departmentSpecific &&
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div></div>
-            <SiteDepartmentField sites={sites} getSelectedSites={onSelectDepartment} selectedSites={selectedDepartmentSites} isMultiSiteEntity={isMultiSiteEntity} />
+            <SiteDepartmentField sites={sites} getSelectedSites={onSelectDepartment} selectedSites={selectedSites} isMultiSiteEntity={isMultiSiteEntity} />
           </div>
         }
 

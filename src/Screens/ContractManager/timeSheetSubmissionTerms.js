@@ -137,7 +137,6 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
     } catch (e) {
       console.log('error', e);
     }
-
   }
 
   const getUserData = async () => {
