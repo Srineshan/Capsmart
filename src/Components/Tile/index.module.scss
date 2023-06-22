@@ -75,6 +75,18 @@
     margin-top: 5px !important;
 }
 
+.marginTop10 {
+    margin-top: 10px !important;
+}
+
+.marginBottom5 {
+    margin-bottom: 5px !important;
+}
+
+.marginBottom10 {
+    margin-bottom: 10px !important;
+}
+
 .marginLeft10 {
     margin-left: 10px !important;
 }
@@ -195,6 +207,9 @@
 .displayInGrid{
     display: grid;
     grid-template-columns: 1fr 1fr;
+    // display: flex;
+    // align-items: center;
+    // justify-content: flex-end;
 }
 
 .counterHeight{

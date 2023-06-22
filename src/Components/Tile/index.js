@@ -43,7 +43,7 @@ const Tile = ({
           )}
         </div>
 
-        <div className={`${style.spaceBetween} ${style.marginTop5} `}>
+        <div className={`${style.spaceBetween} ${style.marginBottom5} `}>
           <div className={`${style.displayInColRev}  ${style.reduceTop10}  `}>
             {bigText2 !== "" && (
               <div className={` ${style.displayInGrid}  `}>
@@ -64,7 +64,9 @@ const Tile = ({
                 </div>
               </div>
             )}
-            <div className={`${style.displayInGrid} ${style.counterHeight}`}>
+            <div
+              className={`${style.displayInGrid} ${style.counterHeight} ${style.alignRight}`}
+            >
               <div
                 className={`${style.headingCountForContracts} ${
                   bigNumber !== "-" ? bigNumberColor : ""
@@ -82,9 +84,27 @@ const Tile = ({
           <div
             className={`${style.optionsStyle} ${style.displayInCol} ${style.reduceTop10} ${style.alignRight}`}
           >
+            {smallNum3 !== "" && (
+              <span
+                className={`${style.verticalAlignCenter}  ${style.alignRight}`}
+              >
+                {smallText3}
+                <span
+                  className={`${
+                    smallNum3 !== "-"
+                      ? selectedContract === currentTile
+                        ? smallNum3SelectedColor
+                        : smallNum3Color
+                      : style.defaultSmallNumber
+                  } ${style.countDesign}`}
+                >
+                  {smallNum3}
+                </span>
+              </span>
+            )}
             {smallNum1 !== "" && (
               <span
-                className={`${style.verticalAlignCenter} ${style.alignRight}`}
+                className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`}
               >
                 {smallText1}
                 <span
@@ -115,24 +135,6 @@ const Tile = ({
                   } ${style.countDesign}`}
                 >
                   {smallNum2}
-                </span>
-              </span>
-            )}
-            {smallNum3 !== "" && (
-              <span
-                className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`}
-              >
-                {smallText3}
-                <span
-                  className={`${
-                    smallNum3 !== "-"
-                      ? selectedContract === currentTile
-                        ? smallNum3SelectedColor
-                        : smallNum3Color
-                      : style.defaultSmallNumber
-                  } ${style.countDesign}`}
-                >
-                  {smallNum3}
                 </span>
               </span>
             )}
