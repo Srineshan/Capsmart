@@ -110,7 +110,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
     console.log(metadata, serviceSelected)
 
     const setSelectedValues = () => {
-        if (serviceSelected) {
+        if (Object.keys(serviceSelected)?.length !== 0) {
             setMetadata({
                 ...metadata,
                 refId: serviceSelected?.refId,
@@ -142,7 +142,11 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
     }, [metadata])
 
     const handleValueChange = (name, value) => {
-        setMetadata({ ...metadata, [name]: value });
+        if (name === 'frequency' && value === 'NA') {
+            setMetadata({ ...metadata, [name]: value, min: 0, max: 99999999 })
+        } else {
+            setMetadata({ ...metadata, [name]: value });
+        }
     }
 
     const getServiceDaysMetadata = (serviceDays) => {
@@ -175,6 +179,7 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         onChange={(e) => e.target.value >= 0 && handleValueChange('min', parseFloat(e.target.value.slice(0, 5)))}
                         value={metadata?.min === 0 ? '' : metadata?.min}
                         type='number'
+                        disabled={metadata?.frequency === 'NA'}
                     />
                     {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                         <div className={style.textElement}>MAX</div>
@@ -188,13 +193,14 @@ const SurgerySessionFields = ({ getMetaData, serviceSelected, timeCommitment, is
                         onChange={(e) => e.target.value >= 0 && handleValueChange('max', parseFloat(e.target.value.slice(0, 5)))}
                         value={(metadata?.max === 0 || metadata?.max === 99999999) ? '' : metadata?.max}
                         type='number'
+                        disabled={metadata?.frequency === 'NA'}
                     />
                     <CommonSelectField className={`${style.fullWidth} ${style.marginLeft20}`}
                         onChange={(e) => handleValueChange('frequency', e.target.value)}
                         value={metadata?.frequency}
-                        firstOptionLabel={'Select Frequency'} firstOptionValue={''}
-                        valueList={['WEEK', 'MONTH']}
-                        labelList={['Per Week', 'Per Month']}
+                        firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                        valueList={['NA', 'WEEK', 'MONTH']}
+                        labelList={['As Needed', 'Per Week', 'Per Month']}
                         disabledList={[false, false]} />
                 </div>
             </div>

@@ -355,7 +355,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     }, [])
 
     const handleValueChange = (name, value) => {
-        setMetadata({ ...metadata, [name]: value });
+        if (name === 'frequency' && value === 'NA' || value === '') {
+            setMetadata({ ...metadata, [name]: 'NA', min: 0, max: 99999999 })
+        }
+        else {
+            setMetadata({ ...metadata, [name]: value });
+        }
     }
 
 
@@ -545,7 +550,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 disabledSelect={!metadata?.serviceDays?.weekDays}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Contract Year', 'Every Other Week']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -662,7 +667,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 disabled={!metadata?.serviceDays?.weekEnds}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Contract Year', 'Every Other Week']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -798,7 +803,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 disabled={!metadata?.serviceDays?.isholidays}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Contract Year']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false, false, false]} />
                         </div>
                     </div>
@@ -855,6 +860,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => e.target.value >= 0 && handleValueChange('min', parseFloat(e.target.value.slice(0, 5)))}
                                 value={metadata?.min === 0 ? '' : metadata?.min}
                                 type='number'
+                                disabled={metadata?.frequency === 'NA'}
                             />
                             {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
@@ -868,13 +874,14 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => e.target.value >= 0 && handleValueChange('max', parseFloat(e.target.value.slice(0, 5)))}
                                 value={(metadata?.max === 0 || metadata?.max === 99999999) ? '' : metadata?.max}
                                 type='number'
+                                disabled={metadata?.frequency === 'NA'}
                             />
                             <CommonSelectField className={`${style.fullWidth}`}
                                 value={metadata?.frequency}
                                 onChange={(e) => handleValueChange('frequency', e.target.value)}
-                                firstOptionLabel={'Select Frequency'} firstOptionValue={'NA'}
-                                valueList={['WEEK', 'MONTH', 'CONTRACT_YEAR']}
-                                labelList={['Per Week', 'Per Month', 'Per Contract Year']}
+                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false]} />
                         </div>
                     </div>

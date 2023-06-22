@@ -196,7 +196,6 @@ const App = ({ props }) => {
   }, [])
 
   axios.interceptors.request.use((request) => {
-    console.log('request interceptors', request);
     return request;
   }, (error) => {
     console.log('request error', error);
@@ -204,7 +203,6 @@ const App = ({ props }) => {
   })
 
   axios.interceptors.response.use((response) => {
-    console.log('response interceptors', response);
     return response;
   }, (error) => {
     console.log('response error', error);

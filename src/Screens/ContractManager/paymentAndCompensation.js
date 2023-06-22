@@ -129,6 +129,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     console.log('Compensation Policy', compensationPolicy);
 
+
     const setTimesheetPaymentsValue = () => {
         if (timeSheetTabs?.length !== timesheetPayments?.length) {
             let temp = [];
