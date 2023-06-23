@@ -261,8 +261,8 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerTimesheetSubmission', i)}
-                                    value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString()}
+                                    onChange={(e) => fixedCompensationValue(e.target.value.slice(0, limit9), 'maxPaymentPerTimesheetSubmission', i)}
+                                    value={((timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)).toLocaleString()}
                                 // value={Number(timesheetPayments?.[i]?.maxPaymentPerTimesheetSubmission)?.toLocaleString(undefined, {
                                 //     minimumFractionDigits: 2,
                                 //     maximumFractionDigits: 2
@@ -288,8 +288,11 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
-                                    value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
+                                    onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9), 'maxPaymentPerContract', i)}
+                                    value={(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
+                                // onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
+                                // value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
+
                                 />
                             </div>
 
@@ -459,12 +462,12 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         //     ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7))?.toLocaleString('en-gb'), notApplicable: false
                                         // })}
                                         disabled={dollarRate?.notApplicable}
-                                        value={dollarRate?.hour ? Number(dollarRate?.hour)?.toLocaleString() : null}
+                                        value={dollarRate?.hour?.toLocaleString() ?? null}
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                         }}
                                         onChange={(e) => setDollarRate({
-                                            ...dollarRate, hour: (e.target.value.slice(0, limit9)).replace(/,/g, ""), notApplicable: false
+                                            ...dollarRate, hour: (e.target.value.slice(0, limit9)), notApplicable: false
                                         })}
                                     />
                                     <CommonCheckBox value="NA" checked={dollarRate?.notApplicable} onChange={(e) => setDollarRate({ ...dollarRate, notApplicable: e.target.checked, hour: '0' })} label="NA" />

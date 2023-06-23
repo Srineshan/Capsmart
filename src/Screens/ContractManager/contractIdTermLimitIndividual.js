@@ -799,7 +799,7 @@ const ContractIdTermLimitIndividual = (
           departmentSpecific &&
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div></div>
-            <SiteDepartmentField sites={(siteSpecific || !isMultiSiteEntity) ? selectedSites?.map(data => data) : sites} getSelectedSites={onSelectDepartment} selectedSites={selectedDepartmentSites} isMultiSiteEntity={isMultiSiteEntity} />
+            <SiteDepartmentField sites={sites} getSelectedSites={onSelectDepartment} selectedSites={selectedSites} isMultiSiteEntity={isMultiSiteEntity} />
           </div>
         }
 
