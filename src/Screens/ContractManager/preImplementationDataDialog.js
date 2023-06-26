@@ -21,7 +21,7 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
     const [preImplementationDataId, setPreImplementationDataId] = useState('');
     const [datePeriod, setDatePeriod] = useState({ startDate: '', endDate: '' });
     const [goLiveDate, setGoLiveDate] = useState('');
-
+    const [goLiveDateNotSet, setGoLiveDateNotSet] = useState(false);
 
     useEffect(() => {
         if (showPreImplementationDialog) {
@@ -38,15 +38,18 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
     }, [contractPayments])
 
     const getPreImplementationValue = async () => {
-        const { data: preImplementationData } = await GET(`timesheet-management-service/timesheet/preImplementationData/${contractId}`);
-        setObligatedActivities(preImplementationData?.obligatedActivities);
-        setContractPayments(preImplementationData?.contractYearPayments);
-        setAbsenseDays({ ...absenseDays, value: preImplementationData?.noOfDaysAbsent, na: preImplementationData?.absentDaysUpToDate })
-        setTotalCompensation({ ...totalCompensation, value: preImplementationData?.totalCompensationPaid?.value, na: preImplementationData?.totalCompensationPaid?.upToDate })
-        setDatePeriod({ ...datePeriod, startDate: preImplementationData?.dataPeriod?.startDate, endDate: preImplementationData?.dataPeriod?.endDate })
-        setActivitiesCompleted(preImplementationData?.activitiesUpToDate);
-        setGoLiveDate(preImplementationData?.goLiveDate);
-        setPreImplementationDataId(preImplementationData?.id);
+        await GET(`timesheet-management-service/timesheet/preImplementationData/${contractId}`)
+            .then(response => {
+                setObligatedActivities(response?.data?.obligatedActivities);
+                setContractPayments(response?.data?.contractYearPayments);
+                setAbsenseDays({ ...absenseDays, value: response?.data?.noOfDaysAbsent, na: response?.data?.absentDaysUpToDate })
+                setTotalCompensation({ ...totalCompensation, value: response?.data?.totalCompensationPaid?.value, na: response?.data?.totalCompensationPaid?.upToDate })
+                setDatePeriod({ ...datePeriod, startDate: response?.data?.dataPeriod?.startDate, endDate: response?.data?.dataPeriod?.endDate })
+                setActivitiesCompleted(response?.data?.activitiesUpToDate);
+                setGoLiveDate(response?.data?.goLiveDate);
+                setPreImplementationDataId(response?.data?.id);
+                setGoLiveDateNotSet(response?.response?.data === 'Go Live Date is not set' ? true : false)
+            })
     }
 
     const addPreImplementationData = async (buttonType) => {
@@ -172,69 +175,75 @@ const PreImplementationDataDialog = ({ showPreImplementationDialog, getPreImplem
     return (
         <Dialog isOpen={showPreImplementationDialog} onClose={() => { getPreImplementationDialogBoolean(false); reset(); }} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
             <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
-                <div className={style.spaceBetween}>
-                    <div>
-                        <p className={`${style.popUpPreImplementationHeading}`}>Obligated activities Completed & Payments in this contract year prior to <span className={style.purpleText}>{format(new Date(goLiveDate || new Date()), 'MMM d, yyyy')}</span></p>
-                        <p className={`${style.popUpPreImplementationSubHeading}`}>For The Period - {format(new Date(datePeriod?.startDate || new Date()), 'MMM d, yyyy')} - {format(new Date(datePeriod?.endDate || new Date()), 'MMM d, yyyy')}</p>
-                    </div>
-                    <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => { getPreImplementationDialogBoolean(false); reset(); }} />
-                </div>
-                <div className={style.extensionBorder}></div>
-                <div className={`${style.preImplementationGrid} ${style.marginTop20}`}>
-                    <div className={style.preImplementationPadding}>
+                {!goLiveDateNotSet ? (
+                    <>
+                        <div className={style.spaceBetween}>
+                            <div>
+                                <p className={`${style.popUpPreImplementationHeading}`}>Obligated activities Completed & Payments in this contract year prior to <span className={style.purpleText}>{format(new Date(goLiveDate || new Date()), 'MMM d, yyyy')}</span></p>
+                                <p className={`${style.popUpPreImplementationSubHeading}`}>For The Period - {format(new Date(datePeriod?.startDate || new Date()), 'MMM d, yyyy')} - {format(new Date(datePeriod?.endDate || new Date()), 'MMM d, yyyy')}</p>
+                            </div>
+                            <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => { getPreImplementationDialogBoolean(false); reset(); }} />
+                        </div>
+                        <div className={style.extensionBorder}></div>
+                        <div className={`${style.preImplementationGrid} ${style.marginTop20}`}>
+                            <div className={style.preImplementationPadding}>
+                                <div>
+                                    <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
+                                        <div className={style.popUpPreImplementationTitle}>Obligated Activities Completed</div>
+                                        <CommonCheckBox
+                                            checked={activitiesCompleted} onChange={(e) => setActivitiesCompleted(!activitiesCompleted)}
+                                            label="NA" />
+                                    </div>
+                                    {obligatedFields}
+                                </div>
+                            </div>
+                            <div className={`${style.leftBorder} ${style.preImplementationPadding}`}>
+                                <div className={style.popUpPreImplementationTitle}>Payments Made For Elapsed Contract Year</div>
+                                {contractPaymentFields}
+                                <div className={`${style.marginTop20}`}>
+                                    <CommonLabel value='Total Compensation Paid for Elapsed Contract Year' />
+                                    <div className={style.displayInRow}>
+                                        <CommonTextField
+                                            className={style.fullWidth}
+                                            min="0"
+                                            InputProps={{
+                                                startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                            }}
+                                            onChange={(e) => setTotalCompensation({ ...totalCompensation, value: (e.target.value.slice(0, 9)).replace(/,/g, "") })}
+                                            value={totalCompensation?.value ? Number(totalCompensation?.value)?.toLocaleString() : null}
+                                        />
+                                        <CommonCheckBox className={style.marginLeft20}
+                                            checked={totalCompensation?.na} onChange={(e) => setTotalCompensation({ ...totalCompensation, na: !totalCompensation?.na, value: 0 })} label="NA" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className={`${style.leftBorder} ${style.preImplementationPadding}`}>
+                                <div className={style.popUpPreImplementationTitle}>Absence Days Taken During Elapsed Contract Year</div>
+                                <div className={`${style.marginTop20}`}>
+                                    <CommonLabel value='Days' />
+                                    <div className={style.displayInRow}>
+                                        <CommonInputField className={style.fullWidth}
+                                            value={absenseDays?.value}
+                                            type='number'
+                                            onChange={(e) => e.target.value >= 0 && setAbsenseDays({ ...absenseDays, value: e.target.value })}
+                                        />
+                                        <CommonCheckBox className={style.marginLeft20}
+                                            checked={absenseDays?.na} onChange={(e) => setAbsenseDays({ ...absenseDays, na: !absenseDays?.na, value: 0 })}
+                                            label="NA" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div>
-                            <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
-                                <div className={style.popUpPreImplementationTitle}>Obligated Activities Completed</div>
-                                <CommonCheckBox
-                                    checked={activitiesCompleted} onChange={(e) => setActivitiesCompleted(!activitiesCompleted)}
-                                    label="NA" />
-                            </div>
-                            {obligatedFields}
-                        </div>
-                    </div>
-                    <div className={`${style.leftBorder} ${style.preImplementationPadding}`}>
-                        <div className={style.popUpPreImplementationTitle}>Payments Made For Elapsed Contract Year</div>
-                        {contractPaymentFields}
-                        <div className={`${style.marginTop20}`}>
-                            <CommonLabel value='Total Compensation Paid for Elapsed Contract Year' />
-                            <div className={style.displayInRow}>
-                                <CommonTextField
-                                    className={style.fullWidth}
-                                    min="0"
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                                    }}
-                                    onChange={(e) => setTotalCompensation({ ...totalCompensation, value: (e.target.value.slice(0, 9)).replace(/,/g, "") })}
-                                    value={totalCompensation?.value ? Number(totalCompensation?.value)?.toLocaleString() : null}
-                                />
-                                <CommonCheckBox className={style.marginLeft20}
-                                    checked={totalCompensation?.na} onChange={(e) => setTotalCompensation({ ...totalCompensation, na: !totalCompensation?.na, value: 0 })} label="NA" />
+                            <div className={`${style.floatRight} ${style.marginTop20}`}>
+                                <button className={`${style.buttonStyle} `} onClick={() => { getPreImplementationDialogBoolean(false); reset(); }}>CANCEL</button>
+                                <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => addPreImplementationData()}>SAVE AS DONE</button>
                             </div>
                         </div>
-                    </div>
-                    <div className={`${style.leftBorder} ${style.preImplementationPadding}`}>
-                        <div className={style.popUpPreImplementationTitle}>Absence Days Taken During Elapsed Contract Year</div>
-                        <div className={`${style.marginTop20}`}>
-                            <CommonLabel value='Days' />
-                            <div className={style.displayInRow}>
-                                <CommonInputField className={style.fullWidth}
-                                    value={absenseDays?.value}
-                                    type='number'
-                                    onChange={(e) => e.target.value >= 0 && setAbsenseDays({ ...absenseDays, value: e.target.value })}
-                                />
-                                <CommonCheckBox className={style.marginLeft20}
-                                    checked={absenseDays?.na} onChange={(e) => setAbsenseDays({ ...absenseDays, na: !absenseDays?.na, value: 0 })}
-                                    label="NA" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div className={`${style.floatRight} ${style.marginTop20}`}>
-                        <button className={`${style.buttonStyle} `} onClick={() => { getPreImplementationDialogBoolean(false); reset(); }}>CANCEL</button>
-                        <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => addPreImplementationData()}>SAVE AS DONE</button>
-                    </div>
-                </div>
+                    </>
+                ) : (
+                    <div className={`${style.dateNotSet} ${style.alignCenter}`}>Go Live Date Is Not Set By The Contracted Service Provider</div>
+                )}
             </div>
         </Dialog>
     )

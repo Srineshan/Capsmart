@@ -2196,6 +2196,11 @@ input[type=number] {
     color: white;
 }
 
+.dateNotSet {
+    font: normal normal 600 23px/30px Montserrat;
+    color: #7165E3;
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .addContractBody.serviceBoxStyle.cloneBlockStyle.tableHeight.proofBorder.timeSheetBoxStyle.contractScrollStyle::-webkit-scrollbar {
     display: none;
