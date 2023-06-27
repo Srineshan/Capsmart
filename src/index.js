@@ -21,21 +21,6 @@ import { SuccessToaster, ErrorToaster } from './utils/toaster';
 //   </React.StrictMode>
 // );
 const loggedInUser = currentUser();
-// const [users, setUsers] = useState([]);
-// const [currentUserData, setCurrentUserData] = useState(users?.filter(data => data?.id === loggedInUser?.id)?.map(data => data)[0]);
-
-// useEffect(() => {
-//   setCurrentUserData(users?.filter(data => data?.id === loggedInUser?.id)?.map(data => data)[0])
-// }, [users, loggedInUser?.id]);
-
-// useEffect(() => {
-//   getUser();
-// }, []);
-
-// const getUser = async () => {
-//   const { data: user } = await GET('user-management-service/user');
-//   setUsers(user);
-// };
 
 console.log(loggedInUser, browserName, browserVersion, osName, osVersion, isMobile, isDesktop, isTablet)
 const logError = async (error, info) => {
@@ -120,12 +105,6 @@ const logError = async (error, info) => {
     },
     "ticketFile": {
       "fileName": '',
-      // ...(isEdit &&
-      //     { 'id': ticketDetails?.ticketFile?.id }),
-      // ...(isEdit &&
-      //     { 'filePath': ticketDetails?.ticketFile?.filePath }),
-      // ...(isEdit &&
-      //     { 'fileURL': ticketDetails?.ticketFile?.fileURL }),
     },
     "deviceDetails": {
       "browser": browser,
@@ -146,10 +125,6 @@ const logError = async (error, info) => {
   formData.append('ticketDetail', new Blob([JSON.stringify(data)], {
     type: "application/json"
   }));
-  // if (screenCaptured && !isEdit) {
-  //     const file = new File([blobFormat], fileName);
-  //     formData.append('ticketFile', file);
-  // }
   if (errorInfo !== error.message) {
     await POST(`feedback-management-service/ticket`, formData)
       .then(response => {
