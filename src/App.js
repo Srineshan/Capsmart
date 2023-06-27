@@ -27,8 +27,14 @@ const Welcome = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcome")
 );
 const Login = React.lazy(() => import("./Screens/SuperAdminDashboard/login"));
+const Notify = React.lazy(() => import("./Screens/SuperAdminDashboard/notify"));
+const RemindContractors = React.lazy(() => import("./Screens/SuperAdminDashboard/remindContractors"));
+const NotifyEntityUser = React.lazy(() => import("./Screens/SuperAdminDashboard/notifyEntityUser"));
 const SetPassword = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/setPassword")
+);
+const ActivateAccess = React.lazy(() =>
+  import("./Screens/SuperAdminDashboard/activateAccess")
 );
 const SetPasswordWithoutEmail = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/setPasswordWithoutEmail")
@@ -219,6 +225,7 @@ const App = ({ props }) => {
       });
   };
 
+
   const login = () => {
     const requestOptions = {
       method: "GET",
@@ -335,9 +342,13 @@ const App = ({ props }) => {
               <Route path="/" element={<LoginRoute />} />
               <Route path="/contracts" element={<ActiveContracts />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/notifyUser" element={<Notify />} />
+              <Route path="/remindContractors" element={<RemindContractors />} />
+              <Route path="notifyEntityUser" element={<NotifyEntityUser />} />
               {/* <Route path="/user" element={<Users />} /> */}
               <Route path="/pages" element={<EntryPage />} />
               <Route path="/setPassword/:randomId" element={<SetPassword />} />
+              <Route path="/activateAccess/:randomId" element={<ActivateAccess />} />
               <Route path="/setPassword" element={<SetPasswordWithoutEmail />} />
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />
