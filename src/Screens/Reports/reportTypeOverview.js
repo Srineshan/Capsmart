@@ -326,7 +326,7 @@ const ReportTypeOverview = () => {
     const getPayments = async () => {
         const { data: chartData } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`);
         setPaymentsReportLog(chartData);
-        if (chartData?.paymentStats?.minPayment !== 0) {
+        if (chartData?.paymentStats?.minPayment !== 0 && chartData !== undefined) {
             let temp = [];
             console.log(chartData)
             Object?.keys(chartData?.timesheetProcessingStatus)?.map((data, index) => {
