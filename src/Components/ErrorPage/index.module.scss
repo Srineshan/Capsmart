@@ -3,6 +3,10 @@
     height: 100vh;
 }
 
+.unexpectedErrorBackgroundCard {
+    height: 100vh;
+}
+
 .verticalAlignCenter {
     display: flex;
     align-items: center;
@@ -34,12 +38,29 @@
     color: #a6a6a6;
 }
 
+.unexpectedErrormessageStyle {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    font: normal normal bold 32px/50px Montserrat;
+    color: #2A2A2A;
+}
+
 .descriptionStyle {
     text-align: center;
     display: flex;
     justify-content: center;
     font: normal normal normal 24px/30px Montserrat;
     color: #a6a6a6;
+    padding: 0 20%;
+}
+
+.unexpectedErrordescriptionStyle {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    font: normal normal normal 16px/22px Montserrat;
+    color: #979797;
     padding: 0 20%;
 }
 
@@ -74,4 +95,16 @@
 
 .marginLeft20 {
     margin-left: 20px;
+}
+
+.errorImgStyle {
+    width: 300px;
+    height: 250px;
+    object-fit: contain;
+}
+
+.errorBorder {
+    background: #7165E3 0% 0% no-repeat padding-box;
+    height: 4px;
+    width: 50%;
 }
