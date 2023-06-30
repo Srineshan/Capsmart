@@ -672,7 +672,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             "maximum": {
               "value": parseInt(dataValues?.max || '0')
             },
-            "frequency": dataValues?.frequency
+            "frequency": dataValues?.frequency,
+            "startDate": contractTermPeriod?.start,
+            "endDate": contractTermPeriod?.end,
           }],
           "patientsSeenTargets": [{
             "withNurse": {
@@ -681,7 +683,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             "withoutNurse": {
               "value": parseInt(dataValues?.withoutNurse || "0")
             },
-            "noTargetApplicable": dataValues?.noTargetApplicable
+            "noTargetApplicable": dataValues?.noTargetApplicable,
+            "startDate": contractTermPeriod?.start,
+            "endDate": contractTermPeriod?.end,
           }],
           "scheduledPatientsTargets": [{
             "withNurse": {
@@ -690,7 +694,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             "withoutNurse": {
               "value": parseInt(dataValues?.targetWithoutNurse || '0')
             },
-            "noTargetApplicable": dataValues?.targetNoTargetApplicable
+            "noTargetApplicable": dataValues?.targetNoTargetApplicable,
+            "startDate": contractTermPeriod?.start,
+            "endDate": contractTermPeriod?.end,
           }]
         })),
         ...(serviceTypeTemplate !== SUPPLEMENTAL && {
