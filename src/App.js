@@ -5,8 +5,10 @@ import history from "./routes/history";
 import Loader from "./Components/LoadingScreen";
 import IdleTimer from "./Components/IdleTimer";
 import Cookie from "universal-cookie";
-import { Auth, GetEntityDetails } from "./utils/auth";
-import { TenantID, GET } from "./Screens/dataSaver";
+import { Auth, GetEntityDetails, currentUser } from "./utils/auth";
+import { TenantID, GET, POST } from "./Screens/dataSaver";
+import { browserName, browserVersion, osName, osVersion, isMobile, isDesktop, isTablet } from "react-device-detect";
+import { SuccessToaster, ErrorToaster } from './utils/toaster';
 import axios from "axios";
 import jwt from "jwt-decode";
 
@@ -206,9 +208,132 @@ const App = ({ props }) => {
   axios.interceptors.response.use((response) => {
     return response;
   }, (error) => {
+    logError(error);
     console.log('response error', error);
     return error;
   })
+
+  const loggedInUser = currentUser();
+
+  const logError = async (error) => {
+    let browser = browserName === 'Chrome' ? 'CHROME' :
+      browserName === 'Firefox' ? 'FIREFOX' :
+        browserName === 'Safari' ? 'SAFARI' :
+          browserName === 'Opera' ? 'OPERA' :
+            browserName === 'Edge' ? 'EDGE' :
+              browserName === 'Internet Explorer' ? 'INTERNETEXPLORER' :
+                browserName === 'Chromium' ? 'CHROMIUM' :
+                  browserName === 'Yandex' ? 'YANDEX' :
+                    browserName === 'IE' ? 'IE' :
+                      browserName === 'Mobile Safari' ? 'MOBILESAFARI' :
+                        browserName === 'Edge Chromium' ? 'EDGECHROMIUM' :
+                          browserName === 'MIUI Browser' ? 'MIUIBROWSER' :
+                            browserName === 'Samsung Browser' ? 'SAMSUNGBROWSER' : '';
+
+    let os = osName === 'Windows' ? 'WINDOWS' :
+      osName === 'Linux' ? 'LINUX' :
+        osName === 'Mac OS' ? 'MAC' :
+          osName === 'iOS' ? 'IOS' :
+            osName === 'Android' ? 'ANDROID' :
+              osName === 'Windows Phone' ? 'WINDOWSPHONE' : '';
+
+    let deviceType = isDesktop ? 'DESKTOP' : isMobile ? 'MOBILE' : isTablet ? 'TABLET' : '';
+    let interceptorsInfo = sessionStorage.getItem('interceptorsInfo');
+
+    let data = {
+      "subject": 'Auto Ticket',
+      "description": `${error?.response?.data?.error} ${error?.response?.data?.path}`,
+      "createdBy": {
+        "id": loggedInUser?.id,
+        "name": {
+          firstName: loggedInUser?.firstName,
+          lastName: loggedInUser?.lastName,
+          middleName: '',
+          suffix: {
+            id: '',
+            suffix: '',
+          }
+        },
+        "email": { officialEmail: loggedInUser?.email },
+        "communication": {
+          personalEmail: loggedInUser?.email,
+          mobileNumber: '',
+          landlineNumber: '',
+          mobileNumberNotApplicable: false
+        }
+      },
+      "assignedTo": {
+        "id": '',
+        "name": {
+          firstName: '',
+          lastName: '',
+          middleName: '',
+          suffix: {
+            id: '',
+            suffix: '',
+          }
+        },
+        "email": { officialEmail: '' },
+        "communication": {
+          personalEmail: '',
+          mobileNumber: '',
+          landlineNumber: '',
+          mobileNumberNotApplicable: false
+        }
+      },
+      "type": 'APPLICATION',
+      "impact": 'HIGH',
+      "status": 'NEW',
+      "generationMode": "SYSTEM",
+      "bugTrackingId": "string",
+      "site": {
+        "id": "string",
+        "siteName": {
+          "siteName": "string"
+        }
+      },
+      "tenant": {
+        "tenantId": TenantID
+      },
+      "ticketFile": {
+        "fileName": '',
+        // ...(isEdit &&
+        //     { 'id': ticketDetails?.ticketFile?.id }),
+        // ...(isEdit &&
+        //     { 'filePath': ticketDetails?.ticketFile?.filePath }),
+        // ...(isEdit &&
+        //     { 'fileURL': ticketDetails?.ticketFile?.fileURL }),
+      },
+      "deviceDetails": {
+        "browser": browser,
+        "browserVersion": browserVersion,
+        "os": os,
+        "osVersion": osVersion,
+        "componentInfo": `${error?.response?.data?.error} ${error?.response?.data?.path}`,
+        "deviceType": deviceType,
+        "screenResolution": `width: ${window.innerWidth}, height: ${window.innerHeight}`,
+      },
+      "dueDate": "2022-10-06",
+      "screenCaptured": false,
+      "externalBugTrackingSystem": true
+    }
+
+    const formData = new FormData();
+
+    formData.append('ticketDetail', new Blob([JSON.stringify(data)], {
+      type: "application/json"
+    }));
+    if (interceptorsInfo !== `${error?.response?.data?.error} ${error?.response?.data?.path}`) {
+      await POST(`feedback-management-service/ticket`, formData)
+        .then(response => {
+          sessionStorage.setItem('interceptorsInfo', `${error?.response?.data?.error} ${error?.response?.data?.path}`);
+          SuccessToaster('Error Logged Successfully');
+        })
+        .catch(error => {
+          ErrorToaster('Unexpected Error Occured');
+        })
+    }
+  };
 
 
   const getEntityId = async () => {
