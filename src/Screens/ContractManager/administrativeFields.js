@@ -138,26 +138,27 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
         let workFlowValues = Object?.values(workflowData);
         let approver = user?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
-
-        setMetadata({
-            ...metadata,
-            refId: serviceSelected?.refId,
-            dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
-            dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
-            dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
-            selectedActivities: serviceSelected?.activityResponse?.dataMap?.adminActivities,
-            totalSession: serviceSelected?.totalSessions?.value || '0',
-            totalSessionFrequency: serviceSelected?.totalSessions?.frequency || 'NA',
-            workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
-            workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
-            serviceDays: serviceSelected?.serviceDays,
-            sessionAmount: serviceSelected?.payableAmount?.value,
-            sessionDuration: serviceSelected?.duration?.hours || '0',
-            workflowId: serviceSelected?.workFlow?.id,
-            workflowName: serviceSelected?.workFlow?.workFlowName?.name,
-            activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
-            approver: approver,
-        });
+        if (Object.keys(serviceSelected)?.length !== 0) {
+            setMetadata({
+                ...metadata,
+                refId: serviceSelected?.refId,
+                dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
+                dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
+                dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
+                selectedActivities: serviceSelected?.activityResponse?.dataMap?.adminActivities,
+                totalSession: serviceSelected?.totalSessions?.value || '0',
+                totalSessionFrequency: serviceSelected?.totalSessions?.frequency || 'NA',
+                workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+                workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
+                serviceDays: serviceSelected?.serviceDays,
+                sessionAmount: serviceSelected?.payableAmount?.value,
+                sessionDuration: serviceSelected?.duration?.hours || '0',
+                workflowId: serviceSelected?.workFlow?.id,
+                workflowName: serviceSelected?.workFlow?.workFlowName?.name,
+                activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
+                approver: approver,
+            });
+        }
     }
 
 

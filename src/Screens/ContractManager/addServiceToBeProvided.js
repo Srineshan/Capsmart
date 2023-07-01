@@ -730,7 +730,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         },
         ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && dataValues?.dedicatedHoursSpecified && {
           "hourlyRate": {
-            "value": serviceTypeTemplate === SUPPLEMENTAL && dataValues?.totalSession === 0 ? dataValues?.sessionAmount.toFixed(2) : (dataValues?.sessionAmount / dataValues?.totalSession).toFixed(2)
+            "value": serviceTypeTemplate === SUPPLEMENTAL && dataValues?.totalSession === 0 ? Number(dataValues?.sessionAmount)?.toFixed(2) : Number(dataValues?.sessionAmount / dataValues?.totalSession)?.toFixed(2)
           },
         }),
         ...((serviceTypeTemplate === SUPPLEMENTAL || serviceTypeTemplate === ADMINISTRATIVE) && !dataValues?.dedicatedHoursSpecified && {
@@ -743,7 +743,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }),
         ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(serviceTypeTemplate) && {
           "hourlyRate": {
-            "value": (dataValues?.sessionAmount / dataValues?.sessionDuration).toFixed(2)
+            "value": (dataValues?.sessionAmount / dataValues?.sessionDuration)?.toFixed(2)
           },
         }),
         "totalSessions": {
@@ -784,7 +784,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   "value": parseFloat(dataValues?.weekdayPayment)
                 },
                 "hourlyRate": {
-                  "value": (dataValues?.weekdayPayment / dataValues?.weekdayDuration).toFixed(2)
+                  "value": (dataValues?.weekdayPayment / dataValues?.weekdayDuration)?.toFixed(2)
                 },
                 "paymentNotApplicable": dataValues?.weekdayPaymentNa
               },
@@ -809,7 +809,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   "value": parseFloat(dataValues?.weekendPayment)
                 },
                 "hourlyRate": {
-                  "value": (dataValues?.weekendPayment / dataValues?.weekendDuration).toFixed(2)
+                  "value": (dataValues?.weekendPayment / dataValues?.weekendDuration)?.toFixed(2)
                 },
                 "paymentNotApplicable": dataValues?.weekendPaymentNa
               },
@@ -833,7 +833,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
                   "value": parseFloat(dataValues?.holidayPayment)
                 },
                 "hourlyRate": {
-                  "value": (dataValues?.holidayPayment / dataValues?.holidayDuration).toFixed(2)
+                  "value": (dataValues?.holidayPayment / dataValues?.holidayDuration)?.toFixed(2)
                 },
                 "paymentNotApplicable": dataValues?.holidayPaymentNa
               }
@@ -953,6 +953,13 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       })),
     [locationList],
   )
+
+  const checkIfExistInOtherPlaces = () => {
+    console.log('existing Services', existingServices);
+    console.log('selected Services', selectedService);
+    let otherPlaces = existingServices?.filter(data => data?.dataResponse?.dataMap?.selectedActivityId === selectedService?.refId)?.map(data => data);
+    console.log('other places', otherPlaces);
+  }
 
   const onActivitySelect = (selectedItem) => {
     setItem(selectedItem);
