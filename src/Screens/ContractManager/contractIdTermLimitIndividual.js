@@ -538,12 +538,11 @@ const ContractIdTermLimitIndividual = (
   }
 
   const handleReminder = (e, i) => {
-    if (parseInt(e) <= 999) {
-      console.log('value of e ', e, typeof parseInt(e), parseInt(e) <= 999);
-      let temp = renewalReminder;
-      temp[i] = { 'days': parseInt(e) };
-      setRenewalreminder(temp);
-    }
+    console.log('value of e ', e, typeof parseInt(e), parseInt(e) <= 999);
+    let temp = renewalReminder;
+    temp[i] = { 'days': parseInt(e) };
+    setRenewalreminder(temp);
+    getReminder();
   }
 
   const handleFileChange = (e, name) => {
@@ -554,7 +553,7 @@ const ContractIdTermLimitIndividual = (
     let temp = [];
     for (let i = 0; i < renewalReminder?.length; i++) {
       temp[i] = (
-        <div className={`${style.renewalRemainderBoxGrid} ${style.marginBottom}`} key={`reminder${i}-${renewalReminder?.[i]?.days}`}>
+        <div className={`${style.renewalRemainderBoxGrid} ${style.marginBottom}`} key={i}>
           <div className={style.verticalAlignCenter}>
             Set Renewal Reminder*
           </div>
@@ -567,11 +566,11 @@ const ContractIdTermLimitIndividual = (
               InputProps={{
                 endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Days</InputAdornment>,
               }}
-              onChange={(e) => { handleReminder(e.target.value, i); }}
-              key={`days${i}${renewalReminder?.[i]?.days}`}
-              defaultValue={(renewalReminder?.[i]?.days)}
-              maxLength={2}
-              type="number"
+              onChange={(e) => { handleReminder(e.target.value.slice(0, 3), i); }}
+              key={i}
+              value={renewalReminder?.[i]?.days ? renewalReminder?.[i]?.days : 0}
+            // maxLength={2}
+            // type="number"
             />
           </div>
           <div className={style.verticalAlignCenter}>

@@ -243,7 +243,7 @@ body::-webkit-scrollbar {
 
 .activeContractGrid {
     display: grid;
-    grid-template-columns: 6% 6% 15% 10% 16% 10% 11% 11% 5%;
+    grid-template-columns: 6% 6% 12% 10% 3% 16% 10% 11% 11% 5%;
     grid-gap: 10px;
 }
 
@@ -2194,6 +2194,11 @@ input[type=number] {
 .selectedDay {
     background: #7165E3 0% 0% no-repeat padding-box;
     color: white;
+}
+
+.dateNotSet {
+    font: normal normal 600 23px/30px Montserrat;
+    color: #7165E3;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
