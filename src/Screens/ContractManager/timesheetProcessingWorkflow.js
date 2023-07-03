@@ -112,6 +112,8 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     setIsLoading(false);
   }
 
+
+
   const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
     let id = timesheet?.id;
     if (id === '' || id === undefined) {
@@ -378,7 +380,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     let id = timesheetFlow?.workFlowDetails?.filter(data => data?.workFlow?.workFlowName?.name === activeTab)?.map(data => data?.workFlow?.id)[0];
     if (timesheetFlow) {
       let workflowData = timesheetWorkFlow?.filter(data => data?.id === id)?.map(data => data?.workFlowMap?.workflow)[0];
-      let workFlowValues = Object.values(workflowData || {});
+      let workFlowValues = (workflowData !== undefined && workflowData !== null) ? Object.values(workflowData) : [];
       if (workFlowValues?.length === 1) {
         let approver = workFlowValues?.[0]?.workFlowUser?.id;
         setTimesheet({ ...timesheet, id: id, reviewer: approver, reviewerTitle: workFlowValues?.[0]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[0]?.workflowUser?.title });

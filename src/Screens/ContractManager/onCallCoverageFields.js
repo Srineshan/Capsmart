@@ -281,67 +281,67 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
         let workFlowValues = Object?.values(workflowData);
         let approver = user?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
 
-
-        setMetadata({
-            ...metadata,
-            refId: serviceSelected?.refId,
-            min: serviceSelected?.contractedSchedules?.[0]?.minimum?.value,
-            max: serviceSelected?.contractedSchedules?.[0]?.maximum?.value,
-            frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
-            onCallCoverageFor: serviceSelected?.activityResponse?.dataMap?.onCallCoverageFor,
-            additionalScheduleValue: serviceSelected?.additionalSchedule?.value,
-            additionalScheduleFrequency: serviceSelected?.additionalSchedule?.frequency,
-            additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
-            billableService: serviceSelected?.billableService,
-            rateType: serviceSelected?.rateType,
-            sessionDuration: serviceSelected?.duration?.hours || '0',
-            sessionAmount: serviceSelected?.payableAmount?.value,
-            totalSession: serviceSelected?.totalSessions?.value,
-            totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
-            workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
-            workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
-            serviceDays: serviceSelected?.serviceDays,
-            additionalActivity: dependentActivities,
-            additionalActivityBillable: serviceSelected?.dependentService?.billableService,
-            additionalActivityPaymentApprovalRequired: serviceSelected?.dependentService?.paymentApprovalRequired,
-            dependencyPayableAmount: serviceSelected?.dependentService?.payableAmount?.value,
-            dependencyFrequency: serviceSelected?.dependentService?.frequency,
-            dependantServiceIncluded: serviceSelected?.dependantServiceIncluded,
-            weekdayFrom: GetDateFromHours(serviceSelected?.customschedule?.weekday?.from?.toString() || ''),
-            weekdayTo: GetDateFromHours(serviceSelected?.customschedule?.weekday?.to?.toString() || ''),
-            weekdayDuration: serviceSelected?.customschedule?.weekday?.duration?.hours,
-            weekdayMin: serviceSelected?.customschedule?.weekday?.target?.minimum?.value,
-            weekdayMax: serviceSelected?.customschedule?.weekday?.target?.maximum?.value,
-            weekdayPayment: serviceSelected?.customschedule?.weekday?.payableAmount?.value,
-            weekdayPaymentNa: serviceSelected?.customschedule?.weekday?.paymentNotApplicable,
-            weekdayFrequency: serviceSelected?.customschedule?.weekday?.target?.frequency,
-            weekendFrom: GetDateFromHours(serviceSelected?.customschedule?.weekend?.from?.toString() || ''),
-            weekendTo: GetDateFromHours(serviceSelected?.customschedule?.weekend?.to?.toString() || ''),
-            weekendStartday: serviceSelected?.customschedule?.weekend?.startDay,
-            weekendEndday: serviceSelected?.customschedule?.weekend?.endDay,
-            weekendDuration: serviceSelected?.customschedule?.weekend?.duration?.hours,
-            weekendMin: serviceSelected?.customschedule?.weekend?.target?.minimum?.value,
-            weekendMax: serviceSelected?.customschedule?.weekend?.target?.maximum?.value,
-            weekendPayment: serviceSelected?.customschedule?.weekend?.payableAmount?.value,
-            weekendPaymentNa: serviceSelected?.customschedule?.weekend?.paymentNotApplicable,
-            weekendFrequency: serviceSelected?.customschedule?.weekend?.target?.frequency,
-            holidayFrom: GetDateFromHours(serviceSelected?.customschedule?.holiday?.from?.toString() || ''),
-            holidayTo: GetDateFromHours(serviceSelected?.customschedule?.holiday?.to?.toString() || ''),
-            holidayFrequency: serviceSelected?.customschedule?.holiday?.target?.frequency,
-            holidayTerm: serviceSelected?.customschedule?.holiday?.holidayTerm,
-            holidayDuration: serviceSelected?.customschedule?.holiday?.duration?.hours,
-            holidayMin: serviceSelected?.customschedule?.holiday?.target?.minimum?.value,
-            holidayMax: serviceSelected?.customschedule?.holiday?.target?.maximum?.value,
-            holidayPayment: serviceSelected?.customschedule?.holiday?.payableAmount?.value,
-            holidayPaymentNa: serviceSelected?.customschedule?.holiday?.paymentNotApplicable,
-            patientMRNRequired: serviceSelected?.patientMRNRequired,
-            attendingDocRequired: serviceSelected?.attendingDocRequired,
-            customizedSchedule: serviceSelected?.customizedSchedule,
-            approver: approver,
-            workflowId: serviceSelected?.dependentService?.workFlow?.id,
-            workflowName: serviceSelected?.dependentService?.workFlow?.workFlowName?.name,
-        });
-
+        if (Object.keys(serviceSelected)?.length !== 0) {
+            setMetadata({
+                ...metadata,
+                refId: serviceSelected?.refId,
+                min: serviceSelected?.contractedSchedules?.[0]?.minimum?.value,
+                max: serviceSelected?.contractedSchedules?.[0]?.maximum?.value,
+                frequency: serviceSelected?.contractedSchedules?.[0]?.frequency,
+                onCallCoverageFor: serviceSelected?.activityResponse?.dataMap?.onCallCoverageFor,
+                additionalScheduleValue: serviceSelected?.additionalSchedule?.value,
+                additionalScheduleFrequency: serviceSelected?.additionalSchedule?.frequency,
+                additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
+                billableService: serviceSelected?.billableService,
+                rateType: serviceSelected?.rateType,
+                sessionDuration: serviceSelected?.duration?.hours || '0',
+                sessionAmount: serviceSelected?.payableAmount?.value,
+                totalSession: serviceSelected?.totalSessions?.value,
+                totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
+                workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+                workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
+                serviceDays: serviceSelected?.serviceDays,
+                additionalActivity: dependentActivities,
+                additionalActivityBillable: serviceSelected?.dependentService?.billableService,
+                additionalActivityPaymentApprovalRequired: serviceSelected?.dependentService?.paymentApprovalRequired,
+                dependencyPayableAmount: serviceSelected?.dependentService?.payableAmount?.value,
+                dependencyFrequency: serviceSelected?.dependentService?.frequency,
+                dependantServiceIncluded: serviceSelected?.dependantServiceIncluded,
+                weekdayFrom: GetDateFromHours(serviceSelected?.customschedule?.weekday?.from?.toString() || ''),
+                weekdayTo: GetDateFromHours(serviceSelected?.customschedule?.weekday?.to?.toString() || ''),
+                weekdayDuration: serviceSelected?.customschedule?.weekday?.duration?.hours,
+                weekdayMin: serviceSelected?.customschedule?.weekday?.target?.minimum?.value,
+                weekdayMax: serviceSelected?.customschedule?.weekday?.target?.maximum?.value,
+                weekdayPayment: serviceSelected?.customschedule?.weekday?.payableAmount?.value,
+                weekdayPaymentNa: serviceSelected?.customschedule?.weekday?.paymentNotApplicable,
+                weekdayFrequency: serviceSelected?.customschedule?.weekday?.target?.frequency,
+                weekendFrom: GetDateFromHours(serviceSelected?.customschedule?.weekend?.from?.toString() || ''),
+                weekendTo: GetDateFromHours(serviceSelected?.customschedule?.weekend?.to?.toString() || ''),
+                weekendStartday: serviceSelected?.customschedule?.weekend?.startDay,
+                weekendEndday: serviceSelected?.customschedule?.weekend?.endDay,
+                weekendDuration: serviceSelected?.customschedule?.weekend?.duration?.hours,
+                weekendMin: serviceSelected?.customschedule?.weekend?.target?.minimum?.value,
+                weekendMax: serviceSelected?.customschedule?.weekend?.target?.maximum?.value,
+                weekendPayment: serviceSelected?.customschedule?.weekend?.payableAmount?.value,
+                weekendPaymentNa: serviceSelected?.customschedule?.weekend?.paymentNotApplicable,
+                weekendFrequency: serviceSelected?.customschedule?.weekend?.target?.frequency,
+                holidayFrom: GetDateFromHours(serviceSelected?.customschedule?.holiday?.from?.toString() || ''),
+                holidayTo: GetDateFromHours(serviceSelected?.customschedule?.holiday?.to?.toString() || ''),
+                holidayFrequency: serviceSelected?.customschedule?.holiday?.target?.frequency,
+                holidayTerm: serviceSelected?.customschedule?.holiday?.holidayTerm,
+                holidayDuration: serviceSelected?.customschedule?.holiday?.duration?.hours,
+                holidayMin: serviceSelected?.customschedule?.holiday?.target?.minimum?.value,
+                holidayMax: serviceSelected?.customschedule?.holiday?.target?.maximum?.value,
+                holidayPayment: serviceSelected?.customschedule?.holiday?.payableAmount?.value,
+                holidayPaymentNa: serviceSelected?.customschedule?.holiday?.paymentNotApplicable,
+                patientMRNRequired: serviceSelected?.patientMRNRequired,
+                attendingDocRequired: serviceSelected?.attendingDocRequired,
+                customizedSchedule: serviceSelected?.customizedSchedule,
+                approver: approver,
+                workflowId: serviceSelected?.dependentService?.workFlow?.id,
+                workflowName: serviceSelected?.dependentService?.workFlow?.workFlowName?.name,
+            });
+        }
     }
     const limit5 = 5;
 
@@ -355,7 +355,12 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
     }, [])
 
     const handleValueChange = (name, value) => {
-        setMetadata({ ...metadata, [name]: value });
+        if (name === 'frequency' && value === 'NA' || value === '') {
+            setMetadata({ ...metadata, [name]: 'NA', min: 0, max: 99999999 })
+        }
+        else {
+            setMetadata({ ...metadata, [name]: value });
+        }
     }
 
 
@@ -545,7 +550,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 disabledSelect={!metadata?.serviceDays?.weekDays}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Contract Year', 'Every Other Week']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -662,7 +667,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 disabled={!metadata?.serviceDays?.weekEnds}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR', 'EVERY_OTHER_WEEK']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Contract Year', 'Every Other Week']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year', 'Every Other Week']}
                                 disabledList={[false, false, false]} />
                         </div>
                     </div>
@@ -798,7 +803,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 disabled={!metadata?.serviceDays?.isholidays}
                                 firstOptionLabel={'Select Frequency'} firstOptionValue={''}
                                 valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
-                                labelList={['Not Applicable', 'Per Week', 'Per Month', 'Per Contract Year']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false, false, false]} />
                         </div>
                     </div>
@@ -855,6 +860,7 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => e.target.value >= 0 && handleValueChange('min', parseFloat(e.target.value.slice(0, 5)))}
                                 value={metadata?.min === 0 ? '' : metadata?.min}
                                 type='number'
+                                disabled={metadata?.frequency === 'NA'}
                             />
                             {/* <div className={`${style.displayInRow} ${style.editableTextOuterBorder} ${style.threeFieldWidth}`}>
                                 <div className={style.textElement}>MAX</div>
@@ -868,13 +874,14 @@ const OnCallCoverageFields = ({ getMetaData, serviceSelected, timeCommitment, is
                                 onChange={(e) => e.target.value >= 0 && handleValueChange('max', parseFloat(e.target.value.slice(0, 5)))}
                                 value={(metadata?.max === 0 || metadata?.max === 99999999) ? '' : metadata?.max}
                                 type='number'
+                                disabled={metadata?.frequency === 'NA'}
                             />
                             <CommonSelectField className={`${style.fullWidth}`}
                                 value={metadata?.frequency}
                                 onChange={(e) => handleValueChange('frequency', e.target.value)}
-                                firstOptionLabel={'Select Frequency'} firstOptionValue={'NA'}
-                                valueList={['WEEK', 'MONTH', 'CONTRACT_YEAR']}
-                                labelList={['Per Week', 'Per Month', 'Per Contract Year']}
+                                firstOptionLabel={'Select Frequecy'} firstOptionValue={''}
+                                valueList={['NA', 'WEEK', 'MONTH', 'CONTRACT_YEAR']}
+                                labelList={['As Needed', 'Per Week', 'Per Month', 'Per Year']}
                                 disabledList={[false, false]} />
                         </div>
                     </div>

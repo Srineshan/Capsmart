@@ -32,7 +32,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     var cookie = new Cookie();
     let authValue = cookie.get('user');
     const loggedUser = jwt(authValue);
-    const ticketsTableHeaderValues = ["", "TKT ID", "TYPE", "SUBJECT", "OPEN DATE/TIME", "IMPACT", "APP IN USE", "SUBMITTED BY’", "MESSAGES", "LAST UPDATED", "ACTION"];
+    const ticketsTableHeaderValues = ["", "TKT ID", "TYPE", "GENERATION MODE", "SUBJECT", "OPEN DATE/TIME", "IMPACT", "APP IN USE", "SUBMITTED BY’", "MESSAGES", "LAST UPDATED", "ACTION"];
     const exceptionTableHeaderValues = ["", "TICKET ID", "EXCEPTION CODE", "DESCRIPTION", "DATE/TIME", "CONTRACTOR NAME", "USER NAME", "LAST UPDATED", "ACTION"];
     const messagesTableHeaderValues = ["", "TYPE", "RELATED TO", "MESSAGE / COMMENT", "LAST RESPONDED", "DATE / TIME", "ACTION"];
 
@@ -175,6 +175,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
 
     let dot = [];
     let dotTooltipValues = [];
+    let generationMode = [];
     let tktId = [];
     let type = [];
     let subject = [];
@@ -190,6 +191,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
     const getTicketValues = () => {
         dot = [];
         dotTooltipValues = [];
+        generationMode = [];
         tktId = [];
         type = [];
         subject = [];
@@ -205,6 +207,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
         ticket?.map(data => {
             dot.push('green');
             dotTooltipValues.push('In-Progress');
+            generationMode.push(data?.generationMode);
             tktId.push(data?.ticketId);
             type.push(data?.type);
             subject.push(data?.subject);
@@ -222,6 +225,7 @@ const FeedbackTicket = ({ getSelectedOption }) => {
             { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
             { "type": "text", "value": tktId, "onClickFunction": onClickFunction },
             { "type": "text", "value": type, "onClickFunction": onClickFunction },
+            { "type": "text", "value": generationMode, "onClickFunction": onClickFunction },
             { "type": "text", "value": subject, "onClickFunction": onClickFunction },
             { "type": "text", "value": openDateOrTime, "onClickFunction": onClickFunction },
             { "type": "icon", "icon": impact },

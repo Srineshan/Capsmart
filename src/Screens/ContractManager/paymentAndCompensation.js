@@ -129,6 +129,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     console.log('Compensation Policy', compensationPolicy);
 
+
     const setTimesheetPaymentsValue = () => {
         if (timeSheetTabs?.length !== timesheetPayments?.length) {
             let temp = [];
@@ -298,8 +299,11 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
-                                    value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
+                                    onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9), 'maxPaymentPerContract', i)}
+                                    value={(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
+                                // onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
+                                // value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
+
                                 />
                             </div>
 
@@ -469,12 +473,12 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                         //     ...dollarRate, hour: parseFloat(e.target.value.slice(0, limit7))?.toLocaleString('en-gb'), notApplicable: false
                                         // })}
                                         disabled={dollarRate?.notApplicable}
-                                        value={dollarRate?.hour ? Number(dollarRate?.hour)?.toLocaleString() : null}
+                                        value={dollarRate?.hour?.toLocaleString() ?? null}
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                         }}
                                         onChange={(e) => setDollarRate({
-                                            ...dollarRate, hour: (e.target.value.slice(0, limit9)).replace(/,/g, ""), notApplicable: false
+                                            ...dollarRate, hour: (e.target.value.slice(0, limit9)), notApplicable: false
                                         })}
                                     />
                                     <CommonCheckBox value="NA" checked={dollarRate?.notApplicable} onChange={(e) => setDollarRate({ ...dollarRate, notApplicable: e.target.checked, hour: '0' })} label="NA" />

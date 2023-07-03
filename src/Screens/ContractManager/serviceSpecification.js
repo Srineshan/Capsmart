@@ -92,6 +92,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     setShowDeleteConfirmation(false);
     setSelectedContractServiceIndex();
     getContractedServices();
+    getTabDataStatus();
   }
 
   const onClickFunction = (data, index) => {

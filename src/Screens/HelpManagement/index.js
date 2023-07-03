@@ -43,7 +43,7 @@ const HelpHome = () => {
     const [from, setFrom] = useState(subDays(new Date(), 30));
     const [to, setTo] = useState(new Date());
     const [currentUserDetails, setCurrentUserDetails] = useState({});
-    const ticketsTableHeaderValues = ["", "TICKET ID", "TYPE", "SUBJECT/ ISSUE", "CUSTOMER", "START DATE/TIME", "LAST UPDATED", "USER NAME"];
+    const ticketsTableHeaderValues = ["", "TICKET ID", "TYPE", "GENERATION MODE", "SUBJECT/ ISSUE", "CUSTOMER", "START DATE/TIME", "LAST UPDATED", "USER NAME"];
     const tutorialsTableHeaderValues = ["", "TITLE", "DESCRIPTION", "AUTHOR", "TYPE", "DATE / TIME", "LINK", "COMMENT"];
     const releaseTableHeaderValues = ["", "TITLE", "DESCRIPTION", "AUTHOR", "TYPE", "DATE / TIME", "UPLOAD", "COMMENT", "ACTION"];
     const messageTableHeaderValues = ["", "TYPE", "RELATED TO", "MESSAGE / COMMENT", "LAST RESPONDED", "DATE / TIME", "ACTION"];
@@ -168,6 +168,7 @@ const HelpHome = () => {
     let dot = [];
     let dotTooltipValues = [];
     let tktId = [];
+    let generationMode = [];
     let type = [];
     let subject = [];
     let openDateOrTime = [];
@@ -178,6 +179,7 @@ const HelpHome = () => {
     const getTicketValues = () => {
         dot = [];
         dotTooltipValues = [];
+        generationMode = [];
         tktId = [];
         type = [];
         subject = [];
@@ -190,6 +192,7 @@ const HelpHome = () => {
             dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'grey' : '');
             dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : '');
             tktId.push(data?.ticketId);
+            generationMode.push(data?.generationMode);
             type.push(data?.type);
             subject.push(data?.subject);
             openDateOrTime.push(format(new Date(data?.createdDateTime), 'MM-dd-yyyy HH:mm'));
@@ -202,6 +205,7 @@ const HelpHome = () => {
             { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
             { "type": "text", "value": tktId, "onClickFunction": onClickFunction },
             { "type": "text", "value": type, "onClickFunction": onClickFunction },
+            { "type": "text", "value": generationMode, "onClickFunction": onClickFunction },
             { "type": "text", "value": subject, "onClickFunction": onClickFunction },
             { "type": "text", "value": customer, "onClickFunction": onClickFunction },
             { "type": "text", "value": openDateOrTime, "onClickFunction": onClickFunction },
