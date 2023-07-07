@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Dialog, Classes, Icon, Intent, Tag } from '@blueprintjs/core';
+import cloneDeep from 'lodash.clonedeep';
+
 import AddIcon from '@mui/icons-material/Add';
 import DatalistInput, { useComboboxControls } from 'react-datalist-input';
 import { PUT, GET, TenantID, POST } from './../dataSaver';
@@ -27,6 +29,8 @@ import Notes from '../../Components/Notes';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+import ServiceConflict from './serviceConflict';
+import { checkActivityChange } from './checkDependentData';
 
 import style from './index.module.scss';
 
@@ -78,6 +82,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [continueLoading, setContinueLoading] = useState(false);
   const { setValue, value } = useComboboxControls({ initialValue: '' });
   const [location, setLocation] = useState('');
+  const [conflict, setConflict] = useState({ isPresent: false, data: [] });
 
   useEffect(() => {
     getContractedServices();
@@ -878,18 +883,67 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
       }
     }
+
+    // if (conflict?.conflict?.length !== 0) {
+    //   conflict?.conflict?.map(data => {
+    //     if (data?.type === ADDON) {
+    //       services?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === ADDON)?.map(service => {
+    //         if (service.performingActivity === data?.missingData) {
+    //           service.performingActivity.activity = `${data?.activityType} (${selectedActivity?.join(', ')})`
+    //         }
+    //       })
+    //     }
+    //   })
+    // }
+
+    const dataChange = () => {
+      let conflictedData = checkActivityChange(existingServices, selectedService);
+      console.log('conflicted Data', conflictedData);
+      let temp = services;
+      conflictedData?.map(conflictData => {
+        services?.filter(data => data?.refId === conflictData?.id)?.map(serviceData => {
+          console.log('activity check', selectedActivity, serviceData)
+          if (conflictData?.type === ADDON) {
+            console.log('refid', selectedService?.refId, selectedService);
+            let currentData = cloneDeep(services?.filter(service => service.refId === selectedService?.refId)?.map(data => data)[0]);
+            let conflictedAddOn = cloneDeep(services?.filter(service => service.refId === conflictData?.id)?.map(data => data)[0]);
+            console.log('current Data', currentData);
+            serviceData = cloneDeep(currentData);
+            console.log('shared data', serviceData);
+            serviceData.activityTypeTemplate = conflictedAddOn?.activityTypeTemplate;
+            serviceData.activityType = conflictedAddOn?.activityType;
+            // serviceData.selectedActivityId = currentData?.refId;
+            // serviceData.activities = currentData?.activities;
+            serviceData.refId = conflictedAddOn.refId;
+            serviceData.workFlow = conflictedAddOn.workFlow;
+            serviceData.contractedSchedules = [];
+            serviceData.patientsSeenTargets = [];
+            serviceData.scheduledPatientsTargets = [];
+            // serviceData.workingTimeFrom = currentData?.workingTimeFrom;
+            // serviceData.workingTimeTo = currentData?.workingTimeTo;
+            // serviceData.locations = currentData?.serviceLocations;
+            serviceData.performingActivity.activity = `${selectedService?.activityType?.activityType} (${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')})`
+          }
+        })
+      })
+      return services;
+    }
+
+    console.log('services', dataChange());
+
     let formattedData = {
       contractedServices: services
     }
 
-    const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
-    if (response) {
-      SuccessToaster('Contracted Service Updated Successfully');
-    }
-    else {
-      ErrorToaster('Unexpected Error');
-    }
-    getContractedServices();
+
+    // const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
+    // if (response) {
+    //   SuccessToaster('Contracted Service Updated Successfully');
+    // }
+    // else {
+    //   ErrorToaster('Unexpected Error');
+    // }
+    // getContractedServices();
     if (buttonType === 'SAVE AND EXIT') {
       getAddServiceDialog(false);
       getEditServiceDialog(false);
@@ -954,12 +1008,11 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     [locationList],
   )
 
-  const checkIfExistInOtherPlaces = () => {
-    console.log('existing Services', existingServices);
-    console.log('selected Services', selectedService);
-    let otherPlaces = existingServices?.filter(data => data?.dataResponse?.dataMap?.selectedActivityId === selectedService?.refId)?.map(data => data);
-    console.log('other places', otherPlaces);
+  const updateConflict = (value) => {
+
+    setConflict({ ...conflict, isPresent: value, data: [] });
   }
+
 
   const onActivitySelect = (selectedItem) => {
     setItem(selectedItem);
@@ -970,6 +1023,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setSelectedActivity(temp);
     }
     setValue('');
+    if (editService) {
+      let conflictedData = checkActivityChange(existingServices, selectedService);
+      setConflict({ isPresent: conflictedData?.length !== 0, conflict: conflictedData });
+    }
   }
 
   const onLocationSelect = (selectedItem) => {
@@ -1247,6 +1304,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             ) : ''}
           </div>
           <div>
+            {
+              <ServiceConflict conflict={conflict} updateConflict={updateConflict} />
+            }
             {isEditable && !isShowPDF &&
               <div className={`${style.floatRight} `}>
                 {!editService && <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => addOnWorkFlow('ADD MORE') : null}>ADD MORE</button>}

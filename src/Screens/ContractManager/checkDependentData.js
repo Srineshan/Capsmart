@@ -1,3 +1,6 @@
+import { CLINIC, SURGERY, ONCALL, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING } from '../../Constants';
+
+
 export const checkSiteAndDepartment = (contracts, site, contractId) => {
     console.log('inside check function', site)
     let conflictData = [];
@@ -37,4 +40,47 @@ export const checkSiteAndDepartment = (contracts, site, contractId) => {
         })
     })
     return conflictData;
+}
+
+function areEqual(array1, array2) {
+    if (array1?.length === array2?.length ) {
+        return array1.every((element, index) => {
+            if (element === array2[index]) {
+                return true;
+            }
+
+            return false;
+        });
+    }
+
+    return false;
+}
+
+export const checkActivityChange = (existingServices, selectedService) => {
+    console.log('selectedService', selectedService, existingServices);
+    let conflictedData = [];
+    let otherPlaces = [];
+    let temp = [];
+    try {
+        otherPlaces = existingServices?.filter(data => data?.activityResponse?.dataMap?.selectedActivityId === selectedService?.refId)?.map(data => data);
+        existingServices?.filter(data => data?.hoursBorrowed?.activityType?.activityType === selectedService?.activityType?.activityType)?.map(data => {
+            console.log('conflict data', selectedService?.activities?.map(activity => activity?.activity), data?.hoursBorrowed?.performingActivity?.activity?.split(', '));
+            if (areEqual(selectedService?.activities?.map(activity => activity?.activity), data?.hoursBorrowed?.performingActivity?.activity?.split(', '))) {
+                console.log('inside if pass');
+                temp?.push({ type: data?.activityTypeTemplate?.activityTypeTemplate, data: 'Activities To Be Performed', missingData: data?.hoursBorrowed?.performingActivity?.activity, id: data?.refId })
+            }
+        });
+        conflictedData = temp;
+        console.log('temp', temp);
+        if (otherPlaces?.length !== 0) {
+            otherPlaces?.map(data => {
+                conflictedData?.push({ type: data?.activityTypeTemplate?.activityTypeTemplate, data: 'Activities To Be Performed', missingData: data?.performingActivity?.activity, id: data.refId })
+            })
+
+        }
+    } catch (e) {
+        console.log('error', e)
+    }
+
+    return conflictedData;
 }
