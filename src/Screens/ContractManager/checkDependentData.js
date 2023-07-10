@@ -43,7 +43,7 @@ export const checkSiteAndDepartment = (contracts, site, contractId) => {
 }
 
 function areEqual(array1, array2) {
-    if (array1?.length === array2?.length ) {
+    if (array1?.length === array2?.length) {
         return array1.every((element, index) => {
             if (element === array2[index]) {
                 return true;
@@ -57,27 +57,26 @@ function areEqual(array1, array2) {
 }
 
 export const checkActivityChange = (existingServices, selectedService) => {
-    console.log('selectedService', selectedService, existingServices);
     let conflictedData = [];
     let otherPlaces = [];
-    let temp = [];
     try {
         otherPlaces = existingServices?.filter(data => data?.activityResponse?.dataMap?.selectedActivityId === selectedService?.refId)?.map(data => data);
+        console.log('other places', otherPlaces);
         existingServices?.filter(data => data?.hoursBorrowed?.activityType?.activityType === selectedService?.activityType?.activityType)?.map(data => {
-            console.log('conflict data', selectedService?.activities?.map(activity => activity?.activity), data?.hoursBorrowed?.performingActivity?.activity?.split(', '));
-            if (areEqual(selectedService?.activities?.map(activity => activity?.activity), data?.hoursBorrowed?.performingActivity?.activity?.split(', '))) {
+            console.log('check data', data?.hoursBorrowed?.performingActivity?.activity);
+            console.log('conflict data', selectedService?.activities?.map(activity => activity?.activity), data?.hoursBorrowed?.performingActivity?.activity?.toString()?.split(', '));
+            if (areEqual(selectedService?.activities?.map(activity => activity?.activity), data?.hoursBorrowed?.performingActivity?.activity?.toString()?.split(', '))) {
                 console.log('inside if pass');
-                temp?.push({ type: data?.activityTypeTemplate?.activityTypeTemplate, data: 'Activities To Be Performed', missingData: data?.hoursBorrowed?.performingActivity?.activity, id: data?.refId })
+                conflictedData?.push({ type: data?.activityTypeTemplate?.activityTypeTemplate, data: 'Activities To Be Performed', missingData: data?.hoursBorrowed?.performingActivity?.activity, id: data?.refId })
+            }
+            if (otherPlaces?.length !== 0) {
+                otherPlaces?.map(data => {
+                    conflictedData?.push({ type: data?.activityTypeTemplate?.activityTypeTemplate, data: 'Activities To Be Performed', missingData: data?.performingActivity?.activity, id: data.refId })
+                })
+
             }
         });
-        conflictedData = temp;
-        console.log('temp', temp);
-        if (otherPlaces?.length !== 0) {
-            otherPlaces?.map(data => {
-                conflictedData?.push({ type: data?.activityTypeTemplate?.activityTypeTemplate, data: 'Activities To Be Performed', missingData: data?.performingActivity?.activity, id: data.refId })
-            })
 
-        }
     } catch (e) {
         console.log('error', e)
     }

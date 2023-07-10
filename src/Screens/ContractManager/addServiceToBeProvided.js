@@ -906,6 +906,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         if (conflictData?.type === ADDON) {
           console.log('conflictData is add on data', conflictedIndex, currentServiceIndex);
           services[conflictedIndex] = cloneDeep(services[currentServiceIndex]);
+          services[conflictedIndex].activityResponse = conflictedAddOn?.activityResponse;
           services[conflictedIndex].activityTypeTemplate = conflictedAddOn?.activityTypeTemplate;
           services[conflictedIndex].activityType = conflictedAddOn?.activityType;
           services[conflictedIndex].refId = conflictedAddOn.refId;
