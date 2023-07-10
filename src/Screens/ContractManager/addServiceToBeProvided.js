@@ -914,9 +914,28 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           services[conflictedIndex].patientsSeenTargets = [];
           services[conflictedIndex].scheduledPatientsTargets = [];
           services[conflictedIndex].performingActivity.activity = `${selectedService?.activityType?.activityType} (${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')})`
-        }else if(conflictData?.type === SUPPLEMENTAL){
-          
         }
+        if (conflictData?.type === SUPPLEMENTAL) {
+          services[conflictedIndex].hoursBorrowed = {
+            activityType: {
+              activityType: services[currentServiceIndex].activityType?.activityType,
+
+            },
+            performingActivity: {
+              activity: selectedService?.activities?.map(activity => activity?.activity),
+            }
+          };
+          // dedicatedHoursActivityType: dedicatedHoursActivityType,
+          // services[conflictedIndex] = selectedService?.activities?.map(activity => activity?.activity);
+          services[conflictedIndex].billableService = services[currentServiceIndex]?.billableService;
+          services[conflictedIndex].rateType = services[currentServiceIndex]?.rateType;
+          services[conflictedIndex].payableAmount = services[currentServiceIndex]?.payableAmount;
+          services[conflictedIndex].duration = services[currentServiceIndex]?.duration;
+          services[conflictedIndex].totalSessions = services[currentServiceIndex]?.totalSessions;
+          // services[conflictedIndex].totalSessionFrequency = data?.totalSessions?.frequency;
+          services[conflictedIndex].hourlyRate = services[currentServiceIndex]?.hourlyRate;
+        }
+
       })
       return services;
     }
@@ -928,14 +947,14 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
 
 
-    const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
-    if (response) {
-      SuccessToaster('Contracted Service Updated Successfully');
-    }
-    else {
-      ErrorToaster('Unexpected Error');
-    }
-    getContractedServices();
+    // const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
+    // if (response) {
+    //   SuccessToaster('Contracted Service Updated Successfully');
+    // }
+    // else {
+    //   ErrorToaster('Unexpected Error');
+    // }
+    // getContractedServices();
     if (buttonType === 'SAVE AND EXIT') {
       getAddServiceDialog(false);
       getEditServiceDialog(false);
