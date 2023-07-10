@@ -16,10 +16,6 @@ import MultiSelectDisplay from '../../Components/ReusableSmallComponents/multiSe
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 const SupplementalFields = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset }) => {
-    const [additionalClinicSchedule, setAdditionalClinicSchedule] = useState(0);
-    const [additionalSchedule, setAdditionalSchedule] = useState(false);
-    const [totalContractedService, setTotalContractedService] = useState(0);
-    const [isDedicatedHours, setIsDedicatedHours] = useState(false);
     const [availableActivities, setAvailableActivities] = useState([]);
     const { setValue, value } = useComboboxControls({ initialValue: '' });
     const [newServiceName, setNewServiceName] = useState('');

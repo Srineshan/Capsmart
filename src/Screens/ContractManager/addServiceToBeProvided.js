@@ -900,58 +900,42 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       let conflictedData = checkActivityChange(existingServices, selectedService);
       console.log('conflicted Data', conflictedData);
       conflictedData?.map(conflictData => {
-        let conflictedIndex = services?.findIndexOf(services?.filter(data => data?.refId === conflictData?.refId)?.map(data => data)[0]);
-        let currentServiceIndex = services?.findIndexOf(services?.filter(data => data?.refId === selectedService?.refId)?.map(data => data)[0]);
+        let conflictedIndex = services?.indexOf(services?.filter(data => data?.refId === conflictData?.id)?.map(data => data)[0]);
+        let currentServiceIndex = services?.indexOf(services?.filter(data => data?.refId === selectedService?.refId)?.map(data => data)[0]);
+        let conflictedAddOn = cloneDeep(services[conflictedIndex])
         if (conflictData?.type === ADDON) {
-          console.log('conflictData is add on data')
+          console.log('conflictData is add on data', conflictedIndex, currentServiceIndex);
+          services[conflictedIndex] = cloneDeep(services[currentServiceIndex]);
+          services[conflictedIndex].activityTypeTemplate = conflictedAddOn?.activityTypeTemplate;
+          services[conflictedIndex].activityType = conflictedAddOn?.activityType;
+          services[conflictedIndex].refId = conflictedAddOn.refId;
+          services[conflictedIndex].workFlow = conflictedAddOn.workFlow;
+          services[conflictedIndex].contractedSchedules = [];
+          services[conflictedIndex].patientsSeenTargets = [];
+          services[conflictedIndex].scheduledPatientsTargets = [];
+          services[conflictedIndex].performingActivity.activity = `${selectedService?.activityType?.activityType} (${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')})`
+        }else if(conflictData?.type === SUPPLEMENTAL){
+          
         }
       })
-      // let temp = services;
-      // conflictedData?.map(conflictData => {
-      //   services?.filter(data => data?.refId === conflictData?.id)?.map(serviceData => {
-      //     console.log('activity check', selectedActivity, serviceData)
-      //     if (conflictData?.type === ADDON) {
-      //       console.log('refid', selectedService?.refId, selectedService);
-      //       let currentData = cloneDeep(services?.filter(service => service.refId === selectedService?.refId)?.map(data => data)[0]);
-      //       let conflictedAddOn = cloneDeep(services?.filter(service => service.refId === conflictData?.id)?.map(data => data)[0]);
-      //       console.log('current Data', currentData);
-      //       serviceData = cloneDeep(currentData);
-      //       console.log('shared data', serviceData);
-      //       serviceData.activityTypeTemplate = conflictedAddOn?.activityTypeTemplate;
-      //       serviceData.activityType = conflictedAddOn?.activityType;
-      //       // serviceData.selectedActivityId = currentData?.refId;
-      //       // serviceData.activities = currentData?.activities;
-      //       serviceData.refId = conflictedAddOn.refId;
-      //       serviceData.workFlow = conflictedAddOn.workFlow;
-      //       serviceData.contractedSchedules = [];
-      //       serviceData.patientsSeenTargets = [];
-      //       serviceData.scheduledPatientsTargets = [];
-      //       // serviceData.workingTimeFrom = currentData?.workingTimeFrom;
-      //       // serviceData.workingTimeTo = currentData?.workingTimeTo;
-      //       // serviceData.locations = currentData?.serviceLocations;
-      //       serviceData.performingActivity.activity = `${selectedService?.activityType?.activityType} (${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')})`
-      //     }
-      //   })
-      // })
-      // return services;
-      return true;
+      return services;
     }
 
     console.log('services', dataChange());
 
     let formattedData = {
-      contractedServices: services
+      contractedServices: dataChange()
     }
 
 
-    // const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
-    // if (response) {
-    //   SuccessToaster('Contracted Service Updated Successfully');
-    // }
-    // else {
-    //   ErrorToaster('Unexpected Error');
-    // }
-    // getContractedServices();
+    const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
+    if (response) {
+      SuccessToaster('Contracted Service Updated Successfully');
+    }
+    else {
+      ErrorToaster('Unexpected Error');
+    }
+    getContractedServices();
     if (buttonType === 'SAVE AND EXIT') {
       getAddServiceDialog(false);
       getEditServiceDialog(false);
