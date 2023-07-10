@@ -899,34 +899,42 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     const dataChange = () => {
       let conflictedData = checkActivityChange(existingServices, selectedService);
       console.log('conflicted Data', conflictedData);
-      let temp = services;
       conflictedData?.map(conflictData => {
-        services?.filter(data => data?.refId === conflictData?.id)?.map(serviceData => {
-          console.log('activity check', selectedActivity, serviceData)
-          if (conflictData?.type === ADDON) {
-            console.log('refid', selectedService?.refId, selectedService);
-            let currentData = cloneDeep(services?.filter(service => service.refId === selectedService?.refId)?.map(data => data)[0]);
-            let conflictedAddOn = cloneDeep(services?.filter(service => service.refId === conflictData?.id)?.map(data => data)[0]);
-            console.log('current Data', currentData);
-            serviceData = cloneDeep(currentData);
-            console.log('shared data', serviceData);
-            serviceData.activityTypeTemplate = conflictedAddOn?.activityTypeTemplate;
-            serviceData.activityType = conflictedAddOn?.activityType;
-            // serviceData.selectedActivityId = currentData?.refId;
-            // serviceData.activities = currentData?.activities;
-            serviceData.refId = conflictedAddOn.refId;
-            serviceData.workFlow = conflictedAddOn.workFlow;
-            serviceData.contractedSchedules = [];
-            serviceData.patientsSeenTargets = [];
-            serviceData.scheduledPatientsTargets = [];
-            // serviceData.workingTimeFrom = currentData?.workingTimeFrom;
-            // serviceData.workingTimeTo = currentData?.workingTimeTo;
-            // serviceData.locations = currentData?.serviceLocations;
-            serviceData.performingActivity.activity = `${selectedService?.activityType?.activityType} (${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')})`
-          }
-        })
+        let conflictedIndex = services?.findIndexOf(services?.filter(data => data?.refId === conflictData?.refId)?.map(data => data)[0]);
+        let currentServiceIndex = services?.findIndexOf(services?.filter(data => data?.refId === selectedService?.refId)?.map(data => data)[0]);
+        if (conflictData?.type === ADDON) {
+          console.log('conflictData is add on data')
+        }
       })
-      return services;
+      // let temp = services;
+      // conflictedData?.map(conflictData => {
+      //   services?.filter(data => data?.refId === conflictData?.id)?.map(serviceData => {
+      //     console.log('activity check', selectedActivity, serviceData)
+      //     if (conflictData?.type === ADDON) {
+      //       console.log('refid', selectedService?.refId, selectedService);
+      //       let currentData = cloneDeep(services?.filter(service => service.refId === selectedService?.refId)?.map(data => data)[0]);
+      //       let conflictedAddOn = cloneDeep(services?.filter(service => service.refId === conflictData?.id)?.map(data => data)[0]);
+      //       console.log('current Data', currentData);
+      //       serviceData = cloneDeep(currentData);
+      //       console.log('shared data', serviceData);
+      //       serviceData.activityTypeTemplate = conflictedAddOn?.activityTypeTemplate;
+      //       serviceData.activityType = conflictedAddOn?.activityType;
+      //       // serviceData.selectedActivityId = currentData?.refId;
+      //       // serviceData.activities = currentData?.activities;
+      //       serviceData.refId = conflictedAddOn.refId;
+      //       serviceData.workFlow = conflictedAddOn.workFlow;
+      //       serviceData.contractedSchedules = [];
+      //       serviceData.patientsSeenTargets = [];
+      //       serviceData.scheduledPatientsTargets = [];
+      //       // serviceData.workingTimeFrom = currentData?.workingTimeFrom;
+      //       // serviceData.workingTimeTo = currentData?.workingTimeTo;
+      //       // serviceData.locations = currentData?.serviceLocations;
+      //       serviceData.performingActivity.activity = `${selectedService?.activityType?.activityType} (${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')})`
+      //     }
+      //   })
+      // })
+      // return services;
+      return true;
     }
 
     console.log('services', dataChange());
