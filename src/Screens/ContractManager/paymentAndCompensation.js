@@ -121,7 +121,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     useEffect(() => {
         setTimesheetPaymentsValue()
-    }, [timeSheetTabs?.length, timesheetPayments?.length, compensationPolicy])
+    }, [timeSheetTabs?.length, timesheetPayments?.length, paymentAndCompensation, compensationPolicy])
 
     useEffect(() => {
         getPaymentFields();
@@ -166,9 +166,11 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         getTimeSheetValues();
     }, [contractId])
 
-    useEffect(() => {
-        getPaymentFields();
-    }, [timesheetPayments?.length, timesheetPayments])
+    // useEffect(() => {
+    //     getPaymentFields();
+    // }, [timesheetPayments])
+
+    console.log('payments', paymentFields);
 
     const updateTimesheetPayment = (value, name, index) => {
         let temp = timesheetPayments;

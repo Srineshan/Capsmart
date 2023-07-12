@@ -83,6 +83,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const { setValue, value } = useComboboxControls({ initialValue: '' });
   const [location, setLocation] = useState('');
   const [conflict, setConflict] = useState({ isPresent: false, data: [] });
+  const [activityUpdated, setActivityUpdated] = useState(false);
 
   useEffect(() => {
     getContractedServices();
@@ -135,6 +136,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   useEffect(() => {
     if (newActivity !== '') {
+      setActivityUpdated(true);
       onActivitySelect(activity?.filter(data => data?.activity?.activity === newActivity)?.map(data => data)[0]);
     }
   }, [activity])
@@ -167,6 +169,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const removeFriendlyName = (index) => {
+    setActivityUpdated(true);
     setSelectedActivity(selectedActivity?.filter((data, indexValue) => index !== indexValue)?.map(data => data));
   }
 
@@ -250,6 +253,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
 
   const activityToAdd = async () => {
+    setActivityUpdated(true);
     let dept = [];
     siteData?.map(site => site?.departmentList?.departments?.map(deptData => {
       dept.push(deptData.id);
@@ -884,18 +888,6 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       }
     }
 
-    // if (conflict?.conflict?.length !== 0) {
-    //   conflict?.conflict?.map(data => {
-    //     if (data?.type === ADDON) {
-    //       services?.filter(data => data?.activityTypeTemplate?.activityTypeTemplate === ADDON)?.map(service => {
-    //         if (service.performingActivity === data?.missingData) {
-    //           service.performingActivity.activity = `${data?.activityType} (${selectedActivity?.join(', ')})`
-    //         }
-    //       })
-    //     }
-    //   })
-    // }
-
     const dataChange = () => {
       let conflictedData = checkActivityChange(existingServices, selectedService);
       console.log('conflicted Data', conflictedData);
@@ -916,46 +908,65 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
           services[conflictedIndex].scheduledPatientsTargets = [];
           services[conflictedIndex].performingActivity.activity = `${selectedService?.activityType?.activityType} (${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')})`
         }
-        if (conflictData?.type === SUPPLEMENTAL) {
+        if (conflictData?.type === SUPPLEMENTAL || conflictData?.type === ADMINISTRATIVE) {
           services[conflictedIndex].hoursBorrowed = {
             activityType: {
               activityType: services[currentServiceIndex].activityType?.activityType,
 
             },
             performingActivity: {
-              activity: selectedService?.activities?.map(activity => activity?.activity),
+              activity: selectedService?.activities?.map(activity => activity?.activity)?.join(', '),
             }
           };
-          // dedicatedHoursActivityType: dedicatedHoursActivityType,
-          // services[conflictedIndex] = selectedService?.activities?.map(activity => activity?.activity);
           services[conflictedIndex].billableService = services[currentServiceIndex]?.billableService;
           services[conflictedIndex].rateType = services[currentServiceIndex]?.rateType;
           services[conflictedIndex].payableAmount = services[currentServiceIndex]?.payableAmount;
           services[conflictedIndex].duration = services[currentServiceIndex]?.duration;
           services[conflictedIndex].totalSessions = services[currentServiceIndex]?.totalSessions;
-          // services[conflictedIndex].totalSessionFrequency = data?.totalSessions?.frequency;
           services[conflictedIndex].hourlyRate = services[currentServiceIndex]?.hourlyRate;
         }
-
       })
+      updateTimesheet(services)
       return services;
     }
 
-    console.log('services', dataChange());
+    const updateTimesheet = async (serviceData) => {
+      const { data: timesheetSubmissionTerms } = await GET(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`);
+      let temp = [];
+      if (timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length === 1) {
+        serviceData?.map(data => {
+          temp.push({ activityType: { activityType: data?.activityType?.activityType }, performingActivity: { activity: data?.activities?.map(data => data?.activity)?.join('-') } })
+        })
+        timesheetSubmissionTerms.timesheetActivitiesPeriods[0].activities = temp;
+      } else {
+        timesheetSubmissionTerms.timesheetActivitiesPeriods?.map(data => {
+          data.activities = [];
+        })
+      }
+      if (!editService || activityUpdated) {
+        const response = await PUT(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`, JSON.stringify(timesheetSubmissionTerms));
+        if (response) {
+          console.log('Successfully Updated Timesheet Activities')
+        }
+        else {
+          console.log('Unexpected Error');
+        }
+      }
+    }
+
 
     let formattedData = {
       contractedServices: dataChange()
     }
 
-
-    // const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
-    // if (response) {
-    //   SuccessToaster('Contracted Service Updated Successfully');
-    // }
-    // else {
-    //   ErrorToaster('Unexpected Error');
-    // }
-    // getContractedServices();
+    const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
+    if (response) {
+      SuccessToaster('Contracted Service Updated Successfully');
+    }
+    else {
+      ErrorToaster('Unexpected Error');
+    }
+    getContractedServices();
     if (buttonType === 'SAVE AND EXIT') {
       getAddServiceDialog(false);
       getEditServiceDialog(false);

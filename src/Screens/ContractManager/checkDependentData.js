@@ -71,7 +71,8 @@ export const checkActivityChange = (existingServices, selectedService) => {
             }
             if (otherPlaces?.length !== 0) {
                 otherPlaces?.map(data => {
-                    conflictedData?.push({ type: data?.activityTypeTemplate?.activityTypeTemplate, data: 'Activities To Be Performed', missingData: data?.performingActivity?.activity, id: data.refId })
+                    if (!conflictedData?.map(data => data?.id).includes(data.refId))
+                        conflictedData?.push({ type: data?.activityTypeTemplate?.activityTypeTemplate, data: 'Activities To Be Performed', missingData: data?.performingActivity?.activity, id: data.refId })
                 })
 
             }
