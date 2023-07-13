@@ -108,7 +108,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     useEffect(() => {
         setCompensation(paymentAndCompensation?.compensationBasis || 'RVUBASED');
         setRvuQuantity(paymentAndCompensation?.rvuQuantity);
-        setFrequency(paymentAndCompensation?.frequency);
+        setFrequency(paymentAndCompensation?.frequency || '');
         setFteEquivalent(paymentAndCompensation?.fteEquivalent);
         setRvuReferenceUsed(paymentAndCompensation?.rvuReferenceUsed);
         setRvuQuantityPeriod(paymentAndCompensation?.rvuQuantityPeriod);
@@ -121,7 +121,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     useEffect(() => {
         setTimesheetPaymentsValue()
-    }, [timeSheetTabs?.length, timesheetPayments?.length, compensationPolicy])
+    }, [timeSheetTabs?.length, compensationPolicy])
 
     useEffect(() => {
         getPaymentFields();
@@ -137,6 +137,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         timeSheetTabs?.map((data, index) => {
             let reducedNumberOfServices = (compensationPolicy === 'ACTIVITY_BASED' || compensationPolicy === 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') ? 'NA' : timesheetPayments?.[index]?.reducedNumberOfServices || 'NA';
             let maxPaymentPerTimesheetSubmission = compensationPolicy === 'ACTIVITY_BASED' ? parseFloat(0) : timesheetPayments?.[index]?.maxPaymentPerTimesheetSubmission || parseFloat(0);
+            let providingAdditionalServices = (compensationPolicy === 'ACTIVITY_BASED' || compensationPolicy === 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET') ? 'NA' : timesheetPayments?.[index]?.providingAdditionalServices || 'NA';
             console.log('reducedNumberOfServices', reducedNumberOfServices)
             temp.push({
                 timesheetLabel: {
@@ -146,7 +147,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                 maxPaymentPerTimesheetSubmission: maxPaymentPerTimesheetSubmission,
                 maxPaymentPerContract: timesheetPayments?.[index]?.maxPaymentPerContract || parseFloat(0),
                 reducedNumberOfServices: reducedNumberOfServices,
-                providingAdditionalServices: timesheetPayments?.[index]?.providingAdditionalServices || "NA",
+                providingAdditionalServices: providingAdditionalServices,
                 paymentBasedonFixedHoursVsActual: timesheetPayments?.[index]?.paymentBasedonFixedHoursVsActual || true
             });
         });
@@ -308,17 +309,18 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
                                 />
                             </div>
-
-                            <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-                                <CommonLabel value='Compensation Offset Criteria For Providing Additional Services To The Agreed To Services*' />
-                                <CommonSelectField
-                                    value={timesheetPayments?.[i]?.providingAdditionalServices}
-                                    onChange={(e) => updateTimesheetPayment(e.target.value, 'providingAdditionalServices', i)}
-                                    firstOptionLabel={''} firstOptionValue={''}
-                                    valueList={['TIMESHEET', 'CONTRACT_END']}
-                                    labelList={['Per Timesheet Period', 'On Last Invoice For Contract Year']}
-                                    disabledList={[false, false]} />
-                            </div>
+                            {compensationPolicy !== 'ACTIVITY_BASED' && compensationPolicy !== 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET' && (
+                                <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+                                    <CommonLabel value='Compensation Offset Criteria For Providing Additional Services To The Agreed To Services*' />
+                                    <CommonSelectField
+                                        value={timesheetPayments?.[i]?.providingAdditionalServices}
+                                        onChange={(e) => updateTimesheetPayment(e.target.value, 'providingAdditionalServices', i)}
+                                        firstOptionLabel={''} firstOptionValue={''}
+                                        valueList={['TIMESHEET', 'CONTRACT_END']}
+                                        labelList={['Per Timesheet Period', 'On Last Invoice For Contract Year']}
+                                        disabledList={[false, false]} />
+                                </div>
+                            )}
 
                             {
                                 ////// Do NOT REMOVE TO BE REMOVED AFTER CONFIRMATION //////
@@ -374,7 +376,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         }
     }
 
-    console.log(dollarRate?.hour)
+    console.log('frequency', frequency, fteEquivalent);
 
     if (isLoading) {
         return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />
@@ -418,7 +420,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                                 onChange={(e) => e.target.value >= 0 && setRvuQuantity({
                                                     ...rvuQuantity, quantity: e.target.value.slice(0, limit5)
                                                 })} />
-                                            <CommonSelectField className={`${style.twoFieldWidth} ${style.marginLeft} ${style.reduceTop}`}
+                                            <CommonSelectField
+                                                className={`${style.twoFieldWidth} ${style.marginLeft} ${style.reduceTop}`}
+                                                defaultValue={frequency}
                                                 value={frequency}
                                                 onChange={(e) => setFrequency(e.target.value)}
                                                 firstOptionLabel={''} firstOptionValue={''}
