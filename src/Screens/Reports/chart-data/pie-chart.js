@@ -20,6 +20,12 @@ const ApexPieChart = ({ pieData }) => {
       return 'Payment Not Made';
     else if (data === "paidPastDue")
       return 'Payment Past Due';
+    else if (data === "ONHOLD")
+      return 'On Hold';
+    else if (data === "SUBMITTED")
+      return 'Submitted';
+    else if (data === "REJECTED")
+      return 'Rejected';
     else return '';
   }
 

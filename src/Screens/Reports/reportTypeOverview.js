@@ -53,6 +53,8 @@ const ReportTypeOverview = () => {
     const [stackedData, setStackedData] = useState([]);
     const [stackedKeys, setStackedKeys] = useState([]);
     const [reportLog, setReportLog] = useState([]);
+    const [addOnAcceptedReportLog, setAddOnAcceptedReportLog] = useState([]);
+    const [addOnRejectedReportLog, setAddOnRejectedReportLog] = useState([]);
     const [paymentsReportLog, setPaymentsReportLog] = useState();
     const [series, setSeries] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -265,7 +267,8 @@ const ReportTypeOverview = () => {
     const getAddOnServices = async () => {
         const { data: chartData } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
         const { data: reportLogData } = await GET(`timesheet-management-service/report/addOnActivityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-        setReportLog(reportLogData);
+        setAddOnAcceptedReportLog(reportLogData?.approvedActivities);
+        setAddOnRejectedReportLog(reportLogData?.rejectedActivities);
         if (chartData) {
             let temp = [];
             chartData?.addOnActivityServiceReports?.map((pie, index) => {
@@ -337,7 +340,8 @@ const ReportTypeOverview = () => {
     const getAddOnServicesWithParameter = async () => {
         const { data: chartData } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
         const { data: reportLogData } = await GET(`timesheet-management-service/report/addOnActivityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-        setReportLog(reportLogData);
+        setAddOnAcceptedReportLog(reportLogData?.approvedActivities);
+        setAddOnRejectedReportLog(reportLogData?.rejectedActivities);
         // setIsLoading(false);
         if (chartData) {
             let temp = [];
@@ -375,7 +379,7 @@ const ReportTypeOverview = () => {
                 'data': chartData?.addOnActivityStatusByCategorys?.map(data => data?.rejected),
                 'name': 'Rejected'
             }])
-            setCategories(chartData?.addOnActivityStatusByCategorys?.map(data => data?.activityType));
+            setCategories(chartData?.addOnActivityStatusByCategorys?.map(data => data?.activity));
 
             setBarData({
                 'series': series,
@@ -603,6 +607,52 @@ const ReportTypeOverview = () => {
         ];
     }
 
+    let addonActivityServices = [];
+    let requestDateTime = [];
+    let rejectedDateTime = [];
+    let requestingProvider = [];
+    let requestReviewer = [];
+    let site = [];
+
+    const getAddOnActivitiesServicesValues = (value) => {
+        addonActivityServices = [];
+        requestDateTime = [];
+        rejectedDateTime = [];
+        requestingProvider = [];
+        requestReviewer = [];
+        site = [];
+
+        if (value === "Rejected") {
+            addOnRejectedReportLog?.map(data => {
+                addonActivityServices.push(data?.activity?.activity?.activity);
+                requestDateTime.push(`${format(new Date(data?.activity?.createdDate) || new Date(), 'MM-dd-yyyy, HH:mm')}`)
+                rejectedDateTime.push(`${format(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.createdDate) || new Date(), 'MM-dd-yyyy, HH:mm')}`)
+                requestingProvider.push(data?.activity?.user?.name)
+                requestReviewer.push(data?.logs?.workFlowUser?.name?.name);
+                site.push(data?.activity?.site?.name)
+            })
+        }
+        if (value === "Approved") {
+            addOnAcceptedReportLog?.map(data => {
+                addonActivityServices.push(data?.activity?.activity?.activity);
+                requestDateTime.push(`${format(new Date(data?.activity?.createdDate) || new Date(), 'MM-dd-yyyy, HH:mm')}`)
+                rejectedDateTime.push(`${format(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.createdDate) || new Date(), 'MM-dd-yyyy, HH:mm')}`)
+                requestingProvider.push(data?.activity?.user?.name)
+                requestReviewer.push(data?.logs?.workFlowUser?.name?.name);
+                site.push(data?.activity?.site?.name)
+            })
+        }
+
+        return [
+            addonActivityServices,
+            requestDateTime,
+            rejectedDateTime,
+            requestingProvider,
+            requestReviewer,
+            site
+        ];
+    }
+
     let timeSheet = [];
     let period = [];
     let serviceProvider = [];
@@ -802,7 +852,8 @@ const ReportTypeOverview = () => {
                                                                     : reportType === "complianceStatus" ? "Proof Of Documentation Status By Contractor"
                                                                         : reportType === "nonCompliant" ? 'List of Contracts that are non compliant with proof of documentation requirement'
                                                                             : reportType === "paymentsProcessingSummary" ? 'Payments Processing Summary'
-                                                                                : 'Activities/ Services Log Status Summary'}
+                                                                                : reportType === "addOnActivities" ? 'Add On Activities/ Services Requests Status Summary'
+                                                                                    : 'Activities/ Services Log Status Summary'}
                                                 </div>
                                                 {dataToUseInReport?.reportingTimePeriod !== "" && (
                                                     <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5}`}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
@@ -1014,31 +1065,31 @@ const ReportTypeOverview = () => {
                                                         </div>
                                                     </div>
                                                     <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
-                                                    {/* {reportLog?.filter(data => data?.activityStatus === "DONE")?.length !== 0 && (
+                                                    {addOnRejectedReportLog?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableType={'Completed Activity / Service Log'}
-                                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Completion Date/ Time', 'Contracted Provider', 'Site']}
-                                                                tableValue={reportLog?.filter(data => data?.activityStatus === "DONE")}
-                                                                activitiesServicesValues={getActivitiesServicesValues('DONE')}
-                                                                styleName={style.grid5}
+                                                                tableType={'List Of Request Rejected For Add On Activity / Services'}
+                                                                tableHeader={['Add on Activity/ Services', 'Request Date/ Time', 'Rejected Date/ Time', 'Requesting Provider', 'Request Reviewer', 'Site']}
+                                                                tableValue={addOnRejectedReportLog}
+                                                                activitiesServicesValues={getAddOnActivitiesServicesValues('Rejected')}
+                                                                styleName={style.grid6}
                                                             />
                                                             <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
                                                         </>
                                                     )}
-                                                    {reportLog?.filter(data => data?.activityStatus === "TODO")?.length !== 0 && (
+                                                    {addOnAcceptedReportLog?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
-                                                                tableType={'To Do Activity/ Services'}
-                                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site']}
-                                                                tableValue={reportLog?.filter(data => data?.activityStatus === "TODO")}
-                                                                activitiesServicesValues={getActivitiesServicesValues('TODO')}
-                                                                styleName={style.grid5}
+                                                                tableType={'List Of Approved Add On Activity / Services Requests'}
+                                                                tableHeader={['Add on Activity/ Services', 'Request Date/ Time', 'Approved Date/ Time', 'Requesting Provider', 'Request Reviewer', 'Site']}
+                                                                tableValue={addOnAcceptedReportLog}
+                                                                activitiesServicesValues={getAddOnActivitiesServicesValues('Approved')}
+                                                                styleName={style.grid6}
                                                             />
                                                             <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
                                                         </>
                                                     )}
-                                                    {reportLog?.filter(data => data?.activityStatus === "NOTDONE")?.length !== 0 && (
+                                                    {/*{reportLog?.filter(data => data?.activityStatus === "NOTDONE")?.length !== 0 && (
                                                         <>
                                                             <ReportsTable
                                                                 tableType={'Not Done Activity / Service Log'}
