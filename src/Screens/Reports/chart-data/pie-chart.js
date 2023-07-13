@@ -26,6 +26,14 @@ const ApexPieChart = ({ pieData }) => {
       return 'Submitted';
     else if (data === "REJECTED")
       return 'Rejected';
+    else if (data === "NA")
+      return 'NA';
+    else if (data === "SUBMITTED")
+      return 'Submitted';
+    else if (data === "APPROVED")
+      return 'Approved';
+    else if (data === "REVIEWED")
+      return 'Reviewed';
     else return '';
   }
 
