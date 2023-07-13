@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Icon, Intent, Dialog, Classes, TextArea, InputGroup } from "@blueprintjs/core";
 import { GET, TenantID, POST, PUT } from './../../Screens/dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { browserName, browserVersion, osName, osVersion, isMobile, isDesktop, isTablet } from "react-device-detect";
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -128,6 +129,28 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     }
 
     const handleSave = async () => {
+        let browser = browserName === 'Chrome' ? 'CHROME' :
+            browserName === 'Firefox' ? 'FIREFOX' :
+                browserName === 'Safari' ? 'SAFARI' :
+                    browserName === 'Opera' ? 'OPERA' :
+                        browserName === 'Edge' ? 'EDGE' :
+                            browserName === 'Internet Explorer' ? 'INTERNETEXPLORER' :
+                                browserName === 'Chromium' ? 'CHROMIUM' :
+                                    browserName === 'Yandex' ? 'YANDEX' :
+                                        browserName === 'IE' ? 'IE' :
+                                            browserName === 'Mobile Safari' ? 'MOBILESAFARI' :
+                                                browserName === 'Edge Chromium' ? 'EDGECHROMIUM' :
+                                                    browserName === 'MIUI Browser' ? 'MIUIBROWSER' :
+                                                        browserName === 'Samsung Browser' ? 'SAMSUNGBROWSER' : '';
+
+        let os = osName === 'Windows' ? 'WINDOWS' :
+            osName === 'Linux' ? 'LINUX' :
+                osName === 'Mac OS' ? 'MAC' :
+                    osName === 'iOS' ? 'IOS' :
+                        osName === 'Android' ? 'ANDROID' :
+                            osName === 'Windows Phone' ? 'WINDOWSPHONE' : '';
+
+        let deviceType = isDesktop ? 'DESKTOP' : isMobile ? 'MOBILE' : isTablet ? 'TABLET' : '';
         let data = {
             ...(isEdit &&
                 { 'id': ticketId }),
@@ -167,6 +190,16 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                 ...(isEdit &&
                     { 'fileURL': ticketDetails?.ticketFile?.fileURL }),
             },
+            "deviceDetails": {
+                "browser": browser,
+                "browserVersion": browserVersion,
+                "os": os,
+                "osVersion": osVersion,
+                "componentInfo": '',
+                "deviceType": deviceType,
+                "screenResolution": `width: ${window.innerWidth}, height: ${window.innerHeight}`,
+            },
+            "generationMode": "MANUAL",
             "dueDate": "2022-10-06",
             "screenCaptured": screenCaptured,
             "externalBugTrackingSystem": true

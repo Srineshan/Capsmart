@@ -124,14 +124,18 @@ const TimeSheetSubmissionTerms = ({ getViewPage7, getCurrentPage, contractId, is
   }
 
   const getAbsenceRequestWorkFlow = async () => {
-    const { data: absenceWorkFlow } = await GET(`contract-managment-service/contracts/${contractId}/absenceRequestWorkFlow`);
-    if (absenceWorkFlow) {
-      let workflowData = timesheetWorkFlow?.filter(data => data?.id === absenceWorkFlow?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
-      let workFlowValues = Object.values(workflowData);
-      setAddApprover(absenceWorkFlow?.workFlowRequired);
-      let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
-      let approver = workFlowValues?.[1]?.workFlowUser?.id;
-      setAbsence({ ...absence, id: absenceWorkFlow?.workFlow?.id, reviewer: reviewer, reviewerTitle: workFlowValues?.[0]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[1]?.workFlowUser?.title });
+    try {
+      const { data: absenceWorkFlow } = await GET(`contract-managment-service/contracts/${contractId}/absenceRequestWorkFlow`);
+      if (absenceWorkFlow) {
+        let workflowData = timesheetWorkFlow?.filter(data => data?.id === absenceWorkFlow?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
+        let workFlowValues = Object.values(workflowData);
+        setAddApprover(absenceWorkFlow?.workFlowRequired);
+        let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
+        let approver = workFlowValues?.[1]?.workFlowUser?.id;
+        setAbsence({ ...absence, id: absenceWorkFlow?.workFlow?.id, reviewer: reviewer, reviewerTitle: workFlowValues?.[0]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[1]?.workFlowUser?.title });
+      }
+    } catch (e) {
+      console.log('error', e);
     }
   }
 

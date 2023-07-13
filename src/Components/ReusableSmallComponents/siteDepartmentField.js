@@ -32,7 +32,7 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     let dept = sites?.filter(site => site?.id === selectedSite)?.map(site => site?.departmentList?.departments)?.[0];
     console.log('dept', dept);
     if (dept?.length > 1) {
-      console.log('inside selected Site change dept length greater thatn 1');
+      console.log('inside selected Site change dept length greater than 1');
       setDepartmentsSelected([]);
     } else {
       setDepartmentsSelected([dept?.[0]?.id]);
@@ -92,6 +92,8 @@ const SiteDepartmentField = ({ sites, getSelectedSites, selectedSites }) => {
     setSiteData(temp);
     getSelectedSites(temp);
   }
+
+  console.log('deparmentList', departmentList);
 
 
   const onRemoveDept = (siteIndex, deptIndex, deptId) => {

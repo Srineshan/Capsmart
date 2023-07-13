@@ -138,26 +138,27 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
         let workFlowValues = Object?.values(workflowData);
         let approver = user?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
-
-        setMetadata({
-            ...metadata,
-            refId: serviceSelected?.refId,
-            dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
-            dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
-            dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
-            selectedActivities: serviceSelected?.activityResponse?.dataMap?.adminActivities,
-            totalSession: serviceSelected?.totalSessions?.value || '0',
-            totalSessionFrequency: serviceSelected?.totalSessions?.frequency || 'NA',
-            workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
-            workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
-            serviceDays: serviceSelected?.serviceDays,
-            sessionAmount: serviceSelected?.payableAmount?.value,
-            sessionDuration: serviceSelected?.duration?.hours || '0',
-            workflowId: serviceSelected?.workFlow?.id,
-            workflowName: serviceSelected?.workFlow?.workFlowName?.name,
-            activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
-            approver: approver,
-        });
+        if (Object.keys(serviceSelected)?.length !== 0) {
+            setMetadata({
+                ...metadata,
+                refId: serviceSelected?.refId,
+                dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
+                dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
+                dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
+                selectedActivities: serviceSelected?.activityResponse?.dataMap?.adminActivities,
+                totalSession: serviceSelected?.totalSessions?.value || '0',
+                totalSessionFrequency: serviceSelected?.totalSessions?.frequency || 'NA',
+                workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+                workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
+                serviceDays: serviceSelected?.serviceDays,
+                sessionAmount: serviceSelected?.payableAmount?.value,
+                sessionDuration: serviceSelected?.duration?.hours || '0',
+                workflowId: serviceSelected?.workFlow?.id,
+                workflowName: serviceSelected?.workFlow?.workFlowName?.name,
+                activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
+                approver: approver,
+            });
+        }
     }
 
 
@@ -232,8 +233,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const selectedHours = (index) => {
-        // let temp = services?.findIndexOf(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType));
-        // let temp;
         services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
             let activityName = data?.activityType?.activityType;
             let activities = data?.activities?.map(data => data?.activity);
@@ -249,19 +248,11 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                     totalSession: data?.totalSessions?.value,
                     totalSessionFrequency: data?.totalSessions?.frequency,
                     sessionAmount: data?.payableAmount?.value,
+                    hourlyRate: data?.hourlyRate?.value,
                 });
             }
         });
     }
-
-    // const selectedHours = (index) => {
-    //     console.log('check', index)
-    //     let temp = services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => data);
-    //     let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
-    //     let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
-    //     console.log('check', dedicatedHoursActivityType, dedicatedHoursPerformingActivity);
-    //     setMetadata({ ...metadata, dedicatedHoursActivityType: dedicatedHoursActivityType, dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity, sessionAmount: temp[index]?.payableAmount?.value });
-    // }
 
     const handleAdminActivity = (name, value) => {
         if (name === 'schedule' && value !== 'NA') {
@@ -332,7 +323,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
 
     const updateWorkingPeriod = (e) => {
-        // let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
 

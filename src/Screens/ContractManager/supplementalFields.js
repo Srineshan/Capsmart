@@ -73,6 +73,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                     sessionDuration: data?.duration?.hours,
                     totalSession: data?.totalSessions?.value,
                     totalSessionFrequency: data?.totalSessions?.frequency,
+                    hourlyRate: data?.hourlyRate?.value,
                 });
             }
         });
@@ -396,7 +397,7 @@ const SupplementalFields = ({ getMetaData, services, serviceSelected, editServic
                                     </div>
 
                                     <div className={style.verticalAlignCenter}>
-                                        {metadata?.sessionAmount !== '' && metadata?.sessionAmount !== '0' && <CommonLabel className={`${style.marginLeft20}`} value={metadata?.sessionsAsNeeded ? `${parseInt(metadata?.sessionAmount)?.toFixed(2)} per Hour (Pro Rata)` : `${(metadata?.sessionAmount / metadata?.totalSession || 0).toFixed(2)} per Hour (Pro Rata)`} />}
+                                        {metadata?.sessionAmount !== '' && metadata?.sessionAmount !== '0' && <CommonLabel className={`${style.marginLeft20}`} value={metadata?.sessionsAsNeeded ? `${parseInt(metadata?.sessionAmount)?.toFixed(2)} per Hour (Pro Rata)` : `${(metadata?.sessionAmount / metadata?.totalSession || 0)?.toFixed(2)} per Hour (Pro Rata)`} />}
                                     </div>
                                 </div>
                             </div>

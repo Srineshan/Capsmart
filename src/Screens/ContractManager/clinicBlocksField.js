@@ -269,36 +269,37 @@ const ClinicBlocksFields = ({ getMetaData, serviceSelected, timeCommitment, cont
             data.startDate = data?.startDate;
             data.endDate = data?.endDate;
         })
-
-        setMetadata({
-            ...metadata,
-            refId: serviceSelected?.refId,
-            contractedSchedules: tempContractedSchedules,
-            patientsSeenTargets: tempPatientsSeenTargets,
-            scheduledPatientsTargets: tempScheduledPatientsTargets,
-            scheduleAndTargetSame: serviceSelected?.contractedSchedules?.length <= 1 ? true : false,
-            min: serviceSelected?.contractedSchedule?.minimum?.value,
-            max: serviceSelected?.contractedSchedule?.maximum?.value,
-            frequency: serviceSelected?.contractedSchedule?.frequency,
-            withNurse: serviceSelected?.patientsSeenTarget?.withNurse?.value,
-            withoutNurse: serviceSelected?.patientsSeenTarget?.withoutNurse?.value,
-            noTargetApplicable: serviceSelected?.patientsSeenTarget?.noTargetApplicable,
-            targetWithNurse: serviceSelected?.scheduledPatientsTarget?.withNurse?.value,
-            targetWithoutNurse: serviceSelected?.scheduledPatientsTarget?.withoutNurse?.value,
-            targetNoTargetApplicable: serviceSelected?.scheduledPatientsTarget?.noTargetApplicable,
-            additionalScheduleValue: serviceSelected?.additionalSchedule?.value,
-            additionalScheduleFrequency: serviceSelected?.additionalSchedule?.frequency,
-            additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
-            billableService: serviceSelected?.billableService,
-            rateType: serviceSelected?.rateType,
-            sessionDuration: serviceSelected?.duration?.hours || '0',
-            sessionAmount: serviceSelected?.payableAmount?.value,
-            totalSession: serviceSelected?.totalSessions?.value,
-            totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
-            workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
-            workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
-            serviceDays: serviceSelected?.serviceDays,
-        });
+        if (Object.keys(serviceSelected)?.length !== 0) {
+            setMetadata({
+                ...metadata,
+                refId: serviceSelected?.refId,
+                contractedSchedules: tempContractedSchedules,
+                patientsSeenTargets: tempPatientsSeenTargets,
+                scheduledPatientsTargets: tempScheduledPatientsTargets,
+                scheduleAndTargetSame: serviceSelected?.contractedSchedules?.length <= 1 ? true : false,
+                min: serviceSelected?.contractedSchedule?.minimum?.value,
+                max: serviceSelected?.contractedSchedule?.maximum?.value,
+                frequency: serviceSelected?.contractedSchedule?.frequency,
+                withNurse: serviceSelected?.patientsSeenTarget?.withNurse?.value,
+                withoutNurse: serviceSelected?.patientsSeenTarget?.withoutNurse?.value,
+                noTargetApplicable: serviceSelected?.patientsSeenTarget?.noTargetApplicable,
+                targetWithNurse: serviceSelected?.scheduledPatientsTarget?.withNurse?.value,
+                targetWithoutNurse: serviceSelected?.scheduledPatientsTarget?.withoutNurse?.value,
+                targetNoTargetApplicable: serviceSelected?.scheduledPatientsTarget?.noTargetApplicable,
+                additionalScheduleValue: serviceSelected?.additionalSchedule?.value,
+                additionalScheduleFrequency: serviceSelected?.additionalSchedule?.frequency,
+                additionalScheduleRequired: serviceSelected?.additionalSchedule?.scheduleRequired,
+                billableService: serviceSelected?.billableService,
+                rateType: serviceSelected?.rateType,
+                sessionDuration: serviceSelected?.duration?.hours || '0',
+                sessionAmount: serviceSelected?.payableAmount?.value,
+                totalSession: serviceSelected?.totalSessions?.value,
+                totalSessionFrequency: serviceSelected?.totalSessions?.frequency,
+                workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+                workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
+                serviceDays: serviceSelected?.serviceDays,
+            });
+        }
     }
 
     const handleValueChange = (name, value) => {

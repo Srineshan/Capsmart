@@ -112,6 +112,8 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     setIsLoading(false);
   }
 
+
+
   const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
     let id = timesheet?.id;
     if (id === '' || id === undefined) {
@@ -318,29 +320,31 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   }
 
   const submit = async (buttontext) => {
-    setContinueLoading(true);
-    // if (timesheet?.reviewer === '' || timesheet?.approver === '') {
-    //   ErrorToaster('Select both Approver and Reviewer to save');
-    //   setContinueLoading(false);
-    //   return;
-    // }
-    // if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '') {
-    //   ErrorToaster('Select Aggregator to save');
-    //   setContinueLoading(false);
-    //   return;
-    // }
-    let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
-    updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
-    setContinueLoading(false);
-    if (buttontext === 'Continue') {
-      getViewPage9(true);
-      // getCurrentPage('Request Processing Workflow')
-    } else if (buttontext === 'Save In Progress') {
-      getShowAlert(true);
-    } else {
-      getNextTab();
+    if (timesheet.reviewer !== '' || timesheet.approver !== '') {
+      setContinueLoading(true);
+      // if (timesheet?.reviewer === '' || timesheet?.approver === '') {
+      //   ErrorToaster('Select both Approver and Reviewer to save');
+      //   setContinueLoading(false);
+      //   return;
+      // }
+      // if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '') {
+      //   ErrorToaster('Select Aggregator to save');
+      //   setContinueLoading(false);
+      //   return;
+      // }
+      let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
+      updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
+      setContinueLoading(false);
+      if (buttontext === 'Continue') {
+        getViewPage9(true);
+        // getCurrentPage('Request Processing Workflow')
+      } else if (buttontext === 'Save In Progress') {
+        getShowAlert(true);
+      } else {
+        getNextTab();
+      }
+      setIsShowValidationCheck(true);
     }
-    setIsShowValidationCheck(true);
   }
 
   const handleContinue = async (workflowId) => {
@@ -368,6 +372,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
         ErrorToaster('Unexpected Error');
       })
 
+
   }
 
   const getTimeSheetSubmissionTerms = async () => {
@@ -375,7 +380,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     let id = timesheetFlow?.workFlowDetails?.filter(data => data?.workFlow?.workFlowName?.name === activeTab)?.map(data => data?.workFlow?.id)[0];
     if (timesheetFlow) {
       let workflowData = timesheetWorkFlow?.filter(data => data?.id === id)?.map(data => data?.workFlowMap?.workflow)[0];
-      let workFlowValues = Object.values(workflowData || {});
+      let workFlowValues = (workflowData !== undefined && workflowData !== null) ? Object.values(workflowData) : [];
       if (workFlowValues?.length === 1) {
         let approver = workFlowValues?.[0]?.workFlowUser?.id;
         setTimesheet({ ...timesheet, id: id, reviewer: approver, reviewerTitle: workFlowValues?.[0]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[0]?.workflowUser?.title });

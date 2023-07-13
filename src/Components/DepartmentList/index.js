@@ -4,7 +4,7 @@ import SelectField from './../SelectField';
 
 const DepartmentList = ({onChangeFunc, value, className, entityTypeId}) => {
   const [departmentList, setDepartmentList] = useState([]);
-  const siteTypeId = entityTypeId || sessionStorage.getItem('entityTypeId') || '6335e452bb13e2088b208b99'
+  const siteTypeId = entityTypeId || sessionStorage.getItem('entityTypeId') || '63ab2c90bc9089d77c9232ac'
   console.log('entityTypeId',entityTypeId);
   useEffect(()=>{
     getDepartmentList();

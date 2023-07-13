@@ -206,7 +206,7 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                     </div>
                 </div>
                 <div className={style.marginTop20}>
-                    <ValidationHeader heading={'PAYMENT & COMPENSATION'} result={'PASS'} />
+                    <ValidationHeader heading={'PAYMENT & COMPENSATION'} result={isTabsValid?.value6?.length !== 0 ? 'FAIL' : 'PASS'} />
                     <div className={style.validationPadding}>
                         {
                             isTabsValid?.value6?.map(data => (

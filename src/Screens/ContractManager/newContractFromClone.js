@@ -404,7 +404,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                         getTabDataStatus={getTabDataStatus}
                     />
                 ) : (currentPage === "Contracted Add on service specification" || currentPage === "Contracted Services Specification") ?
-                    <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId={contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo} isMultiSiteEntity={isMultiSiteEntity} isEditable={isEditable} />
+                    <ServiceSpecification getViewPage6={getViewPage6} getAddon={getAddOn} contractId={contractId} getCurrentPage={getCurrentPage} selectContractInfo={selectContractInfo} isMultiSiteEntity={isMultiSiteEntity} isEditable={isEditable} getTabDataStatus={getTabDataStatus} />
                     : currentPage === "Documentation Proof Required" ? (
                         <DocumentationProofRequired
                             getViewPage5={getViewPage5}
@@ -443,6 +443,7 @@ const NewContractFromClone = ({ contracts, getNewContract, contractType, selecte
                             />
                         ) : (currentPage === "Contract ID & Term Limit") ? (
                             <ContractIdTermLimitIndividual
+                                contracts={contracts}
                                 getViewPage1={getViewPage1}
                                 getViewPage2={getViewPage2}
                                 contractType={contractType}
