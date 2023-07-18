@@ -82,6 +82,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             return 'activitiesOrServices';
         } else if (value === 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY') {
             return 'addOnActivities';
+        } else if (value === 'PAYMENT_PROCESSING_SUMMARY') {
+            return 'paymentsProcessingSummary';
         } else {
             return '';
         }
