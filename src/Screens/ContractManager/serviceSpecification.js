@@ -27,6 +27,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   const [userLength, setUserLength] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [servicesValid, setServicesValid] = useState([]);
+  const [serviceToDelete, setServiceToDelete] = useState('');
   let tableHeaderValues = selectContractInfo === 'INDIVIDUAL' ? ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'BILLABLE', ''] : ['', 'ACTIVITY TYPE', 'SPECIFIC ACTIVITY', 'APPLIES TO', 'BILLABLE', ''];
 
   useEffect(() => {
@@ -78,6 +79,8 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
   }
 
   const handleDeleteService = async () => {
+    setServiceToDelete(contractedServices?.filter((data, index) => contractToDelete?.includes(index))?.map(data => data?.refId)[0])
+    updateTimesheet(contractedServices, contractedServices?.filter((data, index) => !contractToDelete?.includes(index))?.map(data => data)[0]);
     let formattedData = {
       contractedServices: contractedServices?.filter((data, index) => !contractToDelete?.includes(index))?.map(data => data)
     }
@@ -95,6 +98,30 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
     getTabDataStatus();
   }
 
+  const updateTimesheet = async (services, serviceSelected) => {
+    const { data: timesheetSubmissionTerms } = await GET(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`);
+    let temp = [];
+
+    if (timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length === 1) {
+      services?.filter(data => data?.refId !== serviceToDelete)?.map(data => {
+        temp.push({ activityType: { activityType: data?.activityType?.activityType }, performingActivity: { activity: data?.activities?.map(data => data?.activity)?.join('-') } })
+      })
+      timesheetSubmissionTerms.timesheetActivitiesPeriods[0].activities = temp;
+    } else {
+      timesheetSubmissionTerms.timesheetActivitiesPeriods?.map(data => {
+        data.activities = [];
+      })
+    }
+    const response = await PUT(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`, JSON.stringify(timesheetSubmissionTerms));
+    if (response) {
+      console.log('Successfully Updated Timesheet Activities')
+    }
+    else {
+      console.log('Unexpected Error');
+    }
+
+  }
+
   const onClickFunction = (data, index) => {
     getEditServiceDialog(true);
     setSelectedService(data);
@@ -103,6 +130,7 @@ const ServiceSpecification = ({ getViewPage6, getAddon, contractId, getCurrentPa
 
   const onClickCrossFunction = (data, index) => {
     let temp = [];
+    setServiceToDelete(data?.refId);
     setShowDeleteConfirmation(true);
     temp.push(index);
     temp.push(contractedServices?.findIndex(service => service?.activityResponse?.dataMap?.selectedActivityId === data?.refId));

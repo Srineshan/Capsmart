@@ -2053,6 +2053,12 @@ input[type=number] {
     padding-left: 10px;
 }
 
+.twoColumnGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
 .serviceSpecificationGridActive {
     display: grid;
     grid-template-columns: 8% 22% 22% 22% 10% 7%;

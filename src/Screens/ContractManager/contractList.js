@@ -29,7 +29,7 @@ import style from './index.module.scss';
 import SideBar from '../../Components/Sidebar';
 import PreImplementationDataDialog from './preImplementationDataDialog';
 
-const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page }) => {
+const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelectedContract, getContracts, getAddContract, getExtensionDialog, getTerminationDialog, getCloneDialog, activeContracts, getNewContract, getContractType, getSelectedContractType, getContractIdFromActive, selectedContract, users, getSelectedPage, totalCount, page, getActiveContractView }) => {
   const [selectedContractId, setSelectedContractId] = useState();
   const activeHeaderValues = ["", "", "CONTRACT TYPE", "ID",
     "",
@@ -146,9 +146,13 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
   }
 
   const onClickFunction = (data) => {
-    getNewContract(true);
-    getContractType(data?.contractType);
-    getSelectedContractType('New Contract');
+    if (selectedContract === 'activecontracts') {
+      getActiveContractView(true);
+    } else {
+      getNewContract(true);
+      getContractType(data?.contractType);
+      getSelectedContractType('New Contract');
+    }
     getContractIdFromActive(data?.id);
   }
 
@@ -254,8 +258,6 @@ const ContractList = ({ getSearchKey, getDeleteDraftDialog, contracts, getSelect
     lastUpdated = [];
     lastUpdatedBy = [];
     action = [];
-
-    console.log('validateContractIDTermLimit', validateTimesheetSubmission(contracts?.[0]), contracts)
 
     contracts?.map(data => {
       dot.push('yellow');

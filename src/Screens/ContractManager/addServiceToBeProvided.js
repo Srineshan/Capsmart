@@ -84,6 +84,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [location, setLocation] = useState('');
   const [conflict, setConflict] = useState({ isPresent: false, data: [] });
   const [activityUpdated, setActivityUpdated] = useState(false);
+  const [activityItems, setActivityItems] = useState([]);
 
   useEffect(() => {
     getContractedServices();
@@ -125,6 +126,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       setSelectedDeptId(temp);
     }
   }, [siteData])
+
+  useEffect(() => {
+    getActivityItems();
+  }, [activity, usedActivity?.length])
 
   const removeSelectedLocationFromList = () => {
     setLocationList(allLocation?.filter(data => !selectedLocation?.map(location => location?.location).includes(data?.location))?.map(data => data));
@@ -171,6 +176,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const removeFriendlyName = (index) => {
     setActivityUpdated(true);
     setSelectedActivity(selectedActivity?.filter((data, indexValue) => index !== indexValue)?.map(data => data));
+    setUsedActivity(usedActivity?.filter((data, indexValue) => indexValue !== index)?.map(data => data));
   }
 
   const removeLocation = (index) => {
@@ -251,7 +257,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }
 
-
+  console.log('conflict Data testing', conflict);
   const activityToAdd = async () => {
     setActivityUpdated(true);
     let dept = [];
@@ -636,7 +642,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
       }
-      if (activities?.length === 0) {
+      if (activities?.length === 0 && serviceTypeTemplate !== ADDON) {
         let message = serviceTypeTemplate === SUPPLEMENTAL ? 'Supplement Services' : serviceTypeTemplate === ADMINISTRATIVE ? 'Allowable Administrative Duties' : 'Activity To Be Performed';
         ErrorToaster(`Atleast One ${message} needs to be added to create a service`);
         return;
@@ -915,7 +921,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
             },
             performingActivity: {
-              activity: selectedService?.activities?.map(activity => activity?.activity)?.join(', '),
+              activity: services[currentServiceIndex]?.activities?.map(activity => activity?.activity)?.join(', '),
             }
           };
           services[conflictedIndex].billableService = services[currentServiceIndex]?.billableService;
@@ -954,6 +960,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       }
     }
 
+    console.log('datachanged', dataChange());
 
     let formattedData = {
       contractedServices: dataChange()
@@ -1011,15 +1018,19 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       );
     });
 
-  const activityItems = useMemo(
-    () =>
-      activity?.filter(data => !usedActivity?.includes(data?.activity?.activity))?.map((data) => ({
+  const getActivityItems = () => {
+    let temp = [];
+    activity?.filter(data => !usedActivity?.includes(data?.activity?.activity))?.map((data) => (
+      temp.push({
         id: data.id,
         value: data?.activity?.activity,
         ...data,
-      })),
-    [activity, usedActivity],
-  );
+      })))
+    setActivityItems(temp);
+  }
+
+
+  console.log('activit Items', activityItems, activity, usedActivity);
 
   const locationItems = useMemo(
     () =>
@@ -1032,17 +1043,20 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   )
 
   const updateConflict = (value) => {
-
-    setConflict({ ...conflict, isPresent: value, data: [] });
+    setConflict({ ...conflict, isPresent: value });
   }
 
 
   const onActivitySelect = (selectedItem) => {
+    console.log('selectedItem', selectedItem);
     setItem(selectedItem);
     if (!selectedActivity?.map(data => data?.id)?.includes(selectedItem?.id)) {
       delete selectedItem["value"];
       let temp = selectedActivity;
       temp.push(selectedItem);
+      let usedActivityTemp = usedActivity;
+      usedActivityTemp.push(selectedItem?.activity?.activity);
+      setUsedActivity(usedActivityTemp);
       setSelectedActivity(temp);
     }
     setValue('');
