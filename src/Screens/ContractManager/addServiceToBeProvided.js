@@ -758,7 +758,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }),
         ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(serviceTypeTemplate) && {
           "hourlyRate": {
-            "value": (dataValues?.sessionAmount / dataValues?.sessionDuration)?.toFixed(2)
+            "value": isNaN((dataValues?.sessionAmount / dataValues?.sessionDuration)?.toFixed(2)) ? 0 : (dataValues?.sessionAmount / dataValues?.sessionDuration)?.toFixed(2)
           },
         }),
         "totalSessions": {
