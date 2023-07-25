@@ -41,7 +41,7 @@ const UserTable = ({ getSelectedContract, getAddContract, getExtensionDialog, ge
     const [registeredUsers, setRegisteredUsers] = useState([]);
     const [blockedUsers, setBlockedUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState();
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
     let cookie = new Cookie();
     let userDetail = cookie.get('user');
     const user = jwt(userDetail);
@@ -312,8 +312,8 @@ const UserTable = ({ getSelectedContract, getAddContract, getExtensionDialog, ge
                 </div>
             </div>
             <div className={style.spaceBetween}>
-                <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                <p className={style.poweredBy}>© TimeSmart.AI</p>
+                <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+                <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
             </div>
             {sendEMail && (
                 <SendEmail getSendEmailDialog={getSendEmailDialog} getSendEmailUserListDialog={getSendEmailUserListDialog} />

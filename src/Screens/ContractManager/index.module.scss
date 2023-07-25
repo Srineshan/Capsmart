@@ -11,6 +11,10 @@ body {
     }
 }
 
+body::-webkit-scrollbar {
+    display: none !important;
+}
+
 .margin20 {
     margin: 20px;
 }
@@ -25,6 +29,10 @@ body {
 
 .marginTop20 {
     margin-top: 20px !important;
+}
+
+.removeUnderline {
+    text-decoration: none;
 }
 
 .marginTop {
@@ -54,7 +62,7 @@ body {
 }
 
 .bigCardStyle {
-    height: calc(100vh - 265px);
+    height: calc(100vh - 255px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -235,7 +243,7 @@ body {
 
 .activeContractGrid {
     display: grid;
-    grid-template-columns: 5% 5% 10% 10% 5% 10% 10% 10% 7% 10% 5%;
+    grid-template-columns: 6% 6% 12% 10% 3% 16% 10% 11% 11% 5%;
     grid-gap: 10px;
 }
 
@@ -248,7 +256,7 @@ body {
 .draftContractGrid {
     display: grid;
     grid-template-columns: 6% 11% 11% 16% 11% 10% 11% 11% 6%;
-    grid-gap: 10px;
+    grid-gap: 0.4%;
 }
 
 .activationPendingContractGrid {
@@ -383,10 +391,12 @@ body {
 }
 
 .addMoreButton {
-    color: rgba(143, 153, 168, 0.5);
-    background-color: #f1f2f3;
+    // color: rgba(143, 153, 168, 0.5);
+    // background-color: #f1f2f3;
+    color: white !important;
+    background-color: #7165E3;
     height: 32px;
-    width: 130px;
+    min-width: 130px;
     border: none;
     border-radius: 6px;
 }
@@ -409,7 +419,6 @@ body {
 .addBoxDescription {
     color: #52575D;
     background-color: rgba(143, 153, 168, 0.5);
-    width: 260px;
     padding: 10px;
     border-radius: 10px;
 }
@@ -506,8 +515,8 @@ body {
 
 .contractedTime {
     display: grid;
-    grid-template-columns: 45% 45%;
-    grid-column-gap: 10%;
+    grid-template-columns: 30% 65%;
+    grid-column-gap: 5%;
 }
 
 .effectiveDateWidth {
@@ -529,7 +538,7 @@ body {
     height: 60vh;
     overflow: scroll;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 10px;
     padding: 20px;
 }
 
@@ -636,17 +645,13 @@ select {
 
 .selectLable {
     text-align: left;
-    font: normal normal normal 17px/16px Montserrat;
-    letter-spacing: 0px;
+    font: normal normal normal 17px/20px Montserrat;
     color: #52575D;
-    opacity: 1;
-    margin-top: 10px;
+    // margin-top: 15px;
 }
 
 .contractOptions {
     height: 350px;
-    width: 60%;
-    margin-left: 20%;
     margin-top: 3%;
 }
 
@@ -659,6 +664,7 @@ select {
     height: 150px;
     margin-top: 3%;
     margin-right: 20px;
+    cursor: pointer;
 }
 
 .contractCards:hover {
@@ -934,6 +940,10 @@ select {
     color: #52575D;
 }
 
+.durationWidth {
+    max-width: 150px;
+}
+
 .weekSelectStyle {
     margin-top: 0px;
     height: 30px;
@@ -950,7 +960,8 @@ select {
 
 .cloneBlockStyle {
     height: calc(100vh - 80px);
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
     border-right: 4px solid #EBF2F7;
     margin-top: -10px;
     margin-bottom: -20px;
@@ -1067,8 +1078,7 @@ select {
 }
 
 .selectAssignedContractFieldWidth {
-    min-width: 230px;
-    max-width: 230px;
+    width: 100%;
 }
 
 .selectFieldSwitchWidth {
@@ -1144,7 +1154,7 @@ select {
     display: flex;
     align-items: center;
     padding-left: 10px;
-    padding-top: 8px;
+    // padding-top: 8px;
     width: 40%;
     border-radius: 4px !important;
 }
@@ -1155,7 +1165,7 @@ select {
     align-items: center;
     text-align: left;
     padding-left: 15px;
-    padding-top: 8px;
+    // padding-top: 8px;
     width: 60px;
     border-radius: 4px !important;
 }
@@ -1165,7 +1175,7 @@ select {
     display: flex;
     align-items: center;
     text-align: left;
-    padding-top: 8px;
+    // padding-top: 8px;
     padding-left: 10px;
     width: 50px;
     border-radius: 4px !important;
@@ -1210,7 +1220,7 @@ select {
 }
 
 .threeFieldWidth {
-    width: 33.3% !important;
+    min-width: 33.3% !important;
 }
 
 .fourFieldWidth {
@@ -1260,17 +1270,21 @@ select {
     grid-template-columns: 15% 1fr;
 }
 
+.documentTextGrid {
+    display: grid;
+    grid-template-columns: 85% 10%;
+    grid-gap: 10px;
+}
+
 .documentText {
     color: #707070;
+    word-wrap: break-word;
+    width: 150px;
 }
 
 .proofBorder {
     border: 1px solid #7165E3;
     border-radius: 8px;
-    opacity: 1;
-    overflow: scroll;
-    border-radius: 8px;
-    opacity: 1;
     overflow: scroll;
     margin-top: 10px;
     padding: 20px;
@@ -1283,6 +1297,20 @@ select {
 
 .manageServiceDialog {
     height: 75%;
+    width: 75% !important;
+}
+
+.bp4-timepicker.reducedTimeWidth .bp4-timepicker-input {
+    width: 20px !important;
+}
+
+// .bp4-timepicker.reducedTimeWidth {
+//     & .bp4-timepicker-input {
+//         width: 20px !important;
+//     }
+// }
+
+.ScheduleDialog {
     width: 70% !important;
 }
 
@@ -1374,6 +1402,11 @@ select {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 20px;
+}
+
+.grid3WithoutGap {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .withNurseGrid {
@@ -1818,7 +1851,7 @@ input[type="file"] {
 }
 
 .contractScrollStyle {
-    height: calc(100vh - 435px);
+    height: calc(100vh - 415px);
     overflow: scroll;
 }
 
@@ -1862,6 +1895,39 @@ input[type="file"] {
 .redSmallNumberSelected {
     color: #fff;
     background-color: #F94848;
+}
+
+.purpleText {
+    color: #E316D6;
+}
+
+.popUpPreImplementationHeading {
+    font: bold 15px/15px Montserrat;
+    color: #7165E3;
+}
+
+.popUpPreImplementationSubHeading {
+    font: bold 13px/15px Montserrat;
+    color: #52575D;
+}
+
+.popUpPreImplementationTitle {
+    font: bold 13px/15px Montserrat;
+    color: #7165E3;
+}
+
+.preImplementationGrid {
+    display: grid;
+    grid-template-columns: 28% 41% 28%;
+    grid-gap: 1%;
+}
+
+.preImplementationPadding {
+    padding: 0 20px;
+}
+
+.leftBorder {
+    border-left: 3px solid #E9E9F0;
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -1975,14 +2041,35 @@ input[type=number] {
 
 .multipleServiceProviderGrid {
     display: grid;
-    grid-template-columns: 15% 20% 20% 20% 15%;
-    grid-gap: 10px;
-    padding-left: 10px;
+    grid-template-columns: 12% 20% 20% 20% 15%;
+    grid-gap: 2%;
+    padding-left: 3%;
 }
 
 .serviceSpecificationGrid {
     display: grid;
-    grid-template-columns: 8% 20% 20% 20% 15% 8%;
+    grid-template-columns: 8% 22% 22% 22% 10% 7%;
+    grid-gap: 10px;
+    padding-left: 10px;
+}
+
+.serviceSpecificationGridActive {
+    display: grid;
+    grid-template-columns: 8% 22% 22% 22% 10% 7%;
+    grid-gap: 10px;
+    padding-left: 10px;
+}
+
+.serviceSpecificationGridIndividual {
+    display: grid;
+    grid-template-columns: 8% 30% 25% 20% 8%;
+    grid-gap: 10px;
+    padding-left: 10px;
+}
+
+.serviceSpecificationGridIndividualActive {
+    display: grid;
+    grid-template-columns: 8% 30% 25% 20% 8%;
     grid-gap: 10px;
     padding-left: 10px;
 }
@@ -2039,12 +2126,12 @@ input[type=number] {
 
 .editableTableGridStyle {
     display: grid;
-    grid-template-columns: 20% 27% 27% 10% 10%;
-    grid-gap: 10px;
+    grid-template-columns: 15% 18% 18% 18% 10% 10% 5%;
+    grid-gap: 1%;
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold 13px/17px Montserrat;
+    font: normal normal bold 13px/15px Montserrat;
     letter-spacing: 0px;
     color: #52575D;
     text-transform: uppercase;
@@ -2067,4 +2154,70 @@ input[type=number] {
     color: #52575D;
     text-transform: uppercase;
     text-align: left;
+}
+
+// .scheduleTableGrid1 {
+//     display: grid;
+//     grid-template-columns: 2fr 1fr 1fr 2fr 1fr 2fr 1fr;
+// }
+
+.scheduleTableGrid2 {
+    display: grid;
+    grid-template-columns: 2fr 0.5fr 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 0fr 0fr;
+}
+
+.flexCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.scheduleTableGrid1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 2fr 1fr 2fr 1fr;
+}
+
+.scheduleTableGrid2 {
+    display: grid;
+    grid-template-columns: 2fr 0.5fr 0.5fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr 0.5fr;
+}
+
+.dayStyle {
+    background: #F1F3F4 0% 0% no-repeat padding-box;
+    font: normal normal 600 13px/20px Montserrat;
+    color: #94979A;
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.selectedDay {
+    background: #7165E3 0% 0% no-repeat padding-box;
+    color: white;
+}
+
+.dateNotSet {
+    font: normal normal 600 23px/30px Montserrat;
+    color: #7165E3;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.addContractBody.serviceBoxStyle.cloneBlockStyle.tableHeight.proofBorder.timeSheetBoxStyle.contractScrollStyle::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.addContractBody.serviceBoxStyle.cloneBlockStyle.tableHeight.proofBorder.timeSheetBoxStyle.contractScrollStyle {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.fileNameTextStyle {
+    text-align: left;
+    font: normal normal normal 18px/24px Montserrat;
+    letter-spacing: 1.44px;
+    color: #707070;
+    opacity: 0.71;
 }

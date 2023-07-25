@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { TextArea, InputGroup, Icon, Dialog, Classes, Intent, Checkbox } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import ToolBar from './toolbar';
 import { POST, GET, PUT } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ReviewerApproverField from './reviewerApproverField';
 import LoadingScreen from '../../Components/LoadingScreen';
 import RedirectingPopUp from './redirectingPopUp';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import ContractValidationCheckSummary from './contractValidationCheckSummary';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
 
 import style from './index.module.scss';
 
-const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus }) => {
-  const [timesheet, setTimesheet] = useState({ id: '', aggregator: '', reviewer: '', approver: '' });
+const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, getTabDataStatus, contract, getShowAlert }) => {
+  const [timesheet, setTimesheet] = useState({ id: '', aggregator: '', aggregatorTitle: {}, reviewer: '', reviewerTitle: {}, approver: '', approverTitle: {} });
   const [workFlowList, setWorkFlowList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [sites, setSites] = useState([]);
   const [activeTab, setActiveTab] = useState('');
   const [selectTimesheetToDefineProcess, setSelectTimesheetToDefineProcess] = useState('');
   const [customWorkFlow, setCustomWorkFlow] = useState(false);
@@ -25,7 +25,10 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   const [users, setUsers] = useState([]);
   const [provider, setProvider] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
-  const [selectedTimeSheet, setSelectedTimeSheet] = useState({ id: '', reviewer: '', approver: '' });
+  const [isShowValidationCheck, setIsShowValidationCheck] = useState(false);
+  const [continueLoading, setContinueLoading] = useState(false);
+
+  const [selectedTimeSheet, setSelectedTimeSheet] = useState({ id: '', reviewer: '', reviewerTitle: {}, approver: '', approverTitle: {} });
 
   useEffect(() => {
     setSelectTimesheetToDefineProcess(timesheetProcessingWorkflow[0]?.timesheetLabel?.label);
@@ -35,17 +38,21 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   }, [timesheetProcessingWorkflow]);
 
   useEffect(() => {
-    setTimesheet({ id: '', approver: '', reviewer: '', aggregator: '' });
+    setTimesheet({ id: '', approver: '', approverTitle: {}, reviewer: '', reviewerTitle: {}, aggregator: '', aggregatorTitle: {} });
     getTimeSheetSubmissionTerms();
     setTabIndex(timeSheetTabs?.indexOf(activeTab));
   }, [activeTab])
 
   useEffect(() => {
-    getUserData();
+    getContractSites();
     getProviderData();
     getTimeSheetValues();
     getTimeSheetWorkFlow();
   }, [])
+
+  useEffect(() => {
+    getUserData();
+  }, [sites])
 
   useEffect(() => {
     getTimeSheetSubmissionTerms();
@@ -56,17 +63,36 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   }
 
   const getUserData = async () => {
-    const { data: userList } = await GET(`contract-managment-service/contracts/workFlowUser`)
+    let siteId = sites?.map(data => data?.id);
+    let deptId = [];
+    sites?.map(data => data?.departmentList?.departments?.map(dept => {
+      deptId.push(`${data?.id}#${dept?.id}`);
+    }))
+    let encodedDept = encodeURIComponent(deptId);
+    let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&contractIdToIgnore=${contractId}`;
+    const { data: userList } = await GET(uri)
     if (userList) {
       setUsers(userList);
     }
   }
 
+  const getContractValidationDialog = (value) => {
+    setIsShowValidationCheck(value);
+  }
+
+  const getContractSites = async () => {
+    const { data: contractData } = await GET(`contract-managment-service/contracts/${contractId}/contractDetail`);
+    setSites(contractData?.contractDetail?.site?.sites);
+  }
+
+
   const getProviderData = async () => {
     if (contractId !== '' && selectContractInfo === 'MULTIPLE') {
       const { data: providerData } = await GET(`user-management-service/user?contractID=${contractId}`);
       if (providerData) {
-        setProvider(providerData);
+        let aggregatorUser = providerData?.filter(user => user?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.map(data => data);
+        console.log('aggregatorUser', aggregatorUser);
+        setProvider(aggregatorUser);
       }
     }
   }
@@ -86,9 +112,11 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     setIsLoading(false);
   }
 
+
+
   const updateTimeSheetWorkflow = async (data, workFlowName, type) => {
     let id = timesheet?.id;
-    if (id === '') {
+    if (id === '' || id === undefined) {
       await POST(`timesheet-management-service/workflow`, JSON.stringify(data))
         .then(response => {
           handleContinue(response?.data);
@@ -111,7 +139,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   }
 
   const getSelectedUserDetails = (id) => {
-    let user = users?.filter(user => user?.userId === id)?.map(data => data)[0];
+    let user = users?.filter(user => user?.id === id)?.map(data => data)[0];
     return user;
   }
 
@@ -127,10 +155,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             "1": {
               "workFlowUser": {
                 "id": aggregator,
-                "title": {
-                  "title": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.title?.title || '',
-                  "id": null,
-                },
+                "title": { id: timesheet?.aggregatorTitle?.id, title: timesheet?.aggregatorTitle?.title },
                 "name": {
                   "name": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.firstName || '',
                 },
@@ -146,10 +171,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             "2": {
               "workFlowUser": {
                 "id": reviewer,
-                "title": {
-                  "title": getSelectedUserDetails(reviewer)?.title?.title || '',
-                  "id": null,
-                },
+                "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
                   "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
                 },
@@ -176,10 +198,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             "1": {
               "workFlowUser": {
                 "id": aggregator,
-                "title": {
-                  "title": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.title?.title || '',
-                  "id": null,
-                },
+                "title": { id: timesheet?.aggregatorTitle?.id, title: timesheet?.aggregator?.title },
                 "name": {
                   "name": provider?.filter(data => data?.id === aggregator)?.map(data => data)?.[0]?.name?.firstName || '',
                 },
@@ -195,10 +214,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             "2": {
               "workFlowUser": {
                 "id": reviewer,
-                "title": {
-                  "title": getSelectedUserDetails(reviewer)?.title?.title || '',
-                  "id": null,
-                },
+                "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
                   "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
                 },
@@ -214,10 +230,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             "3": {
               "workFlowUser": {
                 "id": approver,
-                "title": {
-                  "title": getSelectedUserDetails(approver)?.title?.title || '',
-                  "id": null,
-                },
+                "title": { id: timesheet?.approverTitle?.id, title: timesheet?.approverTitle?.title },
                 "name": {
                   "name": getSelectedUserDetails(approver)?.name?.firstName || '',
                 },
@@ -244,10 +257,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             "1": {
               "workFlowUser": {
                 "id": reviewer,
-                "title": {
-                  "title": getSelectedUserDetails(reviewer)?.title?.title || '',
-                  "id": null,
-                },
+                "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
                   "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
                 },
@@ -273,10 +283,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             "1": {
               "workFlowUser": {
                 "id": reviewer,
-                "title": {
-                  "title": getSelectedUserDetails(reviewer)?.title?.title || '',
-                  "id": null,
-                },
+                "title": { id: timesheet?.reviewerTitle?.id, title: timesheet?.reviewerTitle?.title },
                 "name": {
                   "name": getSelectedUserDetails(reviewer)?.name?.firstName || '',
                 },
@@ -292,10 +299,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             "2": {
               "workFlowUser": {
                 "id": approver,
-                "title": {
-                  "title": getSelectedUserDetails(approver)?.title?.title || '',
-                  "id": null,
-                },
+                "title": { id: timesheet?.approverTitle?.id, title: timesheet?.approverTitle?.title },
                 "name": {
                   "name": getSelectedUserDetails(approver)?.name?.firstName || '',
                 },
@@ -316,21 +320,30 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
   }
 
   const submit = async (buttontext) => {
-    if (timesheet?.reviewer === '0' || timesheet?.approver === '0') {
-      ErrorToaster('Select both Approver and Reviewer to save');
-      return;
-    }
-    if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '0') {
-      ErrorToaster('Select Aggregator to save');
-      return;
-    }
-    let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
-    updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
-    if (buttontext === 'Continue') {
-      getViewPage9(true);
-      getCurrentPage('Request Processing Workflow')
-    } else {
-      getNextTab();
+    if (timesheet.reviewer !== '' || timesheet.approver !== '') {
+      setContinueLoading(true);
+      // if (timesheet?.reviewer === '' || timesheet?.approver === '') {
+      //   ErrorToaster('Select both Approver and Reviewer to save');
+      //   setContinueLoading(false);
+      //   return;
+      // }
+      // if (selectContractInfo === 'MULTIPLE' && timesheet?.aggregator === '') {
+      //   ErrorToaster('Select Aggregator to save');
+      //   setContinueLoading(false);
+      //   return;
+      // }
+      let data = handleTimeSheetWorkFlow(activeTab, timesheet?.reviewer, timesheet?.approver, timesheet?.aggregator, activeTab);
+      updateTimeSheetWorkflow(data, activeTab, 'Timesheet');
+      setContinueLoading(false);
+      if (buttontext === 'Continue') {
+        getViewPage9(true);
+        // getCurrentPage('Request Processing Workflow')
+      } else if (buttontext === 'Save In Progress') {
+        getShowAlert(true);
+      } else {
+        getNextTab();
+      }
+      setIsShowValidationCheck(true);
     }
   }
 
@@ -359,6 +372,7 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
         ErrorToaster('Unexpected Error');
       })
 
+
   }
 
   const getTimeSheetSubmissionTerms = async () => {
@@ -366,25 +380,25 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
     let id = timesheetFlow?.workFlowDetails?.filter(data => data?.workFlow?.workFlowName?.name === activeTab)?.map(data => data?.workFlow?.id)[0];
     if (timesheetFlow) {
       let workflowData = timesheetWorkFlow?.filter(data => data?.id === id)?.map(data => data?.workFlowMap?.workflow)[0];
-      let workFlowValues = Object.values(workflowData);
+      let workFlowValues = (workflowData !== undefined && workflowData !== null) ? Object.values(workflowData) : [];
       if (workFlowValues?.length === 1) {
         let approver = workFlowValues?.[0]?.workFlowUser?.id;
-        setTimesheet({ ...timesheet, id: id, reviewer: approver, approver: approver });
+        setTimesheet({ ...timesheet, id: id, reviewer: approver, reviewerTitle: workFlowValues?.[0]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[0]?.workflowUser?.title });
       }
       else if (workFlowValues?.length === 3) {
         let aggregator = workFlowValues?.[0]?.workFlowUser?.id;
         let reviewer = workFlowValues?.[1]?.workFlowUser?.id;
         let approver = workFlowValues?.[2]?.workFlowUser?.id;
-        setTimesheet({ ...timesheet, id: id, aggregator: aggregator, reviewer: reviewer, approver: approver });
+        setTimesheet({ ...timesheet, id: id, aggregator: aggregator, aggregatorTitle: workFlowValues?.[0]?.workFlowUser?.title, reviewer: reviewer, reviewerTitle: workFlowValues?.[1]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[2]?.workFlowUser?.title });
       }
       else if (selectContractInfo === 'MULTIPLE' && workFlowValues?.length === 2) {
         let aggregator = workFlowValues?.[0]?.workFlowUser?.id;
         let approver = workFlowValues?.[1]?.workFlowUser?.id;
-        setTimesheet({ ...timesheet, id: id, reviewer: approver, approver: approver, aggregator: aggregator });
+        setTimesheet({ ...timesheet, id: id, reviewer: approver, reviewerTitle: workFlowValues?.[1]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[1]?.workFlowUser?.title, aggregator: aggregator, aggregatorTitle: workFlowValues?.[0]?.workFlowUser?.title });
       } else {
         let reviewer = workFlowValues?.[0]?.workFlowUser?.id;
         let approver = workFlowValues?.[1]?.workFlowUser?.id;
-        setTimesheet({ ...timesheet, id: id, reviewer: reviewer, approver: approver });
+        setTimesheet({ ...timesheet, id: id, reviewer: reviewer, reviewerTitle: workFlowValues?.[0]?.workFlowUser?.title, approver: approver, approverTitle: workFlowValues?.[1]?.workFlowUser?.title });
       }
 
     }
@@ -416,30 +430,35 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
             <div className={`${style.timeSheetBoxStyle} ${style.verticalSpaceBetween}`}>
               <div>
                 <div className={`${style.addManagerGrid}`}>
-                  <div className={style.extentionLableStyle}>Timesheet To Define Process*</div>
+                  <CommonLabel value='Timesheet To Define Process*' />
                   <div className={style.displayInRow}>
-                    <InputGroup className={style.fullWidth} placeholder={activeTab}
-                      value={activeTab} readOnly />
+                    <CommonInputField className={style.fullWidth} placeholder={activeTab}
+                      value={activeTab} readOnly={true} />
                   </div>
                 </div>
                 {selectContractInfo === 'MULTIPLE' &&
-                  <ReviewerApproverField data={provider} label="Timesheet Aggregator*" onValueChange={(value) => { setTimesheet({ ...timesheet, aggregator: value }) }} selectLabel="Select Aggregator" value={timesheet?.aggregator || '0'} />
+                  <ReviewerApproverField data={provider} label="Timesheet Aggregator*" onValueChange={(value, title) => { setTimesheet({ ...timesheet, aggregator: value, aggregatorTitle: title }) }} selectLabel="Select Aggregator" value={timesheet?.aggregator || '0'} />
                 }
-                <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value) => { setTimesheet({ ...timesheet, reviewer: value }) }} selectLabel="Select Reviewer" value={timesheet?.reviewer || '0'} />
-                <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value) => { setTimesheet({ ...timesheet, approver: value }) }} selectLabel="Select Approver" value={timesheet?.approver || '0'} />
+                <ReviewerApproverField data={users} label="Timesheet Reviewer*" onValueChange={(value, title) => { setTimesheet({ ...timesheet, reviewer: value, reviewerTitle: title }) }} selectLabel="Select Reviewer" value={timesheet?.reviewer || '0'} approverReviewer='reviewer' />
+                <ReviewerApproverField data={users} label="Timesheet Approver*" onValueChange={(value, title) => { setTimesheet({ ...timesheet, approver: value, approverTitle: title }) }} selectLabel="Select Approver" value={timesheet?.approver || '0'} approverReviewer='approver' />
               </div>
               {
                 tabIndex < timeSheetTabs?.length - 1 && isEditable &&
                 <div>
-                  <button className={`${style.timesheetNextButtonStyle} ${style.floatRight}`} onClick={() => { submit('Next') }}>NEXT</button>
+                  <button className={`${style.timesheetNextButtonStyle}  ${style.cursorPointer} ${style.floatRight}`} onClick={() => { submit('Next') }}>NEXT</button>
                 </div>
               }
             </div>
             {isEditable &&
               <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Payment & Compensation') }}>BACK</button>
+                <button className={`${style.newContractButtonStyle} ${style.cursorPointer} `} onClick={() => { getCurrentPage('Payment & Compensation') }}>BACK</button>
                 <div>
-                  <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`}
+                  <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
+                    onClick={() => {
+                      submit('Save In Progress')
+                    }}
+                  >SAVE IN PROGRESS</button>
+                  <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`}
                     onClick={() => {
                       submit('Continue')
                     }}
@@ -469,6 +488,9 @@ const TimesheetProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContr
           :
           <RedirectingPopUp getCurrentPage={getCurrentPage} tabName={'Timesheet Submission Terms'} title={'NO TIMESHEET FOUND'} description={'No Timesheet Is Found.'} buttonText={'ADD TIMESHEET'} />
       }
+      {isShowValidationCheck && (
+        <ContractValidationCheckSummary getContractValidationDialog={getContractValidationDialog} contract={contract} />
+      )}
     </>
   )
 }

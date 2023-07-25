@@ -1,47 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, EditableText, Checkbox } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import FormGroup from '@mui/material/FormGroup';
-import Typography from '@mui/material/Typography';
+import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import Select from '@mui/material/Select';
-import Popover from '@mui/material/Popover';
 import { GET, TenantID, POST } from './../dataSaver';
 import { TimePicker } from "@blueprintjs/datetime";
 import { GetDateFromHours } from './../../utils/formatting';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { CLINIC, SURGERY, ONCALL, PROCEDUREREADING } from '../../Constants';
 import ServiceDays from '../../Components/ReusableSmallComponents/serviceDays';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonTextField from '../../Components/CommonFields/CommonTextField';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+
 import style from './index.module.scss';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
-const switchTheme = createTheme({
-    palette: {
-        primary: {
-            main: '#7165E3',
-        },
-    },
-});
-
-const AdministrativeFields = ({ getMetaData, services, serviceSelected, editService }) => {
+const AdministrativeFields = ({ getMetaData, services, serviceSelected, editService, isReset, getIsReset, sites, contractId }) => {
     const [activity, setActivity] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [showAdminActivity, setShowAdminActivity] = useState(false);
     const [additionalSchedule, setAdditionalSchedule] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [title, setTitle] = useState([]);
+    const [user, setUsers] = useState([]);
     const [adminActivity, setAdminActivity] = useState({
         activity: '',
         podRequired: false,
         schedule: 'WEEK',
         billable: false,
+        asNeeded: false,
     });
     const [editAdminActivitySelected, setEditAdminActivitySelected] = useState(false);
 
     let specificDedicatedHoursList = [];
-    services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => {
+    services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
         let activityName = data?.activityType?.activityType;
         let activities = data?.activities?.map(data => data?.activity);
         let result = `${activityName} (${activities?.map(data => data)?.join(', ')})`
@@ -53,7 +50,9 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         dedicatedHoursActivityType: '',
         dedicatedHoursPerformingActivity: '',
         totalSession: '0',
+        totalSessionFrequency: 'NA',
         sessionAmount: '0',
+        sessionDuration: '0',
         serviceDays: {
             tuesday: false,
             wednesday: false,
@@ -68,30 +67,31 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         selectedActivities: [],
         weekdaysCount: '0',
         weekendsCount: '0',
-        workingTimeFrom: new Date(),
-        workingTimeTo: new Date(),
+        workingTimeFrom: null,
+        workingTimeTo: null,
+        activityApprovalWFRequired: false,
     })
+
+    const [addOnWorkFlow, setAddOnWorkFlow] = useState([]);
+
+    useEffect(() => {
+        if (isReset) {
+            resetMetadata();
+            getIsReset(false);
+        }
+    }, [isReset])
 
     useEffect(() => {
         if (serviceSelected !== {}) {
             setSelectedValues();
         }
-    }, [serviceSelected]);
+    }, [serviceSelected, addOnWorkFlow, user]);
 
-    const setSelectedValues = () => {
-        setMetadata({
-            ...metadata,
-            refId: serviceSelected?.refId,
-            dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
-            dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
-            dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
-            selectedActivities: serviceSelected?.activityResponse?.dataMap?.adminActivities,
-            totalSession: serviceSelected?.totalSessions?.value || '0',
-            workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
-            workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
-            serviceDays: serviceSelected?.serviceDays,
-            sessionAmount: serviceSelected?.payableAmount?.value,
-        });
+    const getTimeSheetWorkFlow = async () => {
+        const { data: timesheetWorkFlow } = await GET('timesheet-management-service/workflow');
+        if (timesheetWorkFlow) {
+            setAddOnWorkFlow(timesheetWorkFlow);
+        }
     }
 
     useEffect(() => {
@@ -99,8 +99,69 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }, [metadata])
 
     useEffect(() => {
+        getTimeSheetWorkFlow();
+        getUserData();
         getAdminActivityList();
     }, [])
+
+    const resetMetadata = () => {
+        setMetadata({
+            dedicatedHoursSpecified: false,
+            dedicatedHoursActivityType: '',
+            dedicatedHoursPerformingActivity: '',
+            totalSession: '0',
+            totalSessionFrequency: 'NA',
+            sessionAmount: '0',
+            sessionDuration: '0',
+            serviceDays: {
+                tuesday: false,
+                wednesday: false,
+                thursday: false,
+                friday: false,
+                saturday: false,
+                sunday: false,
+                weekDays: false,
+                weekEnds: false,
+                monday: false
+            },
+            selectedActivities: [],
+            weekdaysCount: '0',
+            weekendsCount: '0',
+            workingTimeFrom: null,
+            workingTimeTo: null,
+            activityApprovalWFRequired: false,
+        })
+    }
+
+    const setSelectedValues = () => {
+
+        let workflowData = addOnWorkFlow?.filter(data => data?.id === serviceSelected?.workFlow?.id)?.map(data => data?.workFlowMap?.workflow)[0] || {};
+        let workFlowValues = Object?.values(workflowData);
+        let approver = user?.filter(data => data?.id === workFlowValues?.[0]?.workFlowUser?.id)?.map(data => data)[0];
+        if (Object.keys(serviceSelected)?.length !== 0) {
+            setMetadata({
+                ...metadata,
+                refId: serviceSelected?.refId,
+                dedicatedHoursSpecified: serviceSelected?.dedicatedHoursSpecified,
+                dedicatedHoursActivityType: serviceSelected?.hoursBorrowed?.activityType?.activityType,
+                dedicatedHoursPerformingActivity: serviceSelected?.hoursBorrowed?.performingActivity?.activity,
+                selectedActivities: serviceSelected?.activityResponse?.dataMap?.adminActivities,
+                totalSession: serviceSelected?.totalSessions?.value || '0',
+                totalSessionFrequency: serviceSelected?.totalSessions?.frequency || 'NA',
+                workingTimeFrom: GetDateFromHours(serviceSelected?.workingPeriod?.from?.toString() || ''),
+                workingTimeTo: GetDateFromHours(serviceSelected?.workingPeriod?.to?.toString() || ''),
+                serviceDays: serviceSelected?.serviceDays,
+                sessionAmount: serviceSelected?.payableAmount?.value,
+                sessionDuration: serviceSelected?.duration?.hours || '0',
+                workflowId: serviceSelected?.workFlow?.id,
+                workflowName: serviceSelected?.workFlow?.workFlowName?.name,
+                activityApprovalWFRequired: serviceSelected?.activityApprovalWFRequired,
+                approver: approver,
+            });
+        }
+    }
+
+
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -125,10 +186,20 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const handleValueChange = (name, value) => {
-        setMetadata({ ...metadata, [name]: value });
+        if (name === 'dedicatedHoursSpecified') {
+            if (value) {
+                setMetadata({ ...metadata, sessionDuration: '1', totalSession: '0', sessionAmount: '', totalSessionFrequency: 'NA', dedicatedHoursActivityType: '', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+            } else {
+                setMetadata({ ...metadata, sessionDuration: '0', dedicatedHoursActivityType: '', sessionAmount: '', totalSession: '0', totalSessionFrequency: 'NA', dedicatedHoursPerformingActivity: '', dedicatedHoursSpecified: value });
+            }
+        }
+        else {
+            setMetadata({ ...metadata, [name]: value });
+        }
     }
 
     const activityToAdd = async () => {
+        setIsLoading(true);
         if (adminActivity?.activity === '') {
             ErrorToaster('Administrative Service Name is Mandatory');
             return;
@@ -144,7 +215,8 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             },
             "podRequired": adminActivity?.podRequired,
             "schedule": adminActivity?.schedule,
-            "billable": adminActivity?.billable
+            "billable": adminActivity?.billable,
+            "asNeeded": adminActivity?.asNeeded,
         }
         await POST(`contract-managment-service/contracts/adminActivity`, data)
             .then(response => {
@@ -155,17 +227,41 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 ErrorToaster('Adding Activity To List Failed');
             })
         setAdminActivity({ ...adminActivity, activity: '' })
+        setShowAdminActivity(false);
+        setEditAdminActivitySelected(false);
+        setIsLoading(false);
     }
 
     const selectedHours = (index) => {
-        let temp = services?.filter(data => ['Clinic Blocks', 'Surgery Session', 'On Call Coverage Duty Days']?.includes(data?.activityType?.activityType))?.map(data => data);
-        let dedicatedHoursActivityType = temp[index]?.activityType?.activityType;
-        let dedicatedHoursPerformingActivity = temp[index]?.activities?.map(data => data?.activity)?.join('-');
-        setMetadata({ ...metadata, dedicatedHoursActivityType: dedicatedHoursActivityType, dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity, sessionAmount: temp[index]?.payableAmount?.value });
+        services?.filter(data => [CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(data?.activityType?.activityType))?.map(data => {
+            let activityName = data?.activityType?.activityType;
+            let activities = data?.activities?.map(data => data?.activity);
+            if (`${activityName} (${activities?.map(data => data)?.join(', ')})` === index) {
+                let dedicatedHoursActivityType = data?.activityType?.activityType;
+                let dedicatedHoursPerformingActivity = data?.activities?.map(data => data?.activity)?.join(', ');
+                console.log('data', data);
+                setMetadata({
+                    ...metadata,
+                    dedicatedHoursActivityType: dedicatedHoursActivityType,
+                    dedicatedHoursPerformingActivity: dedicatedHoursPerformingActivity,
+                    sessionDuration: data?.duration?.hours,
+                    totalSession: data?.totalSessions?.value,
+                    totalSessionFrequency: data?.totalSessions?.frequency,
+                    sessionAmount: data?.payableAmount?.value,
+                    hourlyRate: data?.hourlyRate?.value,
+                });
+            }
+        });
     }
 
     const handleAdminActivity = (name, value) => {
-        setAdminActivity({ ...adminActivity, [name]: value });
+        if (name === 'schedule' && value !== 'NA') {
+            setAdminActivity({ ...adminActivity, [name]: value, asNeeded: false })
+        } else if (name === 'schedule' && adminActivity?.asNeeded) {
+            setAdminActivity({ ...adminActivity, [name]: "NA" });
+        } else {
+            setAdminActivity({ ...adminActivity, [name]: value });
+        }
     }
 
     const onSelectActivity = (id, checked) => {
@@ -180,10 +276,12 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     }
 
     const editActivitySelected = () => {
-        let editableData = metadata?.selectedActivities?.filter(data => data?.activity === adminActivity?.activity)?.map(data => data)[0];
-        let temp = metadata?.selectedActivities?.filter(data => data?.activity !== adminActivity?.activity)?.map(data => data);
-        temp.push({ activity: adminActivity?.activity, billable: adminActivity?.billable, podRequired: adminActivity?.podRequired, id: editableData?.id, tenant: editableData?.tenant, schedule: adminActivity?.schedule });
+        let editableData = metadata?.selectedActivities?.filter(data => data?.id === adminActivity?.id)?.map(data => data)[0];
+        let temp = metadata?.selectedActivities?.filter(data => data?.id !== adminActivity?.id)?.map(data => data);
+        temp.push({ activity: adminActivity?.activity, billable: adminActivity?.billable, podRequired: adminActivity?.podRequired, id: adminActivity?.id, tenant: editableData?.tenant, schedule: adminActivity?.schedule });
         setMetadata({ ...metadata, selectedActivities: temp });
+        setShowAdminActivity(false);
+        setEditAdminActivitySelected(false);
     }
 
     const submit = () => {
@@ -194,71 +292,175 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
         }
     }
 
-    console.log('date', metadata.selectedActivities);
+    const getUserData = async () => {
+        let siteId = sites?.map(data => data?.id);
+        let deptId = [];
+        sites?.map(data => data?.departmentList?.departments?.map(dept => {
+            deptId.push(`${data?.id}#${dept?.id}`);
+        }))
+        let encodedDept = encodeURIComponent(deptId);
+        let uri = `user-management-service/user/workFlowUser?sites=${siteId}&sitedepartments=${encodedDept}&contractIdToIgnore=${contractId}`;
+        const { data: userList } = await GET(uri);
+        if (userList) {
+            setUsers(userList);
+            let temp = [];
+            userList?.map(data => data?.sites?.sites?.map(site => {
+                if (data?.name?.firstName && site?.siteName?.siteName && site?.siteResponsibility?.title) {
+                    if (site?.siteResponsibility?.title !== "" && site?.siteResponsibility?.title !== undefined && site?.siteResponsibility?.title !== null) {
+                        temp.push({ fname: data?.name?.firstName, lname: data?.name?.lastName, suffix: data?.name?.suffix?.suffix || '', site: site?.siteName?.siteName, title: site?.siteResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+                    }
+
+                    site?.departmentList?.departments?.map(dept => {
+                        if (dept?.departmentResponsibility?.title !== "" && dept?.departmentResponsibility?.title !== undefined && dept?.departmentResponsibility?.title !== null) {
+                            temp.push({ fname: data?.name?.firstName, lname: data?.name?.lastName, suffix: data?.name?.suffix?.suffix || '', site: dept?.departmentName?.name, title: dept?.departmentResponsibility?.title, id: data?.id, approver: data?.roles?.filter(role => role?.roleName === 'Approver')?.map(data => data)?.length !== 0 ? true : false, reviewer: data?.roles?.filter(role => role?.roleName === 'Reviewer')?.map(data => data)?.length !== 0 ? true : false });
+                        }
+                    })
+                }
+            }))
+            setTitle(temp);
+        }
+    }
+
+
     const updateWorkingPeriod = (e) => {
-        // let minTime = new Date(new Date(e).getTime() + (metadata?.totalSession * 60 * 60 * 1000));
         setMetadata({ ...metadata, workingTimeFrom: e });
     }
+
+    console.log('Metadata', metadata);
+
 
     return (
         <div>
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Dedicated Hours For Administrative Services*</div>
+                <CommonLabel value='Dedicated Hours For Administrative Services*' />
                 <div className={style.displayInRow}>
-                    <div className={`${style.threeFieldWidth}`} >
-                        <ThemeProvider theme={switchTheme}>
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        className={` ${style.textAlignLeft}`}
-                                        checked={metadata?.dedicatedHoursSpecified}
-                                        onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)}
-                                    />
-                                }
-                                color='primary'
-                                className={`${style.switchFontStyle} ${style.flexLeft}`}
-                                label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'}
-                            />
-                        </ThemeProvider>
-                    </div>
+                    {/* <div className={`${style.threeFieldWidth}`} > */}
+                    <CommonSwitch
+                        className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`}
+                        checked={metadata?.dedicatedHoursSpecified} label={metadata?.dedicatedHoursSpecified ? 'YES' : 'NO'}
+                        onChange={(e) => handleValueChange('dedicatedHoursSpecified', !metadata?.dedicatedHoursSpecified)}
+                    />
+                    {/* </div> */}
                     {!metadata?.dedicatedHoursSpecified && (
-                        <Select
-                            displayEmpty
-                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                            className={`${style.fullWidth}`}
-                            onChange={(e) => selectedHours(e.target.value)}
-                            value={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})`}
-                        >
-                            <MenuItem value="">Select Dedicated Hours</MenuItem>
-                            {
-                                specificDedicatedHoursList?.map((data, index) => (
-                                    <MenuItem value={data}>{data}</MenuItem>
-                                ))
-                            }
-                        </Select>
+                        <FormControl sx={{ width: 480 }}>
+                            <Select
+                                displayEmpty
+                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                className={`${style.fullWidth}`}
+                                onChange={(e) => selectedHours(e.target.value)}
+                                value={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity})`}
+                            >
+                                <MenuItem value="">Select Dedicated Hours</MenuItem>
+                                {
+                                    specificDedicatedHoursList?.map((data, index) => (
+                                        <MenuItem value={data}>{data}</MenuItem>
+                                    ))
+                                }
+                            </Select>
+                        </FormControl>
+                        // <CommonSelectField className={`${style.fullWidth}`}
+                        // onChange={(e) => selectedHours(e.target.value)}
+                        // value={`${metadata?.dedicatedHoursActivityType} (${metadata?.dedicatedHoursPerformingActivity?.replace('-', ', ')})` || ''}
+                        //  firstOptionLabel={'Select Dedicated Hours'} firstOptionValue={''}
+                        // valueList={specificDedicatedHoursList}
+                        // labelList={specificDedicatedHoursList}
+                        // disabledList={specificDedicatedHoursList?.map(data => false)} />
                     )}
                 </div>
             </div>
+            {
+                metadata?.dedicatedHoursSpecified &&
+                <>
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Separate Administrative Hours Specified*' />
+                        <div className={style.displayInRow}>
+                            <div className={`${style.twoFieldWidth}`}>
+                                <CommonTextField
+                                    type="tel"
+                                    maxLength="3"
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
+                                    }}
+                                    onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
+                                    value={metadata?.totalSession}
+                                />
+                            </div>
+                            <CommonSelectField className={` ${style.marginLeft20}`}
+                                value={metadata?.totalSessionFrequency || 'NA'}
+                                onChange={(e) => handleValueChange('totalSessionFrequency', e.target.value)}
+                                firstOptionLabel={'Select Frequency'} firstOptionValue={'NA'}
+                                valueList={['WEEK', 'MONTH']}
+                                labelList={['Per Week', 'Per Month']}
+                                disabledList={[false, false]} />
+                        </div>
+                    </div>
+
+                    <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                        <CommonLabel value='Administrative Services Payment Amount*' />
+                        <div className={`${style.displayInRow}`}>
+                            <div className={`${style.threeFieldWidth}`}>
+                                <CommonTextField
+                                    type="tel"
+                                    maxLength="5"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
+                                    }}
+                                    onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
+                                    value={metadata?.sessionAmount}
+                                />
+                            </div>
+                            <div className={style.verticalAlignCenter}>
+                                <CommonLabel className={` ${style.marginLeft20}`} value={metadata?.totalSession !== 0 && metadata?.totalSession !== '' ? `${(metadata?.sessionAmount / metadata?.totalSession).toFixed(2)} per Hour` : ''} />
+                            </div>
+                        </div>
+                    </div>
+                </>
+            }
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Administrative Duties & Function To Perform</div>
+                <CommonLabel value='Allowable Administrative Duties & Function To Perform' />
                 <div>
                     {
                         activity?.map((data, index) => (
                             <div className={`${style.displayInRow} ${style.marginBottom10}`}>
-                                <FormGroup className={`${style.marginLeft10}`}>
-                                    <FormControlLabel control={<Checkbox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} />} label={<Typography variant="body2" color="textSecondary">{data?.activity}</Typography>} />
-                                </FormGroup>
-                                <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
-                                {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
-                                {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                {metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id) ? (
+                                    <>
+                                        <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.activity)?.[0]} />
+                                        <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.schedule)[0]}</div>
+                                        {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.billable)[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                        {metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities?.podRequired)[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                    </>
+                                ) : (<>
+                                    <CommonCheckBox checked={metadata?.selectedActivities?.map(activities => activities?.id)?.includes(data?.id)} className={`${style.marginLeft10}`} onChange={(e) => onSelectActivity(data?.id, e.target.checked)} label={data?.activity} />
+
+                                    <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
+                                    {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                    {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                </>)}
+
+                                {
+                                    // metadata?.selectedActivities?.map(data => data?.id).includes(data?.id) ? <>
+                                    //     <div className={`${style.chipStyle} ${style.redChip}`}>{metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.schedule)?.[0] || ''}</div>
+                                    //     {metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.billable)?.[0] && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                    //     {metadata?.selectedActivities?.filter(activity => activity?.id === data?.id)?.map(activity => activity?.podRequired)?.[0] && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                    // </> :
+                                    //     <>
+                                    //         <div className={`${style.chipStyle} ${style.redChip}`}>{data?.schedule}</div>
+                                    //         {data?.billable && <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>}
+                                    //         {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
+                                    //     </>
+                                }
+
                                 {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#7165E3' }} onClick={() => {
                                     setEditAdminActivitySelected(true);
+                                    let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
-                                        activity: data?.activity,
-                                        podRequired: data?.podRequired,
-                                        schedule: data?.schedule,
-                                        billable: data?.billable,
+                                        id: adminActivity?.id,
+                                        activity: adminActivity?.activity,
+                                        podRequired: adminActivity?.podRequired,
+                                        schedule: adminActivity?.schedule,
+                                        billable: adminActivity?.billable,
+                                        asNeeded: adminActivity?.asNeeded,
                                     });
                                 }} />}
                             </div>
@@ -269,66 +471,47 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             </div>
 
             {
-                showAdminActivity || editAdminActivitySelected &&
+                (showAdminActivity || editAdminActivitySelected) &&
                 <div className={`${style.addonAddBox} ${style.marginTop20}`}>
                     <div className={`${style.addManagerGrid}`}>
-                        <div className={style.extentionLableStyle}>Additional Administrative Services Name</div>
-                        <InputGroup placeholder='Add-On Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonLabel value='Additional Administrative Services Name' />
+                        <CommonInputField placeholder='Administrative Service Name' className={style.fullWidth} value={adminActivity?.activity} onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Classify As Billable Activity</div>
+                        <CommonLabel value='Classify As Billable Activity' />
                         <div className={`${style.threeFieldWidth} `}>
-                            <ThemeProvider theme={switchTheme}>
-                                <FormControlLabel
-                                    control={
-                                        <Switch className={`${style.textAlignLeft}`} checked={adminActivity?.billable} onChange={(e) => handleAdminActivity('billable', !adminActivity?.billable)} />
-                                    }
-                                    color='primary'
-                                    className={`${style.switchFontStyle} ${style.flexLeft} `}
-                                    label={adminActivity?.billable ? 'YES' : 'NO'}
-                                />
-                            </ThemeProvider>
+                            <CommonSwitch label={adminActivity?.billable ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={adminActivity?.billable} onChange={(e) => handleAdminActivity('billable', !adminActivity?.billable)} />
                         </div>
                     </div>
 
                     <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                        <div className={style.extentionLableStyle}>Proof Of Completion / Documentation Required</div>
+                        <CommonLabel value='Proof Of Completion / Documentation Required' />
                         <div className={style.displayInRow}>
                             <div className={`${style.threeFieldWidth} `}>
-                                <ThemeProvider theme={switchTheme}>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch className={`${style.textAlignLeft}`} checked={adminActivity?.podRequired} onChange={(e) => handleAdminActivity('podRequired', !adminActivity?.podRequired)} />
-                                        }
-                                        color='primary'
-                                        className={`${style.switchFontStyle} ${style.flexLeft} `}
-                                        label={adminActivity?.podRequired ? 'YES' : 'NO'}
-                                    />
-                                </ThemeProvider>
+                                <CommonSwitch label={adminActivity?.podRequired ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={adminActivity?.podRequired} onChange={(e) => handleAdminActivity('podRequired', !adminActivity?.podRequired)} />
                             </div>
                             <div className={style.threeFieldWidth}>
-                                <div className={style.extentionLableStyle}>Contracted Schedule*</div>
-                                <Select
-                                    displayEmpty
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                    className={`${style.fullWidth}`}
-                                    value={adminActivity?.schedule}
+                                <CommonLabel value='Frequency*' />
+                                <CommonSelectField className={`${style.fullWidth}`}
+                                    value={adminActivity?.schedule || ''}
                                     onChange={(e) => handleAdminActivity('schedule', e.target.value)}
-                                >
-                                    <MenuItem value="">Select Frequecy</MenuItem>
-                                    <MenuItem value={'WEEK'}>Per Week</MenuItem>
-                                    <MenuItem value={'MONTH'}>Per Month</MenuItem>
-                                    <MenuItem value={'YEAR'}>Per Contract Year</MenuItem>
-                                </Select>
+                                    firstOptionLabel={'Select Frequency'} firstOptionValue={''}
+                                    valueList={['NA', 'WEEK', 'MONTH', 'YEAR']}
+                                    labelList={['NA', 'Per Week', 'Per Month', 'Per Contract Year']}
+                                    disabledList={[false, false, false, false, false]} />
                             </div>
+                            <div className={`${style.marginTop20} ${style.marginLeft20}`}>
+                                <CommonCheckBox checked={adminActivity?.asNeeded} label='As Needed' onChange={(e) => setAdminActivity({ ...adminActivity, asNeeded: e.target.checked, schedule: 'NA' })} />
+                            </div>
+
                         </div>
                     </div>
 
                     <div>
                         <div className={`${style.twoCol} ${style.marginTop20}`}>
                             <button className={`${style.outlinedButton} ${style.fullWidth}`} onClick={(e) => { setShowAdminActivity(false); setEditAdminActivitySelected(false); }}>CANCEL</button>
-                            <button className={`${style.buttonStyle} ${style.fullWidth}`} onClick={(e) => { submit() }}>SAVE</button>
+                            <button className={`${style.buttonStyle} ${style.fullWidth} ${isLoading ? style.disabled : ''}`} onClick={(e) => { submit() }}>SAVE</button>
                         </div>
                         <br />
                     </div>
@@ -338,7 +521,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
             <div>
                 {!showAdminActivity &&
                     <div className={`${style.addGrid} ${style.fullWidth} ${style.marginTop20}`}>
-                        <InputGroup className={style.fullWidth} placeholder='New Additional Administrative Services Name' onChange={(e) => handleAdminActivity('activity', e.target.value)} />
+                        <CommonInputField className={style.fullWidth} placeholder='New Additional Administrative Services Name' onChange={(e) => handleAdminActivity('activity', e.target.value)} />
                         <div className={`${style.addStyle} ${style.alignCenter} ${style.cursorPointer}`} >
                             <AddIcon sx={{ fontSize: 25, color: 'white' }} aria-describedby={id} onClick={(e) => setShowAdminActivity(true)} />
                         </div>
@@ -390,69 +573,52 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                 </Popover> */}
             </div>
 
-            <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Separate Administrative Hours Specified*</div>
-                <div className={`${style.threeFieldWidth}`}>
-                    <TextField
-                        size="small"
-                        type="tel"
-                        maxLength="3"
-                        InputProps={{
-                            endAdornment: <InputAdornment position="end" sx={{ fontSize: 10 }}>Hours</InputAdornment>,
-                        }}
-                        onChange={(e) => e.target.value >= 0 && handleValueChange('totalSession', e.target.value)}
-                        value={metadata?.totalSession}
-                    />
-                </div>
-            </div>
-            {
-                metadata?.dedicatedHoursSpecified &&
-                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                    <div className={style.extentionLableStyle}>Administrative Services Payment Amount*</div>
-                    <div className={`${style.displayInRow}`}>
-                        <div className={`${style.threeFieldWidth}`}>
-                            <TextField
-                                size="small"
-                                type="tel"
-                                maxLength="5"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
-                                }}
-                                onChange={(e) => e.target.value >= 0 && handleValueChange('sessionAmount', e.target.value)}
-                                value={metadata?.sessionAmount}
-                            />
-                        </div>
-                        <div className={style.verticalAlignCenter}>
-                            <p className={`${style.extentionLableStyle} ${style.marginLeft20}`}>per Hour</p>
-                        </div>
-                    </div>
-                </div>
-            }
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Service Days*</div>
-                <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} />
+                <CommonLabel value='Service Days*' />
+                <ServiceDays setMetaData={getServiceDaysMetadata} selectedService={serviceSelected} isReset={isReset} setIsReset={getIsReset} />
             </div>
 
             <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
-                <div className={style.extentionLableStyle}>Allowable Working Day Hours For Service*</div>
+                <CommonLabel value='Allowable Working Day Hours For Service*' />
                 <div className={style.displayInRow}>
                     <TimePicker
                         useAmPm={false}
                         onChange={(e) => {
                             updateWorkingPeriod(e);
                         }}
-                        value={new Date(metadata?.workingTimeFrom)}
+                        value={metadata?.workingTimeFrom === null ? null : new Date(metadata?.workingTimeFrom)}
                     />
                     <p className={`${style.marginLeft20} ${style.toStyle} ${style.marginTop} ${style.marginRight}`}>To</p>
                     <TimePicker
                         useAmPm={false}
-                        onChange={(e) => handleValueChange('workingTimeTo', e)}
-                        value={new Date(metadata?.workingTimeTo)}
+                        onChange={(e) => {
+                            handleValueChange('workingTimeTo', e);
+                        }}
+                        value={metadata?.workingTimeTo === null ? null : new Date(metadata?.workingTimeTo)}
                     // minTime={new Date(new Date(metadata?.workingTimeFrom).getTime() + (metadata?.totalSession * 60 * 60 * 1000))}
                     />
+
                 </div>
             </div>
+            <div className={`${style.addManagerGrid}  ${style.marginTop20}`}>
+                <CommonLabel value='Only Allow Upon Request / Notification Approval' />
+                <CommonSwitch onChange={() => setMetadata({ ...metadata, activityApprovalWFRequired: !metadata?.activityApprovalWFRequired, approver: undefined })} checked={metadata?.activityApprovalWFRequired} />
+            </div>
+            {metadata?.activityApprovalWFRequired &&
+                <div className={`${style.addManagerGrid} ${style.marginTop20}`}>
+                    <CommonLabel value='Designate Request Approver*' />
+                    <CommonSelectField className={`${style.fullWidth} `}
+                        defaultValue={metadata?.approver}
+                        value={metadata?.approver ? metadata?.approver?.id : '0'}
+                        onChange={(e) => { setMetadata({ ...metadata, approver: user.filter(data => data?.id === e.target.value)?.map(data => data)[0], approverTitle: title?.filter(titleData => titleData?.approver === true)?.map(data => data)[0] }) }}
+                        firstOptionLabel={'Select Payment Approver'}
+                        firstOptionValue={'0'}
+                        valueList={title?.filter(titleData => titleData?.approver === true)?.map(data => data?.id)}
+                        labelList={title?.filter(titleData => titleData?.approver === true)?.map(titleData => `${titleData?.fname} ${titleData?.lname}, ${titleData?.suffix}, ${titleData?.title} - ${titleData?.site}`)}
+                        disabledList={title?.map(data => false)} />
+                </div>
+            }
 
         </div>
     )

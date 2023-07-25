@@ -194,13 +194,34 @@ const AddBoardCertifcation = ({
           <p className={style.extensionStyle}>
             {`ADD / Edit Board Certification Specialties For ${selectedTitle}`}
           </p>
-          <Icon
-            icon="cross"
-            size={20}
-            intent={Intent.DANGER}
-            className={style.dialogCrossStyle}
-            onClick={() => getAddEntityDialog(false)}
-          />
+          <div className={`${style.displayInRow}`}>
+            <div className={`${style.displayInRow} ${style.marginRight20}`}>
+              <img
+                src={
+                  "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
+                }
+                alt="refresh"
+                className={`${style.headerFlag} ${style.marginRight15}`}
+              />
+              <span
+                className={`${style.headerCountryName} ${style.marginLeft10}`}
+              >
+                USA
+              </span>
+              <img
+                src={ArrowDown}
+                className={`${style.colorFileStyle2} ${style.marginLeft10}  ${style.marginTop10}`}
+                alt=""
+              />
+            </div>
+            <Icon
+              icon="cross"
+              size={20}
+              intent={Intent.DANGER}
+              className={style.dialogCrossStyle}
+              onClick={() => getAddEntityDialog(false)}
+            />
+          </div>
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
@@ -319,12 +340,26 @@ const AddBoardCertifcation = ({
 
           <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <div></div>
-            <div
-              className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
-              onClick={() => SaveSubmitHandler("Add More")}
-            >
-              ADD MORE
-            </div>
+            {!isEdit && (
+              <>
+                {primaryBoardName.length > 0 ||
+                secondaryBoardName.length > 0 ? (
+                  <div
+                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                    onClick={() => SaveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                ) : (
+                  <div
+                    className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
+                    onClick={() => SaveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
         <div>

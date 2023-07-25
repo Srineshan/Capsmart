@@ -1,11 +1,12 @@
 /* eslint-disable no-const-assign */
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Dialog, Classes, Icon, Intent, InputGroup } from "@blueprintjs/core";
 import AddHealthcareGroup from "./../../images/addGroupBlue.png";
 import { POST, PUT } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import { useEffect } from "react";
 import style from "./index.module.scss";
+import ArrowDown from "./../../images/arrowDown.png";
 
 const AddHealthCareEntity = ({
   getAddHcEntityDialog,
@@ -19,8 +20,6 @@ const AddHealthCareEntity = ({
   const [entityId, setEntityId] = useState("");
   const [entityName, setEntityName] = useState("");
   const [createdDate, setCreatedDate] = useState("");
-
-  const entityNameRef = useRef(null);
 
   const saveSubmitHandler = async (type) => {
     const isPresent = tableEntityData.find((p) => p.type === entityName);
@@ -73,6 +72,7 @@ const AddHealthCareEntity = ({
     } else {
       setEntityName("");
       document.getElementById("entityName").focus();
+      getEntityData();
     }
   };
 
@@ -97,13 +97,34 @@ const AddHealthCareEntity = ({
           <p className={style.extensionStyle}>
             {`Add/Edit Entity Types For ${selectedTitle}`}
           </p>
-          <Icon
-            icon="cross"
-            size={20}
-            intent={Intent.DANGER}
-            className={style.dialogCrossStyle}
-            onClick={() => getAddHcEntityDialog(false)}
-          />
+          <div className={`${style.displayInRow}`}>
+            <div className={`${style.displayInRow} ${style.marginRight20}`}>
+              <img
+                src={
+                  "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
+                }
+                alt="refresh"
+                className={`${style.headerFlag} ${style.marginRight15}`}
+              />
+              <span
+                className={`${style.headerCountryName} ${style.marginLeft10}`}
+              >
+                USA
+              </span>
+              <img
+                src={ArrowDown}
+                className={`${style.colorFileStyle2} ${style.marginLeft10}  ${style.marginTop10}`}
+                alt=""
+              />
+            </div>
+            <Icon
+              icon="cross"
+              size={20}
+              intent={Intent.DANGER}
+              className={style.dialogCrossStyle}
+              onClick={() => getAddHcEntityDialog(false)}
+            />
+          </div>
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
@@ -111,8 +132,6 @@ const AddHealthCareEntity = ({
             <div className={style.entityLableStyle}>Industry Name*</div>
             <div className={style.displayInRow}>
               <InputGroup value={selectedTitle} className={style.halfWidth} />
-              {/* <img src={AddHealthcareGroup} className={`${style.colorFileStyle} ${style.marginLeft20}`} alt="" /> */}
-              {/* <p className={`${style.marginTop} ${style.marginLeft5}`}>ADD ENTITY</p> */}
             </div>
           </div>
           <div
@@ -126,7 +145,6 @@ const AddHealthCareEntity = ({
               <div className={style.displayInRow}>
                 <InputGroup
                   value={entityName}
-                  ref={entityNameRef}
                   id="entityName"
                   className={style.fullWidth}
                   onChange={(e) => setEntityName(e.target.value)}
@@ -137,12 +155,21 @@ const AddHealthCareEntity = ({
           {!isEdit && (
             <div className={`${style.spaceBetween} ${style.marginTop20}`}>
               <div></div>
-              <div
-                className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
-                onClick={() => saveSubmitHandler("Add More")}
-              >
-                ADD MORE
-              </div>
+              {entityName.length > 0 ? (
+                <div
+                  className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                  onClick={() => saveSubmitHandler("Add More")}
+                >
+                  ADD MORE
+                </div>
+              ) : (
+                <div
+                  className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
+                  onClick={() => saveSubmitHandler("Add More")}
+                >
+                  ADD MORE
+                </div>
+              )}
             </div>
           )}
         </div>

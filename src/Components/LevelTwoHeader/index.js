@@ -37,6 +37,8 @@ const LevelTwoHeader = ({
   needHeader,
   hideClose,
   Title,
+  path,
+  callingFrom,
 }) => {
   const [timeFrame, setTimeFrame] = useState("This Week");
   const [showCustomRangeSelection, setShowCustomRangeSelection] =
@@ -90,12 +92,16 @@ const LevelTwoHeader = ({
   };
 
   return (
-    <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+    <div className={`${style.spaceBetween} ${style.marginTop5}`}>
       <div className={`${style.displayInRow}`}>
-        <div className={`${style.userNameStyle} ${style.alignCenter} `}>
+        <div
+          className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}
+        >
           {heading}
         </div>
-        <div className={`${style.loginStatus} ${style.marginLeft10}`}>
+        <div
+          className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
+        >
           {updatedTime}
         </div>
       </div>
@@ -211,7 +217,7 @@ const LevelTwoHeader = ({
           />
         )}
 
-        {needHeader && (
+        {needHeader && callingFrom === "Super Admin" && (
           <>
             <img
               src={
@@ -237,29 +243,36 @@ const LevelTwoHeader = ({
             >
               {Title}
             </button>
-            {/* {heading === "INDUSTRIES WITH ENTITY TYPES" ? (
-              <button
-                className={`${style.buttonStyle} ${style.marginLeft20}`}
-                onClick={() => {
-                  getAddEntityDialog(true);
-                  setIsEdit(false);
-                }}
-              >
-                {Title}
-              </button>
-            ) : (
-              <img
-                src={AddNewEntity}
-                onClick={() => {
-                  getAddEntityDialog(true);
-                  setIsEdit(false);
-                }}
-                className={`${style.colorFileStyle} ${style.marginLeft20}`}
-                alt=""
-              />
-            )} */}
 
-            <Link to={"/Screens/ReferenceList/superAdminDashboard"}>
+            <Link to={path}>
+              {" "}
+              <Icon
+                icon="cross"
+                size={25}
+                intent={Intent.DANGER}
+                className={`${style.marginLeft20} ${style.marginBottom5}`}
+              />{" "}
+            </Link>
+          </>
+        )}
+
+        {needHeader && callingFrom === "Customer Admin" && (
+          <>
+            <img
+              src={
+                "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
+              }
+              alt="refresh"
+              className={`${style.headerFlag} ${style.marginRight15}  `}
+            />
+            <span className={`${style.headerCountryName}`}>USA</span>
+            <img
+              src={ArrowDown}
+              className={`${style.colorFileStyle2} ${style.headerArrow} ${style.ArrowUp} ${style.marginLeft20}  ${style.marginTop10}`}
+              alt=""
+            />
+
+            <Link to={path}>
               {" "}
               <Icon
                 icon="cross"

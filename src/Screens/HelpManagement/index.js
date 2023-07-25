@@ -36,14 +36,14 @@ const HelpHome = () => {
     const [showChatView, setShowChatView] = useState(false);
     const [selectedOption, setSelectedOption] = useState('TICKETS');
     const [showFeedbackTicketResolution, setShowFeedbackTicketResolution] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
     const [ticketId, setTicketId] = useState('');
     const [isEdit, setIsEdit] = useState(false);
     const [users, setUsers] = useState([]);
     const [from, setFrom] = useState(subDays(new Date(), 30));
     const [to, setTo] = useState(new Date());
     const [currentUserDetails, setCurrentUserDetails] = useState({});
-    const ticketsTableHeaderValues = ["", "TICKET ID", "TYPE", "SUBJECT/ ISSUE", "CUSTOMER", "START DATE/TIME", "LAST UPDATED", "USER NAME"];
+    const ticketsTableHeaderValues = ["", "TICKET ID", "TYPE", "GENERATION MODE", "SUBJECT/ ISSUE", "CUSTOMER", "START DATE/TIME", "LAST UPDATED", "USER NAME"];
     const tutorialsTableHeaderValues = ["", "TITLE", "DESCRIPTION", "AUTHOR", "TYPE", "DATE / TIME", "LINK", "COMMENT"];
     const releaseTableHeaderValues = ["", "TITLE", "DESCRIPTION", "AUTHOR", "TYPE", "DATE / TIME", "UPLOAD", "COMMENT", "ACTION"];
     const messageTableHeaderValues = ["", "TYPE", "RELATED TO", "MESSAGE / COMMENT", "LAST RESPONDED", "DATE / TIME", "ACTION"];
@@ -168,6 +168,7 @@ const HelpHome = () => {
     let dot = [];
     let dotTooltipValues = [];
     let tktId = [];
+    let generationMode = [];
     let type = [];
     let subject = [];
     let openDateOrTime = [];
@@ -178,6 +179,7 @@ const HelpHome = () => {
     const getTicketValues = () => {
         dot = [];
         dotTooltipValues = [];
+        generationMode = [];
         tktId = [];
         type = [];
         subject = [];
@@ -190,6 +192,7 @@ const HelpHome = () => {
             dot.push(data?.status === 'RESOLVED' ? 'green' : data?.status === 'INPROGRESS' ? 'yellow' : data?.status === 'NEW' ? 'grey' : '');
             dotTooltipValues.push(data?.status === 'RESOLVED' ? 'Resolved' : data?.status === 'INPROGRESS' ? 'In-Progress' : data?.status === 'NEW' ? 'New' : '');
             tktId.push(data?.ticketId);
+            generationMode.push(data?.generationMode);
             type.push(data?.type);
             subject.push(data?.subject);
             openDateOrTime.push(format(new Date(data?.createdDateTime), 'MM-dd-yyyy HH:mm'));
@@ -202,6 +205,7 @@ const HelpHome = () => {
             { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
             { "type": "text", "value": tktId, "onClickFunction": onClickFunction },
             { "type": "text", "value": type, "onClickFunction": onClickFunction },
+            { "type": "text", "value": generationMode, "onClickFunction": onClickFunction },
             { "type": "text", "value": subject, "onClickFunction": onClickFunction },
             { "type": "text", "value": customer, "onClickFunction": onClickFunction },
             { "type": "text", "value": openDateOrTime, "onClickFunction": onClickFunction },
@@ -224,7 +228,7 @@ const HelpHome = () => {
                     </SideBar>
                 </div>
                 <div>
-                    <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={'UPDATED ON FEB 16, 2022 16:45 EST'} hideClose={true} />
+                    <LevelTwoHeader heading={'HELP MANAGEMENT'} updatedTime={`UPDATED ON ${formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yy h:mm zzz')}`} hideClose={true} />
                     <div className={`${style.grid4} ${style.marginTop20}`}>
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TICKETS" bigNumber={myTicket?.length} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TICKETS" topText='' bottomText='LAST 30 DAYS' />
                         <Tile selectedContract={selectedOption} getSelectedContract={getSelectedContract} tileLabel="TUTORIALS & VIDEOS" bigNumber={0} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="TUTORIALS & VIDEOS" topText='' bottomText='LAST 30 DAYS' />
@@ -234,7 +238,7 @@ const HelpHome = () => {
                     {selectedOption !== "FAQS" ? (
                         <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                             <div className={style.spaceBetween}>
-                                <p className={`${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yyyy H:m zzz')}</p>
+                                <p className={`${style.activeContractsWidth}`}>{formatInTimeZone(new Date(), 'America/New_York', 'MMM d, yy h:mm zzz')}</p>
                                 <div className={`${style.displayInRow} ${style.marginTop20}`}>
                                     <SearchBar />
                                     <button className={style.contractButton} onClick={() => { setIsEdit(false); setShowFeedbackTicketResolution(true); handleFromUpload() }}>ADD TICKET</button>
@@ -248,11 +252,11 @@ const HelpHome = () => {
                             {selectedOption !== "Exception Error Tickets" && (
                                 <Table
                                     tableHeaderValues={tableHeaderValues}
-                                    tableDataValues={(selectedOption === 'TICKETS' || selectedOption === "TUTORIALS & VIDEOS")
-                                        ? getTicketValues() : selectedOption === "RELEASE NOTES" ? getTicketValues()
-                                            : selectedOption === "Messages" ? getMessagesValues() : []}
-                                    tableData={(selectedOption === 'TICKETS' || selectedOption === "TUTORIALS & VIDEOS" || selectedOption === "RELEASE NOTES")
-                                        ? myTicket : selectedOption === "Messages" ? allMessages : []}
+                                    tableDataValues={selectedOption === 'TICKETS' ? getTicketValues() : (selectedOption === "TUTORIALS & VIDEOS"
+                                        || selectedOption === "RELEASE NOTES") ? []
+                                        : selectedOption === "Messages" ? getMessagesValues() : []}
+                                    tableData={selectedOption === 'TICKETS' ? myTicket : (selectedOption === "TUTORIALS & VIDEOS" || selectedOption === "RELEASE NOTES")
+                                        ? [] : selectedOption === "Messages" ? allMessages : []}
                                     gridStyle={selectedOption === 'TICKETS' ? style.ticketTableDataGrid : selectedOption === "TUTORIALS & VIDEOS" ? style.tutorialTableDataGrid
                                         : selectedOption === "RELEASE NOTES" ? style.releaseTableDataGrid
                                             : selectedOption === "Messages" ? style.messageTableDataGrid : ''}
@@ -273,7 +277,7 @@ const HelpHome = () => {
                 {showChatView && (
                     <div className={style.chatContainer}>
                         <div className={style.blueChatPart}>
-                            <div className={style.justifyCenter}>TimeSmart.AI Team</div>
+                            <div className={style.justifyCenter}>TimeSmartAI.Inc Team</div>
                             <div className={`${style.justifyCenter}`}>
                                 <div className={`${style.displayInRow} ${style.marginTop10}`}>
                                     <div>
@@ -312,7 +316,7 @@ const HelpHome = () => {
                                     </div>
                                     <div className={style.messageContainer}>
                                         Hi there, <br /><br />
-                                        Welcome to TimeSmart.AI Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
+                                        Welcome to TimeSmartAI.Inc Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
                                     </div>
                                 </div>
                             </div>

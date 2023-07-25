@@ -82,6 +82,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             return 'activitiesOrServices';
         } else if (value === 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY') {
             return 'addOnActivities';
+        } else if (value === 'PAYMENT_PROCESSING_SUMMARY') {
+            return 'paymentsProcessingSummary';
         } else {
             return '';
         }
@@ -224,7 +226,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                             <Run />
                                         </Link>
                                     </div>
-                                    {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
                                         <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div>
@@ -233,7 +235,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
                                         <Run link={"/reportTypeOverview/addOnActivities"} />
                                     </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                    {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>3</div>
                                         <Link to="/reportTypeOverview/scheduledActivity" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forcasted to actual</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forcasted to actual</div>

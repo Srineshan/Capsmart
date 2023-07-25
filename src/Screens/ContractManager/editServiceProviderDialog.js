@@ -1,36 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, Classes, Icon, Intent, Tag, InputGroup, Button, RadioGroup, Radio, TagInput } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { GET, PUT, POST, TenantID } from './../dataSaver';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Dialog, Classes, Icon, Intent, Tag, Button, TagInput } from '@blueprintjs/core';
+import { GET, PUT, POST, DELETE, TenantID } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import FormGroup from '@mui/material/FormGroup';
-import Typography from '@mui/material/Typography';
-import Checkbox from '@mui/material/Checkbox';
 import SuffixList from './../../Components/SuffixList';
 import ProviderTypeList from './../../Components/ProviderTypeList';
 import FunctionalTitleList from './../../Components/FunctionalTitleList';
 import { FormatPhoneNumber } from './../../utils/formatting';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
+import CommonLabel from '../../Components/CommonFields/CommonLabel';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
 
-const switchTheme = createTheme({
-  palette: {
-    primary: {
-      main: '#7165E3',
-    },
-  },
-});
-
-const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractId, isEditable }) => {
+const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractId, isEditable, users }) => {
   const [selectedContract, setSelectedContract] = useState('Written Contract Extension For Fixed Term');
   const [startDate, setStartDate] = useState(new Date);
   const [terminationTrigger, setTerminationTrigger] = useState('Contract Expiration');
   const [roles, setRoles] = useState([]);
+  const [workFlowUser, setWorkFlowUser] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState(userProviderData?.roles);
   const [npin, setNpin] = useState({ npin: '', missing: false, na: false });
-  const [userDetails, setUserDetails] = useState({ firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '' });
+  const [userDetails, setUserDetails] = useState({
+    firstName: '', middleName: '', lastName: '', suffix: { suffix: '', id: '' }, email: '', phone: '',
+    ssoId: { id: '' }
+  });
   const [providerType, setProviderType] = useState({ contractedServiceProviderType: '', id: '' });
   const [address, setAddress] = useState({ addressLine: '', city: '', state: '', zipcode: '' });
   const [contractName, setContractName] = useState('');
@@ -48,10 +43,12 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   const [departmentTitleValues, setDepartmentTitleValues] = useState([]);
   const [allowPersonalMail, setAllowPersonalMail] = useState(false);
   const [phoneNA, setPhoneNA] = useState(false);
+  const [continueLoading, setContinueLoading] = useState(false);
 
   useEffect(() => {
     getRolesData();
     getContractName();
+    getContractWorkFlowUser();
   }, [])
 
   useEffect(() => {
@@ -66,7 +63,10 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   useEffect(() => {
     setNpin({ npin: userProviderData?.npin?.npin, missing: userProviderData?.npin?.missing, na: userProviderData?.npin?.notApplicable });
     setSelectedRoles(userProviderData?.roles || []);
-    setUserDetails({ ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: userProviderData?.name?.suffix || '', email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '' });
+    setUserDetails({
+      ...userDetails, firstName: userProviderData?.name?.firstName || '', middleName: userProviderData?.name?.middleName || '', lastName: userProviderData?.name?.lastName || '', suffix: { suffix: userProviderData?.name?.suffix?.suffix || '', id: userProviderData?.name?.suffix?.id }, email: userProviderData?.email?.officialEmail || '', phone: userProviderData?.communication?.mobileNumber || '',
+      ssoId: userProviderData?.ssoId || ''
+    });
     setProviderType(userProviderData?.serviceProviderType || {});
     setAllowPersonalMail(userProviderData?.personalEmailAddressAllowed);
     setAddress({ addressLine: userProviderData?.address?.addressLine || '', city: userProviderData?.address?.city || '', state: userProviderData?.address?.state || '', zipcode: userProviderData?.address?.zipcode || '' });
@@ -86,7 +86,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       data?.departmentList?.departments?.map(deptData => {
         dept.push({ id: deptData?.id, name: deptData?.departmentName?.name, title: deptData?.departmentResponsibility?.title || '', title_id: deptData?.departmentResponsibility?.id });
         if (deptData?.departmentResponsibility?.title !== '' && deptData?.departmentResponsibility?.title !== undefined) {
-          let valueString = `${data?.siteName?.siteName} - ${deptData?.departmentName?.name} - ${deptData?.departmentResponsibility?.title}`
+          let valueString = `${data?.siteName?.siteName} -- ${deptData?.departmentName?.name} -- ${deptData?.departmentResponsibility?.title}`
           if (!deptValue.includes(valueString)) {
             deptValue.push(valueString);
           }
@@ -94,7 +94,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       })
       temp.push({ id: data?.id, name: data?.siteName?.siteName, title: data?.siteResponsibility?.title || '', title_id: data?.siteResponsibility?.id, department: dept });
       if (data?.siteResponsibility?.title !== '' && data?.siteResponsibility?.title !== undefined) {
-        let valueString = `${data?.siteName?.siteName} - ${data?.siteResponsibility?.title}`;
+        let valueString = `${data?.siteName?.siteName} -- ${data?.siteResponsibility?.title}`;
         if (!siteValue.includes(valueString)) {
           siteValue.push(valueString);
         }
@@ -124,6 +124,13 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
     }
   }
 
+  const getContractWorkFlowUser = async () => {
+    const { data: contractWorkflow } = await GET(`contract-managment-service/contracts/workFlowUser`);
+    if (contractWorkflow) {
+      setWorkFlowUser(contractWorkflow);
+    }
+  }
+
   const handleRoles = (value) => {
     if (value !== '0') {
       const selectedValue = roles.filter(data => data?.roleName === value).map(data => data)[0];
@@ -148,7 +155,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
     });
 
   const getRolesData = async () => {
-    const { data: roles } = await GET(`user-management-service/roles?roleType=APP`);
+    const { data: roles } = await GET(`user-management-service/roles?roleType=APP&roleType=APP_SYSTEM`);
     if (roles) {
       setRoles(roles);
     }
@@ -180,7 +187,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} - ${siteLevelTitle?.title}`]);
+    setSiteTitleValues([...siteTitleValues, `${siteLevelSite?.name} -- ${siteLevelTitle?.title}`]);
     let temp = sites;
     temp?.filter(data => data?.id === siteLevelSite?.id)?.map(data => {
       data.title = siteLevelTitle?.title;
@@ -196,7 +203,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       ErrorToaster('Selecting all the fields is mandatory');
       return;
     }
-    let valueString = `${departmentLevelSite?.name} - ${departmentLevelDepartment?.name} - ${departmentLevelTitle?.title}`
+    let valueString = `${departmentLevelSite?.name} -- ${departmentLevelDepartment?.name} -- ${departmentLevelTitle?.title}`
     setDepartmentTitleValues([...departmentTitleValues, valueString]);
     let temp = sites;
     let siteDepartment = sites?.filter(data => data?.id === departmentLevelSite?.id)?.map(data => data?.department)[0];
@@ -217,28 +224,51 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
     setDepartmentLevelSite({ id: id, name: sites?.filter(data => data?.id === id)?.map(data => data?.name)[0] });
   }
 
-  const handleDeptRemove = (values, index) => {
-    let data = values?.split(' - ');
-    let site = data?.[0];
-    let dept = data?.[1];
-    let title = data?.[2];
+  const deptTitleReset = () => {
     let temp = sites;
-    let siteDepartment = sites?.filter(data => data?.name === site)?.map(data => data?.department)[0];
-    siteDepartment?.filter(data => data?.name === dept && data?.title === title)?.map(data => {
-      data.title = '';
-      data.title_id = '';
-    });
-    temp?.filter(data => data?.name === site && data?.title)?.map(data => {
-      data.department = siteDepartment;
-    });
+    temp?.map(site => {
+      site?.department?.map(dept => {
+        dept.title = '';
+        dept.title_id = '';
+      })
+    })
     setSites(temp);
+    setDepartmentTitleValues([]);
+  }
+
+  const siteTitleReset = () => {
+    let temp = sites;
+    temp?.map(site => {
+      site.title = '';
+      site.title_id = '';
+    })
+    setSites(temp);
+    setSiteTitleValues([]);
+  }
+
+  const handleDeptRemove = (values, index) => {
+    let data = values?.split('--');
+    let site = data?.[0]?.trim();
+    let dept = data?.[1]?.trim();
+    let title = data?.[2]?.trim();
+    console.log('dept value', data);
+    sites?.filter(data => data?.name === site)?.map(data => {
+      data?.department?.map(deptData => {
+        if (deptData?.name === dept && deptData?.title === title) {
+          console.log('inside condition')
+          deptData.title = '';
+          deptData.title_id = null;
+        }
+      }
+      )
+    });
     setDepartmentTitleValues(departmentTitleValues?.filter((data, indexVal) => index !== indexVal)?.map(data => data));
   }
 
   const handleSiteRemove = (values, index) => {
-    let data = values?.split(' - ');
-    let site = data?.[0];
-    let title = data?.[1];
+    let data = values?.split('--');
+    let site = data?.[0]?.trim();
+    let title = data?.[1]?.trim();
     let temp = sites;
     temp?.filter(data => data?.name === site && data?.title === title)?.map(data => {
       data.title = '';
@@ -248,20 +278,21 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
     setSiteTitleValues(siteTitleValues?.filter((data, indexVal) => index !== indexVal)?.map(data => data));
   }
 
-  const resetSiteLevel = (value) => {
-    if (!value) {
-      getTitleData();
-    }
-  }
+  // const resetSiteLevel = (value) => {
+  //   if (!value) {
+  //     getTitleData();
+  //   }
+  // }
 
-  const resetDeptvalue = (value) => {
-    if (!value) {
-      getTitleData();
-    }
-  }
+  // const resetDeptvalue = (value) => {
+  //   if (!value) {
+  //     getTitleData();
+  //   }
+  // }
 
   const handleSuffixChange = (id, value) => {
-    setUserDetails({ ...userDetails, suffix: { id: id, value: value } });
+    console.log('value', value);
+    setUserDetails({ ...userDetails, suffix: { id: id, suffix: value } });
   }
 
   const getSiteData = () => {
@@ -299,6 +330,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
   }
 
   const handleSave = async () => {
+    setContinueLoading(true);
     let contractData = userProviderData?.contracts;
     contractData?.filter(data => data?.id === contractId)?.map(data => {
       let site = {
@@ -325,26 +357,32 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
 
     if (!npin?.missing && !npin?.na && npin.npin === '') {
       ErrorToaster('NPIN is Mandatory if not Missing/NA');
+      setContinueLoading(false);
       return;
     }
     if (userDetails?.firstName === '') {
       ErrorToaster('First Name is Mandatory');
+      setContinueLoading(false);
       return;
     }
     if (userDetails?.lastName === '') {
       ErrorToaster('Last Name is Mandatory');
+      setContinueLoading(false);
       return;
     }
     if (!userDetails?.email?.includes('@') || !userDetails?.email?.includes('.')) {
       ErrorToaster('Enter a Valid Email');
+      setContinueLoading(false);
       return;
     }
     if (!phoneNA && userDetails?.phone?.length !== 14) {
       ErrorToaster('Enter Valid Phone Number');
+      setContinueLoading(false);
       return;
     }
     if (roles?.length === 0) {
       ErrorToaster('Select User Role');
+      setContinueLoading(false);
       return;
     }
 
@@ -354,7 +392,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
         "firstName": userDetails?.firstName,
         "middleName": userDetails?.middleName,
         "lastName": userDetails?.lastName,
-        "suffix": userDetails?.suffix
+        "suffix": userDetails?.suffix,
       },
       "userType": "CONTRACTED_SERVICE_PROVIDER_USER",
       "contracts": contractData,
@@ -364,6 +402,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       "email": {
         "officialEmail": userDetails?.email
       },
+      "ssoId": userDetails?.ssoId,
       "communication": {
         "personalEmail": userDetails?.email,
         "mobileNumber": userDetails?.phone,
@@ -420,6 +459,30 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       },
       "personalEmailAddressAllowed": allowPersonalMail,
     }
+    // if (roles?.map(data => ['APPROVER', 'REVIEWER']?.includes(data?.roleName))) {
+    //   if (!workFlowUser?.map(data => data?.userId)?.includes(userProviderData?.id)) {
+    //     await POST('contract-managment-service/contracts/workFlowUser', JSON.stringify(data))
+    //       .then(response => {
+    //         console.log('Success!');
+    //         // SuccessToaster('Workflow User Updated Successfully');
+    //       })
+    //       .catch(error => {
+    //         console.log('Error!');
+    //         // ErrorToaster('Unexpected Error');
+    //       })
+    //   }
+    // } else {
+    //   if (workFlowUser?.map(data => data?.userId)?.includes(userProviderData?.id)) {
+    //     let workFlowId = workFlowUser?.filter(data => data?.userId === userProviderData?.id)?.map(data => data?.userId)?.[0];
+    //     await DELETE(`contract-managment-service/contracts/workFlowUser/${workFlowId}`)
+    //       .then(response => {
+    //         console.log('Success!');
+    //       })
+    //       .then(error => {
+    //         console.log('Error!');
+    //       })
+    //   }
+    // }
 
     await PUT('user-management-service/user', JSON.stringify(data))
       .then(response => {
@@ -428,6 +491,7 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
       .catch(error => {
         ErrorToaster('Unexpected Error');
       })
+    setContinueLoading(false);
     getEditServiceDialog(false);
   }
 
@@ -442,126 +506,104 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
         <div className={style.extensionBorder}></div>
         <div className={`${style.serviceBoxStyle}`}>
           <div className={`${style.extentionGrid}`}>
-            <div className={style.extentionLableStyle}>Contractor Name*</div>
+            <CommonLabel value='Contractor Name*' />
             <div className={style.grid3}>
-              <InputGroup className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e) => handleUserData('firstName', e.target.value)} />
-              <InputGroup className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e) => handleUserData('middleName', e.target.value)} />
-              <InputGroup className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e) => handleUserData('lastName', e.target.value)} />
+              <CommonInputField className={style.fullWidth} value={userDetails?.firstName} placeholder="First" onChange={(e) => handleUserData('firstName', e.target.value)} />
+              <CommonInputField className={style.fullWidth} value={userDetails?.middleName} placeholder="Middle" onChange={(e) => handleUserData('middleName', e.target.value)} />
+              <CommonInputField className={style.fullWidth} value={userDetails?.lastName} placeholder="Last" onChange={(e) => handleUserData('lastName', e.target.value)} />
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>NPIN*</div>
+            <CommonLabel value='NPIN*' />
             <div className={style.grid3}>
-              <InputGroup disabled={npin?.missing || npin?.na} type="tel" maxLength={10} className={style.fullWidth} value={npin?.npin} onChange={(e) =>setNpin({ npin: e.target.value, na: false, missing: false })} />
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value={npin?.missing} checked={npin?.missing} onChange={(e) => setNpin({ npin: '', missing: e.target.checked, na: false })} />} label={<Typography variant="body2" color="textSecondary">Missing</Typography>} />
-              </FormGroup>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value={npin?.na} checked={npin?.na} onChange={(e) => setNpin({ npin: '', missing: false, na: e.target.checked })} />} label={<Typography variant="body2" color="textSecondary">Not Applicable</Typography>} />
-              </FormGroup>
+              <CommonInputField disabled={npin?.missing || npin?.na} type="tel" maxLength={10} className={style.fullWidth} value={npin?.npin} onChange={(e) => setNpin({ npin: e.target.value, na: false, missing: false })} />
+              <CommonCheckBox value={npin?.missing} checked={npin?.missing} onChange={(e) => setNpin({ npin: '', missing: e.target.checked, na: false })} label="Missing" />
+              <CommonCheckBox value={npin?.na} checked={npin?.na} onChange={(e) => setNpin({ npin: '', missing: false, na: e.target.checked })} label="Not Applicable" />
               {/* <Checkbox label="Missing" checked={npin?.missing} onChange={(e) => setNpin({ npin: '', missing: e.target.checked, na: false })} className={`${style.marginTop10} ${style.marginLeft20}`} />
               <Checkbox label="Not Applicable" checked={npin?.na} onChange={(e) => setNpin({ npin: '', missing: false, na: e.target.checked })} className={`${style.marginTop10} ${style.marginLeft20}`} /> */}
             </div>
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Suffix*</div>
+            <CommonLabel value='Suffix*' />
             <div className={style.grid3}>
-              <SuffixList value={userDetails?.suffix?.id} onChangeFunc={(id, value) => handleSuffixChange(id, value)} className={[style.fullWidth]} />
+              <SuffixList value={userDetails?.suffix?.id || ''} onChangeFunc={(id, value) => handleSuffixChange(id, value)} className={[style.fullWidth]} />
             </div>
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Allow Use of Alternate/ Personal Email Address</div>
+            <CommonLabel value='Allow Use of Alternate/ Personal Email Address' />
             <div className={style.displayInRow}>
-              <ThemeProvider theme={switchTheme}>
-                <FormControlLabel
-                  control={
-                    <Switch className={`${style.flexLeft}`} color='primary' checked={allowPersonalMail} onChange={(e) => {setAllowPersonalMail(!allowPersonalMail);handleUserData('email', '');}} />
-                  }
-                  className={`${style.switchFontStyle}`}
-                  label={allowPersonalMail ? 'YES' : 'NO'}
-                />
-              </ThemeProvider>
+              <CommonSwitch className={`${style.flexLeft} ${style.switchFontStyle}`} label={allowPersonalMail ? 'YES' : 'NO'} checked={allowPersonalMail} onChange={(e) => { setAllowPersonalMail(!allowPersonalMail); handleUserData('email', ''); }} />
               {allowPersonalMail &&
                 <div className={`${style.fullWidth} ${style.verticalAlignCenter}`}>
-                  <InputGroup placeholder="Enter Personal email" value={userDetails?.email} className={`${style.fullWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
+                  <CommonInputField placeholder="Enter Personal email" value={userDetails?.email} className={`${style.fullWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
                 </div>
               }
             </div>
           </div>
           {!allowPersonalMail &&
             <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-              <div className={style.extentionLableStyle}>Email Contractor id*</div>
+              <CommonLabel value='Contract Entity Email*' />
               <div className={style.displayInRow}>
-                <InputGroup placeholder="Enter entity specific email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
+                <CommonInputField placeholder="Enter contract entity email" value={userDetails?.email} className={`${style.entityFieldWidth}`} onChange={(e) => handleUserData('email', e.target.value)} />
               </div>
             </div>
           }
+          {/* <div className={`${style.extentionGrid} ${style.marginTop20}`}>
+            <CommonLabel value='SSO ID*' />
+            <div className={style.displayInRow}>
+              <CommonInputField placeholder="Enter SSO Id" value={userDetails?.ssoId?.id} className={`${style.entityFieldWidth}`} onChange={(e) => setUserDetails({ ...userDetails, ssoId: { id: e.target.value } })} />
+            </div>
+          </div> */}
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Service Provider Type*</div>
+            <CommonLabel value='Service Provider Type*' />
             <div className={style.grid3}>
               <ProviderTypeList value={providerType?.id} onChangeFunc={(id, value) => setProviderType({ id: id, contractedServiceProviderType: value })} className={[style.fullWidth]} />
             </div>
           </div>
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Cell Phone*</div>
+            <CommonLabel value='Cell Phone*' />
             <div className={style.twoCol}>
               <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                 <div className={`${style.plusOneText} ${style.marginRight}`}>+1</div>
-                <InputGroup placeholder="Numeric" maxLength={15}
+                <CommonInputField placeholder="Numeric" maxLength={15}
                   className={`${style.fullWidth}`} value={userDetails?.phone} disabled={phoneNA} onChange={(e) => handleUserData('phone', FormatPhoneNumber(e.target.value))} />
               </div>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox value="NA" checked={phoneNA} onChange={(e) => { setPhoneNA(e.target.checked); if (e.target.checked) { handleUserData('phone', '') } }} />} label={<Typography variant="body2" color="textSecondary">NA</Typography>} />
-              </FormGroup>
+              <CommonCheckBox value="NA" checked={phoneNA} onChange={(e) => { setPhoneNA(e.target.checked); if (e.target.checked) { handleUserData('phone', '') } }} label="NA" />
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Address*</div>
+            <CommonLabel value='Address' />
             <div>
-              <InputGroup className={style.fullWidth} placeholder="Street"
+              <CommonInputField className={style.fullWidth} placeholder="Street"
                 value={address?.addressLine}
                 onChange={(e) => setAddress({ ...address, addressLine: e.target.value })} />
               <div className={`${style.grid3} ${style.marginTop20}`}>
-                <InputGroup className={style.fullWidth} placeholder="City" value={address.city} onChange={(e) => handleAddress('city', e.target.value)} />
-                <InputGroup className={style.fullWidth} placeholder="State" value={address.state} onChange={(e) => handleAddress('state', e.target.value)} />
-                <InputGroup className={style.fullWidth} placeholder="Zipcode" value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value)} />
+                <CommonInputField className={style.fullWidth} placeholder="City" value={address.city} onChange={(e) => handleAddress('city', e.target.value)} />
+                <CommonInputField className={style.fullWidth} placeholder="State" value={address.state} onChange={(e) => handleAddress('state', e.target.value)} />
+                <CommonInputField className={style.fullWidth} placeholder="Zipcode" value={address.zipcode} onChange={(e) => handleAddress('zipcode', e.target.value)} />
               </div>
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Site Level Responsibility*</div>
+            <CommonLabel value='Site Level Responsibility*' />
             <div>
               <div className={style.flexLeft}>
-                <FormControlLabel
-                  control={
-                    <Switch checked={siteLevel} className={`${style.flexLeft}`} onChange={() => { setSiteLevel(!siteLevel); resetSiteLevel(!siteLevel); }} />
-                  }
-                  className={`${style.switchFontStyle} ${style.marginTop}`}
-                  label={siteLevel ? 'YES' : "NO"}
-                />
+                <CommonSwitch checked={siteLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setSiteLevel(!siteLevel); siteTitleReset(); }} label={siteLevel ? 'YES' : "NO"} />
               </div>
               {siteLevel && (
                 <div className={`${style.siteLevelBoxStyle}`}>
                   <div className={`${style.siteLevelGrid}`}>
                     <div className={style.marginTop}>Site*</div>
-                    <select
-                      name="class"
-                      id="Class"
-                      value={siteLevelSite?.id}
+                    <CommonSelectField value={siteLevelSite?.id || ''}
                       onChange={(e) => setSiteLevelSite({ id: e.target.value, name: sites?.filter(data => data?.id === e.target.value)?.map(data => data?.name)[0] })}
-                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                      <option value="Select Site" >
-                        Select Site
-                      </option>
-                      {sites?.map((data, index) => (
-                        <option key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>
-                          {data?.name}
-                        </option>
-                      ))}
-                    </select>
+                      className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                      firstOptionLabel={'Select Site'} firstOptionValue={''}
+                      valueList={sites?.map(data => data?.id)}
+                      labelList={sites?.map(data => data?.name)}
+                      disabledList={sites?.map(data => data?.title !== '' ? true : false)} />
                   </div>
                   {/* )} */}
                   <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
@@ -585,16 +627,10 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
             </div>
           </div>
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Department Level Responsibility*</div>
+            <CommonLabel value='Department Level Responsibility*' />
             <div>
               <div className={style.flexLeft}>
-                <FormControlLabel
-                  control={
-                    <Switch checked={departmentLevel} className={`${style.flexLeft}`} onChange={() => { setDepartmentLevel(!departmentLevel); resetDeptvalue(!departmentLevel) }} />
-                  }
-                  className={`${style.switchFontStyle} ${style.marginTop}`}
-                  label={departmentLevel ? 'YES' : "NO"}
-                />
+                <CommonSwitch checked={departmentLevel} className={`${style.flexLeft} ${style.switchFontStyle}`} onChange={() => { setDepartmentLevel(!departmentLevel); deptTitleReset(); }} label={departmentLevel ? 'YES' : "NO"} />
               </div>
               <div>
                 {departmentLevel && (
@@ -602,41 +638,24 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
                     {/* {selectedContract === "Multiple Contractor" && ( */}
                     <div className={`${style.siteLevelGrid}`}>
                       <div className={style.marginTop}>Site*</div>
-                      <select
-                        name="class"
-                        id="Class"
-                        value={departmentLevelSite?.id}
+                      <CommonSelectField value={departmentLevelSite?.id || ''}
                         onChange={(e) => handleSelectedDepartmentSite(e.target.value)}
-                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                        <option value="Select Site" >
-                          Select Site
-                        </option>
-                        {sites?.map((data, index) => (
-                          <option key={index} value={data?.id}>
-                            {data?.name}
-                          </option>
-                        ))}
-                      </select>
+                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                        firstOptionLabel={'Select Site'} firstOptionValue={''}
+                        valueList={sites?.map(data => data?.id)}
+                        labelList={sites?.map(data => data?.name)}
+                        disabledList={sites?.map(data => false)} />
                     </div>
                     {/* )} */}
                     <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                       <div className={style.marginTop}>Department*</div>
-                      <select
-                        name="class"
-                        id="Class"
-                        value={departmentLevelDepartment?.id}
+                      <CommonSelectField value={departmentLevelDepartment?.id || ''}
                         onChange={(e) => onSelectDepartment(e.target.value)}
-                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}>
-                        <option value="Select Department" >
-                          Select Department
-                        </option>
-                        {selectedSitesDept?.map((data, index) =>
-                          <option key={index} value={data?.id} disabled={data?.title !== '' ? true : false}>
-                            {data?.name}
-                          </option>
-                        )
-                        }
-                      </select>
+                        className={`${style.marginLeft20} ${style.weekSelectStyle}`}
+                        firstOptionLabel={'Select Department'} firstOptionValue={''}
+                        valueList={selectedSitesDept?.map(data => data?.id)}
+                        labelList={selectedSitesDept?.map(data => data?.name)}
+                        disabledList={selectedSitesDept?.map(data => data?.title !== '' ? true : false)} />
                     </div>
                     <div className={`${style.siteLevelGrid} ${style.marginTop10}`}>
                       <div className={style.marginTop}>Title*</div>
@@ -661,31 +680,22 @@ const EditServiceProvider = ({ getEditServiceDialog, userProviderData, contractI
 
 
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
-            <div className={style.extentionLableStyle}>Assign Contractor With App User Role*</div>
+            <CommonLabel value='Assign Contractor With App User Role*' />
             <div>
-              <select
-                name="class"
-                id="Class"
-                onChange={(e) => handleRoles(e.target.value)}
-                className={style.fullWidth}>
-                <option value="Select Role" >
-                  Select Role...
-                </option>
-                {
-                  roles?.map((data, index) => (
-                    <option key={index} value={data?.roleName} >
-                      {data?.roleName}
-                    </option>
-                  ))
-                }
-              </select>
+              <CommonSelectField onChange={(e) => handleRoles(e.target.value)}
+                className={style.fullWidth}
+                firstOptionLabel={'Select Role...'} firstOptionValue={''}
+                valueList={users?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => data?.roleName) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+                labelList={users?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => data?.roleName) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => data?.roleName)}
+                disabledList={users?.filter(data => data?.roles?.map(role => role?.roleName)?.includes('Aggregator'))?.length === 0 ? roles?.map(data => false) : roles?.filter(data => data?.roleName !== 'Aggregator')?.map(data => false)}
+              />
               <div className={`${style.marginTop20} ${style.marginLeft20}`}>{rolesTags}</div>
             </div>
           </div>
         </div>
         {isEditable &&
           <div className={`${style.floatRight} ${style.marginTop20}`}>
-            <button className={`${style.buttonStyle} ${style.marginLeft20}`} onClick={() => { handleSave(); }}>SAVE & EXIT</button>
+            <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => { handleSave(); } : {}}>SAVE & EXIT</button>
           </div>
         }
 

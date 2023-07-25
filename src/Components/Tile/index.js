@@ -16,7 +16,7 @@ const Tile = ({ selectedContract, getSelectedContract, tileLabel, bigNumber, big
         </div>
         <div className={`${style.spaceBetween}`}>
           <div className={style.displayInColRev}>
-            {bigNumber2 && (
+            {bigText2 !== '' && (
               <div className={style.displayInRow}>
                 <span className={`${style.headingCountForContracts} ${selectedContract === currentTile && bigNumberColor}`}>{bigNumber2}</span>
                 <span className={`${style.descriptionText} ${style.verticalAlignCenter} ${style.marginLeft10}`}>{bigText2}</span>

@@ -10,15 +10,13 @@ import AddContractedServiceForHealthcare from "./addContractedServiceProvider";
 import { GET, DELETE } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
+import format from "date-fns/format";
+import Navbar from "../../Components/Navbar";
+import LevelTwoHeader from "../../Components/LevelTwoHeader";
+import SideBar from "../../Components/Sidebar";
 
-const ContractedServiceProvidedByIndustries = ({
-  getAddEntityDialog,
-  showAddEntityDialog,
-  isEdit,
-  setIsEdit,
-  sendLastDate,
-  rotate,
-}) => {
+const ContractedServiceProvidedByIndustries = () => {
+  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
   const [sideMenu, setSideMenu] = useState([]);
   const [selectedTitle, setSelectedTitle] = useState("");
   const [industryId, setIndustryId] = useState("");
@@ -27,6 +25,17 @@ const ContractedServiceProvidedByIndustries = ({
   const [seletedEntity, setSelectedEntity] = useState({});
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteEntityId, setDeleteEntityId] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+
+  const getAddEntityDialog = (value) => {
+    setShowAddEntityDialog(value);
+  };
+
+  const getIsExpanded = (value) => {
+    setIsExpanded(value);
+  };
 
   const siteTypeAllData = async (siteTypeId) => {
     const { data: CSPType } = await GET(
@@ -62,48 +71,14 @@ const ContractedServiceProvidedByIndustries = ({
     setSelectedTitle(allEntries[0].industry);
     setSideMenu(allEntries);
 
-    let allDates = [];
-    allEntries.forEach((e) => {
-      e.entities.forEach((d) => {
-        let dates = d.CSPType.map((row) => row.lastModifiedDate);
-        allDates.push(...dates);
-      });
-    });
-    let sorted = allDates.sort((a, b) => a - b).reverse();
-    let lastModifiedDate = sorted[0].toString().split("+")[0];
-    const date = new Date(lastModifiedDate);
-
-    sendLastDate(
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          month: "short",
-          day: "2-digit",
-          hour: "numeric",
-          minute: "numeric",
-          year: "numeric",
-          timeZoneName: "short",
-          hour12: false,
-        })
-        .toUpperCase()
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/master`
     );
 
-    localStorage.setItem(
-      "contractedServiceProvider",
-      date
-        .toLocaleString("en-US", {
-          timeZone: "America/New_York",
-          year: "numeric",
-          month: "long",
-        })
-        .toUpperCase()
+    const date = new Date(
+      lastModifiedDate.contractedServiceProviders?.lastModified
     );
-
-    var showList = JSON.parse(localStorage.getItem("showList") || "[]");
-    if (showList.indexOf(lastModifiedDate) == -1) {
-      showList.push(lastModifiedDate);
-      localStorage.setItem("showList", JSON.stringify(showList));
-    }
+    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
   const getEntityData = async () => {
@@ -181,115 +156,159 @@ const ContractedServiceProvidedByIndustries = ({
 
   return (
     <Fragment>
-      <div className={style.centreCardColumnsGrid}>
-        <div className={style.displayInCol}>
-          {!rotate &&
-            sideMenu?.map((data, index) => (
-              <div
-                className={
-                  data?.industry === selectedTitle
-                    ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
-                    : `${style.industriesCardStyle} ${style.marginTop10}`
-                }
-                onClick={() => SelectedHandler(data)}
-              >
-                <div className={style.spaceBetween}>
-                  <p className={style.industriesCardTextStyle1}>
-                    {data.industry}
-                  </p>
-                  <p className={style.industriesCardTextStyle1}>
-                    {entityCountHandler(data)}
-                  </p>
+      <Navbar />
+      <div className={style.margin20}>
+        <div
+          className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid}`}
+        >
+          <div>
+            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+              <div></div>
+            </SideBar>
+          </div>
+
+          <div>
+            <LevelTwoHeader
+              heading={`CONTRACTED SERVICE PROVIDERS BY INDUSTRY & ENTITY TYPES`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate} `}
+              path={"/Screens/ReferenceList/superAdminDashboard"}
+              callingFrom={"Super Admin"}
+              needHeader={true}
+              getAddEntityDialog={getAddEntityDialog}
+              Title={"ADD CSP"}
+            />
+
+            <div className={style.marginTop35}>
+              <div className={style.centreCardStyle}>
+                <div className={style.margin20}>
+                  <div className={style.centreCardColumnsGrid}>
+                    <div className={style.displayInCol}>
+                      {sideMenu?.map((data, index) => (
+                        <div
+                          className={
+                            data?.industry === selectedTitle
+                              ? `${style.industriesCardStyle} ${style.selectedIndustriesBackground} ${style.marginTop10}`
+                              : `${style.industriesCardStyle} ${style.marginTop10}`
+                          }
+                          onClick={() => SelectedHandler(data)}
+                        >
+                          <div className={style.spaceBetween}>
+                            <p className={style.industriesCardTextStyle1}>
+                              {data.industry}
+                            </p>
+                            <p className={style.industriesCardTextStyle1}>
+                              {entityCountHandler(data)}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className={style.industriesEntityCardStyle}>
+                      <div className={style.contractedServiceHeader}>
+                        <p></p>
+                        <p className={style.tableHeaderIndustriesFontStyle}>
+                          ENTITY TYPE
+                        </p>
+                        <p className={style.tableHeaderIndustriesFontStyle}>
+                          LAST UPDATED
+                        </p>
+                        <p className={style.tableHeaderIndustriesFontStyle}>
+                          {/* LAST UPDATED */}
+                        </p>
+                      </div>
+                      {siteTypeTableData?.map((data) =>
+                        data.items.length !== 0 ? (
+                          <>
+                            <div
+                              className={style.contractedServiceProvidersHeader}
+                            >
+                              <img
+                                src={IndustriesEntityFolder}
+                                alt="IndustriesEntityFolder"
+                                className={`${style.colorFileStyle} ${style.marginLeft5}`}
+                              />
+                              <p
+                                className={
+                                  style.tableSubHeaderIndustriesFontStyle
+                                }
+                              >
+                                {data.type}
+                              </p>
+                              <img
+                                src={EditHcFolder}
+                                className={style.colorFileStyle}
+                                onClick={() => {
+                                  getAddEntityDialog(true);
+                                  setIsEdit(false);
+                                  setSelectedEntity(data);
+                                }}
+                                alt=""
+                              />
+                              <img
+                                src={DeleteHcFolder}
+                                className={style.colorFileStyle}
+                                alt=""
+                              />
+                            </div>
+                            {data?.items?.map((i, innerIndex) => (
+                              <div
+                                className={
+                                  innerIndex % 2 !== 0
+                                    ? `${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`
+                                    : `${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`
+                                }
+                              >
+                                <p className={style.tableDataFontStyle}>
+                                  {i.contractedServiceProviderType}
+                                </p>
+                                <p className={style.tableDataFontStyle}>
+                                  {/* {i.createdDate
+                          .split("T")[0]
+                          .split("-")
+                          .reverse()
+                          .join("-")} */}
+                                </p>
+                                <p className={style.tableDataFontStyle}>
+                                  {format(
+                                    new Date(`${i.lastModifiedDate}`),
+                                    "MM-dd-yyyy"
+                                  )}
+                                </p>
+                                <img
+                                  src={EditHcRow}
+                                  className={style.colorFileStyle}
+                                  onClick={() => {
+                                    setIsEdit(true);
+                                    setSelectedEntity(i);
+                                    getAddEntityDialog(true);
+                                  }}
+                                  alt=""
+                                />
+                                <img
+                                  src={DeleteHcRow}
+                                  className={style.colorFileStyle}
+                                  onClick={() => {
+                                    deleteHandler(i);
+                                  }}
+                                  alt=""
+                                />
+                              </div>
+                            ))}
+                          </>
+                        ) : (
+                          <></>
+                        )
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
-        </div>
-        <div className={style.industriesEntityCardStyle}>
-          <div className={style.contractedServiceHeader}>
-            <p></p>
-            <p className={style.tableHeaderIndustriesFontStyle}>ENTITY TYPE</p>
-            <p className={style.tableHeaderIndustriesFontStyle}>CREATED DATE</p>
-            <p className={style.tableHeaderIndustriesFontStyle}>LAST UPDATED</p>
+            </div>
           </div>
-          {!rotate &&
-            siteTypeTableData?.map((data) =>
-              data.items.length !== 0 ? (
-                <>
-                  <div className={style.terminationHeader}>
-                    <img
-                      src={IndustriesEntityFolder}
-                      alt="IndustriesEntityFolder"
-                      className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                    />
-                    <p className={style.tableSubHeaderIndustriesFontStyle}>
-                      {data.type}
-                    </p>
-                    <img
-                      src={EditHcFolder}
-                      className={style.colorFileStyle}
-                      onClick={() => {
-                        getAddEntityDialog(true);
-                        setIsEdit(false);
-                        setSelectedEntity(data);
-                      }}
-                      alt=""
-                    />
-                    <img
-                      src={DeleteHcFolder}
-                      className={style.colorFileStyle}
-                      alt=""
-                    />
-                  </div>
-                  {data?.items?.map((i, innerIndex) => (
-                    <div
-                      className={
-                        innerIndex % 2 !== 0
-                          ? `${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor2} ${style.displayInRow}`
-                          : `${style.contractedServiceLayer3Card} ${style.healthCareTableDataColor1} ${style.displayInRow}`
-                      }
-                    >
-                      <p className={style.tableDataFontStyle}>
-                        {i.contractedServiceProviderType}
-                      </p>
-                      <p className={style.tableDataFontStyle}>
-                        {i.createdDate
-                          .split("T")[0]
-                          .split("-")
-                          .reverse()
-                          .join("-")}
-                      </p>
-                      <p className={style.tableDataFontStyle}>
-                        {i.lastModifiedDate
-                          .split("T")[0]
-                          .split("-")
-                          .reverse()
-                          .join("-")}
-                      </p>
-                      <img
-                        src={EditHcRow}
-                        className={style.colorFileStyle}
-                        onClick={() => {
-                          setIsEdit(true);
-                          setSelectedEntity(i);
-                          getAddEntityDialog(true);
-                        }}
-                        alt=""
-                      />
-                      <img
-                        src={DeleteHcRow}
-                        className={style.colorFileStyle}
-                        onClick={() => {
-                          deleteHandler(i);
-                        }}
-                        alt=""
-                      />
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <></>
-              )
-            )}
+        </div>
+        <div className={style.spaceBetween}>
+          <p className={style.poweredBy}>Powered by - TimeSmartAI.Inc LLP</p>
+          <p className={style.poweredBy}>© TimeSmartAI.Inc</p>
         </div>
       </div>
 

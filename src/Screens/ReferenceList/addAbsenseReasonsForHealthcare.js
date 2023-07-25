@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, Classes, Icon, Intent, InputGroup } from "@blueprintjs/core";
 import ArrowDown from "./../../images/arrowDown.png";
 import style from "./index.module.scss";
-import { POST, PUT } from "../dataSaver";
+import { POST, PUT, TenantID } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 
 const AddAbsenseReasonsForHealthcare = ({
@@ -14,6 +14,8 @@ const AddAbsenseReasonsForHealthcare = ({
   tableEntityData,
   selectedTitle,
   getIndustryData,
+  absenceReasonCustomer,
+  getAbsenceReason,
 }) => {
   const [absenseId, setAbsenseId] = useState("");
   const [absenseType, setAbsenseType] = useState("Planned");
@@ -32,60 +34,110 @@ const AddAbsenseReasonsForHealthcare = ({
   };
 
   const saveSubmitHandler = async (type) => {
-    const isPresent = tableEntityData
-      .filter((e) => e.absenceType === absenseType.toUpperCase())
-      .find((p) => p.absenceReason === absenceReason);
-    if (isPresent) {
-      ErrorToaster("Already This Absence Reason Exists");
-      document.getElementById("absenceEl").focus();
-      getAddEntityDialog(true);
-      return;
-    }
+    if (!absenceReasonCustomer) {
+      const isPresent = tableEntityData
+        .filter((e) => e.absenceType === absenseType.toUpperCase())
+        .find((p) => p.absenceReason === absenceReason);
+      if (isPresent) {
+        ErrorToaster("Already This Absence Reason Exists");
+        document.getElementById("absenceEl").focus();
+        getAddEntityDialog(true);
+        return;
+      }
 
-    if (!absenceReason && absenceReason === "") {
-      document.getElementById("absenceEl").focus();
-      return;
-    }
+      if (!absenceReason && absenceReason === "") {
+        document.getElementById("absenceEl").focus();
+        return;
+      }
 
-    const data = {
-      ...(isEdit && { id: absenseId }),
-      ...(isEdit && { createdDate: createdDate }),
-      absenceType: absenseType.toUpperCase(),
-      absenceReason: absenceReason,
-      notificationPeriod: {
-        numberOfDays: parseInt(notificationPeriod),
-      },
-      industryId: {
-        id: IndustryId,
-      },
-    };
+      const data = {
+        ...(isEdit && { id: absenseId }),
+        ...(isEdit && { createdDate: createdDate }),
+        absenceType: absenseType.toUpperCase(),
+        absenceReason: absenceReason,
+        notificationPeriod: {
+          numberOfDays: parseInt(notificationPeriod),
+        },
+        industryId: {
+          id: IndustryId,
+        },
+      };
 
-    if (!isEdit) {
-      await POST("entity-service/absenceReasonMaster", JSON.stringify(data))
-        .then((response) => {
-          SuccessToaster("Absence Added Successfully");
-          getIndustryData();
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
+      if (!isEdit) {
+        await POST("entity-service/absenceReasonMaster", JSON.stringify(data))
+          .then((response) => {
+            SuccessToaster("Absence Added Successfully");
+            getEntityData();
+          })
+          .catch((error) => {
+            ErrorToaster(error);
+          });
+      } else {
+        await PUT(
+          `entity-service/absenceReasonMaster/${absenseId}`,
+          JSON.stringify(data)
+        )
+          .then((response) => {
+            SuccessToaster("Absence Updated Successfully");
+            getEntityData();
+          })
+          .catch((error) => {
+            ErrorToaster(error);
+          });
+      }
+
+      if (type !== "Add More") {
+        getAddEntityDialog(false);
+        getEntityData();
+      } else {
+        setAbsenseReason("");
+        document.getElementById("absenceEl").focus();
+      }
     } else {
-      await PUT(
-        `entity-service/absenceReasonMaster/${absenseId}`,
-        JSON.stringify(data)
-      )
-        .then((response) => {
-          SuccessToaster("Absence Updated Successfully");
-          getIndustryData();
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
-    }
+      const data = {
+        ...(isEdit && { id: selectedAbsence?.id }),
+        ...(isEdit && { createdDate: selectedAbsence?.createdDate }),
+        ...(isEdit && { lastModifiedDate: new Date() }),
+        absenceType: absenseType.toUpperCase(),
+        absenceReason: absenceReason,
+        notificationPeriod: {
+          numberOfDays: parseInt(notificationPeriod),
+        },
+        industryId: {
+          id: IndustryId,
+        },
+        entityId: {
+          id: TenantID,
+        },
+        customized: true,
+      };
 
+      if (!isEdit) {
+        await POST("entity-service/absenceReason", JSON.stringify([data]))
+          .then((response) => {
+            SuccessToaster("Absence Added Successfully");
+            getAbsenceReason();
+          })
+          .catch((error) => {
+            ErrorToaster(error);
+          });
+      } else {
+        await PUT(
+          `entity-service/absenceReason/${selectedAbsence?.id}`,
+          JSON.stringify(data)
+        )
+          .then((response) => {
+            SuccessToaster("Absence Updated Successfully");
+            getAbsenceReason();
+          })
+          .catch((error) => {
+            ErrorToaster(error);
+          });
+      }
+    }
     if (type !== "Add More") {
       getAddEntityDialog(false);
-      getIndustryData();
+      getAbsenceReason();
     } else {
       setAbsenseReason("");
       document.getElementById("absenceEl").focus();
@@ -117,16 +169,37 @@ const AddAbsenseReasonsForHealthcare = ({
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>
             {isEdit
-              ? "Add/Edit Absence Reasons"
-              : `New Absence Reason For ${selectedTitle}`}
+              ? `Add/Edit Absence Reasons ${selectedTitle}`
+              : `New Absence Reason For ${selectedTitle ? selectedTitle : ""}`}
           </p>
-          <Icon
-            icon="cross"
-            size={20}
-            intent={Intent.DANGER}
-            className={style.dialogCrossStyle}
-            onClick={() => getAddEntityDialog(false)}
-          />
+          <div className={`${style.displayInRow}`}>
+            <div className={`${style.displayInRow} ${style.marginRight20}`}>
+              <img
+                src={
+                  "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
+                }
+                alt="refresh"
+                className={`${style.headerFlag} ${style.marginRight15}`}
+              />
+              <span
+                className={`${style.headerCountryName} ${style.marginLeft10}`}
+              >
+                USA
+              </span>
+              <img
+                src={ArrowDown}
+                className={`${style.colorFileStyle2} ${style.marginLeft10}  ${style.marginTop10}`}
+                alt=""
+              />
+            </div>
+            <Icon
+              icon="cross"
+              size={20}
+              intent={Intent.DANGER}
+              className={style.dialogCrossStyle}
+              onClick={() => getAddEntityDialog(false)}
+            />
+          </div>
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
         <div className={`${style.addHealthCareBoxStyle}`}>
@@ -174,8 +247,9 @@ const AddAbsenseReasonsForHealthcare = ({
                   ? "Request Notification Period*"
                   : "Notification Period"}
               </div>
+              {absenceReasonCustomer && (
               <div className={style.displayInRow}>
-                <div className={style.entityLableStyle}>Not more than</div>
+                <div className={style.entityLableStyle}>Notification Period</div>
                 <InputGroup
                   value={notificationPeriod}
                   name="notificationPeriod"
@@ -189,18 +263,30 @@ const AddAbsenseReasonsForHealthcare = ({
                   Days
                 </div>
               </div>
+            )}
             </div> */}
           </div>
 
           <div className={`${style.spaceBetween} ${style.marginTop20}`}>
             <div></div>
             {!isEdit && (
-              <div
-                className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
-                onClick={() => saveSubmitHandler("Add More")}
-              >
-                ADD MORE
-              </div>
+              <>
+                {absenceReason.length > 0 ? (
+                  <div
+                    className={`${style.buttonStyle3} ${style.addMoreCardStyle}`}
+                    onClick={() => saveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                ) : (
+                  <div
+                    className={`${style.addMoreCardStyle} ${style.addMoreTextStyle}`}
+                    onClick={() => saveSubmitHandler("Add More")}
+                  >
+                    ADD MORE
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

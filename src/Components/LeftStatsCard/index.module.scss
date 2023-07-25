@@ -1,5 +1,5 @@
 .bigCardStyle {
-    height: calc(100vh - 265px);
+    height: calc(100vh - 255px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -14,13 +14,28 @@
 
 .statisticsHeading {
     border-bottom: 2px solid #EBF2F7;
-    padding-bottom: 20px;
-    text-align: center;
+    padding: 0 0 20px 20px;
+    text-align: left;
 }
 
 .scrollStyle {
     height: calc(100vh - 400px);
     overflow: scroll;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollStyle,
+.bigCardStyle::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollStyle,
+.bigCardStyle {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 .progressbarStyle {
@@ -34,7 +49,7 @@
 }
 
 .statisticsProgress {
-    font: normal normal normal 9px/13px Montserrat;
+    font: normal normal normal 10px/11px Montserrat;
     letter-spacing: -0.3px;
     color: #52575D;
     opacity: 1;
@@ -43,7 +58,7 @@
 }
 
 .viewStyle {
-    font: normal normal normal 10px/15px Montserrat;
+    font: normal normal normal 9px/15px Montserrat;
     letter-spacing: -0.3px;
     color: #52575D;
     opacity: 1;

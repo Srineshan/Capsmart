@@ -1,46 +1,46 @@
-import {ErrorToaster} from './toaster';
+import { ErrorToaster } from './toaster';
 
 export const FormatPhoneNumber = (value) => {
-    if (!value) return value;
+  if (!value) return value;
 
-    const phoneNumber = value.replace(/[^\d]/g, "");
-    const phoneNumberLength = phoneNumber.length;
+  const phoneNumber = value.replace(/[^\d]/g, "");
+  const phoneNumberLength = phoneNumber.length;
 
-    if (phoneNumberLength < 4) return phoneNumber;
+  if (phoneNumberLength < 4) return phoneNumber;
 
-    if (phoneNumberLength < 7) {
-      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
-    }
-
-    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(
-      3,
-      6
-    )}-${phoneNumber.slice(6, 10)}`;
+  if (phoneNumberLength < 7) {
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
   }
 
-export const EmailValidator = (value) =>{
-  if(!value?.includes('@') || !value?.includes('.')){
-     ErrorToaster('Enter valid Email');
-     return true;
+  return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(
+    3,
+    6
+  )}-${phoneNumber.slice(6, 10)}`;
+}
+
+export const EmailValidator = (value) => {
+  if (!value?.includes('@') || !value?.includes('.')) {
+    ErrorToaster('Enter valid Email');
+    return true;
   }
 }
 
 export const PhoneValidator = (value) => {
-  if(value?.length !== 14){
-     ErrorToaster('Enter a valid Phone Number');
-     return true;
+  if (value?.length !== 14) {
+    ErrorToaster('Enter a valid Phone Number');
+    return true;
   }
 }
 
 export const EmptyStringCheck = (value, message) => {
-  if(value === '' || value === undefined || value === null){
-     ErrorToaster(message);
-     return true;
+  if (value === '' || value === undefined || value === null) {
+    ErrorToaster(message);
+    return true;
   }
 }
 
 export const GetDateFromHours = (time) => {
-time = time?.split(':') || [];
-let now = new Date();
-return new Date(now.getFullYear(), now.getMonth(), now.getDate(), ...time);
+  time = time?.split(':') || [];
+  let now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), ...time);
 }

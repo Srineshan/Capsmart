@@ -92,6 +92,8 @@
     color: #52575D;
     text-transform: uppercase;
     text-align: left;
+    word-break: break-word;
+    width: auto;
 }
 
 .cursorPointer {
@@ -175,11 +177,12 @@
 }
 
 .specificActionCard {
-    height: 35px;
-    padding: 0 10px;
+    min-height: 35px;
+    padding: 10px;
     display: flex;
     align-items: center;
     color: #F5F9FD;
+    max-width: 250px;
 }
 
 .siteCard {
@@ -259,4 +262,18 @@
     align-items: center;
     justify-content: center;
     height: 100%;
+}
+
+.sortImgStyle {
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
+}
+
+.addStyle {
+    background: #7165E3 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 6px #00000029;
+    border-radius: 8px;
+    height: 33px;
+    min-width: 35px;
 }

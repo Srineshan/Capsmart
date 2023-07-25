@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { TextArea, InputGroup, Icon, Dialog, Classes, Intent, Checkbox } from '@blueprintjs/core';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import ToolBar from './toolbar';
 import { POST, GET, PUT } from './../dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import ReviewerApproverField from './reviewerApproverField';
+import ContractValidationCheckSummary from './contractValidationCheckSummary';
 
 import style from './index.module.scss';
-import ContractValidationCheckSummary from './contractValidationCheckSummary';
 
 const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContractInfo, contractId, contractName, isEditable, contract, getTabDataStatus }) => {
     const [addOn, setAddOn] = useState({ id: '', reviewer: '', approver: '' });
@@ -188,11 +184,9 @@ const RequestProcessingWorkflow = ({ getViewPage9, getCurrentPage, selectContrac
         return data;
     }
 
-    console.log('reviewer', addOn?.reviewer, absence?.reviewer);
-
     const submit = async () => {
         if (addOn?.reviewer === null || absence?.reviewer === null || addOn?.reviewer === '0' || absence?.reviewer === '0') {
-            ErrorToaster('Select Approver for Add-On and Absence Request');
+            ErrorToaster('Select Approver for Absence Request');
             return;
         }
         // let addOnData = handleTimeSheetWorkFlow(`AddOn-${contractName}`, addOn.reviewer, addOn.approver, activeTab);

@@ -156,14 +156,14 @@ const ContractedServicesProviderMultiple = ({ getNewServiceProviderDialog, newSe
       </div>
       {isEditable &&
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-          <button className={`${style.newContractButtonStyle}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
+          <button className={`${style.newContractButtonStyle}  ${style.cursorPointer}`} onClick={() => { getCurrentPage('Contract ID & Term Limit') }}>BACK</button>
           <div className={`${style.floatRight}`}>
-            <button className={`${style.newContractButtonStyle} ${style.marginLeft20}`} onClick={() => { { getViewPage2(true) }; getViewPage1(false); getCurrentPage('Contractor Business Entity') }}>CONTINUE</button>
+            <button className={`${style.newContractButtonStyle}  ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { { getViewPage2(true) }; getViewPage1(false); getCurrentPage('Contractor Business Entity') }}>CONTINUE</button>
           </div>
         </div>
       }
       {editServiceProviderDialog && (
-        <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId} isEditable={isEditable} />
+        <EditServiceProvider getEditServiceDialog={getEditServiceDialog} userProviderData={userProviderData} contractId={contractId} isEditable={isEditable} users={users} />
       )}
     </div>
   )

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, Fragment } from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Checkbox } from '@material-ui/core';
 import ChevronRight from './../../images/chevronRight.png';
 import Envelope from './../../images/envelope.png';
@@ -12,13 +12,13 @@ import SideBar from '../../Components/Sidebar';
 import Navbar from '../../Components/Navbar';
 import ThreeDot from './../../images/threeDot.png';
 import SearchBar from './../../Components/SearchBar';
-
+import Table from '../../Components/TableDesign';
 import style from './index.module.scss';
 import StopTrial from './stopTrial';
 import ExtendTrial from './extendTrial';
 import ConvertTrial from './convertTrial';
 
-const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
+const TrialCustomers = ({ getSelectedCustomer, getAddContract, entityList, viewInprogress, viewTrial }) => {
     const [showOptions, setShowOptions] = useState(false);
 
     const [stopTrialDialog, setStopTrialDialog] = useState(false);
@@ -42,19 +42,113 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
 
     function useOptionsHide(ref) {
         useEffect(() => {
-          function handleClickOutside(event) {
-            if (ref.current && !ref.current.contains(event.target)) {
-              setShowOptions(false)
+            function handleClickOutside(event) {
+                if (ref.current && !ref.current.contains(event.target)) {
+                    setShowOptions(false)
+                }
             }
-          }
-          document.addEventListener("mousedown", handleClickOutside);
-          return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-          };
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
         }, [ref]);
-      }
-    return(
-        <Fragment>
+    }
+
+    const inProgressTableHeaderValues = ['', 'CUSTOMER', 'TYPE OF CUSTOMER', 'SUBSCRIPTION', 'CITY', 'STATE', 'LAST UPDATED', 'SETUP DELAY', 'LAST UPDATED BY', 'PARTNER', 'ACTION'];
+    const trialTableHeaderValues = ['', 'CUSTOMER', 'TYPE OF CUSTOMER', 'CITY', 'STATE', 'TRIAL START DATE', 'TRIAL EXPIRING IN', 'PARTNER', 'LAST UPDATED BY', 'ACTION'];
+    const tableHeaderValues = viewInprogress ? inProgressTableHeaderValues : trialTableHeaderValues;
+
+    let customer = [];
+    let customerType = [];
+    let subscription = [];
+    let city = [];
+    let state = [];
+    let dateCreated = [];
+    let partner = [];
+    let lastUpdated = [];
+    let setupDelay = [];
+    let lastUpdatedBy = [];
+    let dot = [];
+    let dotTooltipValues = [];
+    let action = [];
+    let trialStartDate = [];
+    let trialExpiringIn = [];
+
+    const getTableValues = () => {
+        customer = [];
+        customerType = [];
+        city = [];
+        state = [];
+        dateCreated = [];
+        subscription = [];
+        partner = [];
+        lastUpdated = [];
+        setupDelay = [];
+        lastUpdatedBy = [];
+        dot = [];
+        dotTooltipValues = [];
+        action = [];
+        trialStartDate = [];
+        trialExpiringIn = [];
+
+        entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map((data, index) => {
+            dot.push('green');
+            dotTooltipValues.push('Active');
+            customer.push(data?.entityName?.entityName || '-');
+            customerType.push(data?.entityType?.type || '-');
+            city.push(data?.mailingAddress?.city || '-');
+            state.push(data?.mailingAddress?.state || '-');
+            dateCreated.push('-');
+            subscription.push(data?.subscriptionPlan?.subscriptionStatus || '-');
+            setupDelay.push('-');
+            lastUpdatedBy.push(data?.updatedBy?.name || '-');
+            partner.push(data?.partner?.partnerName || '-');
+            lastUpdated.push(data?.updatedDate || '-');
+            trialStartDate.push('-');
+            trialExpiringIn.push('-');
+            action.push(true);
+        })
+
+        return viewInprogress ? [
+            { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
+            { "type": "text", "value": customer, "onClickFunction": () => { } },
+            { "type": "text", "value": customerType, "onClickFunction": () => { } },
+            { "type": "text", "value": subscription, "onClickFunction": () => { } },
+            { "type": "text", "value": city, "onClickFunction": () => { } },
+            { "type": "text", "value": state, "onClickFunction": () => { } },
+            { "type": "text", "value": lastUpdated, "onClickFunction": () => { } },
+            { "type": "text", "value": setupDelay, "onClickFunction": () => { } },
+            { "type": "text", "value": lastUpdatedBy, "onClickFunction": () => { } },
+            { "type": "text", "value": partner, "onClickFunction": () => { } },
+            { "type": "action", "value": action },
+        ] : [
+            { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
+            { "type": "text", "value": customer, "onClickFunction": () => { } },
+            { "type": "text", "value": customerType, "onClickFunction": () => { } },
+            { "type": "text", "value": city, "onClickFunction": () => { } },
+            { "type": "text", "value": state, "onClickFunction": () => { } },
+            { "type": "text", "value": trialStartDate, "onClickFunction": () => { } },
+            { "type": "text", "value": trialExpiringIn, "onClickFunction": () => { } },
+            { "type": "text", "value": partner, "onClickFunction": () => { } },
+            { "type": "text", "value": lastUpdatedBy, "onClickFunction": () => { } },
+            { "type": "action", "value": action },
+        ];
+    }
+
+    const inProgressActionsData = [
+        { 'data': 'Delete', 'onClick': () => { }, 'requiredValue': 'boolean' },
+        { 'data': 'Mail', 'onClick': () => { }, 'requiredValue': 'id' },
+    ]
+
+    const trialActionsData = [
+        { 'data': 'Stop Trial', 'onClick': () => { }, 'requiredValue': 'id' },
+        { 'data': 'Extend Trial', 'onClick': () => { }, 'requiredValue': 'id' },
+        { 'data': 'Convert File', 'onClick': () => { }, 'requiredValue': 'id' },
+
+    ]
+    return (
+        <>
+            {/* <Fragment>
             <Navbar />
             <div className={style.margin20}>
                 <div className={`${style.bigCardGrid2}`}>
@@ -72,7 +166,7 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
                             <div className={`${style.cardStyle}`} onClick={() => getSelectedCustomer('ACTIVE CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>ACTIVE CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop30}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data=>data)?.length || 0}</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus === 'ACTIVE')?.map(data => data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.red}>1 </span> RENEWAL PAST DUE</span>
                                         <span><span className={style.yellow}>1 </span> AUTO RENEWED</span>
@@ -83,7 +177,7 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
                             <div className={`${style.cardStyle} ${style.selectedContractBackground}`} onClick={() => getSelectedCustomer('IN-PROGRESS / TRIAL CUSTOMERS')}>
                                 <h5 className={`${style.headingForContracts}`}>IN-PROGRESS / TRIAL CUSTOMERS</h5>
                                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data=>data)?.length || 0}</p>
+                                    <p className={`${style.headingCountForCustomers} ${style.displayInColRev}`}>{entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data => data)?.length || 0}</p>
                                     <div className={`${style.optionsStyle} ${style.displayInCol}`}>
                                         <span><span className={style.green}>1 </span> ON TRIAL</span>
                                         <span><span className={style.yellow}>1 </span> OVER 30 DAYS</span>
@@ -112,84 +206,91 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
                                     </div>
                                 </div>
                             </div>
+                        </div> */}
+            {/* <div className={style.marginTop20}> */}
+            {/* <div className={style.bigCardStyle}> */}
+            {/* <div className={style.spaceBetween}>
+                        <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginLeft30}`}>
+                            <p className={`${style.blue} ${style.activeContractsWidth}`}>LIST OF IN-PROGRESS CUSTOMERS</p>
                         </div>
-                        <div className={style.marginTop20}>
-                            <div className={style.bigCardStyle}>
-                                <div className={style.spaceBetween}>
-                                    <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginLeft30}`}>
-                                        <p className={`${style.blue} ${style.activeContractsWidth}`}>LIST OF IN-PROGRESS CUSTOMERS</p>
-                                    </div>
-                                    <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                        <SearchBar />
-                                        <img src={Envelope} alt="Envelope" className={style.smallIcons} />
-                                        <img src={Bell} alt="Bell" className={style.smallIcons} />
-                                        <img src={Filter} alt="Filter" className={style.filterIcon} />
-                                        <button className={style.contractButton} onClick={() => getAddContract(true)} >ADD CUSTOMER</button>
-                                    </div>
+                        <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                            <SearchBar />
+                            <img src={Envelope} alt="Envelope" className={style.smallIcons} />
+                            <img src={Bell} alt="Bell" className={style.smallIcons} />
+                            <img src={Filter} alt="Filter" className={style.filterIcon} />
+                            <button className={style.contractButton} onClick={() => getAddContract(true)} >ADD CUSTOMER</button>
+                        </div>
+                    </div> */}
+            {/* <div> */}
+            <Table
+                tableHeaderValues={tableHeaderValues}
+                tableDataValues={getTableValues()}
+                tableData={entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')}
+                gridStyle={viewInprogress ? style.inprogressTableGrid : style.trialTableGrid}
+                actions={viewInprogress ? inProgressActionsData : trialActionsData}
+            />
+            {/* <div className={`${style.tableHeaderTrialCustomer} ${style.marginTop20}`}>
+                        <Checkbox />
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>CUSTOMER</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>TYPE OF CUSTOMER</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>SUBSCRIPTION</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>CITY</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>STATE</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>LAST UPDATED</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>SETUP DELAY</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>LAST UPDATED BY</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>PARTNER</p>
+                        <p className={style.tableHeaderFontStyleActiveCustomer}>ACTION</p>
+                    </div>
+                    {
+                        entityList?.filter(data => data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data => (
+                            <div className={`${style.tableDataTrialCustomer}`}>
+                                <div className={`${style.displayInRow}`}>
+                                    <Checkbox />
+                                    <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
                                 </div>
-                                <div>
-                                    <div className={`${style.tableHeaderTrialCustomer} ${style.marginTop20}`}>
-                                        <Checkbox />
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>CUSTOMER</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>TYPE OF CUSTOMER</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>SUBSCRIPTION</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>CITY</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>STATE</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>LAST UPDATED</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>SETUP DELAY</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>LAST UPDATED BY</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>PARTNER</p>
-                                        <p className={style.tableHeaderFontStyleActiveCustomer}>ACTION</p>
-                                    </div>
-                                    {
-                                    entityList?.filter(data=>data?.subscriptionPlan?.subscriptionStatus !== 'ACTIVE')?.map(data=> (
-                                      <div className={`${style.tableDataTrialCustomer}`}>
-                                          <div className={`${style.displayInRow}`}>
-                                              <Checkbox />
-                                              <div className={`${style.green} ${style.greenDotStyle} ${style.marginTop20}`}></div>
-                                          </div>
-                                          <Link to={`/entitySetup/${data?.id}`} className={`${style.linkStyle}`}>
-                                            <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>{data?.entityName?.entityName}</p>
-                                          </Link>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>{data?.customerType}</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>Trial</p>
-                                          <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>Maggiehaven</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>NY</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>-</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                          <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
-                                          <div className={style.tableDataFontStyle}>
-                                              <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
-                                          </div>
-                                      </div>
-                                    ))
-                                    }
-
-                                    {showOptions && (
-                                        <div className={`${style.displayInCol} ${style.actionCard} ${style.cursorPointer}`} ref={menuRef}>
-                                            <img src={CustomerBox3} alt="CustomerBox1" className={style.actionsIcon} onClick={() => setStopTrialDialog(true)} />
-                                            <img src={CustomerBox1} alt="CustomerBox2" className={style.actionsIcon} onClick={() => setExtendTrialDialog(true)} />
-                                            <img src={CustomerBox2} alt="CustomerBox3" className={style.actionsIcon} onClick={() => setConvertTrialDialog(true)} />
-                                        </div>
-                                    )}
-                                    <div className={style.spaceBetween}>
-                                        <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
-                                        <div className={style.displayInRow}>
-                                        <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                                        <img src={ChevronRight} className={style.roundChevron} />
-                                        </div>
-                                    </div>
+                                <Link to={`/entitySetup/${data?.id}`} className={`${style.linkStyle}`}>
+                                    <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>{data?.entityName?.entityName}</p>
+                                </Link>
+                                <p className={style.tableDataFontStyleActiveCustomers}>{data?.customerType}</p>
+                                <p className={style.tableDataFontStyleActiveCustomers}>Trial</p>
+                                <p className={`${style.tableDataFontStyleActiveCustomers} ${style.marginLeft30}`}>Maggiehaven</p>
+                                <p className={style.tableDataFontStyleActiveCustomers}>NY</p>
+                                <p className={style.tableDataFontStyleActiveCustomers}>07/19/2019</p>
+                                <p className={style.tableDataFontStyleActiveCustomers}>-</p>
+                                <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
+                                <p className={style.tableDataFontStyleActiveCustomers}>Lorem</p>
+                                <div className={style.tableDataFontStyle}>
+                                    <img src={ThreeDot} alt="ThreeDot" className={`${style.dotStyle}`} onClick={() => setShowOptions(true)} />
                                 </div>
                             </div>
+                        ))
+                    } */}
+
+            {showOptions && (
+                <div className={`${style.displayInCol} ${style.actionCard} ${style.cursorPointer}`} ref={menuRef}>
+                    <img src={CustomerBox3} alt="CustomerBox1" className={style.actionsIcon} onClick={() => setStopTrialDialog(true)} />
+                    <img src={CustomerBox1} alt="CustomerBox2" className={style.actionsIcon} onClick={() => setExtendTrialDialog(true)} />
+                    <img src={CustomerBox2} alt="CustomerBox3" className={style.actionsIcon} onClick={() => setConvertTrialDialog(true)} />
+                </div>
+            )}
+            {/* <div className={style.spaceBetween}>
+                        <p className={style.accountActivityStyle}>Last account activity: 30 days</p>
+                        <div className={style.displayInRow}>
+                            <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
+                            <img src={ChevronRight} className={style.roundChevron} />
                         </div>
                     </div>
+                </div> */}
+            {/* </div> */}
+            {/* </div> */}
+            {/* </div>
                 </div>
                 <div className={style.spaceBetween}>
-                    <p className={style.poweredBy}>Powered by - TimeSmart.AI LLP</p>
-                    <p className={style.poweredBy}>© TimeSmart.AI</p>
+                    <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
+                    <p className={style.poweredBy}>© TimeSmartAI</p>
                 </div>
-            </div>
+            </div> */}
             {stopTrialDialog && (
                 <StopTrial getStopTrialDialog={getStopTrialDialog} />
             )}
@@ -199,7 +300,8 @@ const TrialCustomers = ({getSelectedCustomer, getAddContract, entityList}) => {
             {convertTrialDialog && (
                 <ConvertTrial getConvertTrialDialog={getConvertTrialDialog} />
             )}
-        </Fragment>
+            {/* </Fragment> */}
+        </>
     )
 }
 

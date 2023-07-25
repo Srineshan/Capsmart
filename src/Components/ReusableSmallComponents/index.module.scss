@@ -11,13 +11,19 @@
 
 .siteDeptGrid {
     display: grid;
-    grid-template-columns: 1fr 1fr 35px;
+    grid-template-columns: 1fr 1fr;
     grid-gap: 10px;
 }
 
 .twoCol {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
+}
+
+.serviceDaysGrid {
+    display: grid;
+    grid-template-columns: 1fr 0.6fr 0.6fr;
     grid-gap: 10px;
 }
 
@@ -144,8 +150,9 @@
 
 .noContractsBox {
     border: 2px dashed #c4bef3;
-    padding: 60px;
-    margin: 50px 20px;
+    padding: 20px;
+    margin: 30px 20px;
+    height: 170px;
 }
 
 .noReportsBox {
