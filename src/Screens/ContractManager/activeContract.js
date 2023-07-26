@@ -9,20 +9,20 @@ import { validateTabs } from './contractValidation';
 
 import style from './index.module.scss';
 
-
-// valueList={['ACTIVITY_BASED', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET', 'SHIFT_OR_PER_DAY_BASED',]}
-// labelList={['Activity Based', 'Fixed Amount for Timesheet Period WITH Offset Applied', 'Fixed Amount for Timesheet Period WITHOUT Offset Applied', 'Shift OR Per diem Based']}
-
-
-
 const ActiveContract = ({ contractId, activeContractView, getActiveContractView }) => {
     const [contractData, setContractData] = useState();
     const [workflow, setWorkflow] = useState([]);
     const [contractUsers, setContractUsers] = useState([]);
     const componentRef = useRef(null);
     const continuationPolicy = { 'AUTORENEWAL': 'Auto Renewal', 'NEWCONTRACTONEXPIRATION': 'New Contract On Expiration', 'ONETIMECONTRACTTERMINATEONEXPIRATION': 'One Time Contract - Terminate On Expiration', 'WRITTENCONTRACTEXTENSIONFORFIXEDTERM': 'Extension By Mutual Written Signed Agreement' }
-    const compensationPolicy = {'ACTIVITY_BASED':'Activity Based', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET':'Fixed Amount for Timesheet Period WITH Offset Applied', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET':'Fixed Amount for Timesheet Period WITHOUT Offset Applied', 'SHIFT_OR_PER_DAY_BASED':'Shift OR Per diem Based'}
-    console.log('contract data', contractData);
+    const compensationPolicy = { 'ACTIVITY_BASED': 'Activity Based', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET': 'Fixed Amount for Timesheet Period WITH Offset Applied', 'FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET': 'Fixed Amount for Timesheet Period WITHOUT Offset Applied', 'SHIFT_OR_PER_DAY_BASED': 'Shift OR Per diem Based' }
+    const commitmentFrequency = { 'WEEK': 'Week', 'MONTH': 'Month' }
+    const secheduleFrequency = { 'NA': 'As Needed', 'MONTH': 'Month', 'WEEK': 'Week', 'YEAR': 'Year', 'EVERY_OTHER_WEEK': 'Every Other Week', 'EVERY_OTHER_MONTH': 'Every Other Month' };
+    const contractedServiceSession = { 'YEAR': 'Year' };
+    const paymentFrequency = { 'TIMESHEET': ' Timesheet Period', 'CONTRACT_END': 'On Last Invoice For Contract Year' };
+    const paymentCriteria = { 'RVUBASED': 'RVU Based', 'DOLLARBASEDRATE': 'Dollar Based Rate' };
+    const timesheetLogPeriod = { 'ENDOFMONTH': 'End Of Month', 'ENDOFEVERYWEEK': 'End Of Every Week', 'EVERY2WEEKS': 'Every 2 Weeks', 'EVERY4WEEKS': 'Every 4 Weeks', 'ONDAYOFSERVICE': 'On Day Of Service' }
+    console.log('contract data', contractUsers);
 
     const reactToPrintContent = useCallback(() => {
         return componentRef.current;
@@ -62,7 +62,6 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
             string.slice(1));
     }
 
-    console.log('contract users', contractUsers);
     return (
         <Dialog isOpen={getActiveContractView} onClose={() => getActiveContractView(false)} className={`${style.addServiceDialog} ${style.addManagerDialogBackground}`}>
             <div className={`${Classes.DIALOG_BODY} `} ref={componentRef}>
@@ -74,7 +73,7 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
 
                         }
                         }>
-                            <PrintOutlinedIcon style={{ color: "#7165E3" }} />
+                            {/* <PrintOutlinedIcon style={{ color: "#7165E3" }} /> */}
                         </div>
                         <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getActiveContractView(false)} />
                     </div>
@@ -94,11 +93,11 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Site/s</div>
-                            <div className={style.statusText}>{contractData?.contractDetail?.site?.sites?.map(data => data?.siteName?.siteName)?.join(', ')}</div>
+                            <div className={style.statusText}>{contractData?.contractDetail?.site?.sites?.map(data => (<p className={style.rightAlign}>{data?.siteName?.siteName}</p>))}</div>
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Department/s</div>
-                            <div className={style.statusText}>FAIL</div>
+                            <div className={style.statusText}>{contractData?.contractDetail.site?.sites?.map(site => site?.departmentList?.departments?.map(dept => (<p className={style.rightAlign}>{dept.departmentName?.name}</p>)))}</div>
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Contract Start Date</div>
@@ -114,7 +113,7 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Contract Time Commitment / Frequency</div>
-                            <div className={style.statusText}>{contractData?.contractDetail?.timeCommitment?.value} / {contractData?.contractDetail?.timeCommitment?.frequency}</div>
+                            <div className={style.statusText}>{contractData?.contractDetail?.timeCommitment?.value} / {commitmentFrequency[contractData?.contractDetail?.timeCommitment?.frequency]}</div>
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Compensation Policy</div>
@@ -142,51 +141,51 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                                         <div className={style.validationTopicText}>Contractor Name</div>
                                         <div className={style.statusText}>{data?.name?.firstName} {data?.name?.middleName ?? ''} {data?.name?.lastName ?? ''}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Service provider Type</div>
                                         <div className={style.statusText}>{data?.serviceProviderType?.contractedServiceProviderType}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>NPIN</div>
                                         <div className={style.statusText}>{data?.npin?.missing ? 'Missing' : data?.npin?.notApplicable ? 'Not Applicable' : data?.npin?.npin}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Suffix</div>
                                         <div className={style.statusText}>{data?.name?.suffix?.suffix}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Email</div>
                                         <div className={style.statusText}>{data?.email?.officialEmail}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Cell Phone</div>
                                         <div className={style.statusText}>{data?.communication?.mobileNumberNotApplicable ? 'Not Applicable' : data?.communication?.mobileNumber}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Address Line</div>
                                         <div className={style.statusText}>{data?.address?.addressLine}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>City</div>
                                         <div className={style.statusText}>{data?.address?.city}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>State</div>
                                         <div className={style.statusText}>{data?.address?.state}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Zipcode</div>
                                         <div className={style.statusText}>{data?.address?.zipcode}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Site Level Responsibility</div>
-                                        <div className={style.statusText}>{contractData?.contractorBusinessEntity?.businessEntityUser?.name?.firstName} {contractData?.contractorBusinessEntity?.businessEntityUser?.name?.middleName ?? ''} {contractData?.contractorBusinessEntity?.businessEntityUser?.name?.lastName ?? ''}</div>
+                                        <div className={style.statusText}>{data?.sites?.sites?.map(site => (<p>{site?.siteResponsibility?.title ?? '-'}</p>))}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Department Level Responsibility</div>
-                                        <div className={style.statusText}>{contractData?.contractorBusinessEntity?.businessEntityUser?.name?.firstName} {contractData?.contractorBusinessEntity?.businessEntityUser?.name?.middleName ?? ''} {contractData?.contractorBusinessEntity?.businessEntityUser?.name?.lastName ?? ''}</div>
+                                        <div className={style.statusText}>{data?.sites?.sites?.map(site => site?.departmentList?.departments?.map(dept => (<p className={style.rightAlign}>{dept.departmentResponsibility?.title ?? '-'}</p>)))}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Contractors Roles</div>
                                         <div className={style.statusText}>{data?.roles?.map(data => data?.roleName)?.join(', ')}</div>
                                     </div>
@@ -204,39 +203,39 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                             <div className={style.validationTopicText}>Business Entity User Name</div>
                             <div className={style.statusText}>{contractData?.contractorBusinessEntity?.businessEntityUser?.name?.firstName} {contractData?.contractorBusinessEntity?.businessEntityUser?.name?.middleName ?? ''} {contractData?.contractorBusinessEntity?.businessEntityUser?.name?.lastName ?? ''}</div>
                         </div>
-                        <div className={style.spaceBetween}>
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Business Point of Contact</div>
                             <div className={style.statusText}>{contractData?.contractorBusinessEntity?.businessEntityUser?.email?.officialEmail}</div>
                         </div>
-                        <div className={style.spaceBetween}>
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Business Entity Name</div>
                             <div className={style.statusText}>{contractData?.contractorBusinessEntity?.businessEntity?.notApplicable ? 'Not Applicable' : contractData?.contractorBusinessEntity?.businessEntity?.name}</div>
                         </div>
-                        <div className={style.spaceBetween}>
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Vendor NPIN</div>
                             <div className={style.statusText}>{contractData?.contractorBusinessEntity?.contractorNPIN?.notApplicable ? 'Not Applicable' : contractData?.contractorBusinessEntity?.contractorNPIN?.missing ? 'Missing' : contractData?.contractorBusinessEntity?.contractorNPIN?.npin}</div>
                         </div>
-                        <div className={style.spaceBetween}>
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Vendor Tax Id</div>
                             <div className={style.statusText}>{contractData?.contractorBusinessEntity?.contractorEntityTaxId?.notApplicable ? 'Not Applicable' : contractData?.contractorBusinessEntity?.contractorEntityTaxId?.missing ? 'Missing' : contractData?.contractorBusinessEntity?.contractorEntityTaxId?.taxId}</div>
                         </div>
-                        <div className={style.spaceBetween}>
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Phone</div>
                             <div className={style.statusText}>{contractData?.contractorBusinessEntity?.businessEntityUser?.contactNumber?.missing ? 'Missing' : contractData?.contractorBusinessEntity?.businessEntityUser?.contactNumber?.number}</div>
                         </div>
-                        <div className={style.spaceBetween}>
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Adress Line</div>
                             <div className={style.statusText}>{contractData?.contractorBusinessEntity?.mailingAddress?.addressLine}</div>
                         </div>
-                        <div className={style.spaceBetween}>
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>City</div>
                             <div className={style.statusText}>{contractData?.contractorBusinessEntity?.mailingAddress?.city}</div>
                         </div>
-                        <div className={style.spaceBetween}>
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>State</div>
                             <div className={style.statusText}>{contractData?.contractorBusinessEntity?.mailingAddress?.state}</div>
                         </div>
-                        <div className={style.spaceBetween}>
+                        <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={style.validationTopicText}>Zipcode</div>
                             <div className={style.statusText}>{contractData?.contractorBusinessEntity?.mailingAddress?.zipcode}</div>
                         </div>
@@ -247,67 +246,71 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                     <ValidationHeader heading={'CONTARCTED SERVICES'} result={"PASS"} />
                     <div className={style.validationPadding}>
                         {
-                            contractData?.contractedServices?.map(service => (
+                            contractData?.contractedServices?.map((service, index) => (
+
                                 <div className={style.marginTop20}>
+                                    <div>
+                                        {index !== 0 && <hr />}
+                                    </div>
                                     <div className={style.spaceBetween}>
                                         <div className={style.validationTopicText}>Service Type Contracted For</div>
                                         <div className={style.statusText}>{service?.activityType?.activityType}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Site/(s)</div>
-                                        <div className={style.statusText}>{service?.sites?.map(site => (<p>{site?.siteName?.siteName}</p>))}</div>
+                                        <div className={style.statusText}>{service?.sites?.map(site => (<p className={style.rightAlign}>{site?.siteName?.siteName}</p>))}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Department/(s)</div>
-                                        <div className={style.statusText}>{service?.sites?.map(site => site?.departmentList?.departments?.map(dept => (<p>{dept?.deaprtmentName?.name}</p>)))}</div>
+                                        <div className={style.statusText}>{service?.sites?.map(site => site?.departmentList?.departments?.map(dept => (<p className={style.rightAlign}>{dept.departmentName?.name}</p>)))}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Activities To Be performed</div>
-                                        <div className={style.statusText}>{service?.activities?.map(activity => (<p>{activity?.activity}</p>))}</div>
+                                        <div className={style.statusText}>{service?.activities?.map(activity => (<p className={style.rightAlign}>{activity?.activity}</p>))}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Service Facility / Location(Cost Center)</div>
-                                        <div className={style.statusText}>{service?.serviceLocations?.map(location => (<p>{location?.location}</p>))}</div>
+                                        <div className={style.statusText}>{service?.serviceLocations?.map(location => (<p className={style.rightAlign}>{location?.location}</p>))}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
-                                        <div className={style.validationTopicText}>Regular Service Schedule</div>
-                                        <div className={style.statusText}>{service?.contractedSchedules?.map(schedule => (<p>{schedule?.minimum?.value} - {schedule?.maximum?.value} / {schedule?.frequency}</p>))}</div>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                                        <div className={style.validationTopicText}>Regular Service Schedule / Frequency</div>
+                                        <div className={style.statusText}>{service?.contractedSchedules?.map(schedule => (<p className={style.rightAlign}>{schedule?.minimum?.value} - {(schedule?.maximum?.value !== 99999999 && schedule?.maximum?.value !== 0) ? schedule?.maximum?.value : '-'} / {secheduleFrequency[schedule?.frequency] ?? 'NA'}</p>))}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Patient Seen target</div>
-                                        <div className={style.statusText}>{service?.patientSeenTarget?.map(patientTarget => (<p>{patientTarget?.noTargetApplicable ? 'No Target Applicable' : `With Nurse ${patientTarget?.withNurse?.value} - Without Nurse ${patientTarget?.withoutNurse?.value}`}</p>))}</div>
+                                        <div className={style.statusText}>{service?.patientSeenTarget?.map(patientTarget => (<p className={style.rightAlign}>{patientTarget?.noTargetApplicable ? 'No Target Applicable' : `With Nurse ${patientTarget?.withNurse?.value} - Without Nurse ${patientTarget?.withoutNurse?.value}`}</p>))}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Scheduled Patient Target</div>
-                                        <div className={style.statusText}>{service?.scheduledPatientsTargets?.map(patientTarget => (<p>{patientTarget?.noTargetApplicable ? 'No Target Applicable' : `With Nurse ${patientTarget?.withNurse?.value} - Without Nurse ${patientTarget?.withoutNurse?.value}`}</p>))}</div>
+                                        <div className={style.statusText}>{service?.scheduledPatientsTargets?.map(patientTarget => (<p className={style.rightAlign}>{patientTarget?.noTargetApplicable ? 'No Target Applicable' : `With Nurse ${patientTarget?.withNurse?.value} - Without Nurse ${patientTarget?.withoutNurse?.value}`}</p>))}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Additional Schedule</div>
-                                        <div className={style.statusText}>{service?.additionalSchedule?.scheduleRequired ? `${service?.additionalSchedule?.value} - ${service?.additionalSchedule?.frequency}` : 'Not Required'}</div>
+                                        <div className={style.statusText}>{service?.additionalSchedule?.scheduleRequired ? `${service?.additionalSchedule?.value} - ${secheduleFrequency[service?.additionalSchedule?.frequency]}` : 'Not Required'}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Billable Service</div>
                                         <div className={style.statusText}>{service?.billableService ? 'YES' : 'NO'}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Service Session Duration</div>
                                         <div className={style.statusText}>{service?.duration?.hours}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Serice Session Payment Amount</div>
                                         <div className={style.statusText}>{service?.payableAmount?.value ?? ''}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
-                                        <div className={style.validationTopicText}>Total Contracted Service Session</div>
-                                        <div className={style.statusText}>{service?.totalSessions?.value} - {service?.totalSessions?.frequency}</div>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                                        <div className={style.validationTopicText}>Total Contracted Service Session / Frequency</div>
+                                        <div className={style.statusText}>{service?.totalSessions?.value} / {contractedServiceSession[service?.totalSessions?.frequency]}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                         <div className={style.validationTopicText}>Service Days</div>
-                                        <div className={style.statusText}>{service?.serviceDays?.length > 0 && Object.keys(service?.serviceDays).find(key => service?.serviceDays[key] === true)}</div>
+                                        <div className={style.statusText}>{service?.serviceDays?.length !== 0 && Object.keys(service?.serviceDays || {})?.filter(data => !['weekDays', 'weekEnds'].includes(data))?.map(data => (<p className={style.rightAlign}>{service?.serviceDays[data] ? data === 'isholidays' ? 'Holidays' : data.charAt(0).toUpperCase() + data.slice(1) : ''}</p>))}</div>
                                     </div>
-                                    <div className={style.spaceBetween}>
-                                        <div className={style.validationTopicText}>Allowable Working Day Hours for Service</div>
-                                        <div className={style.statusText}>{contractData?.paymentAndCompensation?.compensationBasis}</div>
+                                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                                        <div className={style.validationTopicText}>Allowable Working Day Hours for Service (From - To)</div>
+                                        <div className={style.statusText}>{service?.workingPeriod?.from} - {service?.workingPeriod?.to}</div>
                                     </div>
                                 </div>
                             ))
@@ -334,7 +337,7 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                                         </div>
                                         <div className={style.spaceBetween}>
                                             <div className={style.validationTopicText}>Contracted Activities to include in Timesheet</div>
-                                            <div className={style.statusText}>{timesheet?.activities?.map(data => <p>{data?.activityType?.activityType} - {data?.performingActivity?.activity}</p>)}</div>
+                                            <div className={style.statusText}>{timesheet?.activities?.map(data => <p className={style.rightAlign}>{data?.activityType?.activityType} - {data?.performingActivity?.activity}</p>)}</div>
                                         </div>
                                         <div className={style.spaceBetween}>
                                             <div className={style.validationTopicText}>Payment Source</div>
@@ -342,7 +345,7 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                                         </div>
                                         <div className={style.spaceBetween}>
                                             <div className={style.validationTopicText}>Service Log Period</div>
-                                            <div className={style.statusText}>{timesheet?.servicePeriod?.value}</div>
+                                            <div className={style.statusText}>{timesheetLogPeriod[timesheet?.servicePeriod?.value]}</div>
                                         </div>
                                     </div>
                                 ))
@@ -388,7 +391,7 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                     <div className={style.validationPadding}>
                         <div className={style.spaceBetween}>
                             <div className={style.validationTopicText}>Compensation Basis</div>
-                            <div className={style.statusText}>{contractData?.paymentAndCompensation?.compensationBasis}</div>
+                            <div className={style.statusText}>{paymentCriteria[contractData?.paymentAndCompensation?.compensationBasis]}</div>
                         </div>
                         <div className={style.spaceBetween}>
                             <div className={style.validationTopicText}>Dollar Hourly Rate</div>
@@ -438,7 +441,7 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                                     </div>
                                     <div className={style.spaceBetween}>
                                         <div className={style.validationTopicText}>Compensation Offset Criteria For Reduced Number Of Agreed To Services.</div>
-                                        <div className={style.statusText}>{data?.reducedNumberOfServices}</div>
+                                        <div className={style.statusText}>{paymentFrequency[data?.reducedNumberOfServices]}</div>
                                     </div>
                                     <div className={style.spaceBetween}>
                                         <div className={style.validationTopicText}>Max. Compensation Value for Contract Period</div>
@@ -446,7 +449,7 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                                     </div>
                                     <div className={style.spaceBetween}>
                                         <div className={style.validationTopicText}>Compensation Offset Criteria For Providing Additional Services to the Agreed to services.</div>
-                                        <div className={style.statusText}>{data?.providingAdditionalServices}</div>
+                                        <div className={style.statusText}>{paymentFrequency[data?.providingAdditionalServices]}</div>
                                     </div>
                                 </div>
                             ))
@@ -523,7 +526,7 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                     <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.buttonHeight40}`} onClick={() => getContractValidationDialog(false)}>OK</button>
                 </div> */}
             </div>
-        </Dialog>
+        </Dialog >
     )
 }
 
