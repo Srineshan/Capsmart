@@ -327,17 +327,17 @@ const App = ({ props }) => {
       await POST(`feedback-management-service/ticket`, formData)
         .then(response => {
           sessionStorage.setItem('interceptorsInfo', `${error?.response?.data?.error} ${error?.response?.data?.path}`);
-          SuccessToaster('Error Logged Successfully');
+          // SuccessToaster('Error Logged Successfully');
         })
         .catch(error => {
-          ErrorToaster('Unexpected Error Occured');
+          // ErrorToaster('Unexpected Error Occured');
         })
     }
   };
 
 
   const getEntityId = async () => {
-    await axios(`http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/entity-service/entityID`, {
+    await axios(`https:${window.location.hostname}/entity-service/entityID`, {
       method: "GET",
       // headers: { "X-subdomain": "hopkins" },
     })
@@ -360,7 +360,7 @@ const App = ({ props }) => {
       }
     };
     fetch(
-      `http://ec2-34-230-167-131.compute-1.amazonaws.com:8010/user-management-service/auth/login`,
+      `https:${window.location.hostname}/user-management-service/auth/login`,
       requestOptions
     )
       .then((response) => response.json())

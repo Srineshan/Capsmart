@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { TextArea, Icon, TagInput, FileInput, EditableText, Divider } from '@blueprintjs/core';
+import { TextArea, Icon, TagInput, FileInput, EditableText, Divider, Dialog, Classes, Intent } from '@blueprintjs/core';
 import cloneDeep from 'lodash.clonedeep';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -83,6 +83,7 @@ const ContractIdTermLimitIndividual = (
   const [conflict, setConflict] = useState({ isPresent: false, data: [] });
   const [isSiteDeptUpdated, setIsSiteDeptUpdated] = useState(false);
   const [contractUsers, setContractUsers] = useState([]);
+  const [isShowUploadDialog, setIsShowUploadDialog] = useState(false);
 
 
   useEffect(() => {
@@ -301,9 +302,9 @@ const ContractIdTermLimitIndividual = (
   const addContract = async (buttonType) => {
     let sites = getSiteData();
     let conflictedData = checkSiteAndDepartment(contracts, sites, contractIdFromActive);
-    if (conflictedData?.length !== 0) {
-      setConflict({ isPresent: true, conflict: conflictedData });
-    }
+    // if (conflictedData?.length !== 0) {
+    //   setConflict({ isPresent: true, conflict: conflictedData });
+    // }
     console.log('conflict Data', conflictedData);
     if (conflictedData?.length === 0) {
       setContinueLoading(true);
@@ -739,8 +740,16 @@ const ContractIdTermLimitIndividual = (
                 label={fullyExecutedContract ? 'YES' : "NO"}
                 onChange={() => changeContractFile(!fullyExecutedContract)}
               />
+              <div>
+                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}>
+                  <label for="file-upload" className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `}>
+                    Upload File
+                  </label>
+                </button>
+                <input id="file-upload" type="file" accept="image/*, .pdf" onChange={(e) => { handleFileUpload(e); setIsShowUploadDialog(true) }} />
+              </div>
             </div>
-            {fullyExecutedContract && (
+            {/* {fullyExecutedContract && (
               <div>
                 <div>
                   <CommonSelectField value={fileFieldData?.type || 'Select...'} onChange={(e) => handleFileChange(e, 'type')}
@@ -769,7 +778,7 @@ const ContractIdTermLimitIndividual = (
                   </Tooltip> :
                   <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField() }}>UPLOAD</button>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
         {isMultiSiteEntity &&
@@ -1023,6 +1032,47 @@ const ContractIdTermLimitIndividual = (
       {conflict?.isPresent && (
         <ConflictPopUp conflict={conflict} updateConflict={updateConflict} />
       )}
+
+      <Dialog isOpen={isShowUploadDialog} onClose={() => setIsShowUploadDialog(false)} className={`${style.cloneDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
+        <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
+          <div className={style.spaceBetween}>
+            <p className={style.extensionStyle}>ADD FILE DETAILS</p>
+            <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => updateConflict(false)} />
+          </div>
+          <div className={style.extensionBorder}></div>
+          {/* {fullyExecutedContract && ( */}
+          <div>
+            <p className={`${style.fileNameTextStyle} ${style.marginTop10}`}>{fileFieldData?.fileName}</p>
+            <div>
+              <CommonSelectField value={fileFieldData?.type || 'Select...'} onChange={(e) => handleFileChange(e, 'type')}
+                className={`${style.fullWidth}`} firstOptionLabel={'Select...'} firstOptionValue={'Select...'}
+                valueList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
+                labelList={['Agreement Draft', 'Executed Agreement', 'Contract Amendment', 'Exhibit', 'Appendix Addendum', 'Schedule', 'Attachment']}
+                disabledList={[false, false]} />
+            </div>
+            <CommonInputField className={`${style.fullWidth} ${style.marginTop10}`} placeholder="Document Name"
+              value={fileFieldData?.name}
+              maxLength={TEXTFIELDLEN}
+              onChange={(e) => handleFileChange(e, 'name')} />
+            <TextArea rows={4} placeholder="Document Description" value={fileFieldData?.desc}
+              maxLength={DESCLEN} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileChange(e, 'desc')} />
+            {/* <div>
+              <CommonInputField value={fileFieldData?.fileName !== '' ? fileFieldData?.fileName : ''} leftElement={leftElement()} className={`${style.fullWidth} ${style.marginTop10}`} onChange={(e) => handleFileUpload(e)} />
+            </div> */}
+          </div>
+          {/* )} */}
+          <div className={`${style.spaceBetween} ${style.marginTop}`}>
+            <div></div>
+            {(
+              (fileFieldData?.type === '' || fileFieldData?.name === '' || fileFieldData?.file === null) ?
+                <Tooltip title={'Enter All Values To Enable Upload'} arrow>
+                  <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} ${style.disabledUploadButton}`} >UPLOAD</button>
+                </Tooltip> :
+                <button className={`${style.addMoreButton} ${style.marginLeft20} ${style.selectedColor} ${style.cursorPointer} `} disabled={false} onClick={() => { addNewDocumentField(); setIsShowUploadDialog(false) }}>UPLOAD</button>
+            )}
+          </div>
+        </div>
+      </Dialog>
 
     </div>
   )

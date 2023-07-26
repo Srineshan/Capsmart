@@ -121,11 +121,11 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     useEffect(() => {
         setTimesheetPaymentsValue()
-    }, [timeSheetTabs?.length, compensationPolicy])
+    }, [timeSheetTabs?.length, compensationPolicy, timeSheetTabs])
 
     useEffect(() => {
         getPaymentFields();
-    }, [compensationPolicy])
+    }, [timesheetPayments, timesheetPayments?.length])
 
     console.log('Compensation Policy', compensationPolicy, timesheetPayments);
 
@@ -151,7 +151,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                 paymentBasedonFixedHoursVsActual: timesheetPayments?.[index]?.paymentBasedonFixedHoursVsActual || true
             });
         });
-        console.log('temp', temp);
         setTimesheetPayments(temp);
         getPaymentFields();
         // }
@@ -166,12 +165,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     useEffect(() => {
         getTimeSheetValues();
     }, [contractId])
-
-    // useEffect(() => {
-    //     getPaymentFields();
-    // }, [timesheetPayments])
-
-    console.log('payments', paymentFields);
 
     const updateTimesheetPayment = (value, name, index) => {
         let temp = timesheetPayments;
@@ -192,7 +185,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     }
 
     const fixedCompensationValue = (value, name, index) => {
-        console.log('value', value, name)
         let temp = timesheetPayments;
         temp?.filter((data, indexVal) => index === indexVal)?.map(data => {
             data[name] = parseFloat(value);
@@ -382,8 +374,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
             setRvuQuantityVariance(null);
         }
     }
-
-    console.log('frequency', frequency, fteEquivalent);
 
     if (isLoading) {
         return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />

@@ -115,6 +115,10 @@ body::-webkit-scrollbar {
     height: 100%;
 }
 
+.rightAlign {
+    text-align: right;
+}
+
 .reducedOpacity {
     opacity: 0.4;
 }
@@ -2053,6 +2057,12 @@ input[type=number] {
     padding-left: 10px;
 }
 
+.twoColumnGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
 .serviceSpecificationGridActive {
     display: grid;
     grid-template-columns: 8% 22% 22% 22% 10% 7%;
@@ -2212,4 +2222,12 @@ input[type=number] {
     /* IE and Edge */
     scrollbar-width: none;
     /* Firefox */
+}
+
+.fileNameTextStyle {
+    text-align: left;
+    font: normal normal normal 18px/24px Montserrat;
+    letter-spacing: 1.44px;
+    color: #707070;
+    opacity: 0.71;
 }
