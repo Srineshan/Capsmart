@@ -20,6 +20,8 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import AddTerminationReasonsForCustomer from "./addTerminationReasonForCustomer";
 import AddCostCenterAndLocations from "./addCostCenterAndLocations";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
+import { format } from "date-fns";
+import LevelTwoHeader from "../../Components/LevelTwoHeader";
 
 const CostCenterAndLocations = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -42,6 +44,8 @@ const CostCenterAndLocations = () => {
   );
   const [isEdit, setIsEdit] = useState(false);
   const [entityName, setEntityName] = useState("");
+  const [entityId, setEntityId] = useState("");
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
 
   useEffect(() => {
     getEntity();
@@ -52,6 +56,12 @@ const CostCenterAndLocations = () => {
     getTerminationReasonMaster();
     getCostCenterData();
   }, []);
+
+  useEffect(() => {
+    if (entityId !== "" && entityId !== undefined) {
+      getLastModifiedDate();
+    }
+  }, [entityId]);
 
   const getAddCostCenterDialog = (value) => {
     setShowAddCostCenterLocation(value);
@@ -65,12 +75,23 @@ const CostCenterAndLocations = () => {
     const { data: entity } = await GET(`entity-service/entity`);
     // console.log(entity?.[0]?.entityName.entityName);
     setEntityName(entity?.[0]?.entityName?.entityName);
+    setEntityId(entity?.[0]?.id);
+  };
+
+  const getLastModifiedDate = async () => {
+    const { data: lastModifiedDate } = await GET(
+      `entity-service/referenceList/entity/${entityId}`
+    );
+    const date = new Date(
+      lastModifiedDate.costCenterAndServiceLocation?.lastModified
+    );
+    setLastUpdatedDate(format(date, "MMM d, yyyy HH:mm"));
   };
 
   const getEntityTypes = async () => {
     const { data: entityTypes } = await GET(`entity-service/entity/entityType`);
     if (entityTypes?.length !== 0) {
-      console.log(entityTypes, entityTypes?.[0]?.entityType?.id);
+      // console.log(entityTypes, entityTypes?.[0]?.entityType?.id);
       setSiteTypeId(entityTypes?.[0]?.siteTypeId);
       setSelectedEntityType(entityTypes?.[0]?.siteTypeName);
       setEntityTypes(entityTypes);
@@ -102,11 +123,11 @@ const CostCenterAndLocations = () => {
         ?.map((data) => data);
     temp.secondary_reasons = selectedSecondaryReasonListPerTerminationReasons;
     temp.entityId = { id: TenantID };
-    console.log(
-      selectedData,
-      temp,
-      selectedSecondaryReasonListPerTerminationReasons
-    );
+    // console.log(
+    //   selectedData,
+    //   temp,
+    //   selectedSecondaryReasonListPerTerminationReasons
+    // );
     await PUT(
       `entity-service/terminationReason/${selectedData?.id}`,
       JSON.stringify(temp)
@@ -122,10 +143,10 @@ const CostCenterAndLocations = () => {
   };
 
   const handleLocationStatusUpdate = async (value, data, index) => {
-    console.log(value, data, index);
+    // console.log(value, data, index);
     let temp = data;
     temp.serviceLocations[index].status = value;
-    console.log(temp);
+    // console.log(temp);
     await PUT(`entity-service/costCenter/${data?.id}`, JSON.stringify(temp))
       .then((response) => {
         SuccessToaster("Location Status Updated Successfully");
@@ -136,7 +157,7 @@ const CostCenterAndLocations = () => {
       });
   };
 
-  console.log(selectedTerminationReasons, selectedSubReasons);
+  // console.log(selectedTerminationReasons, selectedSubReasons);
 
   return (
     <Fragment>
@@ -152,31 +173,13 @@ const CostCenterAndLocations = () => {
             </SideBar>
           </div>
           <div>
-            <div className={`${style.displayInRow} ${style.marginTop10}`}>
-              <div
-                className={`${style.userNameStyle} ${style.alignCenter} ${style.reduce} `}
-              >
-                COST CENTER & SERVICE LOCATIONS
-              </div>
-              <div
-                className={`${style.loginStatus} ${style.alignCenter} ${style.marginLeft20}`}
-              >
-                UPDATED ON FEB 16, 2022 16:45 EST
-              </div>
-              <div className={style.crossStyle}>
-                <Link
-                  to="/Screens/ReferenceList/customerAdminDashboard"
-                  className={style.linkStyle}
-                >
-                  {" "}
-                  <img
-                    src={CrossPink}
-                    alt="OpenFolder"
-                    className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                  />{" "}
-                </Link>
-              </div>
-            </div>
+            <LevelTwoHeader
+              heading={`COST CENTER & SERVICE LOCATIONS`}
+              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
+              path={"/Screens/ReferenceList/customerAdminDashboard"}
+              callingFrom={"Customer Admin"}
+              needHeader={true}
+            />
             <div className={style.marginTop35}>
               <div className={style.centreCardStyle}>
                 <div className={style.margin20}>
