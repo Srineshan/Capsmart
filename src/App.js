@@ -327,10 +327,10 @@ const App = ({ props }) => {
       await POST(`feedback-management-service/ticket`, formData)
         .then(response => {
           sessionStorage.setItem('interceptorsInfo', `${error?.response?.data?.error} ${error?.response?.data?.path}`);
-          SuccessToaster('Error Logged Successfully');
+          // SuccessToaster('Error Logged Successfully');
         })
         .catch(error => {
-          ErrorToaster('Unexpected Error Occured');
+          // ErrorToaster('Unexpected Error Occured');
         })
     }
   };

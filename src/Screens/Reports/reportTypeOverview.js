@@ -53,6 +53,8 @@ const ReportTypeOverview = () => {
     const [stackedData, setStackedData] = useState([]);
     const [stackedKeys, setStackedKeys] = useState([]);
     const [reportLog, setReportLog] = useState([]);
+    const [addOnAcceptedReportLog, setAddOnAcceptedReportLog] = useState([]);
+    const [addOnRejectedReportLog, setAddOnRejectedReportLog] = useState([]);
     const [paymentsReportLog, setPaymentsReportLog] = useState();
     const [series, setSeries] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -86,6 +88,9 @@ const ReportTypeOverview = () => {
         if (reportType === 'activitiesOrServices') {
             getAcvityAndServices();
         }
+        if (reportType === 'addOnActivities') {
+            getAddOnServices();
+        }
         if (reportType === 'paymentsProcessingSummary') {
             getPayments();
         }
@@ -105,6 +110,9 @@ const ReportTypeOverview = () => {
         }
         if (reportType === 'activitiesOrServices') {
             getAcvityAndServicesWithParameter();
+        }
+        if (reportType === 'addOnActivities') {
+            getAddOnServicesWithParameter();
         }
         if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
             setSelectedPodTypeFromTile(dataToUseInReport?.podType)
@@ -236,6 +244,151 @@ const ReportTypeOverview = () => {
             let keysForChart = [];
             let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
             chartData?.completedActivitiesBycategoryAndMonth?.map((stack, index) => {
+                let values = stack.types;
+                keysForChart = Object.keys(stack.types);
+                setStackedKeys(keysForChart);
+                values['name'] = months[stack?.month];
+                values['type'] = 1;
+                stackedTemp.push(values);
+            })
+            let tempStackedSeries = [];
+            keysForChart?.map((data, index) => {
+                tempStackedSeries.push({
+                    'data': stackedTemp?.map(stackedData => stackedData?.[data]),
+                    'name': data
+                })
+                setStackedSeries(tempStackedSeries);
+            })
+            setStackedData(stackedTemp);
+            setStackedCategories(stackedTemp?.map(stackedData => stackedData?.name));
+        }
+    }
+
+    const getAddOnServices = async () => {
+        const { data: chartData } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+        const { data: reportLogData } = await GET(`timesheet-management-service/report/addOnActivityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+        setAddOnAcceptedReportLog(reportLogData?.approvedActivities);
+        setAddOnRejectedReportLog(reportLogData?.rejectedActivities);
+        if (chartData) {
+            let temp = [];
+            chartData?.addOnActivityServiceReports?.map((pie, index) => {
+                temp[index] = { key: pie.addOnActivityRequestStatus, value: pie.count }
+            })
+            setPieData(temp);
+            // let lineTemp = [];
+            // chartData?.completedActivitiesByDate?.map((line, index) => {
+            //     lineTemp[index] = { date: format(new Date(line.statedate), 'MM-dd'), value: line.count };
+            // })
+            // lineTemp.sort((a, b) => new Date(a.date) - new Date(b.date));
+            // setLineData(lineTemp);
+
+            //   let barTemp = [];
+            //   chartData?.activityStatusByCategorys?.map((bar,index)=>{
+            //     let arr = [{name:bar.activityType,type:1,Done:bar.done},{name:bar.activityType,type:2,ToDo:bar.todo},{name:bar.activityType,type:3,NotDone:bar.notdone}]
+            //     arr.map(data=>{
+            //       barTemp.push(data);
+            //         })
+            //     })
+            setSeries([{
+                'data': chartData?.addOnActivityStatusByCategorys?.map(data => data?.approved),
+                'name': 'Approved'
+            },
+            {
+                'data': chartData?.addOnActivityStatusByCategorys?.map(data => data?.inprogress),
+                'name': 'In Progress'
+            },
+            {
+                'data': chartData?.addOnActivityStatusByCategorys?.map(data => data?.onhold),
+                'name': 'On Hold'
+            },
+            {
+                'data': chartData?.addOnActivityStatusByCategorys?.map(data => data?.rejected),
+                'name': 'Rejected'
+            }])
+            setCategories(chartData?.addOnActivityStatusByCategorys?.map(data => data?.activityType));
+
+            setBarData({
+                'series': series,
+                'categories': categories
+            });
+
+
+            let stackedTemp = [];
+            let keysForChart = [];
+            let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
+            chartData?.approvedAddOnActivitiesByCategoryAndMonth?.map((stack, index) => {
+                let values = stack.types;
+                keysForChart = Object.keys(stack.types);
+                setStackedKeys(keysForChart);
+                values['name'] = months[stack?.month];
+                values['type'] = 1;
+                stackedTemp.push(values);
+            })
+            let tempStackedSeries = [];
+            keysForChart?.map((data, index) => {
+                tempStackedSeries.push({
+                    'data': stackedTemp?.map(stackedData => stackedData?.[data]),
+                    'name': data
+                })
+                setStackedSeries(tempStackedSeries);
+            })
+            setStackedData(stackedTemp);
+            setStackedCategories(stackedTemp?.map(stackedData => stackedData?.name));
+        }
+    }
+
+    const getAddOnServicesWithParameter = async () => {
+        const { data: chartData } = await GET(`timesheet-management-service/report/addOnActivityServiceReport?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+        const { data: reportLogData } = await GET(`timesheet-management-service/report/addOnActivityServiceLog?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+        setAddOnAcceptedReportLog(reportLogData?.approvedActivities);
+        setAddOnRejectedReportLog(reportLogData?.rejectedActivities);
+        // setIsLoading(false);
+        if (chartData) {
+            let temp = [];
+            chartData?.addOnActivityServiceReports?.map((pie, index) => {
+                temp[index] = { key: pie.addOnActivityRequestStatus, value: pie.count }
+            })
+            setPieData(temp);
+            // let lineTemp = [];
+            // chartData?.completedActivitiesByDate?.map((line, index) => {
+            //     lineTemp[index] = { date: format(new Date(line.statedate), 'MM-dd'), value: line.count };
+            // })
+            // lineTemp.sort((a, b) => new Date(a.date) - new Date(b.date));
+            // setLineData(lineTemp);
+            // let barTemp = [];
+            // chartData?.activityStatusByCategorys?.map((bar,index)=>{
+            //     let arr = [{name:bar.activityType,type:1,Done:bar.done},{name:bar.activityType,type:2,ToDo:bar.todo},{name:bar.activityType,type:3,NotDone:bar.notdone}]
+            //     arr.map(data=>{
+            //     barTemp.push(data);
+            //     })
+            // })
+            // setBarData(barTemp);
+            setSeries([{
+                'data': chartData?.addOnActivityStatusByCategorys?.map(data => data?.approved),
+                'name': 'Approved'
+            },
+            {
+                'data': chartData?.addOnActivityStatusByCategorys?.map(data => data?.inprogress),
+                'name': 'In Progress'
+            },
+            {
+                'data': chartData?.addOnActivityStatusByCategorys?.map(data => data?.onhold),
+                'name': 'On Hold'
+            },
+            {
+                'data': chartData?.addOnActivityStatusByCategorys?.map(data => data?.rejected),
+                'name': 'Rejected'
+            }])
+            setCategories(chartData?.addOnActivityStatusByCategorys?.map(data => data?.activity));
+
+            setBarData({
+                'series': series,
+                'categories': categories
+            });
+            let stackedTemp = [];
+            let keysForChart = [];
+            let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
+            chartData?.approvedAddOnActivitiesByCategoryAndMonth?.map((stack, index) => {
                 let values = stack.types;
                 keysForChart = Object.keys(stack.types);
                 setStackedKeys(keysForChart);
@@ -454,6 +607,52 @@ const ReportTypeOverview = () => {
         ];
     }
 
+    let addonActivityServices = [];
+    let requestDateTime = [];
+    let rejectedDateTime = [];
+    let requestingProvider = [];
+    let requestReviewer = [];
+    let site = [];
+
+    const getAddOnActivitiesServicesValues = (value) => {
+        addonActivityServices = [];
+        requestDateTime = [];
+        rejectedDateTime = [];
+        requestingProvider = [];
+        requestReviewer = [];
+        site = [];
+
+        if (value === "Rejected") {
+            addOnRejectedReportLog?.map(data => {
+                addonActivityServices.push(data?.activity?.activity?.activity);
+                requestDateTime.push(`${format(new Date(data?.activity?.createdDate) || new Date(), 'MM-dd-yyyy, HH:mm')}`)
+                rejectedDateTime.push(`${format(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.createdDate) || new Date(), 'MM-dd-yyyy, HH:mm')}`)
+                requestingProvider.push(data?.activity?.user?.name)
+                requestReviewer.push(data?.logs?.workFlowUser?.name?.name);
+                site.push(data?.activity?.site?.name)
+            })
+        }
+        if (value === "Approved") {
+            addOnAcceptedReportLog?.map(data => {
+                addonActivityServices.push(data?.activity?.activity?.activity);
+                requestDateTime.push(`${format(new Date(data?.activity?.createdDate) || new Date(), 'MM-dd-yyyy, HH:mm')}`)
+                rejectedDateTime.push(`${format(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.createdDate) || new Date(), 'MM-dd-yyyy, HH:mm')}`)
+                requestingProvider.push(data?.activity?.user?.name)
+                requestReviewer.push(data?.logs?.workFlowUser?.name?.name);
+                site.push(data?.activity?.site?.name)
+            })
+        }
+
+        return [
+            addonActivityServices,
+            requestDateTime,
+            rejectedDateTime,
+            requestingProvider,
+            requestReviewer,
+            site
+        ];
+    }
+
     let timeSheet = [];
     let period = [];
     let serviceProvider = [];
@@ -653,7 +852,8 @@ const ReportTypeOverview = () => {
                                                                     : reportType === "complianceStatus" ? "Proof Of Documentation Status By Contractor"
                                                                         : reportType === "nonCompliant" ? 'List of Contracts that are non compliant with proof of documentation requirement'
                                                                             : reportType === "paymentsProcessingSummary" ? 'Payments Processing Summary'
-                                                                                : 'Activities/ Services Log Status Summary'}
+                                                                                : reportType === "addOnActivities" ? 'Add On Activities/ Services Requests Status Summary'
+                                                                                    : 'Activities/ Services Log Status Summary'}
                                                 </div>
                                                 {dataToUseInReport?.reportingTimePeriod !== "" && (
                                                     <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5}`}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
@@ -687,7 +887,7 @@ const ReportTypeOverview = () => {
                                                         </div>
                                                     )}
                                                 </div>
-                                            ) : (reportType === "activitiesOrServices") ? (
+                                            ) : (reportType === "activitiesOrServices" || reportType === "addOnActivities") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20}`}>
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5}`}>Sites </div>
@@ -833,6 +1033,73 @@ const ReportTypeOverview = () => {
                                                             />
                                                         </>
                                                     )}
+                                                </>
+                                            ) : reportType === "addOnActivities" ? (
+                                                <>
+                                                    <div className={style.grid2}>
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>Activity / Services Status</div>
+                                                            <ApexPieChart pieData={pieData} />
+                                                        </div>
+
+                                                        <div>
+                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20}`}>By Category Of Service Performed</div>
+                                                            <div className={style.marginTop20}>
+                                                                <ApexGroupedBarChart series={series} categories={categories} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
+                                                    {/* <div className={style.marginTop40}>
+                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Trend For Activities / Services Completed</div>
+                                                        <div className={style.reportWidthToFitFullScreen}>
+                                                            <ApexLineChart lineData={lineData} />
+                                                        </div>
+                                                    </div> 
+                                                    <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
+                                                    */}
+                                                    <div className={style.marginTop40}>
+                                                        <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} ${style.marginBottom20}`}>Percentage Of Activities / Services Completed By Category Type</div>
+                                                        <div className={style.reportWidthToFitFullScreen}>
+                                                            <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
+                                                        </div>
+                                                    </div>
+                                                    <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                                    {addOnRejectedReportLog?.length !== 0 && (
+                                                        <>
+                                                            <ReportsTable
+                                                                tableType={'List Of Request Rejected For Add On Activity / Services'}
+                                                                tableHeader={['Add on Activity/ Services', 'Request Date/ Time', 'Rejected Date/ Time', 'Requesting Provider', 'Request Reviewer', 'Site']}
+                                                                tableValue={addOnRejectedReportLog}
+                                                                activitiesServicesValues={getAddOnActivitiesServicesValues('Rejected')}
+                                                                styleName={style.grid6}
+                                                            />
+                                                            <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                                        </>
+                                                    )}
+                                                    {addOnAcceptedReportLog?.length !== 0 && (
+                                                        <>
+                                                            <ReportsTable
+                                                                tableType={'List Of Approved Add On Activity / Services Requests'}
+                                                                tableHeader={['Add on Activity/ Services', 'Request Date/ Time', 'Approved Date/ Time', 'Requesting Provider', 'Request Reviewer', 'Site']}
+                                                                tableValue={addOnAcceptedReportLog}
+                                                                activitiesServicesValues={getAddOnActivitiesServicesValues('Approved')}
+                                                                styleName={style.grid6}
+                                                            />
+                                                            <div className={`${style.mildBorderStyle} ${style.marginTop20}`}></div>
+                                                        </>
+                                                    )}
+                                                    {/*{reportLog?.filter(data => data?.activityStatus === "NOTDONE")?.length !== 0 && (
+                                                        <>
+                                                            <ReportsTable
+                                                                tableType={'Not Done Activity / Service Log'}
+                                                                tableHeader={['Activity/ Services', 'Scheduled Date/ Time', 'Contracted Provider', 'Site', 'Reason Not Done']}
+                                                                tableValue={reportLog?.filter(data => data?.activityStatus === "NOTDONE")}
+                                                                activitiesServicesValues={getActivitiesServicesValues('NOTDONE')}
+                                                                styleName={style.grid5}
+                                                            />
+                                                        </>
+                                                    )} */}
                                                 </>
                                             ) : reportType === "paymentsProcessingSummary" ? (
                                                 paymentsReportLog?.paymentContracts?.length !== 0 ? (

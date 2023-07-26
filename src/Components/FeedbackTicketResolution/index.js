@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Icon, Intent, Dialog, Classes, TextArea, InputGroup } from "@blueprintjs/core";
 import { GET, TenantID, POST, PUT } from './../../Screens/dataSaver';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
@@ -8,8 +8,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import { format } from 'date-fns';
+import { useReactToPrint } from 'react-to-print';
 import Select from '@mui/material/Select';
 import UserLogo from './../../images/userLogo.jpg';
+import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 
 import style from './index.module.scss';
 import { getDaysAgo } from '../../utils/getDaysAgo';
@@ -44,6 +46,10 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     let fromUpload = sessionStorage.getItem('fromUpload');
     let customerName = sessionStorage.getItem('title');
     const [screenCaptureFromUpload, setScreenCaptureFromUpload] = useState('');
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
 
     useEffect(() => {
         setScreenCapture(screenCaptureImg);
@@ -300,11 +306,16 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
 
     return (
         <>
-            <Dialog isOpen={getShowFeedbackTicketResolution} onClose={() => handleClose()} className={`${style.addManagerDialogBackground} ${style.feedbackDialog}`}>
+            <Dialog isOpen={getShowFeedbackTicketResolution} onClose={() => handleClose()} className={`${style.addManagerDialogBackground} ${style.feedbackDialog}`} ref={componentRef}>
                 <div className={`${Classes.DIALOG_BODY} `}>
+                    <div className={style.alignRight}>
+                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle}`} onClick={() => handleClose()} />
+                    </div>
                     <div className={style.spaceBetween}>
                         <p className={style.extensionStyle}>Feedback Ticket Resolution Progress</p>
-                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.crossStyle}`} onClick={() => handleClose()} />
+                        <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} onClick={handlePrint} />
+
+                        {/* <Icon icon="cross" size={20} intent={Intent.DANGER} className={`${style.printStyle}`} onClick={() => handleClose()} /> */}
                     </div>
                     <div className={style.extensionBorder}></div>
                     <div className={style.feedbackGrid}>
