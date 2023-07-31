@@ -1,6 +1,7 @@
 import React from 'react';
 import { GET } from './../dataSaver';
 import { CLINIC, SURGERY, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING } from '../../Constants';
+import { TRUE } from 'sass';
 
 export const validateContractIDTermLimit = (contract) => {
   let fieldData = [{ field: 'Contract Name', value: contract?.contractName?.contractName },
@@ -76,6 +77,7 @@ export const validateBusinessEntity = (contract) => {
 }
 
 export const validateServices = (contract) => {
+  console.log('contract Data', contract);
   let services = contract?.contractedServices;
   let emptyFields = [];
   if (services?.length === 0) {
@@ -83,25 +85,52 @@ export const validateServices = (contract) => {
 
   }
   services?.map((service, index) => {
-    if (service?.activityType?.activityType !== ADMINISTRATIVE && service?.activityType?.activityType !== ADDON) {
-      let fieldData = [{ field: 'sites', value: service?.sites?.length },
-      { field: 'Service Days', value: service?.serviceDays },
-      { field: 'Total Sessions', value: service?.totalSessions?.value },
-      { field: 'Working Hours - From', value: service?.workingPeriod?.from },
-      { field: 'Working Hours - To', value: service?.workingPeriod?.to }
-      ];
-      if (service?.activityType?.activityType !== SUPPLEMENTAL) {
-        fieldData.push({ field: 'Duration', value: service?.duration?.hours });
-      }
-      if (service?.activityType?.activityType === CLINIC || service?.activityType?.activityType === SURGERY || service?.activityType?.activityType === PROCEDUREREADING) {
-        fieldData.push(...[{ field: 'Service Schedule', value: service?.contractedSchedule?.minimum?.value },
-        { field: 'Service Schedule Frequency', value: service?.contractedSchedule?.frequency }])
-      }
-      let temp = fieldData?.filter(data => data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data => data?.field);
-      emptyFields[index] = temp;
-    } else {
-      emptyFields.push([])
+    let fieldData = [{ field: 'sites', value: service?.sites?.length },
+    // { field: 'Service Days', value: Object.keys(service?.serviceDays)?.filter(data=>service?.serviceDays[data] === TRUE)?.map(data=>data) },
+    { field: 'Total Sessions', value: service?.totalSessions?.value },
+    { field: 'Working Hours - From', value: service?.workingPeriod?.from },
+    { field: 'Working Hours - To', value: service?.workingPeriod?.to }
+    ];
+    if (service?.additionalSchedule?.scheduleRequired) {
+      emptyFields.push(...['Additional Schedule Value', 'Additional Schedule Frequency']);
+      fieldData.push(...[{ field: 'Additional Schedule Value', value: service?.additionalSchedule?.value }, { field: 'Additional Schedule Frequency', value: service?.additionalSchedule?.frequency }]);
     }
+    if (service?.billableService) {
+      emptyFields.push(...['Payment Amount']);
+      fieldData.push(...[{ field: 'Payment Amount', value: service?.payableAmount?.value }]);
+    }
+    if (service?.activityType?.activityType !== SUPPLEMENTAL) {
+      fieldData.push({ field: 'Duration', value: service?.duration?.hours });
+    }
+    if (service?.activityType?.activityType === CLINIC || service?.activityType?.activityType === SURGERY || service?.activityType?.activityType === PROCEDUREREADING) {
+      service?.contractedSchedules?.map(schedule => {
+        fieldData.push(...[{ field: 'Service Schedule', value: schedule?.minimum?.value },
+        { field: 'Service Schedule Frequency', value: schedule?.frequency }])
+      })
+      if (service?.activityType?.activityType === CLINIC || service?.activityType?.activityType === PROCEDUREREADING) {
+        service?.patientsSeenTargets?.map(schedule => {
+          if (!schedule?.noTargetApplicable) {
+            emptyFields.push(...['Patients Seen Target - With Nurse', 'Patients Seen Target - Without Nurse']);
+            fieldData.push(...[{ field: 'Patients Seen Target - With Nurse', value: schedule?.withNurse?.value },
+            { field: 'Patients Seen Target - Without Nurse', value: schedule?.withoutNurse?.value },
+            ])
+          }
+        })
+
+        service?.scheduledPatientsTargets?.map(schedule => {
+          if (!schedule?.noTargetApplicable) {
+            emptyFields.push(...['Scheduled Patients Target - With Nurse', 'Scheduled Patients Target - Without Nurse']);
+            fieldData.push(...[{ field: 'Scheduled Patients Target - With Nurse', value: schedule?.withNurse?.value },
+            { field: 'Scheduled Patients Target - Without Nurse', value: schedule?.withoutNurse?.value },
+            ])
+          }
+        })
+      }
+    }
+    console.log('field Data', fieldData);
+    let temp = fieldData?.filter(data => data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data => data?.field);
+    emptyFields[index] = temp;
+
   });
   return emptyFields;
 }
@@ -225,5 +254,6 @@ export const validateTabs = async (contractId) => {
     tab6: tab6?.length === 0, value6: tab6,
     tab7: tab7, value7: tab7,
   };
+  console.log('tab validation values', isTabsValid);
   return isTabsValid;
 }

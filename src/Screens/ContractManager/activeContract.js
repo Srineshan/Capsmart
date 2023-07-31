@@ -22,7 +22,7 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
     const paymentFrequency = { 'TIMESHEET': ' Timesheet Period', 'CONTRACT_END': 'On Last Invoice For Contract Year' };
     const paymentCriteria = { 'RVUBASED': 'RVU Based', 'DOLLARBASEDRATE': 'Dollar Based Rate' };
     const timesheetLogPeriod = { 'ENDOFMONTH': 'End Of Month', 'ENDOFEVERYWEEK': 'End Of Every Week', 'EVERY2WEEKS': 'Every 2 Weeks', 'EVERY4WEEKS': 'Every 4 Weeks', 'ONDAYOFSERVICE': 'On Day Of Service' }
-    console.log('contract data', contractUsers);
+    console.log('contract data', contractData);
 
     const reactToPrintContent = useCallback(() => {
         return componentRef.current;
@@ -57,11 +57,6 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
         }
     }
 
-    const capitalizeFLetter = (string) => {
-        console.log(string[0].toUpperCase() +
-            string.slice(1));
-    }
-
     return (
         <Dialog isOpen={getActiveContractView} onClose={() => getActiveContractView(false)} className={`${style.addServiceDialog} ${style.addManagerDialogBackground}`}>
             <div className={`${Classes.DIALOG_BODY} `} ref={componentRef}>
@@ -84,7 +79,11 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                     <ValidationHeader heading={'CONTRACT IDENTIFICATION & TERM LIMIT'} result={'PASS'} />
                     <div className={style.validationPadding}>
                         <div className={style.spaceBetween}>
-                            <div className={style.validationTopicText}>Contract Id</div>
+                            <div className={style.validationTopicText}>Contract / Agreement Name</div>
+                            <div className={style.statusText}>{contractData?.contractDetail?.contractId?.id}</div>
+                        </div>
+                        <div className={style.spaceBetween}>
+                            <div className={style.validationTopicText}>Contract Id / Resolution Number</div>
                             <div className={style.statusText}>{contractData?.contractDetail?.contractId?.id}</div>
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
