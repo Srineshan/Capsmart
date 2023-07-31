@@ -133,7 +133,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
     }, [selectedSitesToSend]);
 
     useEffect(() => {
-        if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities") {
+        if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") {
             const quarter = Math.floor((new Date().getMonth() / 3));
             const lastyear = new Date(new Date().getFullYear() - 1, 0, 1);
             if (reportingTimePeriod === 'Current Week') {
@@ -340,7 +340,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                             </FormControl>
                         )}
                     </>
-                ) : (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities") ? (
+                ) : (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") ? (
                     <>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label1">Reporting Time Period</InputLabel>
@@ -421,7 +421,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                                 </Select>
                             </FormControl>
                         )}
-                        {(reportType === "activitiesOrServices" || reportType === "addOnActivities") && (
+                        {(reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") && (
                             <>
                                 <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                     <InputLabel id="demo-multiple-name-label2">Site</InputLabel>

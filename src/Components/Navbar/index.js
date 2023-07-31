@@ -364,18 +364,22 @@ const Navbar = () => {
                       </div>
                     </Link>
                   )}
-                  {/* <Link to={'/reports/timesheets'} className={style.noFontStyle}>
-                                    <div className={style.options}>Timesheets</div>
-                                </Link>
-                                <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
+                  {(isTimesheetsAvailable || isReviewsAndApprovalsAvailable || isPaymentsAvailable) && (
+                    <Link to={'/reports/timesheets'} className={style.noFontStyle}>
+                      <div className={style.options}>Timesheets</div>
+                    </Link>
+                  )}
+                  {/* <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
                                     <div className={style.options}>Reviews & Approvals</div>
                                 </Link>
                                 <Link to={'/reports/taskManagement'} className={style.noFontStyle}>
                                     <div className={style.options}>Task Management</div>
                                 </Link> */}
-                  <Link to={"/reports/payments"} className={style.noFontStyle}>
-                    <div className={style.options}>Payments</div>
-                  </Link>
+                  {isPaymentsAvailable && (
+                    <Link to={"/reports/payments"} className={style.noFontStyle}>
+                      <div className={style.options}>Payments</div>
+                    </Link>
+                  )}
                   {isContractManagementAvailable && (
                     <Link
                       to={"/reports/contractManagement"}
