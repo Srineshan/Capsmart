@@ -34,6 +34,10 @@ const ApexPieChart = ({ pieData }) => {
       return 'Approved';
     else if (data === "REVIEWED")
       return 'Reviewed';
+    else if (data === "paid")
+      return 'Paid';
+    else if (data === "unpaid")
+      return 'Not Paid';
     else return '';
   }
 

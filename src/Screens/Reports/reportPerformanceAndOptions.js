@@ -50,7 +50,11 @@ const ReportPerformanceAndOptions = ({ handle, getIsRefresh, handlePrint, isUpda
                                     : reportType === "complianceStatus" ? "Proof Of Documentation Status By Contractor"
                                         : reportType === "nonCompliant" ? 'List of Contracts that are non compliant with proof of documentation requirement'
                                             : reportType === "paymentsProcessingSummary" ? 'Payments Processing Summary'
-                                                : 'Activities/ Services Log Status Summary'}
+                                                : reportType === "timesheetProcessingSummary" ? 'Timesheet Processing Summary'
+                                                    : reportType === "listingOfTimesheetsNotPaid" ? 'Listing Of Timesheets Not Paid'
+                                                        : reportType === "submittedTimesheetsPaymentStatus" ? 'Submitted Timesheets Payment Status'
+                                                            : reportType === "addOnActivities" ? 'Add On Activities/ Services Requests Status Summary'
+                                                                : 'Activities/ Services Log Status Summary'}
                     </div>
                 </div>
                 <div className={` ${style.margin20}`}>
