@@ -139,32 +139,30 @@ const AddCostCenterAndLocations = ({
       serviceLocations: serviceLocations,
     };
 
-    console.log(data);
-
-    // if (!isEdit) {
-    //   await POST("entity-service/costCenter", JSON.stringify([data]))
-    //     .then((response) => {
-    //       SuccessToaster("Cost Center Location Added Successfully");
-    //       getCostCenterData();
-    //       getAddCostCenterDialog(false);
-    //     })
-    //     .catch((error) => {
-    //       ErrorToaster(error);
-    //     });
-    // } else {
-    //   await PUT(
-    //     `entity-service/costCenter/${costCenterId}`,
-    //     JSON.stringify(data)
-    //   )
-    //     .then((response) => {
-    //       SuccessToaster("Cost Center Location Updated Successfully");
-    //       getCostCenterData();
-    //       getAddCostCenterDialog(false);
-    //     })
-    //     .catch((error) => {
-    //       ErrorToaster(error);
-    //     });
-    // }
+    if (!isEdit) {
+      await POST("entity-service/costCenter", JSON.stringify([data]))
+        .then((response) => {
+          SuccessToaster("Cost Center Location Added Successfully");
+          getCostCenterData();
+          getAddCostCenterDialog(false);
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      await PUT(
+        `entity-service/costCenter/${costCenterId}`,
+        JSON.stringify(data)
+      )
+        .then((response) => {
+          SuccessToaster("Cost Center Location Updated Successfully");
+          getCostCenterData();
+          getAddCostCenterDialog(false);
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    }
   };
 
   const handleAddMoreClick = () => {
