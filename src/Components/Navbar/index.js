@@ -364,7 +364,7 @@ const Navbar = () => {
                       </div>
                     </Link>
                   )}
-                  {(isTimesheetsAvailable || isReviewsAndApprovalsAvailable || isPaymentsAvailable) && (
+                  {isTimesheetsAvailable && (
                     <Link to={'/reports/timesheets'} className={style.noFontStyle}>
                       <div className={style.options}>Timesheets</div>
                     </Link>
