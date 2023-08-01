@@ -1,7 +1,6 @@
 import React from 'react';
 import { GET } from './../dataSaver';
-import { CLINIC, SURGERY, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING } from '../../Constants';
-import { TRUE } from 'sass';
+import { CLINIC, SURGERY, SUPPLEMENTAL, ADDON, ADMINISTRATIVE, PROCEDUREREADING, ONCALL } from '../../Constants';
 
 export const validateContractIDTermLimit = (contract) => {
   let fieldData = [{ field: 'Contract Name', value: contract?.contractName?.contractName },
@@ -82,11 +81,11 @@ export const validateServices = (contract) => {
   let emptyFields = [];
   if (services?.length === 0) {
     emptyFields.push(['Sites', 'Activities', 'Service Schedule', 'Service Schedule Frequency', 'Duration', 'Service Days', 'Total Session', 'Working Hours - From', 'Working Hours - To']);
-
   }
+  console.log('services data', services)
   services?.map((service, index) => {
     let fieldData = [{ field: 'sites', value: service?.sites?.length },
-    // { field: 'Service Days', value: Object.keys(service?.serviceDays)?.filter(data=>service?.serviceDays[data] === TRUE)?.map(data=>data) },
+    { field: 'Service Days', value: service?.serviceDays !== undefined && service?.serviceDays !== null && Object.keys(service?.serviceDays || {})?.filter(data => service?.serviceDays[data] === true)?.map(data => data)?.length },
     { field: 'Total Sessions', value: service?.totalSessions?.value },
     { field: 'Working Hours - From', value: service?.workingPeriod?.from },
     { field: 'Working Hours - To', value: service?.workingPeriod?.to }
@@ -99,6 +98,16 @@ export const validateServices = (contract) => {
       emptyFields.push(...['Payment Amount']);
       fieldData.push(...[{ field: 'Payment Amount', value: service?.payableAmount?.value }]);
     }
+    if (service?.activityApprovalWFRequired && service?.activityType?.activityType === ADDON) {
+      emptyFields.push(...['Approval Workflow']);
+      fieldData.push(...[{ field: 'Approval Workflow', value: service?.workflow }]);
+    }
+    if (service?.activityType?.activityType === SUPPLEMENTAL || service?.activityType?.activityType === ADMINISTRATIVE) {
+      if (!service?.dedicatedHoursSpecified) {
+        emptyFields.push(...['Dedicated Hours Borrowed From']);
+        fieldData.push({ field: 'Dedicated Hours Borrowed From', value: service?.hoursBorrowed });
+      }
+    }
     if (service?.activityType?.activityType !== SUPPLEMENTAL) {
       fieldData.push({ field: 'Duration', value: service?.duration?.hours });
     }
@@ -107,16 +116,21 @@ export const validateServices = (contract) => {
         fieldData.push(...[{ field: 'Service Schedule', value: schedule?.minimum?.value },
         { field: 'Service Schedule Frequency', value: schedule?.frequency }])
       })
-      if (service?.activityType?.activityType === CLINIC || service?.activityType?.activityType === PROCEDUREREADING) {
-        service?.patientsSeenTargets?.map(schedule => {
-          if (!schedule?.noTargetApplicable) {
-            emptyFields.push(...['Patients Seen Target - With Nurse', 'Patients Seen Target - Without Nurse']);
-            fieldData.push(...[{ field: 'Patients Seen Target - With Nurse', value: schedule?.withNurse?.value },
-            { field: 'Patients Seen Target - Without Nurse', value: schedule?.withoutNurse?.value },
-            ])
+      service?.patientsSeenTargets?.map(schedule => {
+        if (!schedule?.noTargetApplicable) {
+          if (schedule?.withNurse?.value === 0) {
+            emptyFields.push(...['Patients Seen Target - With Nurse'])
           }
-        })
-
+          if (schedule?.withoutNurse?.value === 0) {
+            emptyFields.push(...['Patients Seen Target - Without Nurse'])
+          }
+          // emptyFields.push(...['Patients Seen Target - With Nurse', 'Patients Seen Target - Without Nurse']);
+          // fieldData.push(...[{ field: 'Patients Seen Target - With Nurse', value: schedule?.withNurse?.value },
+          // { field: 'Patients Seen Target - Without Nurse', value: schedule?.withoutNurse?.value },
+          // ])
+        }
+      })
+      if (service?.activityType?.activityType !== SURGERY) {
         service?.scheduledPatientsTargets?.map(schedule => {
           if (!schedule?.noTargetApplicable) {
             emptyFields.push(...['Scheduled Patients Target - With Nurse', 'Scheduled Patients Target - Without Nurse']);
@@ -127,10 +141,33 @@ export const validateServices = (contract) => {
         })
       }
     }
+    if (service?.activityType?.activityType === ONCALL) {
+      emptyFields.push(...['On Call Coverage For']);
+      fieldData.push(...[{ field: 'On Call Coverage For', value: service?.activityResponse?.dataMap?.onCallCoverageFor ?? null },
+      ])
+      if (service?.dependantServiceIncluded) {
+        emptyFields.push(...['Additional Activity']);
+        service?.dependentService?.additionalServices?.map(data => {
+          if (data?.activity?.activity === '') {
+            emptyFields.push(...['Dependent Service Activity Name']);
+          }
+          if (service?.dependentService?.billableService) {
+            fieldData.push(...[{ field: 'Additional Activity - Payable Amount', value: service?.dependentService?.payableAmount?.value }]);
+            emptyFields.push(...['Additional Activity - Payable Amount']);
+          }
+          if (service?.dependentService?.paymentApprovalRequired) {
+            fieldData.push(...[{ field: 'Additional Activity - Payment Approver', value: service?.dependentService?.workFlow }]);
+            emptyFields.push(...['Additional Activity - Payment Approver']);
+          }
+          // if(service?.customizedSchedule){
+
+          // }
+        })
+      }
+    }
     console.log('field Data', fieldData);
     let temp = fieldData?.filter(data => data?.value === null || data?.value === '' || data?.value === undefined || data?.value === 0)?.map(data => data?.field);
     emptyFields[index] = temp;
-
   });
   return emptyFields;
 }
