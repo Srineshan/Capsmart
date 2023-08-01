@@ -866,6 +866,13 @@
     grid-gap: 20px;
 }
 
+.gridAuto{
+    display: grid;
+   grid-auto-columns: 1fr;
+   grid-auto-flow: column;
+   grid-gap: 20px;
+}
+
 .grid4 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;

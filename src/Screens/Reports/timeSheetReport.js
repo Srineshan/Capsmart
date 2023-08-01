@@ -334,6 +334,17 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                             <Run />
                                         </Link>
                                     </div>
+                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
+                                        <div className={style.tableDataReportsFontStyle}>2</div>
+                                        <Link to="/reportTypeOverview/compensationCostAnalysis" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Compensation Cost Analysis</div></Link>
+                                        <div className={style.tableDataReportsFontStyle}>This report provides a comprehensive summary of statistics with regards to status of payments being made to contracted service providers</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
+                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
+                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
+                                        <Link to={"/reportTypeOverview/compensationCostAnalysis"} className={style.linkStyle}>
+                                            <Run />
+                                        </Link>
+                                    </div>
                                     {/* <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
                                         <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Time and Payment Log for Contracted Services</div></Link>

@@ -596,6 +596,29 @@ const SampleReportLeftCard = ({ getDataToUseInReport }) => {
                             </Select>
                         </FormControl>
                     </>
+                ) : reportType === "compensationCostAnalysis" ? (
+                    <>
+                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-multiple-name-label5">Contract</InputLabel>
+                            <Select
+                                labelId="demo-multiple-name-label5"
+                                id="demo-multiple-name5"
+                                multiple
+                                value={selectedContracts}
+                                onChange={handleChangeContracts}
+                                MenuProps={MenuProps}
+                            >
+                                {contracts?.map((data) => (
+                                    <MenuItem
+                                        key={data?.id}
+                                        value={data?.id}
+                                    >
+                                        {data?.contractName?.contractName}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </>
                 ) : (
                     <>
                         <div className={`${style.darkLabel} ${style.marginTop20}`}>Time Range:</div>

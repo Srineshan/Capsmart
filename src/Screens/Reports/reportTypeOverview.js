@@ -57,6 +57,7 @@ const ReportTypeOverview = () => {
     const [addOnAcceptedReportLog, setAddOnAcceptedReportLog] = useState([]);
     const [addOnRejectedReportLog, setAddOnRejectedReportLog] = useState([]);
     const [paymentsReportLog, setPaymentsReportLog] = useState();
+    const [compensationCostAnalysis, setCompensationCostAnalysis] = useState();
     const [series, setSeries] = useState([]);
     const [categories, setCategories] = useState([]);
     const [barChartSeries, setBarChartSeries] = useState([]);
@@ -75,6 +76,7 @@ const ReportTypeOverview = () => {
     const [apexStackedBarChartDisplay, setApexStackedBarChartDisplay] = useState(
         <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
     )
+    let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
     const podTypes = ['Medical Staff Membership & Privileges',
         'Primary Speciality Board Certification',
         'Secondary Specialty Board Certification',
@@ -122,6 +124,9 @@ const ReportTypeOverview = () => {
         if (reportType === 'paymentsProcessingSummary') {
             getPayments();
         }
+        if (reportType === 'compensationCostAnalysis') {
+            getCompensationCostAnalysis();
+        }
         getUsersData();
     }, [])
 
@@ -148,6 +153,9 @@ const ReportTypeOverview = () => {
         }
         if (reportType === 'paymentsProcessingSummary') {
             getPayments();
+        }
+        if (reportType === 'compensationCostAnalysis') {
+            getCompensationCostAnalysis();
         }
         if (reportType === 'timesheetProcessingSummary') {
             getTimesheetProcessingSummary('withParameter');
@@ -307,7 +315,6 @@ const ReportTypeOverview = () => {
 
             let stackedTemp = [];
             let keysForChart = [];
-            let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
             chartData?.completedActivitiesBycategoryAndMonth?.map((stack, index) => {
                 let values = stack.types;
                 keysForChart = Object.keys(stack.types);
@@ -380,7 +387,6 @@ const ReportTypeOverview = () => {
 
             let stackedTemp = [];
             let keysForChart = [];
-            let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
             chartData?.approvedAddOnActivitiesByCategoryAndMonth?.map((stack, index) => {
                 let values = stack.types;
                 keysForChart = Object.keys(stack.types);
@@ -452,7 +458,6 @@ const ReportTypeOverview = () => {
             });
             let stackedTemp = [];
             let keysForChart = [];
-            let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
             chartData?.approvedAddOnActivitiesByCategoryAndMonth?.map((stack, index) => {
                 let values = stack.types;
                 keysForChart = Object.keys(stack.types);
@@ -519,7 +524,6 @@ const ReportTypeOverview = () => {
             });
             let stackedTemp = [];
             let keysForChart = [];
-            let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
             chartData?.completedActivitiesBycategoryAndMonth?.map((stack, index) => {
                 let values = stack.types;
                 keysForChart = Object.keys(stack.types);
@@ -539,6 +543,11 @@ const ReportTypeOverview = () => {
             setStackedData(stackedTemp);
             setStackedCategories(stackedTemp?.map(stackedData => stackedData?.name));
         }
+    }
+
+    const getCompensationCostAnalysis = async () => {
+        const { data: chartData } = await GET(`timesheet-management-service/timesheet/compensationCostAnalysis?contractId=${dataToUseInReport?.selectedContracts}`);
+        setCompensationCostAnalysis(chartData);
     }
 
     const getPayments = async () => {
@@ -982,6 +991,21 @@ const ReportTypeOverview = () => {
             invoiceAmount
         ];
     }
+    let oneColValue = []
+    const getCompensationCostAnalysisValues = () => {
+        let leftHeadings = ['Obligated Expected', 'Obligated (Actual)', 'Add-ON', 'Obligated Variance', 'Additional Services', 'Reduced Services', 'Actual', 'Invoice By Contractor', 'Fixed (Budgeted)'];
+        let allColValues = [];
+        allColValues.push(leftHeadings)
+        oneColValue = []
+        compensationCostAnalysis?.map(data => {
+            oneColValue = [data?.obligatedExpected, data?.obligatedActivitiesCosts, data?.addOnActivitiesCost, '-', data?.additionalServicesCost, data?.reducedServicesCost, data?.totalActivitiesCost, data?.policyBasedPayment, data?.maxPaymentPerTimesheetSubmission]
+            allColValues.push(oneColValue)
+        })
+
+        console.log(leftHeadings, allColValues)
+
+        return allColValues;
+    }
 
     let contractManagementContractName = [];
     let contractManagementContractId = [];
@@ -1073,6 +1097,16 @@ const ReportTypeOverview = () => {
         ];
     }
 
+    const getHeaderValues = () => {
+        let headerValues = [];
+        headerValues.push('');
+        compensationCostAnalysis?.map(data => headerValues.push(`${months[data?.month]}, ${data?.year}`));
+        compensationCostAnalysis?.map(data =>
+            console.log(months[data?.month])
+        )
+        return headerValues;
+    }
+
     return (
         <Fragment>
             <Navbar />
@@ -1107,11 +1141,12 @@ const ReportTypeOverview = () => {
                                                                     : reportType === "complianceStatus" ? "Proof Of Documentation Status By Contractor"
                                                                         : reportType === "nonCompliant" ? 'List of Contracts that are non compliant with proof of documentation requirement'
                                                                             : reportType === "paymentsProcessingSummary" ? 'Payments Processing Summary'
-                                                                                : reportType === "timesheetProcessingSummary" ? 'Timesheet Processing Summary'
-                                                                                    : reportType === "listingOfTimesheetsNotPaid" ? 'Listing Of Timesheets Not Paid'
-                                                                                        : reportType === "submittedTimesheetsPaymentStatus" ? 'Submitted Timesheets Payment Status'
-                                                                                            : reportType === "addOnActivities" ? 'Add On Activities/ Services Requests Status Summary'
-                                                                                                : 'Activities/ Services Log Status Summary'}
+                                                                                : reportType === "compensationCostAnalysis" ? 'Compensation Cost Analysis'
+                                                                                    : reportType === "timesheetProcessingSummary" ? 'Timesheet Processing Summary'
+                                                                                        : reportType === "listingOfTimesheetsNotPaid" ? 'Listing Of Timesheets Not Paid'
+                                                                                            : reportType === "submittedTimesheetsPaymentStatus" ? 'Submitted Timesheets Payment Status'
+                                                                                                : reportType === "addOnActivities" ? 'Add On Activities/ Services Requests Status Summary'
+                                                                                                    : 'Activities/ Services Log Status Summary'}
                                                 </div>
                                                 {dataToUseInReport?.reportingTimePeriod !== "" && (
                                                     <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
@@ -1170,6 +1205,11 @@ const ReportTypeOverview = () => {
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
                                                     </div>
+                                                </div>
+                                            ) : (reportType === "compensationCostAnalysis") ? (
+                                                <div className={`${style.marginTop20} `}>
+                                                    <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract </div>
+                                                    <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
                                                 </div>
                                             ) : (reportType === "nonCompliant") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20} `}>
@@ -1462,6 +1502,20 @@ const ReportTypeOverview = () => {
                                                     <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
                                                         subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
                                                 )
+                                            ) : reportType === "compensationCostAnalysis" ? (
+                                                <>
+                                                    {compensationCostAnalysis?.length !== 0 && (
+                                                        <>
+                                                            <ReportsTable
+                                                                tableType={'Compensation Cost Analysis'}
+                                                                tableHeader={getHeaderValues()}
+                                                                tableValue={['Obligated Expected', 'Obligated (Actual)', 'Add-ON', 'Obligated Variance', 'Additional Services', 'Reduced Services', 'Actual', 'Invoice By Contractor', 'Fixed (Budgeted)']}
+                                                                activitiesServicesValues={getCompensationCostAnalysisValues()}
+                                                                styleName={style.gridAuto}
+                                                            />
+                                                        </>
+                                                    )}
+                                                </>
                                             ) : reportType === "timesheetProcessingSummary" ? (
                                                 <div>
                                                     <div className={style.timeSheetProcessingSummaryCalendarGrid}>
