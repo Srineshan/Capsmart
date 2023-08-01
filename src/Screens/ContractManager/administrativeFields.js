@@ -24,7 +24,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
     const [activity, setActivity] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showAdminActivity, setShowAdminActivity] = useState(false);
-    const [additionalSchedule, setAdditionalSchedule] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [title, setTitle] = useState([]);
     const [user, setUsers] = useState([]);
@@ -173,8 +172,6 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
-
-    const limit5 = 5;
 
     const getServiceDaysMetadata = (serviceDays) => {
         setMetadata({ ...metadata, serviceDays: serviceDays })

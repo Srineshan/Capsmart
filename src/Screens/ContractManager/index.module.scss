@@ -115,6 +115,10 @@ body::-webkit-scrollbar {
     height: 100%;
 }
 
+.rightAlign {
+    text-align: right;
+}
+
 .reducedOpacity {
     opacity: 0.4;
 }
@@ -2051,6 +2055,12 @@ input[type=number] {
     grid-template-columns: 8% 22% 22% 22% 10% 7%;
     grid-gap: 10px;
     padding-left: 10px;
+}
+
+.twoColumnGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
 }
 
 .serviceSpecificationGridActive {

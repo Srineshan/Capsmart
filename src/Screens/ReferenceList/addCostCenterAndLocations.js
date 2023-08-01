@@ -112,6 +112,21 @@ const AddCostCenterAndLocations = ({
       return;
     }
 
+    if (
+      !serviceLocations?.[0]?.location &&
+      serviceLocations?.[0]?.location === ""
+    ) {
+      ErrorToaster("Enter Location Name");
+      document.getElementById("locationName").focus();
+      return;
+    }
+
+    if (!serviceLocations?.[0]?.code && serviceLocations?.[0]?.code === "") {
+      ErrorToaster("Enter Location Code");
+      document.getElementById("locationCode").focus();
+      return;
+    }
+
     const data = {
       ...(isEdit && { id: costCenterId }),
       ...(isEdit && { createdDate: createdDate }),
@@ -123,8 +138,6 @@ const AddCostCenterAndLocations = ({
       },
       serviceLocations: serviceLocations,
     };
-
-    console.log(data);
 
     if (!isEdit) {
       await POST("entity-service/costCenter", JSON.stringify([data]))
@@ -224,6 +237,7 @@ const AddCostCenterAndLocations = ({
                     //   handleLocationValue(i, e.target.value, "location")
                     // }
                     onChange={(e) => handleInputChange(e, i)}
+                    id="locationName"
                   />
                   <InputGroup
                     name="code"
@@ -235,6 +249,7 @@ const AddCostCenterAndLocations = ({
                     // onChange={(e) =>
                     //   handleLocationValue(i, e.target.value, "code")
                     // }
+                    id="locationCode"
                   />
                   {i + 1 === serviceLocations?.length && (
                     <div

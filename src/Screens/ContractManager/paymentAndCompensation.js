@@ -23,7 +23,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     const [rvuQuantity, setRvuQuantity] = useState({
         quantity: 0
     })
-    const [frequency, setFrequency] = useState('')
+    const [frequency, setFrequency] = useState('NA')
     const [fteEquivalent, setFteEquivalent] = useState({
         value: parseFloat(0)
     })
@@ -108,7 +108,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     useEffect(() => {
         setCompensation(paymentAndCompensation?.compensationBasis || 'RVUBASED');
         setRvuQuantity(paymentAndCompensation?.rvuQuantity);
-        setFrequency(paymentAndCompensation?.frequency || '');
+        setFrequency(paymentAndCompensation?.frequency || 'NA');
         setFteEquivalent(paymentAndCompensation?.fteEquivalent);
         setRvuReferenceUsed(paymentAndCompensation?.rvuReferenceUsed);
         setRvuQuantityPeriod(paymentAndCompensation?.rvuQuantityPeriod);
@@ -121,11 +121,11 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
 
     useEffect(() => {
         setTimesheetPaymentsValue()
-    }, [timeSheetTabs?.length, compensationPolicy])
+    }, [timeSheetTabs?.length, compensationPolicy, timeSheetTabs])
 
     useEffect(() => {
         getPaymentFields();
-    }, [compensationPolicy])
+    }, [timesheetPayments, timesheetPayments?.length])
 
     console.log('Compensation Policy', compensationPolicy, timesheetPayments);
 
@@ -144,14 +144,13 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                     label: timeSheetTabs?.[index]?.timesheetLabel?.label
                 },
                 paymentFrequency: data?.servicePeriod?.value,
-                maxPaymentPerTimesheetSubmission: maxPaymentPerTimesheetSubmission,
-                maxPaymentPerContract: timesheetPayments?.[index]?.maxPaymentPerContract || parseFloat(0),
+                maxPaymentPerTimesheetSubmission: parseFloat(maxPaymentPerTimesheetSubmission),
+                maxPaymentPerContract: parseFloat(timesheetPayments?.[index]?.maxPaymentPerContract) || parseFloat(0),
                 reducedNumberOfServices: reducedNumberOfServices,
                 providingAdditionalServices: providingAdditionalServices,
                 paymentBasedonFixedHoursVsActual: timesheetPayments?.[index]?.paymentBasedonFixedHoursVsActual || true
             });
         });
-        console.log('temp', temp);
         setTimesheetPayments(temp);
         getPaymentFields();
         // }
@@ -167,14 +166,15 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
         getTimeSheetValues();
     }, [contractId])
 
-    useEffect(() => {
-        getPaymentFields();
-    }, [timesheetPayments?.length, timesheetPayments])
-
     const updateTimesheetPayment = (value, name, index) => {
         let temp = timesheetPayments;
         temp?.filter((data, indexVal) => index === indexVal)?.map(data => {
-            data[name] = value;
+            if (name === 'maxPaymentPerContract') {
+                data[name] = parseFloat(value);
+            }
+            else {
+                data[name] = value;
+            }
             if (name === 'paymentBasedonFixedHoursVsActual' && !value) {
                 data['maxPaymentPerTimesheetSubmission'] = parseFloat(0);
                 data['maxPaymentPerContract'] = parseFloat(0);
@@ -185,10 +185,9 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
     }
 
     const fixedCompensationValue = (value, name, index) => {
-        console.log('value', value, name)
         let temp = timesheetPayments;
         temp?.filter((data, indexVal) => index === indexVal)?.map(data => {
-            data[name] = value;
+            data[name] = parseFloat(value);
             // if (name === 'paymentBasedonFixedHoursVsActual' && !value) {
             //     data['maxPaymentPerTimesheetSubmission'] = parseFloat(0);
             //     data['maxPaymentPerContract'] = parseFloat(0);
@@ -302,7 +301,7 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>$</InputAdornment>,
                                     }}
-                                    onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9), 'maxPaymentPerContract', i)}
+                                    onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
                                     value={(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
                                 // onChange={(e) => updateTimesheetPayment(e.target.value.slice(0, limit9).replace(/,/g, ""), 'maxPaymentPerContract', i)}
                                 // value={Number(timesheetPayments?.[i]?.maxPaymentPerContract)?.toLocaleString()}
@@ -375,8 +374,6 @@ const PaymentAndCompensation = ({ selectContractInfo, getViewPage8, getCurrentPa
             setRvuQuantityVariance(null);
         }
     }
-
-    console.log('frequency', frequency, fteEquivalent);
 
     if (isLoading) {
         return <LoadingScreen text={['Sit Back And Relax', 'Loading Your Details']} />

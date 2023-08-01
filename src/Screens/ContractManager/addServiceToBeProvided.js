@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Dialog, Classes, Icon, Intent, Tag } from '@blueprintjs/core';
+import cloneDeep from 'lodash.clonedeep';
+
 import AddIcon from '@mui/icons-material/Add';
 import DatalistInput, { useComboboxControls } from 'react-datalist-input';
 import { PUT, GET, TenantID, POST } from './../dataSaver';
@@ -27,6 +29,8 @@ import Notes from '../../Components/Notes';
 import CommonSwitch from '../../Components/CommonFields/CommonSwitch';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+import ServiceConflict from './serviceConflict';
+import { checkActivityChange } from './checkDependentData';
 
 import style from './index.module.scss';
 
@@ -78,6 +82,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   const [continueLoading, setContinueLoading] = useState(false);
   const { setValue, value } = useComboboxControls({ initialValue: '' });
   const [location, setLocation] = useState('');
+  const [conflict, setConflict] = useState({ isPresent: false, data: [] });
+  const [activityUpdated, setActivityUpdated] = useState(false);
+  const [activityItems, setActivityItems] = useState([]);
 
   useEffect(() => {
     getContractedServices();
@@ -120,6 +127,10 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }, [siteData])
 
+  useEffect(() => {
+    getActivityItems();
+  }, [activity, usedActivity?.length])
+
   const removeSelectedLocationFromList = () => {
     setLocationList(allLocation?.filter(data => !selectedLocation?.map(location => location?.location).includes(data?.location))?.map(data => data));
   }
@@ -130,6 +141,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
   useEffect(() => {
     if (newActivity !== '') {
+      setActivityUpdated(true);
       onActivitySelect(activity?.filter(data => data?.activity?.activity === newActivity)?.map(data => data)[0]);
     }
   }, [activity])
@@ -162,7 +174,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
   }
 
   const removeFriendlyName = (index) => {
+    setActivityUpdated(true);
     setSelectedActivity(selectedActivity?.filter((data, indexValue) => index !== indexValue)?.map(data => data));
+    setUsedActivity(usedActivity?.filter((data, indexValue) => indexValue !== index)?.map(data => data));
   }
 
   const removeLocation = (index) => {
@@ -243,8 +257,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     }
   }
 
-
+  console.log('conflict Data testing', conflict);
   const activityToAdd = async () => {
+    setActivityUpdated(true);
     let dept = [];
     siteData?.map(site => site?.departmentList?.departments?.map(deptData => {
       dept.push(deptData.id);
@@ -627,7 +642,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       if (serviceTypeTemplate === ADDON) {
         dataValues = metadata?.[0];
       }
-      if (activities?.length === 0) {
+      if (activities?.length === 0 && serviceTypeTemplate !== ADDON) {
         let message = serviceTypeTemplate === SUPPLEMENTAL ? 'Supplement Services' : serviceTypeTemplate === ADMINISTRATIVE ? 'Allowable Administrative Duties' : 'Activity To Be Performed';
         ErrorToaster(`Atleast One ${message} needs to be added to create a service`);
         return;
@@ -743,7 +758,7 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
         }),
         ...([CLINIC, SURGERY, ONCALL, PROCEDUREREADING]?.includes(serviceTypeTemplate) && {
           "hourlyRate": {
-            "value": (dataValues?.sessionAmount / dataValues?.sessionDuration)?.toFixed(2)
+            "value": isNaN((dataValues?.sessionAmount / dataValues?.sessionDuration)?.toFixed(2)) ? 0 : (dataValues?.sessionAmount / dataValues?.sessionDuration)?.toFixed(2)
           },
         }),
         "totalSessions": {
@@ -878,8 +893,77 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
 
       }
     }
+
+    const dataChange = () => {
+      let conflictedData = checkActivityChange(existingServices, selectedService);
+      console.log('conflicted Data', conflictedData);
+      conflictedData?.map(conflictData => {
+        let conflictedIndex = services?.indexOf(services?.filter(data => data?.refId === conflictData?.id)?.map(data => data)[0]);
+        let currentServiceIndex = services?.indexOf(services?.filter(data => data?.refId === selectedService?.refId)?.map(data => data)[0]);
+        let conflictedAddOn = cloneDeep(services[conflictedIndex])
+        if (conflictData?.type === ADDON) {
+          console.log('conflictData is add on data', conflictedIndex, currentServiceIndex);
+          services[conflictedIndex] = cloneDeep(services[currentServiceIndex]);
+          services[conflictedIndex].activityResponse = conflictedAddOn?.activityResponse;
+          services[conflictedIndex].activityTypeTemplate = conflictedAddOn?.activityTypeTemplate;
+          services[conflictedIndex].activityType = conflictedAddOn?.activityType;
+          services[conflictedIndex].refId = conflictedAddOn.refId;
+          services[conflictedIndex].workFlow = conflictedAddOn.workFlow;
+          services[conflictedIndex].contractedSchedules = [];
+          services[conflictedIndex].patientsSeenTargets = [];
+          services[conflictedIndex].scheduledPatientsTargets = [];
+          services[conflictedIndex].performingActivity.activity = `${selectedService?.activityType?.activityType} (${selectedActivity?.map(data => data?.activity?.activity)?.join(', ')})`
+        }
+        if (conflictData?.type === SUPPLEMENTAL || conflictData?.type === ADMINISTRATIVE) {
+          services[conflictedIndex].hoursBorrowed = {
+            activityType: {
+              activityType: services[currentServiceIndex].activityType?.activityType,
+
+            },
+            performingActivity: {
+              activity: services[currentServiceIndex]?.activities?.map(activity => activity?.activity)?.join(', '),
+            }
+          };
+          services[conflictedIndex].billableService = services[currentServiceIndex]?.billableService;
+          services[conflictedIndex].rateType = services[currentServiceIndex]?.rateType;
+          services[conflictedIndex].payableAmount = services[currentServiceIndex]?.payableAmount;
+          services[conflictedIndex].duration = services[currentServiceIndex]?.duration;
+          services[conflictedIndex].totalSessions = services[currentServiceIndex]?.totalSessions;
+          services[conflictedIndex].hourlyRate = services[currentServiceIndex]?.hourlyRate;
+        }
+      })
+      updateTimesheet(services)
+      return services;
+    }
+
+    const updateTimesheet = async (serviceData) => {
+      const { data: timesheetSubmissionTerms } = await GET(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`);
+      let temp = [];
+      if (timesheetSubmissionTerms?.timesheetActivitiesPeriods?.length === 1) {
+        serviceData?.map(data => {
+          temp.push({ activityType: { activityType: data?.activityType?.activityType }, performingActivity: { activity: data?.activities?.map(data => data?.activity)?.join('-') } })
+        })
+        timesheetSubmissionTerms.timesheetActivitiesPeriods[0].activities = temp;
+      } else {
+        timesheetSubmissionTerms.timesheetActivitiesPeriods?.map(data => {
+          data.activities = [];
+        })
+      }
+      if (!editService || activityUpdated) {
+        const response = await PUT(`contract-managment-service/contracts/${contractId}/timesheetSubmissionTerms`, JSON.stringify(timesheetSubmissionTerms));
+        if (response) {
+          console.log('Successfully Updated Timesheet Activities')
+        }
+        else {
+          console.log('Unexpected Error');
+        }
+      }
+    }
+
+    console.log('datachanged', dataChange());
+
     let formattedData = {
-      contractedServices: services
+      contractedServices: dataChange()
     }
 
     const response = await PUT(`contract-managment-service/contracts/${contractId}/ContractedService`, JSON.stringify(formattedData));
@@ -934,15 +1018,19 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
       );
     });
 
-  const activityItems = useMemo(
-    () =>
-      activity?.filter(data => !usedActivity?.includes(data?.activity?.activity))?.map((data) => ({
+  const getActivityItems = () => {
+    let temp = [];
+    activity?.filter(data => !usedActivity?.includes(data?.activity?.activity))?.map((data) => (
+      temp.push({
         id: data.id,
         value: data?.activity?.activity,
         ...data,
-      })),
-    [activity, usedActivity],
-  );
+      })))
+    setActivityItems(temp);
+  }
+
+
+  console.log('activit Items', activityItems, activity, usedActivity);
 
   const locationItems = useMemo(
     () =>
@@ -954,22 +1042,28 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
     [locationList],
   )
 
-  const checkIfExistInOtherPlaces = () => {
-    console.log('existing Services', existingServices);
-    console.log('selected Services', selectedService);
-    let otherPlaces = existingServices?.filter(data => data?.dataResponse?.dataMap?.selectedActivityId === selectedService?.refId)?.map(data => data);
-    console.log('other places', otherPlaces);
+  const updateConflict = (value) => {
+    setConflict({ ...conflict, isPresent: value });
   }
 
+
   const onActivitySelect = (selectedItem) => {
+    console.log('selectedItem', selectedItem);
     setItem(selectedItem);
     if (!selectedActivity?.map(data => data?.id)?.includes(selectedItem?.id)) {
       delete selectedItem["value"];
       let temp = selectedActivity;
       temp.push(selectedItem);
+      let usedActivityTemp = usedActivity;
+      usedActivityTemp.push(selectedItem?.activity?.activity);
+      setUsedActivity(usedActivityTemp);
       setSelectedActivity(temp);
     }
     setValue('');
+    if (editService) {
+      let conflictedData = checkActivityChange(existingServices, selectedService);
+      setConflict({ isPresent: conflictedData?.length !== 0, conflict: conflictedData });
+    }
   }
 
   const onLocationSelect = (selectedItem) => {
@@ -1247,6 +1341,9 @@ const AddServiceProvided = ({ getAddServiceDialog, getAddOn, contractId, selectC
             ) : ''}
           </div>
           <div>
+            {
+              <ServiceConflict conflict={conflict} updateConflict={updateConflict} />
+            }
             {isEditable && !isShowPDF &&
               <div className={`${style.floatRight} `}>
                 {!editService && <button className={`${style.buttonStyle}  ${style.cursorPointer} ${style.marginLeft20} ${continueLoading ? style.disabled : ''}`} onClick={!continueLoading ? () => addOnWorkFlow('ADD MORE') : null}>ADD MORE</button>}

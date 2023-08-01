@@ -302,9 +302,9 @@ const ContractIdTermLimitIndividual = (
   const addContract = async (buttonType) => {
     let sites = getSiteData();
     let conflictedData = checkSiteAndDepartment(contracts, sites, contractIdFromActive);
-    if (conflictedData?.length !== 0) {
-      setConflict({ isPresent: true, conflict: conflictedData });
-    }
+    // if (conflictedData?.length !== 0) {
+    //   setConflict({ isPresent: true, conflict: conflictedData });
+    // }
     console.log('conflict Data', conflictedData);
     if (conflictedData?.length === 0) {
       setContinueLoading(true);

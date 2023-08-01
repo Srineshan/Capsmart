@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import style from './index.module.scss';
 
-const ConflictPopUp = ({ updateConflict, conflict }) => {
+const ServiceConflict = ({ updateConflict, conflict }) => {
     const navigate = useNavigate();
     const submit = () => {
-        updateConflict(false);
+        updateConflict(conflict);
     }
     let uniqueType = [];
     conflict?.conflict?.map(data => {
@@ -24,8 +24,7 @@ const ConflictPopUp = ({ updateConflict, conflict }) => {
                         <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => updateConflict(false)} />
                     </div>
                     <div className={style.extensionBorder}></div>
-                    {conflict?.conflict?.[0]?.type === 'Service Dependencies' ? 'The Following Services has dependency with the data that you are trying to change' :
-                        'The Following Services / Timesheet is using Site / Department that you are trying to remove.'}
+
                     {
                         uniqueType?.map(type => (
                             <>
@@ -48,7 +47,7 @@ const ConflictPopUp = ({ updateConflict, conflict }) => {
                     }
 
                     <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                        <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={submit}>OK</button>
+                        <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={submit}>Update Anyway</button>
                     </div>
                 </div>
             </Dialog>
@@ -56,4 +55,4 @@ const ConflictPopUp = ({ updateConflict, conflict }) => {
     )
 }
 
-export default ConflictPopUp;
+export default ServiceConflict;

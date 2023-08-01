@@ -10,6 +10,7 @@ import DeleteDraftContract from './deleteDraftContract';
 import ContractActivationRequest from './contractActivationRequest';
 import { GET, PUT, POST, TenantID } from './../dataSaver';
 import ContractList from './contractList';
+import ActiveContract from './activeContract';
 
 const Contracts = () => {
     const [selectedContract, setSelectedContract] = useState('activecontracts');
@@ -30,6 +31,7 @@ const Contracts = () => {
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [isEditable, setIsEditable] = useState(false);
+    const [activeContractView, setActiveContractView] = useState(false);
 
     useEffect(() => {
         getContracts();
@@ -82,6 +84,10 @@ const Contracts = () => {
         setNewContractFromClone(value);
     }
 
+    const getActiveContractView = (value) => {
+        setActiveContractView(value);
+    }
+
     const getDeleteDraftDialog = (value) => {
         setDeleteDraftDialog(value);
     }
@@ -126,7 +132,7 @@ const Contracts = () => {
     return (
         addContract ? (
             <AddContract getAddContract={getAddContract} getNewContract={getNewContract} getContractType={getContractType} getSelectedContractType={getSelectedContractType} getMethod={getMethod} />
-        ) : newContractFromClone ? (
+        ) : activeContractView ? (<ActiveContract contractId={contractId} activeContractView={activeContractView} getActiveContractView={getActiveContractView} />) : newContractFromClone ? (
             <NewContractFromClone getNewContract={getNewContract} contractType={contractType} selectedContractType={selectedContractType} contractIdFromActive={contractId} getContractIdFromActive={getContractIdFromActive} method={method} contracts={contracts} isEditable={isEditable} selectedContract={selectedContract} />
         ) : (
             <Fragment>
@@ -151,6 +157,7 @@ const Contracts = () => {
                     getSelectedPage={getSelectedPage}
                     totalCount={totalCount}
                     page={page}
+                    getActiveContractView={getActiveContractView}
                 />
 
                 {extensionDialog && (
