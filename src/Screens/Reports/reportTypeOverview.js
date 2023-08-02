@@ -1402,7 +1402,10 @@ const ReportTypeOverview = () => {
                                                     )} */}
                                                 </>
                                             ) : reportType === "paymentsProcessingSummary" ? (
-                                                paymentsReportLog?.paymentContracts?.length !== 0 ? (
+                                                (paymentsReportLog?.paymentContracts?.length === 0 && paymentsReportLog?.rejected?.length === 0 && paymentsReportLog?.paymentPastDue?.length === 0 && paymentsReportLog?.paymentNotDone?.length === 0 && paymentsReportLog?.paymentDelayed?.length === 0 && paymentsReportLog?.paidOnTime?.length === 0) ? (
+                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                ) : (
                                                     <>
                                                         <div className={style.grid2}>
                                                             <div>
@@ -1498,9 +1501,6 @@ const ReportTypeOverview = () => {
                                                             </>
                                                         )}
                                                     </>
-                                                ) : (
-                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
                                                 )
                                             ) : reportType === "compensationCostAnalysis" ? (
                                                 <>
