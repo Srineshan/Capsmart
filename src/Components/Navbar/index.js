@@ -276,7 +276,7 @@ const Navbar = () => {
   let homeLink = currentUserRoles?.includes("Contract Manager")
     ? "/contracts"
     : isFlutterRoles?.length !== 0
-      ? `/dashboard/#/dashboardRoute`
+      ? `/home/#/dashboardRoute`
       : currentUserRoles?.includes("Super Sys Admin")
         ? "/partnerPortal"
         : currentUserRoles?.includes("Entity Sys Admin")
@@ -294,7 +294,7 @@ const Navbar = () => {
             : "/entitySitePortal";
     console.log(homeLink);
     if (homeLink === "/") {
-      window.location.href = "/dashboard/#/dashboardRoute";
+      window.location.href = "/home/#/dashboardRoute";
     } else {
       navigate(homeLink);
     }
