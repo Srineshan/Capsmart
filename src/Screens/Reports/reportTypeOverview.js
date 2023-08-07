@@ -1001,9 +1001,6 @@ const ReportTypeOverview = () => {
             oneColValue = [data?.obligatedExpected, data?.obligatedActivitiesCosts, data?.addOnActivitiesCost, data?.obligatedVariance, data?.contractYearBalance, data?.contractYearProjectedBalance, data?.contractPeriodBalance, data?.contractPeriodProjectedBalance, data?.additionalServicesCost, data?.reducedServicesCost, data?.totalActivitiesCost, data?.policyBasedPayment, data?.maxPaymentPerTimesheetSubmission]
             allColValues.push(oneColValue)
         })
-
-        console.log(leftHeadings, allColValues)
-
         return allColValues;
     }
 
