@@ -993,12 +993,12 @@ const ReportTypeOverview = () => {
     }
     let oneColValue = []
     const getCompensationCostAnalysisValues = () => {
-        let leftHeadings = ['Obligated Expected', 'Obligated (Actual)', 'Add-ON', 'Obligated Variance', 'Additional Services', 'Reduced Services', 'Actual', 'Invoice By Contractor', 'Fixed (Budgeted)'];
+        let leftHeadings = ['Obligated Expected', 'Obligated (Actual)', 'Add-ON', 'Obligated Variance', 'Contract Year Balance', 'Contract Year Projected Balance', 'Contract Period Balance', 'Contract Period Projected Balance', 'Additional Services', 'Reduced Services', 'Actual', 'Invoice By Contractor', 'Fixed (Budgeted)'];
         let allColValues = [];
         allColValues.push(leftHeadings)
         oneColValue = []
         compensationCostAnalysis?.map(data => {
-            oneColValue = [data?.obligatedExpected, data?.obligatedActivitiesCosts, data?.addOnActivitiesCost, '-', data?.additionalServicesCost, data?.reducedServicesCost, data?.totalActivitiesCost, data?.policyBasedPayment, data?.maxPaymentPerTimesheetSubmission]
+            oneColValue = [data?.obligatedExpected, data?.obligatedActivitiesCosts, data?.addOnActivitiesCost, data?.obligatedVariance, data?.contractYearBalance, data?.contractYearProjectedBalance, data?.contractPeriodBalance, data?.contractPeriodProjectedBalance, data?.additionalServicesCost, data?.reducedServicesCost, data?.totalActivitiesCost, data?.policyBasedPayment, data?.maxPaymentPerTimesheetSubmission]
             allColValues.push(oneColValue)
         })
 
@@ -1101,9 +1101,6 @@ const ReportTypeOverview = () => {
         let headerValues = [];
         headerValues.push('');
         compensationCostAnalysis?.map(data => headerValues.push(`${months[data?.month]}, ${data?.year}`));
-        compensationCostAnalysis?.map(data =>
-            console.log(months[data?.month])
-        )
         return headerValues;
     }
 
