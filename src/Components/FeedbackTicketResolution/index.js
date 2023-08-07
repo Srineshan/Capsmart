@@ -17,6 +17,7 @@ import style from './index.module.scss';
 import { getDaysAgo } from '../../utils/getDaysAgo';
 import { currentUser } from './../../utils/auth';
 import FeedbackTicketResolutionLog from './feedbackTicketResolutionLog';
+import { formatInTimeZone } from 'date-fns-tz';
 
 const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, isEdit }) => {
     const loggedInUser = currentUser();
@@ -35,8 +36,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     const [ticketDetails, setTicketDetails] = useState();
     const [ticketName, setTicketName] = useState('');
     const [fileName, setFileName] = useState(`${currentUserData?.[0]?.id}${new Date().getTime().toString()}.png`);
-    const [dateAndTime, setDateAndTime] = useState(format(new Date(), 'MM-dd-yyyy HH:mm'));
-    const [modifiedDateAndTime, setModifiedDateAndTime] = useState(format(new Date(), 'MM-dd-yyyy HH:mm'));
+    const [dateAndTime, setDateAndTime] = useState(formatInTimeZone(new Date(), 'America/New_York', 'MM-dd-yyyy HH:mm zzz'));
+    const [modifiedDateAndTime, setModifiedDateAndTime] = useState(formatInTimeZone(new Date(), 'America/New_York', 'MM-dd-yyyy HH:mm zzz'));
     const [showFeedbackTicketResolutionLog, setShowFeedbackTicketResolutionLog] = useState(false);
     const [blobFormat, setBlobFormat] = useState();
     const [comment, setComment] = useState('');
@@ -85,8 +86,8 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
     useEffect(() => {
         if (ticketDetails) {
             setTicketName(ticketDetails?.ticketId);
-            setDateAndTime(format(new Date(ticketDetails?.createdDateTime), 'MM-dd-yyyy HH:mm'));
-            setModifiedDateAndTime(format(new Date(ticketDetails?.modifiedDateTime), 'MM-dd-yyyy HH:mm'));
+            setDateAndTime(formatInTimeZone(new Date(ticketDetails?.createdDateTime), 'America/New_York', 'MM-dd-yyyy HH:mm zzz'));
+            setModifiedDateAndTime(formatInTimeZone(new Date(ticketDetails?.modifiedDateTime), 'America/New_York', 'MM-dd-yyyy HH:mm zzz'));
             setSubject(ticketDetails?.subject);
             setDescription(ticketDetails?.description);
             setType(ticketDetails?.type);
@@ -409,7 +410,6 @@ const FeedbackTicketResolution = ({ getShowFeedbackTicketResolution, ticketId, i
                                                 UPLOAD
                                             </label>
                                             <input id="file-upload-help" type="file" onChange={(e) => handleFileUpload(e)} />
-
                                         </>
                                     )}
                                 </div>
