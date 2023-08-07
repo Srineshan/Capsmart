@@ -252,8 +252,8 @@ const HelpHome = () => {
             { "type": "text", "value": description, "onClickFunction": onClickFunction },
             { "type": "text", "value": openDateOrTime, "onClickFunction": onClickFunction },
             { "type": "text", "value": contractorName, "onClickFunction": onClickFunction },
-            { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
             { "type": "text", "value": submittedBy, "onClickFunction": onClickFunction },
+            { "type": "text", "value": lastUpdated, "onClickFunction": onClickFunction },
         ];
     }
 
@@ -289,7 +289,7 @@ const HelpHome = () => {
                             </div>
                             <div className={style.buttonGroupUsers}>
                                 <button className={selectedOption === "TICKETS" && style.activeButton} onClick={() => setSelectedOption('TICKETS')}>Tickets ( {myTicket?.length} )</button>
-                                <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( 0 )</button>
+                                <button className={selectedOption === "Exception Error Tickets" && style.activeButton} onClick={() => setSelectedOption('Exception Error Tickets')}>Exception Error ( {exceptionTicket?.length} )</button>
                                 <button className={selectedOption === "Messages" && style.activeButton} onClick={() => setSelectedOption('Messages')}>Messages ( {allMessages?.length} )</button>
                             </div>
                             {/* {selectedOption !== "Exception Error Tickets" && ( */}
